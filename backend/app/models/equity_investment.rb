@@ -72,8 +72,14 @@ class EquityInvestment < ApplicationRecord
   end
 
   def current_value
-    return amount unless campaign && campaign.valuation && percentage
-    (campaign.valuation * percentage / 100).round(2)
+    return unless campaign && campaign.valuation && percentage
+    
+    new_value = (campaign.valuation * percentage / 100).round(2)
+    
+    # Only update if changed significantly to avoid unnecessary writes
+    if (current_value || amount) != new_value
+      self.current_value = new_value
+    end
   end
 
   def total_returns

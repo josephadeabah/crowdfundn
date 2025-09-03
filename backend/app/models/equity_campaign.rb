@@ -20,8 +20,10 @@ class EquityCampaign < Campaign
   validate :type_cannot_change, on: :update
   validate :shares_within_equity_limits
   validate :total_shares_must_be_set
+  validate :shares_and_percentage_consistency
+  validate :reasonable_share_structure
+  validate :founder_equity_within_bounds
 
-  # Add these attributes to make sure they're accessible
   attribute :company_name, :string
   attribute :company_description, :text
   attribute :company_headquarters, :string
@@ -210,7 +212,7 @@ class EquityCampaign < Campaign
   end
 
   def percentage_available
-    equity_offered.to_f - equity_investments.successful.sum(:percentage) - founder_equity_percentage
+    equity_offered.to_f - equity_investments.successful.sum(:percentage)
   end
 
   def percentage_raised
@@ -219,6 +221,34 @@ class EquityCampaign < Campaign
 
   def founder_equity_percentage
     campaign_team_members.sum(:equity_percentage).to_f
+  end
+
+  def reasonable_share_structure
+    if total_shares > 1_000_000_000
+      errors.add(:total_shares, "exceeds reasonable limit for company structure")
+    end
+    
+    if valuation.to_f / total_shares.to_f < 0.0001
+      errors.add(:total_shares, "would create unreasonably low share price")
+    end
+  end
+  
+  def founder_equity_within_bounds
+    if founder_equity_percentage > 80
+      errors.add(:base, "Founder equity allocation is too high for a credible offering")
+    end
+    
+    if equity_offered.to_f < 5
+      errors.add(:equity_offered, "is too low for a meaningful investment opportunity")
+    end
+  end
+  
+  def investment_ready?
+    valid? && 
+    live? && 
+    shares_available > 0 && 
+    percentage_available > 0 &&
+    (shares_available - (percentage_available / 100) * total_shares).abs < 0.01
   end
 
   def as_json(options = {})
@@ -273,10 +303,8 @@ class EquityCampaign < Campaign
     return 0 if equity_offered.nil? || valuation.nil? || total_shares.nil?
     
     total_equity_shares = (equity_offered.to_f / 100) * total_shares.to_f
-    issued_shares = shares_issued
-    founder_shares = calculate_founder_shares
+    available = total_equity_shares - shares_issued
     
-    available = total_equity_shares - issued_shares - founder_shares
     available.positive? ? available.round(4) : 0
   end
   
@@ -316,12 +344,6 @@ class EquityCampaign < Campaign
     UpdateCampaignInvestmentsJob.perform_later(id)
   end
 
-  def update_investments_valuation
-    equity_investments.successful.find_each do |investment|
-      UpdateCampaignInvestmentsJob.perform_later(investment.id)
-    end
-  end
-
   def shares_within_equity_limits
     return unless shares_issued > (equity_offered.to_f / 100) * total_shares.to_f
     errors.add(:base, 'Total shares issued cannot exceed equity offered')
@@ -340,5 +362,33 @@ class EquityCampaign < Campaign
   def maximum_greater_than_minimum
     return unless maximum_investment.present? && minimum_investment.present? && maximum_investment <= minimum_investment
     errors.add(:maximum_investment, 'must be greater than minimum investment')
+  end
+
+  def shares_and_percentage_consistency
+    return if shares_available.zero? || percentage_available.zero?
+    
+    expected_shares_from_percentage = (percentage_available / 100) * total_shares.to_f
+    
+    if (shares_available - expected_shares_from_percentage).abs > 0.01
+      errors.add(:base, "Shares and percentage availability are inconsistent")
+    end
+  end
+  
+  def equity_debug_info
+    price_per_share = valuation.to_f / total_shares.to_f
+    
+    {
+      valuation: valuation,
+      total_shares: total_shares,
+      equity_offered: equity_offered,
+      shares_available: shares_available,
+      percentage_available: percentage_available,
+      shares_issued: shares_issued,
+      founder_equity_percentage: founder_equity_percentage,
+      price_per_share: price_per_share,
+      max_investment_by_shares: (shares_available * price_per_share).round(2),
+      max_investment_by_percentage: ((percentage_available / 100) * (valuation * equity_offered / 100)).round(2),
+      consistency_check: (shares_available - (percentage_available / 100) * total_shares).abs < 0.01
+    }
   end
 end

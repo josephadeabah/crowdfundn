@@ -2,16 +2,25 @@
 class UpdateCampaignInvestmentsJob < ApplicationJob
   queue_as :default
 
-  def perform(investment_id)
-    investment = EquityInvestment.find_by(id: investment_id)
+  def perform(campaign_id)
+    campaign = EquityCampaign.find_by(id: campaign_id)
     
-    return unless investment && investment.successful?
+    return unless campaign
     
-    investment.current_value
+    # Update all successful investments for this campaign
+    campaign.equity_investments.successful.find_each do |investment|
+      investment.current_value
+      investment.save! if investment.changed?
+    end
+    
+    # Also update the campaign's shares available to ensure consistency
+    campaign.update_shares_available_from_investments
+    
   rescue ActiveRecord::RecordNotFound => e
-    Rails.logger.error "InvestmentUpdateJob: Investment #{investment_id} not found - #{e.message}"
+    Rails.logger.error "UpdateCampaignInvestmentsJob: Campaign #{campaign_id} not found - #{e.message}"
   rescue StandardError => e
-    Rails.logger.error "InvestmentUpdateJob: Error updating investment #{investment_id} - #{e.message}"
-    # You might want to retry the job or send to error monitoring
+    Rails.logger.error "UpdateCampaignInvestmentsJob: Error updating investments for campaign #{campaign_id} - #{e.message}"
+    # Retry the job with exponential backoff
+    retry_job(wait: 1.minute) if executions < 5
   end
 end
