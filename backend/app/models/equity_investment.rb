@@ -41,7 +41,6 @@ class EquityInvestment < ApplicationRecord
   before_create :set_investment_date
   after_commit :update_campaign_leaderboard, if: :saved_change_to_status?
   after_save :update_campaign_shares, if: -> { saved_change_to_status? && successful? }
-  before_save :update_current_value, if: -> { campaign_id_changed? || percentage_changed? }
 
   # Status query methods
   def pending?
@@ -242,10 +241,6 @@ class EquityInvestment < ApplicationRecord
   end
 
   private
-
-  def update_current_value
-    self.current_value = calculate_current_value
-  end
 
   def generate_certificate_number
     self.certificate_number ||= "BHV-#{SecureRandom.alphanumeric(10).upcase}"
