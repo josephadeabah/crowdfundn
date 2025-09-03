@@ -176,6 +176,7 @@ class EquityCampaign < Campaign
     authenticated_investors + anonymous_investors
   end
 
+  # In your EquityCampaign model
   def create_investment(user, amount)
     ActiveRecord::Base.transaction do
       campaign = EquityCampaign.lock.find(id)
@@ -205,6 +206,11 @@ class EquityCampaign < Campaign
       
       if investment.persisted?
         campaign.update!(shares_available: campaign.shares_available - shares)
+      else
+        # Add investment errors to campaign errors
+        investment.errors.full_messages.each do |message|
+          campaign.errors.add(:base, message)
+        end
       end
       
       investment
@@ -214,6 +220,9 @@ class EquityCampaign < Campaign
     nil
   rescue ActiveRecord::StaleObjectError => e
     errors.add(:base, "Campaign was modified by another process. Please try again.")
+    nil
+  rescue StandardError => e
+    errors.add(:base, "Unexpected error: #{e.message}")
     nil
   end
 
