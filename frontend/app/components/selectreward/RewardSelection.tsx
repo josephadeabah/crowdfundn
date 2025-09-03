@@ -102,7 +102,11 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
       <form className="mb-4 relative">
         <FaInfoCircle
           data-tooltip-id="amount-info"
-          data-tooltip-content="If you do not want to pledge with reward, Enter the amount you want to donate and click Support Now to proceed. Otherwise choose reward and proceed. You will be charged this amount during payment."
+          data-tooltip-content={
+            isEquityCampaign
+              ? 'Enter the amount you want to invest and click Invest to proceed. Otherwise choose reward and proceed.'
+              : 'If you do not want to pledge with reward, Enter the amount you want to donate and click Support Now to proceed. Otherwise choose reward and proceed. You will be charged this amount during payment.'
+          }
           className="absolute top-0 left-0 text-gray-500"
         />
         <Tooltip
@@ -125,15 +129,17 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
             required
           />
           <span className="text-sm text-gray-500">
-            For one-time donation, enter the amount and click Support Now to
-            proceed.
+            {!isEquityCampaign &&
+              'For one-time donation, enter the amount and click Support Now to proceed.'}
           </span>
         </div>
-        {/* Assuming BackingPeriodSelector is another reusable component */}
-        <BackingPeriodSelector
-          billingFrequency={billingFrequency}
-          setBillingFrequency={setBillingFrequency}
-        />
+        {/* Only show BackingPeriodSelector for non-equity campaigns */}
+        {!isEquityCampaign && (
+          <BackingPeriodSelector
+            billingFrequency={billingFrequency}
+            setBillingFrequency={setBillingFrequency}
+          />
+        )}
       </form>
 
       {/* Modal for Order Details */}

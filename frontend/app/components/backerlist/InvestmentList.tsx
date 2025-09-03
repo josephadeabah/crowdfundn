@@ -4,6 +4,7 @@ import { FaChartLine } from 'react-icons/fa';
 import moment from 'moment';
 import Pagination from '@/app/components/pagination/Pagination';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
+import CommentLoader from '@/app/loaders/CommentLoader';
 
 interface InvestmentListProps {
   currencySymbol?: string;
@@ -14,7 +15,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({
   currencySymbol = 'GHS',
   campaignId,
 }) => {
-  const { pagination, investments, fetchPublicInvestments } =
+  const { pagination, investments, loading, fetchPublicInvestments } =
     useEquityCampaignContext();
 
   // Initial load
@@ -27,6 +28,17 @@ const InvestmentList: React.FC<InvestmentListProps> = ({
     await fetchPublicInvestments(campaignId, page, pagination?.per_page || 10);
   };
 
+  // Show loader while loading
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, index) => (
+          <CommentLoader key={index} />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Investment List */}
@@ -34,7 +46,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({
         {investments.length > 0 ? (
           investments.map((investment) => (
             <div
-              key={investment.investor_name}
+              key={`${investment.investor_name}-${investment.date}`}
               className="flex items-center justify-between border-b border-gray-200 py-4"
             >
               {/* Investor Info */}
@@ -67,7 +79,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500 dark:text-gray-400">
+          <p className="text-center text-gray-500 dark:text-gray-400 py-8">
             No investors yet. Be the first to invest!
           </p>
         )}
@@ -75,11 +87,13 @@ const InvestmentList: React.FC<InvestmentListProps> = ({
 
       {/* Pagination */}
       {pagination && pagination.total_pages > 1 && (
-        <Pagination
-          currentPage={pagination.current_page}
-          totalPages={pagination.total_pages}
-          onPageChange={handlePageChange}
-        />
+        <div className="mt-6">
+          <Pagination
+            currentPage={pagination.current_page}
+            totalPages={pagination.total_pages}
+            onPageChange={handlePageChange}
+          />
+        </div>
       )}
     </div>
   );
