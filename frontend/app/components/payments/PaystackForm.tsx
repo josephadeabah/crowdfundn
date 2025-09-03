@@ -147,6 +147,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     }
   };
 
+  // In your PaystackForm component
   const handleEquityInvestment = async () => {
     if (!validateForm()) return;
 
@@ -174,28 +175,34 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
       if (!result.success) {
         let errorMessage = result.error || 'Investment failed';
 
+        // Enhanced error handling for validation errors
+        if (result.validationErrors) {
+          // Format all validation errors
+          const formattedErrors = Object.entries(result.validationErrors)
+            .map(([field, messages]) => {
+              const fieldName =
+                field === 'base' ? '' : `${field.replace(/_/g, ' ')}: `;
+              const messageList = Array.isArray(messages)
+                ? messages
+                : [messages];
+              return `${fieldName}${messageList.join(', ')}`;
+            })
+            .join('\n');
+
+          errorMessage = formattedErrors || errorMessage;
+        }
+
         // Special handling for share availability errors
         if (result.data?.shares_available !== undefined) {
           const pricePerShare =
             result.data.shares_available > 0
               ? (totalAmount / result.data.shares_available).toFixed(2)
               : 0;
-          errorMessage += `. Current share price: ${pricePerShare}`;
-        }
-
-        if (result.validationErrors) {
-          errorMessage = Object.entries(result.validationErrors)
-            .map(([field, messages]) => {
-              const message = Array.isArray(messages)
-                ? messages.join(', ')
-                : messages;
-              return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message}`;
-            })
-            .join('\n');
+          errorMessage += `\nCurrent share price: ${pricePerShare}`;
         }
 
         if (result.code) {
-          errorMessage += ` (Code: ${result.code})`;
+          errorMessage += `\n(Code: ${result.code})`;
         }
 
         setToastMessage(errorMessage);
