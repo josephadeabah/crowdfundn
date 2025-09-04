@@ -73,12 +73,14 @@ const EquityInvestments = () => {
     setExpandedInvestments(newExpanded);
   };
 
-  // Filter out pending investments for display purposes only
-  const filterOutPendingInvestments = (investments: EquityInvestment[]) => {
-    return investments.filter((investment) => investment.status !== 'pending');
+  // Filter out non-successful investments for display purposes only
+  const filterSuccessfulInvestments = (investments: EquityInvestment[]) => {
+    return investments.filter(
+      (investment) => investment.status === 'successful',
+    );
   };
 
-  const successfulInvestments = filterOutPendingInvestments(
+  const successfulInvestments = filterSuccessfulInvestments(
     portfolio?.investments || [],
   );
 
@@ -93,6 +95,12 @@ const EquityInvestments = () => {
 
       if (!investment) {
         console.error('Investment not found');
+        return;
+      }
+
+      // Only allow certificate download for successful investments
+      if (investment.status !== 'successful') {
+        console.error('Certificate only available for successful investments');
         return;
       }
 
@@ -153,6 +161,68 @@ const EquityInvestments = () => {
     router.push(`/campaign/${identifier}?${generateRandomString()}`);
   };
 
+  // Helper function to get status badge styling
+  const getStatusBadgeStyle = (status: string) => {
+    switch (status) {
+      case 'successful':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'pending':
+      case 'processing':
+      case 'ongoing':
+      case 'queued':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      case 'failed':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      case 'abandoned':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+      case 'reversed':
+      case 'refunded':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+      case 'canceled':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+    }
+  };
+
+  // Helper function to get status display text
+  const getStatusDisplayText = (status: string) => {
+    switch (status) {
+      case 'successful':
+        return 'Successful';
+      case 'pending':
+        return 'Pending';
+      case 'processing':
+        return 'Processing';
+      case 'ongoing':
+        return 'In Progress';
+      case 'queued':
+        return 'Queued';
+      case 'failed':
+        return 'Failed';
+      case 'abandoned':
+        return 'Abandoned';
+      case 'reversed':
+        return 'Reversed';
+      case 'refunded':
+        return 'Refunded';
+      case 'canceled':
+        return 'Canceled';
+      default:
+        return status;
+    }
+  };
+
+  // Helper function to determine if investment can have certificate
+  const canHaveCertificate = (status: string) => {
+    return status === 'successful';
+  };
+
+  // Helper function to determine if investment has value data
+  const hasValueData = (status: string) => {
+    return status === 'successful';
+  };
+
   if (loading) {
     return <EquityInvestmentsLoader />;
   }
@@ -208,7 +278,7 @@ const EquityInvestments = () => {
         currencySymbol={user?.currency_symbol}
       />
 
-      {/* Performance Charts Section - Use filtered investments for display only */}
+      {/* Performance Charts Section - Use successful investments only */}
       <PerformanceCharts
         investments={successfulInvestments}
         currency={user?.currency}
@@ -256,10 +326,12 @@ const EquityInvestments = () => {
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {currentInvestments.map((investment: EquityInvestment) => {
                       const investmentAmount = parseNumber(investment.amount);
-                      const currentValue = parseNumber(
-                        investment.current_value,
-                        investmentAmount,
-                      );
+                      const currentValue = hasValueData(investment.status)
+                        ? parseNumber(
+                            investment.current_value,
+                            investmentAmount,
+                          )
+                        : investmentAmount;
                       const investmentReturn = currentValue - investmentAmount;
                       const returnPct =
                         investmentAmount > 0
@@ -272,6 +344,9 @@ const EquityInvestments = () => {
                         investment.certificate_exists ||
                         investment.certificate?.exists;
                       const isExpanded = expandedInvestments.has(investment.id);
+                      const canDownloadCertificate = canHaveCertificate(
+                        investment.status,
+                      );
 
                       return (
                         <>
@@ -310,54 +385,62 @@ const EquityInvestments = () => {
                               ({parseNumber(investment.percentage).toFixed(2)}%)
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {formatCurrency(
-                                currentValue,
-                                investment.currency || user?.currency,
-                                investment.currency_symbol ||
-                                  user?.currency_symbol,
+                              {hasValueData(investment.status) ? (
+                                formatCurrency(
+                                  currentValue,
+                                  investment.currency || user?.currency,
+                                  investment.currency_symbol ||
+                                    user?.currency_symbol,
+                                )
+                              ) : (
+                                <span className="text-gray-400 dark:text-gray-500">
+                                  N/A
+                                </span>
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="flex flex-col">
-                                <span
-                                  className={`font-medium ${
-                                    investmentReturn >= 0
-                                      ? 'text-green-600 dark:text-green-400'
-                                      : 'text-red-600 dark:text-red-400'
-                                  }`}
-                                >
-                                  {formatCurrency(
-                                    investmentReturn,
-                                    investment.currency || user?.currency,
-                                    investment.currency_symbol ||
-                                      user?.currency_symbol,
-                                  )}
+                              {hasValueData(investment.status) ? (
+                                <div className="flex flex-col">
+                                  <span
+                                    className={`font-medium ${
+                                      investmentReturn >= 0
+                                        ? 'text-green-600 dark:text-green-400'
+                                        : 'text-red-600 dark:text-red-400'
+                                    }`}
+                                  >
+                                    {formatCurrency(
+                                      investmentReturn,
+                                      investment.currency || user?.currency,
+                                      investment.currency_symbol ||
+                                        user?.currency_symbol,
+                                    )}
+                                  </span>
+                                  <Badge
+                                    variant="secondary"
+                                    className={`w-fit mt-1 border ${
+                                      investmentReturn >= 0
+                                        ? 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700'
+                                        : 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/20 dark:text-red-400 dark:border-red-700'
+                                    }`}
+                                  >
+                                    {investmentReturn >= 0 ? '+' : ''}
+                                    {returnPct.toFixed(2)}%
+                                  </Badge>
+                                </div>
+                              ) : (
+                                <span className="text-gray-400 dark:text-gray-500">
+                                  N/A
                                 </span>
-                                <Badge
-                                  variant="secondary"
-                                  className={`w-fit mt-1 border ${
-                                    investmentReturn >= 0
-                                      ? 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700'
-                                      : 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/20 dark:text-red-400 dark:border-red-700'
-                                  }`}
-                                >
-                                  {investmentReturn >= 0 ? '+' : ''}
-                                  {returnPct.toFixed(2)}%
-                                </Badge>
-                              </div>
+                              )}
                             </td>
 
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
-                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                  investment.status === 'successful'
-                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                    : investment.status === 'pending'
-                                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                }`}
+                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeStyle(
+                                  investment.status,
+                                )}`}
                               >
-                                {investment.status}
+                                {getStatusDisplayText(investment.status)}
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -371,7 +454,7 @@ const EquityInvestments = () => {
                               >
                                 View
                               </Button>
-                              {investment.status === 'successful' && (
+                              {canDownloadCertificate && (
                                 <Button
                                   variant="outline"
                                   size="sm"
