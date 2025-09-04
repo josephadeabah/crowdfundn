@@ -551,7 +551,7 @@ const EquityInvestments = () => {
                       {amount}
                     </span>{' '}
                     in{' '}
-                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                    <span className="font-semibold text-teal-600 dark:text-teal-400">
                       {campaignName}
                     </span>
                   </p>
