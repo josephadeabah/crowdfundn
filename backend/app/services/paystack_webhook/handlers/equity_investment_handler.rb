@@ -2,7 +2,7 @@
 module PaystackWebhook::Handlers
   class EquityInvestmentHandler
     include PaystackWebhook::JsonHelper
-    
+
     def initialize(data)
       @data = data
     end
@@ -42,13 +42,13 @@ module PaystackWebhook::Handlers
           update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
           update_campaign(investment, net_amount)
           create_pledges_from_rewards(investment, metadata)
-          
+
           # CRITICAL: Check equity limits before marking as successful
           if equity_limits_exceeded?(investment)
             handle_oversubscription(investment, response, metadata)
             return # Exit early since investment failed
           end
-          
+
           investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
           send_confirmation_email(investment, response, metadata)
         end
@@ -77,17 +77,13 @@ module PaystackWebhook::Handlers
 
     def equity_limits_exceeded?(investment)
       campaign = investment.campaign
-      # Calculate what the new total would be
       new_total_percentage = campaign.equity_investments.successful.sum(:percentage) + investment.percentage
-      
-      # Check if it would exceed the equity offered (with small tolerance)
       new_total_percentage > (campaign.equity_offered.to_f + 0.01)
     end
 
     def handle_oversubscription(investment, response, metadata)
       Rails.logger.warn "Oversubscription detected for investment #{investment.id}"
-      
-      # Mark as failed due to oversubscription
+
       investment.update!(
         status: EquityInvestment::STATUS_FAILED,
         metadata: investment.metadata.merge(
@@ -101,81 +97,19 @@ module PaystackWebhook::Handlers
           }
         )
       )
-      
-      # Initiate refund process
-      initiate_refund(investment, response)
-      
-      # Send oversubscription notification
+
+      # Delegate refund processing to RefundProcessedHandler
+      PaystackWebhook::Handlers::RefundProcessedHandler.new(
+        investment: investment,
+        response: response
+      ).call
+
       send_oversubscription_notification(investment, metadata)
-      
-      # Roll back campaign updates since investment failed
+
       rollback_campaign_updates(investment, response.dig(:data, :amount).to_f / 100.0 * 0.93)
-      
+
       raise "Investment #{investment.id} failed due to oversubscription"
     end
-
-    def initiate_refund(investment, response)
-      Rails.logger.info "Initiating Paystack refund for investment #{investment.id}"
-      # Try with transaction ID instead of reference
-      transaction_id = response.dig(:data, :id)
-      transaction_reference = response['reference']
-      paystack_service = PaystackService.new
-      
-      begin
-        refund_response = paystack_service.initiate_refund(
-          transaction: transaction_id || transaction_reference,
-          amount: investment.amount,
-          currency: investment.campaign.currency,
-          customer_note: "Refund due to equity oversubscription in #{investment.campaign.company_name}",
-          merchant_note: "Automatic refund for oversubscribed equity investment ID: #{investment.id}"
-        )
-        
-        if refund_response[:status]
-          Rails.logger.info "Refund initiated successfully: #{refund_response[:data][:reference]}"
-          investment.update!(
-            metadata: investment.metadata.merge(
-              'refund_initiated_at' => Time.current.iso8601,
-              'refund_reference' => refund_response[:data][:reference],
-              'refund_id' => refund_response[:data][:id],
-              'refund_status' => refund_response[:data][:status],
-              'refund_amount' => investment.amount
-            )
-          )
-          
-          # Schedule a job to check refund status later
-          RefundStatusCheckJob.set(wait: 1.hour).perform_later(investment.id)
-        else
-          Rails.logger.error "Failed to initiate refund: #{refund_response[:message]}"
-          # Log the full response for debugging
-          Rails.logger.error "Refund API response: #{refund_response.inspect}"
-          
-          investment.update!(
-            metadata: investment.metadata.merge(
-              'refund_initiated_at' => Time.current.iso8601,
-              'refund_error' => refund_response[:message],
-              'refund_requires_manual_intervention' => true,
-              'refund_response' => refund_response # Store full response for debugging
-            )
-          )
-        end
-        
-        refund_response
-      rescue => e
-        Rails.logger.error "Exception during refund initiation: #{e.message}"
-        Rails.logger.error e.backtrace.join("\n")
-        
-        investment.update!(
-          metadata: investment.metadata.merge(
-            'refund_initiated_at' => Time.current.iso8601,
-            'refund_error' => "Exception: #{e.message}",
-            'refund_requires_manual_intervention' => true
-          )
-        )
-        
-        { status: false, message: "Exception: #{e.message}" }
-      end
-    end
-
 
     def rollback_campaign_updates(investment, net_amount)
       campaign = investment.campaign
@@ -262,8 +196,6 @@ module PaystackWebhook::Handlers
 
     def update_campaign(investment, net_amount)
       campaign = investment.campaign
-      
-      # Only update financial amounts, not equity-related fields
       campaign.update!(
         current_amount: campaign.current_amount + net_amount,
         total_successful_donations: campaign.total_successful_donations + net_amount,
@@ -300,7 +232,7 @@ module PaystackWebhook::Handlers
     def send_confirmation_email(investment, response, metadata)
       recipient_email = response.dig(:data, :customer, :email) || investment.email
       recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
-      
+
       InvestmentConfirmationEmailService.send_confirmation_email(
         investment: investment,
         recipient_email: recipient_email,
@@ -314,7 +246,7 @@ module PaystackWebhook::Handlers
     def send_oversubscription_notification(investment, metadata)
       recipient_email = investment.email
       recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
-      
+
       InvestmentOversubscriptionEmailService.send_oversubscription_email(
         investment: investment,
         recipient_email: recipient_email,
