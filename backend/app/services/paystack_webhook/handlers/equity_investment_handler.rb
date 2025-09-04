@@ -1,3 +1,4 @@
+# app/services/paystack_webhook/handlers/equity_investment_handler.rb
 module PaystackWebhook::Handlers
   class EquityInvestmentHandler
     include PaystackWebhook::JsonHelper
@@ -41,8 +42,14 @@ module PaystackWebhook::Handlers
           update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
           update_campaign(investment, net_amount)
           create_pledges_from_rewards(investment, metadata)
-          investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
           
+          # CRITICAL: Check equity limits before marking as successful
+          if equity_limits_exceeded?(investment)
+            handle_oversubscription(investment, response, metadata)
+            return # Exit early since investment failed
+          end
+          
+          investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
           send_confirmation_email(investment, response, metadata)
         end
       else
@@ -68,14 +75,104 @@ module PaystackWebhook::Handlers
       EquityInvestment.find_by(id: metadata[:investment_id])
     end
 
+    def equity_limits_exceeded?(investment)
+      campaign = investment.campaign
+      # Calculate what the new total would be
+      new_total_percentage = campaign.equity_investments.successful.sum(:percentage) + investment.percentage
+      
+      # Check if it would exceed the equity offered (with small tolerance)
+      new_total_percentage > (campaign.equity_offered.to_f + 0.01)
+    end
+
+    def handle_oversubscription(investment, response, metadata)
+      Rails.logger.warn "Oversubscription detected for investment #{investment.id}"
+      
+      # Mark as failed due to oversubscription
+      investment.update!(
+        status: EquityInvestment::STATUS_FAILED,
+        metadata: investment.metadata.merge(
+          'failure_reason' => 'oversubscription',
+          'failure_time' => Time.current.iso8601,
+          'refund_required' => true,
+          'oversubscription_details' => {
+            'requested_percentage' => investment.percentage,
+            'available_percentage' => investment.campaign.percentage_available,
+            'total_equity_offered' => investment.campaign.equity_offered
+          }
+        )
+      )
+      
+      # Initiate refund process
+      initiate_refund(investment, response)
+      
+      # Send oversubscription notification
+      send_oversubscription_notification(investment, metadata)
+      
+      # Roll back campaign updates since investment failed
+      rollback_campaign_updates(investment, response.dig(:data, :amount).to_f / 100.0 * 0.93)
+      
+      raise "Investment #{investment.id} failed due to oversubscription"
+    end
+
+    def initiate_refund(investment, response)
+      Rails.logger.info "Initiating refund for oversubscribed investment #{investment.id}"
+
+      begin
+        paystack_service = PaystackService.new
+        refund_response = paystack_service.initiate_refund(
+          transaction: response.dig(:data, :id) || response.dig(:data, :reference),
+          amount: investment.amount, # major units; service converts to subunits
+          currency: investment.currency || response.dig(:data, :currency),
+          customer_note: "Refund for oversubscribed investment #{investment.id}",
+          merchant_note: "Oversubscription on campaign #{investment.campaign_id}"
+        )
+
+        if refund_response[:status] == true
+          investment.update!(
+            metadata: investment.metadata.merge(
+              'refund_initiated_at' => Time.current.iso8601,
+              'refund_reference' => refund_response.dig(:data, :reference) || "REF_#{SecureRandom.hex(8)}",
+              'refund_amount' => investment.amount,
+              'refund_status' => refund_response.dig(:data, :status) || 'initiated'
+            )
+          )
+          Rails.logger.info "Refund successfully initiated for investment #{investment.id}"
+        else
+          Rails.logger.error "Refund failed for investment #{investment.id}: #{refund_response[:message]}"
+          investment.update!(
+            metadata: investment.metadata.merge(
+              'refund_failed_at' => Time.current.iso8601,
+              'refund_error' => refund_response[:message]
+            )
+          )
+        end
+      rescue => e
+        Rails.logger.error "Exception while initiating refund for #{investment.id}: #{e.message}"
+        investment.update!(
+          metadata: investment.metadata.merge(
+            'refund_exception_at' => Time.current.iso8601,
+            'refund_error' => e.message
+          )
+        )
+      end
+    end
+
+
+    def rollback_campaign_updates(investment, net_amount)
+      campaign = investment.campaign
+      campaign.update!(
+        current_amount: campaign.current_amount - net_amount,
+        total_successful_donations: campaign.total_successful_donations - net_amount,
+        total_equity_invested: campaign.total_equity_invested - net_amount
+      )
+    end
+
     def update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
       donor_ip = response.dig(:data, :ip_address)
       donor_country = response.dig(:data, :authorization, :country_code)
       final_country = donor_country.presence || Geocoder.search(donor_ip).first&.country || 'Unknown'
 
       update_attributes = {
-        status: EquityInvestment::STATUS_SUCCESSFUL,
-        transaction_reference: response[:data][:reference],
         gross_amount: gross_amount,
         net_amount: net_amount,
         platform_fee: adjusted_platform_fee,
@@ -90,7 +187,6 @@ module PaystackWebhook::Handlers
       }
 
       investment.update!(update_attributes)
-      
       begin
         InvestmentCertificateJob.perform_later(investment.id) if investment.successful?
       rescue => e
@@ -148,6 +244,7 @@ module PaystackWebhook::Handlers
     def update_campaign(investment, net_amount)
       campaign = investment.campaign
       
+      # Only update financial amounts, not equity-related fields
       campaign.update!(
         current_amount: campaign.current_amount + net_amount,
         total_successful_donations: campaign.total_successful_donations + net_amount,
@@ -185,19 +282,28 @@ module PaystackWebhook::Handlers
       recipient_email = response.dig(:data, :customer, :email) || investment.email
       recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
       
-      signature_info = {
-        investor_signature_url: investment.user&.latest_kyc&.signature_image_url,
-        issuer_signature_url: investment.campaign.fundraiser&.latest_kyc&.signature_image_url
-      }
-      
       InvestmentConfirmationEmailService.send_confirmation_email(
         investment: investment,
         recipient_email: recipient_email,
         recipient_name: recipient_name,
-        metadata: metadata.merge(signature_info)
+        metadata: metadata
       )
     rescue => e
       Rails.logger.error "Failed to send confirmation email: #{e.message}"
+    end
+
+    def send_oversubscription_notification(investment, metadata)
+      recipient_email = investment.email
+      recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
+      
+      InvestmentOversubscriptionEmailService.send_oversubscription_email(
+        investment: investment,
+        recipient_email: recipient_email,
+        recipient_name: recipient_name,
+        metadata: metadata
+      )
+    rescue => e
+      Rails.logger.error "Failed to send oversubscription notification: #{e.message}"
     end
 
     def log_invalid_investment(metadata)

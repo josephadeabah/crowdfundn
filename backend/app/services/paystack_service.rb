@@ -158,6 +158,31 @@ class PaystackService
     parse_response(response)
   end
 
+  def initiate_refund(transaction:, amount: nil, currency: nil, customer_note: nil, merchant_note: nil)
+    uri = URI("#{PAYSTACK_BASE_URL}/refund")
+
+    # When amount is provided, currency is required so we can convert correctly.
+    if amount.present? && currency.blank?
+      raise ArgumentError, "currency is required when amount is provided for refunds"
+    end
+
+    amount_in_smallest_unit =
+      if amount.present?
+        convert_to_smallest_unit(amount: amount, currency: currency)
+      end
+
+    body = {
+      transaction: transaction,               # Paystack accepts id or reference
+      amount: amount_in_smallest_unit,        # Omit if nil (full refund)
+      currency: currency,                     # Optional unless amount present
+      customer_note: customer_note,
+      merchant_note: merchant_note
+    }.compact.to_json
+
+    response = make_post_request(uri, body)
+    parse_response(response)
+  end
+
   def create_subscription_plan(name:, interval:, amount:)
     valid_intervals = %w[daily weekly monthly quarterly biannually annually]
 
