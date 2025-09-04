@@ -531,7 +531,7 @@ const EquityInvestments = () => {
                 `Campaign #${investment.campaign_id}`;
               const shares = parseNumber(investment.shares)?.toLocaleString();
               const percentage = parseNumber(investment.percentage)?.toFixed(4);
-              const certificate = investment.certificate_number;
+              const certificate = investment.certificate?.number;
               const date = format(
                 new Date(investment.created_at),
                 'MMM dd, yyyy',
