@@ -116,12 +116,14 @@ module PaystackWebhook::Handlers
 
     def initiate_refund(investment, response)
       Rails.logger.info "Initiating Paystack refund for investment #{investment.id}"
-      
+      # Try with transaction ID instead of reference
+      transaction_id = response.dig(:data, :id)
+      transaction_reference = response['reference']
       paystack_service = PaystackService.new
       
       begin
         refund_response = paystack_service.initiate_refund(
-          transaction: response['reference'],
+          transaction: transaction_id || transaction_reference,
           amount: investment.amount,
           currency: investment.campaign.currency,
           customer_note: "Refund due to equity oversubscription in #{investment.campaign.company_name}",
