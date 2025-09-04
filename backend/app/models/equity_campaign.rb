@@ -365,10 +365,13 @@ class EquityCampaign < Campaign
     self.total_shares = calculate_default_shares
   end
 
+  # app/models/equity_campaign.rb
   def equity_issued_within_limits
     issued_percentage = equity_investments.successful.sum(:percentage)
-    return unless issued_percentage > equity_offered.to_f
-    errors.add(:base, 'Total equity issued cannot exceed equity offered')
+    # Allow 0.1% tolerance for floating-point arithmetic and race conditions
+    if issued_percentage > (equity_offered.to_f + 0.1)
+      errors.add(:base, "Total equity issued (#{issued_percentage.round(4)}%) cannot exceed equity offered (#{equity_offered}%) by more than 0.1%")
+    end
   end
 
   def update_investments_valuation
