@@ -513,72 +513,77 @@ const EquityInvestments = () => {
           )}
         </div>
       </div>
-<div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mt-8">
-  <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-    <span className="text-pink-500">💫</span> Recent Activity
-  </h3>
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mt-8">
+        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+          <span className="text-pink-500">💫</span> Recent Activity
+        </h3>
 
-  <div className="space-y-6">
-    {portfolio.investments
-      ?.slice(0, 3)
-      .map((investment: EquityInvestment) => {
-        const amount = formatCurrency(
-          parseNumber(investment.amount),
-          investment.currency || user?.currency,
-          investment.currency_symbol || user?.currency_symbol,
-        );
+        <div className="space-y-6">
+          {portfolio.investments
+            ?.slice(0, 3)
+            .map((investment: EquityInvestment) => {
+              const amount = formatCurrency(
+                parseNumber(investment.amount),
+                investment.currency || user?.currency,
+                investment.currency_symbol || user?.currency_symbol,
+              );
 
-        const campaignName =
-          investment.campaign?.title ||
-          `Campaign #${investment.campaign_id}`;
-        const investment_id = investment.id;
-        const shares = parseNumber(investment.shares)?.toLocaleString();
-        const percentage = parseNumber(investment.percentage)?.toFixed(2);
-        const certificate = investment.certificate?.number;
-        const date = format(new Date(investment.created_at), 'MMM dd, yyyy');
+              const campaignName =
+                investment.campaign?.title ||
+                `Campaign #${investment.campaign_id}`;
+              const investment_id = investment.id;
+              const shares = parseNumber(investment.shares)?.toLocaleString();
+              const percentage = parseNumber(investment.percentage)?.toFixed(2);
+              const certificate = investment.certificate?.number;
+              const date = format(
+                new Date(investment.created_at),
+                'MMM dd, yyyy',
+              );
 
-        return (
-          <div
-            key={investment.id}
-            className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 shadow-sm hover:shadow-md transition"
-          >
-            <p className="text-sm text-gray-700 dark:text-gray-200 mb-3">
-              You invested{' '}
-              <span className="font-semibold text-pink-600 dark:text-pink-400">
-                {amount}
-              </span>{' '}
-              in{' '}
-              <span className="font-semibold text-indigo-600 dark:text-indigo-400">
-                {campaignName}
-              </span>
-            </p>
+              return (
+                <div
+                  key={investment.id}
+                  className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 shadow-sm hover:shadow-md transition"
+                >
+                  <p className="text-sm text-gray-700 dark:text-gray-200 mb-3">
+                    You invested{' '}
+                    <span className="font-semibold text-pink-600 dark:text-pink-400">
+                      {amount}
+                    </span>{' '}
+                    in{' '}
+                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                      {campaignName}
+                    </span>
+                  </p>
 
-            <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 dark:text-gray-400">
-              <div className="flex items-center gap-1">
-                🆔 <span className="font-medium">ID:</span> {investment_id}
-              </div>
-              <div className="flex items-center gap-1">
-                📈 <span className="font-medium">Shares:</span> {shares}
-              </div>
-              <div className="flex items-center gap-1">
-                🎯 <span className="font-medium">Equity:</span> {percentage}%
-              </div>
-              {certificate && (
-                <div className="flex items-center gap-1">
-                  🎖️ <span className="font-medium">Cert:</span> {certificate}
+                  <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center gap-1">
+                      🆔 <span className="font-medium">ID:</span>{' '}
+                      {investment_id}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      📈 <span className="font-medium">Shares:</span> {shares}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      🎯 <span className="font-medium">Equity:</span>{' '}
+                      {percentage}%
+                    </div>
+                    {certificate && (
+                      <div className="flex items-center gap-1">
+                        🎖️ <span className="font-medium">Cert:</span>{' '}
+                        {certificate}
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-3 flex items-center gap-1">
+                    ⏰ Invested on {date}
+                  </p>
                 </div>
-              )}
-            </div>
-
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-3 flex items-center gap-1">
-              ⏰ Invested on {date}
-            </p>
-          </div>
-        );
-      })}
-  </div>
-</div>
-
+              );
+            })}
+        </div>
+      </div>
     </div>
   );
 };
