@@ -51,12 +51,6 @@ class EquityCampaign < Campaign
   def total_shares
     self[:total_shares] || calculate_default_shares
   end
-
-  def update_all_investment_values
-    equity_investments.successful.each do |investment|
-      InvestmentUpdateJob.perform_later(investment.id)
-    end
-  end
     
   def submit_for_approval
     return false unless may_submit_for_approval?
