@@ -1,3 +1,4 @@
+# app/services/paystack_webhook/handlers/equity_investment_handler.rb
 module PaystackWebhook::Handlers
   class EquityInvestmentHandler
     include PaystackWebhook::JsonHelper
@@ -17,10 +18,22 @@ module PaystackWebhook::Handlers
       end
 
       transaction_status = response.dig(:data, :status)
-      if transaction_status == 'success'
+      
+      case transaction_status
+      when 'success'
         process_successful_transaction(response)
+      when 'pending', 'processing', 'ongoing'
+        handle_pending_transaction(response, transaction_status)
+      when 'failed'
+        handle_failed_transaction(response)
+      when 'abandoned'
+        handle_abandoned_transaction(response)
+      when 'reversed'
+        handle_reversed_transaction(response)
+      when 'queued'
+        handle_queued_transaction(response)
       else
-        handle_failed_transaction(transaction_status)
+        handle_unknown_status(response, transaction_status)
       end
     end
 
@@ -42,10 +55,9 @@ module PaystackWebhook::Handlers
           update_campaign(investment, net_amount)
           create_pledges_from_rewards(investment, metadata)
 
-          # CRITICAL: Check equity limits before marking as successful
           if equity_limits_exceeded?(investment)
             handle_oversubscription(investment, response, metadata)
-            return # Exit early since investment failed
+            return
           end
 
           investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
@@ -53,6 +65,239 @@ module PaystackWebhook::Handlers
         end
       else
         log_invalid_investment(metadata)
+      end
+    end
+
+    def handle_pending_transaction(response, status)
+      transaction_reference = response.dig(:data, :reference)
+      metadata = parse_metadata(response)
+      investment = find_investment(metadata)
+      
+      Rails.logger.info "Transaction #{transaction_reference} for investment #{investment&.id} is #{status} - scheduling status check"
+      
+      if investment
+        # Update investment status to reflect pending state
+        investment.update!(
+          status: EquityInvestment::STATUS_PENDING,
+          metadata: investment.metadata.merge(
+            'last_status_check' => Time.current.iso8601,
+            'transaction_status' => status,
+            'pending_reference' => transaction_reference,
+            'status_attempts' => (investment.metadata&.[]('status_attempts') || 0) + 1,
+            'gateway_response' => response.dig(:data, :gateway_response)
+          )
+        )
+      end
+      
+      # Schedule a check with exponential backoff
+      attempt_count = investment&.metadata&.[]('status_attempts') || 1
+      check_time = calculate_next_check_time(attempt_count, status)
+      
+      TransactionStatusCheckJob.set(wait_until: check_time).perform_later(
+        transaction_reference,
+        investment&.id
+      )
+      
+      Rails.logger.info "Scheduled status check for #{transaction_reference} at #{check_time} (attempt ##{attempt_count}, status: #{status})"
+    end
+
+    def handle_failed_transaction(response)
+      transaction_reference = response.dig(:data, :reference)
+      metadata = parse_metadata(response)
+      investment = find_investment(metadata)
+      
+      Rails.logger.warn "Transaction #{transaction_reference} failed for investment #{investment&.id}"
+      
+      if investment
+        failure_reason = response.dig(:data, :gateway_response) || 'payment_failed'
+        
+        investment.update!(
+          status: EquityInvestment::STATUS_FAILED,
+          metadata: investment.metadata.merge(
+            'failure_reason' => failure_reason,
+            'failure_time' => Time.current.iso8601,
+            'failure_details' => response.dig(:data, :message),
+            'gateway_response' => response.dig(:data, :gateway_response),
+            'transaction_status' => 'failed'
+          )
+        )
+        
+        send_failure_notification(investment, response, metadata)
+      end
+      
+      Rails.logger.error "Transaction failed with reference #{transaction_reference}: #{response.dig(:data, :message)}"
+    end
+
+    def handle_abandoned_transaction(response)
+      transaction_reference = response.dig(:data, :reference)
+      metadata = parse_metadata(response)
+      investment = find_investment(metadata)
+      
+      Rails.logger.warn "Transaction #{transaction_reference} abandoned for investment #{investment&.id}"
+      
+      if investment
+        investment.update!(
+          status: EquityInvestment::STATUS_ABANDONED,
+          metadata: investment.metadata.merge(
+            'abandoned_time' => Time.current.iso8601,
+            'abandoned_reason' => 'customer_did_not_complete',
+            'gateway_response' => response.dig(:data, :gateway_response),
+            'transaction_status' => 'abandoned'
+          )
+        )
+        
+        send_abandonment_notification(investment, response, metadata)
+      end
+    end
+
+    def handle_reversed_transaction(response)
+      transaction_reference = response.dig(:data, :reference)
+      metadata = parse_metadata(response)
+      investment = find_investment(metadata)
+      
+      Rails.logger.warn "Transaction #{transaction_reference} reversed for investment #{investment&.id}"
+      
+      if investment
+        reversal_reason = response.dig(:data, :gateway_response) || 'transaction_reversed'
+        
+        investment.update!(
+          status: EquityInvestment::STATUS_REFUNDED,
+          metadata: investment.metadata.merge(
+            'reversal_time' => Time.current.iso8601,
+            'reversal_reason' => reversal_reason,
+            'reversal_details' => response.dig(:data, :message),
+            'gateway_response' => response.dig(:data, :gateway_response),
+            'transaction_status' => 'reversed'
+          )
+        )
+        
+        # If this was a successful investment that got reversed, we need to adjust campaign totals
+        if investment.successful?
+          rollback_campaign_updates(investment, investment.net_amount)
+        end
+        
+        send_reversal_notification(investment, response, metadata)
+      end
+    end
+
+    def handle_queued_transaction(response)
+      transaction_reference = response.dig(:data, :reference)
+      metadata = parse_metadata(response)
+      investment = find_investment(metadata)
+      
+      Rails.logger.info "Transaction #{transaction_reference} queued for investment #{investment&.id}"
+      
+      if investment
+        investment.update!(
+          status: EquityInvestment::STATUS_PENDING,
+          metadata: investment.metadata.merge(
+            'queued_time' => Time.current.iso8601,
+            'transaction_status' => 'queued',
+            'gateway_response' => response.dig(:data, :gateway_response)
+          )
+        )
+      end
+      
+      # Schedule a check for queued transactions (longer interval)
+      TransactionStatusCheckJob.set(wait: 2.hours).perform_later(
+        transaction_reference,
+        investment&.id
+      )
+    end
+
+    def handle_unknown_status(response, status)
+      transaction_reference = response.dig(:data, :reference)
+      metadata = parse_metadata(response)
+      investment = find_investment(metadata)
+      
+      Rails.logger.error "Unknown transaction status '#{status}' for reference #{transaction_reference}"
+      
+      if investment
+        investment.update!(
+          status: EquityInvestment::STATUS_FAILED,
+          metadata: investment.metadata.merge(
+            'failure_reason' => 'unknown_status',
+            'failure_time' => Time.current.iso8601,
+            'unknown_status' => status,
+            'gateway_response' => response.dig(:data, :gateway_response)
+          )
+        )
+      end
+      
+      # For unknown statuses, schedule a check to be safe
+      TransactionStatusCheckJob.set(wait: 30.minutes).perform_later(
+        transaction_reference,
+        investment&.id
+      )
+    end
+
+    def calculate_next_check_time(attempt_count, status)
+      # Different backoff strategies based on status
+      case status
+      when 'ongoing' # Customer is actively trying (OTP, etc.) - check more frequently
+        intervals = [2, 5, 10, 15, 30, 60] # minutes
+      when 'processing' # Direct debit - moderate checking
+        intervals = [5, 15, 30, 60, 120, 240] # minutes
+      else # 'pending' - standard checking
+        intervals = [5, 15, 30, 60, 120, 240, 480, 720, 1440] # minutes
+      end
+      
+      interval_index = [attempt_count - 1, intervals.size - 1].min
+      interval_minutes = intervals[interval_index]
+      
+      interval_minutes.minutes.from_now
+    end
+
+    def send_failure_notification(investment, response, metadata)
+      recipient_email = investment.email
+      recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
+      failure_reason = response.dig(:data, :gateway_response) || 'Payment failed'
+
+      begin
+        InvestmentFailureEmailService.send_failure_email(
+          investment: investment,
+          recipient_email: recipient_email,
+          recipient_name: recipient_name,
+          failure_reason: failure_reason,
+          metadata: metadata
+        )
+      rescue => e
+        Rails.logger.error "Failed to send failure notification: #{e.message}"
+      end
+    end
+
+    def send_abandonment_notification(investment, response, metadata)
+      recipient_email = investment.email
+      recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
+
+      begin
+        InvestmentAbandonmentEmailService.send_abandonment_email(
+          investment: investment,
+          recipient_email: recipient_email,
+          recipient_name: recipient_name,
+          attempt_count: investment.metadata&.[]('status_attempts') || 1,
+          gateway_response: response.dig(:data, :gateway_response)
+        )
+      rescue => e
+        Rails.logger.error "Failed to send abandonment notification: #{e.message}"
+      end
+    end
+
+    def send_reversal_notification(investment, response, metadata)
+      recipient_email = investment.email
+      recipient_name = investment.user&.full_name || investment.full_name || metadata[:investor_name] || 'Investor'
+      reversal_reason = response.dig(:data, :gateway_response) || 'Transaction reversed'
+
+      begin
+        InvestmentReversalEmailService.send_reversal_email(
+          investment: investment,
+          recipient_email: recipient_email,
+          recipient_name: recipient_name,
+          reversal_reason: reversal_reason,
+          metadata: metadata
+        )
+      rescue => e
+        Rails.logger.error "Failed to send reversal notification: #{e.message}"
       end
     end
 
@@ -97,14 +342,12 @@ module PaystackWebhook::Handlers
         )
       )
 
-      # Delegate refund processing to RefundProcessedHandler (use keyword args)
       PaystackWebhook::Handlers::RefundProcessedHandler.new(
         investment: investment,
         response: response
       ).call
 
       send_oversubscription_notification(investment, metadata)
-
       rollback_campaign_updates(investment, (response.dig(:data, :amount).to_f / 100.0) * 0.93)
 
       raise "Investment #{investment.id} failed due to oversubscription"
@@ -259,11 +502,6 @@ module PaystackWebhook::Handlers
     def log_invalid_investment(metadata)
       Rails.logger.error "Equity investment not found or invalid state: #{metadata[:investment_id]}"
       raise 'Invalid investment state'
-    end
-
-    def handle_failed_transaction(status)
-      Rails.logger.error "Transaction failed with status #{status}"
-      raise "Transaction status is #{status}"
     end
   end
 end

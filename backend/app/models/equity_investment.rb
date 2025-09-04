@@ -15,6 +15,10 @@ class EquityInvestment < ApplicationRecord
   STATUS_ABANDONED = 'abandoned'
   STATUS_CANCELED = 'canceled'
   STATUS_REFUNDED = 'refunded'
+  STATUS_REVERSED = 'reversed'
+  STATUS_QUEUED = 'queued'
+  STATUS_PROCESSING = 'processing'
+  STATUS_ONGOING = 'ongoing'
 
   VALID_STATUSES = [
     STATUS_PENDING,
@@ -23,7 +27,11 @@ class EquityInvestment < ApplicationRecord
     STATUS_FAILED,
     STATUS_ABANDONED,
     STATUS_CANCELED,
-    STATUS_REFUNDED
+    STATUS_REFUNDED,
+    STATUS_REVERSED,
+    STATUS_QUEUED,
+    STATUS_PROCESSING,
+    STATUS_ONGOING
   ].freeze
 
   validates :amount, :shares, :percentage, presence: true, numericality: { greater_than: 0 }
@@ -70,6 +78,22 @@ class EquityInvestment < ApplicationRecord
 
   def refunded?
     status == STATUS_REFUNDED
+  end
+  
+  def reversed?
+    status == STATUS_REVERSED
+  end
+
+  def queued?
+    status == STATUS_QUEUED
+  end
+
+  def processing?
+    status == STATUS_PROCESSING
+  end
+
+  def ongoing?
+    status == STATUS_ONGOING
   end
 
   # FIXED: Simple reader method without recursion
