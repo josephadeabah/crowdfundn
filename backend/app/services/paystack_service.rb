@@ -160,26 +160,25 @@ class PaystackService
 
   def initiate_refund(transaction:, amount: nil, currency: nil, customer_note: nil, merchant_note: nil)
     uri = URI("#{PAYSTACK_BASE_URL}/refund")
-
-    # When amount is provided, currency is required so we can convert correctly.
-    if amount.present? && currency.blank?
-      raise ArgumentError, "currency is required when amount is provided for refunds"
+    
+    # Convert amount to smallest unit if provided
+    converted_amount = if amount && currency
+      convert_to_smallest_unit(amount: amount, currency: currency)
     end
-
-    amount_in_smallest_unit =
-      if amount.present?
-        convert_to_smallest_unit(amount: amount, currency: currency)
-      end
-
+    
     body = {
-      transaction: transaction,               # Paystack accepts id or reference
-      amount: amount_in_smallest_unit,        # Omit if nil (full refund)
-      currency: currency,                     # Optional unless amount present
+      transaction: transaction,
+      amount: converted_amount,
+      currency: currency,
       customer_note: customer_note,
       merchant_note: merchant_note
     }.compact.to_json
 
     response = make_post_request(uri, body)
+    
+    # Log the full response for debugging
+    Rails.logger.info "Paystack refund response: #{response.body}"
+    
     parse_response(response)
   end
 

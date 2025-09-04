@@ -119,40 +119,59 @@ module PaystackWebhook::Handlers
       
       paystack_service = PaystackService.new
       
-      refund_response = paystack_service.initiate_refund(
-        transaction: response['reference'],
-        amount: investment.amount,
-        currency: investment.campaign.currency,
-        customer_note: "Refund due to equity oversubscription in #{investment.campaign.company_name}",
-        merchant_note: "Automatic refund for oversubscribed equity investment ID: #{investment.id}"
-      )
-      
-      if refund_response[:status]
-        Rails.logger.info "Refund initiated successfully: #{refund_response[:data][:reference]}"
-        investment.update!(
-          metadata: investment.metadata.merge(
-            'refund_initiated_at' => Time.current.iso8601,
-            'refund_reference' => refund_response[:data][:reference],
-            'refund_id' => refund_response[:data][:id],
-            'refund_status' => refund_response[:data][:status],
-            'refund_amount' => investment.amount
-          )
+      begin
+        refund_response = paystack_service.initiate_refund(
+          transaction: response['reference'],
+          amount: investment.amount,
+          currency: investment.campaign.currency,
+          customer_note: "Refund due to equity oversubscription in #{investment.campaign.company_name}",
+          merchant_note: "Automatic refund for oversubscribed equity investment ID: #{investment.id}"
         )
         
-        # Schedule a job to check refund status later
-        RefundStatusCheckJob.set(wait: 1.hour).perform_later(investment.id)
-      else
-        Rails.logger.error "Failed to initiate refund: #{refund_response[:message]}"
+        if refund_response[:status]
+          Rails.logger.info "Refund initiated successfully: #{refund_response[:data][:reference]}"
+          investment.update!(
+            metadata: investment.metadata.merge(
+              'refund_initiated_at' => Time.current.iso8601,
+              'refund_reference' => refund_response[:data][:reference],
+              'refund_id' => refund_response[:data][:id],
+              'refund_status' => refund_response[:data][:status],
+              'refund_amount' => investment.amount
+            )
+          )
+          
+          # Schedule a job to check refund status later
+          RefundStatusCheckJob.set(wait: 1.hour).perform_later(investment.id)
+        else
+          Rails.logger.error "Failed to initiate refund: #{refund_response[:message]}"
+          # Log the full response for debugging
+          Rails.logger.error "Refund API response: #{refund_response.inspect}"
+          
+          investment.update!(
+            metadata: investment.metadata.merge(
+              'refund_initiated_at' => Time.current.iso8601,
+              'refund_error' => refund_response[:message],
+              'refund_requires_manual_intervention' => true,
+              'refund_response' => refund_response # Store full response for debugging
+            )
+          )
+        end
+        
+        refund_response
+      rescue => e
+        Rails.logger.error "Exception during refund initiation: #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
+        
         investment.update!(
           metadata: investment.metadata.merge(
             'refund_initiated_at' => Time.current.iso8601,
-            'refund_error' => refund_response[:message],
+            'refund_error' => "Exception: #{e.message}",
             'refund_requires_manual_intervention' => true
           )
         )
+        
+        { status: false, message: "Exception: #{e.message}" }
       end
-      
-      refund_response
     end
 
 
