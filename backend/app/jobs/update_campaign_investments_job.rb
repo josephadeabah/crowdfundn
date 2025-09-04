@@ -65,7 +65,7 @@ class UpdateCampaignInvestmentsJob < ApplicationJob
 
   def update_campaign_shares
     @shares_update_start = Time.current
-    @campaign.update_column(:shares_available, @campaign.calculate_shares_available_value)
+    @campaign.update_column(:shares_available, @campaign.public_calculate_shares_available)
     @shares_update_duration = Time.current - @shares_update_start
   end
 

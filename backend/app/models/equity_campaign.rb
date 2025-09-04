@@ -325,6 +325,10 @@ class EquityCampaign < Campaign
     )
   end
 
+  def public_calculate_shares_available
+    calculate_shares_available_value
+  end
+
   private
 
   def calculate_shares_available
