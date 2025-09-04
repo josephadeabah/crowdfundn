@@ -513,7 +513,7 @@ const EquityInvestments = () => {
           )}
         </div>
       </div>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mt-8">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm mt-8">
         <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
           <span className="text-pink-500">💫</span> Recent Activity
         </h3>
