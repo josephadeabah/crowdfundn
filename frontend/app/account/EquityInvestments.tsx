@@ -529,6 +529,7 @@ const EquityInvestments = () => {
               const campaignName =
                 investment.campaign?.title ||
                 `Campaign #${investment.campaign_id}`;
+              const investment_id = investment.id;
               const shares = parseNumber(investment.shares)?.toLocaleString();
               const percentage = parseNumber(investment.percentage)?.toFixed(2);
               const certificate = investment.certificate?.number;
@@ -554,6 +555,10 @@ const EquityInvestments = () => {
                   </p>
 
                   <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    <div>
+                      <span className="font-medium">Investment ID:</span>{' '}
+                      {investment_id}
+                    </div>
                     <div>
                       <span className="font-medium">Shares:</span> {shares}
                     </div>
