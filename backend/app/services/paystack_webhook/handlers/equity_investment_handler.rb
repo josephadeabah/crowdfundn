@@ -115,46 +115,44 @@ module PaystackWebhook::Handlers
     end
 
     def initiate_refund(investment, response)
-      Rails.logger.info "Initiating refund for oversubscribed investment #{investment.id}"
-
-      begin
-        paystack_service = PaystackService.new
-        refund_response = paystack_service.initiate_refund(
-          transaction: response.dig(:data, :id) || response.dig(:data, :reference),
-          amount: investment.amount, # major units; service converts to subunits
-          currency: investment.currency || response.dig(:data, :currency),
-          customer_note: "Refund for oversubscribed investment #{investment.id}",
-          merchant_note: "Oversubscription on campaign #{investment.campaign_id}"
-        )
-
-        if refund_response[:status] == true
-          investment.update!(
-            metadata: investment.metadata.merge(
-              'refund_initiated_at' => Time.current.iso8601,
-              'refund_reference' => refund_response.dig(:data, :reference) || "REF_#{SecureRandom.hex(8)}",
-              'refund_amount' => investment.amount,
-              'refund_status' => refund_response.dig(:data, :status) || 'initiated'
-            )
-          )
-          Rails.logger.info "Refund successfully initiated for investment #{investment.id}"
-        else
-          Rails.logger.error "Refund failed for investment #{investment.id}: #{refund_response[:message]}"
-          investment.update!(
-            metadata: investment.metadata.merge(
-              'refund_failed_at' => Time.current.iso8601,
-              'refund_error' => refund_response[:message]
-            )
-          )
-        end
-      rescue => e
-        Rails.logger.error "Exception while initiating refund for #{investment.id}: #{e.message}"
+      Rails.logger.info "Initiating Paystack refund for investment #{investment.id}"
+      
+      paystack_service = PaystackService.new
+      
+      refund_response = paystack_service.initiate_refund(
+        transaction: response['reference'],
+        amount: investment.amount,
+        currency: investment.campaign.currency,
+        customer_note: "Refund due to equity oversubscription in #{investment.campaign.company_name}",
+        merchant_note: "Automatic refund for oversubscribed equity investment ID: #{investment.id}"
+      )
+      
+      if refund_response[:status]
+        Rails.logger.info "Refund initiated successfully: #{refund_response[:data][:reference]}"
         investment.update!(
           metadata: investment.metadata.merge(
-            'refund_exception_at' => Time.current.iso8601,
-            'refund_error' => e.message
+            'refund_initiated_at' => Time.current.iso8601,
+            'refund_reference' => refund_response[:data][:reference],
+            'refund_id' => refund_response[:data][:id],
+            'refund_status' => refund_response[:data][:status],
+            'refund_amount' => investment.amount
+          )
+        )
+        
+        # Schedule a job to check refund status later
+        RefundStatusCheckJob.set(wait: 1.hour).perform_later(investment.id)
+      else
+        Rails.logger.error "Failed to initiate refund: #{refund_response[:message]}"
+        investment.update!(
+          metadata: investment.metadata.merge(
+            'refund_initiated_at' => Time.current.iso8601,
+            'refund_error' => refund_response[:message],
+            'refund_requires_manual_intervention' => true
           )
         )
       end
+      
+      refund_response
     end
 
 
