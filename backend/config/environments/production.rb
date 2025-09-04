@@ -13,7 +13,6 @@ Rails.application.configure do
   config.eager_load = true
 
   Rails.application.routes.default_url_options[:host] = 'bantuhive.com'
-  config.middleware.insert_before Rack::Runtime, Rack::Timeout, service_timeout: 15
 
 
   # Full error reports are disabled and caching is turned on.
