@@ -63,7 +63,7 @@ module Api
           when 'subscription.charge.failed'
             PaystackWebhook::SubscriptionChargeFailedHandler.new(event[:data]).call
           when 'refund.processed'
-            PaystackWebhook::RefundProcessedHandler.new(event[:data]).call
+            PaystackWebhook::Handlers::RefundProcessedHandler.new(data: event[:data]).call
           else
             Rails.logger.warn "Unhandled event type: #{event[:event]}"
             render json: { error: 'Unhandled event type' }, status: :unprocessable_entity

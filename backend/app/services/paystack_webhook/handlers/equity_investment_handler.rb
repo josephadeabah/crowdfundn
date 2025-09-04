@@ -1,4 +1,3 @@
-# app/services/paystack_webhook/handlers/equity_investment_handler.rb
 module PaystackWebhook::Handlers
   class EquityInvestmentHandler
     include PaystackWebhook::JsonHelper
@@ -98,7 +97,7 @@ module PaystackWebhook::Handlers
         )
       )
 
-      # Delegate refund processing to RefundProcessedHandler
+      # Delegate refund processing to RefundProcessedHandler (use keyword args)
       PaystackWebhook::Handlers::RefundProcessedHandler.new(
         investment: investment,
         response: response
@@ -106,7 +105,7 @@ module PaystackWebhook::Handlers
 
       send_oversubscription_notification(investment, metadata)
 
-      rollback_campaign_updates(investment, response.dig(:data, :amount).to_f / 100.0 * 0.93)
+      rollback_campaign_updates(investment, (response.dig(:data, :amount).to_f / 100.0) * 0.93)
 
       raise "Investment #{investment.id} failed due to oversubscription"
     end
