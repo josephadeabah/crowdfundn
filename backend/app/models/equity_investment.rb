@@ -1,3 +1,4 @@
+# app/models/equity_investment.rb
 class EquityInvestment < ApplicationRecord
   belongs_to :user
   belongs_to :campaign, class_name: 'EquityCampaign'
@@ -170,8 +171,8 @@ class EquityInvestment < ApplicationRecord
     price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
     self.shares = (amount / price_per_share).round(4)
 
-    # FIXED: Correct percentage calculation
-    self.percentage = ((amount / campaign.valuation.to_f) * 100).round(4)
+    # PERCENTAGE IS NOW DERIVED FROM SHARES (consistent with source of truth)
+    self.percentage = (shares / campaign.total_shares.to_f) * 100
   end
 
   def investor_signature_url

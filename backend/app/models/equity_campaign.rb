@@ -1,3 +1,4 @@
+# app/models/equity_campaign.rb
 class EquityCampaign < Campaign
   has_many :equity_investments, foreign_key: 'campaign_id', dependent: :destroy
   has_many :investors, through: :equity_investments, source: :user
@@ -22,6 +23,7 @@ class EquityCampaign < Campaign
   validate :total_shares_must_be_set
   validate :reasonable_share_structure
   validate :founder_equity_within_bounds
+  validate :shares_available_non_negative
 
   attribute :company_name, :string
   attribute :company_description, :text
@@ -147,7 +149,7 @@ class EquityCampaign < Campaign
       errors << "Founder equity (#{founder_equity_percentage}%) + public offering (#{equity_offered}%) must equal 100%"
     end
     
-    errors.empty?
+    errors
   end
   
   def shares_available
@@ -184,25 +186,18 @@ class EquityCampaign < Campaign
       Rails.logger.info "Campaign locked: #{campaign.attributes}"
       
       price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
-      shares = (amount / price_per_share).round(4)
+      requested_shares = (amount / price_per_share).round(4)
       
-      # FIXED: Correct percentage calculation
-      percentage = ((amount / campaign.valuation.to_f) * 100).round(4)
+      # Calculate percentage for record-keeping (derived from shares)
+      percentage = (requested_shares / campaign.total_shares.to_f) * 100
       
-      Rails.logger.info "Calculated: price_per_share=#{price_per_share}, shares=#{shares}, percentage=#{percentage}"
+      Rails.logger.info "Calculated: price_per_share=#{price_per_share}, shares=#{requested_shares}, percentage=#{percentage.round(4)}"
       Rails.logger.info "Campaign limits: shares_available=#{campaign.shares_available}, percentage_available=#{campaign.percentage_available}"
       
-      # Double-check equity limits
-      if shares > campaign.shares_available
-        error_msg = "Not enough shares available for this investment (requested: #{shares}, available: #{campaign.shares_available})"
-        Rails.logger.error error_msg
-        campaign.errors.add(:base, error_msg)
-        return nil
-      end
-      
-      # FIXED: Compare against percentage_available, not equity_offered
-      if percentage > campaign.percentage_available
-        error_msg = "Not enough equity percentage available for this investment (requested: #{percentage}%, available: #{campaign.percentage_available}%)"
+      # Validate ONLY against shares (source of truth)
+      if requested_shares > campaign.shares_available
+        max_investment = (campaign.shares_available * price_per_share).floor
+        error_msg = "Not enough shares available. Maximum investment: #{campaign.currency_symbol}#{max_investment}"
         Rails.logger.error error_msg
         campaign.errors.add(:base, error_msg)
         return nil
@@ -211,15 +206,15 @@ class EquityCampaign < Campaign
       investment = campaign.equity_investments.create(
         user: user,
         amount: amount,
-        shares: shares,
-        percentage: percentage,
+        shares: requested_shares,
+        percentage: percentage.round(4),
         status: EquityInvestment::STATUS_PENDING,
       )
       
       Rails.logger.info "Investment created: #{investment.persisted?}, errors: #{investment.errors.full_messages}"
       
       if investment.persisted?
-        campaign.update!(shares_available: campaign.shares_available - shares)
+        campaign.update!(shares_available: campaign.shares_available - requested_shares)
         Rails.logger.info "Campaign shares updated: #{campaign.shares_available}"
       else
         # Add investment errors to campaign errors
@@ -248,11 +243,14 @@ class EquityCampaign < Campaign
     nil
   end
 
+  # PERCENTAGE_AVAILABLE IS NOW DERIVED FROM SHARES (SOURCE OF TRUTH)
   def percentage_available
-    equity_offered.to_f - equity_investments.successful.sum(:percentage)
+    return 0 if total_shares.to_f.zero?
+    (shares_available.to_f / total_shares.to_f) * 100
   end
 
   def percentage_raised
+    return 0 if equity_offered.to_f.zero?
     (equity_investments.successful.sum(:percentage) / equity_offered.to_f) * 100
   end
 
@@ -352,9 +350,10 @@ class EquityCampaign < Campaign
     end
   end
   
-  def calculate_percentage(amount)
-    total_equity_value = (valuation.to_f * equity_offered.to_f / 100)
-    ((amount / total_equity_value) * 100).round(4)
+  def shares_available_non_negative
+    if shares_available < 0
+      errors.add(:shares_available, "cannot be negative. Current: #{shares_available}")
+    end
   end
 
   def calculate_default_shares
@@ -364,12 +363,6 @@ class EquityCampaign < Campaign
   def set_default_total_shares
     return if total_shares.present? || valuation.blank?
     self.total_shares = calculate_default_shares
-  end
-
-  # REMOVE founder-related calculations from availability
-  def calculate_founder_shares
-    # Founder shares are pre-allocated and don't affect public offering
-    0
   end
 
   def equity_issued_within_limits

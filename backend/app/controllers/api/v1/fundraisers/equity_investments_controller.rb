@@ -344,7 +344,7 @@ module Api
             Rails.logger.error "Campaign not live: status=#{@campaign.equity_status}"
           end
 
-          # Check if investment would exceed available shares
+          # Check if investment would exceed available shares (SOURCE OF TRUTH)
           if result[:valid] && @campaign.shares_available <= 0
             result[:valid] = false
             result[:message] = "No shares available for investment"
