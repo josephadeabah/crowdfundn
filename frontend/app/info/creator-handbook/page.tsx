@@ -98,7 +98,7 @@ const CreatorHandbook = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold mb-6 text-trust">
+              <h2 className="text-2xl font-semibold mb-6 text-growth">
                 Marketing Your Campaign
               </h2>
               <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
@@ -135,7 +135,7 @@ const CreatorHandbook = () => {
               </h2>
               <div className="space-y-4">
                 <div className="bg-card p-6 rounded-lg border border-accent/20">
-                  <h3 className="font-semibold mb-3 text-accent">
+                  <h3 className="font-semibold mb-3 text-growth">
                     🎁 Donation/Grant-Based
                   </h3>
                   <p className="text-sm mb-3">
@@ -216,7 +216,7 @@ const CreatorHandbook = () => {
                       </ul>
                     </div>
                     <div className="bg-card p-4 rounded-lg">
-                      <h4 className="font-semibold mb-3 text-accent">
+                      <h4 className="font-semibold mb-3 text-growth">
                         Key Considerations
                       </h4>
                       <ul className="text-sm space-y-1">
@@ -429,7 +429,7 @@ const CreatorHandbook = () => {
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-3 text-accent">
+                      <h4 className="font-semibold mb-3 text-growth">
                         Business Operations
                       </h4>
                       <ul className="text-sm space-y-1">
