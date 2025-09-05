@@ -6,7 +6,6 @@ module Api
       before_action :set_campaign,
                     only: %i[show update destroy webhook_status_update favorite unfavorite cancel_campaign
                              contact_fundraiser]
-      before_action :authorize_campaign_user!, only: %i[update destroy]
       before_action :authorize_campaign_owner_or_admin!, only: %i[update destroy]
 
       def index
@@ -371,10 +370,6 @@ module Api
         render json: { error: 'Campaign not found' }, status: :not_found
       rescue JSON::ParserError
         render json: { error: 'Invalid JSON payload' }, status: :bad_request
-      end
-
-      def authorize_campaign_user!
-        render json: { error: 'Unauthorized' }, status: :unauthorized unless @campaign.fundraiser == @current_user
       end
 
       def authorize_campaign_owner_or_admin!
