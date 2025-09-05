@@ -5,8 +5,8 @@ import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import ErrorPage from '../errorpage/ErrorPage';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-import EquityCampaignCard from './EquityCampaignCard ';
 import { cn } from '@/app/lib/utils';
+import EquityCampaignCard from './EquityCampaignCard ';
 
 interface EquityCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
