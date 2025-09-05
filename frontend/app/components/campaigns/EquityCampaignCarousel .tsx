@@ -153,6 +153,7 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
     }
   };
 
+  // FIX: Use index as key instead of campaign.id to avoid ref issues
   const showContent = () => {
     if (loading && displayedCampaigns.length === 0) {
       return (
@@ -182,7 +183,7 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
         <>
           {displayedCampaigns.map((campaign, index) => (
             <div
-              key={campaign.id}
+              key={`${campaign.id}-${index}`} // FIX: Add index to key to avoid ref conflicts
               className="snap-start flex-none w-[280px] md:w-[350px]"
               style={{ animationDelay: `${index * 100}ms` }}
             >
