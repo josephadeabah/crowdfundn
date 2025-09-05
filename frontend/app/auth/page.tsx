@@ -79,35 +79,44 @@ const Index = () => {
             />
           </div>
         </div>
-              {/* Trust Section */}
-      <div className="py-16">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-8 text-primary">Trusted & Regulated</h2>
-          <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-            <div>
-              <div className="text-3xl mb-3">🛡️</div>
-              <h3 className="font-semibold mb-2">SEC Licensed</h3>
-              <p className="text-sm text-muted-foreground">Fully regulated by Securities and Exchange Commission Ghana</p>
-            </div>
-            <div>
-              <div className="text-3xl mb-3">🏦</div>
-              <h3 className="font-semibold mb-2">Secure Banking</h3>
-              <p className="text-sm text-muted-foreground">Client funds protected through segregated bank accounts</p>
-            </div>
-            <div>
-              <div className="text-3xl mb-3">📊</div>
-              <h3 className="font-semibold mb-2">Transparent</h3>
-              <p className="text-sm text-muted-foreground">Real-time reporting and comprehensive disclosure</p>
-            </div>
-            <div>
-              <div className="text-3xl mb-3">🌍</div>
-              <h3 className="font-semibold mb-2">Diaspora Friendly</h3>
-              <p className="text-sm text-muted-foreground">Easy participation for Ghanaians worldwide</p>
+        {/* Trust Section */}
+        <div className="py-16">
+          <div className="container mx-auto px-6 text-center">
+            <h2 className="text-3xl font-bold mb-8 text-growth">
+              Trusted & (in Regulatory Compliance)
+            </h2>
+            <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+              <div>
+                <div className="text-3xl mb-3">🛡️</div>
+                <h3 className="font-semibold mb-2">SEC Licensed</h3>
+                <p className="text-sm text-muted-foreground">
+                  Fully regulated by Securities and Exchange Commission Ghana
+                </p>
+              </div>
+              <div>
+                <div className="text-3xl mb-3">🏦</div>
+                <h3 className="font-semibold mb-2">Secure Banking</h3>
+                <p className="text-sm text-muted-foreground">
+                  Client funds protected through segregated bank accounts
+                </p>
+              </div>
+              <div>
+                <div className="text-3xl mb-3">📊</div>
+                <h3 className="font-semibold mb-2">Transparent</h3>
+                <p className="text-sm text-muted-foreground">
+                  Real-time reporting and comprehensive disclosure
+                </p>
+              </div>
+              <div>
+                <div className="text-3xl mb-3">🌍</div>
+                <h3 className="font-semibold mb-2">Diaspora Friendly</h3>
+                <p className="text-sm text-muted-foreground">
+                  Easy participation for Ghanaians worldwide
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
       </div>
     </div>
   );
