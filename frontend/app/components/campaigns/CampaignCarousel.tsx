@@ -145,14 +145,13 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
     if (loading && displayedCampaigns.length === 0) {
       return (
         <div className="flex space-x-4 w-full">
-          {Array.from({ length: 10 }).map((_, index) => (
-            // <div
-            //   key={index}
-            //   className="snap-start flex-none w-full max-w-[280px]"
-            // >
-              <CampaignCardLoader />
-            // </div>
-          ))}
+          {/* {Array.from({ length: 10 }).map((_, index) => ( */}
+            <div
+              className="snap-start flex-none w-full max-w-[280px]"
+            >
+              {/* <CampaignCardLoader /> */}
+            </div>
+          {/* ))} */}
         </div>
       );
     }
