@@ -12,6 +12,7 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import InfoTooltip from '../tooltip/tooltip';
 import Avatar from '../avatar/Avatar';
+import ToastComponent from '../toast/Toast';
 
 interface EquityCardProps {
   campaign: CampaignResponseDataType;
@@ -34,19 +35,13 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
     type: 'success' as 'success' | 'error' | 'warning',
   });
 
-  const handleFavorite = async (campaignId: string) => {
-    if (!user) {
-      showToast(
-        'Error',
-        'You must log in first to add to your favorite and track campaign progress.',
-        'error',
-      );
-      return;
-    }
-    await favoriteCampaign(campaignId);
-  };
+  const handleFavoriteClick = async (
+    e: React.MouseEvent,
+    campaignId: string,
+  ) => {
+    e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling
 
-  const handleUnfavorite = async (campaignId: string) => {
     if (!user) {
       showToast(
         'Error',
@@ -55,7 +50,18 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
       );
       return;
     }
-    await unfavoriteCampaign(campaignId);
+
+    try {
+      if (campaign.favorited) {
+        await unfavoriteCampaign(campaignId);
+        showToast('Success', 'Campaign removed from favorites', 'success');
+      } else {
+        await favoriteCampaign(campaignId);
+        showToast('Success', 'Campaign added to favorites', 'success');
+      }
+    } catch (error) {
+      showToast('Error', 'Failed to update favorite status', 'error');
+    }
   };
 
   const showToast = (
@@ -90,141 +96,167 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
     return <CampaignCardLoader />;
   }
 
+  if (error) {
+    return (
+      <div className="w-[280px] md:w-[350px] h-96 bg-red-50 border border-red-200 rounded-lg flex items-center justify-center p-4">
+        <div className="text-red-600 text-sm text-center">
+          Failed to load campaign
+        </div>
+      </div>
+    );
+  }
+
+  if (!campaign) {
+    return (
+      <div className="w-[280px] md:w-[350px] h-96 bg-gray-100 rounded-lg flex items-center justify-center">
+        <div className="text-gray-500 text-sm">No campaign data</div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className="group relative overflow-hidden bg-background hover:bg-gray-50 hover:shadow-md transition-all duration-300 h-full flex flex-col"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <Link
-        href={`/campaign/${campaign.slug || campaign.id}?tab=invest&${generateRandomString()}`}
-        className="block flex-1"
+    <>
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
+      <div
+        className="group relative overflow-hidden bg-background hover:bg-gray-50 hover:shadow-md transition-all duration-300 h-full flex flex-col"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="relative aspect-[3/2] overflow-hidden">
-          <Image
-            src={campaign?.media || '/bantuhive.svg'}
-            alt={campaign.title}
-            layout="fill"
-            objectFit="cover"
-            unoptimized
-            className={cn(
-              'w-full h-full object-cover transition-transform duration-700',
-              isHovered ? 'scale-105' : 'scale-100',
-            )}
-            onError={(e) => {
-              console.error('Image failed to load:', e);
-              e.currentTarget.src = '/bantuhive.svg';
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
-
-          {/* Equity status badge */}
-          <span
-            className={`absolute top-4 left-4 px-2 py-1 text-xs font-semibold rounded-full ${getEquityStatusColor(campaign.equity_status ?? '')}`}
-          >
-            {campaign.equity_status === 'approved'
-              ? 'READY TO LAUNCH'
-              : campaign.equity_status?.toUpperCase()}
-          </span>
-
-          <button
-            className={cn(
-              'absolute top-4 right-4 p-2 rounded-full transition-colors',
-              campaign.favorited
-                ? 'bg-green-500/20 text-green-500'
-                : 'bg-background/80 text-muted-foreground hover:text-green-500',
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              campaign.favorited
-                ? handleUnfavorite(campaign.id.toString())
-                : handleFavorite(campaign.id.toString());
-            }}
-          >
-            <Heart
-              className={cn('h-4 w-4', campaign?.favorited && 'fill-green-500')}
+        <Link
+          href={`/campaign/${campaign.slug || campaign.id}?tab=invest&${generateRandomString()}`}
+          className="block flex-1"
+          prefetch={false}
+        >
+          <div className="relative aspect-[3/2] overflow-hidden">
+            <Image
+              src={campaign?.media || '/bantuhive.svg'}
+              alt={campaign.title}
+              fill
+              sizes="(max-width: 768px) 280px, 350px"
+              className={cn(
+                'object-cover transition-transform duration-700',
+                isHovered ? 'scale-105' : 'scale-100',
+              )}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = '/bantuhive.svg';
+              }}
             />
-          </button>
-        </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
 
-        {/* Fundraiser profile positioned to overlap */}
-        <div className="relative px-4 -mt-6 z-10 flex items-end justify-end">
-          <div className="flex flex-col items-end">
-            <div className="bg-white rounded-full p-1 shadow-md">
-              <Avatar
-                name={campaign?.fundraiser?.profile?.name}
-                size="sm"
-                imageUrl={campaign?.fundraiser?.profile?.avatar}
-              />
+            {/* Equity status badge */}
+            <span
+              className={`absolute top-4 left-4 px-2 py-1 text-xs font-semibold rounded-full ${getEquityStatusColor(campaign.equity_status ?? '')}`}
+            >
+              {campaign.equity_status === 'approved'
+                ? 'READY TO LAUNCH'
+                : campaign.equity_status?.toUpperCase()}
+            </span>
+
+            <div className="absolute top-4 right-4 z-10">
+              <button
+                onClick={(e) => handleFavoriteClick(e, String(campaign.id))}
+                className={cn(
+                  'p-2 rounded-full transition-colors',
+                  campaign.favorited
+                    ? 'bg-green-500/20 text-green-500'
+                    : 'bg-background/80 text-muted-foreground hover:text-green-500',
+                )}
+              >
+                <Heart
+                  className={cn(
+                    'h-4 w-4',
+                    campaign?.favorited && 'fill-green-500',
+                  )}
+                />
+              </button>
             </div>
-            <span className="mt-1 text-xs font-medium text-gray-700 bg-white/90 px-2 py-0.5 rounded-full shadow-sm">
-              {campaign?.fundraiser?.profile?.name}
-            </span>
           </div>
-        </div>
 
-        <div className="p-4 pt-2">
-          <h3 className="text-lg font-semibold text-foreground mb-2">
-            {campaign.title}
-          </h3>
-
-          {/* Category badge */}
-          <span className="inline-block mb-2 px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-700 rounded-full">
-            {deslugify(campaign?.category)}
-          </span>
-
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">Valuation</span>
-            <span className="text-sm font-semibold">
-              {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
-              {parseFloat(
-                (campaign.valuation ?? 0).toString(),
-              )?.toLocaleString()}
-            </span>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold">
-              {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
-              {parseFloat(
-                campaign.transferred_amount.toString(),
-              )?.toLocaleString()}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              from {campaign.total_investors} investors
-            </span>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center">
-              <span className="text-sm text-muted-foreground">
-                Minimum Investment
+          {/* Fundraiser profile positioned to overlap */}
+          <div className="relative px-4 -mt-6 z-10 flex items-end justify-end">
+            <div className="flex flex-col items-end">
+              <div className="bg-white rounded-full p-1 shadow-md">
+                <Avatar
+                  name={campaign?.fundraiser?.profile?.name}
+                  size="sm"
+                  imageUrl={campaign?.fundraiser?.profile?.avatar}
+                />
+              </div>
+              <span className="mt-1 text-xs font-medium text-gray-700 bg-white/90 px-2 py-0.5 rounded-full shadow-sm">
+                {campaign?.fundraiser?.profile?.name}
               </span>
             </div>
-            <span className="text-sm font-semibold bg-red-100 text-red-800 px-2 py-1 rounded">
-              {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
-              {parseFloat(
-                (campaign.minimum_investment ?? '0.0').toString(),
-              ).toLocaleString()}
-            </span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Days Left</span>
-            <span className="text-sm font-semibold">
-              {campaign.remaining_days}
+
+          <div className="p-4 pt-2">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              {campaign.title}
+            </h3>
+
+            {/* Category badge */}
+            <span className="inline-block mb-2 px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-700 rounded-full">
+              {deslugify(campaign?.category)}
             </span>
+
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-muted-foreground">Valuation</span>
+              <span className="text-sm font-semibold">
+                {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
+                {parseFloat(
+                  (campaign.valuation ?? 0).toString(),
+                )?.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-semibold">
+                {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
+                {parseFloat(
+                  campaign.transferred_amount.toString(),
+                )?.toLocaleString()}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                from {campaign.total_investors} investors
+              </span>
+            </div>
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center">
+                <span className="text-sm text-muted-foreground">
+                  Minimum Investment
+                </span>
+              </div>
+              <span className="text-sm font-semibold bg-red-100 text-red-800 px-2 py-1 rounded">
+                {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
+                {parseFloat(
+                  (campaign.minimum_investment ?? '0.0').toString(),
+                ).toLocaleString()}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Days Left</span>
+              <span className="text-sm font-semibold">
+                {campaign.remaining_days}
+              </span>
+            </div>
+            <div className="flex justify-between items-center mt-1">
+              <span className="text-sm font-semibold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">
+                Invest
+              </span>
+              <InfoTooltip
+                id={`tooltip-${campaign.id}`}
+                content="This offering is hosted by BantuHive LLC"
+              />
+            </div>
           </div>
-          <div className="flex justify-between items-center mt-1">
-            <span className="text-sm font-semibold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">
-              Invest
-            </span>
-            <InfoTooltip
-              id={`tooltip-${campaign.id}`}
-              content="This offering is hosted by BantuHive LLC"
-            />
-          </div>
-        </div>
-      </Link>
-    </div>
+        </Link>
+      </div>
+    </>
   );
 };
 
