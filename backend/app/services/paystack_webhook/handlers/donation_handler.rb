@@ -278,6 +278,7 @@ module PaystackWebhook::Handlers
       subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email'
       subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
 
+      # FIX: Ensure proper handling of rewards data
       shipping_data = metadata[:shippingData] || {}
       selected_rewards = Array(metadata[:selectedRewards]).map { |r| r.is_a?(Hash) ? r.deep_symbolize_keys : r }
       delivery_option = metadata[:deliveryOption].presence || 'pickup'
@@ -340,25 +341,47 @@ module PaystackWebhook::Handlers
     end
 
     def create_pledges_from_rewards(donation, metadata)
-      shipping_data = metadata[:shippingData] || {}
-      selected_rewards = Array(metadata[:selectedRewards]).map { |r| r.is_a?(Hash) ? r.deep_symbolize_keys : r }
-      delivery_option = metadata[:deliveryOption].presence || 'pickup'
+      # Get shipping data and delivery option from metadata or donation metadata
+      shipping_data = metadata[:shippingData] || donation.metadata&.[]('shipping_data') || {}
+      delivery_option = metadata[:deliveryOption] || donation.metadata&.[]('delivery_option') || 'pickup'
+      
+      # Get selected rewards from metadata or donation metadata
+      selected_rewards = if metadata[:selectedRewards].present?
+                          Array(metadata[:selectedRewards]).map { |r| r.is_a?(Hash) ? r.deep_symbolize_keys : r }
+                        else
+                          donation.metadata&.[]('selected_rewards') || []
+                        end
 
       selected_rewards.each do |reward|
-        rid = reward[:id].to_i
+        # Handle both symbol and string keys, and different reward structures
+        reward_id = if reward.is_a?(Hash)
+                      reward[:id] || reward['id'] || reward[:reward_id] || reward['reward_id']
+                    else
+                      reward.to_i
+                    end
+        
+        reward_amount = if reward.is_a?(Hash)
+                          reward[:amount] || reward['amount'] || 0
+                        else
+                          0
+                        end
+
+        next if reward_id.blank?
+        
+        rid = reward_id.to_i
         next if Pledge.exists?(donation_id: donation.id, reward_id: rid)
 
         Pledge.create!(
           donation_id: donation.id,
           reward_id: rid,
-          amount: reward[:amount].to_f,
+          amount: reward_amount.to_f,
           shipping_data: shipping_data,
           selected_rewards: [reward],
           delivery_option: delivery_option,
           status: 'pending',
           shipping_status: 'not_shipped',
           campaign_id: donation.campaign_id,
-          user_id: metadata[:fundraiser_id]
+          user_id: metadata[:fundraiser_id] || donation.campaign&.fundraiser_id
         )
       end
     end
