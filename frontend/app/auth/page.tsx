@@ -82,7 +82,7 @@ const Index = () => {
         {/* Trust Section */}
         <div className="py-16">
           <div className="container mx-auto px-6 text-center">
-            <h2 className="text-3xl font-bold mb-8 text-growth">
+            <h2 className="text-3xl font-bold mb-8 text-trust">
               Trusted & (in Regulatory Compliance)
             </h2>
             <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
