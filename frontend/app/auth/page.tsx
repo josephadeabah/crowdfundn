@@ -90,7 +90,8 @@ const Index = () => {
                 <div className="text-3xl mb-3">🛡️</div>
                 <h3 className="font-semibold mb-2">SEC Licensed</h3>
                 <p className="text-sm text-muted-foreground">
-                  Fully in regulatory process by the Securities and Exchange Commission Ghana
+                  Fully in regulatory process by the Securities and Exchange
+                  Commission Ghana
                 </p>
               </div>
               <div>
