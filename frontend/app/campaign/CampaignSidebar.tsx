@@ -36,7 +36,7 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
             </h2>
             <p className="text-gray-700 mb-4">
               <Link
-                href="/learn/equity-fundraising"
+                href="/info/creator-handbook"
                 target="_blank"
                 className="text-gray-500 underline text-sm"
               >
