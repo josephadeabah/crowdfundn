@@ -12,7 +12,7 @@ const CreatorHandbook = () => {
           </p>
 
           <div className="space-y-12">
-            <section>
+            <div>
               <h2 className="text-2xl font-semibold mb-6 text-secondary">
                 Getting Started
               </h2>
@@ -40,9 +40,9 @@ const CreatorHandbook = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
+            <div>
               <h2 className="text-2xl font-semibold mb-6 text-secondary">
                 Campaign Creation
               </h2>
@@ -95,9 +95,9 @@ const CreatorHandbook = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
+            <div>
               <h2 className="text-2xl font-semibold mb-6 text-secondary">
                 Marketing Your Campaign
               </h2>
@@ -127,9 +127,9 @@ const CreatorHandbook = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
+            <div>
               <h2 className="text-2xl font-semibold mb-6 text-secondary">
                 Funding Models
               </h2>
@@ -183,9 +183,9 @@ const CreatorHandbook = () => {
                   </ul>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
+            <div>
               <h2 className="text-2xl font-semibold mb-6 text-secondary">
                 Equity Fundraising Deep Dive
               </h2>
@@ -502,9 +502,9 @@ const CreatorHandbook = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section>
+            <div>
               <h2 className="text-2xl font-semibold mb-6 text-secondary">
                 Post-Campaign Management
               </h2>
@@ -531,9 +531,9 @@ const CreatorHandbook = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
 
-            <section className="bg-muted p-6 rounded-lg">
+            <div className="bg-muted p-6 rounded-lg">
               <h2 className="text-xl font-semibold mb-4">Need Help?</h2>
               <div className="grid md:grid-cols-2 gap-6 text-sm">
                 <div>
@@ -547,7 +547,7 @@ const CreatorHandbook = () => {
                   <p>Saturday: 10:00 AM - 2:00 PM GMT</p>
                 </div>
               </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>
