@@ -83,7 +83,7 @@ const Index = () => {
         <div className="py-16">
           <div className="container mx-auto px-6 text-center">
             <h2 className="text-3xl font-bold mb-8 text-trust">
-              Trusted & (in Regulatory Compliance)
+              Trusted & Regulated
             </h2>
             <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
               <div>
