@@ -30,7 +30,9 @@ class User < ApplicationRecord
   validates :full_name, :phone_number, :country, :payment_method, :currency, :birth_date, :category, :target_amount,
             presence: true
   # Add this validation for equity investment
-  validates :tax_id, format: { with: /\A[A-Z0-9]+\z/ }, if: :investor?
+  validates :tax_id, format: { with: /\A[A-Z0-9]+\z/ }, 
+                    allow_blank: true, 
+                    if: -> { investor? && tax_id.present? }
   has_one :profile, dependent: :destroy
   has_many :campaigns, foreign_key: 'fundraiser_id', dependent: :destroy
   has_many :donations

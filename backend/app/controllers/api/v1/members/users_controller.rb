@@ -286,12 +286,8 @@ module Api
         # PUT /api/v1/members/users/:id/make_admin
         def make_admin
           admin_status = params[:admin] == true
-
-          # Use default values if currency_symbol and phone_code are not provided
-          currency_symbol = params[:currency_symbol] || 'GHS' # Default to 'GHS'
-          phone_code = params[:phone_code] || '+233' # Default to '+233'
-
-          if @user.update(admin: admin_status, currency_symbol: currency_symbol, phone_code: phone_code)
+          
+          if @user.update(admin: admin_status)
             render json: @user.as_json(include: :profile), status: :ok
           else
             render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
