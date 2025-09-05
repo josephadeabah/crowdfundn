@@ -149,7 +149,7 @@ class User < ApplicationRecord
   end
 
   def admin?
-    has_role?('Admin')
+    has_role?('Admin') || self[:admin] == true
   end
 
   # New methods for KYC verification

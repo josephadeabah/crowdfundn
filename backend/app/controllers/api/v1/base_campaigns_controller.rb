@@ -7,6 +7,7 @@ module Api
                     only: %i[show update destroy webhook_status_update favorite unfavorite cancel_campaign
                              contact_fundraiser]
       before_action :authorize_campaign_user!, only: %i[update destroy]
+      before_action :authorize_campaign_owner_or_admin!, only: %i[update destroy]
 
       def index
         page = params[:page] || 1
@@ -137,25 +138,25 @@ module Api
       end
 
       def destroy
-      # Ensure the campaign belongs to the current user
-      if @campaign.fundraiser == @current_user
-        ActiveRecord::Base.transaction do
-          if @campaign.is_a?(EquityCampaign)
-            # Handle equity investments first
-            @campaign.equity_investments.find_each do |investment|
-              investment.points.update_all(equity_investment_id: nil) # Clear the association
-              investment.destroy!
+        # Ensure the campaign belongs to the current user OR user is admin
+        if @campaign.fundraiser == @current_user || @current_user.admin?
+          ActiveRecord::Base.transaction do
+            if @campaign.is_a?(EquityCampaign)
+              # Handle equity investments first
+              @campaign.equity_investments.find_each do |investment|
+                investment.points.update_all(equity_investment_id: nil) # Clear the association
+                investment.destroy!
+              end
             end
+            @campaign.destroy!
           end
-          @campaign.destroy!
+          head :no_content
+        else
+          render json: { error: 'You are not authorized to delete this campaign' }, status: :forbidden
         end
-        head :no_content
-      else
-        render json: { error: 'You are not authorized to delete this campaign' }, status: :forbidden
+      rescue ActiveRecord::RecordNotDestroyed => e
+        render json: { error: "Failed to delete campaign: #{e.message}" }, status: :unprocessable_entity
       end
-    rescue ActiveRecord::RecordNotDestroyed => e
-      render json: { error: "Failed to delete campaign: #{e.message}" }, status: :unprocessable_entity
-    end
 
       def statistics
         user = @current_user
@@ -374,6 +375,12 @@ module Api
 
       def authorize_campaign_user!
         render json: { error: 'Unauthorized' }, status: :unauthorized unless @campaign.fundraiser == @current_user
+      end
+
+      def authorize_campaign_owner_or_admin!
+        unless @campaign.fundraiser == @current_user || @current_user.admin?
+          render json: { error: 'Unauthorized' }, status: :unauthorized
+        end
       end
 
       def set_media_content_disposition(media)
