@@ -7,6 +7,7 @@ import ErrorPage from '../errorpage/ErrorPage';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import EquityCampaignCard from './EquityCampaignCard ';
 import { cn } from '@/app/lib/utils';
+import CampaignCardSkeleton from '@/app/loaders/CampaignCardSkeleton';
 
 interface EquityCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
@@ -153,18 +154,12 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
     }
   };
 
-  // FIX: Use index as key instead of campaign.id to avoid ref issues
   const showContent = () => {
     if (loading && displayedCampaigns.length === 0) {
       return (
-        <div className="flex space-x-8 w-full">
+        <div className="flex space-x-4 w-full">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div
-              key={index}
-              className="snap-start flex-none w-[280px] md:w-[350px]"
-            >
-              <CampaignCardLoader />
-            </div>
+            <CampaignCardSkeleton key={index} />
           ))}
         </div>
       );
@@ -183,9 +178,8 @@ const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
         <>
           {displayedCampaigns.map((campaign, index) => (
             <div
-              key={`${campaign.id}-${index}`} // FIX: Add index to key to avoid ref conflicts
+              key={`${campaign.id}-${index}`}
               className="snap-start flex-none w-[280px] md:w-[350px]"
-              style={{ animationDelay: `${index * 100}ms` }}
             >
               <EquityCampaignCard
                 campaign={campaign}

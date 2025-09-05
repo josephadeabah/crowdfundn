@@ -131,7 +131,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
         <Link
           href={`/campaign/${campaign.slug || campaign.id}?tab=invest&${generateRandomString()}`}
           className="block flex-1"
-          prefetch={false} // Added for better performance in carousels
+          prefetch={false}
         >
           <div className="relative aspect-[3/2] overflow-hidden">
             <Image
