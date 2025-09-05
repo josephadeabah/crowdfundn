@@ -96,8 +96,6 @@ const FeaturedCampaigns = () => {
           campaigns={equityCampaigns}
           loading={loading}
           error={error}
-          hasNextPage={false} // Set based on your pagination logic
-          totalCount={equityCampaigns.length}
         />
       </div>
       
