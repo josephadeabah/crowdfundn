@@ -127,7 +127,7 @@ const FeaturedCampaigns = () => {
         </div>
         
         <CampaignCarousel
-          title="Trending Hive Builders"
+          title="Trending Creators"
           campaigns={trendingCampaigns}
           loading={loading}
           error={error}
