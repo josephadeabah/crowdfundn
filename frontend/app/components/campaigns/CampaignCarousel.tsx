@@ -4,8 +4,8 @@ import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import CampaignCard from './CampaignCard';
-import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import ErrorPage from '../errorpage/ErrorPage';
+import CampaignCardSkeleton from '@/app/loaders/CampaignCardSkeleton';
 
 interface CampaignCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
@@ -145,13 +145,8 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
     if (loading && displayedCampaigns.length === 0) {
       return (
         <div className="flex space-x-4 w-full">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={index}
-              className="snap-start flex-none w-full max-w-[280px]"
-            >
-              <CampaignCardLoader />
-            </div>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <CampaignCardSkeleton key={index} />
           ))}
         </div>
       );
