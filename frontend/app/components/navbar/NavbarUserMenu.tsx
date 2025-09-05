@@ -4,10 +4,11 @@ import { Popover, PopoverTrigger, PopoverContent } from '../popover/Popover';
 import Avatar from '../avatar/Avatar';
 import Link from 'next/link';
 import { LoginUserType } from '@/app/types/auth.login.types';
+import { UserProfile } from '@/app/types/user_profiles.types';
 
 interface NavbarUserMenuProps {
   user: LoginUserType;
-  userAccountData: any;
+  userAccountData: UserProfile | null;
   logout: () => void;
 }
 
@@ -52,7 +53,8 @@ export const NavbarUserMenu: React.FC<NavbarUserMenuProps> = ({
             <span className="text-gray-600">{user.email}</span>
           </div>
         </div>
-        {userAccountData?.admin && (
+        {(userAccountData?.admin ||
+          userAccountData?.roles?.some((r) => r.name === 'Admin')) && (
           <Link
             href="/admin/manage"
             passHref
