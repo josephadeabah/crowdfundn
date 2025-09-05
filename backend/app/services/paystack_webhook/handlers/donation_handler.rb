@@ -278,7 +278,6 @@ module PaystackWebhook::Handlers
       subaccount_contact = response.dig(:data, :subaccount, :primary_contact_email) || 'No contact email'
       subaccount_phone = response.dig(:data, :subaccount, :primary_contact_phone) || 'No contact phone'
 
-      # FIX: Ensure proper handling of rewards data
       shipping_data = metadata[:shippingData] || {}
       selected_rewards = Array(metadata[:selectedRewards]).map { |r| r.is_a?(Hash) ? r.deep_symbolize_keys : r }
       delivery_option = metadata[:deliveryOption].presence || 'pickup'
