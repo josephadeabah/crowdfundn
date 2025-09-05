@@ -13,7 +13,7 @@ const CreatorHandbook = () => {
 
           <div className="space-y-12">
             <div>
-              <h2 className="text-2xl font-semibold mb-6 text-secondary">
+              <h2 className="text-2xl font-semibold mb-6 text-trust">
                 Getting Started
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
@@ -43,7 +43,7 @@ const CreatorHandbook = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold mb-6 text-secondary">
+              <h2 className="text-2xl font-semibold mb-6 text-trust">
                 Campaign Creation
               </h2>
               <div className="space-y-6">
@@ -98,7 +98,7 @@ const CreatorHandbook = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold mb-6 text-secondary">
+              <h2 className="text-2xl font-semibold mb-6 text-trust">
                 Marketing Your Campaign
               </h2>
               <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
@@ -130,7 +130,7 @@ const CreatorHandbook = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold mb-6 text-secondary">
+              <h2 className="text-2xl font-semibold mb-6 text-trust">
                 Funding Models
               </h2>
               <div className="space-y-4">
@@ -186,7 +186,7 @@ const CreatorHandbook = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold mb-6 text-secondary">
+              <h2 className="text-2xl font-semibold mb-6 text-trust">
                 Equity Fundraising Deep Dive
               </h2>
 
@@ -231,7 +231,7 @@ const CreatorHandbook = () => {
                 </div>
 
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="text-lg font-semibold mb-4 text-secondary">
+                  <h3 className="text-lg font-semibold mb-4 text-trust">
                     Legal Requirements & Compliance
                   </h3>
                   <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
@@ -293,7 +293,7 @@ const CreatorHandbook = () => {
                 </div>
 
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="text-lg font-semibold mb-4 text-secondary">
+                  <h3 className="text-lg font-semibold mb-4 text-trust">
                     Valuation & Pricing Strategy
                   </h3>
                   <div className="space-y-4">
@@ -346,7 +346,7 @@ const CreatorHandbook = () => {
                 </div>
 
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="text-lg font-semibold mb-4 text-secondary">
+                  <h3 className="text-lg font-semibold mb-4 text-trust">
                     Investment Terms & Structure
                   </h3>
                   <div className="space-y-4">
@@ -398,7 +398,7 @@ const CreatorHandbook = () => {
                 </div>
 
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="text-lg font-semibold mb-4 text-secondary">
+                  <h3 className="text-lg font-semibold mb-4 text-trust">
                     Due Diligence Preparation
                   </h3>
                   <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-6">
@@ -445,7 +445,7 @@ const CreatorHandbook = () => {
                 </div>
 
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="text-lg font-semibold mb-4 text-secondary">
+                  <h3 className="text-lg font-semibold mb-4 text-trust">
                     Investor Relations & Communication
                   </h3>
                   <div className="space-y-4">
@@ -505,7 +505,7 @@ const CreatorHandbook = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold mb-6 text-secondary">
+              <h2 className="text-2xl font-semibold mb-6 text-trust">
                 Post-Campaign Management
               </h2>
               <div className="bg-card p-6 rounded-lg border">
