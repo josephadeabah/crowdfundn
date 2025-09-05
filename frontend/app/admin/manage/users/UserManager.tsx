@@ -93,6 +93,7 @@ const UserManagement = () => {
           user.id === userId ? { ...user, isAdmin } : user,
         ),
       );
+      
       toast.success(`User ${isAdmin ? 'made' : 'removed'} admin!`);
     } catch (err) {
       toast.error('Failed to update admin status');
