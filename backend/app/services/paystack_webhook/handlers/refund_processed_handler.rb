@@ -41,7 +41,7 @@ module PaystackWebhook
         begin
           refund_response = paystack_service.initiate_refund(
             transaction: transaction_id || transaction_reference,
-            amount: (@investment.amount.to_f * 100).to_i, # send amount in kobo/pesewa if Paystack expects integer
+            amount: (@investment.amount.to_f).to_i, # send amount in kobo/pesewa if Paystack expects integer
             currency: @investment.campaign.currency,
             customer_note: "Refund due to equity oversubscription in #{@investment.campaign.company_name}",
             merchant_note: "Automatic refund for oversubscribed equity investment ID: #{@investment.id}"
