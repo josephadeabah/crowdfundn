@@ -3,14 +3,14 @@ module Api
     module Metrics
       class MetricsController < ApplicationController
         def dashboard
-          donors_per_campaign = Campaign.left_joins(:donations)
-                                        .group(:id)
-                                        .count('donations.id')
-
-          if donors_per_campaign.any?
-            average_donors_per_campaign = donors_per_campaign.values.sum.to_f / donors_per_campaign.size
-          end
-          average_donors_per_campaign ||= 0
+          # Calculate combined platform fees
+          total_platform_fees = calculate_total_platform_fees
+          
+          # Calculate combined donations metrics
+          combined_donations_metrics = calculate_combined_donations_metrics
+          
+          # Calculate combined equity metrics
+          combined_equity_metrics = calculate_combined_equity_metrics
 
           metrics = {
             users: {
@@ -33,18 +33,17 @@ module Api
                   goal_amount: c.goal_amount,
                   performance_percentage: c.performance_percentage
                 }
-              end,
-              donors_per_campaign: donors_per_campaign.transform_values(&:to_i),
-              average_donors_per_campaign: average_donors_per_campaign.round(2)
+              end
             },
-            donations: {
-              total_amount: Donation.sum(:gross_amount),
-              average_donation: Donation.average(:gross_amount),
-              donations_over_time: Donation.group_by_week(:created_at,
-                                                          format: '%Y-%m-%d').sum(:gross_amount).sort.reverse.to_h,
-              repeat_donors: Donation.select(:user_id).group(:user_id).having('count(*) > 1').count.keys.size
+            donations: combined_donations_metrics[:donations],
+            equity: combined_equity_metrics[:equity],
+            combined: {
+              total_raised: combined_donations_metrics[:total_raised] + combined_equity_metrics[:total_raised],
+              average_contribution: ((combined_donations_metrics[:total_amount].to_f + combined_equity_metrics[:total_investment_amount]) / 
+                                    (combined_donations_metrics[:total_count] + combined_equity_metrics[:successful_investments])).round(2),
+              platform_fees: total_platform_fees
             },
-            platform_fees: Donation.where(processed: false).sum(:platform_fee),
+            platform_fees: total_platform_fees,
             roles: Role.joins(:users).group(:name).count,
             subscriptions: {
               active: Subscription.where(status: 'active').count,
@@ -71,6 +70,44 @@ module Api
         end
 
         private
+
+        def calculate_total_platform_fees
+          donation_fees = Donation.where(processed: false).sum(:platform_fee)
+          investment_fees = EquityInvestment.successful.sum(:platform_fee)
+          donation_fees + investment_fees
+        end
+
+        def calculate_combined_donations_metrics
+          donations = Donation.all
+          successful_donations = donations.where(processed: true)
+          
+          {
+            donations: {
+              total_amount: successful_donations.sum(:gross_amount).to_f.round(2),
+              total_count: successful_donations.count,
+              average_donation: successful_donations.average(:gross_amount).to_f.round(2),
+              donations_over_time: donations.group_by_week(:created_at, format: '%Y-%m-%d').sum(:gross_amount),
+              repeat_donors: donations.select(:user_id).group(:user_id).having('count(*) > 1').count.keys.size
+            },
+            total_raised: successful_donations.sum(:gross_amount).to_f.round(2)
+          }
+        end
+
+        def calculate_combined_equity_metrics
+          investments = EquityInvestment.all
+          successful_investments = investments.successful
+          
+          {
+            equity: {
+              total_investment_amount: successful_investments.sum(:amount).to_f.round(2),
+              total_count: successful_investments.count,
+              average_investment: successful_investments.average(:amount).to_f.round(2),
+              investments_over_time: successful_investments.group_by_week(:created_at, format: '%Y-%m-%d').sum(:amount),
+              repeat_investors: investments.select(:user_id).group(:user_id).having('count(*) > 1').count.keys.size
+            },
+            total_raised: successful_investments.sum(:amount).to_f.round(2)
+          }
+        end
 
         def equity_campaign_metrics
           equity_campaigns = EquityCampaign.all
@@ -107,8 +144,7 @@ module Api
             successful_investments: successful_investments.count,
             total_investment_amount: successful_investments.sum(:amount).to_f.round(2),
             average_investment: successful_investments.average(:amount).to_f.round(2),
-            investments_over_time: successful_investments.group_by_week(:created_at, 
-                                                                       format: '%Y-%m-%d').sum(:amount).sort.reverse.to_h,
+            investments_over_time: successful_investments.group_by_week(:created_at, format: '%Y-%m-%d').sum(:amount),
             status_distribution: investments.group(:status).count,
             top_investors: calculate_top_investors,
             investment_size_distribution: {
