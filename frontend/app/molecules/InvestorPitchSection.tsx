@@ -4,18 +4,26 @@ import MarketingMediaCarousel from './MarketingMediaCarousel';
 
 const InvestorPitchSection = () => {
   return (
-    <div className="sm:px-2">
-      <div className="text-center mb-3 px-2">
-        <h2 className="text-3xl font-bold mb-4">
-          From tomorrow’s unicorns to local coffee shops
-        </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Invest to bring founders’ dreams to life, strengthen local
-          communities, build a portfolio of long-term angel investments, or all
-          of the above.
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+            Crowdfunding Success Stories
+          </h1>
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+            Discover how communities around the world are transforming ideas into reality through the power of collective funding and shared dreams.
+          </p>
+        </div>
+        
+        <MarketingMediaCarousel />
+        
+        <div className="text-center mt-16">
+          <p className="text-gray-600 mb-8">Ready to start your own success story?</p>
+          <button className="carousel-cta-button text-lg px-8 py-4">
+            Start Your Campaign
+          </button>
+        </div>
       </div>
-      <MarketingMediaCarousel />
     </div>
   );
 };
