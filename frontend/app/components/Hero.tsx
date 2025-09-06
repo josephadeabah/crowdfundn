@@ -154,9 +154,7 @@ const Hero = () => {
                 </p>
 
                 <div className="flex flex-row gap-4 animate-fade-up animate-delay-300">
-                  <Link
-                    href={user ? '/account/dashboard/create' : '/auth/register'}
-                  >
+                  <Link href={user ? '/account/dashboard/create' : '/auth'}>
                     <button className="group px-6 py-3 bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
                       Raise Capital Now
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
