@@ -82,6 +82,8 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
         return 'bg-purple-100 text-purple-800 border border-purple-200';
       case 'closed':
         return 'bg-red-100 text-red-800 border border-red-200';
+      case 'failed':
+        return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
       default:
         return 'bg-gray-100 text-gray-800 border border-gray-200';
     }

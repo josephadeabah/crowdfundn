@@ -38,7 +38,12 @@ const FeaturedCampaigns = () => {
   const rewardCampaigns = useMemo(() => {
     if (!campaigns) return [];
     return campaigns.filter((campaign) => {
-      return campaign.status !== 'completed' && campaign.permissions.is_public;
+      return (
+        campaign.status !== 'completed' &&
+        campaign.equity_status !== 'draft' &&
+        campaign.equity_status !== 'pending_approval' &&
+        campaign.permissions.is_public
+      );
     });
   }, [campaigns]);
 
@@ -58,8 +63,12 @@ const FeaturedCampaigns = () => {
   const trendingCampaigns = useMemo(() => {
     if (!campaigns) return [];
     return campaigns.filter((campaign) => {
-      return campaign.status !== 'completed' &&  campaign.equity_status !== 'draft' &&
-        campaign.equity_status !== 'pending_approval' && campaign.permissions.is_public;
+      return (
+        campaign.status !== 'completed' &&
+        campaign.equity_status !== 'draft' &&
+        campaign.equity_status !== 'pending_approval' &&
+        campaign.permissions.is_public
+      );
     });
   }, [campaigns]);
 
