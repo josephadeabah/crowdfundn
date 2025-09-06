@@ -186,7 +186,7 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
                 <ChevronRight className="h-6 w-6" />
                 <span className="text-sm">Load More</span>
                 {totalCount > 0 && (
-                  <span className="text-xs text-trust">
+                  <span className="text-xs text-muted-foreground">
                     {displayedCampaigns.length} of {totalCount}
                   </span>
                 )}
@@ -216,7 +216,7 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
             <div className="flex items-center space-x-2 mt-1">
               <div className="w-24 h-1 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-primary transition-all duration-300 ease-out"
+                  className="h-full bg-trust transition-all duration-300 ease-out"
                   style={{ width: `${progress}%` }}
                 />
               </div>
