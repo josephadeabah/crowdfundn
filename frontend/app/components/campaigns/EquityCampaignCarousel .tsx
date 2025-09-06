@@ -22,7 +22,7 @@ interface EquityCarouselProps {
 }
 
 const EquityCampaignCarousel: React.FC<EquityCarouselProps> = ({
-  campaigns = [],
+  campaigns,
   loading,
   error,
   title,
