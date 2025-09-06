@@ -8,7 +8,7 @@ const InvestorPitchSection = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-            Crowdfunding Success Stories
+            See What You Could Be a Part Of
           </h1>
           <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
             Discover how communities around the world are transforming ideas into reality through the power of collective funding and shared dreams.
@@ -16,13 +16,7 @@ const InvestorPitchSection = () => {
         </div>
         
         <MarketingMediaCarousel />
-        
-        <div className="text-center mt-16">
-          <p className="text-gray-600 mb-8">Ready to start your own success story?</p>
-          <button className="carousel-cta-button text-lg px-8 py-4">
-            Start Your Campaign
-          </button>
-        </div>
+      
       </div>
     </div>
   );
