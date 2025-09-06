@@ -608,7 +608,7 @@ const Index = () => {
 
             <Card className="text-center hover:shadow-medium transition-all duration-300 group">
               <CardHeader>
-                <div className="w-16 h-16 bg-gradient-to-br from-ttrust to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 bg-gradient-to-br from-trust to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                   <Users className="w-8 h-8 text-white" />
                 </div>
                 <CardTitle className="text-xl text-trust">
