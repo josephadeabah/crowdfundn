@@ -177,7 +177,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           {/* Investment Metrics Grid */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             {/* Valuation */}
-            <div className="bg-gray-50 rounded-lg p-1">
+            <div className="rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="h-3 w-3 text-gray-600" />
                 <span className="text-xs text-gray-600 font-medium">
@@ -193,7 +193,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             </div>
 
             {/* Raised Amount */}
-            <div className="bg-gray-50 rounded-lg p-1">
+            <div className="rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="h-3 w-3 text-gray-600" />
                 <span className="text-xs text-gray-600 font-medium">
@@ -209,7 +209,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             </div>
 
             {/* Investors */}
-            <div className="bg-gray-50 rounded-lg p-1">
+            <div className="rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <Users className="h-3 w-3 text-gray-600" />
                 <span className="text-xs text-gray-600 font-medium">
@@ -222,7 +222,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             </div>
 
             {/* Days Left */}
-            <div className="bg-gray-50 rounded-lg p-1">
+            <div className="rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <Clock className="h-3 w-3 text-gray-600" />
                 <span className="text-xs text-gray-600 font-medium">
@@ -237,7 +237,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
 
           {/* Minimum Investment */}
           <div className="mb-4">
-            <div className="flex justify-between items-center bg-gray-50 rounded-lg p-1">
+            <div className="flex justify-between items-center rounded-lg p-1">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-600 font-medium">
                   Minimum Investment
