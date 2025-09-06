@@ -36,7 +36,7 @@ module Api
               average_goal_amount: Campaign.average(:goal_amount).to_f.round(2),
               average_current_amount: Campaign.average(:transferred_amount).to_f.round(2),
               performance_percentage: Campaign.average('(transferred_amount / NULLIF(goal_amount, 0)) * 100').to_f.round(2),
-              top_performing: Campaign.order(transferred_amount: :desc).limit(5).map do |c|
+              top_performing: Campaign.order(transferred_amount: :desc).limit(6).map do |c|
                 {
                   id: c.id,
                   name: c.title,
