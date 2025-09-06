@@ -156,7 +156,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       />
       <div
         className={cn(
-          'group relative overflow-hidden bg-background hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col text-xs rounded-lg',
+          'group relative overflow-hidden bg-background hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col text-xs rounded-none',
           className,
         )}
         onMouseEnter={() => setIsHovered(true)}
