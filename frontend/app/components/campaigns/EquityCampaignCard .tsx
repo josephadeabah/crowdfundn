@@ -12,6 +12,7 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import InfoTooltip from '../tooltip/tooltip';
 import Avatar from '../avatar/Avatar';
+import { Button } from '../ui/button';
 
 interface EquityCardProps {
   campaign: CampaignResponseDataType;
@@ -176,7 +177,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           {/* Investment Metrics Grid */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             {/* Valuation */}
-            <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+            <div className="bg-gray-50 rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="h-3 w-3 text-gray-600" />
                 <span className="text-xs text-gray-600 font-medium">Valuation</span>
@@ -190,7 +191,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             </div>
 
             {/* Raised Amount */}
-            <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+            <div className="bg-gray-50 rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="h-3 w-3 text-gray-600" />
                 <span className="text-xs text-gray-600 font-medium">Raised</span>
@@ -204,7 +205,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             </div>
 
             {/* Investors */}
-            <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+            <div className="bg-gray-50 rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <Users className="h-3 w-3 text-gray-600" />
                 <span className="text-xs text-gray-600 font-medium">Investors</span>
@@ -215,7 +216,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             </div>
 
             {/* Days Left */}
-            <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+            <div className="bg-gray-50 rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <Clock className="h-3 w-3 text-gray-600" />
                 <span className="text-xs text-gray-600 font-medium">Days Left</span>
@@ -228,7 +229,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
 
           {/* Minimum Investment */}
           <div className="mb-4">
-            <div className="flex justify-between items-center bg-gray-50 rounded-lg p-3 border border-gray-100">
+            <div className="flex justify-between items-center bg-gray-50 rounded-lg p-1">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-600 font-medium">Minimum Investment</span>
               </div>
@@ -243,9 +244,9 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
 
           {/* Invest Button */}
           <div className="flex justify-between items-center">
-            <button className="flex-1 bg-gray-900 hover:bg-gray-800 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 text-sm">
+            <Button variant="outline" className="flex-1 text-gray-900 font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 text-sm">
               Invest Now
-            </button>
+            </Button>
             <InfoTooltip
               id={`tooltip-${campaign.id}`}
               content="This offering is hosted by BantuHive LLC"
