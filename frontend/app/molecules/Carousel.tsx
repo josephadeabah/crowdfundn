@@ -43,7 +43,7 @@ const MediaContent: React.FC<{
       {!isLoaded && <MediaSkeleton />}
       
       <div className="absolute top-3 left-3 bg-black/50 text-white text-xs font-semibold px-3 py-1 rounded-full z-10 backdrop-blur-sm">
-        Sponsored
+        {/* Sponsored */}
       </div>
 
       {slide.type === 'image' ? (
