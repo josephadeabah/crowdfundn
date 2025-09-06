@@ -71,7 +71,6 @@ const FeaturedCampaigns = () => {
           campaigns={rewardCampaigns}
           loading={loading}
           error={error}
-          hasNextPage={false}
           totalCount={rewardCampaigns.length}
         />
       </div>
@@ -86,7 +85,6 @@ const FeaturedCampaigns = () => {
           campaigns={equityCampaigns}
           loading={loading}
           error={error}
-          hasNextPage={false}
           totalCount={equityCampaigns.length}
         />
       </div>
@@ -121,7 +119,6 @@ const FeaturedCampaigns = () => {
           campaigns={trendingCampaigns}
           loading={loading}
           error={error}
-          hasNextPage={false}
           totalCount={trendingCampaigns.length}
         />
 
