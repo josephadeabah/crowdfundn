@@ -19,7 +19,7 @@ const FeaturedCampaigns = () => {
       sortCriteria: 'created_at',
       sortOrder: 'desc',
       pageNumber: 1,
-      itemsPerPage: 20,
+      itemsPerPage: 12,
     }),
     [],
   );
