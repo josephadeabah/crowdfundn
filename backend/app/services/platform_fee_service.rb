@@ -16,7 +16,7 @@ class PlatformFeeService
       )
 
       if response[:status] == true
-        # Mark the donations as processed
+        # Mark the donations & investment as processed
         Donation.where(processed: false).update_all(processed: true)
         EquityInvestment.where(processed: false).update_all(processed: true)
         Rails.logger.info "Successfully transferred #{total_platform_fee.round} to company recipient."
