@@ -180,7 +180,9 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             <div className="bg-gray-50 rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="h-3 w-3 text-gray-600" />
-                <span className="text-xs text-gray-600 font-medium">Valuation</span>
+                <span className="text-xs text-gray-600 font-medium">
+                  Valuation
+                </span>
               </div>
               <p className="text-sm font-semibold text-gray-900">
                 {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
@@ -194,7 +196,9 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             <div className="bg-gray-50 rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="h-3 w-3 text-gray-600" />
-                <span className="text-xs text-gray-600 font-medium">Raised</span>
+                <span className="text-xs text-gray-600 font-medium">
+                  Raised
+                </span>
               </div>
               <p className="text-sm font-semibold text-gray-900">
                 {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
@@ -208,7 +212,9 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             <div className="bg-gray-50 rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <Users className="h-3 w-3 text-gray-600" />
-                <span className="text-xs text-gray-600 font-medium">Investors</span>
+                <span className="text-xs text-gray-600 font-medium">
+                  Investors
+                </span>
               </div>
               <p className="text-sm font-semibold text-gray-900">
                 {campaign.total_investors}
@@ -219,7 +225,9 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             <div className="bg-gray-50 rounded-lg p-1">
               <div className="flex items-center gap-2 mb-1">
                 <Clock className="h-3 w-3 text-gray-600" />
-                <span className="text-xs text-gray-600 font-medium">Days Left</span>
+                <span className="text-xs text-gray-600 font-medium">
+                  Days Left
+                </span>
               </div>
               <p className="text-sm font-semibold text-gray-900">
                 {campaign.remaining_days}
@@ -231,7 +239,9 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           <div className="mb-4">
             <div className="flex justify-between items-center bg-gray-50 rounded-lg p-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-600 font-medium">Minimum Investment</span>
+                <span className="text-xs text-gray-600 font-medium">
+                  Minimum Investment
+                </span>
               </div>
               <span className="text-sm font-semibold text-gray-900">
                 {campaign?.currency_symbol || campaign?.currency?.toUpperCase()}{' '}
@@ -244,7 +254,10 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
 
           {/* Invest Button */}
           <div className="flex justify-between items-center">
-            <Button variant="outline" className="flex-1 text-gray-900 font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 text-sm">
+            <Button
+              variant="outline"
+              className="flex-1 text-gray-900 font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 text-sm"
+            >
               Invest Now
             </Button>
             <InfoTooltip
