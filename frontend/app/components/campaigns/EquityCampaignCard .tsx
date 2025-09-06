@@ -93,7 +93,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
 
   return (
     <div
-      className="group relative overflow-hidden bg-white hover:shadow-lg transition-all duration-300 h-full flex flex-col rounded-xl border border-gray-100"
+      className="group relative overflow-hidden bg-white hover:shadow-lg transition-all duration-300 h-full flex flex-col rounded-none border border-gray-100"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
