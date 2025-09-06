@@ -7,6 +7,7 @@ import FundingTypes from '@/app/molecules/FundingTypes';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import InvestorPitchSection from '@/app/molecules/InvestorPitchSection';
+import EquityCampaignCarousel from './EquityCampaignCarousel';
 
 const FeaturedCampaigns = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
@@ -86,7 +87,7 @@ const FeaturedCampaigns = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <CampaignCarousel
+        <EquityCampaignCarousel
           title="Invest Now"
           campaigns={equityCampaigns}
           loading={loading}
