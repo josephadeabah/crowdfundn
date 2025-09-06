@@ -73,7 +73,7 @@ module Api
 
         def calculate_total_platform_fees
           donation_fees = Donation.where(processed: false).sum(:platform_fee)
-          investment_fees = EquityInvestment.successful.sum(:platform_fee)
+          investment_fees = EquityInvestment.where(processed: false).sum(:platform_fee)
           donation_fees + investment_fees
         end
 
