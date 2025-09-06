@@ -6,21 +6,11 @@ import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import CampaignCard from './CampaignCard';
 import ErrorPage from '../errorpage/ErrorPage';
 import CampaignCardSkeleton from '@/app/loaders/CampaignCardSkeleton';
+import EquityCampaignCard from './EquityCampaignCard ';
+import { CampaignCarouselProps } from './CampaignCarousel';
 
-export interface CampaignCarouselProps {
-  campaigns: CampaignResponseDataType[] | undefined;
-  loading: boolean;
-  error: string | null;
-  title: string;
-  onLoadMore?: (page: number) => Promise<CampaignResponseDataType[]>;
-  hasNextPage?: boolean;
-  totalCount?: number;
-  initialItemsPerPage?: number;
-  showProgress?: boolean;
-  autoLoad?: boolean;
-}
 
-const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
+const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
   campaigns = [],
   loading,
   error,
@@ -168,11 +158,10 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
               key={campaign.id}
               className="snap-start flex-none w-[220px] md:w-[280px] my-3 mx-2"
             >
-              <CampaignCard
+              <EquityCampaignCard
                 campaign={campaign}
                 loading={false}
-                error={null}
-                onPageChange={() => {}}
+                error={error}
               />
             </div>
           ))}
@@ -299,4 +288,4 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
   );
 };
 
-export default CampaignCarousel;
+export default EquityCampaignCarousel;
