@@ -19,20 +19,17 @@ const FeaturedCampaigns = () => {
       sortCriteria: 'created_at',
       sortOrder: 'desc',
       pageNumber: 1,
-      itemsPerPage: 20, // Increased to ensure we have enough campaigns for all carousels
+      itemsPerPage: 20,
     }),
     [],
   );
 
   useEffect(() => {
-    // Set up mount state
     isMounted.current = true;
-
     const { sortCriteria, sortOrder, pageNumber, itemsPerPage } = fetchParams;
     fetchAllCampaigns(sortCriteria, sortOrder, pageNumber, itemsPerPage);
 
     return () => {
-      // Clean up on unmount
       isMounted.current = false;
     };
   }, [fetchAllCampaigns, fetchParams]);
@@ -61,13 +58,8 @@ const FeaturedCampaigns = () => {
 
   const trendingCampaigns = useMemo(() => {
     if (!campaigns) return [];
-    // Filter for trending campaigns (you might want to add specific criteria)
     return campaigns.filter((campaign) => {
-      return (
-        campaign.status !== 'completed' && campaign.permissions.is_public
-        // Add trending criteria here, for example:
-        // (campaign.total_donors > 10 || campaign.transferred_amount > 1000)
-      );
+      return campaign.status !== 'completed' && campaign.permissions.is_public;
     });
   }, [campaigns]);
 
@@ -79,6 +71,8 @@ const FeaturedCampaigns = () => {
           campaigns={rewardCampaigns}
           loading={loading}
           error={error}
+          hasNextPage={false}
+          totalCount={rewardCampaigns.length}
         />
       </div>
 
@@ -92,7 +86,7 @@ const FeaturedCampaigns = () => {
           campaigns={equityCampaigns}
           loading={loading}
           error={error}
-          hasNextPage={false} // Set based on your pagination logic
+          hasNextPage={false}
           totalCount={equityCampaigns.length}
         />
       </div>
@@ -127,6 +121,8 @@ const FeaturedCampaigns = () => {
           campaigns={trendingCampaigns}
           loading={loading}
           error={error}
+          hasNextPage={false}
+          totalCount={trendingCampaigns.length}
         />
 
         <div className="no-scrollbar"></div>

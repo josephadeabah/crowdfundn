@@ -9,7 +9,6 @@ import CampaignCardSkeleton from '@/app/loaders/CampaignCardSkeleton';
 import EquityCampaignCard from './EquityCampaignCard ';
 import { CampaignCarouselProps } from './CampaignCarousel';
 
-
 const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
   campaigns = [],
   loading,
