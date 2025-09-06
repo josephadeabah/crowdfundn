@@ -2,6 +2,8 @@ class PlatformFeeService
   def self.transfer_platform_fees
     # Sum up all unprocessed platform fees
     total_platform_fee = Donation.where(processed: false).sum(:platform_fee)
+    total_equity_platform_fee = EquityInvestment.where(processed: false).sum(:platform_fee)
+    total_platform_fee += total_equity_platform_fee
 
     if total_platform_fee >= 200
       # Transfer the total platform fee to the company's subaccount
@@ -16,6 +18,7 @@ class PlatformFeeService
       if response[:status] == true
         # Mark the donations as processed
         Donation.where(processed: false).update_all(processed: true)
+        EquityInvestment.where(processed: false).update_all(processed: true)
         Rails.logger.info "Successfully transferred #{total_platform_fee.round} to company recipient."
       else
         Rails.logger.info "Transfer failed: #{response[:message]}"
