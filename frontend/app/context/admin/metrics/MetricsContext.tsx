@@ -29,25 +29,36 @@ export interface Metrics {
     average_current_amount: number;
     performance_percentage: number;
     top_performing: Campaign[];
-    donors_per_campaign: Record<string, number>;
-    average_donors_per_campaign: number;
   };
   donations: {
-    total_amount: string;
-    average_donation?: string;
-    donations_over_time: Record<string, string | number>;
+    total_amount: number;
+    total_count: number;
+    average_donation: number;
+    donations_over_time: Record<string, number>;
     repeat_donors: number;
   };
-  platform_fees?: string;
+  equity: {
+    total_investment_amount: number;
+    total_count: number;
+    average_investment: number;
+    investments_over_time: Record<string, number>;
+    repeat_investors: number;
+  };
+  combined: {
+    total_raised: number;
+    average_contribution: number;
+    platform_fees: number;
+  };
+  platform_fees: number;
   roles: Record<string, number>;
   subscriptions: {
     active: number;
-    mrr: string;
+    mrr: number;
     churn_rate: number;
   };
   geography: {
     users_by_country: Record<string, number>;
-    top_countries_by_donations: [string, string][];
+    top_countries_by_donations: [string, number][];
   };
   engagement: {
     average_logins: number;
@@ -57,7 +68,6 @@ export interface Metrics {
     total: number;
     success_rate: number;
   };
-  // Add equity campaigns and investments
   equity_campaigns: {
     total: number;
     active: number;
@@ -74,7 +84,7 @@ export interface Metrics {
     successful_investments: number;
     total_investment_amount: number;
     average_investment: number;
-    investments_over_time: Record<string, string | number>;
+    investments_over_time: Record<string, number>;
     status_distribution: Record<string, number>;
     top_investors: TopInvestor[];
     investment_size_distribution: {
