@@ -79,7 +79,7 @@ module Api
 
         def calculate_combined_donations_metrics
           donations = Donation.all
-          successful_donations = donations.where(processed: true)
+          successful_donations = donations.successful
           
           {
             donations: {
