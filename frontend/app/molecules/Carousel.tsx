@@ -41,7 +41,7 @@ const MediaContent: React.FC<{
   return (
     <div className="carousel-media-container">
       {!isLoaded && <MediaSkeleton />}
-      
+
       {/* <div className="absolute top-3 left-3 bg-black/50 text-white text-xs font-semibold px-3 py-1 rounded-full z-10 backdrop-blur-sm">
         Sponsored
       </div> */}
@@ -157,7 +157,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
   };
 
   const handleMediaLoad = (index: number) => {
-    setLoadingStates(prev => ({ ...prev, [index]: true }));
+    setLoadingStates((prev) => ({ ...prev, [index]: true }));
   };
 
   return (
@@ -188,9 +188,10 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                     (groupIndex + 1) * slidesPerPage,
                   )
                   .map((slide, slideIndex) => {
-                    const absoluteIndex = groupIndex * slidesPerPage + slideIndex;
+                    const absoluteIndex =
+                      groupIndex * slidesPerPage + slideIndex;
                     const isLoaded = loadingStates[absoluteIndex] || false;
-                    
+
                     return (
                       <div
                         key={absoluteIndex}
@@ -246,7 +247,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
         >
           <FaArrowLeft className="w-4 h-4" />
         </button>
-        
+
         <button
           onClick={goToNext}
           className="carousel-nav-button right-4"

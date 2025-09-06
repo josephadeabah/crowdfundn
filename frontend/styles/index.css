@@ -91,7 +91,7 @@
     --carousel-surface-secondary: 210 40% 96%;
     --carousel-text: 222.2 84% 4.9%;
     --carousel-text-muted: 215.4 16.3% 46.9%;
-    
+
     /* Loading and animation */
     --skeleton-base: 210 40% 94%;
     --skeleton-highlight: 210 40% 98%;
@@ -99,10 +99,11 @@
     --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     /* Shadows and effects */
-    --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
     --glow-orange: 0 0 20px rgb(249 115 22 / 0.3);
-
   }
 
   .dark {
@@ -325,7 +326,7 @@
     @apply pointer-events-auto;
   }
 
-    /* Carousel specific components */
+  /* Carousel specific components */
   .carousel-container {
     @apply relative w-full overflow-hidden;
     border-radius: var(--radius);
