@@ -622,7 +622,7 @@ const Campaigns: React.FC = () => {
               : actionType === 'submit'
                 ? 'Submit this campaign for admin approval?'
                 : actionType === 'launch'
-                  ? 'Launch this campaign to make it publicly visible?'
+                  ? 'Launch this campaign to start receiving investments?'
                   : 'Close this campaign to prevent further investments?'
         }
         isOpen={alertPopupOpen}
