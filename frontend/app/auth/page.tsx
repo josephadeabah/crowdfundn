@@ -26,6 +26,7 @@ import {
   Briefcase,
   User,
 } from 'lucide-react';
+import Link from 'next/link';
 
 const Index = () => {
   return (
@@ -77,17 +78,20 @@ const Index = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
             <Button
+              asChild
               size="lg"
-              className="bg-bantu-green hover:bg-bantu-green-dark text-white px-8 py-6 text-lg shadow-strong"
+              className="bg-bantu-green text-white px-8 py-6 text-lg font-semibold hover:bg-bantu-green/90 transition-colors shadow-sm hover:shadow-xl"
             >
-              Start Investing Today
+              <Link href="/auth/register">Start Investing Today</Link>
             </Button>
+
             <Button
+              asChild
               variant="outline"
               size="lg"
-              className="px-8 py-6 text-lg border-2 border-white text-white hover:bg-white hover:text-black"
+              className="px-8 py-6 text-lg font-semibold border-2 hover:bg-accent transition-colors"
             >
-              Learn More
+              <Link href="/auth/login">Sign In</Link>
             </Button>
           </div>
         </div>
