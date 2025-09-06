@@ -31,8 +31,8 @@ import Link from 'next/link';
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Hero div */}
+      <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/investors-hero.jpg')" }}
@@ -95,10 +95,10 @@ const Index = () => {
             </Button>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Types of Crowdfunding */}
-      <section className="py-20 bg-gradient-to-b from-background to-gray-50">
+      <div className="py-20 bg-gradient-to-b from-background to-gray-50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
@@ -224,10 +224,10 @@ const Index = () => {
             </Card>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Investor Types Section */}
-      <section className="py-20 bg-white">
+      {/* Investor Types div */}
+      <div className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
@@ -388,10 +388,10 @@ const Index = () => {
             </p>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* KYC & Security Section */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      {/* KYC & Security div */}
+      <div className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -481,10 +481,10 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* How It Works Section */}
-      <section className="py-20 bg-white">
+      {/* How It Works div */}
+      <div className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
@@ -573,10 +573,10 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Benefits Section */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      {/* Benefits div */}
+      <div className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
@@ -656,10 +656,10 @@ const Index = () => {
             </Card>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Platform Features */}
-      <section className="py-20 bg-white">
+      <div className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1">
@@ -731,10 +731,10 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Trust & Compliance */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-background">
+      <div className="py-20 bg-gradient-to-b from-gray-50 to-background">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
@@ -788,10 +788,10 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-bantu-green to-bantu-green-light">
+      {/* CTA div */}
+      <div className="py-20 bg-gradient-to-r from-bantu-green to-bantu-green-light">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
             Ready to Start Your Investment Journey?
@@ -833,7 +833,7 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
