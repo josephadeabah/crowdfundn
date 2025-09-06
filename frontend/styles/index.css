@@ -81,8 +81,28 @@
     --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(214 32% 98%));
 
     /* Shadows */
-    --shadow-card: 0 4px 12px -2px hsl(215 25% 15% / 0.08);
+    /* --shadow-card: 0 4px 12px -2px hsl(215 25% 15% / 0.08); */
     --shadow-chart: 0 8px 32px -8px hsl(217 91% 60% / 0.3);
+
+    /* Carousel specific design tokens */
+    --carousel-primary: 25 95% 53%;
+    --carousel-primary-hover: 25 95% 48%;
+    --carousel-surface: 0 0% 100%;
+    --carousel-surface-secondary: 210 40% 96%;
+    --carousel-text: 222.2 84% 4.9%;
+    --carousel-text-muted: 215.4 16.3% 46.9%;
+    
+    /* Loading and animation */
+    --skeleton-base: 210 40% 94%;
+    --skeleton-highlight: 210 40% 98%;
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Shadows and effects */
+    --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --glow-orange: 0 0 20px rgb(249 115 22 / 0.3);
+
   }
 
   .dark {
@@ -303,6 +323,73 @@
   }
   .react-tooltip {
     @apply pointer-events-auto;
+  }
+
+    /* Carousel specific components */
+  .carousel-container {
+    @apply relative w-full overflow-hidden;
+    border-radius: var(--radius);
+  }
+
+  .carousel-slide {
+    @apply bg-white rounded-xl overflow-hidden;
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-smooth);
+  }
+
+  .carousel-slide:hover {
+    box-shadow: var(--shadow-elevated);
+    transform: translateY(-2px);
+  }
+
+  .carousel-media-container {
+    @apply relative overflow-hidden;
+    aspect-ratio: 16 / 9;
+    background-color: hsl(var(--skeleton-base));
+  }
+
+  .carousel-media {
+    @apply w-full h-full object-cover;
+    transition: var(--transition-smooth);
+  }
+
+  .carousel-nav-button {
+    @apply absolute top-1/2 -translate-y-1/2 p-3 rounded-full;
+    @apply bg-white/90 hover:bg-white backdrop-blur-sm;
+    @apply text-gray-800 hover:text-gray-900;
+    @apply shadow-lg hover:shadow-xl;
+    transition: var(--transition-smooth);
+  }
+
+  .carousel-nav-button:hover {
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .carousel-cta-button {
+    background-color: hsl(var(--carousel-primary));
+    @apply text-white px-6 py-3 rounded-lg font-medium;
+    @apply transition-all duration-300;
+    box-shadow: var(--shadow-card);
+  }
+
+  .carousel-cta-button:hover {
+    background-color: hsl(var(--carousel-primary-hover));
+    box-shadow: var(--shadow-elevated), var(--glow-orange);
+    transform: translateY(-1px);
+  }
+
+  .carousel-indicator {
+    @apply w-3 h-3 rounded-full transition-all duration-300;
+  }
+
+  .carousel-indicator.active {
+    background-color: hsl(var(--carousel-primary));
+    box-shadow: var(--glow-orange);
+    transform: scale(1.2);
+  }
+
+  .carousel-indicator.inactive {
+    @apply bg-gray-300 hover:bg-gray-400;
   }
 }
 
