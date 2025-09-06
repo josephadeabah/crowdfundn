@@ -187,7 +187,7 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
                 <ChevronRight className="h-6 w-6" />
                 <span className="text-sm">Load More</span>
                 {totalCount > 0 && (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-trust">
                     {displayedCampaigns.length} of {totalCount}
                   </span>
                 )}
