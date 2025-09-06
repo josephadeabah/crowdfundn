@@ -6,6 +6,7 @@ import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import CampaignCard from './CampaignCard';
 import ErrorPage from '../errorpage/ErrorPage';
 import CampaignCardSkeleton from '@/app/loaders/CampaignCardSkeleton';
+import EquityCampaignCard from './EquityCampaignCard ';
 
 interface CampaignCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
@@ -168,12 +169,20 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
               key={campaign.id}
               className="snap-start flex-none w-[220px] md:w-[280px] my-3 mx-2"
             >
-              <CampaignCard
-                campaign={campaign}
-                loading={false}
-                error={null}
-                onPageChange={() => {}}
-              />
+              {campaign.type === 'EquityCampaign' ? (
+                <CampaignCard
+                  campaign={campaign}
+                  loading={false}
+                  error={null}
+                  onPageChange={() => {}}
+                />
+              ) : (
+                <EquityCampaignCard
+                  campaign={campaign}
+                  loading={false}
+                  error={error}
+                />
+              )}
             </div>
           ))}
 

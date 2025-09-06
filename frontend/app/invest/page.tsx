@@ -4,7 +4,7 @@
 import React from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useEffect, useMemo } from 'react';
-import EquityCampaignCarousel from '../components/campaigns/EquityCampaignCarousel ';
+import CampaignCarousel from '../components/campaigns/CampaignCarousel';
 
 const InvestPage = () => {
   const { campaigns, loading, error, fetchAllCampaigns } = useCampaignContext();
@@ -40,7 +40,7 @@ const InvestPage = () => {
     <div className="py-8 md:py-12">
       <div className="max-w-7xl mx-auto">
         <h1 className="mt-2">Invest in founders building the future</h1>
-        <EquityCampaignCarousel
+        <CampaignCarousel
           title="Featured Startups"
           campaigns={displayedCampaigns}
           loading={loading}

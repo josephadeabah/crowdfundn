@@ -4,7 +4,6 @@ import { useCampaignContext } from '../../context/account/campaign/CampaignsCont
 import CampaignCarousel from './CampaignCarousel';
 import RewardCarousel from './RewardCarousel';
 import FundingTypes from '@/app/molecules/FundingTypes';
-import EquityCampaignCarousel from './EquityCampaignCarousel ';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import InvestorPitchSection from '@/app/molecules/InvestorPitchSection';
@@ -19,7 +18,7 @@ const FeaturedCampaigns = () => {
       sortCriteria: 'created_at',
       sortOrder: 'desc',
       pageNumber: 1,
-      itemsPerPage: 12,
+      itemsPerPage: 20, // Increased to ensure we have enough campaigns for all carousels
     }),
     [],
   );
@@ -37,10 +36,19 @@ const FeaturedCampaigns = () => {
     };
   }, [fetchAllCampaigns, fetchParams]);
 
-  const displayedCampaigns = useMemo(() => {
+  // Filter campaigns for each carousel type
+  const rewardCampaigns = useMemo(() => {
+    if (!campaigns) return [];
+    return campaigns.filter((campaign) => {
+      return campaign.status !== 'completed' && campaign.permissions.is_public;
+    });
+  }, [campaigns]);
+
+  const equityCampaigns = useMemo(() => {
     if (!campaigns) return [];
     return campaigns.filter((campaign) => {
       return (
+        campaign.type === 'EquityCampaign' &&
         campaign.status !== 'completed' &&
         campaign.equity_status !== 'draft' &&
         campaign.equity_status !== 'pending_approval' &&
@@ -50,27 +58,44 @@ const FeaturedCampaigns = () => {
     });
   }, [campaigns]);
 
+  const trendingCampaigns = useMemo(() => {
+    if (!campaigns) return [];
+    // Filter for trending campaigns (you might want to add specific criteria)
+    return campaigns.filter((campaign) => {
+      return (
+        campaign.status !== 'completed' && campaign.permissions.is_public
+        // Add trending criteria here, for example:
+        // (campaign.total_donors > 10 || campaign.transferred_amount > 1000)
+      );
+    });
+  }, [campaigns]);
+
   return (
     <div className="py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <RewardCarousel
           title="Featured Rewards"
-          campaigns={displayedCampaigns}
+          campaigns={rewardCampaigns}
           loading={loading}
           error={error}
         />
       </div>
+
       <div className="bg-gray-50 py-12">
         <InvestorPitchSection />
       </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <EquityCampaignCarousel
+        <CampaignCarousel
           title="Invest Now"
-          campaigns={displayedCampaigns}
+          campaigns={equityCampaigns}
           loading={loading}
           error={error}
+          hasNextPage={false} // Set based on your pagination logic
+          totalCount={equityCampaigns.length}
         />
       </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 flex justify-center">
         <Link href="/invest" passHref>
           <Button
@@ -82,9 +107,11 @@ const FeaturedCampaigns = () => {
           </Button>
         </Link>
       </div>
+
       <div>
         <FundingTypes />
       </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between">
           <div className="animate-fade-up">
@@ -93,12 +120,14 @@ const FeaturedCampaigns = () => {
             </span>
           </div>
         </div>
+
         <CampaignCarousel
-          title="Trending Creators"
-          campaigns={displayedCampaigns}
+          title="Trending Hive Builders"
+          campaigns={trendingCampaigns}
           loading={loading}
           error={error}
         />
+
         <div className="no-scrollbar"></div>
       </div>
     </div>
