@@ -12,6 +12,7 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import InfoTooltip from '../tooltip/tooltip';
 import Avatar from '../avatar/Avatar';
+import { Button } from '../ui/button';
 
 interface EquityCardProps {
   campaign: CampaignResponseDataType;
@@ -243,9 +244,9 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
 
           {/* Invest Button */}
           <div className="flex justify-between items-center">
-            <button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200">
+            <Button variant="outline" className="flex-1 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200">
               Invest Now
-            </button>
+            </Button>
             <InfoTooltip
               id={`tooltip-${campaign.id}`}
               content="This offering is hosted by BantuHive LLC"
