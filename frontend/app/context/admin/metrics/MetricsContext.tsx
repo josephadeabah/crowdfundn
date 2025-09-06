@@ -15,6 +15,7 @@ interface MetricsState {
 }
 
 // Add these interfaces to your MetricsContext.tsx file
+// Update your Metrics interface to match the new backend structure
 export interface Metrics {
   users: {
     total: number;
@@ -98,9 +99,9 @@ export interface Metrics {
 interface Campaign {
   id: number;
   name: string;
-  transferred_amount: string;
-  goal_amount: string;
-  performance_percentage: string;
+  transferred_amount: number;
+  goal_amount: number;
+  performance_percentage: number;
 }
 
 interface EquityCampaign {
