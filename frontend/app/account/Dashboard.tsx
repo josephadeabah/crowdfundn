@@ -1,4 +1,5 @@
 // app/account/dashboard/page.tsx
+'use client';
 import React, { useEffect } from 'react';
 import {
   Card,
@@ -34,7 +35,12 @@ export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
     useCampaignContext();
   const { user } = useAuth();
-  const { subscription } = usePremium();
+  const { subscription, fetchPlans, fetchSubscription } = usePremium();
+
+  useEffect(() => {
+    fetchPlans();
+    fetchSubscription();
+  }, [fetchPlans, fetchSubscription]);
 
   const hasPremium = subscription?.has_premium;
 
