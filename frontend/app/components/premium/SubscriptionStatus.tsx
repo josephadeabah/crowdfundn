@@ -16,6 +16,29 @@ const SubscriptionStatus = () => {
     message: string;
   } | null>(null);
 
+  // Function to format date in a more human-readable way
+  const formatExpiryDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = date.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // If expiry is within 7 days, show relative time
+    if (diffDays <= 7 && diffDays >= 0) {
+      if (diffDays === 0) return 'today';
+      if (diffDays === 1) return 'tomorrow';
+      return `in ${diffDays} days`;
+    }
+    
+    // Otherwise show a friendly date format
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-4">
@@ -69,8 +92,7 @@ const SubscriptionStatus = () => {
               {subscription.expires_at && (
                 <>
                   {' '}
-                  • Expires on{' '}
-                  {new Date(subscription.expires_at).toLocaleDateString()}
+                  • Expires {formatExpiryDate(subscription.expires_at)}
                 </>
               )}
             </p>
