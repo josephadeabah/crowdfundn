@@ -1,5 +1,5 @@
 // app/account/dashboard/page.tsx
-'use client';
+'use client'
 import React, { useEffect, useState } from 'react';
 import {
   Card,
@@ -32,37 +32,35 @@ import BlurredChartContainer from '../components/premiumplaceholder/BlurredChart
 export default function Dashboard() {
   const {
     statistics,
-    loading: campaignLoading,
     error,
     fetchCampaignStatistics,
   } = useCampaignContext();
   const { user } = useAuth();
   const {
     subscription,
-    loading: premiumLoading,
     fetchSubscription,
   } = usePremium();
 
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const hasPremium = subscription?.has_premium;
 
   useEffect(() => {
     const loadData = async () => {
+      setIsLoading(true);
       try {
         await Promise.all([fetchCampaignStatistics(), fetchSubscription()]);
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
       } finally {
-        setIsInitialLoad(false);
+        setIsLoading(false);
       }
     };
 
     loadData();
   }, [fetchCampaignStatistics, fetchSubscription]);
 
-  // Show loading only on initial load
-  if (isInitialLoad && (campaignLoading || premiumLoading)) {
+  if (isLoading) {
     return <MainDashboardLoader />;
   }
 

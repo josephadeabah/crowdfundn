@@ -36,32 +36,29 @@ const ProfileTabs = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
 
   // Get premium subscription status
-  const {
-    subscription,
-    loading: premiumLoading,
-    fetchSubscription,
-  } = usePremium();
-  const [isPremiumLoading, setIsPremiumLoading] = useState(true);
+const { subscription, fetchSubscription } = usePremium();
+const [isPremiumDataLoaded, setIsPremiumDataLoaded] = useState(false);
 
-  useEffect(() => {
-    const loadPremiumData = async () => {
-      setIsPremiumLoading(true);
-      try {
-        await fetchSubscription();
-      } catch (err) {
-        console.error('Failed to load premium data:', err);
-      } finally {
-        setIsPremiumLoading(false);
-      }
-    };
+useEffect(() => {
+  const loadPremiumData = async () => {
+    try {
+      await fetchSubscription();
+    } catch (err) {
+      console.error('Failed to load premium data:', err);
+    } finally {
+      setIsPremiumDataLoaded(true);
+    }
+  };
 
+  // Only load if we don't have subscription data yet
+  if (!subscription) {
     loadPremiumData();
-  }, [fetchSubscription]);
-
-  // Update loading check
-  if (loading || isPremiumLoading) {
-    return <ProfileTabsLoader />;
+  } else {
+    setIsPremiumDataLoaded(true);
   }
+}, [fetchSubscription, subscription]);
+
+
 
   // Tab titles and icons
   const tabs = [
@@ -169,11 +166,12 @@ const ProfileTabs = () => {
     setShowOnboarding(false);
   };
 
-  if (loading || premiumLoading) {
-    return <ProfileTabsLoader />;
-  }
-
   const hasPremium = subscription?.has_premium;
+
+  // Only show loader for initial tab loading, not premium data loading
+if (loading) {
+  return <ProfileTabsLoader />;
+}
 
   return (
     <div className="w-full bg-white dark:bg-gray-800">
