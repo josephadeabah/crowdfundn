@@ -203,7 +203,7 @@ const ProfileTabs = () => {
               {hasPremium ? (
                 // Show premium status if user has premium
                 <div className="w-full py-2 px-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg text-center shadow-sm">
-                  <div className="flex items-center justify-center mb-1">
+                  <div className="flex text-sm items-center justify-center mb-1">
                     <FaCrown className="mr-2" />
                     Premium Member
                   </div>
