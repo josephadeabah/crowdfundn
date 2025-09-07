@@ -163,10 +163,10 @@ const Features = () => {
                     requirements.
                   </p>
                   <ul className="text-xs space-y-1">
-                    <li>• Level 1: Basic identity verification</li>
-                    <li>• Level 2: Enhanced due diligence</li>
+                    <li>• Level 1: Issuer identity verification</li>
+                    <li>• Level 2: Investor due diligence</li>
                     <li>• Level 3: Full accreditation verification</li>
-                    <li>• Level 4: Institutional investor screening</li>
+                    <li>• Level 4: Mentorship verification</li>
                   </ul>
                 </div>
 
