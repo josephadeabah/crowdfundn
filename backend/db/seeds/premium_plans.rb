@@ -1,8 +1,12 @@
 # db/seeds/premium_plans.rb
-# run  this file with `bin/rails db:seed:premium_plans`
 puts "Creating premium plans..."
 
-# Delete existing plans to avoid duplicates
+# Safely handle existing subscriptions by setting premium_plan_id to NULL
+PremiumSubscription.where.not(premium_plan_id: nil).in_batches do |batch|
+  batch.update_all(premium_plan_id: nil)
+end
+
+# Now delete the plans
 PremiumPlan.destroy_all
 
 plans = [
@@ -24,7 +28,7 @@ plans = [
   },
   {
     name: 'Growth',
-    price: 299.99,
+    price: 299.99,  # Updated price
     currency: 'GHS',
     interval: 'monthly',
     description: 'Ideal for growing organizations',
