@@ -1,4 +1,5 @@
 # db/seeds/premium_plans.rb
+# run  this file with `bin/rails db:seed:premium_plans`
 puts "Creating premium plans..."
 
 # Delete existing plans to avoid duplicates
