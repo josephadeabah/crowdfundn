@@ -24,7 +24,7 @@ plans = [
   },
   {
     name: 'Growth',
-    price: 199.99,
+    price: 299.99,
     currency: 'GHS',
     interval: 'monthly',
     description: 'Ideal for growing organizations',
