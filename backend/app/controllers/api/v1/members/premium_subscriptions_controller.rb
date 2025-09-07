@@ -16,13 +16,15 @@ module Api
         
         def create
           plan = PremiumPlan.find(params[:plan_id])
+
+          callback_url = 'https://www.bantuhive.com/account#Dashboard?'
           
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
             email: @current_user.email,
             amount: plan.price,
             currency: plan.currency,
-            callback_url: "#{Rails.application.config.frontend_url}/premium/confirm",
+            callback_url: callback_url,
             metadata: {
               user_id: @current_user.id,
               premium_plan_id: plan.id,
