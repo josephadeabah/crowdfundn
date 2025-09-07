@@ -10,6 +10,7 @@ Rails.application.routes.draw do
         resources :premium_subscriptions, only: [:create] do
           collection do
             get :current, to: 'premium_subscriptions#show'  # GET /premium_subscriptions/current
+            post :verify, to: 'premium_subscriptions#verify'
             delete :cancel
           end
         end

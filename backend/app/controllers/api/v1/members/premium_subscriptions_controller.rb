@@ -18,7 +18,8 @@ module Api
         def create
           plan = PremiumPlan.find(params[:plan_id])
 
-          callback_url = 'https://www.bantuhive.com/account'
+          # Use dedicated callback page
+          callback_url = 'https://www.bantuhive.com/premium/callback'
           
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
@@ -41,6 +42,36 @@ module Api
             }, status: :ok
           else
             render json: { error: response[:message] }, status: :unprocessable_entity
+          end
+        end
+
+        # Add to your PremiumSubscriptionsController
+        def verify
+          reference = params[:reference]
+          
+          # Verify payment with Paystack
+          paystack_service = PaystackService.new
+          verification_response = paystack_service.verify_transaction(reference)
+          
+          if verification_response[:status] && verification_response[:data][:status] == 'success'
+            # Process successful payment
+            metadata = verification_response[:data][:metadata]
+            user = User.find(metadata[:user_id])
+            plan = PremiumPlan.find(metadata[:premium_plan_id])
+            
+            user.upgrade_to_premium(plan)
+            
+            render json: { 
+              success: true, 
+              message: 'Payment verified successfully',
+              plan: plan.name
+            }, status: :ok
+          else
+            render json: { 
+              success: false, 
+              message: 'Payment verification failed',
+              error: verification_response[:message]
+            }, status: :unprocessable_entity
           end
         end
         
