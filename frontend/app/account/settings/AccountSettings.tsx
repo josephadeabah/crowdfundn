@@ -16,7 +16,7 @@ const AccountSettings = () => {
       case 'payment':
         return <PaymentMethod />;
       case 'subscription':
-        return <UserSubscriptions/>
+        return <UserSubscriptions />;
       case 'account':
         return <UserSettings />;
       case 'kyc':
