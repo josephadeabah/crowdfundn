@@ -34,7 +34,7 @@ const ProfileTabs = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
-  
+
   // Get premium subscription status
   const { subscription, loading: premiumLoading } = usePremium();
 

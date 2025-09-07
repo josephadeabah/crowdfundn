@@ -4,7 +4,8 @@ import PricingCard from './PricingCard';
 import { usePremium } from '@/app/context/premium/PremiumContext';
 
 const PricingSection = () => {
-  const { plans, loading, error, subscription, fetchPlans, fetchSubscription } = usePremium();
+  const { plans, loading, error, subscription, fetchPlans, fetchSubscription } =
+    usePremium();
 
   useEffect(() => {
     fetchPlans();

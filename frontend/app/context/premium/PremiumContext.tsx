@@ -45,7 +45,9 @@ const PremiumContext = createContext<PremiumState | undefined>(undefined);
 
 export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   const [plans, setPlans] = useState<PremiumPlan[]>([]);
-  const [subscription, setSubscription] = useState<PremiumSubscription | null>(null);
+  const [subscription, setSubscription] = useState<PremiumSubscription | null>(
+    null,
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
@@ -197,7 +199,16 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
       createSubscription,
       cancelSubscription,
     }),
-    [plans, subscription, loading, error, fetchPlans, fetchSubscription, createSubscription, cancelSubscription],
+    [
+      plans,
+      subscription,
+      loading,
+      error,
+      fetchPlans,
+      fetchSubscription,
+      createSubscription,
+      cancelSubscription,
+    ],
   );
 
   return (
