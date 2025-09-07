@@ -26,13 +26,17 @@ import Favorites from '@/app/account/Favorites';
 import PledgesListPage from '@/app/account/Pledges';
 import EquityInvestments from './EquityInvestments';
 import Link from 'next/link';
-import { FaCashRegister } from 'react-icons/fa';
+import { FaCashRegister, FaCrown } from 'react-icons/fa';
+import { usePremium } from '@/app/context/premium/PremiumContext';
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
+  
+  // Get premium subscription status
+  const { subscription, loading: premiumLoading } = usePremium();
 
   // Tab titles and icons
   const tabs = [
@@ -140,9 +144,11 @@ const ProfileTabs = () => {
     setShowOnboarding(false);
   };
 
-  if (loading) {
+  if (loading || premiumLoading) {
     return <ProfileTabsLoader />;
   }
+
+  const hasPremium = subscription?.has_premium;
 
   return (
     <div className="w-full bg-white dark:bg-gray-800">
@@ -192,15 +198,29 @@ const ProfileTabs = () => {
               })}
             </div>
 
-            {/* Upgrade Button - Fixed at the bottom */}
+            {/* Conditional Button - Fixed at the bottom */}
             <div className="sticky bottom-0 bg-white dark:bg-gray-800 pt-2 pb-4 px-3 border-t border-dashed border-orange-200 dark:border-neutral-700">
-              <Link
-                href="/info/upgrade"
-                className="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-colors duration-300 shadow-sm"
-              >
-                <FaCashRegister className="mr-2" />
-                Upgrade plan
-              </Link>
+              {hasPremium ? (
+                // Show premium status if user has premium
+                <div className="w-full py-2 px-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg text-center shadow-sm">
+                  <div className="flex items-center justify-center mb-1">
+                    <FaCrown className="mr-2" />
+                    Premium Member
+                  </div>
+                  <div className="text-xs opacity-90">
+                    {subscription.current_plan?.name} Plan
+                  </div>
+                </div>
+              ) : (
+                // Show upgrade button if user doesn't have premium
+                <Link
+                  href="/info/upgrade"
+                  className="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-colors duration-300 shadow-sm"
+                >
+                  <FaCashRegister className="mr-2" />
+                  Upgrade plan
+                </Link>
+              )}
             </div>
           </div>
         </div>
