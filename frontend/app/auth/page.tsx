@@ -822,7 +822,7 @@ const Index = () => {
 
           <div className="mt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold text-white">500+</div>
+              <div className="text-3xl font-bold text-white">50+</div>
               <div className="text-white/80">Active Investors</div>
             </div>
             <div className="text-center">
