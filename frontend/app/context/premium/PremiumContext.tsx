@@ -82,8 +82,9 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
+      // FIXED: Changed to use the /current endpoint
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions/current`,
         {
           method: 'GET',
           headers: {
