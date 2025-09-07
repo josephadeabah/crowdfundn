@@ -208,22 +208,18 @@ const ProfileTabs = () => {
                 const isOnboarding = showOnboarding && currentStep === index;
 
                 return (
-                  <a
+                 <button
                     key={label}
-                    href={`#${label}`}
                     className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap min-w-fit lg:min-w-full lg:w-full relative group ${
                       isActive
                         ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-400 dark:text-orange-600'
                         : 'border-transparent text-gray-700 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-gray-950'
-                    }  focus:outline-none ${
+                    }  focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 ${
                       isOnboarding
                         ? 'bg-green-600 text-white dark:bg-orange-700'
                         : ''
                     }`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleTabClick(label);
-                    }}
+                    onClick={() => handleTabClick(label)}
                     aria-selected={isActive}
                     aria-controls={`vertical-tab-${label}`}
                     role="tab"
@@ -231,12 +227,12 @@ const ProfileTabs = () => {
                   >
                     <span className="mr-2">{icon}</span>
                     {label}
-                    {isActive && ( // GRAY DOT SHOWS ONLY ON ACTIVE TAB
+                    {isActive && (
                       <span className="ml-2 relative">
                         <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-gray-300"></span>
                       </span>
                     )}
-                  </a>
+                  </button>
                 );
               })}
             </div>
