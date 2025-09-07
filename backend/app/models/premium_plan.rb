@@ -1,6 +1,8 @@
 # app/models/premium_plan.rb
 class PremiumPlan < ApplicationRecord
   INTERVALS = %w[monthly quarterly annually].freeze
+
+  has_many :premium_subscriptions, dependent: :nullify
   
   validates :name, :price, :interval, presence: true
   validates :interval, inclusion: { in: INTERVALS }
