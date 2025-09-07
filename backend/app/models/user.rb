@@ -17,7 +17,7 @@ class User < ApplicationRecord
   has_many :equity_investments, dependent: :destroy
   has_many :invested_campaigns, through: :equity_investments, source: :campaign
   has_many :investor_documents, dependent: :destroy
-  has_many :premium_subscriptions
+  has_many :premium_subscriptions, dependent: :nullify
   belongs_to :premium_plan, optional: true
   # Update KYC associations to use full namespace
   has_many :kycs, class_name: '::Kyc', dependent: :destroy
