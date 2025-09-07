@@ -10,10 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/table';
-import { usePremiumContext } from '@/app/context/premium/PremiumContext';
+import { usePremium } from '@/app/context/premium/PremiumContext';
 
 const ComparisonTable = () => {
-  const { plans, loading } = usePremiumContext();
+  const { plans, loading } = usePremium();
 
   if (loading) {
     return (

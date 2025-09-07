@@ -1,10 +1,11 @@
 // app/info/upgrade/PricingSection.tsx
+'use client';
 import React from 'react';
 import PricingCard from './PricingCard';
-import { usePremiumContext } from '@/app/context/premium/PremiumContext';
+import { usePremium } from '@/app/context/premium/PremiumContext';
 
 const PricingSection = () => {
-  const { plans, loading, error, subscription } = usePremiumContext();
+  const { plans, loading, error, subscription } = usePremium();
 
   if (loading) {
     return (

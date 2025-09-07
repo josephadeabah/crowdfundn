@@ -1,11 +1,12 @@
 // app/components/premium/SubscriptionStatus.tsx
+'use client';
 import React, { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { usePremiumContext } from '@/app/context/premium/PremiumContext';
+import { usePremium } from '@/app/context/premium/PremiumContext';
 
 const SubscriptionStatus = () => {
-  const { subscription, loading, cancelSubscription } = usePremiumContext();
+  const { subscription, loading, cancelSubscription } = usePremium();
   const [isCancelling, setIsCancelling] = useState(false);
 
   if (loading) {

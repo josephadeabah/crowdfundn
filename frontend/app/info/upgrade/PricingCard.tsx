@@ -1,9 +1,10 @@
 // app/info/upgrade/PricingCard.tsx
+'use client';
 import React, { useState } from 'react';
 import { Check } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { cn } from '@/app/lib/utils';
-import { PremiumPlan, usePremiumContext } from '@/app/context/premium/PremiumContext';
+import { PremiumPlan, usePremium } from '@/app/context/premium/PremiumContext';
 
 interface PricingCardProps {
   plan: PremiumPlan;
@@ -19,7 +20,7 @@ const PricingCard = ({
   gradient = false,
 }: PricingCardProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const { createSubscription, subscription } = usePremiumContext();
+  const { createSubscription, subscription } = usePremium();
 
   const handleSubscribe = async () => {
     setIsProcessing(true);

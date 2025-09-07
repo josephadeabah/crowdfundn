@@ -1,4 +1,6 @@
 // app/contexts/PremiumContext.tsx
+"use client";
+
 import React, {
   createContext,
   useState,
@@ -181,7 +183,7 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const usePremiumContext = () => {
+export const usePremium = () => {
   const context = useContext(PremiumContext);
   if (!context) {
     throw new Error('usePremium must be used within a PremiumProvider');
