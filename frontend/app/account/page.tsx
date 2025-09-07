@@ -226,9 +226,9 @@ const ProfileTabs = () => {
                 <div className="w-full py-2 px-4 border-2 border-purple-600 text-purple-800 rounded-full text-center shadow-sm">
                   <div className="flex text-sm items-center justify-center mb-1">
                     <FaCrown className="mr-2" />
-                  <div className="opacity-90">
-                    {subscription.current_plan?.name} Plan
-                  </div>
+                    <div className="opacity-90">
+                      {subscription.current_plan?.name} Plan
+                    </div>
                   </div>
                 </div>
               ) : (

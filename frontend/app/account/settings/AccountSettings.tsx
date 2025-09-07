@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { FaCreditCard, FaUser, FaBell, FaIdCard } from 'react-icons/fa';
+import { FaCreditCard, FaUser, FaBell, FaIdCard, FaBars } from 'react-icons/fa';
 import { MdAccountCircle } from 'react-icons/md';
 import PaymentMethod from './paymentmethod/PaymentMethod';
 import UserSettings from './usersettings/UserSettings';
@@ -10,6 +10,7 @@ import UserSubscriptions from './subscriptions/UserSubscription';
 
 const AccountSettings = () => {
   const [activeTab, setActiveTab] = useState('kyc');
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -28,50 +29,86 @@ const AccountSettings = () => {
     }
   };
 
+  const tabs = [
+    {
+      id: 'payment',
+      label: 'Payment',
+      icon: <FaCreditCard className="mr-2" />,
+    },
+    {
+      id: 'subscription',
+      label: 'Subscription',
+      icon: <FaCreditCard className="mr-2" />,
+    },
+    {
+      id: 'account',
+      label: 'Account',
+      icon: <MdAccountCircle className="mr-2" />,
+    },
+    { id: 'kyc', label: 'KYC', icon: <FaIdCard className="mr-2" /> },
+    { id: 'system', label: 'System', icon: <FaBell className="mr-2" /> },
+  ];
+
   return (
     <div className="mx-auto min-h-screen">
       <h1 className="text-3xl font-bold text-gray-900 mb-6 mt-6">Settings</h1>
-      <div className="flex border-b border-gray-200 mb-6">
-        <button
-          className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm ${activeTab === 'payment' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-          onClick={() => setActiveTab('payment')}
-        >
-          <FaCreditCard className="mr-2" />
-          Payment
-        </button>
 
+      {/* Mobile Menu Button */}
+      <div className="lg:hidden mb-4">
         <button
-          className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm ${activeTab === 'subscription' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-          onClick={() => setActiveTab('subscription')}
+          onClick={() => setShowMobileMenu(!showMobileMenu)}
+          className="flex items-center px-4 py-2 bg-gray-100 rounded-lg text-gray-700 font-medium"
         >
-          <FaCreditCard className="mr-2" />
-          Subscription
-        </button>
-
-        <button
-          className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm ${activeTab === 'account' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-          onClick={() => setActiveTab('account')}
-        >
-          <MdAccountCircle className="mr-2" />
-          Account
-        </button>
-        <button
-          className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm ${activeTab === 'kyc' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-          onClick={() => setActiveTab('kyc')}
-        >
-          <FaIdCard className="mr-2" />
-          KYC
-        </button>
-        <button
-          className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm ${activeTab === 'system' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-          onClick={() => setActiveTab('system')}
-        >
-          <FaBell className="mr-2" />
-          System
+          <FaBars className="mr-2" />
+          {tabs.find((tab) => tab.id === activeTab)?.label || 'Menu'}
         </button>
       </div>
 
-      {/* Content container with enough bottom padding to prevent overlapping */}
+      {/* Tabs Container */}
+      <div className="relative">
+        {/* Desktop Tabs */}
+        <div className="hidden lg:flex border-b border-gray-200 mb-6 overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'border-gray-500 text-gray-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Mobile Dropdown Menu */}
+        {showMobileMenu && (
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 mb-4">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                className={`flex items-center w-full px-4 py-3 text-left ${
+                  activeTab === tab.id
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-700 hover:bg-gray-50'
+                } border-b border-gray-100 last:border-b-0`}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setShowMobileMenu(false);
+                }}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Content container */}
       <div className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50 p-3 shadow min-h-[calc(100vh-150px)] pb-16">
         {renderTabContent()}
       </div>
