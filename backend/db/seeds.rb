@@ -7,3 +7,13 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+# db/seeds.rb
+# This is the main seed file that loads all other seeds
+
+puts "Loading seed data..."
+
+# Load all seed files in specific order
+require_relative 'seeds/premium_plans'
+
+puts "Seed data loaded successfully!"

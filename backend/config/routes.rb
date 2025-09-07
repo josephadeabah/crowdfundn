@@ -1,4 +1,3 @@
-
 Rails.application.routes.draw do
   # redirect to the detailed campaign page
   get 'campaign/:id', to: 'campaigns#show', as: 'campaign'
@@ -6,7 +5,12 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       namespace :members do
-        resources :premium_subscriptions, only: [:create, :show]
+        # Premium subscription routes
+        resources :premium_plans, only: [:index]
+        resources :premium_subscriptions, only: [:create, :show] do
+          delete :cancel, on: :collection
+        end
+        
         resources :profiles, only: [:update]
         resources :roles, only: [:create]
         post 'auth/signup', to: 'auth#signup'

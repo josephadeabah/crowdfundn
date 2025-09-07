@@ -57,9 +57,24 @@ module Api
           when 'transfer.reversed'
             PaystackWebhook::TransferReversedHandler.new(event[:data]).call
           when 'subscription.create'
-            PaystackWebhook::SubscriptionCreateHandler.new(event[:data]).call
-          when 'subscription.disabled'
-            PaystackWebhook::SubscriptionDisabledHandler.new(event[:data]).call
+            metadata = event[:data][:metadata] || {}
+            if metadata[:premium_access] # Check for premium subscription
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+            else
+              PaystackWebhook::SubscriptionCreateHandler.new(event[:data]).call
+            end
+          when 'subscription.disable'
+            metadata = event[:data][:metadata] || {}
+            if metadata[:premium_access] # Check for premium subscription
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+            else
+              PaystackWebhook::SubscriptionDisabledHandler.new(event[:data]).call
+            end
+          when 'subscription.not_renew'
+            metadata = event[:data][:metadata] || {}
+            if metadata[:premium_access] # Check for premium subscription
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+            end
           when 'subscription.charge.failed'
             PaystackWebhook::SubscriptionChargeFailedHandler.new(event[:data]).call
           when 'refund.processed'
@@ -71,11 +86,16 @@ module Api
             end
           else
             Rails.logger.warn "Unhandled event type: #{event[:event]}"
-            render json: { error: 'Unhandled event type' }, status: :unprocessable_entity
+            # Don't render an error response here as it would prevent the 200 OK response
+            # Just log and continue
           end
 
           # Mark the event as processed to prevent future duplicates
           EventProcessed.create(event_id: event_id)
+        rescue => e
+          Rails.logger.error "Error processing webhook event: #{e.message}"
+          Rails.logger.error e.backtrace.join("\n")
+          # Don't re-raise the exception to prevent webhook retries
         end
 
       end

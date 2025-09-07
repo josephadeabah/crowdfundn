@@ -17,7 +17,8 @@ class User < ApplicationRecord
   has_many :equity_investments, dependent: :destroy
   has_many :invested_campaigns, through: :equity_investments, source: :campaign
   has_many :investor_documents, dependent: :destroy
-  has_many :premium_subscriptions, dependent: :destroy
+  has_many :premium_subscriptions
+  belongs_to :premium_plan, optional: true
   # Update KYC associations to use full namespace
   has_many :kycs, class_name: '::Kyc', dependent: :destroy
   has_one :latest_kyc, -> { where.not(status: 'superseded').order(created_at: :desc) }, class_name: '::Kyc'
@@ -122,9 +123,47 @@ class User < ApplicationRecord
   def premium_access?
     premium_access && (premium_expires_at.nil? || premium_expires_at > Time.current)
   end
-
+  
   def active_premium_subscription
     premium_subscriptions.active.last
+  end
+  
+  def upgrade_to_premium(plan, subscription_code = nil)
+    transaction do
+      update!(
+        premium_access: true,
+        premium_plan: plan,
+        premium_expires_at: calculate_premium_expiry(plan),
+        premium_subscription_id: subscription_code
+      )
+      
+      # Create subscription record
+      PremiumSubscription.create!(
+        user: self,
+        premium_plan: plan,
+        paystack_subscription_code: subscription_code,
+        amount: plan.price,
+        currency: plan.currency,
+        status: 'active',
+        start_date: Time.current,
+        expires_at: calculate_premium_expiry(plan),
+        auto_renew: premium_auto_renew
+      )
+    end
+  end
+  
+  def downgrade_from_premium
+    transaction do
+      update!(
+        premium_access: false,
+        premium_plan: nil,
+        premium_expires_at: nil,
+        premium_subscription_id: nil
+      )
+      
+      # Cancel any active subscriptions
+      active_premium_subscription&.update!(status: 'cancelled')
+    end
   end
 
   # Add KYC status methods
@@ -218,5 +257,14 @@ class User < ApplicationRecord
   def set_default_status
     self.status ||= 'active'
     self.user_type = 'individual' if new_record? && user_type.blank?
+  end
+
+  def calculate_premium_expiry(plan)
+    case plan.interval
+    when 'monthly' then 1.month.from_now
+    when 'quarterly' then 3.months.from_now
+    when 'annually' then 1.year.from_now
+    else 1.month.from_now
+    end
   end
 end

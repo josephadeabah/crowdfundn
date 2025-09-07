@@ -1,89 +1,126 @@
-import React from 'react';
+// app/info/upgrade/PricingCard.tsx
+import React, { useState } from 'react';
 import { Check } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { cn } from '@/app/lib/utils';
-
-type PricingFeature = {
-  title: string;
-  included: boolean;
-};
+import { PremiumPlan, usePremiumContext } from '@/app/context/premium/PremiumContext';
 
 interface PricingCardProps {
-  name: string;
-  price: string;
-  description: string;
-  features: string[];
+  plan: PremiumPlan;
+  isCurrentPlan: boolean;
   popular?: boolean;
   gradient?: boolean;
 }
 
 const PricingCard = ({
-  name,
-  price,
-  description,
-  features,
+  plan,
+  isCurrentPlan,
   popular = false,
   gradient = false,
 }: PricingCardProps) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { createSubscription, subscription } = usePremiumContext();
+
+  const handleSubscribe = async () => {
+    setIsProcessing(true);
+    try {
+      const result = await createSubscription(plan.id);
+      // Redirect to Paystack checkout
+      window.location.href = result.authorization_url;
+    } catch (error) {
+      console.error('Failed to create subscription:', error);
+      // Handle error (show toast message, etc.)
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Convert features object to array for display
+  const features = Object.entries(plan.features || {}).map(([key, value]) => {
+    if (typeof value === 'boolean') {
+      return value ? `${key}` : `${key} (Not included)`;
+    }
+    return `${key}: ${value}`;
+  });
+
   return (
     <div
       className={cn(
-        'pricing-card',
-        popular && 'popular',
-        gradient && 'bg-pricing-gradient text-white',
+        'relative p-6 rounded-lg border-2 transition-all duration-200 h-full flex flex-col',
+        popular ? 'border-bantu-orange shadow-lg' : 'border-gray-200',
+        gradient 
+          ? 'bg-gradient-to-br from-bantu-purple to-bantu-blue text-white' 
+          : 'bg-white'
       )}
     >
-      {popular && <div className="card-highlight">Popular</div>}
+      {popular && (
+        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+          <span className="bg-bantu-orange text-white px-3 py-1 rounded-full text-sm font-medium">
+            Most Popular
+          </span>
+        </div>
+      )}
 
-      <div className="mb-4">
+      <div className="mb-4 text-center">
         <h3 className={cn('text-2xl font-bold', gradient && 'text-white')}>
-          {name}
+          {plan.name}
         </h3>
         <div className="mt-2">
           <span className={cn('text-4xl font-bold', gradient && 'text-white')}>
-            {price}
+            {plan.currency} {plan.price}
           </span>
           <span
             className={cn(
-              'text-muted-foreground ml-1',
-              gradient && 'text-white/80',
+              'ml-1 text-lg',
+              gradient ? 'text-white/80' : 'text-gray-600'
             )}
           >
-            /month
+            /{plan.interval}
           </span>
         </div>
       </div>
 
       <p
         className={cn(
-          'mt-2 mb-4 text-sm',
-          gradient ? 'text-white/80' : 'text-muted-foreground',
+          'mt-2 mb-4 text-sm text-center flex-grow-0',
+          gradient ? 'text-white/80' : 'text-gray-600'
         )}
       >
-        {description}
+        {plan.description}
       </p>
 
       <Button
         className={cn(
           'w-full mt-6',
           gradient
-            ? 'bg-white text-bantu-orange hover:bg-gray-100'
+            ? 'bg-white text-bantu-purple hover:bg-gray-100'
             : 'bg-bantu-green text-white hover:bg-bantu-dark-green',
+          (isCurrentPlan || subscription?.has_premium) && 'bg-gray-400 cursor-not-allowed'
         )}
+        onClick={handleSubscribe}
+        disabled={isCurrentPlan || isProcessing || subscription?.has_premium}
       >
-        Get started
+        {isProcessing
+          ? 'Processing...'
+          : isCurrentPlan
+          ? 'Current Plan'
+          : subscription?.has_premium
+          ? 'Already Premium'
+          : 'Get Started'}
       </Button>
 
-      <ul className="mt-8 space-y-3 pricing-feature-list">
+      <ul className="mt-8 space-y-3 flex-grow">
         {features.map((feature, index) => (
-          <li key={index} className="pricing-feature-item">
+          <li key={index} className="flex items-start">
             <Check
               className={cn(
-                'h-5 w-5 flex-shrink-0',
-                gradient ? 'text-white' : 'text-bantu-green',
+                'h-5 w-5 flex-shrink-0 mt-0.5',
+                gradient ? 'text-white' : 'text-bantu-green'
               )}
             />
-            <span className={cn(gradient && 'text-white')}>{feature}</span>
+            <span className={cn('ml-2 text-sm', gradient && 'text-white')}>
+              {feature}
+            </span>
           </li>
         ))}
       </ul>

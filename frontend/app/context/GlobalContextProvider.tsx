@@ -19,6 +19,7 @@ import { PledgesProvider } from './pledges/PledgesContext';
 import { DrawerProvider } from './drawer/DrawerContext';
 import { KycProvider } from './kyc/KycContext';
 import { KycReviewProvider } from './kyc/KycReviewContext';
+import { PremiumProvider } from './premium/PremiumContext';
 
 export const GlobalContextProvider = ({
   children,
@@ -29,37 +30,39 @@ export const GlobalContextProvider = ({
     <DrawerProvider>
       <AuthProvider>
         <UserProfileProvider>
-          <KycProvider>
-            <KycReviewProvider>
-              <DonationsProvider>
-                <RewardProvider>
-                  <CampaignProvider>
-                    <EquityCampaignProvider>
-                      <CampaignUpdatesProvider>
-                        <TransferProvider>
-                          <CampaignCommentsProvider>
-                            <CategoryProvider>
-                              <MetricsProvider>
-                                <ArticlesProvider>
-                                  <LeaderboardProvider>
-                                    <PointRewardProvider>
-                                      <PledgesProvider>
-                                        {children}
-                                      </PledgesProvider>
-                                    </PointRewardProvider>
-                                  </LeaderboardProvider>
-                                </ArticlesProvider>
-                              </MetricsProvider>
-                            </CategoryProvider>
-                          </CampaignCommentsProvider>
-                        </TransferProvider>
-                      </CampaignUpdatesProvider>
-                    </EquityCampaignProvider>
-                  </CampaignProvider>
-                </RewardProvider>
-              </DonationsProvider>
-            </KycReviewProvider>
-          </KycProvider>
+          <PremiumProvider>
+            <KycProvider>
+              <KycReviewProvider>
+                <DonationsProvider>
+                  <RewardProvider>
+                    <CampaignProvider>
+                      <EquityCampaignProvider>
+                        <CampaignUpdatesProvider>
+                          <TransferProvider>
+                            <CampaignCommentsProvider>
+                              <CategoryProvider>
+                                <MetricsProvider>
+                                  <ArticlesProvider>
+                                    <LeaderboardProvider>
+                                      <PointRewardProvider>
+                                        <PledgesProvider>
+                                          {children}
+                                        </PledgesProvider>
+                                      </PointRewardProvider>
+                                    </LeaderboardProvider>
+                                  </ArticlesProvider>
+                                </MetricsProvider>
+                              </CategoryProvider>
+                            </CampaignCommentsProvider>
+                          </TransferProvider>
+                        </CampaignUpdatesProvider>
+                      </EquityCampaignProvider>
+                    </CampaignProvider>
+                  </RewardProvider>
+                </DonationsProvider>
+              </KycReviewProvider>
+            </KycProvider>
+          </PremiumProvider>
         </UserProfileProvider>
       </AuthProvider>
     </DrawerProvider>

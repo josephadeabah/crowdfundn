@@ -3,74 +3,116 @@ module PaystackWebhook
   class PremiumSubscriptionHandler
     def initialize(data)
       @data = data
+      @metadata = data[:metadata] || {}
     end
-
+    
     def call
-      transaction_reference = @data[:reference]
-
-      # Check for duplicate processing
-      if EventProcessed.exists?(event_id: transaction_reference)
-        Rails.logger.info "Premium subscription already processed: #{transaction_reference}"
-        return
+      return unless @metadata[:premium_access] && @metadata[:premium_plan_id]
+      
+      case @data[:event]
+      when 'charge.success'
+        handle_successful_payment
+      when 'subscription.create'
+        handle_subscription_creation
+      when 'subscription.disable'
+        handle_subscription_cancellation
+      when 'subscription.not_renew'
+        handle_non_renewal
       end
-
-      ActiveRecord::Base.transaction do
-        # Verify transaction with Paystack
-        response = PaystackService.new.verify_transaction(transaction_reference)
-        unless response[:status] == true && response.dig(:data, :status) == 'success'
-          raise 'Premium subscription verification failed'
-        end
-
-        metadata = parse_metadata(response)
-
-        # Only process if this is a premium subscription
-        if metadata[:premium_access]
-          user = User.find(metadata[:user_id])
-          process_premium_subscription(user, response, metadata)
-        end
-      end
-    rescue StandardError => e
-      Rails.logger.error "Error processing premium subscription: #{e.message}"
-      raise e
-    ensure
-      EventProcessed.create(event_id: transaction_reference)
     end
-
+    
     private
-
-    def parse_metadata(response)
-      if response.dig(:data, :metadata).is_a?(String)
-        JSON.parse(response.dig(:data, :metadata), symbolize_names: true)
-      else
-        response.dig(:data, :metadata) || {}
-      end
-    rescue JSON::ParserError
-      {}
-    end
-
-    def process_premium_subscription(user, response, metadata)
-      amount = response.dig(:data, :amount).to_f / 100.0
-      reference = response.dig(:data, :reference)
-
-      # Create premium subscription record
-      subscription = PremiumSubscription.create!(
+    
+    def handle_successful_payment
+      user = User.find(@metadata[:user_id])
+      plan = PremiumPlan.find(@metadata[:premium_plan_id])
+      
+      # Create or update subscription record
+      subscription = PremiumSubscription.find_or_initialize_by(
+        transaction_reference: @data[:reference]
+      )
+      
+      subscription.update!(
         user: user,
-        amount: amount,
-        transaction_reference: reference,
-        plan_name: metadata[:plan_name] || 'Premium',
-        expires_at: 1.month.from_now,
-        status: 'active'
+        premium_plan: plan,
+        paystack_subscription_code: @data[:subscription_code],
+        status: 'active',
+        start_date: Time.current,
+        expires_at: calculate_end_date(plan),
+        amount: @data[:amount].to_f / 100, # Convert from kobo
+        currency: @data[:currency],
+        auto_renew: user.premium_auto_renew
       )
-
-      # Update user's premium access
-      user.update!(
-        premium_access: true,
-        premium_expires_at: subscription.expires_at,
-        premium_plan: subscription.plan_name
+      
+      # Upgrade user
+      user.upgrade_to_premium(plan, @data[:subscription_code])
+      
+      # Send confirmation email using the service
+      PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
+      PremiumSubscriptionEmailService.send_payment_success_email(user, subscription, @data)
+    end
+    
+    def handle_subscription_creation
+      user = User.find(@metadata[:user_id])
+      plan = PremiumPlan.find(@metadata[:premium_plan_id])
+      
+      subscription = PremiumSubscription.find_or_initialize_by(
+        paystack_subscription_code: @data[:subscription_code]
       )
-
+      
+      subscription.update!(
+        user: user,
+        premium_plan: plan,
+        status: 'active',
+        start_date: Time.at(@data[:created_at]),
+        expires_at: calculate_end_date(plan, Time.at(@data[:created_at])),
+        next_payment_date: Time.at(@data[:next_payment_date]),
+        amount: plan.price,
+        currency: plan.currency,
+        auto_renew: true
+      )
+      
+      user.upgrade_to_premium(plan, @data[:subscription_code])
+      
       # Send confirmation email
-      PremiumSubscriptionMailer.confirmation(user, subscription).deliver_later
+      PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
+    end
+    
+    def handle_subscription_cancellation
+      subscription = PremiumSubscription.find_by(
+        paystack_subscription_code: @data[:subscription_code]
+      )
+      
+      if subscription
+        subscription.update!(status: 'cancelled', auto_renew: false)
+        subscription.user.downgrade_from_premium
+        
+        # Send cancellation email
+        PremiumSubscriptionEmailService.send_cancellation_email(subscription.user, subscription)
+      end
+    end
+    
+    def handle_non_renewal
+      subscription = PremiumSubscription.find_by(
+        paystack_subscription_code: @data[:subscription_code]
+      )
+      
+      if subscription
+        subscription.update!(status: 'expired', auto_renew: false)
+        subscription.user.downgrade_from_premium
+        
+        # Send cancellation email
+        PremiumSubscriptionEmailService.send_cancellation_email(subscription.user, subscription)
+      end
+    end
+    
+    def calculate_end_date(plan, start_date = Time.current)
+      case plan.interval
+      when 'monthly' then start_date + 1.month
+      when 'quarterly' then start_date + 3.months
+      when 'annually' then start_date + 1.year
+      else start_date + 1.month
+      end
     end
   end
 end

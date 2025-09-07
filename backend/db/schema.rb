@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_03_231956) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_07_022456) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -238,6 +238,21 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_231956) do
     t.index ["event_id"], name: "index_event_processeds_on_event_id", unique: true
   end
 
+  create_table "failed_donation_attempts", force: :cascade do |t|
+    t.string "transaction_reference", null: false
+    t.json "payload"
+    t.json "metadata"
+    t.json "error_messages"
+    t.string "status"
+    t.boolean "resolved", default: false
+    t.datetime "resolved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["resolved"], name: "index_failed_donation_attempts_on_resolved"
+    t.index ["status"], name: "index_failed_donation_attempts_on_status"
+    t.index ["transaction_reference"], name: "index_failed_donation_attempts_on_transaction_reference"
+  end
+
   create_table "favorites", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "campaign_id", null: false
@@ -396,15 +411,41 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_231956) do
     t.index ["user_id"], name: "index_points_on_user_id"
   end
 
+  create_table "premium_plans", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "paystack_plan_code"
+    t.decimal "price", precision: 10, scale: 2, null: false
+    t.string "currency", default: "GHS"
+    t.string "interval", null: false
+    t.text "description"
+    t.jsonb "features", default: {}
+    t.boolean "active", default: true
+    t.integer "trial_period_days", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["paystack_plan_code"], name: "index_premium_plans_on_paystack_plan_code", unique: true
+  end
+
   create_table "premium_subscriptions", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.decimal "amount", precision: 15, scale: 2, null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
     t.string "transaction_reference", null: false
     t.string "plan_name"
     t.datetime "expires_at"
     t.string "status", default: "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "premium_plan_id"
+    t.string "paystack_subscription_code"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "next_payment_date"
+    t.boolean "auto_renew", default: true
+    t.string "payment_method"
+    t.string "currency", default: "GHS"
+    t.index ["paystack_subscription_code"], name: "index_premium_subscriptions_on_paystack_subscription_code", unique: true
+    t.index ["premium_plan_id"], name: "index_premium_subscriptions_on_premium_plan_id"
+    t.index ["status"], name: "index_premium_subscriptions_on_status"
     t.index ["transaction_reference"], name: "index_premium_subscriptions_on_transaction_reference", unique: true
     t.index ["user_id"], name: "index_premium_subscriptions_on_user_id"
   end
@@ -572,9 +613,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_231956) do
     t.string "tax_id"
     t.boolean "premium_access", default: false
     t.datetime "premium_expires_at"
-    t.string "premium_plan"
     t.string "user_type", default: "individual"
+    t.bigint "premium_plan_id"
+    t.string "premium_subscription_id"
+    t.boolean "premium_auto_renew", default: true
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["premium_plan_id"], name: "index_users_on_premium_plan_id"
     t.index ["subaccount_id"], name: "index_users_on_subaccount_id"
   end
 
@@ -608,6 +652,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_231956) do
   add_foreign_key "points", "donations"
   add_foreign_key "points", "equity_investments"
   add_foreign_key "points", "users"
+  add_foreign_key "premium_subscriptions", "premium_plans"
   add_foreign_key "premium_subscriptions", "users"
   add_foreign_key "profiles", "users"
   add_foreign_key "subaccounts", "campaigns"
@@ -619,4 +664,5 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_231956) do
   add_foreign_key "updates", "campaigns"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
+  add_foreign_key "users", "premium_plans"
 end
