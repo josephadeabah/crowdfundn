@@ -1,57 +1,47 @@
+// app/info/upgrade/PricingSection.tsx
 import React from 'react';
 import PricingCard from './PricingCard';
+import { usePremiumContext } from '@/app/context/premium/PremiumContext';
 
 const PricingSection = () => {
-  const starterFeatures = [
-    'Email support with 1-day response time',
-    'General guidance from our staff',
-    'Marketing & Analytics Toolkit access',
-    'Campaign setup assistance',
-  ];
+  const { plans, loading, error, subscription } = usePremiumContext();
 
-  const growthFeatures = [
-    'Email & Google Hangout support',
-    '5-hour response time',
-    'Technical & Marketing Support experts',
-    'Marketing & Analytics Toolkit access',
-    'Campaign optimization strategies',
-  ];
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse">
+              <div className="h-64 bg-gray-200 rounded-lg"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-  const proFeatures = [
-    'Email, Google Hangout & preferred channels',
-    '30-minute response time',
-    'Dedicated technical professionals',
-    'Influencer marketing guidance',
-    'Marketing & Analytics Toolkit access',
-    'Custom campaign strategies',
-    'Priority support',
-  ];
+  if (error) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center text-red-600">
+          Error loading plans: {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
       <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
-        <PricingCard
-          name="Starter"
-          price="$29.99"
-          description="Perfect for beginners looking to launch their first campaign."
-          features={starterFeatures}
-        />
-
-        <PricingCard
-          name="Growth"
-          price="$79.99"
-          description="Ideal for creators serious about campaign success."
-          features={growthFeatures}
-          popular={true}
-        />
-
-        <PricingCard
-          name="Pro+"
-          price="$199.99"
-          description="For professional campaigns that demand the very best support."
-          features={proFeatures}
-          gradient={true}
-        />
+        {plans.map((plan, index) => (
+          <PricingCard
+            key={plan.id}
+            plan={plan}
+            isCurrentPlan={subscription?.current_plan?.id === plan.id}
+            popular={index === 1} // Make Growth plan popular
+            gradient={index === 2} // Make Pro+ gradient
+          />
+        ))}
       </div>
     </div>
   );

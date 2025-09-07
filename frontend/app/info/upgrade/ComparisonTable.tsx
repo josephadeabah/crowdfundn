@@ -1,3 +1,4 @@
+// app/info/upgrade/ComparisonTable.tsx
 import React from 'react';
 import { Check, X } from 'lucide-react';
 import {
@@ -9,51 +10,34 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/table';
+import { usePremiumContext } from '@/app/context/premium/PremiumContext';
 
 const ComparisonTable = () => {
+  const { plans, loading } = usePremiumContext();
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="animate-pulse">
+          <div className="h-12 bg-gray-200 rounded mb-8"></div>
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <div key={i} className="h-8 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const features = [
-    {
-      name: 'Communication Channels',
-      starter: 'Email only',
-      growth: 'Email & Google Hangout',
-      pro: 'Email, Google Hangout & Customer Preferred',
-    },
-    {
-      name: 'Response Time',
-      starter: '1 day',
-      growth: 'Within 5 hours',
-      pro: 'Within 30 mins',
-    },
-    {
-      name: 'Support Agents',
-      starter: 'General staff',
-      growth: 'Technical & Marketing experts',
-      pro: 'Dedicated professionals',
-    },
-    {
-      name: 'Marketing & Analytics Toolkit',
-      starter: true,
-      growth: true,
-      pro: true,
-    },
-    {
-      name: 'Influencer Marketing',
-      starter: false,
-      growth: false,
-      pro: true,
-    },
-    {
-      name: 'Campaign Strategy Review',
-      starter: false,
-      growth: true,
-      pro: true,
-    },
-    {
-      name: 'Priority Support',
-      starter: false,
-      growth: false,
-      pro: true,
-    },
+    'Communication Channels',
+    'Response Time',
+    'Support Agents',
+    'Marketing & Analytics Toolkit',
+    'Influencer Marketing',
+    'Campaign Strategy Review',
+    'Priority Support',
   ];
 
   const renderCheck = (value: boolean | string) => {
@@ -64,7 +48,7 @@ const ComparisonTable = () => {
         <X className="h-5 w-5 text-gray-400 mx-auto" />
       );
     }
-    return value;
+    return <span className="text-sm">{value}</span>;
   };
 
   return (
@@ -80,24 +64,22 @@ const ComparisonTable = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="w-1/4">Feature</TableHead>
-              <TableHead className="text-center">Starter ($29.99/mo)</TableHead>
-              <TableHead className="text-center">Growth ($79.99/mo)</TableHead>
-              <TableHead className="text-center">Pro+ ($199.99/mo)</TableHead>
+              {plans.map((plan) => (
+                <TableHead key={plan.id} className="text-center">
+                  {plan.name} ({plan.currency} {plan.price}/{plan.interval})
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {features.map((feature) => (
-              <TableRow key={feature.name}>
-                <TableCell className="font-medium">{feature.name}</TableCell>
-                <TableCell className="text-center">
-                  {renderCheck(feature.starter)}
-                </TableCell>
-                <TableCell className="text-center">
-                  {renderCheck(feature.growth)}
-                </TableCell>
-                <TableCell className="text-center">
-                  {renderCheck(feature.pro)}
-                </TableCell>
+              <TableRow key={feature}>
+                <TableCell className="font-medium">{feature}</TableCell>
+                {plans.map((plan) => (
+                  <TableCell key={plan.id} className="text-center">
+                    {renderCheck(plan.features[feature] || false)}
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>
