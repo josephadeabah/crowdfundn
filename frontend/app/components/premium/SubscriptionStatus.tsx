@@ -22,20 +22,20 @@ const SubscriptionStatus = () => {
     const now = new Date();
     const diffTime = date.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     // If expiry is within 7 days, show relative time
     if (diffDays <= 7 && diffDays >= 0) {
       if (diffDays === 0) return 'today';
       if (diffDays === 1) return 'tomorrow';
       return `in ${diffDays} days`;
     }
-    
+
     // Otherwise show a friendly date format
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
@@ -90,10 +90,7 @@ const SubscriptionStatus = () => {
               </span>{' '}
               plan
               {subscription.expires_at && (
-                <>
-                  {' '}
-                  • Expires {formatExpiryDate(subscription.expires_at)}
-                </>
+                <> • Expires {formatExpiryDate(subscription.expires_at)}</>
               )}
             </p>
           </div>
