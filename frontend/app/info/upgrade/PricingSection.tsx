@@ -7,8 +7,8 @@ const PricingSection = () => {
   const { plans, loading, error, subscription, fetchPlans, fetchSubscription } = usePremium();
 
   useEffect(() => {
-    void fetchPlans();
-    void fetchSubscription();
+    fetchPlans();
+    fetchSubscription();
   }, [fetchPlans, fetchSubscription]);
 
   if (loading) {
