@@ -1,5 +1,5 @@
 // app/account/dashboard/page.tsx
-'use client'
+'use client';
 import React, { useEffect, useState } from 'react';
 import {
   Card,
@@ -30,16 +30,9 @@ import { usePremium } from '@/app/context/premium/PremiumContext';
 import BlurredChartContainer from '../components/premiumplaceholder/BlurredChartContainer ';
 
 export default function Dashboard() {
-  const {
-    statistics,
-    error,
-    fetchCampaignStatistics,
-  } = useCampaignContext();
+  const { statistics, error, fetchCampaignStatistics } = useCampaignContext();
   const { user } = useAuth();
-  const {
-    subscription,
-    fetchSubscription,
-  } = usePremium();
+  const { subscription, fetchSubscription } = usePremium();
 
   const [isLoading, setIsLoading] = useState(true);
 

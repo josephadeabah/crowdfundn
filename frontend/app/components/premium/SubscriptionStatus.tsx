@@ -11,7 +11,10 @@ const SubscriptionStatus = () => {
   const { subscription, loading, cancelSubscription } = usePremium();
   const [isCancelling, setIsCancelling] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [cancelResult, setCancelResult] = useState<{type: 'success' | 'error', message: string} | null>(null);
+  const [cancelResult, setCancelResult] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   if (loading) {
     return (
@@ -28,17 +31,17 @@ const SubscriptionStatus = () => {
   const handleCancelConfirm = async () => {
     setIsCancelling(true);
     setShowCancelConfirm(false);
-    
+
     try {
       await cancelSubscription();
       setCancelResult({
         type: 'success',
-        message: 'Subscription cancelled successfully'
+        message: 'Subscription cancelled successfully',
       });
     } catch (error) {
       setCancelResult({
-        type: 'error', 
-        message: 'Failed to cancel subscription. Please try again.'
+        type: 'error',
+        message: 'Failed to cancel subscription. Please try again.',
       });
     } finally {
       setIsCancelling(false);
@@ -96,8 +99,8 @@ const SubscriptionStatus = () => {
         title="Cancel Subscription"
         message={
           <span>
-            Are you sure you want to cancel your subscription? You will lose access to 
-            premium features at the end of your billing period.
+            Are you sure you want to cancel your subscription? You will lose
+            access to premium features at the end of your billing period.
           </span>
         }
         isOpen={showCancelConfirm}
@@ -117,13 +120,15 @@ const SubscriptionStatus = () => {
         setIsOpen={() => setCancelResult(null)}
         onConfirm={() => setCancelResult(null)}
         icon={
-          cancelResult?.type === 'success' 
-            ? <div className="w-6 h-6 text-green-600">✓</div>
-            : <FaExclamationTriangle className="w-6 h-6 text-red-600" />
+          cancelResult?.type === 'success' ? (
+            <div className="w-6 h-6 text-green-600">✓</div>
+          ) : (
+            <FaExclamationTriangle className="w-6 h-6 text-red-600" />
+          )
         }
         confirmText="OK"
         confirmButtonClass={
-          cancelResult?.type === 'success' 
+          cancelResult?.type === 'success'
             ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
             : 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
         }

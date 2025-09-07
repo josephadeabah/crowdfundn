@@ -51,7 +51,7 @@ const PricingCard = ({
         popular ? 'border-bantu-orange shadow-lg' : 'border-gray-200',
         proPlus
           ? 'bg-purple-50 border-purple-200' // Unique color for Pro+
-          : 'bg-white'
+          : 'bg-white',
       )}
     >
       {popular && (
@@ -75,13 +75,18 @@ const PricingCard = ({
           {plan.name}
         </h3>
         <div className="mt-2">
-          <span className={cn('text-4xl font-bold', proPlus ? 'text-purple-900' : 'text-gray-900')}>
+          <span
+            className={cn(
+              'text-4xl font-bold',
+              proPlus ? 'text-purple-900' : 'text-gray-900',
+            )}
+          >
             {plan.currency} {plan.price}
           </span>
           <span
             className={cn(
               'ml-1 text-lg',
-              proPlus ? 'text-purple-700' : 'text-gray-600'
+              proPlus ? 'text-purple-700' : 'text-gray-600',
             )}
           >
             /{plan.interval}
@@ -92,7 +97,7 @@ const PricingCard = ({
       <p
         className={cn(
           'mt-2 mb-4 text-sm text-center flex-grow-0',
-          proPlus ? 'text-purple-700' : 'text-gray-600'
+          proPlus ? 'text-purple-700' : 'text-gray-600',
         )}
       >
         {plan.description}
@@ -104,9 +109,10 @@ const PricingCard = ({
           proPlus
             ? 'bg-purple-600 text-white hover:bg-purple-700'
             : popular
-            ? 'bg-bantu-orange text-white hover:bg-orange-600'
-            : 'bg-bantu-green text-white hover:bg-bantu-dark-green',
-          (isCurrentPlan || subscription?.has_premium) && 'bg-gray-400 cursor-not-allowed'
+              ? 'bg-bantu-orange text-white hover:bg-orange-600'
+              : 'bg-bantu-green text-white hover:bg-bantu-dark-green',
+          (isCurrentPlan || subscription?.has_premium) &&
+            'bg-gray-400 cursor-not-allowed',
         )}
         onClick={handleSubscribe}
         disabled={isCurrentPlan || isProcessing || subscription?.has_premium}
@@ -114,10 +120,10 @@ const PricingCard = ({
         {isProcessing
           ? 'Processing...'
           : isCurrentPlan
-          ? 'Current Plan'
-          : subscription?.has_premium
-          ? 'Already Premium'
-          : 'Get Started'}
+            ? 'Current Plan'
+            : subscription?.has_premium
+              ? 'Already Premium'
+              : 'Get Started'}
       </Button>
 
       <ul className="mt-8 space-y-3 flex-grow">
@@ -126,10 +132,15 @@ const PricingCard = ({
             <Check
               className={cn(
                 'h-5 w-5 flex-shrink-0 mt-0.5',
-                proPlus ? 'text-purple-600' : 'text-bantu-green'
+                proPlus ? 'text-purple-600' : 'text-bantu-green',
               )}
             />
-            <span className={cn('ml-2 text-sm', proPlus ? 'text-purple-800' : 'text-gray-700')}>
+            <span
+              className={cn(
+                'ml-2 text-sm',
+                proPlus ? 'text-purple-800' : 'text-gray-700',
+              )}
+            >
               {feature}
             </span>
           </li>
