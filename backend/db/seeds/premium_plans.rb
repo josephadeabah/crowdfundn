@@ -1,10 +1,11 @@
 # db/seeds/premium_plans.rb
 puts "Creating premium plans..."
 
+# First, set all user premium_plan_id to NULL
+User.where.not(premium_plan_id: nil).update_all(premium_plan_id: nil)
+
 # Safely handle existing subscriptions by setting premium_plan_id to NULL
-PremiumSubscription.where.not(premium_plan_id: nil).find_each do |subscription|
-  subscription.update_columns(premium_plan_id: nil)
-end
+PremiumSubscription.where.not(premium_plan_id: nil).update_all(premium_plan_id: nil)
 
 # Now delete the plans
 PremiumPlan.destroy_all
@@ -28,7 +29,7 @@ plans = [
   },
   {
     name: 'Growth',
-    price: 299.99,  # Updated price
+    price: 299.99,
     currency: 'GHS',
     interval: 'monthly',
     description: 'Ideal for growing organizations',
