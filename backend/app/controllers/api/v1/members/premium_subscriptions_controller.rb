@@ -17,7 +17,7 @@ module Api
         def create
           plan = PremiumPlan.find(params[:plan_id])
 
-          callback_url = 'https://www.bantuhive.com/account#Dashboard?'
+          callback_url = 'https://www.bantuhive.com/account'
           
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
