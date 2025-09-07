@@ -1,6 +1,6 @@
 // app/account/dashboard/page.tsx
-'use client'
-import React, { useEffect } from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -30,20 +30,39 @@ import { usePremium } from '@/app/context/premium/PremiumContext';
 import BlurredChartContainer from '../components/premiumplaceholder/BlurredChartContainer ';
 
 export default function Dashboard() {
-  const { statistics, loading, error, fetchCampaignStatistics } =
-    useCampaignContext();
+  const {
+    statistics,
+    loading: campaignLoading,
+    error,
+    fetchCampaignStatistics,
+  } = useCampaignContext();
   const { user } = useAuth();
-  const { subscription, loading: premiumLoading, fetchSubscription } = usePremium();
+  const {
+    subscription,
+    loading: premiumLoading,
+    fetchSubscription,
+  } = usePremium();
+
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const hasPremium = subscription?.has_premium;
 
   useEffect(() => {
-    fetchCampaignStatistics();
-    fetchSubscription(); // Fetch subscription data
+    const loadData = async () => {
+      try {
+        await Promise.all([fetchCampaignStatistics(), fetchSubscription()]);
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+      } finally {
+        setIsInitialLoad(false);
+      }
+    };
+
+    loadData();
   }, [fetchCampaignStatistics, fetchSubscription]);
 
-  // Show loading if either campaign stats or premium data is loading
-  if (loading || premiumLoading) {
+  // Show loading only on initial load
+  if (isInitialLoad && (campaignLoading || premiumLoading)) {
     return <MainDashboardLoader />;
   }
 

@@ -36,11 +36,32 @@ const ProfileTabs = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
 
   // Get premium subscription status
-  const { subscription, loading: premiumLoading, fetchSubscription } = usePremium();
+  const {
+    subscription,
+    loading: premiumLoading,
+    fetchSubscription,
+  } = usePremium();
+  const [isPremiumLoading, setIsPremiumLoading] = useState(true);
 
   useEffect(() => {
-    fetchSubscription(); // Add this to fetch premium status
+    const loadPremiumData = async () => {
+      setIsPremiumLoading(true);
+      try {
+        await fetchSubscription();
+      } catch (err) {
+        console.error('Failed to load premium data:', err);
+      } finally {
+        setIsPremiumLoading(false);
+      }
+    };
+
+    loadPremiumData();
   }, [fetchSubscription]);
+
+  // Update loading check
+  if (loading || isPremiumLoading) {
+    return <ProfileTabsLoader />;
+  }
 
   // Tab titles and icons
   const tabs = [
