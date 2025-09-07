@@ -112,12 +112,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     Cookies.set('user', JSON.stringify(response.user), {
       expires: 30,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
     });
     Cookies.set('token', response.token, {
       expires: 30,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
     });
 
     resetLogoutTimer();
