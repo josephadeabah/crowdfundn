@@ -10,6 +10,7 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
+import { useAuth } from '../auth/AuthContext';
 
 export interface PremiumPlan {
   id: number;
@@ -51,8 +52,11 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { token } = useAuth();
 
   const fetchPlans = useCallback(async () => {
+    if (!token) return;
+
     setLoading(true);
     setError(null);
 
@@ -60,7 +64,11 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_plans`,
         {
-          credentials: 'include',
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
 
@@ -75,9 +83,11 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   const fetchSubscription = useCallback(async () => {
+    if (!token) return;
+
     setLoading(true);
     setError(null);
 
@@ -85,12 +95,15 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions`,
         {
-          credentials: 'include',
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
 
       if (!response.ok) {
-        // If not subscribed, that's okay - just return empty data
         if (response.status === 404) {
           setSubscription({
             has_premium: false,
@@ -113,43 +126,54 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
-  const createSubscription = useCallback(async (planId: number) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({ plan_id: planId }),
-        },
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create subscription');
+  const createSubscription = useCallback(
+    async (planId: number) => {
+      if (!token) {
+        throw new Error('Authentication token is missing');
       }
 
-      const data = await response.json();
-      return data;
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to create subscription',
-      );
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ plan_id: planId }),
+          },
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to create subscription');
+        }
+
+        const data = await response.json();
+        return data;
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Failed to create subscription',
+        );
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
 
   const cancelSubscription = useCallback(async () => {
+    if (!token) {
+      throw new Error('Authentication token is missing');
+    }
+
     setLoading(true);
     setError(null);
 
@@ -158,7 +182,10 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions/cancel`,
         {
           method: 'DELETE',
-          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
 
@@ -166,7 +193,6 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Failed to cancel subscription');
       }
 
-      // Refresh subscription data
       await fetchSubscription();
     } catch (err) {
       setError(
@@ -176,9 +202,8 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [fetchSubscription]);
+  }, [token, fetchSubscription]);
 
-  // Fetch plans on mount
   useEffect(() => {
     fetchPlans();
     fetchSubscription();
@@ -221,34 +246,3 @@ export const usePremium = () => {
   }
   return context;
 };
-
-
-
-//   const createSubscription = useCallback(async (planId: number) => {
-//     setLoading(true);
-//     setError(null);
-
-//     try {
-//       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/members/premium_subscriptions`, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         credentials: 'include',
-//         body: JSON.stringify({ plan_id: planId }),
-//       });
-
-//       if (!response.ok) {
-//         const errorData = await response.json();
-//         throw new Error(errorData.error || 'Failed to create subscription');
-//       }
-
-//       const data = await response.json();
-//       return data;
-//     } catch (err) {
-//       setError(err instanceof Error ? err.message : 'Failed to create subscription');
-//       throw err;
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, []);
