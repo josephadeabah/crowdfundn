@@ -1,39 +1,27 @@
 // app/account/dashboard/page.tsx
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
 } from '../components/card/Card';
-import { HiOutlinePlus } from 'react-icons/hi';
-import Link from 'next/link';
 import { useCampaignContext } from '../context/account/campaign/CampaignsContext';
 import { useAuth } from '../context/auth/AuthContext';
 import MainDashboardLoader from '../loaders/MainDashboardLoader';
 import ErrorPage from '../components/errorpage/ErrorPage';
-import { InfoCircledIcon } from '@radix-ui/react-icons';
-import { deslugify } from '../utils/helpers/categories';
-import moment from 'moment';
-import DashboardCharts from '../components/charts/DashboardCharts';
-import { FiPlusCircle } from 'react-icons/fi';
 import DonationByCountryCharts from '../components/charts/DonationByCountryChart';
 import {
-  PlusCircle,
   Users,
   Target,
   Activity,
-  DollarSign,
   Clock,
   BarChart2,
-  AlertCircle,
   TrendingUp,
   PieChart as PieChartIcon,
   Heart,
   TrendingUp as TrendingUpIcon,
-  Landmark,
   Coins,
-  PiggyBank,
 } from 'lucide-react';
 
 import { CampaignsByCategoryChart } from '../components/charts/CampaignsByCategoryChart';
