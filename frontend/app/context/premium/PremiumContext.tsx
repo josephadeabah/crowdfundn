@@ -205,12 +205,13 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   }, [token, fetchSubscription]);
 
 useEffect(() => {
-  // Only fetch on client and when token exists
-  if (typeof window !== 'undefined' && token) {
-    fetchPlans();
-    fetchSubscription();
-  }
+if (token) {
+    // Only fetch once client-side when authenticated
+    void fetchPlans();
+    void fetchSubscription();
+}
 }, [token, fetchPlans, fetchSubscription]);
+
 
 
   const contextValue = useMemo(
