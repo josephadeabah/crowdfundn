@@ -1,3 +1,4 @@
+// app/info/upgrade/PricingSection.tsx
 'use client';
 import React, { useEffect } from 'react';
 import PricingCard from './PricingCard';
@@ -44,8 +45,8 @@ const PricingSection = () => {
             key={plan.id}
             plan={plan}
             isCurrentPlan={subscription?.current_plan?.id === plan.id}
-            popular={index === 1}
-            gradient={index === 2}
+            popular={index === 1} // Middle card is popular
+            proPlus={index === 2} // Third card is Pro+
           />
         ))}
       </div>

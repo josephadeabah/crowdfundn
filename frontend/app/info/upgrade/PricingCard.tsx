@@ -10,14 +10,14 @@ interface PricingCardProps {
   plan: PremiumPlan;
   isCurrentPlan: boolean;
   popular?: boolean;
-  gradient?: boolean;
+  proPlus?: boolean; // Changed from gradient to proPlus
 }
 
 const PricingCard = ({
   plan,
   isCurrentPlan,
   popular = false,
-  gradient = false,
+  proPlus = false, // Changed from gradient to proPlus
 }: PricingCardProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { createSubscription, subscription } = usePremium();
@@ -49,9 +49,9 @@ const PricingCard = ({
       className={cn(
         'relative p-6 rounded-lg border-2 transition-all duration-200 h-full flex flex-col',
         popular ? 'border-bantu-orange shadow-lg' : 'border-gray-200',
-        gradient 
-          ? 'bg-gradient-to-br from-bantu-purple to-bantu-blue text-white' 
-          : 'bg-white text-gray-900' // Ensure text color for non-gradient
+        proPlus
+          ? 'bg-purple-50 border-purple-200' // Unique color for Pro+
+          : 'bg-white'
       )}
     >
       {popular && (
@@ -62,18 +62,26 @@ const PricingCard = ({
         </div>
       )}
 
+      {proPlus && (
+        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+          <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+            Premium
+          </span>
+        </div>
+      )}
+
       <div className="mb-4 text-center">
-        <h3 className={cn('text-2xl font-bold', gradient && 'text-white')}>
+        <h3 className={cn('text-2xl font-bold', proPlus && 'text-purple-900')}>
           {plan.name}
         </h3>
         <div className="mt-2">
-          <span className={cn('text-4xl font-bold', gradient ? 'text-white' : 'text-gray-900')}>
+          <span className={cn('text-4xl font-bold', proPlus ? 'text-purple-900' : 'text-gray-900')}>
             {plan.currency} {plan.price}
           </span>
           <span
             className={cn(
               'ml-1 text-lg',
-              gradient ? 'text-white/80' : 'text-gray-600'
+              proPlus ? 'text-purple-700' : 'text-gray-600'
             )}
           >
             /{plan.interval}
@@ -84,7 +92,7 @@ const PricingCard = ({
       <p
         className={cn(
           'mt-2 mb-4 text-sm text-center flex-grow-0',
-          gradient ? 'text-white/80' : 'text-gray-600'
+          proPlus ? 'text-purple-700' : 'text-gray-600'
         )}
       >
         {plan.description}
@@ -93,8 +101,10 @@ const PricingCard = ({
       <Button
         className={cn(
           'w-full mt-6',
-          gradient
-            ? 'bg-white text-bantu-purple hover:bg-gray-100'
+          proPlus
+            ? 'bg-purple-600 text-white hover:bg-purple-700'
+            : popular
+            ? 'bg-bantu-orange text-white hover:bg-orange-600'
             : 'bg-bantu-green text-white hover:bg-bantu-dark-green',
           (isCurrentPlan || subscription?.has_premium) && 'bg-gray-400 cursor-not-allowed'
         )}
@@ -116,10 +126,10 @@ const PricingCard = ({
             <Check
               className={cn(
                 'h-5 w-5 flex-shrink-0 mt-0.5',
-                gradient ? 'text-white' : 'text-bantu-green'
+                proPlus ? 'text-purple-600' : 'text-bantu-green'
               )}
             />
-            <span className={cn('ml-2 text-sm', gradient ? 'text-white' : 'text-gray-700')}>
+            <span className={cn('ml-2 text-sm', proPlus ? 'text-purple-800' : 'text-gray-700')}>
               {feature}
             </span>
           </li>
