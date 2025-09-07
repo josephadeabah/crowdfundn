@@ -1,11 +1,15 @@
-// app/info/upgrade/PricingSection.tsx
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import PricingCard from './PricingCard';
 import { usePremium } from '@/app/context/premium/PremiumContext';
 
 const PricingSection = () => {
-  const { plans, loading, error, subscription } = usePremium();
+  const { plans, loading, error, subscription, fetchPlans, fetchSubscription } = usePremium();
+
+  useEffect(() => {
+    void fetchPlans();
+    void fetchSubscription();
+  }, [fetchPlans, fetchSubscription]);
 
   if (loading) {
     return (
@@ -39,8 +43,8 @@ const PricingSection = () => {
             key={plan.id}
             plan={plan}
             isCurrentPlan={subscription?.current_plan?.id === plan.id}
-            popular={index === 1} // Make Growth plan popular
-            gradient={index === 2} // Make Pro+ gradient
+            popular={index === 1}
+            gradient={index === 2}
           />
         ))}
       </div>

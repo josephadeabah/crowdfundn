@@ -1,5 +1,5 @@
-// app/info/upgrade/ComparisonTable.tsx
-import React from 'react';
+'use client';
+import React, { useEffect } from 'react';
 import { Check, X } from 'lucide-react';
 import {
   Table,
@@ -13,7 +13,11 @@ import {
 import { usePremium } from '@/app/context/premium/PremiumContext';
 
 const ComparisonTable = () => {
-  const { plans, loading } = usePremium();
+  const { plans, loading, fetchPlans } = usePremium();
+
+  useEffect(() => {
+    void fetchPlans();
+  }, [fetchPlans]);
 
   if (loading) {
     return (

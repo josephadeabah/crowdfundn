@@ -1,4 +1,3 @@
-// app/contexts/PremiumContext.tsx
 'use client';
 
 import React, {
@@ -8,7 +7,6 @@ import React, {
   ReactNode,
   useMemo,
   useCallback,
-  useEffect,
 } from 'react';
 import { useAuth } from '../auth/AuthContext';
 
@@ -47,19 +45,15 @@ const PremiumContext = createContext<PremiumState | undefined>(undefined);
 
 export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   const [plans, setPlans] = useState<PremiumPlan[]>([]);
-  const [subscription, setSubscription] = useState<PremiumSubscription | null>(
-    null,
-  );
+  const [subscription, setSubscription] = useState<PremiumSubscription | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
 
   const fetchPlans = useCallback(async () => {
     if (!token) return;
-
     setLoading(true);
     setError(null);
-
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_plans`,
@@ -72,9 +66,7 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
         },
       );
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch premium plans');
-      }
+      if (!response.ok) throw new Error('Failed to fetch premium plans');
 
       const data = await response.json();
       setPlans(data.plans);
@@ -87,10 +79,8 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchSubscription = useCallback(async () => {
     if (!token) return;
-
     setLoading(true);
     setError(null);
-
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions`,
@@ -130,13 +120,10 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
 
   const createSubscription = useCallback(
     async (planId: number) => {
-      if (!token) {
-        throw new Error('Authentication token is missing');
-      }
+      if (!token) throw new Error('Authentication token is missing');
 
       setLoading(true);
       setError(null);
-
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions`,
@@ -155,8 +142,7 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
           throw new Error(errorData.error || 'Failed to create subscription');
         }
 
-        const data = await response.json();
-        return data;
+        return await response.json();
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Failed to create subscription',
@@ -170,13 +156,10 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const cancelSubscription = useCallback(async () => {
-    if (!token) {
-      throw new Error('Authentication token is missing');
-    }
+    if (!token) throw new Error('Authentication token is missing');
 
     setLoading(true);
     setError(null);
-
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions/cancel`,
@@ -189,9 +172,7 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
         },
       );
 
-      if (!response.ok) {
-        throw new Error('Failed to cancel subscription');
-      }
+      if (!response.ok) throw new Error('Failed to cancel subscription');
 
       await fetchSubscription();
     } catch (err) {
@@ -204,16 +185,6 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token, fetchSubscription]);
 
-useEffect(() => {
-if (token) {
-    // Only fetch once client-side when authenticated
-    void fetchPlans();
-    void fetchSubscription();
-}
-}, [token, fetchPlans, fetchSubscription]);
-
-
-
   const contextValue = useMemo(
     () => ({
       plans,
@@ -225,16 +196,7 @@ if (token) {
       createSubscription,
       cancelSubscription,
     }),
-    [
-      plans,
-      subscription,
-      loading,
-      error,
-      fetchPlans,
-      fetchSubscription,
-      createSubscription,
-      cancelSubscription,
-    ],
+    [plans, subscription, loading, error, fetchPlans, fetchSubscription, createSubscription, cancelSubscription],
   );
 
   return (
