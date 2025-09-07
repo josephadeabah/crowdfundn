@@ -5,6 +5,7 @@ module Api
       class PremiumSubscriptionsController < ApplicationController
         before_action :authenticate_request
         
+        # This now handles GET /api/v1/members/premium_subscriptions/current
         def show
           render json: {
             has_premium: @current_user.premium_access?,

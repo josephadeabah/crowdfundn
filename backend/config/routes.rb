@@ -5,10 +5,13 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       namespace :members do
-        # Premium subscription routes
+        # Premium subscription routes - UPDATED with cleaner structure
         resources :premium_plans, only: [:index]
-        resources :premium_subscriptions, only: [:create, :show] do
-          delete :cancel, on: :collection
+        resources :premium_subscriptions, only: [:create] do
+          collection do
+            get :current, to: 'premium_subscriptions#show'  # GET /premium_subscriptions/current
+            delete :cancel
+          end
         end
         
         resources :profiles, only: [:update]
