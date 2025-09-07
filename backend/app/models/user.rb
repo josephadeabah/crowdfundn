@@ -130,11 +130,13 @@ class User < ApplicationRecord
   
   def upgrade_to_premium(plan, subscription_code = nil)
     transaction do
-      update!(
+      # Use update_columns to skip validations
+      update_columns(
         premium_access: true,
-        premium_plan: plan,
+        premium_plan_id: plan.id,
         premium_expires_at: calculate_premium_expiry(plan),
-        premium_subscription_id: subscription_code
+        premium_subscription_id: subscription_code,
+        updated_at: Time.current
       )
       
       # Create subscription record
@@ -154,11 +156,13 @@ class User < ApplicationRecord
   
   def downgrade_from_premium
     transaction do
-      update!(
+      # Use update_columns to skip validations
+      update_columns(
         premium_access: false,
-        premium_plan: nil,
+        premium_plan_id: nil,
         premium_expires_at: nil,
-        premium_subscription_id: nil
+        premium_subscription_id: nil,
+        updated_at: Time.current
       )
       
       # Cancel any active subscriptions
