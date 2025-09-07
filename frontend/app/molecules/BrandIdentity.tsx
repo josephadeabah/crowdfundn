@@ -19,13 +19,13 @@ const BrandIdentity = () => {
     },
     {
       label: 'Global Reach',
-      value: '195',
+      value: '3',
       icon: '🌍',
       description: 'Countries supported',
     },
     {
       label: 'Total Raised',
-      value: '$2.5B+',
+      value: 'GHS100K+',
       icon: '💰',
       description: 'All funding combined',
     },
