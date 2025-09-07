@@ -238,7 +238,7 @@ const ProfileTabs = () => {
                   className="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-colors duration-300 shadow-sm"
                 >
                   <FaCashRegister className="mr-2" />
-                  Upgrade plan
+                  Subscribe plan
                 </Link>
               )}
             </div>
