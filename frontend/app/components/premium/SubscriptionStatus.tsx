@@ -69,7 +69,7 @@ const SubscriptionStatus = () => {
               {subscription.expires_at && (
                 <>
                   {' '}
-                  • Renews on{' '}
+                  • Expires on{' '}
                   {new Date(subscription.expires_at).toLocaleDateString()}
                 </>
               )}
