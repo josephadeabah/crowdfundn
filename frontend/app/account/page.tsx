@@ -36,7 +36,11 @@ const ProfileTabs = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
 
   // Get premium subscription status
-  const { subscription, loading: premiumLoading } = usePremium();
+  const { subscription, loading: premiumLoading, fetchSubscription } = usePremium();
+
+  useEffect(() => {
+    fetchSubscription(); // Add this to fetch premium status
+  }, [fetchSubscription]);
 
   // Tab titles and icons
   const tabs = [

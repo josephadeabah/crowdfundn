@@ -1,5 +1,5 @@
 // app/account/dashboard/page.tsx
-'use client';
+'use client'
 import React, { useEffect } from 'react';
 import {
   Card,
@@ -19,12 +19,10 @@ import {
   Clock,
   BarChart2,
   TrendingUp,
-  PieChart as PieChartIcon,
   Heart,
   TrendingUp as TrendingUpIcon,
   Coins,
 } from 'lucide-react';
-
 import { CampaignsByCategoryChart } from '../components/charts/CampaignsByCategoryChart';
 import { FundingOverTimeChart } from '../components/charts/FundingOverTimeChart';
 import { CampaignPerformanceChart } from '../components/charts/CampaignPerformanceChart';
@@ -35,20 +33,17 @@ export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
     useCampaignContext();
   const { user } = useAuth();
-  const { subscription, fetchPlans, fetchSubscription } = usePremium();
-
-  useEffect(() => {
-    fetchPlans();
-    fetchSubscription();
-  }, [fetchPlans, fetchSubscription]);
+  const { subscription, loading: premiumLoading, fetchSubscription } = usePremium();
 
   const hasPremium = subscription?.has_premium;
 
   useEffect(() => {
     fetchCampaignStatistics();
-  }, [fetchCampaignStatistics]);
+    fetchSubscription(); // Fetch subscription data
+  }, [fetchCampaignStatistics, fetchSubscription]);
 
-  if (loading) {
+  // Show loading if either campaign stats or premium data is loading
+  if (loading || premiumLoading) {
     return <MainDashboardLoader />;
   }
 
