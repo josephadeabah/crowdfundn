@@ -59,8 +59,12 @@ module Api
             user = User.find(metadata[:user_id])
             plan = PremiumPlan.find(metadata[:premium_plan_id])
             
-            # Pass the Paystack transaction reference
-            user.upgrade_to_premium(plan, verification_response[:data][:reference])
+            # Pass the Paystack reference as transaction_reference
+            user.upgrade_to_premium(
+              plan, 
+              verification_response[:data][:reference], # Paystack transaction reference
+              verification_response[:data][:subscription_code] # Paystack subscription code (if any)
+            )
             
             render json: { 
               success: true, 

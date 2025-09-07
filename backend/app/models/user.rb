@@ -128,9 +128,8 @@ class User < ApplicationRecord
     premium_subscriptions.active.last
   end
   
-  def upgrade_to_premium(plan, paystack_reference = nil, subscription_code = nil)
+  def upgrade_to_premium(plan, transaction_reference, subscription_code = nil)
     transaction do
-      # Use update_columns to skip validations for premium upgrade
       update_columns(
         premium_access: true,
         premium_plan_id: plan.id,
@@ -139,10 +138,8 @@ class User < ApplicationRecord
         updated_at: Time.current
       )
       
-      # Use Paystack reference or generate a fallback
-      transaction_ref = paystack_reference || "premium_#{SecureRandom.alphanumeric(12)}"
-      
-      # Create subscription record
+      # For recurring subscriptions, subscription_code will be present
+      # For one-time payments, only transaction_reference will be present
       PremiumSubscription.create!(
         user: self,
         premium_plan: plan,
@@ -152,8 +149,8 @@ class User < ApplicationRecord
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_premium_expiry(plan),
-        auto_renew: premium_auto_renew,
-        transaction_reference: transaction_ref
+        auto_renew: subscription_code.present? && premium_auto_renew, # Only auto-renew if it's a subscription
+        transaction_reference: transaction_reference
       )
     end
   end
