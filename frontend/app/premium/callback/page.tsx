@@ -26,7 +26,7 @@ export default function PremiumCallback() {
                 Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({ reference: reference || trxref }),
-            }
+            },
           );
 
           if (response.ok) {

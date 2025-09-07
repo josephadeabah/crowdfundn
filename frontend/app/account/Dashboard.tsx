@@ -35,20 +35,20 @@ import {
   Coins,
   PiggyBank,
 } from 'lucide-react';
-import BlurredChartContainer from '@/app/components/premiumplaceholder/BlurredChartContainer ';
+
 import { CampaignsByCategoryChart } from '../components/charts/CampaignsByCategoryChart';
 import { FundingOverTimeChart } from '../components/charts/FundingOverTimeChart';
 import { CampaignPerformanceChart } from '../components/charts/CampaignPerformanceChart';
+import { usePremium } from '@/app/context/premium/PremiumContext';
+import BlurredChartContainer from '../components/premiumplaceholder/BlurredChartContainer ';
 
 export default function Dashboard() {
   const { statistics, loading, error, fetchCampaignStatistics } =
     useCampaignContext();
   const { user } = useAuth();
-  const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
+  const { subscription } = usePremium();
 
-  useEffect(() => {
-    setHasPremiumAccess(user?.subscription?.isActive || false);
-  }, [user]);
+  const hasPremium = subscription?.has_premium;
 
   useEffect(() => {
     fetchCampaignStatistics();
@@ -299,12 +299,22 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Funding over time chart */}
-      <FundingOverTimeChart
-        statistics={statistics}
-        user={user}
-        fetchCampaignStatistics={fetchCampaignStatistics}
-      />
+      {/* Funding over time chart - Premium Feature */}
+      {hasPremium ? (
+        <FundingOverTimeChart
+          statistics={statistics}
+          user={user}
+          fetchCampaignStatistics={fetchCampaignStatistics}
+        />
+      ) : (
+        <BlurredChartContainer>
+          <FundingOverTimeChart
+            statistics={statistics}
+            user={user}
+            fetchCampaignStatistics={fetchCampaignStatistics}
+          />
+        </BlurredChartContainer>
+      )}
 
       {/* Campaign Performance Chart */}
       <CampaignPerformanceChart
@@ -313,11 +323,20 @@ export default function Dashboard() {
         fetchCampaignStatistics={fetchCampaignStatistics}
       />
 
-      {/* Funding by Country Chart */}
-      <DonationByCountryCharts
-        statistics={statistics}
-        fetchCampaignStatistics={fetchCampaignStatistics}
-      />
+      {/* Funding by Country Chart - Premium Feature */}
+      {hasPremium ? (
+        <DonationByCountryCharts
+          statistics={statistics}
+          fetchCampaignStatistics={fetchCampaignStatistics}
+        />
+      ) : (
+        <BlurredChartContainer>
+          <DonationByCountryCharts
+            statistics={statistics}
+            fetchCampaignStatistics={fetchCampaignStatistics}
+          />
+        </BlurredChartContainer>
+      )}
 
       {/* Equity Campaigns Section (if available) */}
       {statistics?.equity_campaigns &&
