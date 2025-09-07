@@ -1,5 +1,5 @@
 // app/contexts/PremiumContext.tsx
-"use client";
+'use client';
 
 import React, {
   createContext,
@@ -36,7 +36,9 @@ interface PremiumState {
   error: string | null;
   fetchPlans: () => Promise<void>;
   fetchSubscription: () => Promise<void>;
-  createSubscription: (planId: number) => Promise<{ authorization_url: string; reference: string }>;
+  createSubscription: (
+    planId: number,
+  ) => Promise<{ authorization_url: string; reference: string }>;
   cancelSubscription: () => Promise<void>;
 }
 
@@ -44,7 +46,9 @@ const PremiumContext = createContext<PremiumState | undefined>(undefined);
 
 export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   const [plans, setPlans] = useState<PremiumPlan[]>([]);
-  const [subscription, setSubscription] = useState<PremiumSubscription | null>(null);
+  const [subscription, setSubscription] = useState<PremiumSubscription | null>(
+    null,
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,9 +57,12 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_plans`, {
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_plans`,
+        {
+          credentials: 'include',
+        },
+      );
 
       if (!response.ok) {
         throw new Error('Failed to fetch premium plans');
@@ -75,9 +82,12 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions`, {
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions`,
+        {
+          credentials: 'include',
+        },
+      );
 
       if (!response.ok) {
         // If not subscribed, that's okay - just return empty data
@@ -87,7 +97,7 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
             expires_at: null,
             current_plan: null,
             active_subscription: null,
-            id: 0
+            id: 0,
           });
           return;
         }
@@ -97,7 +107,9 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
       const data = await response.json();
       setSubscription(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch subscription');
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch subscription',
+      );
     } finally {
       setLoading(false);
     }
@@ -108,14 +120,17 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ plan_id: planId }),
         },
-        credentials: 'include',
-        body: JSON.stringify({ plan_id: planId }),
-      });
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -125,7 +140,9 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
       const data = await response.json();
       return data;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create subscription');
+      setError(
+        err instanceof Error ? err.message : 'Failed to create subscription',
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -137,10 +154,13 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions/cancel`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions/cancel`,
+        {
+          method: 'DELETE',
+          credentials: 'include',
+        },
+      );
 
       if (!response.ok) {
         throw new Error('Failed to cancel subscription');
@@ -149,7 +169,9 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
       // Refresh subscription data
       await fetchSubscription();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to cancel subscription');
+      setError(
+        err instanceof Error ? err.message : 'Failed to cancel subscription',
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -173,7 +195,16 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
       createSubscription,
       cancelSubscription,
     }),
-    [plans, subscription, loading, error, fetchPlans, fetchSubscription, createSubscription, cancelSubscription]
+    [
+      plans,
+      subscription,
+      loading,
+      error,
+      fetchPlans,
+      fetchSubscription,
+      createSubscription,
+      cancelSubscription,
+    ],
   );
 
   return (
@@ -190,3 +221,34 @@ export const usePremium = () => {
   }
   return context;
 };
+
+
+
+//   const createSubscription = useCallback(async (planId: number) => {
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/members/premium_subscriptions`, {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         credentials: 'include',
+//         body: JSON.stringify({ plan_id: planId }),
+//       });
+
+//       if (!response.ok) {
+//         const errorData = await response.json();
+//         throw new Error(errorData.error || 'Failed to create subscription');
+//       }
+
+//       const data = await response.json();
+//       return data;
+//     } catch (err) {
+//       setError(err instanceof Error ? err.message : 'Failed to create subscription');
+//       throw err;
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
