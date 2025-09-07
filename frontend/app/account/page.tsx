@@ -206,7 +206,7 @@ const ProfileTabs = () => {
             <div className="sticky bottom-0 bg-white dark:bg-gray-800 pt-2 pb-4 px-3 border-t border-dashed border-orange-200 dark:border-neutral-700">
               {hasPremium ? (
                 // Show premium status if user has premium
-                <div className="w-full py-2 px-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg text-center shadow-sm">
+                <div className="w-full py-2 px-4 border border-gradient-to-r from-purple-500 to-purple-600 text-white rounded-sm text-center shadow-sm">
                   <div className="flex text-sm items-center justify-center mb-1">
                     <FaCrown className="mr-2" />
                     Premium Member
