@@ -2,8 +2,8 @@
 puts "Creating premium plans..."
 
 # Safely handle existing subscriptions by setting premium_plan_id to NULL
-PremiumSubscription.where.not(premium_plan_id: nil).in_batches do |batch|
-  batch.update_all(premium_plan_id: nil)
+PremiumSubscription.where.not(premium_plan_id: nil).find_each do |subscription|
+  subscription.update_columns(premium_plan_id: nil)
 end
 
 # Now delete the plans
