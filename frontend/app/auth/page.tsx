@@ -826,7 +826,7 @@ const Index = () => {
               <div className="text-white/80">Active Investors</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white">GHS 10K+</div>
+              <div className="text-3xl font-bold text-white">GHS 100K+</div>
               <div className="text-white/80">Funds Raised</div>
             </div>
             <div className="text-center">
