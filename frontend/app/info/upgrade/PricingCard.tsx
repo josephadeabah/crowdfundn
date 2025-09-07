@@ -49,9 +49,9 @@ const PricingCard = ({
       className={cn(
         'relative p-6 rounded-lg border-2 transition-all duration-200 h-full flex flex-col',
         popular ? 'border-bantu-orange shadow-lg' : 'border-gray-200',
-        gradient
-          ? 'bg-gradient-to-br from-bantu-purple to-bantu-blue text-white'
-          : 'bg-white',
+        gradient 
+          ? 'bg-gradient-to-br from-bantu-purple to-bantu-blue text-white' 
+          : 'bg-white text-gray-900' // Ensure text color for non-gradient
       )}
     >
       {popular && (
@@ -67,13 +67,13 @@ const PricingCard = ({
           {plan.name}
         </h3>
         <div className="mt-2">
-          <span className={cn('text-4xl font-bold', gradient && 'text-white')}>
+          <span className={cn('text-4xl font-bold', gradient ? 'text-white' : 'text-gray-900')}>
             {plan.currency} {plan.price}
           </span>
           <span
             className={cn(
               'ml-1 text-lg',
-              gradient ? 'text-white/80' : 'text-gray-600',
+              gradient ? 'text-white/80' : 'text-gray-600'
             )}
           >
             /{plan.interval}
@@ -84,7 +84,7 @@ const PricingCard = ({
       <p
         className={cn(
           'mt-2 mb-4 text-sm text-center flex-grow-0',
-          gradient ? 'text-white/80' : 'text-gray-600',
+          gradient ? 'text-white/80' : 'text-gray-600'
         )}
       >
         {plan.description}
@@ -96,8 +96,7 @@ const PricingCard = ({
           gradient
             ? 'bg-white text-bantu-purple hover:bg-gray-100'
             : 'bg-bantu-green text-white hover:bg-bantu-dark-green',
-          (isCurrentPlan || subscription?.has_premium) &&
-            'bg-gray-400 cursor-not-allowed',
+          (isCurrentPlan || subscription?.has_premium) && 'bg-gray-400 cursor-not-allowed'
         )}
         onClick={handleSubscribe}
         disabled={isCurrentPlan || isProcessing || subscription?.has_premium}
@@ -105,10 +104,10 @@ const PricingCard = ({
         {isProcessing
           ? 'Processing...'
           : isCurrentPlan
-            ? 'Current Plan'
-            : subscription?.has_premium
-              ? 'Already Premium'
-              : 'Get Started'}
+          ? 'Current Plan'
+          : subscription?.has_premium
+          ? 'Already Premium'
+          : 'Get Started'}
       </Button>
 
       <ul className="mt-8 space-y-3 flex-grow">
@@ -117,10 +116,10 @@ const PricingCard = ({
             <Check
               className={cn(
                 'h-5 w-5 flex-shrink-0 mt-0.5',
-                gradient ? 'text-white' : 'text-bantu-green',
+                gradient ? 'text-white' : 'text-bantu-green'
               )}
             />
-            <span className={cn('ml-2 text-sm', gradient && 'text-white')}>
+            <span className={cn('ml-2 text-sm', gradient ? 'text-white' : 'text-gray-700')}>
               {feature}
             </span>
           </li>
