@@ -1,6 +1,6 @@
 'use client';
-import React, { useState } from 'react';
-import { FaCreditCard, FaUser, FaBell, FaIdCard, FaBars, FaCashRegister } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaCreditCard, FaUser, FaBell, FaIdCard, FaBars, FaCashRegister, FaCrown } from 'react-icons/fa';
 import { MdAccountCircle } from 'react-icons/md';
 import PaymentMethod from './paymentmethod/PaymentMethod';
 import UserSettings from './usersettings/UserSettings';
@@ -11,13 +11,55 @@ import UserSubscriptions from './subscriptions/UserSubscription';
 const AccountSettings = () => {
   const [activeTab, setActiveTab] = useState('kyc');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const subscriptionRef = useRef<HTMLDivElement>(null);
+
+  // Check if we should highlight the subscription section from URL parameters
+  useEffect(() => {
+    const checkSubscriptionParam = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const subscribeParam = urlParams.get('subscribe');
+      
+      if (subscribeParam === 'true') {
+        setActiveTab('subscription');
+        
+        // Scroll to subscription section after a short delay to allow rendering
+        setTimeout(() => {
+          if (subscriptionRef.current) {
+            subscriptionRef.current.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+            
+            // Add highlight effect
+            subscriptionRef.current.classList.add('ring-2', 'ring-green-500', 'rounded-lg');
+            setTimeout(() => {
+              if (subscriptionRef.current) {
+                subscriptionRef.current.classList.remove('ring-2', 'ring-green-500', 'rounded-lg');
+              }
+            }, 3000);
+          }
+        }, 300);
+        
+        // Clean up the URL parameter
+        const url = new URL(window.location.href);
+        url.searchParams.delete('subscribe');
+        window.history.replaceState(null, '', url.toString());
+      }
+    };
+
+    checkSubscriptionParam();
+  }, []);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'payment':
         return <PaymentMethod />;
       case 'subscription':
-        return <UserSubscriptions />;
+        return (
+          <div ref={subscriptionRef} className="transition-all duration-500 ease-in-out">
+            <UserSubscriptions />
+          </div>
+        );
       case 'account':
         return <UserSettings />;
       case 'kyc':

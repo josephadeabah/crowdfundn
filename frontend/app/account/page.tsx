@@ -25,7 +25,6 @@ import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 import Favorites from '@/app/account/Favorites';
 import PledgesListPage from '@/app/account/Pledges';
 import EquityInvestments from './EquityInvestments';
-import Link from 'next/link';
 import { FaCashRegister, FaCrown } from 'react-icons/fa';
 import { usePremium } from '@/app/context/premium/PremiumContext';
 
@@ -129,7 +128,15 @@ const ProfileTabs = () => {
     const onboardingCompleted = localStorage.getItem('onboardingCompleted');
     const hashTab = window.location.hash.replace('#', '');
 
-    if (hashTab && tabs.find((tab) => tab.label === hashTab)) {
+    // Check if URL has subscription parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const subscribeParam = urlParams.get('subscribe');
+
+    if (subscribeParam === 'true') {
+      // Redirect to Settings tab with subscription parameter
+      window.history.replaceState(null, '', '/account#Settings?subscribe=true');
+      setActiveTab('Settings');
+    } else if (hashTab && tabs.find((tab) => tab.label === hashTab)) {
       setActiveTab(hashTab);
     } else if (savedTab) {
       setActiveTab(savedTab);
@@ -146,7 +153,10 @@ const ProfileTabs = () => {
 
   useEffect(() => {
     if (activeTab) {
-      window.history.replaceState(null, '', `#${activeTab}`);
+      // Update URL hash without page reload
+      const url = new URL(window.location.href);
+      url.hash = activeTab;
+      window.history.replaceState(null, '', url.toString());
       localStorage.setItem('activeTab', activeTab);
     }
   }, [activeTab]);
@@ -157,6 +167,18 @@ const ProfileTabs = () => {
     setTimeout(() => {
       setLoading(false);
     }, 500);
+  };
+
+  const handleSubscribeClick = () => {
+    // Navigate to Settings tab with subscription parameter
+    const url = new URL(window.location.href);
+    url.hash = 'Settings';
+    url.searchParams.set('subscribe', 'true');
+    window.history.replaceState(null, '', url.toString());
+    
+    setActiveTab('Settings');
+    setLoading(true);
+    setTimeout(() => setLoading(false), 500);
   };
 
   const completeOnboarding = () => {
@@ -233,13 +255,13 @@ const ProfileTabs = () => {
                 </div>
               ) : (
                 // Show upgrade button if user doesn't have premium
-                <a
-                  href="/account#Settings"
+                <button
+                  onClick={handleSubscribeClick}
                   className="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-colors duration-300 shadow-sm"
                 >
                   <FaCashRegister className="mr-2" />
                   Subscribe plan
-                </a>
+                </button>
               )}
             </div>
           </div>
