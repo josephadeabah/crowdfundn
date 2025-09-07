@@ -131,23 +131,26 @@ class PaystackService
   end
 
   # 3. Initialize Transaction with Split Code
-  def initialize_transaction(email:, amount:, subaccount:, callback_url:, metadata:, plan: nil, currency:)
+  def initialize_transaction(email:, amount:, callback_url:, metadata:, currency:, subaccount: nil, plan: nil)
     return { status: 'error', message: 'Email address is required' } if email.blank?
 
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
     amount_in_smallest_unit = convert_to_smallest_unit(amount: amount, currency: currency)
+    
     body = {
       email: email,
       amount: amount_in_smallest_unit,
       plan: plan,
       reference: SecureRandom.uuid,
       metadata: metadata,
-      subaccount: subaccount,
       callback_url: callback_url,
       currency: currency
-    }.compact.to_json
-
-    response = make_post_request(uri, body)
+    }
+    
+    # Only add subaccount if provided
+    body[:subaccount] = subaccount if subaccount.present?
+    
+    response = make_post_request(uri, body.to_json)
     parse_response(response)
   end
 
