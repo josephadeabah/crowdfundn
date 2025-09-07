@@ -724,7 +724,9 @@ const Index = () => {
                   size="lg"
                   className="bg-bantu-green hover:bg-bantu-green-dark text-white px-8 py-4 text-lg shadow-medium"
                 >
-                  <Link href="/info/platform-features">Explore Platform Features</Link>
+                  <Link href="/info/platform-features">
+                    Explore Platform Features
+                  </Link>
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>

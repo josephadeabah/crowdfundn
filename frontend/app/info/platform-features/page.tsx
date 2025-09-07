@@ -1,3 +1,24 @@
+import {
+  Shield,
+  FileText,
+  Users,
+  MessageSquare,
+  Award,
+  BarChart3,
+  TrendingUp,
+  Search,
+  FileCheck,
+  Bell,
+  Share2,
+  Mail,
+  Calendar,
+  Zap,
+  Target,
+  Globe,
+  Lock,
+  BadgeCheck,
+} from 'lucide-react';
+
 const Features = () => {
   return (
     <div className="min-h-screen bg-background">
@@ -95,55 +116,137 @@ const Features = () => {
                     <li>• Investment performance metrics</li>
                     <li>• Dividend and return tracking</li>
                     <li>• Project milestone notifications</li>
+                    <li>• Automated certificate generation</li>
                   </ul>
                 </div>
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-growth">
-                    Due Diligence Tools
+                  {/* <h3 className="font-semibold mb-3 text-growth">
+                    Advanced Due Diligence Tools
                   </h3>
                   <p className="text-sm mb-3">
-                    Advanced tools for evaluating investment opportunities and
-                    risks.
+                    Robust investment analysis and risk assessment platform.
                   </p>
                   <ul className="text-xs space-y-1">
-                    <li>• Financial statement analysis</li>
-                    <li>• Market research integration</li>
-                    <li>• Risk assessment matrices</li>
-                  </ul>
+                    <li>
+                      • Financial statement analysis with AI-powered insights
+                    </li>
+                    <li>• Real-time market research integration</li>
+                    <li>• Multi-dimensional risk assessment matrices</li>
+                    <li>• Competitive analysis and benchmarking</li>
+                    <li>• Investment viability scoring system</li>
+                    <li>• Predictive analytics for returns forecasting</li>
+                  </ul> */}
                 </div>
               </div>
             </div>
 
             <div>
               <h2 className="text-2xl font-semibold mb-6 text-green-600">
-                Compliance & Reporting
+                KYC & Compliance
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-trust">
-                    KYC/AML Automation
-                  </h3>
-                  <p className="text-sm">
-                    Automated identity verification and anti-money laundering
-                    compliance checks.
+                  <div className="flex items-center gap-2 mb-3">
+                    <Shield className="w-5 h-5 text-trust" />
+                    <h3 className="font-semibold text-trust">
+                      Tiered KYC System
+                    </h3>
+                  </div>
+                  <p className="text-sm mb-3">
+                    Multi-level verification system with progressive
+                    requirements.
                   </p>
+                  <ul className="text-xs space-y-1">
+                    <li>• Level 1: Basic identity verification</li>
+                    <li>• Level 2: Enhanced due diligence</li>
+                    <li>• Level 3: Full accreditation verification</li>
+                    <li>• Level 4: Institutional investor screening</li>
+                  </ul>
                 </div>
+
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-growth">
-                    Regulatory Reporting
-                  </h3>
-                  <p className="text-sm">
-                    Automated generation of SEC Ghana and tax compliance
-                    reports.
+                  <div className="flex items-center gap-2 mb-3">
+                    <FileCheck className="w-5 h-5 text-growth" />
+                    <h3 className="font-semibold text-growth">
+                      Automated Certificate Generation
+                    </h3>
+                  </div>
+                  <p className="text-sm mb-3">
+                    Instant digital certificates for investments and compliance.
                   </p>
+                  <ul className="text-xs space-y-1">
+                    <li>• Investment confirmation certificates</li>
+                    <li>• Equity ownership certificates</li>
+                    <li>• Mentorship completion certificates</li>
+                  </ul>
                 </div>
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-green-600">
-                    Audit Trail
-                  </h3>
+
+                {/* <div className="bg-card p-6 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <BadgeCheck className="w-5 h-5 text-green-600" />
+                    <h3 className="font-semibold text-green-600">
+                      Regulatory Compliance
+                    </h3>
+                  </div>
                   <p className="text-sm">
-                    Complete transaction history and compliance documentation
-                    for regulatory review.
+                    Automated generation of SEC Ghana and tax compliance reports
+                    with complete audit trails.
+                  </p>
+                </div> */}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold mb-6 text-green-600">
+                Community & Engagement
+              </h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="bg-card p-6 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Users className="w-5 h-5 text-trust" />
+                    <h3 className="font-semibold text-trust">
+                      Investor Community Hub
+                    </h3>
+                  </div>
+                  <p className="text-sm mb-3">
+                    Connect with other investors and founders.
+                  </p>
+                  <ul className="text-xs space-y-1">
+                    <li>• Discussion forums and groups</li>
+                    <li>• Live Q&A sessions with founders</li>
+                    <li>• Investor networking events</li>
+                    <li>• Expert webinars and workshops</li>
+                  </ul>
+                </div>
+
+                <div className="bg-card p-6 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <MessageSquare className="w-5 h-5 text-growth" />
+                    <h3 className="font-semibold text-growth">
+                      Real-time Updates
+                    </h3>
+                  </div>
+                  <p className="text-sm mb-3">
+                    Stay informed with comprehensive update system.
+                  </p>
+                  <ul className="text-xs space-y-1">
+                    <li>• Project milestone notifications</li>
+                    <li>• Financial performance updates</li>
+                    <li>• Market intelligence alerts</li>
+                    <li>• Regulatory change notifications</li>
+                  </ul>
+                </div>
+
+                <div className="bg-card p-6 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Award className="w-5 h-5 text-green-600" />
+                    <h3 className="font-semibold text-green-600">
+                      Recognition System
+                    </h3>
+                  </div>
+                  <p className="text-sm">
+                    Gamified engagement with badges and rewards for active
+                    participation and successful investments.
                   </p>
                 </div>
               </div>
@@ -151,25 +254,88 @@ const Features = () => {
 
             <div>
               <h2 className="text-2xl font-semibold mb-6 text-green-600">
-                Marketing & Engagement
+                Marketing & Analytics
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-trust">
-                    Social Media Integration
-                  </h3>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Share2 className="w-5 h-5 text-trust" />
+                    <h3 className="font-semibold text-trust">
+                      Social Media Integration
+                    </h3>
+                  </div>
                   <p className="text-sm">
                     One-click sharing to Facebook, Twitter, WhatsApp, and other
-                    platforms.
+                    platforms with automated campaign promotion.
                   </p>
                 </div>
+
                 <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="font-semibold mb-3 text-growth">
-                    Email Marketing Suite
-                  </h3>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Mail className="w-5 h-5 text-growth" />
+                    <h3 className="font-semibold text-growth">
+                      Marketing Automation
+                    </h3>
+                  </div>
                   <p className="text-sm">
-                    Built-in email campaigns, newsletters, and investor update
-                    automation.
+                    Built-in email campaigns, newsletters, investor update
+                    automation, and targeted communication tools.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold mb-6 text-green-600">
+                Advanced Features
+              </h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-card p-6 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Zap className="w-5 h-5 text-trust" />
+                    <h3 className="font-semibold text-trust text-sm">
+                      Smart Notifications
+                    </h3>
+                  </div>
+                  <p className="text-xs">
+                    AI-powered alerts for investment opportunities and risks.
+                  </p>
+                </div>
+
+                <div className="bg-card p-6 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Target className="w-5 h-5 text-growth" />
+                    <h3 className="font-semibold text-growth text-sm">
+                      Goal Tracking
+                    </h3>
+                  </div>
+                  <p className="text-xs">
+                    Set and monitor investment goals with progress tracking.
+                  </p>
+                </div>
+
+                <div className="bg-card p-6 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Globe className="w-5 h-5 text-green-600" />
+                    <h3 className="font-semibold text-green-600 text-sm">
+                      Multi-currency
+                    </h3>
+                  </div>
+                  <p className="text-xs">
+                    Support for GHS, USD, EUR, GBP with auto-conversion.
+                  </p>
+                </div>
+
+                <div className="bg-card p-6 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Lock className="w-5 h-5 text-warning" />
+                    <h3 className="font-semibold text-warning text-sm">
+                      Document Vault
+                    </h3>
+                  </div>
+                  <p className="text-xs">
+                    Secure storage for all investment documents and
+                    certificates.
                   </p>
                 </div>
               </div>
