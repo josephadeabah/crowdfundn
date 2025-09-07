@@ -120,22 +120,28 @@ const Features = () => {
                   </ul>
                 </div>
                 <div className="bg-card p-6 rounded-lg border">
-                  {/* <h3 className="font-semibold mb-3 text-growth">
-                    Advanced Due Diligence Tools
+                  <h3 className="font-semibold mb-3 text-growth">
+                    Technical & Marketing
                   </h3>
-                  <p className="text-sm mb-3">
-                    Robust investment analysis and risk assessment platform.
-                  </p>
+                  <p className="text-sm mb-3">Support Plans</p>
                   <ul className="text-xs space-y-1">
                     <li>
-                      • Financial statement analysis with AI-powered insights
+                      • Choose the perfect support plan for your crowdfunding
+                      campaign
                     </li>
-                    <li>• Real-time market research integration</li>
-                    <li>• Multi-dimensional risk assessment matrices</li>
-                    <li>• Competitive analysis and benchmarking</li>
-                    <li>• Investment viability scoring system</li>
-                    <li>• Predictive analytics for returns forecasting</li>
-                  </ul> */}
+                    <li>
+                      • Get expert guidance tailored to your fundraising goals
+                    </li>
+                    <li>
+                      • Dedicated technical assistance to keep your campaign
+                      running smoothly
+                    </li>
+                    <li>
+                      • Marketing strategies designed to boost visibility and
+                      attract backers
+                    </li>
+                    <li>• Ongoing optimization for maximum campaign success</li>
+                  </ul>
                 </div>
               </div>
             </div>
