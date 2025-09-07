@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { FaCreditCard, FaUser, FaBell, FaIdCard, FaBars } from 'react-icons/fa';
+import { FaCreditCard, FaUser, FaBell, FaIdCard, FaBars, FaCashRegister } from 'react-icons/fa';
 import { MdAccountCircle } from 'react-icons/md';
 import PaymentMethod from './paymentmethod/PaymentMethod';
 import UserSettings from './usersettings/UserSettings';
@@ -38,7 +38,7 @@ const AccountSettings = () => {
     {
       id: 'subscription',
       label: 'Subscription',
-      icon: <FaCreditCard className="mr-2" />,
+      icon: <FaCashRegister className="mr-2" />,
     },
     {
       id: 'account',
