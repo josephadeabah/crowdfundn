@@ -58,9 +58,11 @@ module Api
             if plan_response[:status]
               plan_code = plan_response[:data][:plan_code]
               # Use initialize_subscription method for recurring
-              response = paystack_service.initialize_subscription(
+              response = paystack_service.initialize_transaction(
                 email: @current_user.email,
-                plan_code: plan_code,
+                amount: plan.price,
+                currency: plan.currency,
+                plan: plan_code,
                 callback_url: callback_url,
                 metadata: metadata.merge(plan_code: plan_code)
               )
