@@ -52,9 +52,11 @@ module Api
               plan_code = plan_response[:data][:plan_code]
               response = paystack_service.initialize_transaction(
                 email: @current_user.email,
-                plan_code: plan_code,
+                amount: plan.price,
                 callback_url: callback_url,
-                metadata: metadata.merge(plan_code: plan_code)
+                currency: plan.currency,
+                metadata: metadata.merge(plan_code: plan_code),
+                plan_code: plan_code,
               )
             else
               render json: { error: 'Failed to create subscription plan' }, status: :unprocessable_entity
