@@ -29,7 +29,7 @@ export default function PremiumCallback() {
           );
 
           const result = await response.json();
-          
+
           if (result.success) {
             if (result.processed) {
               // Webhook already processed - immediate access

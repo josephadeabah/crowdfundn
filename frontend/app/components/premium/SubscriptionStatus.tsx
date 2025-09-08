@@ -69,9 +69,10 @@ const SubscriptionStatus = () => {
     return null;
   }
 
-  const isRecurring = subscription.active_subscription?.is_recurring === true || 
-                   (subscription.current_plan?.is_recurring && 
-                    subscription.active_subscription?.paystack_subscription_code !== null);
+  const isRecurring =
+    subscription.active_subscription?.is_recurring === true ||
+    (subscription.current_plan?.is_recurring &&
+      subscription.active_subscription?.paystack_subscription_code !== null);
   const isCancelled = subscription.active_subscription?.status === 'cancelled';
 
   const handleCancelConfirm = async () => {
