@@ -1,5 +1,4 @@
 # app/controllers/api/v1/members/premium_subscriptions_controller.rb
-# This file is already correct - no changes needed
 module Api
   module V1
     module Members
