@@ -34,8 +34,8 @@ const ProfileTabs = () => {
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
 
-  // Get premium subscription status with separate loading states
-  const { subscription, subscriptionLoading, fetchSubscription } = usePremium();
+  // Get premium subscription status
+  const { subscription, fetchSubscription } = usePremium();
   const [isPremiumDataLoaded, setIsPremiumDataLoaded] = useState(false);
 
   useEffect(() => {
@@ -175,7 +175,7 @@ const ProfileTabs = () => {
     url.hash = 'Settings';
     url.searchParams.set('subscribe', 'true');
     window.history.replaceState(null, '', url.toString());
-
+    
     setActiveTab('Settings');
     setLoading(true);
     setTimeout(() => setLoading(false), 500);
@@ -188,8 +188,8 @@ const ProfileTabs = () => {
 
   const hasPremium = subscription?.has_premium;
 
-  // Show loader for initial tab loading or if premium data is still loading
-  if (loading || subscriptionLoading) {
+  // Only show loader for initial tab loading, not premium data loading
+  if (loading) {
     return <ProfileTabsLoader />;
   }
 
@@ -208,7 +208,7 @@ const ProfileTabs = () => {
                 const isOnboarding = showOnboarding && currentStep === index;
 
                 return (
-                  <button
+                 <button
                     key={label}
                     className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap min-w-fit lg:min-w-full lg:w-full relative group ${
                       isActive

@@ -32,7 +32,7 @@ import BlurredChartContainer from '../components/premiumplaceholder/BlurredChart
 export default function Dashboard() {
   const { statistics, error, fetchCampaignStatistics } = useCampaignContext();
   const { user } = useAuth();
-  const { subscription, subscriptionLoading, fetchSubscription } = usePremium();
+  const { subscription, fetchSubscription } = usePremium();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -53,8 +53,7 @@ export default function Dashboard() {
     loadData();
   }, [fetchCampaignStatistics, fetchSubscription]);
 
-  // Show loading state if either main data or subscription is loading
-  if (isLoading || subscriptionLoading) {
+  if (isLoading) {
     return <MainDashboardLoader />;
   }
 
