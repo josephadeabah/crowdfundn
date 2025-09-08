@@ -175,7 +175,7 @@ const ProfileTabs = () => {
     url.hash = 'Settings';
     url.searchParams.set('subscribe', 'true');
     window.history.replaceState(null, '', url.toString());
-    
+
     setActiveTab('Settings');
     setLoading(true);
     setTimeout(() => setLoading(false), 500);
@@ -208,7 +208,7 @@ const ProfileTabs = () => {
                 const isOnboarding = showOnboarding && currentStep === index;
 
                 return (
-                 <button
+                  <button
                     key={label}
                     className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap min-w-fit lg:min-w-full lg:w-full relative group ${
                       isActive

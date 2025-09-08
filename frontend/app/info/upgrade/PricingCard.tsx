@@ -27,10 +27,12 @@ const PricingCard = ({
 
   const isRecurringPlan = plan.interval !== 'one_time';
 
-  const handleSubscribe = async (recurring: string) => {
+  const handleSubscribe = async (paymentType: 'one-time' | 'recurring') => {
     setIsProcessing(true);
     try {
-      const result = await createSubscription(plan.id, recurring);
+      // Convert paymentType to boolean for backend
+      const isRecurring = paymentType === 'recurring';
+      const result = await createSubscription(plan.id, isRecurring);
       window.location.href = result.authorization_url;
     } catch (error) {
       console.error('Failed to create subscription:', error);

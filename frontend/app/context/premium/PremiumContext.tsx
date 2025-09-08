@@ -53,7 +53,7 @@ interface PremiumState {
   fetchSubscription: () => Promise<void>;
   createSubscription: (
     planId: number,
-    isRecurring: string,
+    isRecurring: boolean,
   ) => Promise<CreateSubscriptionResponse>;
   cancelSubscription: () => Promise<void>;
 }
@@ -151,7 +151,7 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   const createSubscription = useCallback(
     async (
       planId: number,
-      isRecurring: string = 'false',
+      isRecurring: boolean = false,
     ): Promise<CreateSubscriptionResponse> => {
       if (!token) throw new Error('Authentication token is missing');
 
@@ -168,7 +168,7 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
             },
             body: JSON.stringify({
               plan_id: planId,
-              recurring: isRecurring,
+              recurring: isRecurring, // Send as boolean
             }),
           },
         );
