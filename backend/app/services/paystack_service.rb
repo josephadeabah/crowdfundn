@@ -203,7 +203,7 @@ class PaystackService
     parse_response(response)
   end
 
-  def cancel_subscription(code:, email_token: nil)
+  def cancel_subscription(code:, token: nil)
     uri = URI("#{PAYSTACK_BASE_URL}/subscription/disable")
     body = {
       code: code,
