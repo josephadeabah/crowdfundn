@@ -27,7 +27,7 @@ const PricingCard = ({
 
   const isRecurringPlan = plan.interval !== 'one_time';
 
-  const handleSubscribe = async (recurring: boolean) => {
+  const handleSubscribe = async (recurring: string) => {
     setIsProcessing(true);
     try {
       const result = await createSubscription(plan.id, recurring);
@@ -135,7 +135,7 @@ const PricingCard = ({
           (isCurrentPlan || subscription?.has_premium) &&
             'bg-gray-400 cursor-not-allowed',
         )}
-        onClick={() => handleSubscribe(paymentType === 'recurring')}
+        onClick={() => handleSubscribe(paymentType)}
         disabled={isCurrentPlan || isProcessing || subscription?.has_premium}
       >
         {isProcessing

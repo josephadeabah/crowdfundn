@@ -8,13 +8,8 @@ import { FaExclamationTriangle } from 'react-icons/fa';
 import AlertPopup from '../alertpopup/AlertPopup';
 
 const SubscriptionStatus = () => {
-  const {
-    subscription,
-    subscriptionLoading,
-    actionLoading,
-    cancelSubscription,
-    fetchSubscription,
-  } = usePremium();
+  const { subscription, subscriptionLoading, actionLoading, cancelSubscription, fetchSubscription } =
+    usePremium();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelResult, setCancelResult] = useState<{
