@@ -5,23 +5,34 @@ module Api
       class PremiumSubscriptionsController < ApplicationController
         before_action :authenticate_request
         
-        def show
-          active_subscription = @current_user.active_premium_subscription
-          
-          render json: {
-            has_premium: @current_user.premium_access?,
-            expires_at: @current_user.premium_expires_at,
-            current_plan: @current_user.premium_plan,
-            active_subscription: active_subscription ? {
-              id: active_subscription.id,
-              status: active_subscription.status,
-              auto_renew: active_subscription.auto_renew,
-              paystack_subscription_code: active_subscription.paystack_subscription_code,
-              expires_at: active_subscription.expires_at,
-              start_date: active_subscription.start_date
-            } : nil
-          }, status: :ok
-        end
+      def show
+        active_subscription = @current_user.active_premium_subscription
+        current_plan = @current_user.premium_plan
+        
+        render json: {
+          has_premium: @current_user.premium_access?,
+          expires_at: @current_user.premium_expires_at,
+          current_plan: current_plan ? {
+            id: current_plan.id,
+            name: current_plan.name,
+            price: current_plan.price,
+            currency: current_plan.currency,
+            interval: current_plan.interval,
+            description: current_plan.description,
+            features: current_plan.features,
+            is_recurring: current_plan.recurring? # Add this field
+          } : nil,
+          active_subscription: active_subscription ? {
+            id: active_subscription.id,
+            status: active_subscription.status,
+            auto_renew: active_subscription.auto_renew,
+            paystack_subscription_code: active_subscription.paystack_subscription_code,
+            expires_at: active_subscription.expires_at,
+            start_date: active_subscription.start_date,
+            is_recurring: active_subscription.paystack_subscription_code.present? # Add this
+          } : nil
+        }, status: :ok
+      end
         
       def create
         plan = PremiumPlan.find(params[:plan_id])
@@ -135,10 +146,18 @@ module Api
           subscription = @current_user.active_premium_subscription
           
           if subscription
-            subscription.cancel!
-            @current_user.downgrade_from_premium
-            
-            render json: { message: 'Subscription cancelled successfully' }, status: :ok
+            begin
+              subscription.cancel!
+              @current_user.downgrade_from_premium
+              
+              render json: { message: 'Subscription cancelled successfully' }, status: :ok
+            rescue => e
+              Rails.logger.error "Failed to cancel subscription: #{e.message}"
+              render json: { 
+                error: 'Failed to cancel subscription on Paystack', 
+                details: e.message 
+              }, status: :unprocessable_entity
+            end
           else
             render json: { error: 'No active subscription found' }, status: :not_found
           end

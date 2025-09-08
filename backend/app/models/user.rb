@@ -128,7 +128,6 @@ class User < ApplicationRecord
     premium_subscriptions.active.last
   end
   
-  # app/models/user.rb
   def upgrade_to_premium(plan, transaction_reference, subscription_code = nil)
     transaction do 
       update_columns(
@@ -148,25 +147,16 @@ class User < ApplicationRecord
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_premium_expiry(plan),
-        auto_renew: subscription_code.present?,
+        auto_renew: subscription_code.present?, # This should be true for recurring subscriptions
         transaction_reference: transaction_reference
       )
     end
   end
 
-  # app/models/user.rb
   def downgrade_from_premium
     transaction do
-      # Cancel subscription in Paystack first
-      if active_premium_subscription&.paystack_subscription_code.present?
-        paystack_service = PaystackService.new
-        paystack_service.cancel_subscription(
-          code: active_premium_subscription.paystack_subscription_code,
-          email_token: email
-        )
-      end
-      
-      # Then update local records
+      # Don't cancel on Paystack here - let the subscription.cancel! method handle it
+      # Just update local records
       update_columns(
         premium_access: false,
         premium_plan_id: nil,
@@ -176,7 +166,8 @@ class User < ApplicationRecord
       )
       
       # Cancel any active subscriptions locally
-      active_premium_subscription&.update!(status: 'cancelled')
+      # This will now call the updated cancel! method that handles Paystack
+      active_premium_subscription&.cancel!
     end
   end
 
