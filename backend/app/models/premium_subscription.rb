@@ -24,7 +24,7 @@ class PremiumSubscription < ApplicationRecord
       paystack_service = PaystackService.new
       response = paystack_service.cancel_subscription(
         code: paystack_subscription_code,
-        email_token: user.email
+        token: user.email
       )
       
       # Check if Paystack cancellation was successful
