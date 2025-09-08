@@ -128,7 +128,7 @@ class User < ApplicationRecord
     premium_subscriptions.active.last
   end
   
-  def upgrade_to_premium(plan, transaction_reference, subscription_code = nil)
+  def upgrade_to_premium(plan, transaction_reference, subscription_code = nil, is_recurring = false)
     transaction do 
       update_columns(
         premium_access: true,
@@ -137,7 +137,7 @@ class User < ApplicationRecord
         premium_subscription_id: subscription_code,
         updated_at: Time.current
       )
-      
+
       PremiumSubscription.create!(
         user: self,
         premium_plan: plan,
@@ -147,11 +147,12 @@ class User < ApplicationRecord
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_premium_expiry(plan),
-        auto_renew: subscription_code.present?, # This should be true for recurring subscriptions
+        auto_renew: subscription_code.present? || is_recurring, # ✅ fix
         transaction_reference: transaction_reference
       )
     end
   end
+
 
   def downgrade_from_premium
     transaction do
