@@ -23,10 +23,17 @@ module Api
           }, status: :ok
         end
         
-        def create
-          plan = PremiumPlan.find(params[:plan_id])
-          is_recurring = plan.recurring? && params[:recurring] != 'false'
-
+      def create
+        plan = PremiumPlan.find(params[:plan_id])
+        
+        # Handle both string and boolean values for recurring parameter
+        recurring_param = params[:recurring]
+        is_recurring = if recurring_param.is_a?(String)
+                        recurring_param.downcase == 'true'
+                      else
+                        recurring_param == true
+                      end
+          
           callback_url = 'https://www.bantuhive.com/premium/callback'
           paystack_service = PaystackService.new
           
@@ -35,7 +42,7 @@ module Api
             premium_plan_id: plan.id,
             premium_access: true,
             type: 'premium_subscription',
-            is_recurring: is_recurring.to_s, # Convert to string for metadata
+            is_recurring: is_recurring.to_s,
             plan_interval: plan.interval
           }
 
@@ -50,20 +57,19 @@ module Api
             
             if plan_response[:status]
               plan_code = plan_response[:data][:plan_code]
-              response = paystack_service.initialize_transaction(
+              # Use initialize_subscription method for recurring
+              response = paystack_service.initialize_subscription(
                 email: @current_user.email,
-                amount: plan.price,
-                callback_url: callback_url,
-                currency: plan.currency,
-                metadata: metadata.merge(plan_code: plan_code),
                 plan: plan_code,
+                callback_url: callback_url,
+                metadata: metadata.merge(plan_code: plan_code)
               )
             else
               render json: { error: 'Failed to create subscription plan' }, status: :unprocessable_entity
               return
             end
           else
-            # One-time payment
+            # One-time payment - use initialize_transaction
             response = paystack_service.initialize_transaction(
               email: @current_user.email,
               amount: plan.price,

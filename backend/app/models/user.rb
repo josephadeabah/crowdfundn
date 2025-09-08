@@ -161,9 +161,19 @@ class User < ApplicationRecord
     end
   end
 
+  # app/models/user.rb
   def downgrade_from_premium
     transaction do
-      # Use update_columns to skip validations
+      # Cancel subscription in Paystack first
+      if active_premium_subscription&.paystack_subscription_code.present?
+        paystack_service = PaystackService.new
+        paystack_service.cancel_subscription(
+          subscription_code: active_premium_subscription.paystack_subscription_code,
+          email_token: email
+        )
+      end
+      
+      # Then update local records
       update_columns(
         premium_access: false,
         premium_plan_id: nil,
@@ -172,7 +182,7 @@ class User < ApplicationRecord
         updated_at: Time.current
       )
       
-      # Cancel any active subscriptions
+      # Cancel any active subscriptions locally
       active_premium_subscription&.update!(status: 'cancelled')
     end
   end

@@ -154,6 +154,19 @@ class PaystackService
     parse_response(response)
   end
 
+  def initialize_subscription(email:, plan_code:, callback_url:, metadata: {})
+    uri = URI("#{PAYSTACK_BASE_URL}/transaction/initialize")
+    payload = {
+      email: email,
+      plan: plan_code,  # This should be the plan code for subscriptions
+      callback_url: callback_url,
+      metadata: metadata
+    }.to_json
+    
+    response = make_post_request(uri, body.to_json)
+    parse_response(response)
+  end
+
 
   def verify_transaction(reference)
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/verify/#{reference}")

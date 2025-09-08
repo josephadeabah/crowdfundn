@@ -16,9 +16,7 @@ class PremiumSubscription < ApplicationRecord
   end
   
   def cancel!
-    update(status: 'cancelled', auto_renew: false)
-    
-    # Cancel subscription in Paystack if we have a subscription code
+    # Cancel on Paystack first if we have a subscription code
     if paystack_subscription_code.present?
       paystack_service = PaystackService.new
       paystack_service.cancel_subscription(
@@ -26,5 +24,8 @@ class PremiumSubscription < ApplicationRecord
         email_token: user.email
       )
     end
+    
+    # Then update local status
+    update(status: 'cancelled', auto_renew: false)
   end
 end
