@@ -56,7 +56,7 @@ module Api
                 callback_url: callback_url,
                 currency: plan.currency,
                 metadata: metadata.merge(plan_code: plan_code),
-                plan_code: plan_code,
+                plan: plan_code,
               )
             else
               render json: { error: 'Failed to create subscription plan' }, status: :unprocessable_entity
