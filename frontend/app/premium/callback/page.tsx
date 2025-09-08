@@ -9,7 +9,6 @@ export default function PremiumCallback() {
   const { token } = useAuth();
 
   useEffect(() => {
-    // Verify payment with backend
     const verifyPayment = async () => {
       try {
         const urlParams = new URLSearchParams(window.location.search);
@@ -29,8 +28,16 @@ export default function PremiumCallback() {
             },
           );
 
-          if (response.ok) {
-            router.push('/account?premium=success');
+          const result = await response.json();
+          
+          if (result.success) {
+            if (result.processed) {
+              // Webhook already processed - immediate access
+              router.push('/account?premium=success');
+            } else {
+              // Webhook not processed yet - show waiting message
+              router.push('/account?premium=pending');
+            }
           } else {
             router.push('/account?premium=failed');
           }
