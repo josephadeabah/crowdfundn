@@ -103,42 +103,44 @@ module Api
             end
           end
 
-        def verify
-          reference = params[:reference]
-          
-          paystack_service = PaystackService.new
-          verification_response = paystack_service.verify_transaction(reference)
-          
-          if verification_response[:status] && verification_response[:data][:status] == 'success'
-            metadata = verification_response[:data][:metadata].with_indifferent_access
-            is_recurring = ActiveModel::Type::Boolean.new.cast(metadata[:is_recurring])
-            plan = PremiumPlan.find(metadata[:premium_plan_id])
-            subscription_code = is_recurring ? metadata[:plan_code] : nil
+          def verify
+            reference = params[:reference]
+            
+            paystack_service = PaystackService.new
+            verification_response = paystack_service.verify_transaction(reference)
+            
+            if verification_response[:status] && verification_response[:data][:status] == 'success'
+              metadata = verification_response[:data][:metadata].with_indifferent_access
+              is_recurring = ActiveModel::Type::Boolean.new.cast(metadata[:is_recurring])
+              plan = PremiumPlan.find(metadata[:premium_plan_id])
 
-            subscription = PremiumSubscription.find_by(transaction_reference: reference)
+              # ✅ Use actual subscription_code if present
+              subscription_code = verification_response[:data].dig(:subscription, :subscription_code)
 
-            unless subscription
-              @current_user.upgrade_to_premium(
-                plan,
-                reference,
-                subscription_code,  # ✅ passed correctly
-                is_recurring
-              )
+              subscription = PremiumSubscription.find_by(transaction_reference: reference)
+
+              unless subscription
+                @current_user.upgrade_to_premium(
+                  plan,
+                  reference,
+                  subscription_code, # ✅ now correct
+                  is_recurring
+                )
+              end
+
+              render json: { 
+                success: true, 
+                message: 'Payment verified successfully',
+                processed: subscription.present?
+              }, status: :ok
+            else
+              render json: { 
+                success: false, 
+                message: 'Payment verification failed',
+                error: verification_response[:message]
+              }, status: :unprocessable_entity
             end
-
-            render json: { 
-              success: true, 
-              message: 'Payment verified successfully',
-              processed: subscription.present?
-            }, status: :ok
-          else
-            render json: { 
-              success: false, 
-              message: 'Payment verification failed',
-              error: verification_response[:message]
-            }, status: :unprocessable_entity
           end
-        end
 
         
         def cancel
