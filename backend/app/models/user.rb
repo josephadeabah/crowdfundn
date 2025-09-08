@@ -130,18 +130,11 @@ class User < ApplicationRecord
   
   # app/models/user.rb
   def upgrade_to_premium(plan, transaction_reference, subscription_code = nil)
-    transaction do
-      expiry_date = if plan.interval == 'one_time'
-                      # For one-time payments, set expiry to 1 year or your preferred duration
-                      1.year.from_now
-                    else
-                      calculate_premium_expiry(plan)
-                    end
-      
+    transaction do 
       update_columns(
         premium_access: true,
         premium_plan_id: plan.id,
-        premium_expires_at: expiry_date,
+        premium_expires_at: calculate_premium_expiry(plan),
         premium_subscription_id: subscription_code,
         updated_at: Time.current
       )
@@ -154,7 +147,7 @@ class User < ApplicationRecord
         currency: plan.currency,
         status: 'active',
         start_date: Time.current,
-        expires_at: expiry_date,
+        expires_at: calculate_premium_expiry(plan),
         auto_renew: subscription_code.present?,
         transaction_reference: transaction_reference
       )
@@ -168,7 +161,7 @@ class User < ApplicationRecord
       if active_premium_subscription&.paystack_subscription_code.present?
         paystack_service = PaystackService.new
         paystack_service.cancel_subscription(
-          subscription_code: active_premium_subscription.paystack_subscription_code,
+          code: active_premium_subscription.paystack_subscription_code,
           email_token: email
         )
       end
@@ -282,10 +275,16 @@ class User < ApplicationRecord
 
   def calculate_premium_expiry(plan)
     case plan.interval
-    when 'monthly' then 1.month.from_now
-    when 'quarterly' then 3.months.from_now
-    when 'annually' then 1.year.from_now
-    else 1.month.from_now
+    when 'one_time', 'monthly'
+      1.month.from_now
+    when 'quarterly'
+      3.months.from_now
+    when 'annually'
+      1.year.from_now
+    else
+      Rails.logger.warn("Unknown plan interval: #{plan.interval}, defaulting to 1 month")
+      1.month.from_now
     end
   end
+
 end

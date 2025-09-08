@@ -20,7 +20,7 @@ class PremiumSubscription < ApplicationRecord
     if paystack_subscription_code.present?
       paystack_service = PaystackService.new
       paystack_service.cancel_subscription(
-        subscription_code: paystack_subscription_code,
+        code: paystack_subscription_code,
         email_token: user.email
       )
     end
