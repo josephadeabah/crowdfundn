@@ -124,10 +124,12 @@ module PaystackWebhook
       if subscription
         Rails.logger.info "Updating existing subscription #{subscription.id}"
         subscription.update!(
-          status: 'active',
+          paystack_subscription_code: subscription_code,
+          paystack_email_token: @data[:email_token],  # ✅ save token
           auto_renew: true,
           next_payment_date: next_payment_date,
-          expires_at: calculate_end_date(plan, created_at)
+          expires_at: calculate_end_date(plan, created_at),
+          status: 'active'
         )
       else
         # Look for charge.success-created subscription without code
@@ -145,9 +147,11 @@ module PaystackWebhook
           Rails.logger.info "Updating subscription #{subscription.id} with subscription_code: #{subscription_code}"
           subscription.update!(
             paystack_subscription_code: subscription_code,
+            paystack_email_token: @data[:email_token],  # ✅ save token here too
             auto_renew: true,
             next_payment_date: next_payment_date,
-            expires_at: calculate_end_date(plan, created_at)
+            expires_at: calculate_end_date(plan, created_at),
+            status: 'active'
           )
         else
           # Otherwise create new subscription
@@ -155,6 +159,7 @@ module PaystackWebhook
             user: user,
             premium_plan: plan,
             paystack_subscription_code: subscription_code,
+            paystack_email_token: @data[:email_token],
             status: 'active',
             start_date: created_at,
             expires_at: calculate_end_date(plan, created_at),
@@ -178,6 +183,7 @@ module PaystackWebhook
 
       Rails.logger.info "Successfully processed subscription creation"
     end
+
 
     # -------------------------
     # subscription.cancel handler

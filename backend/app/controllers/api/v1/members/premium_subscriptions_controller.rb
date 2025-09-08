@@ -20,7 +20,7 @@ module Api
               interval: current_plan.interval,
               description: current_plan.description,
               features: current_plan.features,
-              is_recurring: current_plan.recurring?
+              is_recurring: active_subscription&.auto_renew || false
             } : nil,
             active_subscription: active_subscription ? {
               id: active_subscription.id,
@@ -53,7 +53,7 @@ module Api
               premium_plan_id: plan.id,
               premium_access: true,
               type: 'premium_subscription',
-              is_recurring: is_recurring.to_s,
+              is_recurring: is_recurring,
               plan_interval: plan.interval
             }
 
@@ -114,7 +114,8 @@ module Api
             # DON'T create subscription records here - let webhooks handle that
             
             metadata = verification_response[:data][:metadata]
-            is_recurring = metadata[:is_recurring] == 'true'
+            is_recurring = ActiveModel::Type::Boolean.new.cast(metadata[:is_recurring])
+
             
             # Check if webhook has already processed this (optional safety check)
             subscription = PremiumSubscription.find_by(transaction_reference: reference)

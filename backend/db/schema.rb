@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_07_022456) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_08_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -443,6 +443,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_07_022456) do
     t.boolean "auto_renew", default: true
     t.string "payment_method"
     t.string "currency", default: "GHS"
+    t.string "paystack_email_token"
     t.index ["paystack_subscription_code"], name: "index_premium_subscriptions_on_paystack_subscription_code", unique: true
     t.index ["premium_plan_id"], name: "index_premium_subscriptions_on_premium_plan_id"
     t.index ["status"], name: "index_premium_subscriptions_on_status"
