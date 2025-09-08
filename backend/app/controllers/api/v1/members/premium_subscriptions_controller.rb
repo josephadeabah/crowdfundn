@@ -110,31 +110,27 @@ module Api
           verification_response = paystack_service.verify_transaction(reference)
           
           if verification_response[:status] && verification_response[:data][:status] == 'success'
-            # Just verify the payment was successful for UI feedback
-            # DON'T create subscription records here - let webhooks handle that
-            
-            metadata = verification_response[:data][:metadata]
+            metadata = verification_response[:data][:metadata].with_indifferent_access
             is_recurring = ActiveModel::Type::Boolean.new.cast(metadata[:is_recurring])
+            plan = PremiumPlan.find(metadata[:premium_plan_id])
+            subscription_code = is_recurring ? metadata[:plan_code] : nil
 
-            
-            # Check if webhook has already processed this (optional safety check)
             subscription = PremiumSubscription.find_by(transaction_reference: reference)
-            
-            if subscription
-              # Webhook already processed this payment
-              render json: { 
-                success: true, 
-                message: 'Payment verified successfully',
-                processed: true
-              }, status: :ok
-            else
-              # Payment successful but webhook not processed yet
-              render json: { 
-                success: true, 
-                message: 'Payment verified successfully. Your subscription will be activated shortly.',
-                processed: false
-              }, status: :ok
+
+            unless subscription
+              @current_user.upgrade_to_premium(
+                plan,
+                reference,
+                subscription_code,  # ✅ passed correctly
+                is_recurring
+              )
             end
+
+            render json: { 
+              success: true, 
+              message: 'Payment verified successfully',
+              processed: subscription.present?
+            }, status: :ok
           else
             render json: { 
               success: false, 
@@ -143,6 +139,7 @@ module Api
             }, status: :unprocessable_entity
           end
         end
+
         
         def cancel
           subscription = @current_user.active_premium_subscription
