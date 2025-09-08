@@ -24,30 +24,40 @@ module PaystackWebhook
     private
     
     def handle_successful_payment
-      user = User.find(@metadata[:user_id])
-      plan = PremiumPlan.find(@metadata[:premium_plan_id])
+      user = User.find(@metadata[:user_id].to_i)
+      plan = PremiumPlan.find(@metadata[:premium_plan_id].to_i)
+      is_recurring = @metadata[:is_recurring] == 'true'
       
-      # Create or update subscription record
       subscription = PremiumSubscription.find_or_initialize_by(
         transaction_reference: @data[:reference]
       )
       
-      subscription.update!(
+      subscription_attrs = {
         user: user,
         premium_plan: plan,
-        paystack_subscription_code: @data[:subscription_code],
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_end_date(plan),
-        amount: @data[:amount].to_f / 100, # Convert from kobo
+        amount: @data[:amount].to_f / 100,
         currency: @data[:currency],
-        auto_renew: user.premium_auto_renew
+        auto_renew: is_recurring
+      }
+      
+      if is_recurring && @data[:subscription_code].present?
+        subscription_attrs[:paystack_subscription_code] = @data[:subscription_code]
+      end
+      
+      subscription.update!(subscription_attrs)
+      
+      # Update user premium status
+      user.update_columns(
+        premium_access: true,
+        premium_plan_id: plan.id,
+        premium_expires_at: calculate_end_date(plan),
+        premium_subscription_id: @data[:subscription_code],
+        updated_at: Time.current
       )
       
-      # Upgrade user
-      user.upgrade_to_premium(plan, @data[:subscription_code])
-      
-      # Send confirmation email using the service
       PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
       PremiumSubscriptionEmailService.send_payment_success_email(user, subscription, @data)
     end

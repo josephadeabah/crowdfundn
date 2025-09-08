@@ -128,18 +128,24 @@ class User < ApplicationRecord
     premium_subscriptions.active.last
   end
   
+  # app/models/user.rb
   def upgrade_to_premium(plan, transaction_reference, subscription_code = nil)
     transaction do
+      expiry_date = if plan.interval == 'one_time'
+                      # For one-time payments, set expiry to 1 year or your preferred duration
+                      1.year.from_now
+                    else
+                      calculate_premium_expiry(plan)
+                    end
+      
       update_columns(
         premium_access: true,
         premium_plan_id: plan.id,
-        premium_expires_at: calculate_premium_expiry(plan),
+        premium_expires_at: expiry_date,
         premium_subscription_id: subscription_code,
         updated_at: Time.current
       )
       
-      # For recurring subscriptions, subscription_code will be present
-      # For one-time payments, only transaction_reference will be present
       PremiumSubscription.create!(
         user: self,
         premium_plan: plan,
@@ -148,8 +154,8 @@ class User < ApplicationRecord
         currency: plan.currency,
         status: 'active',
         start_date: Time.current,
-        expires_at: calculate_premium_expiry(plan),
-        auto_renew: subscription_code.present? && premium_auto_renew, # Only auto-renew if it's a subscription
+        expires_at: expiry_date,
+        auto_renew: subscription_code.present?,
         transaction_reference: transaction_reference
       )
     end

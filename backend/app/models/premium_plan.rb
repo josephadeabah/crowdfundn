@@ -1,6 +1,6 @@
 # app/models/premium_plan.rb
 class PremiumPlan < ApplicationRecord
-  INTERVALS = %w[monthly quarterly annually].freeze
+  INTERVALS = %w[monthly quarterly annually one_time].freeze
   
   validates :name, :price, :interval, presence: true
   validates :interval, inclusion: { in: INTERVALS }
@@ -17,7 +17,12 @@ class PremiumPlan < ApplicationRecord
     when 'monthly' then price
     when 'quarterly' then price / 3
     when 'annually' then price / 12
+    when 'one_time' then price
     else price
     end
+  end
+  
+  def recurring?
+    interval != 'one_time'
   end
 end

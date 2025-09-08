@@ -185,7 +185,7 @@ class PaystackService
     parse_response(response)
   end
 
-  def create_subscription_plan(name:, interval:, amount:)
+  def create_subscription_plan(name:, interval:, amount:, currency:)
     valid_intervals = %w[daily weekly monthly quarterly biannually annually]
 
     return { status: 'error', message: 'Invalid interval' } unless valid_intervals.include?(interval.to_s)
@@ -195,7 +195,8 @@ class PaystackService
     body = {
       name: name,
       interval: interval,
-      amount: (amount.to_f * 100).to_i # Convert to kobo/pesewa
+      amount: (amount.to_f * 100).to_i, # Convert to kobo/pesewa
+      currency: currency
     }.to_json
 
     response = make_post_request(uri, body)
