@@ -163,7 +163,7 @@ class PaystackService
       metadata: metadata
     }.to_json
     
-    response = make_post_request(uri, body.to_json)
+    response = make_post_request(uri, payload)
     parse_response(response)
   end
 
