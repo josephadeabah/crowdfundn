@@ -84,105 +84,66 @@ module PaystackWebhook
     # subscription.create handler
     # -------------------------
     def handle_subscription_creation
+      user_id     = @data.dig(:metadata, :user_id)
+      plan_id     = @data.dig(:metadata, :premium_plan_id)
       subscription_code = @data[:subscription_code]
-      Rails.logger.info "Processing subscription creation for code: #{subscription_code}"
-      return unless subscription_code
+      email_token = @data[:email_token]
+      next_payment_date = @data[:next_payment_date]
+      created_at  = @data[:created_at]
 
-      # Find user from customer email
-      user_email = @data.dig(:customer, :email)
-      unless user_email
-        Rails.logger.error "No user email found in customer data"
+      user = User.find_by(id: user_id)
+      plan = PremiumPlan.find_by(id: plan_id)
+
+      unless user && plan
+        Rails.logger.error "User or plan not found for subscription creation: user_id=#{user_id}, plan_id=#{plan_id}"
         return
       end
 
-      user = User.find_by(email: user_email)
-      unless user
-        Rails.logger.error "User not found with email: #{user_email}"
-        return
-      end
+      # Try finding by subscription_code first
+      subscription = PremiumSubscription.find_by(
+        user: user,
+        paystack_subscription_code: subscription_code
+      )
 
-      # Find plan by name (strip suffix like " - monthly")
-      plan_name = @data.dig(:plan, :name)
-      unless plan_name
-        Rails.logger.error "No plan name found in plan data"
-        return
-      end
+      # If not found, fall back to transaction_reference (from charge.success)
+      subscription ||= PremiumSubscription.find_by(
+        user: user,
+        transaction_reference: @data[:transaction_reference]
+      )
 
-      base_plan_name = plan_name.gsub(/ - (monthly|quarterly|annually)$/, '')
-      plan = PremiumPlan.find_by(name: base_plan_name)
-      unless plan
-        Rails.logger.error "Plan not found with name: #{base_plan_name}"
-        return
-      end
-
-      # Dates
-      created_at = Time.parse(@data[:createdAt]) rescue Time.current
-      next_payment_date = Time.parse(@data[:next_payment_date]) rescue nil
-
-      # Try to find existing subscription
-      subscription = PremiumSubscription.find_by(user: user, paystack_subscription_code: subscription_code)
+      # If still not found, grab the most recent nil subscription
+      subscription ||= PremiumSubscription.where(
+        user: user,
+        paystack_subscription_code: nil
+      ).order(created_at: :desc).first
 
       if subscription
-        Rails.logger.info "Updating existing subscription #{subscription.id}"
         subscription.update!(
           paystack_subscription_code: subscription_code,
-          paystack_email_token: @data[:email_token],
-          status: 'active',
+          paystack_email_token: email_token,
           auto_renew: true,
+          is_recurring: true, # explicitly mark as recurring
           next_payment_date: next_payment_date,
           expires_at: calculate_end_date(plan, created_at)
         )
+        Rails.logger.info "Updated existing PremiumSubscription #{subscription.id} with subscription_code=#{subscription_code}"
       else
-        # Look for charge.success-created subscription without code
-        subscription = PremiumSubscription
-                         .where(user: user, paystack_subscription_code: nil)
-                         .order(created_at: :desc)
-                         .first
-
-        # Or try by transaction_reference
-        if @data[:transaction_reference].present?
-          subscription ||= PremiumSubscription.find_by(transaction_reference: @data[:transaction_reference])
-        end
-
-        if subscription
-          Rails.logger.info "Updating subscription #{subscription.id} with subscription_code: #{subscription_code}"
-          subscription.update!(
-            paystack_subscription_code: subscription_code,
-            paystack_email_token: @data[:email_token],
-            auto_renew: true,
-            next_payment_date: next_payment_date,
-            expires_at: calculate_end_date(plan, created_at)
-          )
-        else
-          # Otherwise create new subscription
-          subscription = PremiumSubscription.create!(
-            user: user,
-            premium_plan: plan,
-            paystack_subscription_code: subscription_code,
-            paystack_email_token: @data[:email_token],
-            status: 'active',
-            start_date: created_at,
-            expires_at: calculate_end_date(plan, created_at),
-            next_payment_date: next_payment_date,
-            amount: @data[:amount].to_f / 100,
-            currency: @data.dig(:plan, :currency),
-            auto_renew: true,
-            transaction_reference: "sub_#{subscription_code}"
-          )
-          Rails.logger.info "Created new subscription: #{subscription.id}"
-        end
+        PremiumSubscription.create!(
+          user: user,
+          premium_plan: plan,
+          paystack_subscription_code: subscription_code,
+          paystack_email_token: email_token,
+          auto_renew: true,
+          is_recurring: true,
+          next_payment_date: next_payment_date,
+          expires_at: calculate_end_date(plan, created_at),
+          status: :active,
+          transaction_reference: @data[:transaction_reference]
+        )
+        Rails.logger.info "Created new PremiumSubscription for user #{user.id} with subscription_code=#{subscription_code}"
       end
-
-      # Update user premium flags
-      user.update!(
-        premium_access: true,
-        premium_plan_id: plan.id,
-        premium_expires_at: calculate_end_date(plan, created_at),
-        premium_subscription_id: subscription.id
-      )
-
-      Rails.logger.info "Successfully processed subscription creation"
     end
+
 
     # -------------------------
     # subscription.cancel handler
