@@ -60,7 +60,7 @@ module Api
               # Use initialize_subscription method for recurring
               response = paystack_service.initialize_subscription(
                 email: @current_user.email,
-                plan: plan_code,
+                plan_code: plan_code,
                 callback_url: callback_url,
                 metadata: metadata.merge(plan_code: plan_code)
               )
