@@ -16,6 +16,12 @@ export interface PremiumPlan {
   price: number;
   currency: string;
   interval: string;
+  is_recurring: boolean;
+  trial_period_days: number | null;
+  created_at: string;
+  updated_at: string;
+  paystack_plan_code: string | null;
+  paystack_subscription_code: string | null;
   description: string;
   features: Record<string, string | boolean>;
 }
@@ -29,6 +35,7 @@ export interface PremiumSubscription {
     id: number;
     status: string;
     auto_renew: boolean;
+    is_recurring: boolean;
     paystack_subscription_code: string | null;
     expires_at: string;
     start_date: string;
