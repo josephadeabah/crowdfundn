@@ -28,6 +28,7 @@ module PaystackWebhook
       plan = PremiumPlan.find(@metadata[:premium_plan_id].to_i)
       is_recurring = @metadata[:is_recurring] == 'true'
       
+      # Try to find existing subscription by reference first
       subscription = PremiumSubscription.find_or_initialize_by(
         transaction_reference: @data[:reference]
       )
@@ -43,8 +44,18 @@ module PaystackWebhook
         auto_renew: is_recurring
       }
       
-      if is_recurring && @data[:subscription_code].present?
-        subscription_attrs[:paystack_subscription_code] = @data[:subscription_code]
+      # For recurring subscriptions, try to get subscription code from various locations
+      if is_recurring
+        subscription_code = @data[:subscription_code] ||
+                          @data[:subscription] ||
+                          (@data[:authorization] && @data[:authorization][:subscription_code])
+        
+        if subscription_code.present?
+          subscription_attrs[:paystack_subscription_code] = subscription_code
+          subscription_attrs[:auto_renew] = true
+        else
+          Rails.logger.warn "Recurring subscription but no subscription_code found in webhook data"
+        end
       end
       
       subscription.update!(subscription_attrs)
@@ -54,12 +65,9 @@ module PaystackWebhook
         premium_access: true,
         premium_plan_id: plan.id,
         premium_expires_at: calculate_end_date(plan),
-        premium_subscription_id: @data[:subscription_code],
+        premium_subscription_id: subscription.id, # Store subscription ID, not code
         updated_at: Time.current
       )
-      
-      PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
-      PremiumSubscriptionEmailService.send_payment_success_email(user, subscription, @data)
     end
     
     def handle_subscription_creation

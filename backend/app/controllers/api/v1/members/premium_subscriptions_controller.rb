@@ -115,11 +115,20 @@ module Api
             plan = PremiumPlan.find(metadata[:premium_plan_id].to_i)
             is_recurring = metadata[:is_recurring] == 'true'
             
-            subscription_code = if is_recurring && verification_response[:data][:subscription_code].present?
-                                  verification_response[:data][:subscription_code]
-                                else
-                                  nil
-                                end
+            # DEBUG: Log the full verification response to see what Paystack returns
+            Rails.logger.info "Paystack verification response: #{verification_response.inspect}"
+            
+            # Extract subscription code correctly - check different possible locations
+            subscription_code = if is_recurring
+              # Check various possible locations for subscription code
+              verification_response[:data][:subscription_code] ||
+              verification_response[:data][:subscription] ||
+              (verification_response[:data][:authorization] && verification_response[:data][:authorization][:subscription_code])
+            else
+              nil
+            end
+            
+            Rails.logger.info "Extracted subscription_code: #{subscription_code}, is_recurring: #{is_recurring}"
             
             user.upgrade_to_premium(
               plan, 
@@ -131,7 +140,8 @@ module Api
               success: true, 
               message: 'Payment verified successfully',
               plan: plan.name,
-              is_recurring: is_recurring
+              is_recurring: is_recurring,
+              subscription_code: subscription_code # Include for debugging
             }, status: :ok
           else
             render json: { 
