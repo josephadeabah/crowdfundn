@@ -2,14 +2,20 @@
 'use client';
 import React, { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import { usePremium } from '@/app/context/premium/PremiumContext';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import AlertPopup from '../alertpopup/AlertPopup';
 
 const SubscriptionStatus = () => {
-  const { subscription, loading, cancelSubscription } = usePremium();
-  const [isCancelling, setIsCancelling] = useState(false);
+  const {
+    subscription,
+    subscriptionLoading,
+    actionLoading,
+    cancelSubscription,
+    fetchSubscription,
+  } = usePremium();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelResult, setCancelResult] = useState<{
     type: 'success' | 'error';
@@ -39,7 +45,19 @@ const SubscriptionStatus = () => {
     });
   };
 
-  if (loading) {
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await fetchSubscription();
+    } catch (error) {
+      console.error('Failed to refresh subscription:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  // Show loading state if subscription is loading
+  if (subscriptionLoading) {
     return (
       <div className="flex items-center justify-center p-4">
         <Loader2 className="h-5 w-5 animate-spin text-bantu-green" />
@@ -51,23 +69,25 @@ const SubscriptionStatus = () => {
     return null;
   }
 
+  const isRecurring = subscription.active_subscription?.auto_renew === true;
+  const isCancelled = subscription.active_subscription?.status === 'cancelled';
+
   const handleCancelConfirm = async () => {
-    setIsCancelling(true);
     setShowCancelConfirm(false);
 
     try {
       await cancelSubscription();
       setCancelResult({
         type: 'success',
-        message: 'Subscription cancelled successfully',
+        message: isRecurring
+          ? 'Subscription cancelled successfully. You will retain access until the end of your billing period.'
+          : 'Subscription cancelled successfully.',
       });
     } catch (error) {
       setCancelResult({
         type: 'error',
         message: 'Failed to cancel subscription. Please try again.',
       });
-    } finally {
-      setIsCancelling(false);
     }
   };
 
@@ -80,36 +100,71 @@ const SubscriptionStatus = () => {
       <div className="bg-green-50 border border-green-200 rounded-lg p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex-1">
-            <h3 className="font-semibold text-green-900 text-lg">
-              Premium Membership Active
-            </h3>
-            <p className="text-green-700 text-sm mt-1">
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="font-semibold text-green-900 text-lg">
+                Premium Membership Active
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="p-1 h-6 w-6"
+              >
+                <RefreshCw
+                  className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
+                />
+              </Button>
+            </div>
+
+            <p className="text-green-700 text-sm">
               You're on the{' '}
               <span className="font-medium">
                 {subscription.current_plan?.name}
               </span>{' '}
               plan
-              {subscription.expires_at && (
-                <> • Expires {formatExpiryDate(subscription.expires_at)}</>
-              )}
             </p>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCancelClick}
-            disabled={isCancelling}
-            className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 whitespace-nowrap"
-          >
-            {isCancelling ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Cancelling...
-              </>
-            ) : (
-              'Cancel Subscription'
+
+            {subscription.expires_at && (
+              <p className="text-green-700 text-sm mt-1">
+                {isCancelled ? 'Access ends ' : 'Expires '}
+                {formatExpiryDate(subscription.expires_at)}
+              </p>
             )}
-          </Button>
+
+            {isRecurring && !isCancelled && (
+              <p className="text-green-600 text-sm mt-1 flex items-center">
+                <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                Auto-renewal enabled
+              </p>
+            )}
+
+            {isCancelled && (
+              <p className="text-amber-600 text-sm mt-1 flex items-center">
+                <span className="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>
+                Cancelled - access until expiry
+              </p>
+            )}
+          </div>
+
+          {!isCancelled && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCancelClick}
+              disabled={actionLoading}
+              className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 whitespace-nowrap"
+            >
+              {actionLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Cancelling...
+                </>
+              ) : (
+                'Cancel Subscription'
+              )}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -118,17 +173,30 @@ const SubscriptionStatus = () => {
         title="Cancel Subscription"
         message={
           <span>
-            Are you sure you want to cancel your subscription? You will lose
-            access to premium features at the end of your billing period.
+            {isRecurring ? (
+              <>
+                Are you sure you want to cancel your recurring subscription? You
+                will retain access to premium features until{' '}
+                {subscription.expires_at
+                  ? formatExpiryDate(subscription.expires_at)
+                  : 'the end of your billing period'}
+                . This action cannot be undone.
+              </>
+            ) : (
+              <>
+                Are you sure you want to cancel your subscription? You will lose
+                access to premium features immediately.
+              </>
+            )}
           </span>
         }
         isOpen={showCancelConfirm}
         setIsOpen={setShowCancelConfirm}
         onConfirm={handleCancelConfirm}
         icon={<FaExclamationTriangle className="w-6 h-6 text-red-600" />}
-        confirmText="Yes, Cancel"
+        confirmText={isRecurring ? 'Yes, Cancel Renewal' : 'Yes, Cancel'}
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-        loading={isCancelling}
+        loading={actionLoading}
       />
 
       {/* Success/Error Result Popup */}

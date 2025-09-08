@@ -10,33 +10,35 @@ interface PricingCardProps {
   plan: PremiumPlan;
   isCurrentPlan: boolean;
   popular?: boolean;
-  proPlus?: boolean; // Changed from gradient to proPlus
+  proPlus?: boolean;
 }
 
 const PricingCard = ({
   plan,
   isCurrentPlan,
   popular = false,
-  proPlus = false, // Changed from gradient to proPlus
+  proPlus = false,
 }: PricingCardProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentType, setPaymentType] = useState<'one-time' | 'recurring'>(
+    'one-time',
+  );
   const { createSubscription, subscription } = usePremium();
 
-  const handleSubscribe = async () => {
+  const isRecurringPlan = plan.interval !== 'one_time';
+
+  const handleSubscribe = async (recurring: boolean) => {
     setIsProcessing(true);
     try {
-      const result = await createSubscription(plan.id);
-      // Redirect to Paystack checkout
+      const result = await createSubscription(plan.id, recurring);
       window.location.href = result.authorization_url;
     } catch (error) {
       console.error('Failed to create subscription:', error);
-      // Handle error (show toast message, etc.)
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Convert features object to array for display
   const features = Object.entries(plan.features || {}).map(([key, value]) => {
     if (typeof value === 'boolean') {
       return value ? `${key}` : `${key} (Not included)`;
@@ -49,9 +51,7 @@ const PricingCard = ({
       className={cn(
         'relative p-6 rounded-lg border-2 transition-all duration-200 h-full flex flex-col',
         popular ? 'border-bantu-orange shadow-lg' : 'border-gray-200',
-        proPlus
-          ? 'bg-purple-50 border-purple-200' // Unique color for Pro+
-          : 'bg-white',
+        proPlus ? 'bg-purple-50 border-purple-200' : 'bg-white',
       )}
     >
       {popular && (
@@ -89,7 +89,7 @@ const PricingCard = ({
               proPlus ? 'text-purple-700' : 'text-gray-600',
             )}
           >
-            /{plan.interval}
+            {isRecurringPlan ? `/${plan.interval}` : ' one-time'}
           </span>
         </div>
       </div>
@@ -103,9 +103,30 @@ const PricingCard = ({
         {plan.description}
       </p>
 
+      {isRecurringPlan && (
+        <div className="mb-4 flex gap-2">
+          <Button
+            variant={paymentType === 'one-time' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setPaymentType('one-time')}
+            className="flex-1"
+          >
+            One-Time
+          </Button>
+          <Button
+            variant={paymentType === 'recurring' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setPaymentType('recurring')}
+            className="flex-1"
+          >
+            Subscribe
+          </Button>
+        </div>
+      )}
+
       <Button
         className={cn(
-          'w-full mt-6',
+          'w-full mt-2',
           proPlus
             ? 'bg-purple-600 text-white hover:bg-purple-700'
             : popular
@@ -114,7 +135,7 @@ const PricingCard = ({
           (isCurrentPlan || subscription?.has_premium) &&
             'bg-gray-400 cursor-not-allowed',
         )}
-        onClick={handleSubscribe}
+        onClick={() => handleSubscribe(paymentType === 'recurring')}
         disabled={isCurrentPlan || isProcessing || subscription?.has_premium}
       >
         {isProcessing
@@ -123,7 +144,9 @@ const PricingCard = ({
             ? 'Current Plan'
             : subscription?.has_premium
               ? 'Already Premium'
-              : 'Get Started'}
+              : isRecurringPlan && paymentType === 'recurring'
+                ? 'Subscribe Now'
+                : 'Get Started'}
       </Button>
 
       <ul className="mt-8 space-y-3 flex-grow">

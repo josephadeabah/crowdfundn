@@ -25,19 +25,36 @@ export interface PremiumSubscription {
   has_premium: boolean;
   expires_at: string | null;
   current_plan: PremiumPlan | null;
-  active_subscription: any | null;
+  active_subscription: {
+    id: number;
+    status: string;
+    auto_renew: boolean;
+    paystack_subscription_code: string | null;
+    expires_at: string;
+    start_date: string;
+  } | null;
+}
+
+interface CreateSubscriptionResponse {
+  authorization_url: string;
+  reference: string;
+  is_recurring: boolean;
 }
 
 interface PremiumState {
   plans: PremiumPlan[];
   subscription: PremiumSubscription | null;
   loading: boolean;
+  plansLoading: boolean;
+  subscriptionLoading: boolean;
+  actionLoading: boolean;
   error: string | null;
   fetchPlans: () => Promise<void>;
   fetchSubscription: () => Promise<void>;
   createSubscription: (
     planId: number,
-  ) => Promise<{ authorization_url: string; reference: string }>;
+    isRecurring: boolean,
+  ) => Promise<CreateSubscriptionResponse>;
   cancelSubscription: () => Promise<void>;
 }
 
@@ -48,13 +65,16 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   const [subscription, setSubscription] = useState<PremiumSubscription | null>(
     null,
   );
-  const [loading, setLoading] = useState<boolean>(false);
+  const [plansLoading, setPlansLoading] = useState<boolean>(false);
+  const [subscriptionLoading, setSubscriptionLoading] =
+    useState<boolean>(false);
+  const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
 
   const fetchPlans = useCallback(async () => {
     if (!token) return;
-    setLoading(true);
+    setPlansLoading(true);
     setError(null);
     try {
       const response = await fetch(
@@ -68,23 +88,28 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
         },
       );
 
-      if (!response.ok) throw new Error('Failed to fetch premium plans');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch premium plans');
+      }
 
       const data = await response.json();
       setPlans(data.plans);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch plans');
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to fetch plans';
+      setError(errorMessage);
+      console.error('Fetch plans error:', errorMessage);
     } finally {
-      setLoading(false);
+      setPlansLoading(false);
     }
   }, [token]);
 
   const fetchSubscription = useCallback(async () => {
     if (!token) return;
-    setLoading(true);
+    setSubscriptionLoading(true);
     setError(null);
     try {
-      // FIXED: Changed to use the /current endpoint
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/premium_subscriptions/current`,
         {
@@ -107,25 +132,30 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
           });
           return;
         }
-        throw new Error('Failed to fetch subscription');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch subscription');
       }
 
       const data = await response.json();
       setSubscription(data);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to fetch subscription',
-      );
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to fetch subscription';
+      setError(errorMessage);
+      console.error('Fetch subscription error:', errorMessage);
     } finally {
-      setLoading(false);
+      setSubscriptionLoading(false);
     }
   }, [token]);
 
   const createSubscription = useCallback(
-    async (planId: number) => {
+    async (
+      planId: number,
+      isRecurring: boolean = false,
+    ): Promise<CreateSubscriptionResponse> => {
       if (!token) throw new Error('Authentication token is missing');
 
-      setLoading(true);
+      setActionLoading(true);
       setError(null);
       try {
         const response = await fetch(
@@ -136,23 +166,32 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ plan_id: planId }),
+            body: JSON.stringify({
+              plan_id: planId,
+              recurring: isRecurring,
+            }),
           },
         );
 
         if (!response.ok) {
-          const errorData = await response.json();
+          const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.error || 'Failed to create subscription');
         }
 
-        return await response.json();
+        const result = await response.json();
+        return {
+          authorization_url: result.authorization_url,
+          reference: result.reference,
+          is_recurring: result.is_recurring || false,
+        };
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to create subscription',
-        );
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to create subscription';
+        setError(errorMessage);
+        console.error('Create subscription error:', errorMessage);
         throw err;
       } finally {
-        setLoading(false);
+        setActionLoading(false);
       }
     },
     [token],
@@ -161,7 +200,7 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   const cancelSubscription = useCallback(async () => {
     if (!token) throw new Error('Authentication token is missing');
 
-    setLoading(true);
+    setActionLoading(true);
     setError(null);
     try {
       const response = await fetch(
@@ -175,16 +214,21 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
         },
       );
 
-      if (!response.ok) throw new Error('Failed to cancel subscription');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to cancel subscription');
+      }
 
+      // Refresh subscription data after cancellation
       await fetchSubscription();
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to cancel subscription',
-      );
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to cancel subscription';
+      setError(errorMessage);
+      console.error('Cancel subscription error:', errorMessage);
       throw err;
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   }, [token, fetchSubscription]);
 
@@ -192,7 +236,10 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       plans,
       subscription,
-      loading,
+      loading: plansLoading || subscriptionLoading || actionLoading,
+      plansLoading,
+      subscriptionLoading,
+      actionLoading,
       error,
       fetchPlans,
       fetchSubscription,
@@ -202,7 +249,9 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
     [
       plans,
       subscription,
-      loading,
+      plansLoading,
+      subscriptionLoading,
+      actionLoading,
       error,
       fetchPlans,
       fetchSubscription,

@@ -5,15 +5,23 @@ import PricingCard from './PricingCard';
 import { usePremium } from '@/app/context/premium/PremiumContext';
 
 const PricingSection = () => {
-  const { plans, loading, error, subscription, fetchPlans, fetchSubscription } =
-    usePremium();
+  const {
+    plans,
+    plansLoading,
+    subscriptionLoading,
+    error,
+    subscription,
+    fetchPlans,
+    fetchSubscription,
+  } = usePremium();
 
   useEffect(() => {
     fetchPlans();
     fetchSubscription();
   }, [fetchPlans, fetchSubscription]);
 
-  if (loading) {
+  // Show loading state if either plans or subscription is loading
+  if (plansLoading || subscriptionLoading) {
     return (
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">

@@ -1,6 +1,14 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { FaCreditCard, FaUser, FaBell, FaIdCard, FaBars, FaCashRegister, FaCrown } from 'react-icons/fa';
+import {
+  FaCreditCard,
+  FaUser,
+  FaBell,
+  FaIdCard,
+  FaBars,
+  FaCashRegister,
+  FaCrown,
+} from 'react-icons/fa';
 import { MdAccountCircle } from 'react-icons/md';
 import PaymentMethod from './paymentmethod/PaymentMethod';
 import UserSettings from './usersettings/UserSettings';
@@ -18,28 +26,36 @@ const AccountSettings = () => {
     const checkSubscriptionParam = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const subscribeParam = urlParams.get('subscribe');
-      
+
       if (subscribeParam === 'true') {
         setActiveTab('subscription');
-        
+
         // Scroll to subscription section after a short delay to allow rendering
         setTimeout(() => {
           if (subscriptionRef.current) {
-            subscriptionRef.current.scrollIntoView({ 
+            subscriptionRef.current.scrollIntoView({
               behavior: 'smooth',
-              block: 'start'
+              block: 'start',
             });
-            
+
             // Add highlight effect
-            subscriptionRef.current.classList.add('ring-2', 'ring-green-500', 'rounded-lg');
+            subscriptionRef.current.classList.add(
+              'ring-2',
+              'ring-green-500',
+              'rounded-lg',
+            );
             setTimeout(() => {
               if (subscriptionRef.current) {
-                subscriptionRef.current.classList.remove('ring-2', 'ring-green-500', 'rounded-lg');
+                subscriptionRef.current.classList.remove(
+                  'ring-2',
+                  'ring-green-500',
+                  'rounded-lg',
+                );
               }
             }, 3000);
           }
         }, 300);
-        
+
         // Clean up the URL parameter
         const url = new URL(window.location.href);
         url.searchParams.delete('subscribe');
@@ -56,7 +72,10 @@ const AccountSettings = () => {
         return <PaymentMethod />;
       case 'subscription':
         return (
-          <div ref={subscriptionRef} className="transition-all duration-500 ease-in-out">
+          <div
+            ref={subscriptionRef}
+            className="transition-all duration-500 ease-in-out"
+          >
             <UserSubscriptions />
           </div>
         );
