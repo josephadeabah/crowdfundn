@@ -5,8 +5,11 @@ class PremiumSubscription < ApplicationRecord
   
   STATUSES = %w[active inactive cancelled expired].freeze
   
+  # Make sure transaction_reference is not required to be unique if you're using
+  # a pattern like "sub_#{subscription_code}" which might cause conflicts
   validates :status, inclusion: { in: STATUSES }
-  validates :transaction_reference, presence: true, uniqueness: true
+  validates :transaction_reference, presence: true
+  # Remove or modify if causing issues: validates :transaction_reference, uniqueness: true
   
   scope :active, -> { where(status: 'active').where('expires_at > ? OR expires_at IS NULL', Time.current) }
   scope :expired, -> { where('expires_at < ?', Time.current) }
@@ -27,7 +30,6 @@ class PremiumSubscription < ApplicationRecord
       # Check if Paystack cancellation was successful
       unless response[:status]
         Rails.logger.error("Failed to cancel Paystack subscription: #{response[:message]}")
-        # You might want to raise an exception here
         raise "Paystack cancellation failed: #{response[:message]}"
       end
     end
