@@ -108,7 +108,7 @@ const PricingCard = ({
       {isRecurringPlan && (
         <div className="mb-4 flex gap-2">
           <Button
-            variant={paymentType === 'one-time' ? 'default' : 'outline'}
+            variant={paymentType === 'one-time' ? 'secondary' : 'outline'}
             size="sm"
             onClick={() => setPaymentType('one-time')}
             className="flex-1"
@@ -116,7 +116,7 @@ const PricingCard = ({
             One-Time
           </Button>
           <Button
-            variant={paymentType === 'recurring' ? 'default' : 'outline'}
+            variant={paymentType === 'recurring' ? 'secondary' : 'outline'}
             size="sm"
             onClick={() => setPaymentType('recurring')}
             className="flex-1"
