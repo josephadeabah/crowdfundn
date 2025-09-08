@@ -1,3 +1,4 @@
+# app/services/paystack_webhook/premium_subscription_handler.rb
 module PaystackWebhook
   class PremiumSubscriptionHandler
     def initialize(data)
@@ -5,10 +6,10 @@ module PaystackWebhook
       @metadata = data[:metadata] || {}
       Rails.logger.info "PremiumSubscriptionHandler initialized with data: #{@data.inspect}"
     end
-    
+
     def call
       Rails.logger.info "PremiumSubscriptionHandler called with data keys: #{@data.keys}"
-      
+
       # Decide what kind of subscription event this is
       if @data[:subscription_code].present? && @data[:createdAt].present?
         Rails.logger.info "Handling subscription creation event"
@@ -23,7 +24,7 @@ module PaystackWebhook
         Rails.logger.warn "Unknown event type or missing required data"
       end
     end
-    
+
     private
 
     # -------------------------
@@ -33,10 +34,10 @@ module PaystackWebhook
       transaction_reference = @data[:reference]
       Rails.logger.info "Processing charge.success for ref: #{transaction_reference}"
 
-      user_id        = @metadata[:user_id]
-      plan_id        = @metadata[:premium_plan_id]
-      is_recurring   = ActiveModel::Type::Boolean.new.cast(@metadata[:is_recurring])
-      plan_interval  = @metadata[:plan_interval]
+      user_id       = @metadata[:user_id]
+      plan_id       = @metadata[:premium_plan_id]
+      is_recurring  = ActiveModel::Type::Boolean.new.cast(@metadata[:is_recurring])
+      plan_interval = @metadata[:plan_interval]
 
       user = User.find_by(id: user_id)
       plan = PremiumPlan.find_by(id: plan_id)
@@ -62,8 +63,8 @@ module PaystackWebhook
         status: 'active',
         start_date: paid_at,
         expires_at: expires_at,
-        auto_renew: is_recurring, # ✅ Mark recurring if metadata says so
-        paystack_subscription_code: nil # Will be updated later in subscription.create
+        auto_renew: is_recurring, # ✅ set from metadata
+        paystack_subscription_code: nil # will be updated later from subscription.create
       )
 
       subscription.save!
@@ -125,18 +126,18 @@ module PaystackWebhook
         Rails.logger.info "Updating existing subscription #{subscription.id}"
         subscription.update!(
           paystack_subscription_code: subscription_code,
-          paystack_email_token: @data[:email_token],  # ✅ save token
+          paystack_email_token: @data[:email_token],
+          status: 'active',
           auto_renew: true,
           next_payment_date: next_payment_date,
-          expires_at: calculate_end_date(plan, created_at),
-          status: 'active'
+          expires_at: calculate_end_date(plan, created_at)
         )
       else
         # Look for charge.success-created subscription without code
         subscription = PremiumSubscription
-          .where(user: user, paystack_subscription_code: nil)
-          .order(created_at: :desc)
-          .first
+                         .where(user: user, paystack_subscription_code: nil)
+                         .order(created_at: :desc)
+                         .first
 
         # Or try by transaction_reference
         if @data[:transaction_reference].present?
@@ -147,11 +148,10 @@ module PaystackWebhook
           Rails.logger.info "Updating subscription #{subscription.id} with subscription_code: #{subscription_code}"
           subscription.update!(
             paystack_subscription_code: subscription_code,
-            paystack_email_token: @data[:email_token],  # ✅ save token here too
+            paystack_email_token: @data[:email_token],
             auto_renew: true,
             next_payment_date: next_payment_date,
-            expires_at: calculate_end_date(plan, created_at),
-            status: 'active'
+            expires_at: calculate_end_date(plan, created_at)
           )
         else
           # Otherwise create new subscription
@@ -184,7 +184,6 @@ module PaystackWebhook
       Rails.logger.info "Successfully processed subscription creation"
     end
 
-
     # -------------------------
     # subscription.cancel handler
     # -------------------------
@@ -216,11 +215,11 @@ module PaystackWebhook
              data[:subscription] ||
              (data[:authorization] && data[:authorization][:subscription_code]) ||
              (data[:plan] && data[:plan][:subscription_code])
-      
+
       Rails.logger.info "Extracted subscription code: #{code}"
       code
     end
-    
+
     def calculate_end_date(plan, start_date)
       # Prefer Paystack metadata interval if present
       interval = @metadata[:plan_interval] || plan.interval
