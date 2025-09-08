@@ -27,6 +27,73 @@ module PaystackWebhook
     
     private
 
+    def handle_charge_success
+      return unless @metadata[:premium_access] && @metadata[:premium_plan_id]
+      
+      user = User.find(@metadata[:user_id].to_i)
+      plan = PremiumPlan.find(@metadata[:premium_plan_id].to_i)
+      is_recurring = @metadata[:is_recurring] == 'true'
+      
+      # Prevent duplicate processing
+      existing_subscription = PremiumSubscription.find_by(transaction_reference: @data[:reference])
+      if existing_subscription
+        Rails.logger.info "Subscription already exists for reference: #{@data[:reference]}"
+        return 
+      end
+      
+      subscription_attrs = {
+        user: user,
+        premium_plan: plan,
+        transaction_reference: @data[:reference],
+        status: 'active',
+        start_date: Time.current,
+        expires_at: calculate_end_date(plan),
+        amount: @data[:amount].to_f / 100,
+        currency: @data[:currency],
+        auto_renew: is_recurring
+      }
+      
+      # For recurring payments, try to extract subscription code from the webhook data
+      if is_recurring
+        Rails.logger.info "Recurring subscription detected, extracting subscription code from webhook data"
+        
+        # Try to extract subscription code from the webhook data
+        subscription_code = extract_subscription_code(@data)
+        
+        if subscription_code.present?
+          subscription_attrs[:paystack_subscription_code] = subscription_code
+          subscription_attrs[:auto_renew] = true
+          Rails.logger.info "Found subscription code in webhook data: #{subscription_code}"
+        else
+          Rails.logger.info "No subscription code found in webhook data, will be updated by subscription.create webhook if it arrives"
+        end
+      end
+      
+      begin
+        subscription = PremiumSubscription.create!(subscription_attrs)
+        Rails.logger.info "Successfully created premium subscription: #{subscription.id}"
+        
+        # Update user premium status
+        user.update!(
+          premium_access: true,
+          premium_plan_id: plan.id,
+          premium_expires_at: calculate_end_date(plan),
+          premium_subscription_id: subscription.id
+        )
+        Rails.logger.info "Successfully updated user premium status"
+        
+        # Send confirmation email
+        PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
+        Rails.logger.info "Confirmation email sent"
+        
+      rescue ActiveRecord::RecordInvalid => e
+        Rails.logger.error "Failed to create subscription: #{e.message}"
+        Rails.logger.error "Validation errors: #{e.record.errors.full_messages}"
+      rescue StandardError => e
+        Rails.logger.error "Unexpected error creating subscription: #{e.message}"
+      end
+    end
+    
     def handle_subscription_creation
       # Extract subscription code
       subscription_code = @data[:subscription_code]
@@ -66,38 +133,56 @@ module PaystackWebhook
       created_at = Time.parse(@data[:createdAt]) rescue Time.current
       next_payment_date = Time.parse(@data[:next_payment_date]) rescue nil
       
-      # Check if we already have a subscription for this user without a paystack_subscription_code
-      existing_subscription = PremiumSubscription.find_by(user: user, paystack_subscription_code: nil)
+      # Check if we already have a subscription for this user
+      existing_subscription = PremiumSubscription.find_by(user: user, paystack_subscription_code: subscription_code)
       
       if existing_subscription
-        # Update existing subscription with the subscription code
-        Rails.logger.info "Updating existing subscription #{existing_subscription.id} with paystack_subscription_code: #{subscription_code}"
+        # Update existing subscription
+        Rails.logger.info "Updating existing subscription #{existing_subscription.id}"
         
         existing_subscription.update!(
-          paystack_subscription_code: subscription_code,
+          status: 'active',
           auto_renew: true,
-          next_payment_date: next_payment_date
+          next_payment_date: next_payment_date,
+          expires_at: calculate_end_date(plan, created_at)
         )
         
         subscription = existing_subscription
       else
-        # Create new subscription
-        subscription_attrs = {
-          user: user,
-          premium_plan: plan,
-          paystack_subscription_code: subscription_code,
-          status: 'active',
-          start_date: created_at,
-          expires_at: calculate_end_date(plan, created_at),
-          next_payment_date: next_payment_date,
-          amount: @data[:amount].to_f / 100,
-          currency: @data.dig(:plan, :currency),
-          auto_renew: true,
-          transaction_reference: "sub_#{subscription_code}"
-        }
+        # Check if there's a subscription without paystack_subscription_code
+        existing_subscription_without_code = PremiumSubscription.find_by(user: user, paystack_subscription_code: nil)
         
-        subscription = PremiumSubscription.create!(subscription_attrs)
-        Rails.logger.info "Created new subscription: #{subscription.id}"
+        if existing_subscription_without_code
+          # Update existing subscription with the subscription code
+          Rails.logger.info "Updating existing subscription #{existing_subscription_without_code.id} with paystack_subscription_code: #{subscription_code}"
+          
+          existing_subscription_without_code.update!(
+            paystack_subscription_code: subscription_code,
+            auto_renew: true,
+            next_payment_date: next_payment_date,
+            expires_at: calculate_end_date(plan, created_at)
+          )
+          
+          subscription = existing_subscription_without_code
+        else
+          # Create new subscription
+          subscription_attrs = {
+            user: user,
+            premium_plan: plan,
+            paystack_subscription_code: subscription_code,
+            status: 'active',
+            start_date: created_at,
+            expires_at: calculate_end_date(plan, created_at),
+            next_payment_date: next_payment_date,
+            amount: @data[:amount].to_f / 100,
+            currency: @data.dig(:plan, :currency),
+            auto_renew: true,
+            transaction_reference: "sub_#{subscription_code}"
+          }
+          
+          subscription = PremiumSubscription.create!(subscription_attrs)
+          Rails.logger.info "Created new subscription: #{subscription.id}"
+        end
       end
       
       # Update user premium status
@@ -109,79 +194,6 @@ module PaystackWebhook
       )
       
       Rails.logger.info "Successfully processed subscription creation"
-    end
-    
-    # app/services/paystack_webhook/premium_subscription_handler.rb
-
-    def handle_charge_success
-      return unless @metadata[:premium_access] && @metadata[:premium_plan_id]
-      
-      user = User.find(@metadata[:user_id].to_i)
-      plan = PremiumPlan.find(@metadata[:premium_plan_id].to_i)
-      is_recurring = @metadata[:is_recurring] == 'true'
-      
-      # Prevent duplicate processing
-      existing_subscription = PremiumSubscription.find_by(transaction_reference: @data[:reference])
-      if existing_subscription
-        Rails.logger.info "Subscription already exists for reference: #{@data[:reference]}"
-        return 
-      end
-      
-      subscription_attrs = {
-        user: user,
-        premium_plan: plan,
-        transaction_reference: @data[:reference],
-        status: 'active',
-        start_date: Time.current,
-        expires_at: calculate_end_date(plan),
-        amount: @data[:amount].to_f / 100,
-        currency: @data[:currency],
-        auto_renew: is_recurring
-      }
-      
-      # For recurring payments, we need to handle this differently
-      if is_recurring
-        # For recurring subscriptions, we might not have the subscription_code yet
-        # It will come in a separate subscription.create webhook
-        # So we create the subscription without the paystack_subscription_code for now
-        # It will be updated when the subscription.create webhook arrives
-        
-        Rails.logger.info "Recurring subscription detected, but no subscription_code available yet"
-        subscription_attrs[:auto_renew] = true
-        
-        # We can try to extract subscription code from authorization if available
-        subscription_code = extract_subscription_code(@data)
-        if subscription_code.present?
-          subscription_attrs[:paystack_subscription_code] = subscription_code
-          Rails.logger.info "Found subscription code in authorization: #{subscription_code}"
-        else
-          Rails.logger.info "No subscription code found, will be updated by subscription.create webhook"
-        end
-      end
-      
-      begin
-        subscription = PremiumSubscription.create!(subscription_attrs)
-        Rails.logger.info "Successfully created premium subscription: #{subscription.id}"
-        
-        # Update user premium status
-        user.update!(
-          premium_access: true,
-          premium_plan_id: plan.id,
-          premium_expires_at: calculate_end_date(plan),
-          premium_subscription_id: subscription.id
-        )
-        Rails.logger.info "Successfully updated user premium status"
-        
-        # Send confirmation email
-        PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
-        Rails.logger.info "Confirmation email sent"
-        
-      rescue ActiveRecord::RecordInvalid => e
-        Rails.logger.error "Failed to create subscription: #{e.message}"
-        Rails.logger.error "Validation errors: #{e.record.errors.full_messages}"
-      rescue StandardError => e
-        Rails.logger.error "Unexpected error creating subscription: #{e.message}"
-      end
     end
     
     def handle_subscription_cancellation
