@@ -110,39 +110,30 @@ module Api
           verification_response = paystack_service.verify_transaction(reference)
           
           if verification_response[:status] && verification_response[:data][:status] == 'success'
+            # Just verify the payment was successful for UI feedback
+            # DON'T create subscription records here - let webhooks handle that
+            
             metadata = verification_response[:data][:metadata]
-            user = User.find(metadata[:user_id].to_i)
-            plan = PremiumPlan.find(metadata[:premium_plan_id].to_i)
             is_recurring = metadata[:is_recurring] == 'true'
             
-            # DEBUG: Log the full verification response to see what Paystack returns
-            Rails.logger.info "Paystack verification response: #{verification_response.inspect}"
+            # Check if webhook has already processed this (optional safety check)
+            subscription = PremiumSubscription.find_by(transaction_reference: reference)
             
-            # Extract subscription code correctly - check different possible locations
-            subscription_code = if is_recurring
-              # Check various possible locations for subscription code
-              verification_response[:data][:subscription_code] ||
-              verification_response[:data][:subscription] ||
-              (verification_response[:data][:authorization] && verification_response[:data][:authorization][:subscription_code])
+            if subscription
+              # Webhook already processed this payment
+              render json: { 
+                success: true, 
+                message: 'Payment verified successfully',
+                processed: true
+              }, status: :ok
             else
-              nil
+              # Payment successful but webhook not processed yet
+              render json: { 
+                success: true, 
+                message: 'Payment verified successfully. Your subscription will be activated shortly.',
+                processed: false
+              }, status: :ok
             end
-            
-            Rails.logger.info "Extracted subscription_code: #{subscription_code}, is_recurring: #{is_recurring}"
-            
-            user.upgrade_to_premium(
-              plan, 
-              verification_response[:data][:reference],
-              subscription_code
-            )
-            
-            render json: { 
-              success: true, 
-              message: 'Payment verified successfully',
-              plan: plan.name,
-              is_recurring: is_recurring,
-              subscription_code: subscription_code # Include for debugging
-            }, status: :ok
           else
             render json: { 
               success: false, 

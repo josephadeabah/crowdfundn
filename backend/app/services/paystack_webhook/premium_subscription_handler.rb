@@ -28,14 +28,14 @@ module PaystackWebhook
       plan = PremiumPlan.find(@metadata[:premium_plan_id].to_i)
       is_recurring = @metadata[:is_recurring] == 'true'
       
-      # Try to find existing subscription by reference first
-      subscription = PremiumSubscription.find_or_initialize_by(
-        transaction_reference: @data[:reference]
-      )
+      # Prevent duplicate processing
+      existing_subscription = PremiumSubscription.find_by(transaction_reference: @data[:reference])
+      return if existing_subscription
       
       subscription_attrs = {
         user: user,
         premium_plan: plan,
+        transaction_reference: @data[:reference],
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_end_date(plan),
@@ -44,43 +44,45 @@ module PaystackWebhook
         auto_renew: is_recurring
       }
       
-      # For recurring subscriptions, try to get subscription code from various locations
+      # Extract subscription code for recurring payments
       if is_recurring
-        subscription_code = @data[:subscription_code] ||
-                          @data[:subscription] ||
-                          (@data[:authorization] && @data[:authorization][:subscription_code])
-        
+        subscription_code = extract_subscription_code(@data)
         if subscription_code.present?
           subscription_attrs[:paystack_subscription_code] = subscription_code
           subscription_attrs[:auto_renew] = true
-        else
-          Rails.logger.warn "Recurring subscription but no subscription_code found in webhook data"
         end
       end
       
-      subscription.update!(subscription_attrs)
+      subscription = PremiumSubscription.create!(subscription_attrs)
       
       # Update user premium status
-      user.update_columns(
+      user.update!(
         premium_access: true,
         premium_plan_id: plan.id,
         premium_expires_at: calculate_end_date(plan),
-        premium_subscription_id: subscription.id, # Store subscription ID, not code
-        updated_at: Time.current
+        premium_subscription_id: subscription.id
       )
+      
+      # Send confirmation email
+      PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
     end
     
     def handle_subscription_creation
+      # This handles when Paystack creates a new subscription instance
+      subscription_code = @data[:subscription_code]
+      return unless subscription_code
+      
+      # Check if we already have this subscription
+      existing_subscription = PremiumSubscription.find_by(paystack_subscription_code: subscription_code)
+      return if existing_subscription
+      
       user = User.find(@metadata[:user_id])
       plan = PremiumPlan.find(@metadata[:premium_plan_id])
       
-      subscription = PremiumSubscription.find_or_initialize_by(
-        paystack_subscription_code: @data[:subscription_code]
-      )
-      
-      subscription.update!(
+      subscription = PremiumSubscription.create!(
         user: user,
         premium_plan: plan,
+        paystack_subscription_code: subscription_code,
         status: 'active',
         start_date: Time.at(@data[:created_at]),
         expires_at: calculate_end_date(plan, Time.at(@data[:created_at])),
@@ -90,10 +92,19 @@ module PaystackWebhook
         auto_renew: true
       )
       
-      user.upgrade_to_premium(plan, @data[:subscription_code])
-      
-      # Send confirmation email
-      PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
+      user.update!(
+        premium_access: true,
+        premium_plan_id: plan.id,
+        premium_expires_at: calculate_end_date(plan, Time.at(@data[:created_at])),
+        premium_subscription_id: subscription.id
+      )
+    end
+    
+    def extract_subscription_code(data)
+      data[:subscription_code] ||
+      data[:subscription] ||
+      (data[:authorization] && data[:authorization][:subscription_code]) ||
+      (data[:plan] && data[:plan][:subscription_code])
     end
     
     def handle_subscription_cancellation
