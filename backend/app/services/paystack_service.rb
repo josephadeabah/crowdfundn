@@ -207,7 +207,7 @@ class PaystackService
     uri = URI("#{PAYSTACK_BASE_URL}/subscription/disable")
     body = {
       code: code,
-      token: email_token
+      token: token
     }.compact.to_json # Remove nil values
 
     response = make_post_request(uri, body)
