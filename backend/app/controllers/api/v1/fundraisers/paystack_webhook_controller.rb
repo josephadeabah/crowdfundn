@@ -1,3 +1,4 @@
+# app/controllers/api/v1/fundraisers/paystack_webhook_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -57,22 +58,25 @@ module Api
           when 'transfer.reversed'
             PaystackWebhook::TransferReversedHandler.new(event[:data]).call
           when 'subscription.create'
-            metadata = event[:data][:metadata] || {}
-            if metadata[:premium_access] # Check for premium subscription
+            # Check if this is a premium subscription by plan name pattern
+            plan_name = event.dig(:data, :plan, :name)
+            if plan_name&.match?(/ - (monthly|quarterly|annually)$/)
               PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
             else
               PaystackWebhook::SubscriptionCreateHandler.new(event[:data]).call
             end
           when 'subscription.disable'
-            metadata = event[:data][:metadata] || {}
-            if metadata[:premium_access] # Check for premium subscription
+            # Check if this is a premium subscription by plan name pattern
+            plan_name = event.dig(:data, :plan, :name)
+            if plan_name&.match?(/ - (monthly|quarterly|annually)$/)
               PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
             else
               PaystackWebhook::SubscriptionDisabledHandler.new(event[:data]).call
             end
           when 'subscription.not_renew'
-            metadata = event[:data][:metadata] || {}
-            if metadata[:premium_access] # Check for premium subscription
+            # Check if this is a premium subscription by plan name pattern
+            plan_name = event.dig(:data, :plan, :name)
+            if plan_name&.match?(/ - (monthly|quarterly|annually)$/)
               PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
             end
           when 'subscription.charge.failed'
@@ -97,7 +101,6 @@ module Api
           Rails.logger.error e.backtrace.join("\n")
           # Don't re-raise the exception to prevent webhook retries
         end
-
       end
     end
   end

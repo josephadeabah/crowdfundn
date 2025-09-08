@@ -7,11 +7,21 @@ module PaystackWebhook
     end
     
     def call
-      return unless @metadata[:premium_access] && @metadata[:premium_plan_id]
-      
+      # Handle different events with appropriate logic
       case @data[:event]
       when 'charge.success'
-        handle_successful_payment
+        # For charge.success, we can use metadata
+        handle_charge_success if @metadata[:premium_access] && @metadata[:premium_plan_id]
+      when 'subscription.create', 'subscription.disable', 'subscription.not_renew'
+        # For subscription events, handle without metadata
+        handle_subscription_event
+      end
+    end
+    
+    private
+    
+    def handle_subscription_event
+      case @data[:event]
       when 'subscription.create'
         handle_subscription_creation
       when 'subscription.disable'
@@ -21,9 +31,7 @@ module PaystackWebhook
       end
     end
     
-    private
-    
-    def handle_successful_payment
+    def handle_charge_success
       user = User.find(@metadata[:user_id].to_i)
       plan = PremiumPlan.find(@metadata[:premium_plan_id].to_i)
       is_recurring = @metadata[:is_recurring] == 'true'
@@ -68,7 +76,7 @@ module PaystackWebhook
     end
     
     def handle_subscription_creation
-      # This handles when Paystack creates a new subscription instance
+      # Extract subscription code
       subscription_code = @data[:subscription_code]
       return unless subscription_code
       
@@ -76,28 +84,74 @@ module PaystackWebhook
       existing_subscription = PremiumSubscription.find_by(paystack_subscription_code: subscription_code)
       return if existing_subscription
       
-      user = User.find(@metadata[:user_id])
-      plan = PremiumPlan.find(@metadata[:premium_plan_id])
+      # Find user by email from customer data
+      user_email = @data.dig(:customer, :email)
+      return unless user_email
       
+      user = User.find_by(email: user_email)
+      return unless user
+      
+      # Find plan by matching the plan name pattern
+      plan_name = @data.dig(:plan, :name)
+      return unless plan_name
+      
+      # Extract base plan name (remove " - monthly" suffix)
+      base_plan_name = plan_name.gsub(/ - (monthly|quarterly|annually)$/, '')
+      plan = PremiumPlan.find_by(name: base_plan_name)
+      return unless plan
+      
+      # Create the subscription
       subscription = PremiumSubscription.create!(
         user: user,
         premium_plan: plan,
         paystack_subscription_code: subscription_code,
         status: 'active',
-        start_date: Time.at(@data[:created_at]),
-        expires_at: calculate_end_date(plan, Time.at(@data[:created_at])),
-        next_payment_date: Time.at(@data[:next_payment_date]),
-        amount: plan.price,
-        currency: plan.currency,
+        start_date: Time.parse(@data[:createdAt]),
+        expires_at: calculate_end_date(plan, Time.parse(@data[:createdAt])),
+        next_payment_date: Time.parse(@data[:next_payment_date]),
+        amount: @data[:amount].to_f / 100, # Convert from kobo/pesewa
+        currency: @data.dig(:plan, :currency),
         auto_renew: true
       )
       
+      # Update user premium status
       user.update!(
         premium_access: true,
         premium_plan_id: plan.id,
-        premium_expires_at: calculate_end_date(plan, Time.at(@data[:created_at])),
+        premium_expires_at: calculate_end_date(plan, Time.parse(@data[:createdAt])),
         premium_subscription_id: subscription.id
       )
+      
+      # Send confirmation email
+      PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
+    end
+    
+    def handle_subscription_cancellation
+      subscription_code = @data[:subscription_code]
+      return unless subscription_code
+      
+      subscription = PremiumSubscription.find_by(paystack_subscription_code: subscription_code)
+      return unless subscription
+      
+      subscription.update!(status: 'cancelled', auto_renew: false)
+      subscription.user.downgrade_from_premium
+      
+      # Send cancellation email
+      PremiumSubscriptionEmailService.send_cancellation_email(subscription.user, subscription)
+    end
+    
+    def handle_non_renewal
+      subscription_code = @data[:subscription_code]
+      return unless subscription_code
+      
+      subscription = PremiumSubscription.find_by(paystack_subscription_code: subscription_code)
+      return unless subscription
+      
+      subscription.update!(status: 'expired', auto_renew: false)
+      subscription.user.downgrade_from_premium
+      
+      # Send cancellation email
+      PremiumSubscriptionEmailService.send_cancellation_email(subscription.user, subscription)
     end
     
     def extract_subscription_code(data)
@@ -105,34 +159,6 @@ module PaystackWebhook
       data[:subscription] ||
       (data[:authorization] && data[:authorization][:subscription_code]) ||
       (data[:plan] && data[:plan][:subscription_code])
-    end
-    
-    def handle_subscription_cancellation
-      subscription = PremiumSubscription.find_by(
-        paystack_subscription_code: @data[:subscription_code]
-      )
-      
-      if subscription
-        subscription.update!(status: 'cancelled', auto_renew: false)
-        subscription.user.downgrade_from_premium
-        
-        # Send cancellation email
-        PremiumSubscriptionEmailService.send_cancellation_email(subscription.user, subscription)
-      end
-    end
-    
-    def handle_non_renewal
-      subscription = PremiumSubscription.find_by(
-        paystack_subscription_code: @data[:subscription_code]
-      )
-      
-      if subscription
-        subscription.update!(status: 'expired', auto_renew: false)
-        subscription.user.downgrade_from_premium
-        
-        # Send cancellation email
-        PremiumSubscriptionEmailService.send_cancellation_email(subscription.user, subscription)
-      end
     end
     
     def calculate_end_date(plan, start_date = Time.current)
