@@ -50,24 +50,24 @@ module PaystackWebhook
         start_date: Time.current,
         expires_at: calculate_end_date(plan, Time.current),
         auto_renew: is_recurring, # ✅ Set auto_renew based on metadata
-        paystack_subscription_code: @data.dig(:subscription, :subscription_code) # This might be nil initially
+        paystack_subscription_code: @data.dig(:subscription, :subscription_code) # usually nil at charge.success
       )
 
       if subscription.save
-        # ✅ CRITICAL: Update user's premium status
-        update_user_premium_status(user, plan, subscription_code)
+        # ✅ Update user premium status with whatever subscription_code we have
+        update_user_premium_status(user, plan, subscription.paystack_subscription_code)
 
-        
         Rails.logger.info "Premium subscription activated for User##{user.id}, Plan##{plan.id}"
-        
+
         # ✅ Log if subscription code is missing for recurring subscription
-        if is_recurring && subscription_code.nil?
+        if is_recurring && subscription.paystack_subscription_code.nil?
           Rails.logger.info "Subscription code not available yet for recurring subscription. It will come in a subscription.create event."
         end
       else
         Rails.logger.error "Failed to save subscription: #{subscription.errors.full_messages}"
       end
     end
+
 
     def handle_subscription_create
       subscription_code = @data[:subscription_code]
