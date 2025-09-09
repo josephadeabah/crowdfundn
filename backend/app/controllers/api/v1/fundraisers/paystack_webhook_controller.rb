@@ -77,11 +77,11 @@ module Api
 
           when 'subscription.create'
             Rails.logger.info "Processing subscription.create event"
-            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_create)
+            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
 
           when 'subscription.disable', 'subscription.not_renew'
             Rails.logger.info "Processing #{event_type} event"
-            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_disable)
+            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
 
           when 'subscription.charge.failed'
             Rails.logger.info "Processing subscription.charge.failed event"
