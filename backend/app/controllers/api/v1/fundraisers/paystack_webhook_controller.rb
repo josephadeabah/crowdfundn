@@ -47,7 +47,6 @@ module Api
             case metadata[:type]
             when 'premium_subscription'
               PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
-              ensure_user_premium_status(event[:data])
             when 'equity_investment'
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
             else
