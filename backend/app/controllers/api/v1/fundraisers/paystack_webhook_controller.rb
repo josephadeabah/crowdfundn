@@ -88,11 +88,11 @@ module Api
             PaystackWebhook::SubscriptionChargeFailedHandler.new(event[:data]).call
 
           when 'refund.processed'
-            Rails.logger.info "Processing refund.processed event"
+            metadata = event[:data][:metadata] || {}
             if metadata[:type] == 'equity_investment'
-              PaystackWebhook::Handlers::RefundProcessedHandler.new(data: event[:data]).call
+              PaystackWebhook::Handlers::RefundProcessedHandler.new(event[:data]).call  # Remove data: keyword
             else
-              PaystackWebhook::Handlers::DonationRefundHandler.new(data: event[:data]).call
+              PaystackWebhook::Handlers::DonationRefundHandler.new(event[:data]).call   # Remove data: keyword
             end
 
           else
