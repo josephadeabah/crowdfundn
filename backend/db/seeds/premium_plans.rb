@@ -25,7 +25,7 @@ begin
     puts "Step 3: Creating new premium plans..."
     plans = [
       {
-        name: 'Starter',
+        name: 'Starter - monthly',
         price: 99.99,
         currency: 'GHS',
         interval: 'monthly',
@@ -43,7 +43,7 @@ begin
         active: true
       },
       {
-        name: 'Growth',
+        name: 'Growth - monthly',
         price: 299.99,
         currency: 'GHS',
         interval: 'monthly',
@@ -61,7 +61,7 @@ begin
         active: true
       },
       {
-        name: 'Pro+',
+        name: 'Pro+ - monthly',
         price: 499.99,
         currency: 'GHS',
         interval: 'monthly',
