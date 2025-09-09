@@ -20,7 +20,7 @@ class PremiumSubscription < ApplicationRecord
       paystack_service = PaystackService.new
       response = paystack_service.cancel_subscription(
         code: paystack_subscription_code,
-        token: user&.paystack_email_token # ✅ store & use real Paystack email token
+        token: paystack_email_token # ✅ store & use real Paystack email token
       )
 
       unless response[:status]

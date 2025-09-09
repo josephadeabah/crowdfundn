@@ -153,10 +153,6 @@ class User < ApplicationRecord
     end
   end
 
-  def paystack_email_token
-    premium_subscriptions.where.not(paystack_email_token: nil).order(created_at: :desc).limit(1).pluck(:paystack_email_token).first
-  end
-
   def downgrade_from_premium
     transaction do
       # Don't cancel on Paystack here - let the subscription.cancel! method handle it
