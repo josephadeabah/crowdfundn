@@ -41,6 +41,8 @@ module PaystackWebhook
         transaction_reference: @data[:reference]
       )
 
+      email_token = @data[:email_token]
+
       subscription.assign_attributes(
         user: user,
         premium_plan: plan,
@@ -49,18 +51,17 @@ module PaystackWebhook
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_end_date(plan, Time.current),
-        auto_renew: is_recurring, # ✅ Set auto_renew based on metadata
-        paystack_subscription_code: metadata[:subscription_code], # May be nil for one-time payments
-        paystack_email_token: @data[:email_token], # May be nil
+        auto_renew: is_recurring,
+        paystack_subscription_code: @data.dig(:subscription, :subscription_code),
+        paystack_email_token: email_token # ✅ Store the email token
       )
 
       if subscription.save
-        # ✅ Update user premium status with whatever subscription_code we have
+        # ✅ Update user premium status
         update_user_premium_status(user, plan, subscription.paystack_subscription_code)
 
         Rails.logger.info "Premium subscription activated for User##{user.id}, Plan##{plan.id}"
 
-        # ✅ Log if subscription code is missing for recurring subscription
         if is_recurring && subscription.paystack_subscription_code.nil?
           Rails.logger.info "Subscription code not available yet for recurring subscription. It will come in a subscription.create event."
         end
@@ -69,8 +70,6 @@ module PaystackWebhook
       end
     end
 
-
-    # app/services/paystack_webhook/premium_subscription_handler.rb
     def handle_subscription_create
       subscription_code = @data[:subscription_code]
       email_token       = @data[:email_token]
@@ -85,14 +84,13 @@ module PaystackWebhook
         return
       end
 
-      # ✅ Find plan by Paystack plan code
       plan = PremiumPlan.find_by(paystack_plan_code: plan_code)
       unless plan
         Rails.logger.error "PremiumPlan not found for plan_code: #{plan_code}"
         return
       end
 
-      # ✅ Find the most recent subscription for this user and plan that doesn't have a subscription code yet
+      # ✅ Find the most recent subscription for this user and plan
       subscription = user.premium_subscriptions
                         .where(premium_plan: plan)
                         .where(paystack_subscription_code: nil)
@@ -101,26 +99,14 @@ module PaystackWebhook
 
       unless subscription
         Rails.logger.error "No matching subscription found for User##{user.id}, Plan##{plan.id}"
-        
-        # ✅ Fallback: create a new subscription if none found
-        subscription = user.premium_subscriptions.create!(
-          premium_plan: plan,
-          amount: @data[:amount].to_f / 100,
-          currency: @data[:currency],
-          status: 'active',
-          start_date: Time.current,
-          expires_at: calculate_end_date(plan, Time.current),
-          auto_renew: true,
-          transaction_reference: "sub_#{subscription_code}" # Use subscription code as reference
-        )
-        Rails.logger.info "Created new subscription as fallback: #{subscription.id}"
+        return
       end
 
-      # ✅ Update with Paystack details
+      # ✅ Update with Paystack details including email token
       subscription.update!(
         paystack_subscription_code: subscription_code,
-        paystack_email_token: email_token,
-        auto_renew: true, # ✅ Force auto_renew to true for recurring subscriptions
+        paystack_email_token: email_token, # ✅ Store the email token from webhook
+        auto_renew: true,
         status: 'active'
       )
 
@@ -130,7 +116,6 @@ module PaystackWebhook
         premium_access: true,
         premium_plan_id: plan.id,
         premium_expires_at: calculate_end_date(plan, Time.current),
-        paystack_email_token: email_token, # ✅ Store email token on user for future cancellations
         updated_at: Time.current
       )
 

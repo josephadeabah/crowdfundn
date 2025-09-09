@@ -44,7 +44,7 @@ module Api
             metadata = event[:data][:metadata] || {}
 
             if metadata[:type] == 'premium_subscription' || metadata[:premium_plan_id]
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:charge_success)
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_create)
               ensure_user_premium_status(event[:data])
             else
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
