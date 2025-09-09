@@ -41,7 +41,6 @@ module PaystackWebhook
         auto_renew: ActiveModel::Type::Boolean.new.cast(metadata[:is_recurring]),
         next_payment_date: calculate_next_payment_date(plan, @data[:paid_at]),
         expires_at: calculate_end_date(plan, @data[:paid_at]),
-        customer_code: @data.dig(:customer, :customer_code) # so we can match later on subscription.create
       )
 
       Rails.logger.info "Premium subscription activated for User##{user.id}, Plan##{plan.id}"
