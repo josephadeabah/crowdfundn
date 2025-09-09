@@ -19,8 +19,10 @@ class PremiumSubscription < ApplicationRecord
     if paystack_subscription_code.present?
       paystack_service = PaystackService.new
       
-      # ✅ Use the email token from the premium_subscriptions table
-      unless paystack_email_token
+      # ✅ Get the email token from the user's associated record or webhook data
+      email_token = paystack_email_token || user&.paystack_email_token
+      
+      unless email_token
         Rails.logger.error("Email token missing for Paystack subscription cancellation: #{paystack_subscription_code}")
         # Fallback: just update local status without Paystack cancellation
         update(status: 'cancelled', auto_renew: false)
@@ -29,7 +31,7 @@ class PremiumSubscription < ApplicationRecord
 
       response = paystack_service.cancel_subscription(
         code: paystack_subscription_code,
-        token: paystack_email_token # ✅ Use the email token from the subscription
+        token: email_token # ✅ Use the actual email token
       )
 
       unless response[:status]
