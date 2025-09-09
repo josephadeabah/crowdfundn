@@ -27,56 +27,67 @@ module Api
 
         private
 
+        # app/controllers/api/v1/fundraisers/paystack_webhook_controller.rb
         def handle_event(event)
           event_id = event[:data][:id]
 
-          # Check if the event has already been processed (deduplication)
+          # deduplication
           if EventProcessed.exists?(event_id: event_id)
             Rails.logger.info "Event already processed: #{event_id}"
-            return # Ignore duplicate events
+            return
           end
 
-          # Log the received event for debugging purposes
           Rails.logger.info "Received Paystack event: #{event[:event]}"
 
-          # Process different event types
           case event[:event]
           when 'charge.success'
             metadata = event[:data][:metadata] || {}
-            if metadata[:premium_access] # Check for premium subscription
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+            
+            # ✅ FIXED: Check the type field to determine the handler
+            case metadata[:type]
+            when 'premium_subscription'
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:charge_success)
+              ensure_user_premium_status(event[:data])
+            when 'equity_investment'
+              PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
             else
+              # Handle donations and other types
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
             end
-          when 'charge.failed'
-            PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
-          when 'transfer.success'
-            PaystackWebhook::TransferSuccessHandler.new(event[:data]).call
-          when 'transfer.failed'
-            PaystackWebhook::TransferFailedHandler.new(event[:data]).call
-          when 'transfer.reversed'
-            PaystackWebhook::TransferReversedHandler.new(event[:data]).call
+
           when 'subscription.create'
             metadata = event[:data][:metadata] || {}
-            if metadata[:premium_access] # Check for premium subscription
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+            # ✅ Only process premium subscription creates
+            if metadata[:type] == 'premium_subscription' || metadata[:premium_plan_id]
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_create)
             else
-              PaystackWebhook::SubscriptionCreateHandler.new(event[:data]).call
+              Rails.logger.info "Ignoring subscription.create event for non-premium subscription"
             end
-          when 'subscription.disable'
+
+          when 'subscription.disable', 'subscription.not_renew'
             metadata = event[:data][:metadata] || {}
-            if metadata[:premium_access] # Check for premium subscription
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+            # ✅ Only process premium subscription disables
+            if metadata[:type] == 'premium_subscription' || metadata[:premium_plan_id]
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_disable)
             else
-              PaystackWebhook::SubscriptionDisabledHandler.new(event[:data]).call
+              Rails.logger.info "Ignoring subscription.disable event for non-premium subscription"
             end
-          when 'subscription.not_renew'
-            metadata = event[:data][:metadata] || {}
-            if metadata[:premium_access] # Check for premium subscription
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
-            end
+
+          when 'charge.failed'
+            PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
+
+          when 'transfer.success'
+            PaystackWebhook::TransferSuccessHandler.new(event[:data]).call
+
+          when 'transfer.failed'
+            PaystackWebhook::TransferFailedHandler.new(event[:data]).call
+
+          when 'transfer.reversed'
+            PaystackWebhook::TransferReversedHandler.new(event[:data]).call
+
           when 'subscription.charge.failed'
             PaystackWebhook::SubscriptionChargeFailedHandler.new(event[:data]).call
+
           when 'refund.processed'
             metadata = event[:data][:metadata] || {}
             if metadata[:type] == 'equity_investment'
@@ -84,18 +95,15 @@ module Api
             else
               PaystackWebhook::Handlers::DonationRefundHandler.new(data: event[:data]).call
             end
+
           else
             Rails.logger.warn "Unhandled event type: #{event[:event]}"
-            # Don't render an error response here as it would prevent the 200 OK response
-            # Just log and continue
           end
 
-          # Mark the event as processed to prevent future duplicates
           EventProcessed.create(event_id: event_id)
         rescue => e
           Rails.logger.error "Error processing webhook event: #{e.message}"
           Rails.logger.error e.backtrace.join("\n")
-          # Don't re-raise the exception to prevent webhook retries
         end
 
       end
