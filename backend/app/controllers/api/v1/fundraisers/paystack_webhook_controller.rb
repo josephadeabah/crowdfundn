@@ -2,10 +2,8 @@ module Api
   module V1
     module Fundraisers
       class PaystackWebhookController < ApplicationController
-        protect_from_forgery except: :receive
-
         def receive
-          payload   = request.body.read
+          payload = request.body.read
           signature = request.headers['X-Paystack-Signature']
 
           paystack_service = PaystackService.new
@@ -13,13 +11,12 @@ module Api
             begin
               event = JSON.parse(payload, symbolize_names: true)
               handle_event(event)
-              head :ok
+              head :ok # Respond with 200 OK after handling the event
             rescue JSON::ParserError => e
               Rails.logger.error "Invalid JSON payload: #{e.message}"
               render json: { error: 'Invalid JSON payload' }, status: :unprocessable_entity
             rescue StandardError => e
               Rails.logger.error "Unexpected error: #{e.message}"
-              Rails.logger.error e.backtrace.join("\n")
               render json: { error: 'Unexpected error occurred' }, status: :internal_server_error
             end
           else
