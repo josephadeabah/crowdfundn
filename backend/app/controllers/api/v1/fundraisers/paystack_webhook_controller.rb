@@ -1,8 +1,7 @@
-# app/controllers/api/v1/fundraisers/paystack_webhook_controller.rb
 module Api
   module V1
     module Fundraisers
-      class PaystackWebhookController < ApplicationController        
+      class PaystackWebhookController < ApplicationController
         def receive
           payload = request.body.read
           signature = request.headers['X-Paystack-Signature']
@@ -51,35 +50,49 @@ module Api
           when 'charge.success'
             Rails.logger.info "Processing charge.success event"
             
-            # Route to appropriate handler based on metadata type
-            case metadata[:type]
-            when 'premium_subscription'
-              Rails.logger.info "Routing to PremiumSubscriptionHandler"
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
-            when 'equity_investment'
+            # Route to appropriate handler based on metadata
+            if metadata[:premium_access]
+              Rails.logger.info "Routing to PremiumSubscriptionHandler for charge.success"
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:charge_success)
+            else
               Rails.logger.info "Routing to ChargeSuccessHandler"
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
-            else
-              Rails.logger.info "Routing to ChargeSuccessHandler (default)"
-              PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
             end
+
+          when 'charge.failed'
+            Rails.logger.info "Processing charge.failed event"
+            PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
+
+          when 'transfer.success'
+            Rails.logger.info "Processing transfer.success event"
+            PaystackWebhook::TransferSuccessHandler.new(event[:data]).call
+
+          when 'transfer.failed'
+            Rails.logger.info "Processing transfer.failed event"
+            PaystackWebhook::TransferFailedHandler.new(event[:data]).call
+
+          when 'transfer.reversed'
+            Rails.logger.info "Processing transfer.reversed event"
+            PaystackWebhook::TransferReversedHandler.new(event[:data]).call
 
           when 'subscription.create'
-            metadata = event[:data][:metadata] || {}
-            if metadata[:type] == 'premium_subscription' || metadata[:premium_plan_id]
-              Rails.logger.info "Routing to PremiumSubscriptionHandler for subscription.create"
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
-            else
-              Rails.logger.info "Ignoring subscription.create event for non-premium subscription"
-            end
+            Rails.logger.info "Processing subscription.create event"
+            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_create)
 
           when 'subscription.disable', 'subscription.not_renew'
-            metadata = event[:data][:metadata] || {}
-            if metadata[:type] == 'premium_subscription' || metadata[:premium_plan_id]
-              Rails.logger.info "Routing to PremiumSubscriptionHandler for #{event_type}"
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+            Rails.logger.info "Processing #{event_type} event"
+            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_disable)
+
+          when 'subscription.charge.failed'
+            Rails.logger.info "Processing subscription.charge.failed event"
+            PaystackWebhook::SubscriptionChargeFailedHandler.new(event[:data]).call
+
+          when 'refund.processed'
+            Rails.logger.info "Processing refund.processed event"
+            if metadata[:type] == 'equity_investment'
+              PaystackWebhook::Handlers::RefundProcessedHandler.new(data: event[:data]).call
             else
-              Rails.logger.info "Ignoring #{event_type} event for non-premium subscription"
+              PaystackWebhook::Handlers::DonationRefundHandler.new(data: event[:data]).call
             end
 
           else
@@ -91,7 +104,8 @@ module Api
         rescue => e
           Rails.logger.error "Error processing webhook event: #{e.message}"
           Rails.logger.error e.backtrace.join("\n")
-          raise e
+          # Don't raise the error again to prevent returning 500 to Paystack
+          # Paystack will retry if we don't return 200
         end
       end
     end
