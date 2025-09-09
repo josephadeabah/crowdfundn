@@ -9,15 +9,25 @@ module PaystackWebhook
       Rails.logger.info "Metadata: #{@metadata.inspect}"
     end
     
-    def call
-      Rails.logger.info "PremiumSubscriptionHandler.call invoked"
+    # ADD THE event_type PARAMETER HERE
+    def call(event_type = nil)
+      Rails.logger.info "PremiumSubscriptionHandler.call invoked with event_type: #{event_type}"
       Rails.logger.info "Checking premium_access: #{@metadata[:premium_access]}, premium_plan_id: #{@metadata[:premium_plan_id]}"
       
       return unless @metadata[:premium_access] && @metadata[:premium_plan_id]
       
-      # Always handle as successful payment for premium subscriptions
-      Rails.logger.info "Processing premium subscription payment"
-      handle_successful_payment
+      # Handle different event types if needed
+      case event_type
+      when :charge_success, :subscription_create
+        Rails.logger.info "Processing premium subscription payment/creation"
+        handle_successful_payment
+      when :subscription_disable
+        Rails.logger.info "Processing premium subscription disable"
+        handle_subscription_disable
+      else
+        Rails.logger.info "Processing premium subscription (default)"
+        handle_successful_payment
+      end
     rescue => e
       Rails.logger.error "Error in PremiumSubscriptionHandler: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
