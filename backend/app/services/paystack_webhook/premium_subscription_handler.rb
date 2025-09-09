@@ -41,7 +41,9 @@ module PaystackWebhook
         transaction_reference: @data[:reference]
       )
 
-      # ✅ REMOVED: customer_code assignment since the column doesn't exist
+      # ✅ FIX: Check if subscription code exists in the event data
+      subscription_code = @data.dig(:subscription, :subscription_code)
+
       subscription.assign_attributes(
         user: user,
         premium_plan: plan,
@@ -50,16 +52,20 @@ module PaystackWebhook
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_end_date(plan, Time.current),
-        auto_renew: is_recurring,
-        paystack_subscription_code: @data.dig(:subscription, :subscription_code)
-        # ❌ REMOVED: customer_code: @data.dig(:customer, :customer_code)
+        auto_renew: is_recurring, # ✅ Set auto_renew based on metadata
+        paystack_subscription_code: subscription_code # This might be nil initially
       )
 
       if subscription.save
         # ✅ CRITICAL: Update user's premium status
-        update_user_premium_status(user, plan, @data.dig(:subscription, :subscription_code))
+        update_user_premium_status(user, plan, subscription_code)
         
         Rails.logger.info "Premium subscription activated for User##{user.id}, Plan##{plan.id}"
+        
+        # ✅ Log if subscription code is missing for recurring subscription
+        if is_recurring && subscription_code.nil?
+          Rails.logger.info "Subscription code not available yet for recurring subscription. It will come in a subscription.create event."
+        end
       else
         Rails.logger.error "Failed to save subscription: #{subscription.errors.full_messages}"
       end
@@ -68,17 +74,19 @@ module PaystackWebhook
     def handle_subscription_create
       subscription_code = @data[:subscription_code]
       email_token       = @data[:email_token]
-      # ✅ FIXED: Use paystack_subscription_code to find subscription instead of customer_code
-      subscription = PremiumSubscription.find_by(paystack_subscription_code: subscription_code)
+      
+      # ✅ FIX: Find subscription by transaction reference or customer code
+      subscription = find_subscription_for_creation(subscription_code)
       
       unless subscription
-        Rails.logger.error "Subscription not found for paystack_subscription_code: #{subscription_code}"
+        Rails.logger.error "Subscription not found for subscription_code: #{subscription_code}"
         return
       end
 
       subscription.update!(
+        paystack_subscription_code: subscription_code,
         paystack_email_token: email_token,
-        auto_renew: true
+        auto_renew: true # ✅ Ensure auto_renew is set to true for recurring
       )
 
       # ✅ Also update the user's premium_subscription_id
@@ -89,6 +97,19 @@ module PaystackWebhook
       )
 
       Rails.logger.info "Premium subscription updated with Paystack codes for Subscription##{subscription.id}"
+    end
+
+    def find_subscription_for_creation(subscription_code)
+      # Try to find by customer code first (if available)
+      customer_code = @data.dig(:customer, :customer_code)
+      if customer_code
+        subscription = PremiumSubscription.find_by(user_id: User.find_by(customer_code: customer_code)&.id)
+        return subscription if subscription
+      end
+      
+      # Fallback: find by subscription code in user's premium_subscription_id
+      user = User.find_by(premium_subscription_id: subscription_code)
+      user&.premium_subscriptions&.last
     end
 
     def handle_subscription_disable

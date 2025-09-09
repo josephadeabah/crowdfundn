@@ -4,7 +4,7 @@ module Api
     module Members
       class PremiumSubscriptionsController < ApplicationController
         before_action :authenticate_request
-        
+                
         def show
           active_subscription = @current_user.active_premium_subscription
           current_plan = @current_user.premium_plan
@@ -20,7 +20,7 @@ module Api
               interval: current_plan.interval,
               description: current_plan.description,
               features: current_plan.features,
-              is_recurring: current_plan.recurring? # ✅ Use the model method
+              is_recurring: current_plan.recurring?
             } : nil,
             active_subscription: active_subscription ? {
               id: active_subscription.id,
@@ -29,7 +29,7 @@ module Api
               paystack_subscription_code: active_subscription.paystack_subscription_code,
               expires_at: active_subscription.expires_at,
               start_date: active_subscription.start_date,
-              is_recurring: active_subscription.auto_renew && active_subscription.paystack_subscription_code.present?
+              is_recurring: active_subscription.auto_renew # ✅ Use auto_renew instead of checking subscription code
             } : nil
           }, status: :ok
         end
