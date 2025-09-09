@@ -134,7 +134,7 @@ class User < ApplicationRecord
         premium_access: true,
         premium_plan_id: plan.id,
         premium_expires_at: calculate_premium_expiry(plan),
-        premium_subscription_id: subscription_code,
+        premium_subscription_id: subscription_code, # ✅ Make sure this is set
         updated_at: Time.current
       )
 
@@ -147,7 +147,7 @@ class User < ApplicationRecord
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_premium_expiry(plan),
-        auto_renew: is_recurring, # ✅ FIXED: Use the actual is_recurring parameter
+        auto_renew: is_recurring,
         transaction_reference: transaction_reference
       )
     end

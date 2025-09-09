@@ -51,12 +51,13 @@ module PaystackWebhook
       )
 
       if subscription.save
-        # Update user's premium status
-        user.upgrade_to_premium(
-          plan, 
-          @data[:reference], 
-          @data.dig(:subscription, :subscription_code), 
-          is_recurring
+        # ✅ CRITICAL FIX: Update user's premium status for both recurring and one-time
+        user.update_columns(
+          premium_access: true,
+          premium_plan_id: plan.id,
+          premium_expires_at: calculate_end_date(plan, Time.current),
+          premium_subscription_id: @data.dig(:subscription, :subscription_code),
+          updated_at: Time.current
         )
         
         Rails.logger.info "Premium subscription activated for User##{user.id}, Plan##{plan.id}"
@@ -79,6 +80,13 @@ module PaystackWebhook
         auto_renew: true
       )
 
+      # ✅ Also update the user's premium_subscription_id
+      user = subscription.user
+      user.update_columns(
+        premium_subscription_id: subscription_code,
+        updated_at: Time.current
+      )
+
       Rails.logger.info "Premium subscription updated with Paystack codes for Subscription##{subscription.id}"
     end
 
@@ -88,6 +96,17 @@ module PaystackWebhook
       return unless subscription
 
       subscription.update!(status: :cancelled, auto_renew: false)
+      
+      # ✅ Also update user's premium status
+      user = subscription.user
+      user.update_columns(
+        premium_access: false,
+        premium_plan_id: nil,
+        premium_expires_at: nil,
+        premium_subscription_id: nil,
+        updated_at: Time.current
+      )
+      
       Rails.logger.info "Premium subscription disabled for Subscription##{subscription.id}"
     end
 
