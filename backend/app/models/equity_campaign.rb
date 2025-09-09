@@ -263,7 +263,7 @@ class EquityCampaign < Campaign
   end
   
   def founder_equity_within_bounds
-    if founder_equity_percentage > 80
+    if founder_equity_percentage > 85
       errors.add(:base, "Founder equity allocation is too high for a credible offering")
     end
     
