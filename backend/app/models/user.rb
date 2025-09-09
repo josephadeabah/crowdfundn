@@ -134,7 +134,7 @@ class User < ApplicationRecord
         premium_access: true,
         premium_plan_id: plan.id,
         premium_expires_at: calculate_premium_expiry(plan),
-        premium_subscription_id: subscription_code, # ✅ Make sure this is set
+        premium_subscription_id: subscription_code,
         updated_at: Time.current
       )
 
@@ -147,11 +147,12 @@ class User < ApplicationRecord
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_premium_expiry(plan),
-        auto_renew: is_recurring,
+        auto_renew: subscription_code.present? || is_recurring, # ✅ fix
         transaction_reference: transaction_reference
       )
     end
   end
+
 
   def downgrade_from_premium
     transaction do
@@ -257,6 +258,13 @@ class User < ApplicationRecord
     new_kyc.save
   end
 
+  private
+
+  def set_default_status
+    self.status ||= 'active'
+    self.user_type = 'individual' if new_record? && user_type.blank?
+  end
+
   def calculate_premium_expiry(plan)
     case plan.interval
     when 'one_time', 'monthly'
@@ -271,10 +279,4 @@ class User < ApplicationRecord
     end
   end
 
-  private
-
-  def set_default_status
-    self.status ||= 'active'
-    self.user_type = 'individual' if new_record? && user_type.blank?
-  end
 end
