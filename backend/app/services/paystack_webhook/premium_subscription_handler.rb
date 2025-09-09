@@ -41,7 +41,7 @@ module PaystackWebhook
         transaction_reference: @data[:reference]
       )
 
-      email_token = @data[:email_token]
+      email_token = @data.dig(:authorization, :authorization_code) || @data.dig(:customer, :customer_code)
 
       subscription.assign_attributes(
         user: user,
