@@ -1,89 +1,128 @@
+# app/services/paystack_webhook/premium_subscription_handler.rb
 module PaystackWebhook
   class PremiumSubscriptionHandler
-    include JsonHelper
-
     def initialize(data)
-      @data = data.deep_symbolize_keys
-      Rails.logger.info "PremiumSubscriptionHandler initialized with data: #{@data}"
+      @data = data
+      @metadata = data[:metadata] || {}
     end
-
-    def call(event_type = :charge_success)
-      case event_type
-      when :charge_success
-        handle_charge_success
-      when :subscription_create
-        handle_subscription_create
-      when :subscription_disable
-        handle_subscription_disable
-      else
-        Rails.logger.warn "Unhandled premium subscription event: #{event_type}"
+    
+    def call
+      return unless @metadata[:premium_access] && @metadata[:premium_plan_id]
+      
+      case @data[:event]
+      when 'charge.success'
+        handle_successful_payment
+      when 'subscription.create'
+        handle_subscription_creation
+      when 'subscription.disable'
+        handle_subscription_cancellation
+      when 'subscription.not_renew'
+        handle_non_renewal
       end
     end
-
+    
     private
-
-    def handle_charge_success
-      metadata = @data[:metadata] || {}
-      user_id  = metadata[:user_id]
-      plan_id  = metadata[:premium_plan_id]
-
-      user = User.find_by(id: user_id)
-      plan = PremiumPlan.find_by(id: plan_id)
-      return unless user && plan
-
+    
+    def handle_successful_payment
+      user = User.find(@metadata[:user_id].to_i)
+      plan = PremiumPlan.find(@metadata[:premium_plan_id].to_i)
+      is_recurring = @metadata[:is_recurring] == 'true'
+      
       subscription = PremiumSubscription.find_or_initialize_by(
+        transaction_reference: @data[:reference]
+      )
+      
+      subscription_attrs = {
         user: user,
-        premium_plan: plan
+        premium_plan: plan,
+        status: 'active',
+        start_date: Time.current,
+        expires_at: calculate_end_date(plan),
+        amount: @data[:amount].to_f / 100,
+        currency: @data[:currency],
+        auto_renew: is_recurring
+      }
+      
+      if is_recurring && @data[:subscription_code].present?
+        subscription_attrs[:paystack_subscription_code] = @data[:subscription_code]
+      end
+      
+      subscription.update!(subscription_attrs)
+      
+      # Update user premium status
+      user.update_columns(
+        premium_access: true,
+        premium_plan_id: plan.id,
+        premium_expires_at: calculate_end_date(plan),
+        premium_subscription_id: @data[:subscription_code],
+        updated_at: Time.current
       )
-
-      subscription.update!(
-        status: :active,
-        auto_renew: ActiveModel::Type::Boolean.new.cast(metadata[:is_recurring]),
-        next_payment_date: calculate_next_payment_date(plan, @data[:paid_at]),
-        expires_at: calculate_end_date(plan, @data[:paid_at]),
-      )
-
-      Rails.logger.info "Premium subscription activated for User##{user.id}, Plan##{plan.id}"
+      
+      PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
+      PremiumSubscriptionEmailService.send_payment_success_email(user, subscription, @data)
     end
-
-    def handle_subscription_create
-      subscription_code = @data[:subscription_code]
-      email_token       = @data[:email_token]
-      customer_code     = @data.dig(:customer, :customer_code)
-
-      subscription = PremiumSubscription.find_by(customer_code: customer_code)
-      return unless subscription
-
+    
+    def handle_subscription_creation
+      user = User.find(@metadata[:user_id])
+      plan = PremiumPlan.find(@metadata[:premium_plan_id])
+      
+      subscription = PremiumSubscription.find_or_initialize_by(
+        paystack_subscription_code: @data[:subscription_code]
+      )
+      
       subscription.update!(
-        paystack_subscription_code: subscription_code,
-        paystack_email_token: email_token,
+        user: user,
+        premium_plan: plan,
+        status: 'active',
+        start_date: Time.at(@data[:created_at]),
+        expires_at: calculate_end_date(plan, Time.at(@data[:created_at])),
+        next_payment_date: Time.at(@data[:next_payment_date]),
+        amount: plan.price,
+        currency: plan.currency,
         auto_renew: true
       )
-
-      Rails.logger.info "Premium subscription updated with Paystack codes for Subscription##{subscription.id}"
+      
+      user.upgrade_to_premium(plan, @data[:subscription_code])
+      
+      # Send confirmation email
+      PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
     end
-
-    def handle_subscription_disable
-      subscription_code = @data[:subscription_code]
-      subscription = PremiumSubscription.find_by(paystack_subscription_code: subscription_code)
-      return unless subscription
-
-      subscription.update!(status: :cancelled, auto_renew: false)
-      Rails.logger.info "Premium subscription disabled for Subscription##{subscription.id}"
-    end
-
-    def calculate_next_payment_date(plan, paid_at)
-      start_date = paid_at.is_a?(String) ? Time.parse(paid_at) : paid_at
-      case plan.interval
-      when "monthly"   then start_date + 1.month
-      when "quarterly" then start_date + 3.months
-      when "annually"  then start_date + 1.year
-      else start_date + 1.month
+    
+    def handle_subscription_cancellation
+      subscription = PremiumSubscription.find_by(
+        paystack_subscription_code: @data[:subscription_code]
+      )
+      
+      if subscription
+        subscription.update!(status: 'cancelled', auto_renew: false)
+        subscription.user.downgrade_from_premium
+        
+        # Send cancellation email
+        PremiumSubscriptionEmailService.send_cancellation_email(subscription.user, subscription)
       end
     end
-
-    def calculate_end_date(plan, paid_at)
-      calculate_next_payment_date(plan, paid_at)
+    
+    def handle_non_renewal
+      subscription = PremiumSubscription.find_by(
+        paystack_subscription_code: @data[:subscription_code]
+      )
+      
+      if subscription
+        subscription.update!(status: 'expired', auto_renew: false)
+        subscription.user.downgrade_from_premium
+        
+        # Send cancellation email
+        PremiumSubscriptionEmailService.send_cancellation_email(subscription.user, subscription)
+      end
+    end
+    
+    def calculate_end_date(plan, start_date = Time.current)
+      case plan.interval
+      when 'monthly' then start_date + 1.month
+      when 'quarterly' then start_date + 3.months
+      when 'annually' then start_date + 1.year
+      else start_date + 1.month
+      end
     end
   end
 end

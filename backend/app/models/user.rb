@@ -137,7 +137,7 @@ class User < ApplicationRecord
         premium_subscription_id: subscription_code,
         updated_at: Time.current
       )
-
+      
       PremiumSubscription.create!(
         user: self,
         premium_plan: plan,
@@ -147,12 +147,11 @@ class User < ApplicationRecord
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_premium_expiry(plan),
-        auto_renew: subscription_code.present? || is_recurring, # ✅ fix
+        auto_renew: is_recurring, # This should be true for recurring subscriptions
         transaction_reference: transaction_reference
       )
     end
   end
-
 
   def downgrade_from_premium
     transaction do
