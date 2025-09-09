@@ -46,7 +46,7 @@ module Api
             # ✅ FIXED: Check the type field to determine the handler
             case metadata[:type]
             when 'premium_subscription'
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:charge_success)
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
               ensure_user_premium_status(event[:data])
             when 'equity_investment'
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
@@ -59,7 +59,7 @@ module Api
             metadata = event[:data][:metadata] || {}
             # ✅ Only process premium subscription creates
             if metadata[:type] == 'premium_subscription' || metadata[:premium_plan_id]
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_create)
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
             else
               Rails.logger.info "Ignoring subscription.create event for non-premium subscription"
             end
@@ -68,7 +68,7 @@ module Api
             metadata = event[:data][:metadata] || {}
             # ✅ Only process premium subscription disables
             if metadata[:type] == 'premium_subscription' || metadata[:premium_plan_id]
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_disable)
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
             else
               Rails.logger.info "Ignoring subscription.disable event for non-premium subscription"
             end
