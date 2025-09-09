@@ -53,7 +53,7 @@ module Api
             # Route to appropriate handler based on metadata
             if metadata[:premium_access]
               Rails.logger.info "Routing to PremiumSubscriptionHandler for charge.success"
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:charge_success)
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
             else
               Rails.logger.info "Routing to ChargeSuccessHandler"
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
