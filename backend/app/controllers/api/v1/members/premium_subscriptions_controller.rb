@@ -34,6 +34,7 @@ module Api
           }, status: :ok
         end
         
+
         def create
           plan = PremiumPlan.find(params[:plan_id])
           
@@ -45,41 +46,58 @@ module Api
                           recurring_param == true
                         end
             
-            callback_url = 'https://www.bantuhive.com/premium/callback'
-            paystack_service = PaystackService.new
-            
-            metadata = {
-              user_id: @current_user.id,
-              premium_plan_id: plan.id,
-              premium_access: true,
-              type: 'premium_subscription',
-              is_recurring: is_recurring,
-              plan_interval: plan.interval
-            }
+          callback_url = 'https://www.bantuhive.com/premium/callback'
+          paystack_service = PaystackService.new
+          
+          metadata = {
+            user_id: @current_user.id,
+            premium_plan_id: plan.id,
+            premium_access: true,
+            type: 'premium_subscription',
+            is_recurring: is_recurring,
+            plan_interval: plan.interval
+          }
 
           if is_recurring
-            # Create Paystack plan for recurring subscription
-            plan_response = paystack_service.create_subscription_plan(
-              name: "#{plan.name} - #{plan.interval}",
-              amount: plan.price,
-              interval: plan.interval,
-              currency: plan.currency
-            )
-            
-            if plan_response[:status]
-              plan_code = plan_response[:data][:plan_code]
+            # ✅ FIX: Use the existing Paystack plan code from the database
+            if plan.paystack_plan_code.present?
+              plan_code = plan.paystack_plan_code
+              
               # Use initialize_subscription method for recurring
               response = paystack_service.initialize_transaction(
                 email: @current_user.email,
                 amount: plan.price,
                 currency: plan.currency,
-                plan: plan_code, # ✅ This is key for recurring
+                plan: plan_code, # ✅ Use existing plan code
                 callback_url: callback_url,
                 metadata: metadata.merge(plan_code: plan_code)
               )
             else
-              render json: { error: 'Failed to create subscription plan' }, status: :unprocessable_entity
-              return
+              # Fallback: create a new plan if none exists (shouldn't happen with your seed data)
+              plan_response = paystack_service.create_subscription_plan(
+                name: "#{plan.name} - #{plan.interval}",
+                amount: plan.price,
+                interval: plan.interval,
+                currency: plan.currency
+              )
+              
+              if plan_response[:status]
+                plan_code = plan_response[:data][:plan_code]
+                # Update our database with the new plan code
+                plan.update(paystack_plan_code: plan_code)
+                
+                response = paystack_service.initialize_transaction(
+                  email: @current_user.email,
+                  amount: plan.price,
+                  currency: plan.currency,
+                  plan: plan_code,
+                  callback_url: callback_url,
+                  metadata: metadata.merge(plan_code: plan_code)
+                )
+              else
+                render json: { error: 'Failed to create subscription plan' }, status: :unprocessable_entity
+                return
+              end
             end
           else
             # One-time payment
