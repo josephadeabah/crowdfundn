@@ -147,7 +147,7 @@ class User < ApplicationRecord
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_premium_expiry(plan),
-        auto_renew: subscription_code.present? || is_recurring, # ✅ fix
+        auto_renew: is_recurring, # ✅ FIXED: Use the actual is_recurring parameter
         transaction_reference: transaction_reference
       )
     end

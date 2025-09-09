@@ -26,25 +26,43 @@ module PaystackWebhook
       metadata = @data[:metadata] || {}
       user_id  = metadata[:user_id]
       plan_id  = metadata[:premium_plan_id]
+      is_recurring = ActiveModel::Type::Boolean.new.cast(metadata[:is_recurring])
 
       user = User.find_by(id: user_id)
       plan = PremiumPlan.find_by(id: plan_id)
       return unless user && plan
 
+      # Find or create subscription
       subscription = PremiumSubscription.find_or_initialize_by(
+        transaction_reference: @data[:reference]
+      )
+
+      subscription.assign_attributes(
         user: user,
-        premium_plan: plan
+        premium_plan: plan,
+        amount: @data[:amount].to_f / 100, # Convert from kobo/pesewa
+        currency: @data[:currency],
+        status: 'active',
+        start_date: Time.current,
+        expires_at: calculate_end_date(plan, Time.current),
+        auto_renew: is_recurring,
+        paystack_subscription_code: @data.dig(:subscription, :subscription_code),
+        customer_code: @data.dig(:customer, :customer_code)
       )
 
-      subscription.update!(
-        status: :active,
-        auto_renew: ActiveModel::Type::Boolean.new.cast(metadata[:is_recurring]),
-        next_payment_date: calculate_next_payment_date(plan, @data[:paid_at]),
-        expires_at: calculate_end_date(plan, @data[:paid_at]),
-        customer_code: @data.dig(:customer, :customer_code) # so we can match later on subscription.create
-      )
-
-      Rails.logger.info "Premium subscription activated for User##{user.id}, Plan##{plan.id}"
+      if subscription.save
+        # Update user's premium status
+        user.upgrade_to_premium(
+          plan, 
+          @data[:reference], 
+          @data.dig(:subscription, :subscription_code), 
+          is_recurring
+        )
+        
+        Rails.logger.info "Premium subscription activated for User##{user.id}, Plan##{plan.id}"
+      else
+        Rails.logger.error "Failed to save subscription: #{subscription.errors.full_messages}"
+      end
     end
 
     def handle_subscription_create
