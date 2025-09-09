@@ -1,3 +1,4 @@
+# app/services/paystack_webhook/premium_subscription_handler.rb
 module PaystackWebhook
   class PremiumSubscriptionHandler
     def initialize(data)
@@ -14,20 +15,9 @@ module PaystackWebhook
       
       return unless @metadata[:premium_access] && @metadata[:premium_plan_id]
       
-      Rails.logger.info "Processing event: #{@data[:event]}"
-      
-      case @data[:event]
-      when 'charge.success'
-        handle_successful_payment
-      when 'subscription.create'
-        handle_subscription_creation
-      when 'subscription.disable'
-        handle_subscription_cancellation
-      when 'subscription.not_renew'
-        handle_non_renewal
-      else
-        Rails.logger.warn "Unhandled event type in PremiumSubscriptionHandler: #{@data[:event]}"
-      end
+      # Always handle as successful payment for premium subscriptions
+      Rails.logger.info "Processing premium subscription payment"
+      handle_successful_payment
     rescue => e
       Rails.logger.error "Error in PremiumSubscriptionHandler: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
@@ -39,9 +29,21 @@ module PaystackWebhook
     def handle_successful_payment
       Rails.logger.info "handle_successful_payment started"
       
-      user = User.find(@metadata[:user_id].to_i)
-      plan = PremiumPlan.find(@metadata[:premium_plan_id].to_i)
+      user_id = @metadata[:user_id].to_i
+      plan_id = @metadata[:premium_plan_id].to_i
       is_recurring = @metadata[:is_recurring] == 'true'
+      
+      Rails.logger.info "Looking for user #{user_id} and plan #{plan_id}, recurring: #{is_recurring}"
+      
+      user = User.find_by(id: user_id)
+      plan = PremiumPlan.find_by(id: plan_id)
+      
+      unless user && plan
+        Rails.logger.error "User or plan not found: user_id=#{user_id}, plan_id=#{plan_id}"
+        return
+      end
+      
+      Rails.logger.info "Found user: #{user.email}, plan: #{plan.name}"
       
       subscription = PremiumSubscription.find_or_initialize_by(
         transaction_reference: @data[:reference]
@@ -58,77 +60,45 @@ module PaystackWebhook
         auto_renew: is_recurring
       }
       
-      if is_recurring && @data[:subscription_code].present?
-        subscription_attrs[:paystack_subscription_code] = @data[:subscription_code]
+      # For recurring subscriptions, look for subscription code in authorization or metadata
+      if is_recurring
+        subscription_code = @data.dig(:authorization, :subscription_code) || 
+                           @metadata[:subscription_code] ||
+                           @data[:subscription_code]
+        
+        if subscription_code.present?
+          subscription_attrs[:paystack_subscription_code] = subscription_code
+          Rails.logger.info "Setting subscription code: #{subscription_code}"
+        else
+          Rails.logger.warn "No subscription code found for recurring subscription"
+        end
       end
       
-      subscription.update!(subscription_attrs)
+      Rails.logger.info "Creating/updating subscription with attributes: #{subscription_attrs}"
+      
+      if subscription.update!(subscription_attrs)
+        Rails.logger.info "Subscription created/updated successfully: #{subscription.id}"
+      else
+        Rails.logger.error "Failed to create/update subscription: #{subscription.errors.full_messages}"
+        return
+      end
       
       # Update user premium status
       user.update_columns(
         premium_access: true,
         premium_plan_id: plan.id,
         premium_expires_at: calculate_end_date(plan),
-        premium_subscription_id: @data[:subscription_code],
+        premium_subscription_id: subscription.id,
         updated_at: Time.current
       )
       
+      Rails.logger.info "User premium status updated: #{user.email}"
+      
+      # Send confirmation emails
       PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
       PremiumSubscriptionEmailService.send_payment_success_email(user, subscription, @data)
-    end
-    
-    def handle_subscription_creation
-      user = User.find(@metadata[:user_id])
-      plan = PremiumPlan.find(@metadata[:premium_plan_id])
       
-      subscription = PremiumSubscription.find_or_initialize_by(
-        paystack_subscription_code: @data[:subscription_code]
-      )
-      
-      subscription.update!(
-        user: user,
-        premium_plan: plan,
-        status: 'active',
-        start_date: Time.at(@data[:created_at]),
-        expires_at: calculate_end_date(plan, Time.at(@data[:created_at])),
-        next_payment_date: Time.at(@data[:next_payment_date]),
-        amount: plan.price,
-        currency: plan.currency,
-        auto_renew: true
-      )
-      
-      user.upgrade_to_premium(plan, @data[:subscription_code])
-      
-      # Send confirmation email
-      PremiumSubscriptionEmailService.send_confirmation_email(user, subscription)
-    end
-    
-    def handle_subscription_cancellation
-      subscription = PremiumSubscription.find_by(
-        paystack_subscription_code: @data[:subscription_code]
-      )
-      
-      if subscription
-        subscription.update!(status: 'cancelled', auto_renew: false)
-        subscription.user.downgrade_from_premium
-        
-        # Send cancellation email
-        PremiumSubscriptionEmailService.send_cancellation_email(subscription.user, subscription)
-      end
-    end
-    
-    def handle_non_renewal
-      subscription = PremiumSubscription.find_by(
-        paystack_subscription_code: @data[:subscription_code]
-      )
-      
-      if subscription
-        subscription.update!(status: 'expired', auto_renew: false)
-        subscription.user.downgrade_from_premium
-        
-        # Send cancellation email
-        PremiumSubscriptionEmailService.send_cancellation_email(subscription.user, subscription)
-      end
+      Rails.logger.info "Confirmation emails sent successfully"
     end
     
     def calculate_end_date(plan, start_date = Time.current)
