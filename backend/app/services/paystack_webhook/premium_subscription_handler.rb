@@ -73,33 +73,45 @@ module PaystackWebhook
     def handle_subscription_create
       subscription_code = @data[:subscription_code]
       email_token       = @data[:email_token]
-      customer_code     = @data.dig(:customer, :customer_code)
-      
-      Rails.logger.info "Processing subscription.create event: subscription_code=#{subscription_code}, customer_code=#{customer_code}"
-      
-      # ✅ FIX: Find the most recent active subscription for this customer
-      subscription = find_subscription_for_creation(customer_code, subscription_code)
-      
+      customer_email    = @data.dig(:customer, :email)
+      plan_code         = @data.dig(:plan, :plan_code)
+
+      Rails.logger.info "Processing subscription.create event: subscription_code=#{subscription_code}, email=#{customer_email}, plan_code=#{plan_code}"
+
+      # ✅ Find user by email (safer than relying on customer_code)
+      user = User.find_by(email: customer_email)
+      unless user
+        Rails.logger.error "User not found for email: #{customer_email}"
+        return
+      end
+
+      # ✅ Find the latest active subscription for this user & plan
+      subscription = user.premium_subscriptions
+                        .where(premium_plan: PremiumPlan.find_by(plan_code: plan_code))
+                        .where(auto_renew: true, paystack_subscription_code: nil)
+                        .order(created_at: :desc)
+                        .first
+
       unless subscription
-        Rails.logger.error "Subscription not found for customer_code: #{customer_code} or subscription_code: #{subscription_code}"
+        Rails.logger.error "No matching subscription found for User##{user.id}, PlanCode=#{plan_code}"
         return
       end
 
       subscription.update!(
         paystack_subscription_code: subscription_code,
         paystack_email_token: email_token,
-        auto_renew: true # ✅ Ensure auto_renew is set to true for recurring
+        auto_renew: true
       )
 
-      # ✅ Also update the user's premium_subscription_id
-      user = subscription.user
+      # ✅ Update user's premium_subscription_id
       user.update_columns(
         premium_subscription_id: subscription_code,
         updated_at: Time.current
       )
 
-      Rails.logger.info "Premium subscription updated with Paystack codes for Subscription##{subscription.id}"
+      Rails.logger.info "Subscription##{subscription.id} updated with Paystack subscription_code=#{subscription_code}"
     end
+
 
     def find_subscription_for_creation(customer_code, subscription_code)
       # First, try to find user by customer_code from Paystack
