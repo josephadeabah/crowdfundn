@@ -40,20 +40,22 @@ module Api
           Rails.logger.info "Received Paystack event: #{event[:event]}"
 
           case event[:event]
-          when 'charge.success'
-          when 'subscription.create'
+          when 'charge.success', 'subscription.create'
             metadata = event[:data][:metadata] || {}
-            
-            # ✅ FIXED: Check for premium subscription metadata
+
             if metadata[:type] == 'premium_subscription' || metadata[:premium_plan_id]
               handler = PaystackWebhook::PremiumSubscriptionHandler.new(event[:data])
-              handler.call(:charge_success)
-              handler.call(:subscription_create)
-              # ✅ Double ensure user gets updated for premium status
+              
+              # Call both flows explicitly
+              handler.call(:charge_success) if event[:event] == 'charge.success'
+              handler.call(:subscription_create) if event[:event] == 'subscription.create'
+              
               ensure_user_premium_status(event[:data])
             else
+              # Normal donation/pledge charge flow
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
             end
+
 
           when 'subscription.disable', 'subscription.not_renew'
             PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_disable)
