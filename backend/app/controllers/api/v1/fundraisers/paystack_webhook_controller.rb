@@ -27,31 +27,36 @@ module Api
 
         private
 
-        # app/controllers/api/v1/fundraisers/paystack_webhook_controller.rb
         def handle_event(event)
           event_id = event[:data][:id]
-
-          # deduplication
+          event_type = event[:event]
+          metadata = event.dig(:data, :metadata) || {}
+          
+          Rails.logger.info "=== WEBHOOK EVENT RECEIVED ==="
+          Rails.logger.info "Event: #{event_type}, ID: #{event_id}"
+          Rails.logger.info "Metadata: #{metadata.inspect}"
+          
+          # Check for duplicate event
           if EventProcessed.exists?(event_id: event_id)
             Rails.logger.info "Event already processed: #{event_id}"
             return
           end
 
-          Rails.logger.info "Received Paystack event: #{event[:event]}"
-
-          case event[:event]
+          case event_type
           when 'charge.success'
-            metadata = event[:data][:metadata] || {}
+            Rails.logger.info "Processing charge.success event"
             
             # ✅ FIXED: Check the type field to determine the handler
             case metadata[:type]
-            when 'premium_subscription'
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
-            when 'equity_investment'
-              PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
-            else
-              # Handle donations and other types
-              PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
+              when 'premium_subscription'
+                Rails.logger.info "Routing to PremiumSubscriptionHandler"
+                PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+              when 'equity_investment'
+                Rails.logger.info "Routing to ChargeSuccessHandler"
+                PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
+              else
+                Rails.logger.info "Routing to ChargeSuccessHandler (default)"
+                PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
             end
 
           when 'subscription.create'

@@ -1,13 +1,20 @@
-# app/services/paystack_webhook/premium_subscription_handler.rb
 module PaystackWebhook
   class PremiumSubscriptionHandler
     def initialize(data)
       @data = data
       @metadata = data[:metadata] || {}
+      Rails.logger.info "PremiumSubscriptionHandler initialized"
+      Rails.logger.info "Data: #{@data.inspect}"
+      Rails.logger.info "Metadata: #{@metadata.inspect}"
     end
     
     def call
+      Rails.logger.info "PremiumSubscriptionHandler.call invoked"
+      Rails.logger.info "Checking premium_access: #{@metadata[:premium_access]}, premium_plan_id: #{@metadata[:premium_plan_id]}"
+      
       return unless @metadata[:premium_access] && @metadata[:premium_plan_id]
+      
+      Rails.logger.info "Processing event: #{@data[:event]}"
       
       case @data[:event]
       when 'charge.success'
@@ -18,12 +25,20 @@ module PaystackWebhook
         handle_subscription_cancellation
       when 'subscription.not_renew'
         handle_non_renewal
+      else
+        Rails.logger.warn "Unhandled event type in PremiumSubscriptionHandler: #{@data[:event]}"
       end
+    rescue => e
+      Rails.logger.error "Error in PremiumSubscriptionHandler: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      raise e
     end
     
     private
     
     def handle_successful_payment
+      Rails.logger.info "handle_successful_payment started"
+      
       user = User.find(@metadata[:user_id].to_i)
       plan = PremiumPlan.find(@metadata[:premium_plan_id].to_i)
       is_recurring = @metadata[:is_recurring] == 'true'
