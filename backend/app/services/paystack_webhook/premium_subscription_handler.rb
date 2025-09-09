@@ -50,7 +50,8 @@ module PaystackWebhook
         start_date: Time.current,
         expires_at: calculate_end_date(plan, Time.current),
         auto_renew: is_recurring, # ✅ Set auto_renew based on metadata
-        paystack_subscription_code: @data.dig(:subscription, :subscription_code) # usually nil at charge.success
+        paystack_subscription_code: metadata[:subscription_code], # May be nil for one-time payments
+        paystack_email_token: @data[:email_token], # May be nil
       )
 
       if subscription.save
