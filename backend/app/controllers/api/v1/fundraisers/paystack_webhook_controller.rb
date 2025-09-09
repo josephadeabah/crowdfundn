@@ -40,22 +40,19 @@ module Api
           Rails.logger.info "Received Paystack event: #{event[:event]}"
 
           case event[:event]
-          when 'charge.success', 'subscription.create'
+          when 'charge.success'
             metadata = event[:data][:metadata] || {}
 
             if metadata[:type] == 'premium_subscription' || metadata[:premium_plan_id]
-              handler = PaystackWebhook::PremiumSubscriptionHandler.new(event[:data])
-              
-              # Call both flows explicitly
-              handler.call(:charge_success) if event[:event] == 'charge.success'
-              handler.call(:subscription_create) if event[:event] == 'subscription.create'
-              
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:charge_success)
               ensure_user_premium_status(event[:data])
             else
-              # Normal donation/pledge charge flow
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
             end
 
+          when 'subscription.create'
+            # ✅ Only premium subscription flow (no DonationHandler / no transaction verification)
+            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_create)
 
           when 'subscription.disable', 'subscription.not_renew'
             PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_disable)
@@ -92,6 +89,7 @@ module Api
           Rails.logger.error "Error processing webhook event: #{e.message}"
           Rails.logger.error e.backtrace.join("\n")
         end
+
 
         # ✅ New method to ensure user premium status is updated
         def ensure_user_premium_status(data)
