@@ -258,13 +258,6 @@ class User < ApplicationRecord
     new_kyc.save
   end
 
-  private
-
-  def set_default_status
-    self.status ||= 'active'
-    self.user_type = 'individual' if new_record? && user_type.blank?
-  end
-
   def calculate_premium_expiry(plan)
     case plan.interval
     when 'one_time', 'monthly'
@@ -279,4 +272,10 @@ class User < ApplicationRecord
     end
   end
 
+  private
+
+  def set_default_status
+    self.status ||= 'active'
+    self.user_type = 'individual' if new_record? && user_type.blank?
+  end
 end

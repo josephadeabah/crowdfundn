@@ -41,7 +41,9 @@ module Api
           case event[:event]
           when 'charge.success'
             metadata = event[:data][:metadata] || {}
-            if metadata[:premium_access]
+            
+            # ✅ FIXED: Check for premium subscription metadata
+            if metadata[:type] == 'premium_subscription' || metadata[:premium_plan_id]
               handler = PaystackWebhook::PremiumSubscriptionHandler.new(event[:data])
               handler.call(:charge_success)
               
@@ -108,24 +110,10 @@ module Api
             user.update_columns(
               premium_access: true,
               premium_plan_id: plan.id,
-              premium_expires_at: calculate_premium_expiry(plan),
+              premium_expires_at: user.calculate_premium_expiry(plan),
               updated_at: Time.current
             )
             Rails.logger.info "Ensured premium status for User##{user.id}"
-          end
-        end
-
-        def calculate_premium_expiry(plan)
-          case plan.interval
-          when 'one_time', 'monthly'
-            1.month.from_now
-          when 'quarterly'
-            3.months.from_now
-          when 'annually'
-            1.year.from_now
-          else
-            Rails.logger.warn("Unknown plan interval: #{plan.interval}, defaulting to 1 month")
-            1.month.from_now
           end
         end
       end

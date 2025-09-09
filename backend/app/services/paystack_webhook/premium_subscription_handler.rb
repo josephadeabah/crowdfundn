@@ -30,13 +30,18 @@ module PaystackWebhook
 
       user = User.find_by(id: user_id)
       plan = PremiumPlan.find_by(id: plan_id)
-      return unless user && plan
+      
+      unless user && plan
+        Rails.logger.error "User or Plan not found: user_id=#{user_id}, plan_id=#{plan_id}"
+        return
+      end
 
       # Find or create subscription
       subscription = PremiumSubscription.find_or_initialize_by(
         transaction_reference: @data[:reference]
       )
 
+      # ✅ REMOVED: customer_code assignment since the column doesn't exist
       subscription.assign_attributes(
         user: user,
         premium_plan: plan,
@@ -46,19 +51,13 @@ module PaystackWebhook
         start_date: Time.current,
         expires_at: calculate_end_date(plan, Time.current),
         auto_renew: is_recurring,
-        paystack_subscription_code: @data.dig(:subscription, :subscription_code),
-        customer_code: @data.dig(:customer, :customer_code)
+        paystack_subscription_code: @data.dig(:subscription, :subscription_code)
+        # ❌ REMOVED: customer_code: @data.dig(:customer, :customer_code)
       )
 
       if subscription.save
-        # ✅ CRITICAL FIX: Update user's premium status for both recurring and one-time
-        user.update_columns(
-          premium_access: true,
-          premium_plan_id: plan.id,
-          premium_expires_at: calculate_end_date(plan, Time.current),
-          premium_subscription_id: @data.dig(:subscription, :subscription_code),
-          updated_at: Time.current
-        )
+        # ✅ CRITICAL: Update user's premium status
+        update_user_premium_status(user, plan, @data.dig(:subscription, :subscription_code))
         
         Rails.logger.info "Premium subscription activated for User##{user.id}, Plan##{plan.id}"
       else
@@ -69,13 +68,15 @@ module PaystackWebhook
     def handle_subscription_create
       subscription_code = @data[:subscription_code]
       email_token       = @data[:email_token]
-      customer_code     = @data.dig(:customer, :customer_code)
-
-      subscription = PremiumSubscription.find_by(customer_code: customer_code)
-      return unless subscription
+      # ✅ FIXED: Use paystack_subscription_code to find subscription instead of customer_code
+      subscription = PremiumSubscription.find_by(paystack_subscription_code: subscription_code)
+      
+      unless subscription
+        Rails.logger.error "Subscription not found for paystack_subscription_code: #{subscription_code}"
+        return
+      end
 
       subscription.update!(
-        paystack_subscription_code: subscription_code,
         paystack_email_token: email_token,
         auto_renew: true
       )
@@ -93,7 +94,10 @@ module PaystackWebhook
     def handle_subscription_disable
       subscription_code = @data[:subscription_code]
       subscription = PremiumSubscription.find_by(paystack_subscription_code: subscription_code)
-      return unless subscription
+      unless subscription
+        Rails.logger.error "Subscription not found for paystack_subscription_code: #{subscription_code}"
+        return
+      end
 
       subscription.update!(status: :cancelled, auto_renew: false)
       
@@ -108,6 +112,17 @@ module PaystackWebhook
       )
       
       Rails.logger.info "Premium subscription disabled for Subscription##{subscription.id}"
+    end
+
+    def update_user_premium_status(user, plan, subscription_code = nil)
+      user.update_columns(
+        premium_access: true,
+        premium_plan_id: plan.id,
+        premium_expires_at: calculate_end_date(plan, Time.current),
+        premium_subscription_id: subscription_code,
+        updated_at: Time.current
+      )
+      Rails.logger.info "Updated premium status for User##{user.id}"
     end
 
     def calculate_next_payment_date(plan, paid_at)
