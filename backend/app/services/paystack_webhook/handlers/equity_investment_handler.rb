@@ -56,8 +56,9 @@ module PaystackWebhook::Handlers
           create_pledges_from_rewards(investment, metadata)
 
           if equity_limits_exceeded?(investment)
-            handle_oversubscription(investment, response, metadata)
-            return
+            result = handle_oversubscription(investment, response, metadata)
+            # Return the result instead of raising an exception
+            return result
           end
 
           investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
@@ -342,6 +343,7 @@ module PaystackWebhook::Handlers
         )
       )
 
+      # Process the refund
       PaystackWebhook::Handlers::RefundProcessedHandler.new(
         investment: investment,
         response: response
@@ -350,7 +352,11 @@ module PaystackWebhook::Handlers
       send_oversubscription_notification(investment, metadata)
       rollback_campaign_updates(investment, (response.dig(:data, :amount).to_f / 100.0) * 0.93)
 
-      raise "Investment #{investment.id} failed due to oversubscription"
+      # DON'T raise an exception - this is a successfully handled business case
+      Rails.logger.info "Oversubscription handled successfully for investment #{investment.id}"
+      
+      # Return a status indicator instead
+      :oversubscription_handled
     end
 
     def rollback_campaign_updates(investment, net_amount)
