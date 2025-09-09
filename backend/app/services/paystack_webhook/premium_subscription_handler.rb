@@ -87,7 +87,7 @@ module PaystackWebhook
 
       # ✅ Find the latest active subscription for this user & plan
       subscription = user.premium_subscriptions
-                        .where(premium_plan: PremiumPlan.find_by(plan_code: plan_code))
+                        .where(premium_plan: PremiumPlan.find_by(paystack_plan_code: plan_code))
                         .where(auto_renew: true, paystack_subscription_code: nil)
                         .order(created_at: :desc)
                         .first
