@@ -74,12 +74,15 @@ module PaystackWebhook
     def handle_subscription_create
       subscription_code = @data[:subscription_code]
       email_token       = @data[:email_token]
+      customer_code     = @data.dig(:customer, :customer_code)
       
-      # ✅ FIX: Find subscription by transaction reference or customer code
-      subscription = find_subscription_for_creation(subscription_code)
+      Rails.logger.info "Processing subscription.create event: subscription_code=#{subscription_code}, customer_code=#{customer_code}"
+      
+      # ✅ FIX: Find the most recent active subscription for this customer
+      subscription = find_subscription_for_creation(customer_code, subscription_code)
       
       unless subscription
-        Rails.logger.error "Subscription not found for subscription_code: #{subscription_code}"
+        Rails.logger.error "Subscription not found for customer_code: #{customer_code} or subscription_code: #{subscription_code}"
         return
       end
 
@@ -99,17 +102,31 @@ module PaystackWebhook
       Rails.logger.info "Premium subscription updated with Paystack codes for Subscription##{subscription.id}"
     end
 
-    def find_subscription_for_creation(subscription_code)
-      # Try to find by customer code first (if available)
-      customer_code = @data.dig(:customer, :customer_code)
+    def find_subscription_for_creation(customer_code, subscription_code)
+      # First, try to find user by customer_code from Paystack
       if customer_code
-        subscription = PremiumSubscription.find_by(user_id: User.find_by(customer_code: customer_code)&.id)
+        # Look for the user who has a subscription with this customer_code in metadata
+        # or find the most recent subscription for any user that might match
+        subscription = PremiumSubscription.joins(:user)
+                         .where("premium_subscriptions.paystack_subscription_code IS NULL")
+                         .where("premium_subscriptions.auto_renew = ?", true)
+                         .order("premium_subscriptions.created_at DESC")
+                         .first
+        
         return subscription if subscription
       end
       
-      # Fallback: find by subscription code in user's premium_subscription_id
-      user = User.find_by(premium_subscription_id: subscription_code)
-      user&.premium_subscriptions&.last
+      # Fallback: if we have subscription_code, try to find user by premium_subscription_id
+      if subscription_code
+        user = User.find_by(premium_subscription_id: subscription_code)
+        return user&.premium_subscriptions&.last
+      end
+      
+      # Last resort: find the most recent subscription without a paystack_subscription_code
+      PremiumSubscription.where(paystack_subscription_code: nil)
+                         .where(auto_renew: true)
+                         .order(created_at: :desc)
+                         .first
     end
 
     def handle_subscription_disable

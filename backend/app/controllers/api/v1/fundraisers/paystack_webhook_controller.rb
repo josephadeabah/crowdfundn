@@ -53,6 +53,14 @@ module Api
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
             end
 
+          when 'subscription.create'
+            # ✅ Always process subscription.create events for premium
+            handler = PaystackWebhook::PremiumSubscriptionHandler.new(event[:data])
+            handler.call(:subscription_create)
+
+          when 'subscription.disable', 'subscription.not_renew'
+            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_disable)
+
           when 'charge.failed'
             PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
 
@@ -64,12 +72,6 @@ module Api
 
           when 'transfer.reversed'
             PaystackWebhook::TransferReversedHandler.new(event[:data]).call
-
-          when 'subscription.create'
-            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_create)
-
-          when 'subscription.disable', 'subscription.not_renew'
-            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_disable)
 
           when 'subscription.charge.failed'
             PaystackWebhook::SubscriptionChargeFailedHandler.new(event[:data]).call
