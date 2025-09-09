@@ -27,10 +27,8 @@ module PaystackWebhook
       user_id  = metadata[:user_id]
       plan_id  = metadata[:premium_plan_id]
       is_recurring = ActiveModel::Type::Boolean.new.cast(metadata[:is_recurring])
-
       user = User.find_by(id: user_id)
       plan = PremiumPlan.find_by(id: plan_id)
-      
       unless user && plan
         Rails.logger.error "User or Plan not found: user_id=#{user_id}, plan_id=#{plan_id}"
         return
@@ -41,9 +39,6 @@ module PaystackWebhook
         transaction_reference: @data[:reference]
       )
 
-      # ✅ FIX: Check if subscription code exists in the event data
-      subscription_code = @data.dig(:subscription, :subscription_code)
-
       subscription.assign_attributes(
         user: user,
         premium_plan: plan,
@@ -52,20 +47,21 @@ module PaystackWebhook
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_end_date(plan, Time.current),
-        auto_renew: is_recurring, # ✅ Set auto_renew based on metadata
-        paystack_subscription_code: subscription_code # This might be nil initially
+        auto_renew: is_recurring,
+        paystack_subscription_code: @data.dig(:subscription, :subscription_code),
       )
 
       if subscription.save
-        # ✅ CRITICAL: Update user's premium status
+        # Update user's premium status
         update_user_premium_status(user, plan, subscription_code)
+        user.upgrade_to_premium(
+          plan, 
+          @data[:reference], 
+          @data.dig(:subscription, :subscription_code), 
+          is_recurring
+        )
         
         Rails.logger.info "Premium subscription activated for User##{user.id}, Plan##{plan.id}"
-        
-        # ✅ Log if subscription code is missing for recurring subscription
-        if is_recurring && subscription_code.nil?
-          Rails.logger.info "Subscription code not available yet for recurring subscription. It will come in a subscription.create event."
-        end
       else
         Rails.logger.error "Failed to save subscription: #{subscription.errors.full_messages}"
       end
