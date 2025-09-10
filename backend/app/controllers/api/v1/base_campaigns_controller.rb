@@ -280,6 +280,7 @@ module Api
 
       # app/controllers/api/v1/base_campaigns_controller.rb
       def campaign_json(campaign)
+        
         json = campaign.as_json(
           only: %i[
             id title slug goal_amount current_amount transferred_amount start_date end_date
@@ -314,7 +315,7 @@ module Api
             website: campaign.company_website,
             contract_term: campaign.contract_term
           },
-          favorited: options[:user] ? options[:user].favorited_campaigns.include?(campaign) : false
+          favorited: @current_user ? @current_user.favorited_campaigns.include?(campaign) : false
         )
         # Filter to only include contract documents
         if json[:investor_documents]
