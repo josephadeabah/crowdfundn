@@ -66,7 +66,7 @@ const InvestmentContracts = () => {
     <div className="min-h-screen bg-background">
       {/* Header Section */}
       <div className="bg-gradient-to-br from-trust/5 via-background to-growth/5 py-16">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
               Investment Contracts in Ghana
@@ -82,7 +82,7 @@ const InvestmentContracts = () => {
       </div>
 
       {/* Investment Contracts Carousel */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="max-w-7xl mx-auto px-4 py-16">
         <Carousel className="w-full relative" opts={{ align: "start", loop: false }}>
           <CarouselContent className="-ml-2 md:-ml-4">
             {investmentContracts.map((contract, index) => {
@@ -130,7 +130,7 @@ const InvestmentContracts = () => {
                         </div>
                       </div>
 
-                      <Link href={`/contracts/${contract.id}`}>
+                      <Link href={`/investment-contracts/${contract.id}`}>
                         <Button 
                           variant="outline" 
                           className="w-full group-hover:bg-trust group-hover:text-trust-foreground group-hover:border-trust transition-all duration-300"
