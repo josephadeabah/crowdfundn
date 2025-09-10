@@ -6,10 +6,10 @@ import { ArrowLeft, BarChart3, DollarSign, AlertTriangle, CheckCircle, Info, Ref
 
 const ConvertibleBonds = () => {
   return (
-    <div className="max-w-7xl mx-auto min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-gradient-to-br from-trust/10 via-background to-growth/5 py-8">
-        <div className="container mx-auto px-4">
+        <div className="ax-w-7xl mx-auto px-4">
           <Link href="/">
             <Button variant="ghost" className="mb-4 hover:bg-trust/10">
               <ArrowLeft className="mr-2 h-4 w-4" />
