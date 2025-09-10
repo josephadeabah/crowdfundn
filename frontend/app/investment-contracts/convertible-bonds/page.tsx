@@ -6,7 +6,7 @@ import { ArrowLeft, BarChart3, DollarSign, AlertTriangle, CheckCircle, Info, Ref
 
 const ConvertibleBonds = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="max-w-7xl mx-auto min-h-screen bg-background">
       {/* Header */}
       <div className="bg-gradient-to-br from-trust/10 via-background to-growth/5 py-8">
         <div className="container mx-auto px-4">
