@@ -10,6 +10,7 @@ import moment from 'moment';
 import ProgressRing from '../components/ring/ProgressRing';
 import { CampaignResponseDataType } from '../types/campaigns.types';
 import TransferLoader from '../loaders/TransferLoader ';
+import InfoTooltip from '../components/tooltip/tooltip';
 
 export default function Transfers() {
   const {
@@ -102,13 +103,28 @@ export default function Transfers() {
     const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
     const minimumAmount = 60.0;
 
-    // For equity campaigns, only check minimum amount
+    // For equity campaigns, check if current amount is at least half of goal amount AND meets minimum
     if (campaign.type === 'EquityCampaign') {
-      return currentAmount < minimumAmount;
+      return currentAmount < goalAmount * 0.5 || currentAmount < minimumAmount;
     }
 
     // For regular campaigns, check if current amount equals goal amount AND meets minimum
-    return currentAmount !== goalAmount || currentAmount < minimumAmount;
+    return currentAmount < goalAmount || currentAmount < minimumAmount;
+  };
+
+  // Function to get transfer restriction message
+  const getTransferRestrictionMessage = (campaign: CampaignResponseDataType) => {
+    const currentAmount = parseFloat(
+      campaign.current_amount?.toString() || '0',
+    );
+    const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
+    
+    if (campaign.type === 'EquityCampaign') {
+      const requiredAmount = Math.max(goalAmount * 0.5, 60.0);
+      return `Transfer available when campaign reaches at least 50% of goal (${campaign.currency.toUpperCase()}${requiredAmount.toLocaleString()})`;
+    } else {
+      return `Transfer available only when campaign reaches 100% of goal (${campaign.currency.toUpperCase()}${goalAmount.toLocaleString()})`;
+    }
   };
 
   return (
@@ -146,9 +162,16 @@ export default function Transfers() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column - Campaigns */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-            Campaigns Available for Transfer
-          </h3>
+          <div className="flex items-center">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+              Campaigns Available for Transfer
+            </h3>
+            <InfoTooltip 
+              id="campaigns-tooltip"
+              content="Regular campaigns require 100% of goal amount. Equity campaigns require 50% of goal amount."
+              className="ml-2"
+            />
+          </div>
 
           {isLoadingCampaigns ? (
             <TransferCampaignLoader />
@@ -185,9 +208,19 @@ export default function Transfers() {
                       />
                     </div>
                     <div className="space-y-1 flex-1">
-                      <h3 className="font-medium text-gray-800 dark:text-white">
-                        {campaign.title}
-                      </h3>
+                      <div className="flex items-center">
+                        <h3 className="font-medium text-gray-800 dark:text-white">
+                          {campaign.title}
+                        </h3>
+                        {isTransferDisabled(campaign) && (
+                          <InfoTooltip 
+                            id={`tooltip-${campaign.id}`}
+                            content={getTransferRestrictionMessage(campaign)}
+                            className="ml-2"
+                            iconSize={14}
+                          />
+                        )}
+                      </div>
                       <p className="text-sm text-gray-500 dark:text-neutral-400">
                         <span
                           className={
@@ -212,7 +245,7 @@ export default function Transfers() {
                       </p>
                       {campaign.type === 'EquityCampaign' && (
                         <p className="text-xs text-blue-600 dark:text-blue-400">
-                          Equity Campaign
+                          Equity Campaign (50% threshold)
                         </p>
                       )}
                     </div>
@@ -235,17 +268,7 @@ export default function Transfers() {
                 {/* Transfer restriction message */}
                 {isTransferDisabled(campaign) && (
                   <div className="mt-2 text-xs text-purple-600">
-                    {campaign.type === 'EquityCampaign' ? (
-                      <>
-                        Minimum transfer amount is{' '}
-                        {campaign.currency.toUpperCase()}60
-                      </>
-                    ) : (
-                      <>
-                        Transfer available only when campaign reaches 100% of
-                        goal
-                      </>
-                    )}
+                    {getTransferRestrictionMessage(campaign)}
                   </div>
                 )}
               </div>
