@@ -313,7 +313,8 @@ module Api
             headquarters: campaign.company_headquarters,
             website: campaign.company_website,
             contract_term: campaign.contract_term
-          }
+          },
+          favorited: options[:user] ? options[:user].favorited_campaigns.include?(campaign) : false
         )
         # Filter to only include contract documents
         if json[:investor_documents]
