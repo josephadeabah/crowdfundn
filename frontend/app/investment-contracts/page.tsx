@@ -130,7 +130,7 @@ const InvestmentContracts = () => {
                         </div>
                       </div>
 
-                      <Link href={`/investment-contracts/${contract.id}`}>
+                      <Link href={`${contract.id}`}>
                         <Button 
                           variant="outline" 
                           className="w-full group-hover:bg-trust group-hover:text-trust-foreground group-hover:border-trust transition-all duration-300"
