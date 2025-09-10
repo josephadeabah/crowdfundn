@@ -264,13 +264,6 @@ export default function Transfers() {
                       : 'Request Transfer'}
                   </Button>
                 </div>
-
-                {/* Transfer restriction message */}
-                {isTransferDisabled(campaign) && (
-                  <div className="mt-2 text-xs text-purple-600">
-                    {getTransferRestrictionMessage(campaign)}
-                  </div>
-                )}
               </div>
             ))
           )}
