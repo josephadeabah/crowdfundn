@@ -540,7 +540,7 @@ const Campaigns: React.FC = () => {
                       <InfoTooltip
                         id={`approved-tooltip-${campaign.id}`}
                         content="Congratulations! Your campaign has successfully passed all due diligence checks. 
-          You can now launch your campaign to make it publicly visible. 
+          You can now launch your campaign to start receiving investments. 
           Click the vertical dots menu in the top right corner and select 'Launch Campaign' to proceed"
                       />
                     )}
