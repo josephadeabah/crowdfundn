@@ -113,12 +113,14 @@ export default function Transfers() {
   };
 
   // Function to get transfer restriction message
-  const getTransferRestrictionMessage = (campaign: CampaignResponseDataType) => {
+  const getTransferRestrictionMessage = (
+    campaign: CampaignResponseDataType,
+  ) => {
     const currentAmount = parseFloat(
       campaign.current_amount?.toString() || '0',
     );
     const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
-    
+
     if (campaign.type === 'EquityCampaign') {
       const requiredAmount = Math.max(goalAmount * 0.5, 60.0);
       return `Transfer available when campaign reaches at least 50% of goal (${campaign.currency.toUpperCase()}${requiredAmount.toLocaleString()})`;
@@ -208,7 +210,7 @@ export default function Transfers() {
                           {campaign.title}
                         </h3>
                         {isTransferDisabled(campaign) && (
-                          <InfoTooltip 
+                          <InfoTooltip
                             id={`tooltip-${campaign.id}`}
                             content={getTransferRestrictionMessage(campaign)}
                             className="ml-2"

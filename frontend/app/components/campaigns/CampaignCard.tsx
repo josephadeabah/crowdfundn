@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Progress from '@/app/components/progressbar/ProgressBar';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -30,6 +30,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 }) => {
   const { favoriteCampaign, unfavoriteCampaign } = useCampaignContext();
   const { user } = useAuth();
+  const [isFavorited, setIsFavorited] = useState(campaign.favorited || false);
   const [isHovered, setIsHovered] = useState(false);
   const [toast, setToast] = useState({
     isOpen: false,
@@ -37,6 +38,11 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     description: '',
     type: 'success' as 'success' | 'error' | 'warning',
   });
+
+  // Sync with campaign prop changes
+  useEffect(() => {
+    setIsFavorited(campaign.favorited || false);
+  }, [campaign.favorited]);
 
   const showToast = (
     title: string,
@@ -56,7 +62,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     campaignId: string,
   ) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent event bubbling
+    e.stopPropagation();
 
     if (!user) {
       showToast(
@@ -68,20 +74,19 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
     }
 
     try {
-      if (campaign.favorited) {
+      if (isFavorited) {
         await unfavoriteCampaign(campaignId);
+        setIsFavorited(false);
         showToast('Success', 'Campaign removed from favorites', 'success');
       } else {
         await favoriteCampaign(campaignId);
+        setIsFavorited(true);
         showToast('Success', 'Campaign added to favorites', 'success');
       }
-      // Note: Removed the fetchAllCampaigns call as it's not needed here
-      // and could cause unnecessary re-renders in carousel
     } catch (error) {
       showToast('Error', 'Failed to update favorite status', 'error');
     }
   };
-
   const getEquityStatusColor = (status: string) => {
     switch (status) {
       case 'live':
@@ -156,7 +161,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         description={toast.description}
         type={toast.type}
       />
-      <div
+       <div
         className={cn(
           'group relative overflow-hidden bg-background hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col text-xs rounded-none',
           className,
@@ -168,11 +173,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           <button
             onClick={(e) => handleFavoriteClick(e, String(campaign.id))}
             className="p-1.5 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-colors"
+            aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
           >
-            {campaign.favorited ? (
-              <Heart className="h-3.5 w-3.5 fill-red-500 text-red-500" />
+            {isFavorited ? (
+              <Heart className="h-3.5 w-3.5 fill-green-500 text-green-500" />
             ) : (
-              <Heart className="h-3.5 w-3.5 text-muted-foreground hover:text-red-500" />
+              <Heart className="h-3.5 w-3.5 text-muted-foreground hover:text-green-500" />
             )}
           </button>
         </div>
