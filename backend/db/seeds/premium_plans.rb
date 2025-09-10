@@ -30,7 +30,7 @@ begin
         currency: 'GHS',
         interval: 'monthly',
         description: 'Perfect for individual fundraisers',
-        paystack_plan_code: 'PLN_qwcovvd895bdp4f', # 👈 replace with your actual Paystack plan code
+        paystack_plan_code: 'PLN_0hb067vzb4yluh0', # 👈 replace with your actual Paystack plan code
         features: {
           'Communication Channels': 'Email only',
           'Response Time': '1 day',
@@ -48,7 +48,7 @@ begin
         currency: 'GHS',
         interval: 'monthly',
         description: 'Ideal for growing organizations',
-        paystack_plan_code: 'PLN_4toraho9iiimof0', # 👈 replace
+        paystack_plan_code: 'PLN_jstq26qi0b77k6y', # 👈 replace
         features: {
           'Communication Channels': 'Email & Google Hangout',
           'Response Time': 'Within 5 hours',
@@ -66,7 +66,7 @@ begin
         currency: 'GHS',
         interval: 'monthly',
         description: 'Complete solution for professional fundraisers',
-        paystack_plan_code: 'PLN_9v6y9n2qhyz3uxl', # 👈 replace
+        paystack_plan_code: 'PLN_eyvanheki38f25r', # 👈 replace
         features: {
           'Communication Channels': 'Email, Google Hangout & Customer Preferred',
           'Response Time': 'Within 30 mins',
