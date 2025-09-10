@@ -6,7 +6,7 @@ import { ExternalLink, TrendingUp, Shield, DollarSign, PieChart, BarChart3, File
 
 const investmentContracts = [
   {
-    id: "equity-shares",
+    id: "/investment-contracts/equity-shares",
     title: "Equity Shares",
     description: "Direct ownership stake in the company with voting rights and potential dividends.",
     icon: TrendingUp,
@@ -15,7 +15,7 @@ const investmentContracts = [
     returnType: "Capital appreciation + Dividends"
   },
   {
-    id: "preference-shares",
+    id: "/investment-contracts/preference-shares",
     title: "Preference Shares",
     description: "Priority shares with fixed dividend rates and preferential treatment in liquidation.",
     icon: Shield,
@@ -24,7 +24,7 @@ const investmentContracts = [
     returnType: "Fixed dividends"
   },
   {
-    id: "convertible-bonds",
+    id: "/investment-contracts/convertible-bonds",
     title: "Convertible Bonds",
     description: "Debt securities that can be converted to equity shares at predetermined conditions.",
     icon: BarChart3,
@@ -33,7 +33,7 @@ const investmentContracts = [
     returnType: "Interest + Conversion rights"
   },
   {
-    id: "revenue-sharing",
+    id: "/investment-contracts/revenue-sharing",
     title: "Revenue Sharing",
     description: "Receive a percentage of company revenue for a specified period.",
     icon: PieChart,
@@ -42,7 +42,7 @@ const investmentContracts = [
     returnType: "Revenue percentage"
   },
   {
-    id: "profit-sharing",
+    id: "/investment-contracts/profit-sharing",
     title: "Profit Sharing",
     description: "Share in the company's profits without owning equity or having voting rights.",
     icon: DollarSign,
@@ -51,7 +51,7 @@ const investmentContracts = [
     returnType: "Profit percentage"
   },
   {
-    id: "debt-securities",
+    id: "/investment-contracts/debt-securities",
     title: "Debt Securities",
     description: "Fixed-income investments with guaranteed returns and principal protection.",
     icon: FileText,
