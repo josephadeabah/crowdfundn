@@ -161,7 +161,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         description={toast.description}
         type={toast.type}
       />
-       <div
+      <div
         className={cn(
           'group relative overflow-hidden bg-background hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col text-xs rounded-none',
           className,
@@ -173,7 +173,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           <button
             onClick={(e) => handleFavoriteClick(e, String(campaign.id))}
             className="p-1.5 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-colors"
-            aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={
+              isFavorited ? 'Remove from favorites' : 'Add to favorites'
+            }
           >
             {isFavorited ? (
               <Heart className="h-3.5 w-3.5 fill-green-500 text-green-500" />

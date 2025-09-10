@@ -482,107 +482,109 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   }, [token]);
 
   // Update favorite/unfavorite functions to handle the favoritedCampaigns state
-// context/account/campaign/CampaignsContext.tsx
-const favoriteCampaign = useCallback(
-  async (campaignId: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/favorite`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+  // context/account/campaign/CampaignsContext.tsx
+  const favoriteCampaign = useCallback(
+    async (campaignId: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/favorite`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      if (!response.ok) throw new Error('Failed to favorite campaign');
+        if (!response.ok) throw new Error('Failed to favorite campaign');
 
-      // Update the campaigns list
-      setCampaigns(prevCampaigns => 
-        prevCampaigns.map(campaign => 
-          campaign.id === Number(campaignId) 
-            ? { ...campaign, favorited: true } 
-            : campaign
-        )
-      );
+        // Update the campaigns list
+        setCampaigns((prevCampaigns) =>
+          prevCampaigns.map((campaign) =>
+            campaign.id === Number(campaignId)
+              ? { ...campaign, favorited: true }
+              : campaign,
+          ),
+        );
 
-      // Update current campaign if it's the one being favorited
-      setCurrentCampaign(current => 
-        current && current.id === Number(campaignId) 
-          ? { ...current, favorited: true } 
-          : current
-      );
+        // Update current campaign if it's the one being favorited
+        setCurrentCampaign((current) =>
+          current && current.id === Number(campaignId)
+            ? { ...current, favorited: true }
+            : current,
+        );
 
-      // Update favorited campaigns list
-      setFavoritedCampaigns(prev => {
-        const campaignToAdd = campaigns.find(c => c.id === Number(campaignId));
-        return campaignToAdd 
-          ? [...prev, { ...campaignToAdd, favorited: true }] 
-          : prev;
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Error favoriting campaign',
-      );
-    } finally {
-      setLoading(false);
-    }
-  },
-  [token, campaigns],
-);
+        // Update favorited campaigns list
+        setFavoritedCampaigns((prev) => {
+          const campaignToAdd = campaigns.find(
+            (c) => c.id === Number(campaignId),
+          );
+          return campaignToAdd
+            ? [...prev, { ...campaignToAdd, favorited: true }]
+            : prev;
+        });
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error favoriting campaign',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token, campaigns],
+  );
 
-const unfavoriteCampaign = useCallback(
-  async (campaignId: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/unfavorite`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+  const unfavoriteCampaign = useCallback(
+    async (campaignId: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/unfavorite`,
+          {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      if (!response.ok) throw new Error('Failed to unfavorite campaign');
+        if (!response.ok) throw new Error('Failed to unfavorite campaign');
 
-      // Update the campaigns list
-      setCampaigns(prevCampaigns => 
-        prevCampaigns.map(campaign => 
-          campaign.id === Number(campaignId) 
-            ? { ...campaign, favorited: false } 
-            : campaign
-        )
-      );
+        // Update the campaigns list
+        setCampaigns((prevCampaigns) =>
+          prevCampaigns.map((campaign) =>
+            campaign.id === Number(campaignId)
+              ? { ...campaign, favorited: false }
+              : campaign,
+          ),
+        );
 
-      // Update current campaign if it's the one being unfavorited
-      setCurrentCampaign(current => 
-        current && current.id === Number(campaignId) 
-          ? { ...current, favorited: false } 
-          : current
-      );
+        // Update current campaign if it's the one being unfavorited
+        setCurrentCampaign((current) =>
+          current && current.id === Number(campaignId)
+            ? { ...current, favorited: false }
+            : current,
+        );
 
-      // Update favorited campaigns list
-      setFavoritedCampaigns(prev => 
-        prev.filter(c => c.id !== Number(campaignId))
-      );
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Error unfavoriting campaign',
-      );
-    } finally {
-      setLoading(false);
-    }
-  },
-  [token],
-);
+        // Update favorited campaigns list
+        setFavoritedCampaigns((prev) =>
+          prev.filter((c) => c.id !== Number(campaignId)),
+        );
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error unfavoriting campaign',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
 
   // const favoriteCampaign = useCallback(
   //   async (campaignId: string) => {

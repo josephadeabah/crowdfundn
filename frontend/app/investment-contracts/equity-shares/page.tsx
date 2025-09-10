@@ -1,8 +1,23 @@
-import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { ArrowLeft, TrendingUp, Users, Vote, DollarSign, AlertTriangle, CheckCircle, Info } from "lucide-react";
+import Link from 'next/link';
+import { Button } from '@/app/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import { Badge } from '@/app/components/ui/badge';
+import {
+  ArrowLeft,
+  TrendingUp,
+  Users,
+  Vote,
+  DollarSign,
+  AlertTriangle,
+  CheckCircle,
+  Info,
+} from 'lucide-react';
 
 const EquityShares = () => {
   return (
@@ -16,21 +31,31 @@ const EquityShares = () => {
               Back to Contracts
             </Button>
           </Link>
-          
+
           <div className="flex items-center space-x-4 mb-6">
             <div className="p-3 rounded-xl bg-trust/10 text-trust">
               <TrendingUp className="h-8 w-8" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground">Equity Shares</h1>
-              <p className="text-muted-foreground">Direct ownership stake in the company</p>
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                Equity Shares
+              </h1>
+              <p className="text-muted-foreground">
+                Direct ownership stake in the company
+              </p>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Badge variant="secondary" className="bg-warning/10 text-warning">Medium-High Risk</Badge>
-            <Badge variant="secondary" className="bg-trust/10 text-trust">Voting Rights</Badge>
-            <Badge variant="secondary" className="bg-growth/10 text-growth">Dividend Eligible</Badge>
+            <Badge variant="secondary" className="bg-warning/10 text-warning">
+              Medium-High Risk
+            </Badge>
+            <Badge variant="secondary" className="bg-trust/10 text-trust">
+              Voting Rights
+            </Badge>
+            <Badge variant="secondary" className="bg-growth/10 text-growth">
+              Dividend Eligible
+            </Badge>
           </div>
         </div>
       </div>
@@ -49,13 +74,15 @@ const EquityShares = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-muted-foreground">
-                  Equity shares represent ownership in a company. When you purchase equity shares, you become a shareholder 
-                  and part-owner of the business. This ownership comes with certain rights and potential rewards, but also 
-                  carries risks.
+                  Equity shares represent ownership in a company. When you
+                  purchase equity shares, you become a shareholder and
+                  part-owner of the business. This ownership comes with certain
+                  rights and potential rewards, but also carries risks.
                 </p>
                 <p className="text-muted-foreground">
-                  In Ghana's equity crowdfunding market, equity shares allow individual investors to own portions of 
-                  growing businesses, from startups to established companies looking to expand.
+                  In Ghana's equity crowdfunding market, equity shares allow
+                  individual investors to own portions of growing businesses,
+                  from startups to established companies looking to expand.
                 </p>
               </CardContent>
             </Card>
@@ -71,26 +98,32 @@ const EquityShares = () => {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-foreground">Capital Appreciation</h4>
+                    <h4 className="font-semibold text-foreground">
+                      Capital Appreciation
+                    </h4>
                     <p className="text-sm text-muted-foreground">
-                      If the company grows and becomes more valuable, your shares increase in value. You can sell 
-                      them for more than you paid.
+                      If the company grows and becomes more valuable, your
+                      shares increase in value. You can sell them for more than
+                      you paid.
                     </p>
                   </div>
                   <div className="space-y-3">
                     <h4 className="font-semibold text-foreground">Dividends</h4>
                     <p className="text-sm text-muted-foreground">
-                      Companies may distribute profits to shareholders as dividends, typically paid quarterly 
-                      or annually.
+                      Companies may distribute profits to shareholders as
+                      dividends, typically paid quarterly or annually.
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="bg-muted/30 p-4 rounded-lg">
-                  <h5 className="font-medium text-foreground mb-2">Example Return Calculation</h5>
+                  <h5 className="font-medium text-foreground mb-2">
+                    Example Return Calculation
+                  </h5>
                   <p className="text-sm text-muted-foreground">
-                    If you invest GHS 1,000 for 10% equity and the company value grows from GHS 10,000 to GHS 20,000, 
-                    your shares are now worth GHS 2,000 - a 100% return on investment.
+                    If you invest GHS 1,000 for 10% equity and the company value
+                    grows from GHS 10,000 to GHS 20,000, your shares are now
+                    worth GHS 2,000 - a 100% return on investment.
                   </p>
                 </div>
               </CardContent>
@@ -110,41 +143,50 @@ const EquityShares = () => {
                     <div className="flex items-start space-x-3">
                       <CheckCircle className="h-5 w-5 text-success mt-0.5" />
                       <div>
-                        <h5 className="font-medium text-foreground">Voting Rights</h5>
+                        <h5 className="font-medium text-foreground">
+                          Voting Rights
+                        </h5>
                         <p className="text-sm text-muted-foreground">
                           Vote on major company decisions and board elections
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start space-x-3">
                       <CheckCircle className="h-5 w-5 text-success mt-0.5" />
                       <div>
-                        <h5 className="font-medium text-foreground">Information Rights</h5>
+                        <h5 className="font-medium text-foreground">
+                          Information Rights
+                        </h5>
                         <p className="text-sm text-muted-foreground">
                           Access to annual reports and financial statements
                         </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-start space-x-3">
                       <CheckCircle className="h-5 w-5 text-success mt-0.5" />
                       <div>
-                        <h5 className="font-medium text-foreground">Dividend Rights</h5>
+                        <h5 className="font-medium text-foreground">
+                          Dividend Rights
+                        </h5>
                         <p className="text-sm text-muted-foreground">
                           Share in profits when dividends are declared
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start space-x-3">
                       <CheckCircle className="h-5 w-5 text-success mt-0.5" />
                       <div>
-                        <h5 className="font-medium text-foreground">Liquidation Rights</h5>
+                        <h5 className="font-medium text-foreground">
+                          Liquidation Rights
+                        </h5>
                         <p className="text-sm text-muted-foreground">
-                          Share in company assets if the business is sold or closed
+                          Share in company assets if the business is sold or
+                          closed
                         </p>
                       </div>
                     </div>
@@ -164,23 +206,32 @@ const EquityShares = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-4">
                   <div className="bg-warning/5 border border-warning/20 p-4 rounded-lg">
-                    <h5 className="font-medium text-warning mb-2">Company Performance Risk</h5>
+                    <h5 className="font-medium text-warning mb-2">
+                      Company Performance Risk
+                    </h5>
                     <p className="text-sm text-muted-foreground">
-                      If the company performs poorly, your shares may lose value or become worthless.
+                      If the company performs poorly, your shares may lose value
+                      or become worthless.
                     </p>
                   </div>
-                  
+
                   <div className="bg-warning/5 border border-warning/20 p-4 rounded-lg">
-                    <h5 className="font-medium text-warning mb-2">Liquidity Risk</h5>
+                    <h5 className="font-medium text-warning mb-2">
+                      Liquidity Risk
+                    </h5>
                     <p className="text-sm text-muted-foreground">
-                      Equity shares in private companies can be difficult to sell quickly.
+                      Equity shares in private companies can be difficult to
+                      sell quickly.
                     </p>
                   </div>
-                  
+
                   <div className="bg-warning/5 border border-warning/20 p-4 rounded-lg">
-                    <h5 className="font-medium text-warning mb-2">Dilution Risk</h5>
+                    <h5 className="font-medium text-warning mb-2">
+                      Dilution Risk
+                    </h5>
                     <p className="text-sm text-muted-foreground">
-                      Your ownership percentage may decrease if the company issues new shares.
+                      Your ownership percentage may decrease if the company
+                      issues new shares.
                     </p>
                   </div>
                 </div>
@@ -198,24 +249,45 @@ const EquityShares = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Risk Level:</span>
-                    <Badge variant="secondary" className="bg-warning/10 text-warning">Medium-High</Badge>
+                    <span className="text-sm text-muted-foreground">
+                      Risk Level:
+                    </span>
+                    <Badge
+                      variant="secondary"
+                      className="bg-warning/10 text-warning"
+                    >
+                      Medium-High
+                    </Badge>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Min. Investment:</span>
+                    <span className="text-sm text-muted-foreground">
+                      Min. Investment:
+                    </span>
                     <span className="text-sm font-medium">GHS 500</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Voting Rights:</span>
-                    <span className="text-sm font-medium text-success">Yes</span>
+                    <span className="text-sm text-muted-foreground">
+                      Voting Rights:
+                    </span>
+                    <span className="text-sm font-medium text-success">
+                      Yes
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Dividend Eligible:</span>
-                    <span className="text-sm font-medium text-success">Yes</span>
+                    <span className="text-sm text-muted-foreground">
+                      Dividend Eligible:
+                    </span>
+                    <span className="text-sm font-medium text-success">
+                      Yes
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Liquidity:</span>
-                    <span className="text-sm font-medium text-warning">Low</span>
+                    <span className="text-sm text-muted-foreground">
+                      Liquidity:
+                    </span>
+                    <span className="text-sm font-medium text-warning">
+                      Low
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -246,18 +318,32 @@ const EquityShares = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Link href="/preference-shares">
-                  <Button variant="ghost" className="w-full justify-start text-left h-auto p-3">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-left h-auto p-3"
+                  >
                     <div>
-                      <div className="font-medium text-sm">Preference Shares</div>
-                      <div className="text-xs text-muted-foreground">Lower risk alternative</div>
+                      <div className="font-medium text-sm">
+                        Preference Shares
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Lower risk alternative
+                      </div>
                     </div>
                   </Button>
                 </Link>
                 <Link href="/convertible-bonds">
-                  <Button variant="ghost" className="w-full justify-start text-left h-auto p-3">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-left h-auto p-3"
+                  >
                     <div>
-                      <div className="font-medium text-sm">Convertible Bonds</div>
-                      <div className="text-xs text-muted-foreground">Debt with equity option</div>
+                      <div className="font-medium text-sm">
+                        Convertible Bonds
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Debt with equity option
+                      </div>
                     </div>
                   </Button>
                 </Link>

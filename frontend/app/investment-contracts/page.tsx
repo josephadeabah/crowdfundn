@@ -1,64 +1,90 @@
-import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/app/components/ui/carousel";
-import { ExternalLink, TrendingUp, Shield, DollarSign, PieChart, BarChart3, FileText } from "lucide-react";
+import Link from 'next/link';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import { Button } from '@/app/components/ui/button';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/app/components/ui/carousel';
+import {
+  ExternalLink,
+  TrendingUp,
+  Shield,
+  DollarSign,
+  PieChart,
+  BarChart3,
+  FileText,
+} from 'lucide-react';
 
 const investmentContracts = [
   {
-    id: "/investment-contracts/equity-shares",
-    title: "Equity Shares",
-    description: "Direct ownership stake in the company with voting rights and potential dividends.",
+    id: '/investment-contracts/equity-shares',
+    title: 'Equity Shares',
+    description:
+      'Direct ownership stake in the company with voting rights and potential dividends.',
     icon: TrendingUp,
-    riskLevel: "Medium-High",
-    minInvestment: "GHS 500",
-    returnType: "Capital appreciation + Dividends"
+    riskLevel: 'Medium-High',
+    minInvestment: 'GHS 500',
+    returnType: 'Capital appreciation + Dividends',
   },
   {
-    id: "/investment-contracts/preference-shares",
-    title: "Preference Shares",
-    description: "Priority shares with fixed dividend rates and preferential treatment in liquidation.",
+    id: '/investment-contracts/preference-shares',
+    title: 'Preference Shares',
+    description:
+      'Priority shares with fixed dividend rates and preferential treatment in liquidation.',
     icon: Shield,
-    riskLevel: "Medium",
-    minInvestment: "GHS 1,000",
-    returnType: "Fixed dividends"
+    riskLevel: 'Medium',
+    minInvestment: 'GHS 1,000',
+    returnType: 'Fixed dividends',
   },
   {
-    id: "/investment-contracts/convertible-bonds",
-    title: "Convertible Bonds",
-    description: "Debt securities that can be converted to equity shares at predetermined conditions.",
+    id: '/investment-contracts/convertible-bonds',
+    title: 'Convertible Bonds',
+    description:
+      'Debt securities that can be converted to equity shares at predetermined conditions.',
     icon: BarChart3,
-    riskLevel: "Medium",
-    minInvestment: "GHS 2,000",
-    returnType: "Interest + Conversion rights"
+    riskLevel: 'Medium',
+    minInvestment: 'GHS 2,000',
+    returnType: 'Interest + Conversion rights',
   },
   {
-    id: "/investment-contracts/revenue-sharing",
-    title: "Revenue Sharing",
-    description: "Receive a percentage of company revenue for a specified period.",
+    id: '/investment-contracts/revenue-sharing',
+    title: 'Revenue Sharing',
+    description:
+      'Receive a percentage of company revenue for a specified period.',
     icon: PieChart,
-    riskLevel: "Medium-Low",
-    minInvestment: "GHS 1,500",
-    returnType: "Revenue percentage"
+    riskLevel: 'Medium-Low',
+    minInvestment: 'GHS 1,500',
+    returnType: 'Revenue percentage',
   },
   {
-    id: "/investment-contracts/profit-sharing",
-    title: "Profit Sharing",
-    description: "Share in the company's profits without owning equity or having voting rights.",
+    id: '/investment-contracts/profit-sharing',
+    title: 'Profit Sharing',
+    description:
+      "Share in the company's profits without owning equity or having voting rights.",
     icon: DollarSign,
-    riskLevel: "Medium",
-    minInvestment: "GHS 1,000",
-    returnType: "Profit percentage"
+    riskLevel: 'Medium',
+    minInvestment: 'GHS 1,000',
+    returnType: 'Profit percentage',
   },
   {
-    id: "/investment-contracts/debt-securities",
-    title: "Debt Securities",
-    description: "Fixed-income investments with guaranteed returns and principal protection.",
+    id: '/investment-contracts/debt-securities',
+    title: 'Debt Securities',
+    description:
+      'Fixed-income investments with guaranteed returns and principal protection.',
     icon: FileText,
-    riskLevel: "Low-Medium",
-    minInvestment: "GHS 500",
-    returnType: "Fixed interest"
-  }
+    riskLevel: 'Low-Medium',
+    minInvestment: 'GHS 500',
+    returnType: 'Fixed interest',
+  },
 ];
 
 const InvestmentContracts = () => {
@@ -83,16 +109,22 @@ const InvestmentContracts = () => {
 
       {/* Investment Contracts Carousel */}
       <div className="max-w-7xl mx-auto px-4 py-16">
-        <Carousel className="w-full relative" opts={{ align: "start", loop: false }}>
+        <Carousel
+          className="w-full relative"
+          opts={{ align: 'start', loop: false }}
+        >
           <CarouselContent className="-ml-2 md:-ml-4">
             {investmentContracts.map((contract, index) => {
               const IconComponent = contract.icon;
               return (
-                <CarouselItem key={contract.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                  <Card 
+                <CarouselItem
+                  key={contract.id}
+                  className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
+                >
+                  <Card
                     className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 hover:border-trust/30 bg-card/80 backdrop-blur-sm h-full"
                     style={{
-                      animationDelay: `${index * 100}ms`
+                      animationDelay: `${index * 100}ms`,
                     }}
                   >
                     <CardHeader className="pb-4">
@@ -118,21 +150,29 @@ const InvestmentContracts = () => {
                       <CardDescription className="text-sm text-muted-foreground mb-4 line-clamp-2">
                         {contract.description}
                       </CardDescription>
-                      
+
                       <div className="space-y-2 mb-6">
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Min. Investment:</span>
-                          <span className="font-medium text-card-foreground">{contract.minInvestment}</span>
+                          <span className="text-muted-foreground">
+                            Min. Investment:
+                          </span>
+                          <span className="font-medium text-card-foreground">
+                            {contract.minInvestment}
+                          </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Return Type:</span>
-                          <span className="font-medium text-card-foreground">{contract.returnType}</span>
+                          <span className="text-muted-foreground">
+                            Return Type:
+                          </span>
+                          <span className="font-medium text-card-foreground">
+                            {contract.returnType}
+                          </span>
                         </div>
                       </div>
 
                       <Link href={`${contract.id}`}>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="w-full group-hover:bg-trust group-hover:text-trust-foreground group-hover:border-trust transition-all duration-300"
                         >
                           Learn more
@@ -156,7 +196,9 @@ const InvestmentContracts = () => {
               New to Investing?
             </h2>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Understanding investment contracts is crucial for making informed decisions. Each contract type offers different risk levels, returns, and investor rights under Ghanaian securities law.
+              Understanding investment contracts is crucial for making informed
+              decisions. Each contract type offers different risk levels,
+              returns, and investor rights under Ghanaian securities law.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button variant="default" className="bg-trust hover:bg-trust/90">
