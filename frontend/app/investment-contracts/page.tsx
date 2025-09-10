@@ -108,86 +108,88 @@ const InvestmentContracts = () => {
       </div>
 
       {/* Investment Contracts Carousel */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <Carousel
-          className="w-full relative"
-          opts={{ align: 'start', loop: false }}
-        >
-          <CarouselContent className="-ml-2 md:-ml-4">
-            {investmentContracts.map((contract, index) => {
-              const IconComponent = contract.icon;
-              return (
-                <CarouselItem
-                  key={contract.id}
-                  className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
-                >
-                  <Card
-                    className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 hover:border-trust/30 bg-card/80 backdrop-blur-sm h-full"
-                    style={{
-                      animationDelay: `${index * 100}ms`,
-                    }}
+      <div className="max-w-7xl mx-auto px-4 py-16 relative">
+        <div className="relative">
+          <Carousel
+            className="w-full"
+            opts={{ align: 'start', loop: false, dragFree: true }}
+          >
+            <CarouselContent className="-ml-4">
+              {investmentContracts.map((contract, index) => {
+                const IconComponent = contract.icon;
+                return (
+                  <CarouselItem
+                    key={contract.id}
+                    className="pl-4 md:basis-1/2 lg:basis-1/3"
                   >
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="p-2 rounded-lg bg-trust/10 text-trust">
-                            <IconComponent className="h-6 w-6" />
-                          </div>
-                          <div>
-                            <CardTitle className="text-lg font-semibold text-card-foreground group-hover:text-trust transition-colors">
-                              {contract.title}
-                            </CardTitle>
-                            <div className="flex items-center space-x-2 mt-1">
-                              <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
-                                {contract.riskLevel}
-                              </span>
+                    <Card
+                      className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 hover:border-trust/30 bg-card/80 backdrop-blur-sm h-full"
+                      style={{
+                        animationDelay: `${index * 100}ms`,
+                      }}
+                    >
+                      <CardHeader className="pb-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 rounded-lg bg-trust/10 text-trust">
+                              <IconComponent className="h-6 w-6" />
+                            </div>
+                            <div>
+                              <CardTitle className="text-lg font-semibold text-card-foreground group-hover:text-trust transition-colors">
+                                {contract.title}
+                              </CardTitle>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
+                                  {contract.riskLevel}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                        {contract.description}
-                      </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <CardDescription className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                          {contract.description}
+                        </CardDescription>
 
-                      <div className="space-y-2 mb-6">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            Min. Investment:
-                          </span>
-                          <span className="font-medium text-card-foreground">
-                            {contract.minInvestment}
-                          </span>
+                        <div className="space-y-2 mb-6">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              Min. Investment:
+                            </span>
+                            <span className="font-medium text-card-foreground">
+                              {contract.minInvestment}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              Return Type:
+                            </span>
+                            <span className="font-medium text-card-foreground">
+                              {contract.returnType}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            Return Type:
-                          </span>
-                          <span className="font-medium text-card-foreground">
-                            {contract.returnType}
-                          </span>
-                        </div>
-                      </div>
 
-                      <Link href={`${contract.id}`}>
-                        <Button
-                          variant="outline"
-                          className="w-full group-hover:bg-trust group-hover:text-trust-foreground group-hover:border-trust transition-all duration-300"
-                        >
-                          Learn more
-                          <ExternalLink className="ml-2 h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
-                </CarouselItem>
-              );
-            })}
-          </CarouselContent>
-          <CarouselPrevious className="absolute -right-16 top-1/2 -translate-y-1/2" />
-          <CarouselNext className="absolute -right-2 top-1/2 -translate-y-1/2" />
-        </Carousel>
+                        <Link href={`${contract.id}`}>
+                          <Button
+                            variant="outline"
+                            className="w-full group-hover:bg-trust group-hover:text-trust-foreground group-hover:border-trust transition-all duration-300"
+                          >
+                            Learn more
+                            <ExternalLink className="ml-2 h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            <CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm border-border hover:bg-accent" />
+            <CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm border-border hover:bg-accent" />
+          </Carousel>
+        </div>
 
         {/* Additional Resources Section */}
         <div className="mt-16 text-center">
