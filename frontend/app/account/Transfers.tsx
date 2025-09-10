@@ -166,11 +166,6 @@ export default function Transfers() {
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
               Campaigns Available for Transfer
             </h3>
-            <InfoTooltip 
-              id="campaigns-tooltip"
-              content="Regular campaigns require 100% of goal amount. Equity campaigns require 50% of goal amount."
-              className="ml-2"
-            />
           </div>
 
           {isLoadingCampaigns ? (
