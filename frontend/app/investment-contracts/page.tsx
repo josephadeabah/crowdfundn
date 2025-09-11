@@ -174,7 +174,7 @@ const InvestmentContracts = () => {
                         <Link href={`${contract.id}`}>
                           <Button
                             variant="outline"
-                            className="w-full bg-trust group-hover:text-white group-hover:border-trust transition-all duration-300 border-gray-300 text-white"
+                            className="w-full bg-white text-gray-800 group-hover:text-white group-hover:bg-trust transition-all duration-300 border-gray-300"
                           >
                             Learn more
                             <ExternalLink className="ml-2 h-4 w-4" />
