@@ -34,7 +34,7 @@ export const NavbarMobileMenu: React.FC<NavbarMobileMenuProps> = ({
   if (!isMenuOpen) return null;
 
   return (
-    <div className="absolute top-16 left-0 w-full bg-white text-gray-800 dark:text-gray-50 dark:bg-gray-900 lg:hidden">
+    <div className="absolute top-16 left-0 w-full bg-white text-gray-800 lg:hidden">
       <div className="flex flex-col items-start p-4 space-y-4">
         {!user ? (
           <>
@@ -79,15 +79,15 @@ export const NavbarMobileMenu: React.FC<NavbarMobileMenuProps> = ({
                     passHref
                     className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                   >
-                    <div className="w-full flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none">
+                    <div className="w-full flex items-center gap-3 p-2 focus-visible:outline-none focus:ring-0 hover:outline-none">
                       <div className="flex items-center justify-center rounded-lg !bg-white p-2">
                         <link.icon className="h-5 w-5 text-gray-800" />
                       </div>
                       <div>
-                        <h6 className="text-sm font-bold text-gray-800 dark:text-gray-50">
+                        <h6 className="text-sm font-bold text-gray-800">
                           {link.label}
                         </h6>
-                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                        <p className="text-xs font-medium text-gray-500">
                           {link.description}
                         </p>
                       </div>
@@ -102,7 +102,7 @@ export const NavbarMobileMenu: React.FC<NavbarMobileMenuProps> = ({
         {user && (
           <>
             {/* Add notification and message icons */}
-            <div className="flex items-center gap-4 w-full p-2 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-4 w-full p-2 border-b border-gray-200">
               <div className="relative cursor-pointer">
                 <BellIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
                 {notifications.filter((n) => !n.read).length > 0 && (
@@ -139,7 +139,7 @@ export const NavbarMobileMenu: React.FC<NavbarMobileMenuProps> = ({
                 <span className="text-gray-600">{user.email}</span>
               </div>
               <div
-                className="hover:bg-gray-100 cursor-pointer dark:hover:bg-gray-700 p-2 rounded transition"
+                className="cursor-pointer p-2 rounded transition"
                 onClick={logout}
               >
                 Logout
