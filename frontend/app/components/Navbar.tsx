@@ -111,7 +111,7 @@ const Navbar = () => {
           'sticky top-0 z-50 transition-transform duration-300 ease-in-out',
           isVisible || isScrolled
             ? 'bg-white backdrop-blur-md shadow-sm translate-y-0'
-            : 'bg-transparent -translate-y-full',
+            : 'bg-white -translate-y-full',
         )}
       >
         <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
