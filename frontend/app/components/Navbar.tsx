@@ -148,7 +148,7 @@ const Navbar = () => {
 
             <button
               onClick={handleMenuToggle}
-              className="text-gray-800 shadow-none rounded-none dark:text-gray-300"
+              className="text-gray-800 shadow-none rounded-none"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? (
