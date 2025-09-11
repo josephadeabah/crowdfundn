@@ -123,7 +123,7 @@ const InvestmentContracts = () => {
                     className="pl-4 md:basis-1/2 lg:basis-1/3"
                   >
                     <Card
-                      className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-gray-200 hover:border-blue-500 bg-white h-full"
+                      className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-gray-200 hover:border-trust/30 bg-white h-full"
                       style={{
                         animationDelay: `${index * 100}ms`,
                       }}
@@ -131,11 +131,11 @@ const InvestmentContracts = () => {
                       <CardHeader className="pb-4">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center space-x-3">
-                            <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
+                            <div className="p-2 rounded-lg bg-trust/10 text-trust">
                               <IconComponent className="h-6 w-6" />
                             </div>
                             <div>
-                              <CardTitle className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                              <CardTitle className="text-lg font-semibold text-gray-800 group-hover:text-trust transition-colors">
                                 {contract.title}
                               </CardTitle>
                               <div className="flex items-center space-x-2 mt-1">
@@ -174,7 +174,7 @@ const InvestmentContracts = () => {
                         <Link href={`${contract.id}`}>
                           <Button
                             variant="outline"
-                            className="w-full group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all duration-300 border-gray-300"
+                            className="w-full group-hover:bg-trust group-hover:text-white group-hover:border-trust transition-all duration-300 border-gray-300 text-gray-800"
                           >
                             Learn more
                             <ExternalLink className="ml-2 h-4 w-4" />
@@ -202,6 +202,16 @@ const InvestmentContracts = () => {
               decisions. Each contract type offers different risk levels,
               returns, and investor rights under Ghanaian securities law.
             </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button variant="default" className="bg-trust hover:bg-trust/90 text-white">
+                <Shield className="mr-2 h-4 w-4" />
+                Investment Guide
+              </Button>
+              <Button variant="outline" className="border-gray-300 text-gray-800 hover:bg-gray-100">
+                <FileText className="mr-2 h-4 w-4" />
+                Legal Framework
+              </Button>
+            </div>
           </div>
         </div>
       </div>
