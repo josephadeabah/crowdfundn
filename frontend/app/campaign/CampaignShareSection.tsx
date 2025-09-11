@@ -128,14 +128,14 @@ const CampaignShareSection: React.FC<CampaignShareSectionProps> = ({
           <Button
             onClick={handleCopy}
             variant="outline"
-            className="flex items-center justify-center bg-white border border-gray-300 dark:border-gray-600 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 shadow-none"
+            className="flex items-center justify-center bg-white hover:text-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 shadow-none"
           >
             {copyButtonText}
           </Button>
           <Button
             onClick={toggleFavorite}
             variant="outline"
-            className="flex items-center justify-center bg-white border border-gray-300 dark:border-gray-600 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 shadow-none"
+            className="flex items-center justify-center bg-white hover:text-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 shadow-none"
           >
             {isFavorite ? (
               <FaBookmark className="mr-2 text-emerald-500" />
