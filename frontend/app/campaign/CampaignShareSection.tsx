@@ -112,9 +112,9 @@ const CampaignShareSection: React.FC<CampaignShareSectionProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8">
+    <div className="bg-white text-gray-800 rounded-xl shadow-sm p-6 mb-8">
       <div className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
           Share this fundraiser
         </h2>
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -128,14 +128,14 @@ const CampaignShareSection: React.FC<CampaignShareSectionProps> = ({
           <Button
             onClick={handleCopy}
             variant="outline"
-            className="flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-none"
+            className="flex items-center justify-center bg-white border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 shadow-none"
           >
             {copyButtonText}
           </Button>
           <Button
             onClick={toggleFavorite}
             variant="outline"
-            className="flex items-center justify-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 active:scale-95 shadow-none"
+            className="flex items-center justify-center bg-white border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 shadow-none"
           >
             {isFavorite ? (
               <FaBookmark className="mr-2 text-emerald-500" />
