@@ -49,17 +49,17 @@ const ToastComponent: React.FC<ToastProps> = ({
   return (
     <Toast.Provider swipeDirection="right">
       <Toast.Root
-        className="flex items-center gap-4 rounded-md border border-gray-200 bg-white p-3 shadow-lg data-[state=closed]:animate-hide data-[state=open]:animate-slideIn data-[swipe=end]:animate-swipeOut dark:border-gray-700 dark:bg-gray-800"
+        className="flex items-center gap-4 rounded-md border border-gray-200 bg-white p-3 shadow-lg data-[state=closed]:animate-hide data-[state=open]:animate-slideIn data-[swipe=end]:animate-swipeOut"
         open={isOpen}
         onOpenChange={onClose}
       >
         {icons[type]}
         <div className="flex-1">
-          <Toast.Title className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <Toast.Title className="text-lg font-semibold text-gray-900">
             {title}
           </Toast.Title>
           <Toast.Description asChild>
-            <p className="text-xs text-gray-700 dark:text-gray-300">
+            <p className="text-xs text-gray-700">
               {description}
             </p>
           </Toast.Description>
