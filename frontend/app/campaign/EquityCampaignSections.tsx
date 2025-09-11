@@ -218,19 +218,19 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
       {/* Investment Documents Section */}
       {contractDocuments.length > 0 && (
         <div className="bg-gray-50 text-gray-800 px-1 py-6 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
             <FaFileContract className="mr-2 text-orange-500" />
             Contract Documents
           </h2>
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-gray-600">
               Review the legal documents for this investment opportunity:
             </p>
             <div className="grid grid-cols-1 gap-4">
               {contractDocuments.map((document) => (
                 <div
                   key={document.id}
-                  className="bg-white dark:bg-gray-800 p-4 shadow-sm"
+                  className="bg-white text-gray-800 p-4 shadow-sm"
                 >
                   {document.files.map((file) => (
                     <div
@@ -240,10 +240,10 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                       <div className="flex items-center">
                         <FaFileContract className="text-orange-500 mr-3" />
                         <div>
-                          <h3 className="font-medium text-gray-900 dark:text-white">
+                          <h3 className="font-medium text-gray-700">
                             {document.display_name}
                           </h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-700">
                             {file.human_size} • {file.content_type}
                           </p>
                         </div>
@@ -267,7 +267,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
 
       {/* Team Members Section */}
       <div className="bg-gray-50 text-gray-800 px-1 py-6 mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
           <FaUsers className="mr-2 text-purple-600" />
           Team Members
         </h2>
@@ -276,7 +276,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             {campaign.team_members.map((member) => (
               <div
                 key={member.id}
-                className="bg-white dark:bg-gray-800 p-6 shadow-sm"
+                className="bg-white p-6 shadow-sm"
               >
                 <div className="flex items-start space-x-4 gap-3">
                   <div className="w-16 h-16 flex-shrink-0">
@@ -287,22 +287,15 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                     />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                    <h3 className="text-lg font-bold text-gray-900">
                       {member.name}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-300 font-medium">
+                    <p className="text-gray-600 font-medium">
                       {member.title}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    <p className="text-sm text-gray-600 mt-2">
                       {member.description}
                     </p>
-                    {/* {member.equity_percentage && (
-                      <div className="mt-3">
-                        <span className="inline-block bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">
-                          {member.equity_percentage}% Equity
-                        </span>
-                      </div>
-                    )} */}
                   </div>
                 </div>
               </div>
