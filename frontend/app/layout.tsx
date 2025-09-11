@@ -39,7 +39,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <GoogleTagManager />
       <HeadComponent />
       <body
-        className={`max-w-full bg-green-50 dark:bg-gray-900 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable} h-full flex flex-col min-h-screen`}
+        className={`max-w-full bg-green-50 mx-auto transition-all duration-150 ${roboto.variable} ${ubuntu.variable} h-full flex flex-col min-h-screen`}
       >
         <GlobalContextProvider>
           <Providers>
