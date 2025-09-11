@@ -104,7 +104,7 @@ export const NavbarMobileMenu: React.FC<NavbarMobileMenuProps> = ({
             {/* Add notification and message icons */}
             <div className="flex items-center gap-4 w-full p-2 border-b border-gray-200">
               <div className="relative cursor-pointer">
-                <BellIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                <BellIcon className="h-6 w-6 text-gray-700" />
                 {notifications.filter((n) => !n.read).length > 0 && (
                   <span className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-white text-xs">
                     {notifications.filter((n) => !n.read).length}

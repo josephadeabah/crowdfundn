@@ -44,7 +44,7 @@ export const NavbarAuthButtons: React.FC = () => {
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="py-1 px-4 bg-orange-400 rounded-full focus-visible:outline-none focus:ring-0 hover:outline-none hover:bg-orange-600 hover:text-gray-700 hover:scale-105 transition-transform duration-300"
+        className="py-1 px-4 bg-orange-400 rounded-full focus-visible:outline-none focus:ring-0 hover:outline-none hover:bg-orange-600 hover:scale-105 transition-transform duration-300"
       >
         <Link
           href="/auth/login"
