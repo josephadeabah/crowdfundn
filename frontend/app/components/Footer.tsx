@@ -113,9 +113,7 @@ const Footer = () => {
           {/* First three sections (Product, Resources, Company) - each spans 1 column */}
           {footerSections.slice(0, 3).map((section, index) => (
             <div key={index} className="md:col-span-1">
-              <h3 className="font-semibold mb-4">
-                {section.title}
-              </h3>
+              <h3 className="font-semibold mb-4">{section.title}</h3>
               <ul className="space-y-2 text-sm">
                 {section.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
@@ -133,9 +131,7 @@ const Footer = () => {
 
           {/* Compliance & Legal section - spans 2 columns */}
           <div className="md:col-span-2">
-            <h3 className="font-semibold mb-4">
-              {footerSections[3].title}
-            </h3>
+            <h3 className="font-semibold mb-4">{footerSections[3].title}</h3>
             <ul className="space-y-2 text-sm">
               {footerSections[3].links.map((link, linkIndex) => (
                 <li key={linkIndex}>

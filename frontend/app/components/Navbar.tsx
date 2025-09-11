@@ -114,7 +114,7 @@ const Navbar = () => {
             : 'bg-transparent -translate-y-full',
         )}
       >
-      <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 bg-white">
+        <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 bg-white">
           <div className="text-2xl font-bold text-orange-500">
             <a href="/">
               <BantuHiveLogoIcon className="w-24 h-auto" />

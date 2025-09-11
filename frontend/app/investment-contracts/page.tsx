@@ -162,9 +162,7 @@ const InvestmentContracts = () => {
                             </span>
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">
-                              Return Type:
-                            </span>
+                            <span className="text-gray-600">Return Type:</span>
                             <span className="font-medium text-gray-800">
                               {contract.returnType}
                             </span>

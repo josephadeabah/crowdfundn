@@ -25,10 +25,7 @@ const Hero = () => {
   };
 
   const { user } = useAuth();
-  const {
-    topBackers,
-    fetchLeaderboardData,
-  } = useLeaderboardContext();
+  const { topBackers, fetchLeaderboardData } = useLeaderboardContext();
 
   useEffect(() => {
     fetchLeaderboardData();
@@ -78,7 +75,9 @@ const Hero = () => {
   const backgroundY = isMounted ? Math.min(scrollY * 0.5, 300) : 0;
   const contentY = isMounted ? Math.min(scrollY * 0.1, 50) : 0;
   const opacityValue = isMounted ? Math.max(1 - scrollY * 0.002, 0) : 1;
-  const overlayOpacity = isMounted ? Math.min(0.7 + scrollY * 0.0005, 0.85) : 0.7;
+  const overlayOpacity = isMounted
+    ? Math.min(0.7 + scrollY * 0.0005, 0.85)
+    : 0.7;
 
   return (
     <div className="relative w-full overflow-hidden bg-white">
@@ -210,7 +209,9 @@ const Hero = () => {
                               </p>
                             </div>
                             <div>
-                              <p className="text-sm font-semibold text-gray-800">Bio</p>
+                              <p className="text-sm font-semibold text-gray-800">
+                                Bio
+                              </p>
                               <p className="text-sm text-gray-800">
                                 {backer.bio}
                               </p>
@@ -269,9 +270,13 @@ const Hero = () => {
                   <div className="bg-orange-100 text-orange-600 text-xs font-medium rounded-full px-2 py-1">
                     <Trophy className="inline-block h-3 w-3 mr-1" /> Achievement
                   </div>
-                  <div className="text-sm font-semibold text-gray-800">Level 3 Unlocked</div>
+                  <div className="text-sm font-semibold text-gray-800">
+                    Level 3 Unlocked
+                  </div>
                 </div>
-                <h3 className="font-bold mb-1 text-gray-800">Make Good Things Happen</h3>
+                <h3 className="font-bold mb-1 text-gray-800">
+                  Make Good Things Happen
+                </h3>
                 <div className="flex gap-1.5 mb-1">
                   <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse delay-100"></div>

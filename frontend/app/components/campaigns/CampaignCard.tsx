@@ -270,7 +270,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               </div>
 
               <div className="flex justify-between text-[10px]">
-                <span className="text-muted-foreground">
+                <span className="text-gray-700">
                   {campaign?.currency_symbol ||
                     campaign?.currency?.toUpperCase()}{' '}
                   {parseFloat(
@@ -278,7 +278,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                   ).toLocaleString()}{' '}
                   raised
                 </span>
-                <span className="text-muted-foreground">
+                <span className="text-gray-700">
                   of{' '}
                   {campaign?.currency_symbol ||
                     campaign?.currency?.toUpperCase()}{' '}
@@ -292,7 +292,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 <div className="flex items-center gap-1 text-gray-800">
                   <Award className="h-3 w-3" />
                   <span className="font-medium">
-                   {campaign.type === "EquityCampaign" ? campaign.total_donors || 0 : campaign.total_investors || 0 } {campaign.type === "EquityCampaign" ? "Investors" : "Supporters"}
+                    {campaign.type === 'EquityCampaign'
+                      ? campaign.total_donors || 0
+                      : campaign.total_investors || 0}{' '}
+                    {campaign.type === 'EquityCampaign'
+                      ? 'Investors'
+                      : 'Supporters'}
                   </span>
                 </div>
                 <span className="text-muted-foreground">
