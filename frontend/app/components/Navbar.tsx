@@ -108,13 +108,13 @@ const Navbar = () => {
       )}
       <header
         className={cn(
-          'sticky top-0 z-50 transition-transform duration-300 ease-in-out bg-white',
+          'sticky top-0 z-50 transition-transform duration-300 ease-in-out',
           isVisible || isScrolled
-            ? 'backdrop-blur-md shadow-sm translate-y-0'
-            : '-translate-y-full',
+            ? 'bg-white/90 backdrop-blur-md shadow-sm translate-y-0'
+            : 'bg-transparent -translate-y-full',
         )}
       >
-        <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 dark:bg-gray-950 dark:text-gray-50">
+      <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 bg-white">
           <div className="text-2xl font-bold text-orange-500">
             <a href="/">
               <BantuHiveLogoIcon className="w-24 h-auto" />
