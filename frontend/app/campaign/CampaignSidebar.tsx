@@ -76,10 +76,10 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
         )}
 
         <div className="mt-6">
-          <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
             Campaign Progress
           </h3>
-          <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow mb-8 p-2 space-y-6 sm:space-y-0 sm:space-x-6">
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white text-gray-800 rounded-lg shadow mb-8 p-2 space-y-6 sm:space-y-0 sm:space-x-6">
             <div className="text-center sm:text-left">
               <div className="w-full flex lg:flex-col sm:justify-between gap-3 items-center text-xl py-2">
                 <div className="font-medium text-sm">
@@ -92,7 +92,7 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                         : 'text-orange-500'
                     }`}
                   >
-                    <span className="text-gray-600 dark:text-gray-100 mr-1">
+                    <span className="text-gray-600 mr-1">
                       {fundraiserCurrency}
                     </span>
                     {parseFloat(
@@ -100,8 +100,8 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                     ).toLocaleString()}
                   </span>{' '}
                 </div>
-                <div className="flex justify-between gap-3 items-center text-gray-600 dark:text-gray-400">
-                  <div className="text-xs text-gray-500">
+                <div className="flex justify-between gap-3 items-center text-gray-600">
+                  <div className="text-xs">
                     <span>of</span>
                   </div>{' '}
                   <div className="font-medium text-sm">
@@ -110,16 +110,16 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                       campaign?.goal_amount || '0.0',
                     ).toLocaleString()}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs">
                     <span>Goal</span>
                   </div>
                 </div>
               </div>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-2 text-sm text-gray-600">
                 <strong>{backersCount}</strong>{' '}
                 {isEquityCampaign ? 'Investors' : 'Backers'}
               </p>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-2 text-sm text-gray-600">
                 <strong>{campaign?.remaining_days || 0}</strong> days left
               </p>
             </div>
