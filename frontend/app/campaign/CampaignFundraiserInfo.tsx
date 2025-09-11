@@ -35,7 +35,7 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
           <Button
             onClick={() => setIsContactModalOpen(true)}
             variant="outline"
-            className="w-full flex items-center justify-center bg-white border border-gray-300 dark:border-gray-600 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 shadow-none"
+            className="w-full flex items-center justify-center bg-white border hover:text-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 shadow-none"
           >
             Contact
           </Button>
