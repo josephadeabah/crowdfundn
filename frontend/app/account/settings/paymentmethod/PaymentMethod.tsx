@@ -129,7 +129,7 @@ const PaymentMethod = () => {
   const verifyAccountNumber = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/resolve_account_details?account_number=${accountNumber}&bank_code=${selectedBank?.value}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/resolve_account_details?account_number=${accountNumber}&bank_code=${selectedBank?.value}&country=${user?.country.toLowerCase()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`, // Add authorization header
