@@ -93,7 +93,7 @@ const InvestmentContracts = () => {
       {/* Header Section */}
       <div className="w-full bg-white py-16">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-2">
+          <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
               Investment Contracts in Ghana
             </h1>
@@ -108,7 +108,7 @@ const InvestmentContracts = () => {
       </div>
 
       {/* Investment Contracts Carousel */}
-      <div className="max-w-7xl mx-auto px-4 py-16 relative">
+      <div className="max-w-7xl mx-auto px-4 py-6 relative">
         <div className="relative">
           <Carousel
             className="w-full"
