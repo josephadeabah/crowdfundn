@@ -80,7 +80,7 @@ export const NavbarMobileMenu: React.FC<NavbarMobileMenuProps> = ({
                     className="focus-visible:outline-none focus:ring-0 hover:outline-none"
                   >
                     <div className="w-full flex items-center gap-3 p-2 focus-visible:outline-none focus:ring-0 hover:outline-none">
-                      <div className="flex items-center justify-center rounded-lg !bg-white p-2">
+                      <div className="flex items-center justify-center rounded-lg bg-white p-2">
                         <link.icon className="h-5 w-5 text-gray-800" />
                       </div>
                       <div>

@@ -121,7 +121,7 @@ const Navbar = () => {
             </a>
           </div>
 
-          <div className="hidden lg:flex items-center gap-x-2 mx-6">
+          <div className="hidden bg-white text-gray-800 lg:flex items-center gap-x-2 mx-6">
             {Object.entries(dropdownLinks).map(([key, links]) => (
               <NavbarDropdown
                 key={key}
