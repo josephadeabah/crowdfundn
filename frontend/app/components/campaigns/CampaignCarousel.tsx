@@ -226,7 +226,7 @@ const CampaignCarousel: React.FC<CampaignCarouselProps> = ({
           <h2 className="text-xl font-bold">{title}</h2>
           {showProgress && totalCount > 0 && (
             <div className="flex items-center space-x-2 mt-1">
-              <div className="w-24 h-1 bg-muted rounded-full overflow-hidden">
+              <div className="w-24 h-1 bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-trust transition-all duration-300 ease-out"
                   style={{ width: `${progress}%` }}
