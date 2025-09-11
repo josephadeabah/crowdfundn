@@ -68,7 +68,7 @@ const ContactFundraiserForm = ({ campaignId }: ContactFundraiserFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-white text-gray-800">
       <div>
         <h2 className="text-lg font-semibold py-1">Contact Fundraiser</h2>
         <label className="block text-sm font-medium text-gray-700">
@@ -79,7 +79,7 @@ const ContactFundraiserForm = ({ campaignId }: ContactFundraiserFormProps) => {
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           required
-          className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+          className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900"
           disabled={!!user?.full_name} // Disable the input if the user is logged in
         />
       </div>
@@ -92,7 +92,7 @@ const ContactFundraiserForm = ({ campaignId }: ContactFundraiserFormProps) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+          className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900"
         />
       </div>
       <div>
@@ -103,7 +103,7 @@ const ContactFundraiserForm = ({ campaignId }: ContactFundraiserFormProps) => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           required
-          className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
+          className="mt-1 block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900"
           rows={4}
         />
       </div>
