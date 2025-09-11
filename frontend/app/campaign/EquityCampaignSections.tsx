@@ -48,11 +48,11 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full mr-3">
                 <FaMoneyBillWave className="text-green-600 dark:text-green-300" />
               </div>
-              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+              <h3 className="font-medium text-gray-700">
                 Valuation
               </h3>
             </div>
-            <p className="text-2xl font-bold text-gray-800">
+            <p className="text-2xl font-bold text-gray-700">
               {fundraiserCurrency}
               {parseFloat(String(campaign?.valuation || '0')).toLocaleString()}
             </p>
@@ -121,11 +121,11 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-3">
                 <FaUsers className="text-yellow-600 dark:text-yellow-300" />
               </div>
-              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+              <h3 className="font-medium text-gray-700">
                 Shares Available For Investment
               </h3>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl font-bold text-gray-700">
               {parseFloat(
                 campaign?.shares_available?.toString() || '0',
               ).toLocaleString()}
@@ -205,7 +205,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                 href={campaign.company_info.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 dark:text-gray-400 hover:underline flex items-center"
+                className="text-gray-700 hover:underline flex items-center"
               >
                 <FaLink className="mr-1" />
                 {campaign.company_info.website}
