@@ -210,7 +210,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
               </Button>
               <Button
                 type="submit"
-                className="px-4 py-2 text-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
+                className="px-4 py-2 bg-green-700 text-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
                 disabled={isProcessing}
                 size="lg"
                 variant="outline"
