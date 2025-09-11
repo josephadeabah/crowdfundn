@@ -93,7 +93,7 @@ const InvestmentContracts = () => {
       {/* Header Section */}
       <div className="w-full bg-white py-16">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-2">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
               Investment Contracts in Ghana
             </h1>
@@ -202,16 +202,6 @@ const InvestmentContracts = () => {
               decisions. Each contract type offers different risk levels,
               returns, and investor rights under Ghanaian securities law.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button variant="default" className="bg-trust hover:bg-trust/90 text-white">
-                <Shield className="mr-2 h-4 w-4" />
-                Investment Guide
-              </Button>
-              <Button variant="outline" className="border-gray-300 text-gray-800 hover:bg-gray-100">
-                <FileText className="mr-2 h-4 w-4" />
-                Legal Framework
-              </Button>
-            </div>
           </div>
         </div>
       </div>
