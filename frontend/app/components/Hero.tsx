@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/app/lib/utils';
-import { ArrowRight, ArrowDown, Play, Zap, Trophy } from 'lucide-react';
+import { ArrowRight, Play, Zap, Trophy } from 'lucide-react';
 import { useAuth } from '../context/auth/AuthContext';
 import Link from 'next/link';
 import { useLeaderboardContext } from '../context/leaderboard/LeaderboardContext';
@@ -27,11 +27,6 @@ const Hero = () => {
   const { user } = useAuth();
   const {
     topBackers,
-    mostActiveBackers,
-    topBackersWithRewards,
-    topFundraisersStories,
-    loading,
-    error,
     fetchLeaderboardData,
   } = useLeaderboardContext();
 
@@ -83,15 +78,11 @@ const Hero = () => {
   const backgroundY = isMounted ? Math.min(scrollY * 0.5, 300) : 0;
   const contentY = isMounted ? Math.min(scrollY * 0.1, 50) : 0;
   const opacityValue = isMounted ? Math.max(1 - scrollY * 0.002, 0) : 1;
-  const overlayOpacity = isMounted
-    ? Math.min(0.7 + scrollY * 0.0005, 0.85)
-    : 0.7;
+  const overlayOpacity = isMounted ? Math.min(0.7 + scrollY * 0.0005, 0.85) : 0.7;
 
   return (
-    <div className="relative w-full overflow-hidden">
-      {/* Background pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 -z-10"></div>
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMwLTkuOTQtOC4wNi0xOC0xOC0xOFYwYzkuOTQgMCAxOCA4LjA2IDE4IDE4aDEyeiIgZmlsbD0icmdiYSgwLDAsMCwwLjAyKSIvPjwvZz48L3N2Zz4=')] opacity-50 -z-10"></div>
+    <div className="relative w-full overflow-hidden bg-white">
+      {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
         style={{
@@ -102,7 +93,7 @@ const Hero = () => {
         }}
       >
         <div
-          className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-background/50"
+          className="absolute inset-0 bg-white"
           style={{ opacity: overlayOpacity }}
         ></div>
       </div>
@@ -119,7 +110,7 @@ const Hero = () => {
             {/* Left content */}
             <div className="w-full lg:w-1/2 space-y-8">
               <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 mt-2 text-base font-semibold bg-white text-gray-500 rounded-full mb-4 animate-fade-up">
+                <div className="inline-flex items-center gap-2 px-3 py-1 mt-2 text-base font-semibold bg-white text-gray-800 rounded-full mb-4 animate-fade-up">
                   <span className="relative flex h-5 w-5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-5 w-5 bg-orange-600"></span>
@@ -137,7 +128,7 @@ const Hero = () => {
                   </div>
                 </div>
 
-                <h1 className="text-base md:text-xl font-bold text-foreground mb-4 animate-fade-up animate-delay-100">
+                <h1 className="text-base md:text-xl font-bold text-gray-800 mb-4 animate-fade-up animate-delay-100">
                   <span className="text-gray-700">The</span>{' '}
                   <span className="text-orange-500">All-in-One</span>{' '}
                   <span className="text-green-500">Fundraiser</span>{' '}
@@ -146,7 +137,7 @@ const Hero = () => {
                   <span className="text-blue-500">Platform</span>
                 </h1>
 
-                <p className="text-lg md:text-xl text-gray-600 mb-8 animate-fade-up delay-200">
+                <p className="text-lg md:text-xl text-gray-800 mb-8 animate-fade-up delay-200">
                   Revolutionizing Ghana's startup ecosystem through smart equity
                   crowdfunding. Invest in tomorrow's unicorns, earn exclusive
                   rewards, and build wealth while fueling Africa's most
@@ -155,7 +146,7 @@ const Hero = () => {
 
                 <div className="flex flex-row gap-4 animate-fade-up animate-delay-300">
                   <Link href={user ? '/account/dashboard/create' : '/auth'}>
-                    <button className="group px-6 py-3 bg-green-600 text-primary-foreground rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
+                    <button className="group px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
                       Raise Capital Now
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
@@ -166,7 +157,7 @@ const Hero = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <button className="px-6 py-3 bg-transparent border border-border text-foreground rounded-md hover:bg-muted transition-colors">
+                    <button className="px-6 py-3 bg-transparent border border-gray-300 text-gray-800 rounded-md hover:bg-gray-100 transition-colors">
                       Read Our Latest Happenings
                     </button>
                   </Link>
@@ -205,30 +196,30 @@ const Hero = () => {
                                     {getVerifiedBadge(backer.level, 20)}
                                   </span>
                                 </div>
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-gray-800">
                                   {backer.country}
                                 </p>
                               </div>
                             </div>
                             <div>
-                              <p className="text-sm font-semibold">
+                              <p className="text-sm font-semibold text-gray-800">
                                 Category Interest
                               </p>
-                              <p className="text-sm text-gray-700">
+                              <p className="text-sm text-gray-800">
                                 {deslugify(backer.category_interest)}
                               </p>
                             </div>
                             <div>
-                              <p className="text-sm font-semibold">Bio</p>
-                              <p className="text-sm text-gray-700">
+                              <p className="text-sm font-semibold text-gray-800">Bio</p>
+                              <p className="text-sm text-gray-800">
                                 {backer.bio}
                               </p>
                             </div>
                             <div>
-                              <p className="text-sm font-semibold">
+                              <p className="text-sm font-semibold text-gray-800">
                                 Total Donated
                               </p>
-                              <p className="text-sm text-gray-700">
+                              <p className="text-sm text-gray-800">
                                 {backer?.currency}
                                 {backer.amount}
                               </p>
@@ -238,13 +229,13 @@ const Hero = () => {
                       </Popover>
                     ))}
                     {topBackers?.length > 5 && (
-                      <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-sm font-semibold text-gray-600">
+                      <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-sm font-semibold text-gray-800">
                         +{topBackers?.length - 5}
                       </div>
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-semibold text-foreground">
+                  <p className="text-sm text-gray-800">
+                    <span className="font-semibold text-gray-800">
                       {topBackers?.length || 0}+
                     </span>{' '}
                     backers joined this month
@@ -262,10 +253,10 @@ const Hero = () => {
                     <Zap className="h-4 w-4 text-white" />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-800">
                       Fund A Dream Today!
                     </div>
-                    <div className="text-xs font-semibold">
+                    <div className="text-xs font-semibold text-gray-800">
                       Invest In Africa's Bright Minds w/ As Little As GHS50
                     </div>
                   </div>
@@ -278,15 +269,15 @@ const Hero = () => {
                   <div className="bg-orange-100 text-orange-600 text-xs font-medium rounded-full px-2 py-1">
                     <Trophy className="inline-block h-3 w-3 mr-1" /> Achievement
                   </div>
-                  <div className="text-sm font-semibold">Level 3 Unlocked</div>
+                  <div className="text-sm font-semibold text-gray-800">Level 3 Unlocked</div>
                 </div>
-                <h3 className="font-bold mb-1">Make Good Things Happen</h3>
+                <h3 className="font-bold mb-1 text-gray-800">Make Good Things Happen</h3>
                 <div className="flex gap-1.5 mb-1">
                   <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse delay-100"></div>
                   <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse delay-200"></div>
                 </div>
-                <div className="text-xs text-right">
+                <div className="text-xs text-right text-gray-800">
                   Easy Way To Fund Africa's Future.
                 </div>
               </div>
@@ -314,9 +305,9 @@ const Hero = () => {
 
               {/* Decorative elements */}
               <div className="absolute -z-10 -bottom-6 -right-6 w-64 h-64 bg-gray-200/50 rounded-full blur-3xl"></div>
-              <div className="absolute -z-10 -top-6 -left-6 w-40 h-40 bg-video/10 rounded-full blur-3xl"></div>
+              <div className="absolute -z-10 -top-6 -left-6 w-40 h-40 bg-gray-100 rounded-full blur-3xl"></div>
               <div className="absolute bottom-0 left-0 p-6 w-full">
-                <h3 className="text-white text-lg md:text-xl font-medium drop-shadow-md">
+                <h3 className="text-gray-800 text-lg md:text-xl font-medium drop-shadow-md">
                   Introducing Gift For Fundraisers
                 </h3>
               </div>
