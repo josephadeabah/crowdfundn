@@ -76,7 +76,7 @@ const Modal: React.FC<ModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-white text-gray-800"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-white text-gray-800 bg-opacity-50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
