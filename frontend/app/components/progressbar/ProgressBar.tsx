@@ -53,7 +53,7 @@ const Progress: React.FC<ProgressBarProps> = ({
 
       {/* Progress bar container */}
       <div
-        className={`relative ${className} w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700`}
+        className={`relative ${className} w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700`}
       >
         {/* Base progress (Green) */}
         <div
