@@ -136,7 +136,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           <div className="bg-white text-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-full mr-3">
-                <FaShareAlt className="text-indigo-100" />
+                <FaShareAlt className="text-indigo-300" />
               </div>
               <h3 className="font-medium text-gray-700">
                 Total Shares
