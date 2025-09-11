@@ -159,31 +159,31 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
         </h2>
         <div className="space-y-4">
           <div>
-            <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+            <h3 className="font-semibold text-gray-700">
               Name
             </h3>
-            <p className="text-gray-900 dark:text-white">
+            <p className="text-gray-900">
               {campaign?.company_info?.name || 'N/A'}
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+            <h3 className="font-semibold text-gray-700">
               Description
             </h3>
-            <p className="text-gray-900 dark:text-white">
+            <p className="text-gray-700">
               {campaign?.company_info?.description || 'No description provided'}
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+            <h3 className="font-semibold text-gray-700">
               Headquarters
             </h3>
-            <p className="text-gray-900 dark:text-white">
+            <p className="text-gray-700">
               {campaign?.company_info?.headquarters || 'N/A'}
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+            <h3 className="font-semibold text-gray-700">
               <span className="flex gap-2 items-center">
                 Contract Term
                 <InfoTooltip
@@ -192,13 +192,13 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                 />
               </span>
             </h3>
-            <p className="text-gray-900 dark:text-white">
+            <p className="text-gray-700">
               {deslugify(campaign?.company_info?.contract_term || 'N/A')}
             </p>
           </div>
           {campaign?.company_info?.website && (
             <div>
-              <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+              <h3 className="font-semibold text-gray-700">
                 Website
               </h3>
               <a
