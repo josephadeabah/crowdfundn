@@ -74,7 +74,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
 
           <div className="bg-whitetext-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
-              <div className="p-2 bg-purple-800 rounded-full mr-3">
+              <div className="p-2 bg-purple-100 rounded-full mr-3">
                 <FaHandHoldingUsd className="text-purple-300" />
               </div>
               <h3 className="font-medium text-gray-700">
