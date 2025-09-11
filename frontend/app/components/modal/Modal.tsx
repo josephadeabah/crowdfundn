@@ -76,7 +76,7 @@ const Modal: React.FC<ModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black bg-opacity-50"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-white text-gray-800"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -87,7 +87,7 @@ const Modal: React.FC<ModalProps> = ({
         >
           <motion.div
             ref={modalRef}
-            className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-sm shadow-xl modal-scrollbar`}
+            className={`relative w-full ${sizeClasses[size]} bg-white rounded-sm shadow-xl modal-scrollbar`}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
@@ -107,7 +107,7 @@ const Modal: React.FC<ModalProps> = ({
           >
             <div className="p-6">
               <button
-                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                className="absolute top-3 right-3 text-gray-600 transition-colors duration-200"
                 onClick={onClose}
                 aria-label="Close modal"
               >
