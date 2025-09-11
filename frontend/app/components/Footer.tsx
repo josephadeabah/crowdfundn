@@ -55,7 +55,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative bg-gray-50 border-t dark:bg-gray-950">
+    <footer className="relative bg-gray-50 border-t">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-no-repeat bg-contain opacity-10 dark:opacity-5"
