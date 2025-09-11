@@ -172,7 +172,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         <div className="absolute top-2 right-2 z-10">
           <button
             onClick={(e) => handleFavoriteClick(e, String(campaign.id))}
-            className="p-1.5 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
+            className="p-1.5 rounded-full bg-white hover:bg-white transition-colors"
             aria-label={
               isFavorited ? 'Remove from favorites' : 'Add to favorites'
             }
