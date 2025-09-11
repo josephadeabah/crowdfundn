@@ -15,6 +15,7 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import Avatar from '../avatar/Avatar';
+import CampaignCardSkeleton from '@/app/loaders/CampaignCardSkeleton';
 
 const SuggestedCampaignsComponent = ({
   currentCategory,
@@ -88,7 +89,7 @@ const SuggestedCampaignsComponent = ({
   if (loading)
     return (
       <div className="w-full max-w-7xl mx-auto">
-        <CampaignCardLoader />
+        <CampaignCardSkeleton/>
       </div>
     );
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
@@ -132,7 +133,7 @@ const SuggestedCampaignsComponent = ({
                 initial="hidden"
                 animate="visible"
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 rounded-lg cursor-pointer overflow-hidden"
+                className="group relative bg-white flex flex-col h-full text-gray-800 rounded-lg cursor-pointer overflow-hidden"
               >
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
@@ -151,7 +152,7 @@ const SuggestedCampaignsComponent = ({
                       }}
                     />
                   </div>
-                  <div className="px-2 py-2 bg-gray-50 hover:bg-gray-100">
+                  <div className="px-2 py-2 bg-white hover:bg-gray-100">
                     <div className="w-full text-xs">
                       <Progress
                         firstProgress={
@@ -179,7 +180,7 @@ const SuggestedCampaignsComponent = ({
                           </span>
                         </div>
                         <div
-                          className="p-2 bg-white dark:bg-gray-700 rounded-full shadow-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
+                          className="p-2 bg-white text-gray-800 rounded-full shadow-md cursor-pointer hover:bg-gray-50 hover:text-gray-800 transition-colors duration-300"
                           onClick={(e) => {
                             e.preventDefault();
                             campaign.favorited
@@ -190,7 +191,7 @@ const SuggestedCampaignsComponent = ({
                           {campaign.favorited ? (
                             <FaBookmark className="text-orange-500" />
                           ) : (
-                            <FaRegBookmark className="text-gray-700 dark:text-gray-300" />
+                            <FaRegBookmark className="text-gray-700" />
                           )}
                         </div>
                       </div>
@@ -208,20 +209,20 @@ const SuggestedCampaignsComponent = ({
                               : 'text-orange-500'
                           }`}
                         >
-                          <span className="text-gray-600 dark:text-gray-100 mr-1">
+                          <span className="text-gray-600 mr-1">
                             {fundraiserCurrency}
                           </span>
                           {parseFloat(
                             campaign?.transferred_amount?.toString() || '0',
                           ).toLocaleString()}
                         </span>{' '}
-                        <span className="text-gray-600 dark:text-gray-100 truncate">
+                        <span className="text-gray-600 truncate">
                           <span className="text-xs p-1">of</span>
                           {fundraiserCurrency}
                           {parseFloat(campaign.goal_amount).toLocaleString()}
                         </span>
                       </p>
-                      <div className="block md:flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2">
+                      <div className="block md:flex justify-between items-center text-xs font-semibold text-gray-700 mt-2">
                         <div className="flex items-center space-x-1">
                           <FaUser />
                           <span>{campaign?.total_donors} Backers</span>
