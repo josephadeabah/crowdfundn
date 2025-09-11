@@ -163,7 +163,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
       />
       <div
         className={cn(
-          'group relative overflow-hidden bg-background hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col text-xs rounded-none',
+          'group relative overflow-hidden bg-white hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col text-xs rounded-none',
           className,
         )}
         onMouseEnter={() => setIsHovered(true)}
@@ -172,7 +172,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         <div className="absolute top-2 right-2 z-10">
           <button
             onClick={(e) => handleFavoriteClick(e, String(campaign.id))}
-            className="p-1.5 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-colors"
+            className="p-1.5 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
             aria-label={
               isFavorited ? 'Remove from favorites' : 'Add to favorites'
             }
@@ -220,7 +220,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
             {/* Category badge */}
             {campaign?.category && (
-              <span className="absolute bottom-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold bg-background/90 text-green-600 rounded-full">
+              <span className="absolute bottom-2 left-2 px-1.5 py-0.5 text-[10px] font-semibold bg-white/90 text-green-600 rounded-full">
                 {deslugify(campaign.category)}
               </span>
             )}
@@ -240,7 +240,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
             <h3
               className={cn(
-                'text-sm font-semibold text-foreground mb-2 line-clamp-2 transition-colors duration-300 h-10',
+                'text-sm font-semibold text-gray-800 mb-2 line-clamp-2 transition-colors duration-300 h-10',
                 isHovered ? 'text-emerald-500' : '',
               )}
             >
