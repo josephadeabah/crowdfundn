@@ -289,8 +289,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
               </div>
 
               <div className="flex justify-between items-center text-[10px]">
-                <div className="flex items-center gap-1">
-                  <Award className="h-3 w-3 text-gray-800" />
+                <div className="flex items-center gap-1 text-gray-800">
+                  <Award className="h-3 w-3" />
                   <span className="font-medium">
                     {campaign.total_donors || 0} Backers
                   </span>

@@ -270,7 +270,7 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
             variant="ghost"
             onClick={loadMoreCampaigns}
             disabled={isLoadingMore}
-            className="text-sm text-muted-foreground hover:text-foreground"
+            className="bg-white text-sm text-gray-800"
           >
             {isLoadingMore ? (
               <>
