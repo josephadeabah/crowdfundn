@@ -5,7 +5,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const NavbarLoader = () => {
   return (
-    <header className="bg-white/90 backdrop-blur-md shadow-sm p-1 sticky top-0 z-50">
+    <header className="bg-white backdrop-blur-md shadow-sm p-1 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto relative flex items-center justify-between text-gray-800 bg-white">
         {/* Original Logo or Title */}
         <div className="mx-6">
@@ -18,25 +18,25 @@ const NavbarLoader = () => {
 
         <div className="hidden lg:flex items-center gap-x-2 mx-6">
           {/* Original Navigation Links */}
-          <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
+          <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
             About
           </span>
-          <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
+          <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
             Guides
           </span>
-          <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
+          <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
             Contact
           </span>
-          <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
+          <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
             Education
           </span>
-          <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
+          <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
             Events
           </span>
-          <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
+          <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
             Fund
           </span>
-          <span className="mx-2 text-sm font-semibold p-2 hover:text-gray-700 dark:text-gray-50 hover:outline-none dark:hover:bg-gray-800">
+          <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
             Leaderboard
           </span>
         </div>
