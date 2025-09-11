@@ -186,8 +186,8 @@ const InvestmentContracts = () => {
                 );
               })}
             </CarouselContent>
-            <CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm border-border hover:bg-accent" />
-            <CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm border-border hover:bg-accent" />
+            <CarouselPrevious className="absolute -left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm border-border hover:bg-accent md:-left-4 md:h-10 md:w-10" />
+            <CarouselNext className="absolute -right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm border-border hover:bg-accent md:-right-4 md:h-10 md:w-10" />
           </Carousel>
         </div>
 
@@ -202,6 +202,16 @@ const InvestmentContracts = () => {
               decisions. Each contract type offers different risk levels,
               returns, and investor rights under Ghanaian securities law.
             </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button variant="default" className="bg-trust hover:bg-trust/90">
+                <Shield className="mr-2 h-4 w-4" />
+                Investment Guide
+              </Button>
+              <Button variant="outline">
+                <FileText className="mr-2 h-4 w-4" />
+                Legal Framework
+              </Button>
+            </div>
           </div>
         </div>
       </div>
