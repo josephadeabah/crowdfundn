@@ -46,7 +46,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           <div className="bg-white text-gray-800 p-4 shadow-sm">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full mr-3">
-                <FaMoneyBillWave className="text-green-100" />
+                <FaMoneyBillWave className="text-green-300" />
               </div>
               <h3 className="font-medium text-gray-700">
                 Valuation
@@ -61,7 +61,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           <div className="bg-white text-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full mr-3">
-                <FaPercentage className="text-blue-100" />
+                <FaPercentage className="text-blue-300" />
               </div>
               <h3 className="font-medium text-gray-700">
                 Equity Offered
@@ -75,7 +75,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           <div className="bg-whitetext-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-purple-800 rounded-full mr-3">
-                <FaHandHoldingUsd className="text-purple-100" />
+                <FaHandHoldingUsd className="text-purple-300" />
               </div>
               <h3 className="font-medium text-gray-700">
                 Investment Range
@@ -103,7 +103,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           <div className="bg-white p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-full mr-3">
-                <FaShareAlt className="text-orange-100" />
+                <FaShareAlt className="text-orange-300" />
               </div>
               <h3 className="font-medium text-gray-700">
                 Shares Issued
@@ -119,7 +119,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           <div className="bg-white text-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-3">
-                <FaUsers className="text-yellow-100" />
+                <FaUsers className="text-yellow-300" />
               </div>
               <h3 className="font-medium text-gray-700">
                 Shares Available For Investment
