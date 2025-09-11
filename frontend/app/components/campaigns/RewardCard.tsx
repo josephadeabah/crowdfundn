@@ -152,15 +152,15 @@ const RewardCard: React.FC<RewardCardProps> = ({
           </div>
 
           <div className="p-4">
-            <h3 className="text-lg font-semibold text-foreground mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
               {reward.title}
             </h3>
-            <p className="text-sm text-muted-foreground truncate">
+            <p className="text-sm text-gray-600 truncate">
               {reward.description}
             </p>
           </div>
 
-          <div className="flex items-center space-x-2 px-2 py-4 text-sm font-semibold text-green-600 dark:text-green-400">
+          <div className="flex items-center space-x-2 px-2 py-4 text-sm font-semibold text-green-600">
             <FaGift className="text-lg" />
             <span>Exclusive Reward</span>
           </div>
