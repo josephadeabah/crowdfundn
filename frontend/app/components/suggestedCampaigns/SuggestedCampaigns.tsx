@@ -89,7 +89,7 @@ const SuggestedCampaignsComponent = ({
   if (loading)
     return (
       <div className="w-full max-w-7xl mx-auto">
-        <CampaignCardSkeleton/>
+        <CampaignCardSkeleton />
       </div>
     );
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;

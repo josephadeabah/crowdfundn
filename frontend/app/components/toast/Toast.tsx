@@ -59,9 +59,7 @@ const ToastComponent: React.FC<ToastProps> = ({
             {title}
           </Toast.Title>
           <Toast.Description asChild>
-            <p className="text-xs text-gray-700">
-              {description}
-            </p>
+            <p className="text-xs text-gray-700">{description}</p>
           </Toast.Description>
         </div>
       </Toast.Root>

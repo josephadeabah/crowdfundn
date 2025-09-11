@@ -48,9 +48,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full mr-3">
                 <FaMoneyBillWave className="text-green-300" />
               </div>
-              <h3 className="font-medium text-gray-700">
-                Valuation
-              </h3>
+              <h3 className="font-medium text-gray-700">Valuation</h3>
             </div>
             <p className="text-2xl font-bold text-gray-700">
               {fundraiserCurrency}
@@ -63,9 +61,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full mr-3">
                 <FaPercentage className="text-blue-300" />
               </div>
-              <h3 className="font-medium text-gray-700">
-                Equity Offered
-              </h3>
+              <h3 className="font-medium text-gray-700">Equity Offered</h3>
             </div>
             <p className="text-2xl font-bold text-gray-700">
               {campaign?.equity_offered}%
@@ -77,9 +73,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-purple-100 rounded-full mr-3">
                 <FaHandHoldingUsd className="text-purple-300" />
               </div>
-              <h3 className="font-medium text-gray-700">
-                Investment Range
-              </h3>
+              <h3 className="font-medium text-gray-700">Investment Range</h3>
             </div>
 
             {/* Minimum Investment */}
@@ -105,9 +99,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-full mr-3">
                 <FaShareAlt className="text-orange-300" />
               </div>
-              <h3 className="font-medium text-gray-700">
-                Shares Issued
-              </h3>
+              <h3 className="font-medium text-gray-700">Shares Issued</h3>
             </div>
             <p className="text-2xl font-bold text-gray-700">
               {parseFloat(
@@ -138,9 +130,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-full mr-3">
                 <FaShareAlt className="text-indigo-300" />
               </div>
-              <h3 className="font-medium text-gray-700">
-                Total Shares
-              </h3>
+              <h3 className="font-medium text-gray-700">Total Shares</h3>
             </div>
             <p className="text-2xl font-bold text-gray-700">
               {parseFloat(
@@ -159,25 +149,19 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
         </h2>
         <div className="space-y-4">
           <div>
-            <h3 className="font-semibold text-gray-700">
-              Name
-            </h3>
+            <h3 className="font-semibold text-gray-700">Name</h3>
             <p className="text-gray-900">
               {campaign?.company_info?.name || 'N/A'}
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-gray-700">
-              Description
-            </h3>
+            <h3 className="font-semibold text-gray-700">Description</h3>
             <p className="text-gray-700">
               {campaign?.company_info?.description || 'No description provided'}
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-gray-700">
-              Headquarters
-            </h3>
+            <h3 className="font-semibold text-gray-700">Headquarters</h3>
             <p className="text-gray-700">
               {campaign?.company_info?.headquarters || 'N/A'}
             </p>
@@ -198,9 +182,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           </div>
           {campaign?.company_info?.website && (
             <div>
-              <h3 className="font-semibold text-gray-700">
-                Website
-              </h3>
+              <h3 className="font-semibold text-gray-700">Website</h3>
               <a
                 href={campaign.company_info.website}
                 target="_blank"
@@ -274,10 +256,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
         {campaign?.team_members?.length ? (
           <div className="grid grid-cols-1 gap-2">
             {campaign.team_members.map((member) => (
-              <div
-                key={member.id}
-                className="bg-white p-6 shadow-sm"
-              >
+              <div key={member.id} className="bg-white p-6 shadow-sm">
                 <div className="flex items-start space-x-4 gap-3">
                   <div className="w-16 h-16 flex-shrink-0">
                     <Avatar
@@ -290,9 +269,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                     <h3 className="text-lg font-bold text-gray-900">
                       {member.name}
                     </h3>
-                    <p className="text-gray-600 font-medium">
-                      {member.title}
-                    </p>
+                    <p className="text-gray-600 font-medium">{member.title}</p>
                     <p className="text-sm text-gray-600 mt-2">
                       {member.description}
                     </p>
@@ -302,9 +279,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             ))}
           </div>
         ) : (
-          <p className="text-gray-600">
-            No team members available.
-          </p>
+          <p className="text-gray-600">No team members available.</p>
         )}
       </div>
     </div>
