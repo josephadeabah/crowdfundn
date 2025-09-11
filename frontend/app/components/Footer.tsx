@@ -55,10 +55,10 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative bg-gray-50 border-t">
+    <footer className="relative bg-gray-50 border-t text-gray-900">
       {/* Background Image */}
       <div
-        className="absolute inset-0 bg-no-repeat bg-contain opacity-10 dark:opacity-5"
+        className="absolute inset-0 bg-no-repeat bg-contain"
         style={{
           backgroundImage: "url('/undraw_fall-is-coming_tjgw.svg')",
           backgroundPosition: 'right bottom',
@@ -113,7 +113,7 @@ const Footer = () => {
           {/* First three sections (Product, Resources, Company) - each spans 1 column */}
           {footerSections.slice(0, 3).map((section, index) => (
             <div key={index} className="md:col-span-1">
-              <h3 className="font-semibold mb-4 dark:text-gray-100">
+              <h3 className="font-semibold mb-4">
                 {section.title}
               </h3>
               <ul className="space-y-2 text-sm">
@@ -133,7 +133,7 @@ const Footer = () => {
 
           {/* Compliance & Legal section - spans 2 columns */}
           <div className="md:col-span-2">
-            <h3 className="font-semibold mb-4 dark:text-gray-100">
+            <h3 className="font-semibold mb-4">
               {footerSections[3].title}
             </h3>
             <ul className="space-y-2 text-sm">
