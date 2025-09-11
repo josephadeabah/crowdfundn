@@ -266,6 +266,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                         ).toFixed(1)
                       : 0
                   }%`}
+                  className="bg-white"
                 />
               </div>
 
