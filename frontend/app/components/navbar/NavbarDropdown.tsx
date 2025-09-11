@@ -36,7 +36,7 @@ export const NavbarDropdown: React.FC<NavbarDropdownProps> = ({
         onMouseLeave={() => {
           closeTimeout.current = setTimeout(() => setActiveMenu(null), 200);
         }}
-        className="flex items-center text-gray-700 group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
+        className="flex items-center text-gray-700 bg-white group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
       >
         <Button variant="ghost" className="flex items-center">
           {keyName.charAt(0).toUpperCase() + keyName.slice(1)}
@@ -67,7 +67,7 @@ export const NavbarDropdown: React.FC<NavbarDropdownProps> = ({
             className="focus-visible:outline-none focus:ring-0 hover:outline-none"
           >
             <div className="flex items-center gap-3 p-2 hover:bg-gray-50 focus-visible:outline-none focus:ring-0 hover:outline-none">
-              <div className="flex items-center justify-center rounded-lg !bg-white p-2">
+              <div className="flex items-center justify-center rounded-lg bg-white p-2">
                 <link.icon className="h-5 w-5 text-gray-800" />
               </div>
               <div>
