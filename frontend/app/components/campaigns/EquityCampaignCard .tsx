@@ -278,7 +278,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             <div className="flex justify-between items-center">
               <Button
                 variant="outline"
-                className="flex-1 bg-white text-gray-800 font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 text-sm"
+                className="flex-1 bg-white hover:bg-white text-gray-800 font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 text-sm"
               >
                 Invest Now
               </Button>
