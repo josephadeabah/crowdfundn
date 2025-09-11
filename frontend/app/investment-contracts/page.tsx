@@ -202,16 +202,6 @@ const InvestmentContracts = () => {
               decisions. Each contract type offers different risk levels,
               returns, and investor rights under Ghanaian securities law.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button variant="default" className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Shield className="mr-2 h-4 w-4" />
-                Investment Guide
-              </Button>
-              <Button variant="outline" className="border-gray-300 text-gray-800 hover:bg-gray-100">
-                <FileText className="mr-2 h-4 w-4" />
-                Legal Framework
-              </Button>
-            </div>
           </div>
         </div>
       </div>
