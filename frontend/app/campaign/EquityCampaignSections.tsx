@@ -309,7 +309,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             ))}
           </div>
         ) : (
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-gray-600">
             No team members available.
           </p>
         )}
