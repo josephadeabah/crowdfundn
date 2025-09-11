@@ -37,13 +37,13 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
   return (
     <div className="mb-10">
       {/* Investment Details Section */}
-      <div className="bg-gray-50 dark:bg-gray-700 py-6 px-1 mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+      <div className="bg-white text-gray-800 py-6 px-1 mb-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
           <FaChartLine className="mr-2 text-green-600" />
           Investment Details
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
+          <div className="bg-white text-gray-800 p-4 shadow-sm">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full mr-3">
                 <FaMoneyBillWave className="text-green-600 dark:text-green-300" />
@@ -52,13 +52,13 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
                 Valuation
               </h3>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl font-bold text-gray-800">
               {fundraiserCurrency}
               {parseFloat(String(campaign?.valuation || '0')).toLocaleString()}
             </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
+          <div className="bg-white text-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full mr-3">
                 <FaPercentage className="text-blue-600 dark:text-blue-300" />
@@ -72,18 +72,18 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
+          <div className="bg-whitetext-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
-              <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full mr-3">
-                <FaHandHoldingUsd className="text-purple-600 dark:text-purple-300" />
+              <div className="p-2 bg-purple-800 rounded-full mr-3">
+                <FaHandHoldingUsd className="text-purple-600" />
               </div>
-              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+              <h3 className="font-medium text-gray-500">
                 Investment Range
               </h3>
             </div>
 
             {/* Minimum Investment */}
-            <p className="text-xl font-semibold text-gray-900 dark:text-white">
+            <p className="text-xl font-semibold text-gray-900">
               Min: {fundraiserCurrency}
               {parseFloat(
                 String(campaign?.minimum_investment || '0'),
@@ -91,7 +91,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             </p>
 
             {/* Maximum Investment */}
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">
+            <p className="text-sm font-medium text-gray-600 mt-1">
               Max: {fundraiserCurrency}
               {parseFloat(
                 String(campaign?.maximum_investment || '0'),
@@ -100,7 +100,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           </div>
 
           {/* New: Shares Issued Card */}
-          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
+          <div className="bg-white p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-full mr-3">
                 <FaShareAlt className="text-orange-600 dark:text-orange-300" />
@@ -116,7 +116,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
+          <div className="bg-white text-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-3">
                 <FaUsers className="text-yellow-600 dark:text-yellow-300" />
@@ -133,7 +133,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
           </div>
 
           {/* Total Shares Card (if available in your API) */}
-          <div className="bg-white dark:bg-gray-800 p-4 shadow-sm dark:border-gray-700">
+          <div className="bg-white text-gray-800 p-4 shadow-sm dark:border-gray-700">
             <div className="flex items-center mb-2">
               <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-full mr-3">
                 <FaShareAlt className="text-indigo-600 dark:text-indigo-300" />
@@ -152,8 +152,8 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
       </div>
 
       {/* Company Information Section */}
-      <div className="bg-gray-50 dark:bg-gray-700 py-6 px-1 mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+      <div className="bg-gray-50 text-gray-800 py-6 px-1 mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
           <FaBuilding className="mr-2 text-blue-600" />
           Company Information
         </h2>
@@ -217,7 +217,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
 
       {/* Investment Documents Section */}
       {contractDocuments.length > 0 && (
-        <div className="bg-gray-50 dark:bg-gray-700 px-1 py-6 mb-8">
+        <div className="bg-gray-50 text-gray-800 px-1 py-6 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
             <FaFileContract className="mr-2 text-orange-500" />
             Contract Documents
@@ -266,7 +266,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
       )}
 
       {/* Team Members Section */}
-      <div className="bg-gray-50 dark:bg-gray-700 px-1 py-6 mb-8">
+      <div className="bg-gray-50 text-gray-800 px-1 py-6 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
           <FaUsers className="mr-2 text-purple-600" />
           Team Members
