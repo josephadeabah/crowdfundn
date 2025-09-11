@@ -121,7 +121,7 @@ const Footer = () => {
                   <li key={linkIndex}>
                     <a
                       href={link.path}
-                      className="text-gray-800 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                      className="text-gray-800 hover:text-orange-500 dark:hover:text-orange-400"
                     >
                       {link.name}
                     </a>
