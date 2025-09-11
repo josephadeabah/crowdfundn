@@ -29,12 +29,12 @@ const SingleCampaignLoader = () => {
               </div>
 
               {/* Tab Content - Details */}
-              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
+              <div className="bg-white mx-auto px-2 py-6">
                 {/* Campaign Description */}
                 <Skeleton count={5} className="mb-4" />
 
                 {/* Share Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8">
+                <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
                   <Skeleton height={30} width={200} className="mb-4" />
                   <div className="flex gap-4 mb-4">
                     <Skeleton height={40} width={150} />
@@ -67,7 +67,7 @@ const SingleCampaignLoader = () => {
 
                 {/* Campaign Progress */}
                 <Skeleton height={30} width={200} className="mb-4" />
-                <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow mb-8 p-2 space-y-6 sm:space-y-0 sm:space-x-6">
+                <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white rounded-lg shadow mb-8 p-2 space-y-6 sm:space-y-0 sm:space-x-6">
                   <div className="text-center sm:text-left">
                     <Skeleton height={20} width={150} className="mb-2" />
                     <Skeleton height={20} width={100} className="mb-2" />
