@@ -73,7 +73,7 @@ const Footer = () => {
             <div className="mb-4">
               <BantuHiveLogoIcon className="w-40 h-auto" />
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+            <p className="text-sm text-gray-800 mb-4">
               We're democratizing access to funding. Empowering individuals and
               communities to build legacies, spark innovation, and make good
               things happen.
@@ -121,7 +121,7 @@ const Footer = () => {
                   <li key={linkIndex}>
                     <a
                       href={link.path}
-                      className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                      className="text-gray-800 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
                     >
                       {link.name}
                     </a>
@@ -141,7 +141,7 @@ const Footer = () => {
                 <li key={linkIndex}>
                   <a
                     href={link.path}
-                    className="text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 dark:text-gray-300"
+                    className="text-gray-800 hover:text-orange-500 dark:hover:text-orange-400"
                   >
                     {link.name}
                   </a>
@@ -152,8 +152,8 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 text-sm text-gray-500 flex flex-col md:flex-row justify-between">
-          <div className="mb-4 md:mb-0 dark:text-gray-400">
+        <div className="mt-12 pt-8 border-t border-gray-200 text-sm flex flex-col md:flex-row justify-between">
+          <div className="mb-4 md:mb-0 text-gray-400">
             &copy; {new Date().getFullYear()} BantuHive Ltd. All rights
             reserved.
           </div>
