@@ -41,7 +41,7 @@ export const NavbarMobileMenu: React.FC<NavbarMobileMenuProps> = ({
             <div className="w-full">
               <Link
                 href="/auth/register"
-                className="block focus-visible:outline-none focus:ring-0 hover:outline-none"
+                className="block bg-white text-gray-800 focus-visible:outline-none focus:ring-0 hover:outline-none"
               >
                 Start Project
               </Link>

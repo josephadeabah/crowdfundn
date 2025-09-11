@@ -50,7 +50,7 @@ export const NavbarDropdown: React.FC<NavbarDropdownProps> = ({
       <PopoverContent
         align="start"
         sideOffset={8}
-        className="bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-50 p-2"
+        className="bg-white text-gray-800 p-2"
         onMouseEnter={() => {
           if (closeTimeout.current) clearTimeout(closeTimeout.current);
           setActiveMenu(keyName);
