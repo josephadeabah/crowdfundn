@@ -234,7 +234,7 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
             onClick={scrollLeft}
             disabled={!canScrollLeft}
             className={cn(
-              'rounded-full transition-all duration-200',
+              'bg-white text-gray-800 rounded-full transition-all duration-200',
               !canScrollLeft && 'opacity-50 cursor-not-allowed',
             )}
           >
@@ -246,7 +246,7 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
             onClick={scrollRight}
             disabled={!canScrollRight && !hasMore}
             className={cn(
-              'rounded-full transition-all duration-200',
+              'bg-white text-gray-800 rounded-full transition-all duration-200',
               !canScrollRight && !hasMore && 'opacity-50 cursor-not-allowed',
             )}
           >
