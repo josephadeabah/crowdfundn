@@ -63,11 +63,11 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full mr-3">
                 <FaPercentage className="text-blue-600 dark:text-blue-300" />
               </div>
-              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+              <h3 className="font-medium text-gray-700">
                 Equity Offered
               </h3>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl font-bold text-gray-700">
               {campaign?.equity_offered}%
             </p>
           </div>
@@ -77,13 +77,13 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-purple-800 rounded-full mr-3">
                 <FaHandHoldingUsd className="text-purple-600" />
               </div>
-              <h3 className="font-medium text-gray-500">
+              <h3 className="font-medium text-gray-700">
                 Investment Range
               </h3>
             </div>
 
             {/* Minimum Investment */}
-            <p className="text-xl font-semibold text-gray-900">
+            <p className="text-xl font-semibold text-gray-700">
               Min: {fundraiserCurrency}
               {parseFloat(
                 String(campaign?.minimum_investment || '0'),
@@ -91,7 +91,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
             </p>
 
             {/* Maximum Investment */}
-            <p className="text-sm font-medium text-gray-600 mt-1">
+            <p className="text-sm font-medium text-gray-700 mt-1">
               Max: {fundraiserCurrency}
               {parseFloat(
                 String(campaign?.maximum_investment || '0'),
@@ -105,11 +105,11 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-full mr-3">
                 <FaShareAlt className="text-orange-600 dark:text-orange-300" />
               </div>
-              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+              <h3 className="font-medium text-gray-700">
                 Shares Issued
               </h3>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl font-bold text-gray-700">
               {parseFloat(
                 campaign?.shares_issued?.toString() || '0',
               ).toLocaleString()}
@@ -138,11 +138,11 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
               <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-full mr-3">
                 <FaShareAlt className="text-indigo-600 dark:text-indigo-300" />
               </div>
-              <h3 className="font-medium text-gray-500 dark:text-gray-400">
+              <h3 className="font-medium text-gray-700">
                 Total Shares
               </h3>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl font-bold text-gray-700">
               {parseFloat(
                 campaign?.total_equity_shares.toString() || '0',
               ).toLocaleString()}
