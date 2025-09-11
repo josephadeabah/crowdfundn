@@ -29,7 +29,7 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = ({
   user,
 }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 dark:text-gray-100 mx-auto px-2 py-6">
+    <div className="bg-white text-gray-800 mx-auto px-2 py-6">
       {isEquityCampaign && <EquityCampaignSections campaign={campaign} />}
 
       {/* Campaign Description */}
