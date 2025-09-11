@@ -4,7 +4,7 @@ import MarketingMediaCarousel from './MarketingMediaCarousel';
 
 const InvestorPitchSection = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="h-full bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container mx-auto px-4 py-4">
         <div className="text-center mb-2">
           <h1 className="text-4xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
