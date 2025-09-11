@@ -38,7 +38,7 @@ export const NavbarDropdown: React.FC<NavbarDropdownProps> = ({
         }}
         className="flex items-center text-gray-700 bg-white group focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 hover:outline-none"
       >
-        <Button variant="ghost" className="flex items-center hover:bg-white text-gray-700">
+        <Button variant="ghost" className="flex items-center hover:bg-white hover:text-gray-700 text-gray-700">
           {keyName.charAt(0).toUpperCase() + keyName.slice(1)}
           <TriangleDownIcon
             className={`ml-2 h-4 w-4 transition-transform ${
