@@ -190,20 +190,6 @@ const InvestmentContracts = () => {
             <CarouselNext className="absolute -right-2 top-1/2 -translate-y-1/2 bg-white border-gray-300 hover:bg-gray-100 md:-right-4 md:h-10 md:w-10" />
           </Carousel>
         </div>
-
-        {/* Additional Resources Section */}
-        <div className="mt-16 text-center">
-          <div className="bg-gray-100 rounded-xl p-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              New to Investing?
-            </h2>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              Understanding investment contracts is crucial for making informed
-              decisions. Each contract type offers different risk levels,
-              returns, and investor rights under Ghanaian securities law.
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
