@@ -89,18 +89,18 @@ const investmentContracts = [
 
 const InvestmentContracts = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white text-gray-800">
       {/* Header Section */}
-      <div className="w-full bg-gradient-to-br from-trust/5 via-background to-growth/5 py-16">
+      <div className="w-full bg-white py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
               Investment Contracts in Ghana
             </h1>
-            <p className="text-xl text-muted-foreground mb-4 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 mb-4 max-w-3xl mx-auto">
               How you earn a return depends on the investment contract
             </p>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Learn more with our resources for first-time investors.
             </p>
           </div>
@@ -123,7 +123,7 @@ const InvestmentContracts = () => {
                     className="pl-4 md:basis-1/2 lg:basis-1/3"
                   >
                     <Card
-                      className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 hover:border-trust/30 bg-card/80 backdrop-blur-sm h-full"
+                      className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-gray-200 hover:border-blue-500 bg-white h-full"
                       style={{
                         animationDelay: `${index * 100}ms`,
                       }}
@@ -131,15 +131,15 @@ const InvestmentContracts = () => {
                       <CardHeader className="pb-4">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center space-x-3">
-                            <div className="p-2 rounded-lg bg-trust/10 text-trust">
+                            <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
                               <IconComponent className="h-6 w-6" />
                             </div>
                             <div>
-                              <CardTitle className="text-lg font-semibold text-card-foreground group-hover:text-trust transition-colors">
+                              <CardTitle className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
                                 {contract.title}
                               </CardTitle>
                               <div className="flex items-center space-x-2 mt-1">
-                                <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
+                                <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
                                   {contract.riskLevel}
                                 </span>
                               </div>
@@ -148,24 +148,24 @@ const InvestmentContracts = () => {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <CardDescription className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                        <CardDescription className="text-sm text-gray-600 mb-4 line-clamp-2">
                           {contract.description}
                         </CardDescription>
 
                         <div className="space-y-2 mb-6">
                           <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">
+                            <span className="text-gray-600">
                               Min. Investment:
                             </span>
-                            <span className="font-medium text-card-foreground">
+                            <span className="font-medium text-gray-800">
                               {contract.minInvestment}
                             </span>
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">
+                            <span className="text-gray-600">
                               Return Type:
                             </span>
-                            <span className="font-medium text-card-foreground">
+                            <span className="font-medium text-gray-800">
                               {contract.returnType}
                             </span>
                           </div>
@@ -174,7 +174,7 @@ const InvestmentContracts = () => {
                         <Link href={`${contract.id}`}>
                           <Button
                             variant="outline"
-                            className="w-full group-hover:bg-trust group-hover:text-trust-foreground group-hover:border-trust transition-all duration-300"
+                            className="w-full group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all duration-300 border-gray-300"
                           >
                             Learn more
                             <ExternalLink className="ml-2 h-4 w-4" />
@@ -186,28 +186,28 @@ const InvestmentContracts = () => {
                 );
               })}
             </CarouselContent>
-            <CarouselPrevious className="absolute -left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm border-border hover:bg-accent md:-left-4 md:h-10 md:w-10" />
-            <CarouselNext className="absolute -right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm border-border hover:bg-accent md:-right-4 md:h-10 md:w-10" />
+            <CarouselPrevious className="absolute -left-2 top-1/2 -translate-y-1/2 bg-white border-gray-300 hover:bg-gray-100 md:-left-4 md:h-10 md:w-10" />
+            <CarouselNext className="absolute -right-2 top-1/2 -translate-y-1/2 bg-white border-gray-300 hover:bg-gray-100 md:-right-4 md:h-10 md:w-10" />
           </Carousel>
         </div>
 
         {/* Additional Resources Section */}
         <div className="mt-16 text-center">
-          <div className="bg-muted/30 rounded-xl p-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">
+          <div className="bg-gray-100 rounded-xl p-8">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
               New to Investing?
             </h2>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
               Understanding investment contracts is crucial for making informed
               decisions. Each contract type offers different risk levels,
               returns, and investor rights under Ghanaian securities law.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button variant="default" className="bg-trust hover:bg-trust/90">
+              <Button variant="default" className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Shield className="mr-2 h-4 w-4" />
                 Investment Guide
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" className="border-gray-300 text-gray-800 hover:bg-gray-100">
                 <FileText className="mr-2 h-4 w-4" />
                 Legal Framework
               </Button>
