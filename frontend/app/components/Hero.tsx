@@ -238,7 +238,7 @@ const Hero = () => {
                       </Popover>
                     ))}
                     {topBackers?.length > 5 && (
-                      <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                      <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-sm font-semibold text-gray-600">
                         +{topBackers?.length - 5}
                       </div>
                     )}
