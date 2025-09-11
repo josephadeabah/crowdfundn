@@ -292,7 +292,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
                 <div className="flex items-center gap-1 text-gray-800">
                   <Award className="h-3 w-3" />
                   <span className="font-medium">
-                    {campaign.total_donors || 0} Backers
+                   {campaign.type === "EquityCampaign" ? campaign.total_donors || 0 : campaign.total_investors || 0 } {campaign.type === "EquityCampaign" ? "Investors" : "Supporters"}
                   </span>
                 </div>
                 <span className="text-muted-foreground">
