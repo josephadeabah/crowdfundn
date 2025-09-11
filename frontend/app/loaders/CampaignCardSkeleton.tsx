@@ -2,7 +2,7 @@
 const CampaignCardSkeleton: React.FC = () => {
   return (
     <div className="snap-start flex-none w-[220px] md:w-[280px] my-3 mx-2">
-      <div className="group relative overflow-hidden bg-background shadow-sm rounded-lg h-full flex flex-col animate-pulse">
+      <div className="group relative overflow-hidden bg-white shadow-sm rounded-lg h-full flex flex-col animate-pulse">
         {/* Image Skeleton */}
         <div className="relative aspect-[4/2.5] overflow-hidden bg-gray-200">
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
