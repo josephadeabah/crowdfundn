@@ -103,7 +103,7 @@ const FeaturedCampaigns = () => {
           <Button
             variant="outline"
             size="lg"
-            className="rounded-full text-sm md:text-lg whitespace-nowrap"
+            className="rounded-full bg-white text-gray-900 text-sm md:text-lg whitespace-nowrap"
           >
             View More Startups
           </Button>

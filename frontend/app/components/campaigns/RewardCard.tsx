@@ -107,7 +107,7 @@ const RewardCard: React.FC<RewardCardProps> = ({
         type={toast.type}
       />
       <div
-        className="group relative overflow-hidden bg-background hover:bg-gray-50 hover:shadow-md transition-all duration-300 h-full flex flex-col"
+        className="group relative overflow-hidden bg-white hover:bg-gray-50 hover:shadow-md transition-all duration-300 h-full flex flex-col"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -137,7 +137,7 @@ const RewardCard: React.FC<RewardCardProps> = ({
 
             <button
               className={cn(
-                'absolute top-4 right-4 p-2 rounded-full transition-colors bg-background/80 backdrop-blur-sm',
+                'absolute top-4 right-4 p-2 rounded-full transition-colors bg-white backdrop-blur-sm',
                 isFavorited
                   ? 'text-green-500'
                   : 'text-muted-foreground hover:text-green-500',
