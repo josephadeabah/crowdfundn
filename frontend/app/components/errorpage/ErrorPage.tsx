@@ -16,9 +16,9 @@ const ErrorPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-      <div className="w-full max-w-7xl bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-12 relative overflow-hidden transform transition-transform duration-300 hover:scale-[1.02]">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 via-green-500 to-green-300"></div>
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="w-full max-w-7xl bg-white rounded-2xl p-8 md:p-12 relative overflow-hidden transform transition-transform duration-300 hover:scale-[1.02]">
+        <div className="absolute top-0 left-0 w-full h-2 bg-green-500"></div>
 
         <div className="flex flex-col items-center text-center space-y-6">
           <div className="relative">
@@ -30,12 +30,12 @@ const ErrorPage = () => {
 
           <div className="space-y-3">
             <h1
-              className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100"
+              className="text-4xl md:text-5xl font-bold text-gray-900"
               aria-label="Error Occurred"
             >
               Oops! An Error Occurred
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 max-w-md">{error}</p>
+            <p className="text-gray-500 max-w-md">{error}</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6 w-full sm:w-auto">
@@ -52,7 +52,7 @@ const ErrorPage = () => {
 
             <button
               onClick={handleReload}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-all duration-300 focus:ring-4 focus:ring-gray-200 focus:outline-none"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300 focus:ring-4 focus:ring-gray-200 focus:outline-none"
               aria-label="Reload page"
             >
               <FiRefreshCw className="w-5 h-5" />
@@ -61,11 +61,11 @@ const ErrorPage = () => {
           </div>
 
           <div className="mt-8">
-            <p className="text-gray-400 dark:text-gray-500">
+            <p className="text-gray-400">
               If the problem persists, please contact support at{' '}
               <a
                 href="mailto:support@example.com"
-                className="text-gray-600 dark:text-gray-300 hover:underline"
+                className="text-gray-600 hover:underline"
               >
                 help@bantuhive.com
               </a>
