@@ -89,7 +89,7 @@ const investmentContracts = [
 
 const InvestmentContracts = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       {/* Header Section */}
       <div className="w-full bg-gradient-to-br from-trust/5 via-background to-growth/5 py-16">
         <div className="max-w-7xl mx-auto px-4">
