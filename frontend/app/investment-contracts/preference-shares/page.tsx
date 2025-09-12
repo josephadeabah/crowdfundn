@@ -20,8 +20,8 @@ import {
 
 const PreferenceShares = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-12">
+    <div className="min-h-screen bg-white text-gray-700">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="px-4">
           <Link href="/">
             <Button variant="ghost" className="mb-4 hover:bg-trust/10">
