@@ -1,4 +1,3 @@
-// Update the Donations component
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
@@ -30,7 +29,7 @@ interface InvestmentResponse {
   };
 }
 
-// Status color mapping based on EquityInvestments pattern
+// Status color mapping
 const STATUS_COLORS = {
   successful: 'bg-green-100 text-green-800',
   pending: 'bg-yellow-100 text-yellow-800',
@@ -398,7 +397,7 @@ export default function Donations() {
               setCurrentPage(1);
               setSelectedBackers([]);
             }}
-            className="p-2 border border-gray-300 rounded-md bg-white text-gray-800"
+            className="p-2 border border-gray-300 rounded-md"
           >
             <option value="donation">Donations</option>
             <option value="equity_investment">Investments</option>
@@ -412,7 +411,7 @@ export default function Donations() {
                 setCurrentPage(1);
                 setSelectedBackers([]);
               }}
-              className="p-2 border border-gray-300 rounded-md bg-white text-gray-800"
+              className="p-2 border border-gray-300 rounded-md"
             >
               <option value="all">All Statuses</option>
               <option value="successful">Successful</option>
@@ -463,7 +462,7 @@ export default function Donations() {
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+          <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
             <table className="min-w-full bg-white rounded-lg shadow-md">
               <thead>
                 <tr className="text-left bg-gray-200 text-gray-800">
@@ -618,6 +617,7 @@ const BackerRow: React.FC<BackerRowProps> = ({
   const formattedCurrency = currency ? currency.toLocaleUpperCase() : '';
   const formattedAmount = amount.toFixed(2);
 
+  // Truncate campaign title to prevent horizontal scrolling
   const truncatedTitle =
     campaignTitle.length > 30
       ? `${campaignTitle.substring(0, 30)}...`
@@ -625,11 +625,14 @@ const BackerRow: React.FC<BackerRowProps> = ({
 
   const handleSendThankYou = async () => {
     if (!canSendThankYou) return;
+
     setIsSending(true);
     try {
       await onSendThankYou(backerId);
       setIsSent(true);
       setTimeout(() => setIsSent(false), 2000);
+    } catch (error) {
+      console.error('Error sending thank-you email:', error);
     } finally {
       setIsSending(false);
     }
@@ -653,7 +656,9 @@ const BackerRow: React.FC<BackerRowProps> = ({
       <td className="py-3 px-4 text-gray-600 whitespace-nowrap">
         {formattedCurrency} {formattedAmount}
       </td>
-      <td className="py-3 px-4 text-gray-500 whitespace-nowrap">{date}</td>
+      <td className="py-3 px-4 text-gray-500 whitespace-nowrap">
+        {date}
+      </td>
       <td className="py-3 px-4 text-gray-500 whitespace-nowrap">
         <span
           className="cursor-help"
