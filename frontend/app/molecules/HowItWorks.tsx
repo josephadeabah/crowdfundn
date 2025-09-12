@@ -18,7 +18,7 @@ const HowItWorks = () => {
     <div className="min-h-screen bg-white">
       {/* Hero div */}
       <div className="bg-gradient-to-b from-fundify-primary/10 to-white pt-16 pb-20">
-        <div className="container mx-auto px-4 text-center">
+        <div className="max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-fundify-primary to-fundify-accent">
               How BantuHive Works
@@ -242,13 +242,13 @@ const HowItWorks = () => {
       </div>
 
       {/* Funding Types */}
-      <div className="bg-gray-50 py-16">
-        <div className="min-h-screen bg-background">
-          <div className="container mx-auto px-6 py-12">
+      <div className="bg-white py-16 text-gray-700">
+        <div className="min-h-screen bg-white">
+          <div className="max-w-7xl mx-auto px-6 py-12">
             <div className="max-w-4xl mx-auto">
-              <div className="space-y-12 text-foreground">
+              <div className="space-y-12 text-gray-700">
                 <div className="text-center">
-                  <p className="text-xl leading-relaxed text-muted-foreground">
+                  <p className="text-xl leading-relaxed text-gray-700">
                     BantuHive simplifies the fundraising and investment process
                     through our innovative three-tier platform designed
                     specifically for the Ghanaian market.
