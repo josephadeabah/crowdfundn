@@ -54,4 +54,23 @@ class PremiumSubscription < ApplicationRecord
     
     subscription.update(updates)
   end
+
+  def self.find_by_authorization(authorization_code, user_id)
+    # This is a placeholder - you might need to store authorization codes
+    # For now, we'll just find the most recent subscription for the user
+    where(user_id: user_id)
+      .where('created_at >= ?', 5.minutes.ago)
+      .order(created_at: :desc)
+      .first
+  end
+
+  def self.update_subscription_code(subscription_id, subscription_code, email_token)
+    subscription = find_by(id: subscription_id)
+    return unless subscription
+    
+    subscription.update(
+      paystack_subscription_code: subscription_code,
+      paystack_email_token: email_token
+    )
+  end
 end

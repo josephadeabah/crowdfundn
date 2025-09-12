@@ -9,25 +9,6 @@ module Api
           active_subscription = @current_user.active_premium_subscription
           current_plan = @current_user.premium_plan
           
-          # If subscription exists but missing subscription code, check if we have a later subscription.create event
-          if active_subscription && active_subscription.paystack_subscription_code.nil? && active_subscription.auto_renew
-            # Look for any subscription with subscription code for this user
-            subscription_with_code = PremiumSubscription.where(user: @current_user)
-                                                      .where.not(paystack_subscription_code: nil)
-                                                      .order(created_at: :desc)
-                                                      .first
-                                                      
-            if subscription_with_code && subscription_with_code.created_at > active_subscription.created_at
-              # Update the active subscription with the code from the newer record
-              active_subscription.update(
-                paystack_subscription_code: subscription_with_code.paystack_subscription_code,
-                paystack_email_token: subscription_with_code.paystack_email_token
-              )
-              # Refresh the active subscription
-              active_subscription.reload
-            end
-          end
-          
           render json: {
             has_premium: @current_user.premium_access?,
             expires_at: @current_user.premium_expires_at,
@@ -48,11 +29,11 @@ module Api
               paystack_subscription_code: active_subscription.paystack_subscription_code,
               expires_at: active_subscription.expires_at,
               start_date: active_subscription.start_date,
-              is_recurring: active_subscription.paystack_subscription_code.present?
+              is_recurring: active_subscription.auto_renew # ✅ Use auto_renew instead of checking subscription code
             } : nil
           }, status: :ok
         end
-          
+        
 
         def create
           plan = PremiumPlan.find(params[:plan_id])
