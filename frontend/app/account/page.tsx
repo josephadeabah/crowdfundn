@@ -254,7 +254,11 @@ const ProfileTabs = () => {
 
         {/* Tab Content */}
         <div className="flex-1 flex flex-col bg-white px-3 mb-0 overflow-auto h-full md:h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-          <div role="tabpanel" id={`vertical-tab-${activeTab}`} className="flex-1 mb-8">
+          <div
+            role="tabpanel"
+            id={`vertical-tab-${activeTab}`}
+            className="flex-1 mb-8"
+          >
             {tabs.find((tab) => tab.label === activeTab)?.component}
           </div>
           <div className="bg-white w-full m-0 text-center py-4 text-gray-600">

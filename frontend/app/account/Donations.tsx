@@ -483,7 +483,7 @@ export default function Donations() {
                 </tr>
               </thead>
               <tbody>
-                                {backerType === 'donation'
+                {backerType === 'donation'
                   ? donations.map((donation) => {
                       const campaign =
                         donation.metadata?.campaign_metadata || {};
