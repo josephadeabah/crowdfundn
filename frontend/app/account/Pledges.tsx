@@ -160,7 +160,7 @@ const PledgesListPage = () => {
           </div>
         </div>
         <div className="text-center py-16">
-          <p className="text-gray-600 dark:text-neutral-400 text-lg">
+          <p className="text-gray-600 text-lg">
             You have not received any pledges yet.
           </p>
         </div>
@@ -199,28 +199,28 @@ const PledgesListPage = () => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="">
+        <Card>
           <CardContent className="p-6 text-center">
             <Package className="h-8 w-8 mx-auto mb-2 text-tab-primary" />
             <p className="text-2xl font-bold">{stats.total}</p>
             <p className="text-sm text-muted-foreground">Total Pledges</p>
           </CardContent>
         </Card>
-        <Card className="">
+        <Card>
           <CardContent className="p-6 text-center">
             <Clock className="h-8 w-8 mx-auto mb-2 text-tab-secondary" />
             <p className="text-2xl font-bold">{stats.readyToShip}</p>
             <p className="text-sm text-muted-foreground">Ready to Ship</p>
           </CardContent>
         </Card>
-        <Card className="">
+        <Card>
           <CardContent className="p-6 text-center">
             <Truck className="h-8 w-8 mx-auto mb-2 text-tab-success" />
             <p className="text-2xl font-bold">{stats.shipped}</p>
             <p className="text-sm text-muted-foreground">Shipped</p>
           </CardContent>
         </Card>
-        <Card className="">
+        <Card>
           <CardContent className="p-6 text-center">
             <CheckCircle className="h-8 w-8 mx-auto mb-2 text-tab-accent" />
             <p className="text-2xl font-bold">

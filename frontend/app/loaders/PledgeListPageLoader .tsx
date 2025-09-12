@@ -7,11 +7,11 @@ const PledgeListPageLoader = () => {
   return (
     <div className="container mx-auto px-2 py-8">
       <div className="w-full flex justify-start items-center">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+        <h2 className="text-2xl font-semibold text-gray-800">
           <Skeleton width={200} height={30} />
         </h2>
       </div>
-      <p className="text-gray-500 dark:text-neutral-400 mb-4">
+      <p className="text-gray-500 mb-4">
         <Skeleton width={300} height={20} />
       </p>
 
