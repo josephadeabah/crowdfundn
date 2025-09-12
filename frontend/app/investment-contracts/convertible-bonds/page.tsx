@@ -28,7 +28,7 @@ const ConvertibleBonds = () => {
             <Link href="/">
               <Button variant="ghost" className="mb-4 hover:bg-trust/10">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Contracts
+                Back to Home
               </Button>
             </Link>
 
