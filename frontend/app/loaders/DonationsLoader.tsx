@@ -8,11 +8,10 @@ export default function DonationsLoader() {
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+        <h2 className="text-2xl font-semibold text-gray-800">
           Backer List
-          <p className="text-gray-500 dark:text-neutral-400 text-xs font-medium">
-            {' '}
-            Send Thank You to your Backers{' '}
+          <p className="text-gray-500 text-xs font-medium">
+            Send Thank You to your Backers
           </p>
         </h2>
         <Button size="icon" variant="outline" className="rounded-full">
@@ -22,9 +21,9 @@ export default function DonationsLoader() {
 
       {/* Table Loading Skeleton */}
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+        <table className="min-w-full bg-white rounded-lg shadow-md">
           <thead>
-            <tr className="text-left bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-white">
+            <tr className="text-left bg-gray-200 text-gray-800">
               <th className="py-3 px-4">Select</th>
               <th className="py-3 px-4">Donor Name</th>
               <th className="py-3 px-4">Amount</th>
@@ -40,30 +39,30 @@ export default function DonationsLoader() {
               .map((_, index) => (
                 <tr
                   key={index}
-                  className="border-b hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors duration-200"
+                  className="border-b hover:bg-gray-100 transition-colors duration-200"
                 >
                   <td className="py-3 px-4">
                     <Skeleton height={20} width={20} />
                   </td>
-                  <td className="py-3 px-4 text-gray-800 dark:text-white">
+                  <td className="py-3 px-4 text-gray-800">
                     <Skeleton width={100} />
                   </td>
-                  <td className="py-3 px-4 text-gray-600 dark:text-neutral-300">
+                  <td className="py-3 px-4 text-gray-600">
                     <Skeleton width={50} />
                   </td>
-                  <td className="py-3 px-4 text-gray-500 dark:text-neutral-400">
+                  <td className="py-3 px-4 text-gray-500">
                     <Skeleton width={80} />
                   </td>
-                  <td className="py-3 px-4 text-gray-500 dark:text-neutral-400">
+                  <td className="py-3 px-4 text-gray-500">
                     <Skeleton width={150} />
                   </td>
-                  <td className="py-3 px-4 text-green-500 dark:text-green-400">
+                  <td className="py-3 px-4 text-green-500">
                     <Skeleton width={70} />
                   </td>
                   <td className="py-3 px-4">
                     <Button
                       variant="outline"
-                      className="px-3 py-1 text-sm rounded-full hover:bg-gray-100 dark:hover:bg-gray-100 transition duration-200"
+                      className="px-3 py-1 text-sm rounded-full hover:bg-gray-100 transition duration-200"
                     >
                       <Skeleton width={60} />
                     </Button>
