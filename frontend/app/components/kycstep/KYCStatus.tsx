@@ -110,9 +110,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
   const getStatusBadge = () => {
     if (isVerified && !isExpired) {
       return (
-        <Badge className="bg-green-100 text-green-800 border-0">
-          Verified
-        </Badge>
+        <Badge className="bg-green-100 text-green-800 border-0">Verified</Badge>
       );
     } else if (isExpired) {
       return (
@@ -359,10 +357,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
             )}
 
             {status === 'rejected' && (
-              <Alert
-                variant="destructive"
-                className="bg-red-50 border-red-200"
-              >
+              <Alert variant="destructive" className="bg-red-50 border-red-200">
                 <XCircle className="h-4 w-4" />
                 <AlertTitle>Verification Rejected</AlertTitle>
                 <AlertDescription>
@@ -384,7 +379,10 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
             )}
 
             {status === 'in_review' && (
-              <Alert variant="default" className="bg-purple-50 border-purple-200">
+              <Alert
+                variant="default"
+                className="bg-purple-50 border-purple-200"
+              >
                 <RefreshCw className="h-4 w-4" />
                 <AlertTitle>Under Review</AlertTitle>
                 <AlertDescription>

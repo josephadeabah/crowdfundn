@@ -153,9 +153,7 @@ const KYC = () => {
                       {option.benefits.map((benefit, index) => (
                         <li key={index} className="flex items-start">
                           <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-600">
-                            {benefit}
-                          </span>
+                          <span className="text-gray-600">{benefit}</span>
                         </li>
                       ))}
                     </ul>
