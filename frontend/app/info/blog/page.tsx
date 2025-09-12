@@ -30,28 +30,29 @@ export default function BlogPage() {
               <FiExternalLink className="text-white text-2xl" />
             </div>
           </div>
-          
+
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Taking you to our Blog
           </h1>
-          
+
           <p className="text-gray-600 mb-6">
-            You're being redirected to our official blog at PNPM Media, where we share the latest news, updates, and insights from BantuHive.
+            You're being redirected to our official blog at PNPM Media, where we
+            share the latest news, updates, and insights from BantuHive.
           </p>
-          
+
           <div className="flex flex-col space-y-4">
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               className="flex justify-center"
             >
               <FiLoader className="text-blue-600 text-2xl" />
             </motion.div>
-            
+
             <div className="text-sm text-blue-600 mb-4">
               Redirecting to pnpmmedia.com...
             </div>
-            
+
             <button
               onClick={() => router.back()}
               className="flex items-center justify-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
@@ -59,7 +60,7 @@ export default function BlogPage() {
               <FiArrowLeft />
               <span>Go back</span>
             </button>
-            
+
             <div className="mt-4">
               <a
                 href="https://www.pnpmmedia.com/"
@@ -73,10 +74,11 @@ export default function BlogPage() {
               </a>
             </div>
           </div>
-          
+
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-xs text-gray-500">
-              BantuHive's official blog is hosted on PNPM Media. Here you'll find:
+              BantuHive's official blog is hosted on PNPM Media. Here you'll
+              find:
             </p>
             <ul className="text-xs text-gray-500 mt-2 space-y-1">
               <li>• Industry insights and analysis</li>

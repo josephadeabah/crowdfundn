@@ -21,7 +21,8 @@ import {
 
 const ProfitSharing = () => {
   return (
-    <div className="max-w-7xl mx-auto min-h-screen bg-white text-gray-700">
+    <div className="min-h-screen bg-white text-gray-700">
+            <div className="max-w-7xl mx-auto">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="px-4">
           <Link href="/">
@@ -498,6 +499,7 @@ const ProfitSharing = () => {
             </Card>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
