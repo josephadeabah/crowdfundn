@@ -175,7 +175,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
 
   if (compact) {
     return (
-      <Card className="bg-white border-0">
+      <Card className="bg-white text-gray-700 border-0">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -317,7 +317,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
 
             {/* Upgrade Eligibility Banner */}
             {upgradeEligibility?.can_upgrade && (
-              <Alert className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+              <Alert className="bg-gray-50 border-blue-100">
                 <ArrowUpCircle className="h-4 w-4 text-blue-600" />
                 <AlertTitle className="text-blue-800">
                   Free Upgrade Available!

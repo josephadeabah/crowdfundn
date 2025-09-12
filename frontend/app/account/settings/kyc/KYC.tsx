@@ -133,7 +133,7 @@ const KYC = () => {
             return (
               <Card
                 key={option.type}
-                className="hover:shadow-lg transition-shadow h-full flex flex-col"
+                className="hover:shadow-lg bg-white text-gray-800 transition-shadow h-full flex flex-col"
               >
                 <CardHeader className="text-center flex-shrink-0">
                   <div className="mx-auto mb-4 p-3 bg-gray-100 rounded-full">
