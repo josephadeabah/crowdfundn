@@ -136,8 +136,8 @@ const KYC = () => {
                 className="hover:shadow-lg transition-shadow h-full flex flex-col"
               >
                 <CardHeader className="text-center flex-shrink-0">
-                  <div className="mx-auto mb-4 p-3 bg-gray-100 rounded-full dark:bg-gray-900/20">
-                    <IconComponent className="h-8 w-8 text-gray-600 dark:text-gray-400" />
+                  <div className="mx-auto mb-4 p-3 bg-gray-100 rounded-full">
+                    <IconComponent className="h-8 w-8 text-gray-600" />
                   </div>
                   <CardTitle className="text-xl">{option.title}</CardTitle>
                   <CardDescription className="text-sm min-h-[3rem]">
@@ -146,14 +146,14 @@ const KYC = () => {
                 </CardHeader>
                 <CardContent className="flex flex-col flex-grow">
                   <div className="space-y-3 mb-6 flex-grow">
-                    <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300">
+                    <h4 className="font-semibold text-sm text-gray-700">
                       Benefits:
                     </h4>
                     <ul className="space-y-2 text-sm">
                       {option.benefits.map((benefit, index) => (
                         <li key={index} className="flex items-start">
                           <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-600 dark:text-gray-400">
+                          <span className="text-gray-600">
                             {benefit}
                           </span>
                         </li>
@@ -180,14 +180,14 @@ const KYC = () => {
           })}
         </div>
 
-        <div className="mt-8 p-6 bg-blue-50 rounded-lg dark:bg-blue-900/20">
+        <div className="mt-8 p-6 bg-blue-50 rounded-lg">
           <div className="flex items-start mb-3">
             <Info className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+            <h3 className="text-lg font-semibold text-blue-900">
               Important Information
             </h3>
           </div>
-          <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+          <ul className="space-y-2 text-sm text-blue-800">
             <li>
               • <strong>Fundraiser verification</strong> - Create campaigns and
               raise funds
@@ -211,14 +211,14 @@ const KYC = () => {
           </ul>
         </div>
 
-        <div className="mt-6 p-4 bg-yellow-50 rounded-lg dark:bg-yellow-900/20">
+        <div className="mt-6 p-4 bg-yellow-50 rounded-lg">
           <div className="flex items-start">
             <Info className="h-5 w-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
             <div>
-              <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-1">
+              <h4 className="font-semibold text-yellow-900 mb-1">
                 Important Notice
               </h4>
-              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+              <p className="text-sm text-yellow-800">
                 If your KYC is verified immediately after submission while you
                 are still logged in, please{' '}
                 <strong>log out and log back in</strong> to ensure the updated
