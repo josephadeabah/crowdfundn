@@ -36,4 +36,22 @@ class PremiumSubscription < ApplicationRecord
     # Always update local status
     update(status: 'cancelled', auto_renew: false)
   end
+
+  def self.update_with_subscription_data(subscription_code, email_token, plan_code = nil)
+    subscription = find_by(paystack_subscription_code: subscription_code)
+    return unless subscription
+    
+    updates = {
+      paystack_email_token: email_token,
+      status: 'active',
+      auto_renew: true
+    }
+    
+    if plan_code.present?
+      plan = PremiumPlan.find_by(paystack_plan_code: plan_code)
+      updates[:premium_plan] = plan if plan
+    end
+    
+    subscription.update(updates)
+  end
 end

@@ -15,7 +15,6 @@ module PaystackWebhook
       Rails.logger.info "Metadata: #{@metadata.inspect}"
       Rails.logger.info "============================"
       
-      # Handle both events - subscription.create may not have metadata
       case event_type
       when :charge_success
         Rails.logger.info "Processing premium subscription payment"
@@ -40,7 +39,6 @@ module PaystackWebhook
     
     def handle_subscription_create
       # This event contains the subscription code and email token
-      # Store it directly in the PremiumSubscription table
       subscription_code = @data[:subscription_code]
       email_token = @data[:email_token]
       
@@ -62,14 +60,22 @@ module PaystackWebhook
         return
       end
       
-      # Find or create a subscription with this code
-      subscription = PremiumSubscription.find_or_initialize_by(
+      # Try to find an existing subscription by transaction reference or create new
+      # Look for the most recent subscription for this user that might match
+      subscription = PremiumSubscription.where(user: user)
+                                       .where(auto_renew: true)
+                                       .order(created_at: :desc)
+                                       .first
+      
+      # If no existing subscription found, create a new one
+      subscription ||= PremiumSubscription.new(
+        user: user,
+        transaction_reference: "temp_#{subscription_code}", # Temporary reference
         paystack_subscription_code: subscription_code
       )
       
       # Update with the subscription data
       subscription_attrs = {
-        user: user,
         paystack_email_token: email_token,
         status: 'active',
         auto_renew: true,
@@ -84,8 +90,25 @@ module PaystackWebhook
         subscription_attrs[:premium_plan] = plan if plan
       end
       
+      # Set amount and currency from subscription data
+      if @data[:amount].present?
+        subscription_attrs[:amount] = @data[:amount].to_f / 100
+        subscription_attrs[:currency] = @data[:currency] || 'GHS'
+      end
+      
       if subscription.update(subscription_attrs)
         Rails.logger.info "Subscription created/updated from subscription.create: #{subscription_code}"
+        
+        # If this is an existing subscription, also update user status
+        if subscription.persisted? && user.premium_subscription_id != subscription.id
+          user.update_columns(
+            premium_access: true,
+            premium_plan_id: subscription.premium_plan_id,
+            premium_expires_at: subscription.expires_at,
+            premium_subscription_id: subscription.id,
+            updated_at: Time.current
+          )
+        end
       else
         Rails.logger.error "Failed to create/update subscription: #{subscription.errors.full_messages}"
       end
@@ -116,10 +139,10 @@ module PaystackWebhook
       
       Rails.logger.info "Found user: #{user.email}, plan: #{plan.name}"
       
-      # For recurring subscriptions, try to find by subscription code first
+      # For recurring subscriptions, try to find existing subscription
       subscription = nil
       if is_recurring
-        # Look for existing subscription by customer email (from charge.success data)
+        # Look for existing subscription by customer email
         customer_email = @data.dig(:customer, :email)
         if customer_email.present?
           subscription = PremiumSubscription.joins(:user)
@@ -129,12 +152,19 @@ module PaystackWebhook
                                            .first
         end
         
-        # If not found, try to find by reference
-        subscription ||= PremiumSubscription.find_or_initialize_by(
-          transaction_reference: @data[:reference]
-        )
-      else
-        # For one-time payments, use transaction reference
+        # If not found by email, try to find by authorization code (recurring payments use same auth)
+        authorization_code = @data.dig(:authorization, :authorization_code)
+        if subscription.nil? && authorization_code.present?
+          subscription = PremiumSubscription.joins(:user)
+                                           .where(users: { id: user_id })
+                                           .where("paystack_subscription_code IS NOT NULL")
+                                           .order(created_at: :desc)
+                                           .first
+        end
+      end
+      
+      # If no existing subscription found, create a new one with transaction reference
+      if subscription.nil?
         subscription = PremiumSubscription.find_or_initialize_by(
           transaction_reference: @data[:reference]
         )
@@ -148,19 +178,23 @@ module PaystackWebhook
         expires_at: calculate_end_date(plan),
         amount: @data[:amount].to_f / 100,
         currency: @data[:currency],
-        auto_renew: is_recurring
+        auto_renew: is_recurring,
+        transaction_reference: @data[:reference] # Ensure reference is set
       }
       
-      # For recurring subscriptions, try to find subscription code from existing record
-      if is_recurring && subscription.persisted?
+      # For recurring subscriptions, check if we already have subscription data
+      # If subscription.create arrived first, it would have set these values
+      if is_recurring
         if subscription.paystack_subscription_code.present?
-          subscription_attrs[:paystack_subscription_code] = subscription.paystack_subscription_code
           Rails.logger.info "Using existing subscription code: #{subscription.paystack_subscription_code}"
+        else
+          Rails.logger.warn "No subscription code found for recurring subscription"
         end
         
         if subscription.paystack_email_token.present?
-          subscription_attrs[:paystack_email_token] = subscription.paystack_email_token
           Rails.logger.info "Using existing email token: #{subscription.paystack_email_token}"
+        else
+          Rails.logger.warn "No email token found for recurring subscription"
         end
       end
       
