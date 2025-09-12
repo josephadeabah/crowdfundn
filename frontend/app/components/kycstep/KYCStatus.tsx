@@ -75,9 +75,9 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
 
   if (!user) {
     return (
-      <Card className="bg-white dark:bg-gray-800 border-0">
+      <Card className="bg-white border-0">
         <CardContent className="p-6">
-          <div className="text-center text-gray-500 dark:text-gray-400">
+          <div className="text-center text-gray-500">
             Please sign in to view your KYC status
           </div>
         </CardContent>
@@ -110,39 +110,33 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
   const getStatusBadge = () => {
     if (isVerified && !isExpired) {
       return (
-        <Badge className="bg-green-100 text-green-800 border-0 dark:bg-green-900/20 dark:text-green-300">
+        <Badge className="bg-green-100 text-green-800 border-0">
           Verified
         </Badge>
       );
     } else if (isExpired) {
       return (
-        <Badge className="bg-yellow-100 text-yellow-800 border-0 dark:bg-yellow-900/20 dark:text-yellow-300">
+        <Badge className="bg-yellow-100 text-yellow-800 border-0">
           Expired
         </Badge>
       );
     } else if (status === 'pending') {
       return (
-        <Badge className="bg-blue-100 text-blue-800 border-0 dark:bg-blue-900/20 dark:text-blue-300">
-          Pending
-        </Badge>
+        <Badge className="bg-blue-100 text-blue-800 border-0">Pending</Badge>
       );
     } else if (status === 'in_review') {
       return (
-        <Badge className="bg-purple-100 text-purple-800 border-0 dark:bg-purple-900/20 dark:text-purple-300">
+        <Badge className="bg-purple-100 text-purple-800 border-0">
           In Review
         </Badge>
       );
     } else if (status === 'rejected') {
       return (
-        <Badge className="bg-red-100 text-red-800 border-0 dark:bg-red-900/20 dark:text-red-300">
-          Rejected
-        </Badge>
+        <Badge className="bg-red-100 text-red-800 border-0">Rejected</Badge>
       );
     }
     return (
-      <Badge className="bg-gray-100 text-gray-800 border-0 dark:bg-gray-900/20 dark:text-gray-300">
-        Not Started
-      </Badge>
+      <Badge className="bg-gray-100 text-gray-800 border-0">Not Started</Badge>
     );
   };
 
@@ -183,7 +177,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
 
   if (compact) {
     return (
-      <Card className="bg-white dark:bg-gray-800 border-0">
+      <Card className="bg-white border-0">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -216,9 +210,9 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
 
   return (
     <div className="space-y-4">
-      <Card className="bg-white dark:bg-gray-800 border-0">
+      <Card className="bg-white border-0">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold flex items-center">
+          <CardTitle className="text-lg font-semibold flex items-center text-gray-800">
             <UserCheck className="h-5 w-5 mr-2" />
             KYC Verification Status
           </CardTitle>
@@ -226,11 +220,13 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
         <CardContent>
           <div className="space-y-4">
             {/* Status Overview */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div className="flex items-center space-x-3">
                 {getStatusIcon()}
                 <div>
-                  <p className="text-sm font-medium">Verification Status</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    Verification Status
+                  </p>
                   <div className="flex items-center space-x-2 mt-1">
                     {getStatusBadge()}
                     {kycType && (
@@ -256,19 +252,17 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
             {hasKYC && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <h4 className="font-medium text-sm">Verification Details</h4>
+                  <h4 className="font-medium text-sm text-gray-800">
+                    Verification Details
+                  </h4>
                   <div className="text-sm space-y-1">
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">
-                        Status:
-                      </span>
+                      <span className="text-gray-600">Status:</span>
                       <span className="font-medium">{status}</span>
                     </div>
                     {verifiedAt && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">
-                          Verified:
-                        </span>
+                        <span className="text-gray-600">Verified:</span>
                         <span className="font-medium">
                           {formatDate(verifiedAt)}
                         </span>
@@ -276,9 +270,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
                     )}
                     {expiresAt && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">
-                          Expires:
-                        </span>
+                        <span className="text-gray-600">Expires:</span>
                         <span className="font-medium">
                           {formatDate(expiresAt)}
                         </span>
@@ -288,12 +280,12 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="font-medium text-sm">Permissions</h4>
+                  <h4 className="font-medium text-sm text-gray-800">
+                    Permissions
+                  </h4>
                   <div className="text-sm space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">
-                        Can Invest:
-                      </span>
+                      <span className="text-gray-600">Can Invest:</span>
                       <Badge
                         variant={user?.can_invest ? 'default' : 'secondary'}
                         className={
@@ -306,9 +298,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">
-                        Can Fundraise:
-                      </span>
+                      <span className="text-gray-600">Can Fundraise:</span>
                       <Badge
                         variant={
                           user.can_create_campaign ? 'default' : 'secondary'
@@ -329,12 +319,12 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
 
             {/* Upgrade Eligibility Banner */}
             {upgradeEligibility?.can_upgrade && (
-              <Alert className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 dark:from-blue-900/20 dark:to-purple-900/20 dark:border-blue-800">
+              <Alert className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
                 <ArrowUpCircle className="h-4 w-4 text-blue-600" />
-                <AlertTitle className="text-blue-800 dark:text-blue-200">
+                <AlertTitle className="text-blue-800">
                   Free Upgrade Available!
                 </AlertTitle>
-                <AlertDescription className="text-blue-700 dark:text-blue-300">
+                <AlertDescription className="text-blue-700">
                   You can upgrade from {upgradeEligibility.current_type} to Full
                   Platform Access to get both investing and fundraising
                   capabilities.
@@ -344,10 +334,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
 
             {/* Status Alerts */}
             {!hasKYC && (
-              <Alert
-                variant="default"
-                className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800"
-              >
+              <Alert variant="default" className="bg-blue-50 border-blue-200">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Verification Required</AlertTitle>
                 <AlertDescription>
@@ -360,7 +347,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
             {isExpired && (
               <Alert
                 variant="destructive"
-                className="bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800"
+                className="bg-yellow-50 border-yellow-200"
               >
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Verification Expired</AlertTitle>
@@ -374,7 +361,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
             {status === 'rejected' && (
               <Alert
                 variant="destructive"
-                className="bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800"
+                className="bg-red-50 border-red-200"
               >
                 <XCircle className="h-4 w-4" />
                 <AlertTitle>Verification Rejected</AlertTitle>
@@ -386,10 +373,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
             )}
 
             {status === 'pending' && (
-              <Alert
-                variant="default"
-                className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800"
-              >
+              <Alert variant="default" className="bg-blue-50 border-blue-200">
                 <Clock className="h-4 w-4" />
                 <AlertTitle>Pending Review</AlertTitle>
                 <AlertDescription>
@@ -400,10 +384,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
             )}
 
             {status === 'in_review' && (
-              <Alert
-                variant="default"
-                className="bg-purple-50 border-purple-200 dark:bg-purple-900/20 dark:border-purple-800"
-              >
+              <Alert variant="default" className="bg-purple-50 border-purple-200">
                 <RefreshCw className="h-4 w-4" />
                 <AlertTitle>Under Review</AlertTitle>
                 <AlertDescription>
@@ -419,10 +400,10 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
       {showActions && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!hasKYC && (
-            <Card className="bg-white dark:bg-gray-800 border-0">
+            <Card className="bg-white border-0">
               <CardContent className="p-4">
-                <h4 className="font-medium mb-2">Get Started</h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                <h4 className="font-medium mb-2 text-gray-800">Get Started</h4>
+                <p className="text-sm text-gray-600 mb-3">
                   Begin your KYC verification process to unlock all platform
                   features.
                 </p>
@@ -434,10 +415,12 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
           )}
 
           {isExpired && (
-            <Card className="bg-white dark:bg-gray-800 border-0">
+            <Card className="bg-white border-0">
               <CardContent className="p-4">
-                <h4 className="font-medium mb-2">Renew Verification</h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                <h4 className="font-medium mb-2 text-gray-800">
+                  Renew Verification
+                </h4>
+                <p className="text-sm text-gray-600 mb-3">
                   Your verification has expired. Click below to renew it.
                 </p>
                 <Link href="/kyc">
@@ -448,10 +431,12 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
           )}
 
           {status === 'rejected' && (
-            <Card className="bg-white dark:bg-gray-800 border-0">
+            <Card className="bg-white border-0">
               <CardContent className="p-4">
-                <h4 className="font-medium mb-2">Resubmit Application</h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                <h4 className="font-medium mb-2 text-gray-800">
+                  Resubmit Application
+                </h4>
+                <p className="text-sm text-gray-600 mb-3">
                   Review the requirements and submit your KYC application again.
                 </p>
                 <Link href="/kyc">
@@ -462,10 +447,12 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
           )}
 
           {upgradeEligibility?.can_upgrade && (
-            <Card className="bg-white dark:bg-gray-800 border-0">
+            <Card className="bg-white border-0">
               <CardContent className="p-4">
-                <h4 className="font-medium mb-2">Upgrade Access</h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                <h4 className="font-medium mb-2 text-gray-800">
+                  Upgrade Access
+                </h4>
+                <p className="text-sm text-gray-600 mb-3">
                   Upgrade to Full Platform Access for both investing and
                   fundraising capabilities.
                 </p>
@@ -479,10 +466,12 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
           )}
 
           {isVerified && !isExpired && !upgradeEligibility?.can_upgrade && (
-            <Card className="bg-white dark:bg-gray-800 border-0">
+            <Card className="bg-white border-0">
               <CardContent className="p-4">
-                <h4 className="font-medium mb-2">Verification Details</h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                <h4 className="font-medium mb-2 text-gray-800">
+                  Verification Details
+                </h4>
+                <p className="text-sm text-gray-600 mb-3">
                   View your verification details and download certificates.
                 </p>
                 <Link href="/kyc">
