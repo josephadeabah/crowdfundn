@@ -451,7 +451,7 @@ const RevenueSharing = () => {
                 <CardTitle className="text-lg">Related Contracts</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Link href="/profit-sharing">
+                <Link href="/investment-contracts/profit-sharing">
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-left h-auto p-3"
@@ -464,7 +464,7 @@ const RevenueSharing = () => {
                     </div>
                   </Button>
                 </Link>
-                <Link href="/debt-securities">
+                <Link href="/investment-contracts/debt-securities">
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-left h-auto p-3"

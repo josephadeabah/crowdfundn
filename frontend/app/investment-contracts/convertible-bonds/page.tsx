@@ -383,7 +383,7 @@ const ConvertibleBonds = () => {
                 <CardTitle className="text-lg">Related Contracts</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Link href="/contracts/debt-securities">
+                <Link href="/investment-contracts/debt-securities">
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-left h-auto p-3"
@@ -396,7 +396,7 @@ const ConvertibleBonds = () => {
                     </div>
                   </Button>
                 </Link>
-                <Link href="/contracts/equity-shares">
+                <Link href="/investment-contracts/equity-shares">
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-left h-auto p-3"

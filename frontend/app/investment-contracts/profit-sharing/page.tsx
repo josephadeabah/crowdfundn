@@ -481,7 +481,7 @@ const ProfitSharing = () => {
                     </div>
                   </Button>
                 </Link>
-                <Link href="/equity-shares">
+                <Link href="/investment-contracts/equity-shares">
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-left h-auto p-3"

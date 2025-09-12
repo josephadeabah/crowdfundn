@@ -316,7 +316,7 @@ const EquityShares = () => {
                 <CardTitle className="text-lg">Related Contracts</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Link href="/preference-shares">
+                <Link href="/investment-contracts/preference-shares">
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-left h-auto p-3"
@@ -331,7 +331,7 @@ const EquityShares = () => {
                     </div>
                   </Button>
                 </Link>
-                <Link href="/convertible-bonds">
+                <Link href="/investment-contracts/convertible-bonds">
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-left h-auto p-3"
