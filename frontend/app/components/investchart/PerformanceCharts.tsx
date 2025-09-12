@@ -1,4 +1,3 @@
-// app/components/equity/PerformanceCharts.tsx
 'use client';
 import {
   Card,
@@ -33,14 +32,12 @@ export const PerformanceCharts = ({
   currency = 'USD',
   currencySymbol = '$',
 }: PerformanceChartsProps) => {
-  // Safe number parsing function
   const parseNumber = (value: any, fallback = 0): number => {
     if (typeof value === 'number') return value;
     if (typeof value === 'string') return parseFloat(value) || fallback;
     return fallback;
   };
 
-  // Prepare data for portfolio composition pie chart
   const portfolioData = investments.reduce(
     (acc, investment) => {
       const campaignName =
@@ -57,7 +54,6 @@ export const PerformanceCharts = ({
         acc.push({
           name: campaignName,
           value: currentValue,
-          // Use investment-specific currency if available, otherwise fall back to props
           currency: investment.currency || currency,
           currency_symbol: investment.currency_symbol || currencySymbol,
         });
@@ -72,8 +68,7 @@ export const PerformanceCharts = ({
     }[],
   );
 
-  // Prepare data for returns bar chart
-  const returnsData = investments.map((investment, index) => {
+  const returnsData = investments.map((investment) => {
     const invested = parseNumber(investment.amount);
     const currentValue = parseNumber(investment.current_value, invested);
     const returnAmount = currentValue - invested;
@@ -88,7 +83,6 @@ export const PerformanceCharts = ({
       currentValue: currentValue,
       return: returnAmount,
       returnPercentage: returnPercentage,
-      // Use investment-specific currency if available, otherwise fall back to props
       currency: investment.currency || currency,
       currency_symbol: investment.currency_symbol || currencySymbol,
     };
@@ -105,16 +99,19 @@ export const PerformanceCharts = ({
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const dataItem = returnsData.find((item) => item.name === label);
-      // Use the currency from the data item or fall back to props
       const itemCurrency = dataItem?.currency || currency;
       const itemCurrencySymbol = dataItem?.currency_symbol || currencySymbol;
 
       return (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
-          <p className="text-gray-900 dark:text-white font-medium">{`${label}`}</p>
+        <div className="bg-white border border-gray-200 rounded-lg p-3">
+          <p className="text-gray-900 font-medium">{`${label}`}</p>
           {payload.map((entry: any, index: number) => (
-            <p key={index} className="text-sm text-gray-600 dark:text-gray-300">
-              {`${entry.name || entry.dataKey}: ${formatCurrency(entry.value, itemCurrency, itemCurrencySymbol)}`}
+            <p key={index} className="text-sm text-gray-600">
+              {`${entry.name || entry.dataKey}: ${formatCurrency(
+                entry.value,
+                itemCurrency,
+                itemCurrencySymbol,
+              )}`}
             </p>
           ))}
         </div>
@@ -132,20 +129,17 @@ export const PerformanceCharts = ({
       const percentage =
         totalValue > 0 ? (payload[0].value / totalValue) * 100 : 0;
 
-      // Use the currency from the payload or fall back to props
       const itemCurrency = payload[0].payload.currency || currency;
       const itemCurrencySymbol =
         payload[0].payload.currency_symbol || currencySymbol;
 
       return (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
-          <p className="text-gray-900 dark:text-white font-medium">
-            {payload[0].payload.name}
-          </p>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
+        <div className="bg-white border border-gray-200 rounded-lg p-3">
+          <p className="text-gray-900 font-medium">{payload[0].payload.name}</p>
+          <p className="text-sm text-gray-600">
             {formatCurrency(payload[0].value, itemCurrency, itemCurrencySymbol)}
           </p>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
+          <p className="text-sm text-gray-600">
             {percentage.toFixed(1)}% of portfolio
           </p>
         </div>
@@ -157,32 +151,28 @@ export const PerformanceCharts = ({
   if (investments.length === 0) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-        <Card className="bg-white dark:bg-gray-800 border-0">
+        <Card className="bg-white border-0">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+            <CardTitle className="text-lg font-semibold text-gray-900">
               Portfolio Composition
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80 flex items-center justify-center">
-              <p className="text-gray-500 dark:text-gray-400">
-                No investments to display
-              </p>
+              <p className="text-gray-500">No investments to display</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-800 border-0">
+        <Card className="bg-white border-0">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+            <CardTitle className="text-lg font-semibold text-gray-900">
               Investment Returns
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80 flex items-center justify-center">
-              <p className="text-gray-500 dark:text-gray-400">
-                No investments to display
-              </p>
+              <p className="text-gray-500">No investments to display</p>
             </div>
           </CardContent>
         </Card>
@@ -192,9 +182,9 @@ export const PerformanceCharts = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-      <Card className="bg-white dark:bg-gray-800 border-0">
+      <Card className="bg-white border-0">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+          <CardTitle className="text-lg font-semibold text-gray-900">
             Portfolio Composition
           </CardTitle>
         </CardHeader>
@@ -228,9 +218,9 @@ export const PerformanceCharts = ({
         </CardContent>
       </Card>
 
-      <Card className="bg-white dark:bg-gray-800 border-0">
+      <Card className="bg-white border-0">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+          <CardTitle className="text-lg font-semibold text-gray-900">
             Investment Returns
           </CardTitle>
         </CardHeader>
