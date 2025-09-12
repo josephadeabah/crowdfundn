@@ -207,7 +207,7 @@ const RewardsPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="text-center p-4 bg-gray-200 rounded-lg w-full">
+          <div className="text-center p-4 bg-gray-200 text-gray-700 rounded-lg w-full">
             Your special certificate of honor will be available here to download
             or share once you reach a reward level.
           </div>
