@@ -1,12 +1,12 @@
 const InvestorGuide = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-8 text-primary">
             Investor Guide
           </h1>
-          <p className="text-lg text-muted-foreground mb-12">
+          <p className="text-lg text-gray-700 mb-12">
             Everything you need to know about investing through BantuHive's
             crowdfunding platform.
           </p>

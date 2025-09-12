@@ -142,13 +142,13 @@ const Partners = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-bold mb-8 text-primary text-center">
             Our Partners
           </h1>
-          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-gray-700 mb-12 max-w-2xl mx-auto">
             BantuHive collaborates with leading institutions, organizations, and
             service providers to create a robust ecosystem for crowdfunding and
             investment in Ghana.

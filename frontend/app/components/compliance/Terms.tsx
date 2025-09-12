@@ -2,7 +2,7 @@ import React from 'react';
 
 const Terms = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col text-gray-700">
       {/* Header */}
       <div className="bg-gradient-to-br from-primary to-secondary text-white py-16">
         <div className="container mx-auto px-6 text-center">

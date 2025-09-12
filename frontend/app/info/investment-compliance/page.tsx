@@ -1,13 +1,13 @@
 const InvestmentCompliance = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-8 text-primary">
             Investment Compliance
           </h1>
 
-          <div className="space-y-8 text-foreground">
+          <div className="space-y-8 text-gray-700">
             <div className="bg-card p-6 rounded-lg border border-accent/20">
               <h2 className="text-xl font-semibold mb-4 text-orange-600">
                 Compliance Framework
