@@ -34,7 +34,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
 
   const CONTRACT_TERM = `The contract term for this investment opportunity will depend on the structure agreed between the company and investors.\n\n
 Please note: BantuHive does not provide default legal documents. Companies should work with their legal advisors to ensure all agreements meet regulatory standards.\n\n
-<a href="/investments-contracts" target="_blank" class="text-blue-400 hover:underline">Learn more about investment contracts in Ghana</a>`;
+<a href="/investment-contracts" target="_blank" class="text-blue-400 hover:underline">Learn more about investment contracts in Ghana</a>`;
 
   return (
     <div className="mb-10">
