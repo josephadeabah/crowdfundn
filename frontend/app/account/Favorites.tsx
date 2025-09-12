@@ -35,9 +35,7 @@ const Favorites = () => {
 
   return (
     <div className="px-2 py-4">
-      <h2 className="text-2xl font-semibold text-gray-800">
-        Favorites
-      </h2>
+      <h2 className="text-2xl font-semibold text-gray-800">Favorites</h2>
       <p className="text-gray-500 mb-4">
         Keep track of your saved campaigns and monitor their performance.
       </p>

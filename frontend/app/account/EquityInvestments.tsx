@@ -245,9 +245,7 @@ const EquityInvestments = () => {
     return (
       <div className="px-2 py-4">
         <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-gray-600">
-            No portfolio data available
-          </p>
+          <p className="text-gray-600">No portfolio data available</p>
         </div>
       </div>
     );
@@ -256,9 +254,7 @@ const EquityInvestments = () => {
   return (
     <div className="px-2 py-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Equity Investments
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-800">Equity Investments</h1>
         <div className="flex space-x-4">
           <Link href="/invest">
             <Button
@@ -393,9 +389,7 @@ const EquityInvestments = () => {
                                     user?.currency_symbol,
                                 )
                               ) : (
-                                <span className="text-gray-400">
-                                  N/A
-                                </span>
+                                <span className="text-gray-400">N/A</span>
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -428,9 +422,7 @@ const EquityInvestments = () => {
                                   </Badge>
                                 </div>
                               ) : (
-                                <span className="text-gray-400">
-                                  N/A
-                                </span>
+                                <span className="text-gray-400">N/A</span>
                               )}
                             </td>
 
@@ -477,10 +469,7 @@ const EquityInvestments = () => {
                           </tr>
                           {isExpanded && (
                             <tr>
-                              <td
-                                colSpan={7}
-                                className="px-6 py-4 bg-gray-50"
-                              >
+                              <td colSpan={7} className="px-6 py-4 bg-gray-50">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                   {/* Company Information */}
                                   <div>

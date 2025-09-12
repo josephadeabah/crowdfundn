@@ -18,10 +18,7 @@ const EquityInvestmentsLoader = () => {
       {/* Portfolio Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {[1, 2, 3].map((item) => (
-          <div
-            key={item}
-            className="bg-white p-6 rounded-lg shadow"
-          >
+          <div key={item} className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-gray-500 mb-2">
               <Skeleton width={120} />
             </h3>
@@ -116,10 +113,7 @@ const EquityInvestmentsLoader = () => {
           </h3>
           <div className="space-y-4">
             {[1, 2, 3].map((item) => (
-              <div
-                key={item}
-                className="border-b border-gray-200 pb-4"
-              >
+              <div key={item} className="border-b border-gray-200 pb-4">
                 <p className="text-sm text-gray-600">
                   <Skeleton width={200} />
                 </p>

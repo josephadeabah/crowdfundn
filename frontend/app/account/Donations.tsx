@@ -656,9 +656,7 @@ const BackerRow: React.FC<BackerRowProps> = ({
       <td className="py-3 px-4 text-gray-600 whitespace-nowrap">
         {formattedCurrency} {formattedAmount}
       </td>
-      <td className="py-3 px-4 text-gray-500 whitespace-nowrap">
-        {date}
-      </td>
+      <td className="py-3 px-4 text-gray-500 whitespace-nowrap">{date}</td>
       <td className="py-3 px-4 text-gray-500 whitespace-nowrap">
         <span
           className="cursor-help"
