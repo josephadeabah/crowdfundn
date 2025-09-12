@@ -32,7 +32,16 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
       (doc) => doc.document_type === 'contract',
     ) || [];
 
-  const CONTRACT_TERM = `The contract term for this investment opportunity will depend on the structure you choose.\n\nBantu Hive supports a variety of investment contracts including SAFE (Simple Agreement for Future Equity), Convertible Notes, Revenue Share agreements, Preferred Stock, and simple Loans. You may also use a custom structure provided by your legal team.\n\nWhile we don’t provide default legal documents, we can work with the agreements your lawyer prepares or help you adapt existing templates like the Series Seed documents.\n\n<a href="/learn/preferred-stock" target="_blank" class="text-blue-400 hover:underline">Learn more about investment contracts</a>`;
+const CONTRACT_TERM = `The contract term for this investment opportunity will depend on the structure agreed between the company and investors.\n\n
+In Ghana, common investment structures include:\n
+- **Ordinary Shares**: Investors become shareholders and participate in the growth of the company.\n
+- **Preferred Shares**: Investors are issued special classes of shares, usually with priority rights on dividends or liquidation.\n
+- **Revenue Sharing Agreements**: Investors receive an agreed percentage of revenues until a target multiple of their investment is repaid.\n
+- **Loan Agreements**: Companies borrow funds and repay with interest under negotiated terms.\n
+- **Custom Agreements**: Businesses may work with licensed lawyers to prepare other suitable investment contracts that comply with the Companies Act, 2019 (Act 992) and SEC Ghana regulations.\n\n
+Please note: BantuHive does not provide default legal documents. Companies should work with their legal advisors to ensure all agreements meet regulatory standards.\n\n
+<a href="/investments-contracts" target="_blank" class="text-blue-400 hover:underline">Learn more about investment contracts in Ghana</a>`;
+
 
   return (
     <div className="mb-10">
