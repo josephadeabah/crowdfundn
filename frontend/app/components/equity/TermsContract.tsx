@@ -41,7 +41,7 @@ const CONTRACT_OPTIONS = {
     {
       id: 'other',
       label: 'Other / Custom Agreement',
-      tooltip: `If your preferred structure is not listed, you can work with legal counsel to draft a custom investment contract that complies with Ghana’s SEC rules.\n\n<a href="/contact" target="_blank" class="text-blue-400 hover:underline">Contact us for custom agreements</a>`,
+      tooltip: `If your preferred structure is not listed, you can work with legal counsel to draft a custom investment contract that complies with Ghana’s SEC rules.\n\n<a href="/info/contactus" target="_blank" class="text-blue-400 hover:underline">Contact us for custom agreements</a>`,
     },
   ],
 };
