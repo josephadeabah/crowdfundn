@@ -387,9 +387,9 @@ export default function Donations() {
   return (
     <div className="px-2 py-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+        <h2 className="text-2xl font-semibold text-gray-800">
           Backer List
-          <p className="text-gray-500 dark:text-neutral-400 text-xs font-medium">
+          <p className="text-gray-500 text-xs font-medium">
             Send Thank You to your Backers
           </p>
         </h2>
@@ -401,7 +401,7 @@ export default function Donations() {
               setCurrentPage(1);
               setSelectedBackers([]);
             }}
-            className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+            className="p-2 border border-gray-300 rounded-md bg-white text-gray-800"
           >
             <option value="donation">Donations</option>
             <option value="equity_investment">Investments</option>
@@ -415,7 +415,7 @@ export default function Donations() {
                 setCurrentPage(1);
                 setSelectedBackers([]);
               }}
-              className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+              className="p-2 border border-gray-300 rounded-md bg-white text-gray-800"
             >
               <option value="all">All Statuses</option>
               <option value="successful">Successful</option>
@@ -460,16 +460,16 @@ export default function Donations() {
       </div>
 
       {totalItems === 0 ? (
-        <div className="text-center text-lg text-gray-600 dark:text-neutral-400">
+        <div className="text-center text-lg text-gray-600">
           You have not received any{' '}
           {backerType === 'donation' ? 'donations' : 'investments'} yet.
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-            <table className="min-w-full bg-white dark:bg-neutral-800 rounded-lg shadow-md">
+          <div className="overflow-x-auto [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+            <table className="min-w-full bg-white rounded-lg shadow-md">
               <thead>
-                <tr className="text-left bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-white">
+                <tr className="text-left bg-gray-200 text-gray-800">
                   {filter === 'specific' && (
                     <th className="py-3 px-4">Select</th>
                   )}
@@ -483,7 +483,7 @@ export default function Donations() {
                 </tr>
               </thead>
               <tbody>
-                {backerType === 'donation'
+                                {backerType === 'donation'
                   ? donations.map((donation) => {
                       const campaign =
                         donation.metadata?.campaign_metadata || {};
@@ -621,7 +621,6 @@ const BackerRow: React.FC<BackerRowProps> = ({
   const formattedCurrency = currency ? currency.toLocaleUpperCase() : '';
   const formattedAmount = amount.toFixed(2);
 
-  // Truncate campaign title to prevent horizontal scrolling
   const truncatedTitle =
     campaignTitle.length > 30
       ? `${campaignTitle.substring(0, 30)}...`
@@ -629,21 +628,18 @@ const BackerRow: React.FC<BackerRowProps> = ({
 
   const handleSendThankYou = async () => {
     if (!canSendThankYou) return;
-
     setIsSending(true);
     try {
       await onSendThankYou(backerId);
       setIsSent(true);
       setTimeout(() => setIsSent(false), 2000);
-    } catch (error) {
-      console.error('Error sending thank-you email:', error);
     } finally {
       setIsSending(false);
     }
   };
 
   return (
-    <tr className="border-b hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors duration-200">
+    <tr className="border-b hover:bg-gray-100 transition-colors duration-200">
       {filter === 'specific' && (
         <td className="py-3 px-4">
           <Checkbox
@@ -654,16 +650,14 @@ const BackerRow: React.FC<BackerRowProps> = ({
           />
         </td>
       )}
-      <td className="py-3 px-4 text-gray-800 dark:text-white whitespace-nowrap">
+      <td className="py-3 px-4 text-gray-800 whitespace-nowrap">
         {backerName}
       </td>
-      <td className="py-3 px-4 text-gray-600 dark:text-neutral-300 whitespace-nowrap">
+      <td className="py-3 px-4 text-gray-600 whitespace-nowrap">
         {formattedCurrency} {formattedAmount}
       </td>
-      <td className="py-3 px-4 text-gray-500 dark:text-neutral-400 whitespace-nowrap">
-        {date}
-      </td>
-      <td className="py-3 px-4 text-gray-500 dark:text-neutral-400 whitespace-nowrap">
+      <td className="py-3 px-4 text-gray-500 whitespace-nowrap">{date}</td>
+      <td className="py-3 px-4 text-gray-500 whitespace-nowrap">
         <span
           className="cursor-help"
           title={campaignTitle.length > 20 ? campaignTitle : undefined}
@@ -671,7 +665,7 @@ const BackerRow: React.FC<BackerRowProps> = ({
           {truncatedTitle}
         </span>
       </td>
-      <td className="py-3 px-4 text-blue-500 dark:text-blue-400 whitespace-nowrap">
+      <td className="py-3 px-4 text-blue-500 whitespace-nowrap">
         {type === 'donation' ? 'Donation' : 'Investment'}
       </td>
       <td className="py-3 px-4 whitespace-nowrap">
@@ -682,7 +676,7 @@ const BackerRow: React.FC<BackerRowProps> = ({
       <td className="py-3 px-4">
         <Button
           variant="outline"
-          className="px-3 py-1 text-sm rounded-full hover:bg-gray-100 dark:hover:bg-gray-100 transition duration-200 flex items-center gap-2"
+          className="px-3 py-1 text-sm rounded-full hover:bg-gray-100 transition duration-200 flex items-center gap-2"
           onClick={handleSendThankYou}
           disabled={isSending || isSent || !canSendThankYou}
         >

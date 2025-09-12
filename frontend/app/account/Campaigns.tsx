@@ -579,7 +579,7 @@ const Campaigns: React.FC = () => {
 
                   <div className="flex gap-2 w-full sm:w-auto">
                     <Button
-                      className="w-full bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-700 sm:w-auto px-3 py-1.5 text-sm"
+                      className="w-full bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-700 sm:w-auto px-3 py-1.5 text-sm"
                       variant="outline"
                       size="sm"
                       onClick={() => handleViewCampaignDetails(campaign)}
@@ -587,7 +587,7 @@ const Campaigns: React.FC = () => {
                       View
                     </Button>
                     <Button
-                      className="w-full bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-700 sm:w-auto px-3 py-1.5 text-sm"
+                      className="w-full bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-700 sm:w-auto px-3 py-1.5 text-sm"
                       variant="outline"
                       size="sm"
                       onClick={() => handleOpenModal(campaign)}
