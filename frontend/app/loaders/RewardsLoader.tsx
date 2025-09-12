@@ -10,17 +10,23 @@ const RewardsLoader = () => {
         .map((_, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden hover:shadow-xl transition-shadow duration-300 p-4"
+            className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-4 border border-gray-200"
           >
-            <Skeleton height={192} className="mb-2" />{' '}
             {/* Placeholder for image */}
-            <Skeleton height={20} className="mb-2" />{' '}
+            <Skeleton height={192} className="mb-2 bg-gray-200" />
+
             {/* Placeholder for title */}
-            <Skeleton height={15} className="mb-2" />{' '}
+            <Skeleton height={20} className="mb-2 bg-gray-200" />
+
             {/* Placeholder for description */}
+            <Skeleton height={15} className="mb-2 bg-gray-200" />
+
             <div className="flex justify-between items-center">
-              <Skeleton height={30} width={80} /> {/* Placeholder for amount */}
-              <Skeleton height={15} width={50} /> {/* Placeholder for points */}
+              {/* Placeholder for amount */}
+              <Skeleton height={30} width={80} className="bg-gray-200" />
+
+              {/* Placeholder for points */}
+              <Skeleton height={15} width={50} className="bg-gray-200" />
             </div>
           </div>
         ))}
