@@ -28,9 +28,9 @@ export const CampaignsByCategoryChart = ({
   }));
 
   return (
-    <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none">
+    <Card className="p-4 bg-white rounded-lg border-none shadow-none">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+        <CardTitle className="text-lg font-semibold text-gray-600">
           Campaigns by Category
         </CardTitle>
       </CardHeader>

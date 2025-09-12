@@ -33,12 +33,11 @@ const DonationByCountryCharts = ({
     storedYear ? parseInt(storedYear) : new Date().getFullYear(),
   );
 
-  // Use funding_by_country instead of donations_by_country
   const fundingByCountryData = Object.entries(
     statistics?.funding_by_country || {},
   ).map(([country, amount]) => ({
     country: country || 'Unknown',
-    funding: Number(amount) || 0, // Ensure it's always a number
+    funding: Number(amount) || 0,
   }));
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -55,22 +54,21 @@ const DonationByCountryCharts = ({
     fetchCampaignStatistics(selectedMonth, year);
   };
 
-  // Check if there's any data to display
   const hasData =
     fundingByCountryData.length > 0 &&
     fundingByCountryData.some((item) => item.funding > 0);
 
   return (
-    <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
+    <Card className="p-4 bg-white rounded-lg border-none shadow-none my-4">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+        <CardTitle className="text-lg font-semibold text-gray-600">
           Funding by Country
         </CardTitle>
         <div className="mt-2 flex gap-2">
           <select
             value={selectedMonth}
             onChange={handleMonthChange}
-            className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+            className="p-2 border border-gray-300 rounded-md"
           >
             {getMonthOptions().map((month) => (
               <option key={month.value} value={month.value}>
@@ -81,7 +79,7 @@ const DonationByCountryCharts = ({
           <select
             value={selectedYear}
             onChange={handleYearChange}
-            className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+            className="p-2 border border-gray-300 rounded-md"
           >
             {getYearOptions().map((year) => (
               <option key={year.value} value={year.value}>
@@ -93,7 +91,7 @@ const DonationByCountryCharts = ({
       </CardHeader>
 
       {!hasData ? (
-        <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+        <div className="flex items-center justify-center h-64 text-gray-500">
           No funding data by country available for the selected period
         </div>
       ) : (

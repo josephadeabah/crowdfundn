@@ -16,7 +16,7 @@ import { DashboardChartsProps } from './chartTypes';
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white dark:bg-neutral-800 p-3 rounded-lg shadow-md border border-gray-200 dark:border-neutral-700">
+      <div className="bg-white p-3 rounded-lg shadow-md border border-gray-200">
         <p className="font-semibold">{label}</p>
         <p>Performance: {payload[0].value}%</p>
         <p>Total Days: {payload[0].payload.totalDays}</p>
@@ -40,9 +40,9 @@ export const CampaignPerformanceChart = ({
   );
 
   return (
-    <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
+    <Card className="p-4 bg-white rounded-lg border-none shadow-none my-4">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+        <CardTitle className="text-lg font-semibold text-gray-600">
           Campaign Performance
         </CardTitle>
       </CardHeader>

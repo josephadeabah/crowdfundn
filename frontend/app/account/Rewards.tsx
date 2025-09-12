@@ -222,7 +222,7 @@ const RewardsPage: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           {/* Header Section */}
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+            <h2 className="text-2xl font-semibold text-gray-800">
               Rewards & Gifts
             </h2>
             <button
@@ -243,9 +243,9 @@ const RewardsPage: React.FC = () => {
             <div className="space-y-6">
               {/* Level Information */}
               {userReward && userReward.level ? (
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <div className="bg-white p-4 rounded-lg shadow">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                    <h2 className="text-lg font-semibold text-gray-700">
                       Your Current Level
                     </h2>
                     <div className="flex items-center">
@@ -256,7 +256,7 @@ const RewardsPage: React.FC = () => {
                       />
                       <Tooltip
                         id="tooltip-level-info"
-                        className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
+                        className="max-w-xs text-gray-600 text-sm p-2 rounded z-10"
                       />
                     </div>
                   </div>
@@ -265,30 +265,30 @@ const RewardsPage: React.FC = () => {
                       {userReward.level}
                     </div>
                     <div className="mt-2">{getCupIcon(userReward.level)}</div>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
+                    <p className="mt-2 text-sm text-gray-600 text-center">
                       {userReward.description}
                     </p>
                   </div>
                 </div>
               ) : (
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                <div className="bg-white p-4 rounded-lg shadow">
+                  <h2 className="text-lg font-semibold text-gray-700">
                     Your Current Level
                   </h2>
-                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  <p className="mt-2 text-sm text-gray-600">
                     You haven't reached any reward level yet.
                   </p>
                 </div>
               )}
               {/* Performance Summary */}
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h2 className="text-lg font-semibold text-gray-700 mb-4">
                   Your Performance Progress Overview
                 </h2>
                 <div className="grid grid-cols-2 gap-4">
                   {/* Backing User Rank */}
-                  <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                    <p className="text-base font-bold text-gray-800 dark:text-gray-200">
+                  <div className="p-4 bg-gray-100 rounded-lg text-center">
+                    <p className="text-base font-bold text-gray-800">
                       Backer Rank
                     </p>
                     {userRank && userRank.rank ? (
@@ -296,15 +296,15 @@ const RewardsPage: React.FC = () => {
                         {getRankWithSuffix(userRank.rank)}
                       </p>
                     ) : (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-gray-600">
                         You have no rank yet
                       </p>
                     )}
                   </div>
 
                   {/* Fundraiser User Rank */}
-                  <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                    <p className="text-base font-bold text-gray-800 dark:text-gray-200">
+                  <div className="p-4 bg-gray-100 rounded-lg text-center">
+                    <p className="text-base font-bold text-gray-800">
                       Fundraiser Rank
                     </p>
                     {fundraiserLeaderboardRank &&
@@ -313,15 +313,15 @@ const RewardsPage: React.FC = () => {
                         {getRankWithSuffix(fundraiserLeaderboardRank.rank)}
                       </p>
                     ) : (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-gray-600">
                         You have no rank yet
                       </p>
                     )}
                   </div>
 
                   {/* Total Points */}
-                  <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                    <p className="text-base font-bold text-gray-800 dark:text-gray-200">
+                  <div className="p-4 bg-gray-100 rounded-lg text-center">
+                    <p className="text-base font-bold text-gray-800">
                       Percentage Progress
                     </p>
                     {userPoints ? (
@@ -334,15 +334,15 @@ const RewardsPage: React.FC = () => {
                         />
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-gray-600">
                         No progress data available
                       </p>
                     )}
                   </div>
 
                   {/* Contributions */}
-                  <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                    <p className="text-base font-bold text-gray-800 dark:text-gray-200">
+                  <div className="p-4 bg-gray-100 rounded-lg text-center">
+                    <p className="text-base font-bold text-gray-800">
                       Contributions
                     </p>
                     {userRank && userRank?.total_donations ? (
@@ -352,7 +352,7 @@ const RewardsPage: React.FC = () => {
                           'N/A'}
                       </p>
                     ) : (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-gray-600">
                         You have not made any impact yet.
                       </p>
                     )}
@@ -361,7 +361,7 @@ const RewardsPage: React.FC = () => {
               </div>
 
               {/* Certificate Section */}
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+              <div className="bg-white p-4 rounded-lg shadow">
                 <div className="flex items-center justify-between mb-4">
                   <div className="font-semibold flex items-center">
                     <FaInfoCircle
@@ -371,15 +371,15 @@ const RewardsPage: React.FC = () => {
                     />
                     <Tooltip
                       id="tooltip-certificate-reveal"
-                      className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
+                      className="max-w-xs text-gray-600 text-sm p-2 rounded z-10"
                     />
-                    <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                    <h2 className="text-lg font-semibold text-gray-700">
                       Your Certificate of Honor
                     </h2>
                   </div>
                   <Link
                     href="/leaderboard/backers#leaderboard-info"
-                    className="text-sm font-medium text-cyan-600 dark:text-blue-400 hover:underline"
+                    className="text-sm font-medium text-cyan-600 hover:underline"
                   >
                     Learn More →
                   </Link>
@@ -391,8 +391,8 @@ const RewardsPage: React.FC = () => {
             {/* Right Column - Rewards and Level */}
             <div className="space-y-6">
               {/* User Rewards */}
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h2 className="text-lg font-semibold text-gray-700 mb-4">
                   Your Gifts & Rewards
                 </h2>
                 {loading ? (
@@ -434,7 +434,7 @@ const RewardsPage: React.FC = () => {
           closeOnBackdropClick={false}
         >
           <div className="overflow-y-auto max-h-[60vh] p-2">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
               Add New Gift
             </h2>
             {loading ? (
@@ -451,7 +451,7 @@ const RewardsPage: React.FC = () => {
                   <div className="mb-4">
                     <label
                       htmlFor="campaignId"
-                      className="block text-gray-700 dark:text-gray-300 mb-2"
+                      className="block text-gray-700 mb-2"
                     >
                       Select Campaign
                     </label>
@@ -460,7 +460,7 @@ const RewardsPage: React.FC = () => {
                       name="campaignId"
                       value={selectedCampaignId || ''}
                       onChange={(e) => setSelectedCampaignId(e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.campaignId ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.campaignId ? 'border-red-500' : 'border-gray-300'}`}
                       aria-invalid={errors.campaignId ? 'true' : 'false'}
                     >
                       <option value="" disabled>
@@ -490,10 +490,7 @@ const RewardsPage: React.FC = () => {
                     )}
                   </div>
                   <div className="mb-4">
-                    <label
-                      htmlFor="title"
-                      className="block text-gray-700 dark:text-gray-300 mb-2"
-                    >
+                    <label htmlFor="title" className="block text-gray-700 mb-2">
                       Title
                     </label>
                     <input
@@ -502,7 +499,7 @@ const RewardsPage: React.FC = () => {
                       name="title"
                       value={formData.title}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.title ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
                       aria-invalid={errors.title ? 'true' : 'false'}
                     />
                     {errors.title && (
@@ -514,7 +511,7 @@ const RewardsPage: React.FC = () => {
                   <div className="mb-4">
                     <label
                       htmlFor="description"
-                      className="block text-gray-700 dark:text-gray-300 mb-2"
+                      className="block text-gray-700 mb-2"
                     >
                       Description
                     </label>
@@ -523,7 +520,7 @@ const RewardsPage: React.FC = () => {
                       name="description"
                       value={formData.description}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.description ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
                       aria-invalid={errors.description ? 'true' : 'false'}
                     />
                     {errors.description && (
@@ -535,7 +532,7 @@ const RewardsPage: React.FC = () => {
                   <div className="mb-4">
                     <label
                       htmlFor="amount"
-                      className="block text-gray-700 dark:text-gray-300 mb-2"
+                      className="block text-gray-700 mb-2"
                     >
                       Amount
                     </label>
@@ -545,7 +542,7 @@ const RewardsPage: React.FC = () => {
                       name="amount"
                       value={formData.amount}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.amount ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.amount ? 'border-red-500' : 'border-gray-300'}`}
                       aria-invalid={errors.amount ? 'true' : 'false'}
                     />
                     {errors.amount && (
@@ -555,10 +552,7 @@ const RewardsPage: React.FC = () => {
                     )}
                   </div>
                   <div className="mb-4">
-                    <label
-                      htmlFor="image"
-                      className="block text-gray-700 dark:text-gray-300 mb-2"
-                    >
+                    <label htmlFor="image" className="block text-gray-700 mb-2">
                       Image
                     </label>
                     <input
@@ -567,7 +561,7 @@ const RewardsPage: React.FC = () => {
                       name="image"
                       accept="image/*"
                       onChange={handleImageChange}
-                      className={`w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.image ? 'border-red-500' : 'border-gray-300'} dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200`}
+                      className={`w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.image ? 'border-red-500' : 'border-gray-300'}`}
                       aria-invalid={errors.image ? 'true' : 'false'}
                     />
                     {errors.image && (

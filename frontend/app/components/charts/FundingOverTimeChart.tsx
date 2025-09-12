@@ -1,6 +1,6 @@
 // components/charts/FundingOverTimeChart.tsx
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   LineChart,
   Line,
@@ -59,16 +59,16 @@ export const FundingOverTimeChart = ({
     fundingOverTimeData.some((item) => item.amount > 0);
 
   return (
-    <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
+    <Card className="p-4 bg-white rounded-lg border-none shadow-none my-4">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+        <CardTitle className="text-lg font-semibold text-gray-600">
           Funding Over Time
         </CardTitle>
         <div className="mt-2 flex gap-2">
           <select
             value={selectedMonth}
             onChange={handleMonthChange}
-            className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+            className="p-2 border border-gray-300 rounded-md"
           >
             {getMonthOptions().map((month) => (
               <option key={month.value} value={month.value}>
@@ -79,7 +79,7 @@ export const FundingOverTimeChart = ({
           <select
             value={selectedYear}
             onChange={handleYearChange}
-            className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+            className="p-2 border border-gray-300 rounded-md"
           >
             {getYearOptions().map((year) => (
               <option key={year.value} value={year.value}>
@@ -91,7 +91,7 @@ export const FundingOverTimeChart = ({
       </CardHeader>
 
       {!hasData ? (
-        <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+        <div className="flex items-center justify-center h-64 text-gray-500">
           No funding data available for the selected period
         </div>
       ) : (

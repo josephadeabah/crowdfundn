@@ -54,8 +54,8 @@ export const getYearOptions = () => {
 };
 
 interface DashboardChartsProps {
-  statistics: CampaignStatisticsDataType | null; // Replace `any` with the correct type for your statistics
-  user: LoginUserType | null; // Replace `any` with the correct type for your user
+  statistics: CampaignStatisticsDataType | null;
+  user: LoginUserType | null;
   fetchCampaignStatistics: (month: number, year: number) => void;
 }
 
@@ -64,7 +64,6 @@ export default function DashboardCharts({
   user,
   fetchCampaignStatistics,
 }: DashboardChartsProps) {
-  // Initialize selected month and year from sessionStorage, or default to current month/year
   const storedMonth = sessionStorage.getItem('selectedMonth');
   const storedYear = sessionStorage.getItem('selectedYear');
   const [selectedMonth, setSelectedMonth] = useState(
@@ -74,31 +73,27 @@ export default function DashboardCharts({
     storedYear ? parseInt(storedYear) : new Date().getFullYear(),
   );
 
-  // Handle month change
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const month = parseInt(e.target.value);
     setSelectedMonth(month);
-    sessionStorage.setItem('selectedMonth', month.toString()); // Store selected month in sessionStorage
+    sessionStorage.setItem('selectedMonth', month.toString());
     fetchCampaignStatistics(month, selectedYear);
   };
 
-  // Handle year change
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const year = parseInt(e.target.value);
     setSelectedYear(year);
-    sessionStorage.setItem('selectedYear', year.toString()); // Store selected year in sessionStorage
+    sessionStorage.setItem('selectedYear', year.toString());
     fetchCampaignStatistics(selectedMonth, year);
   };
 
-  // Format donations over time for Recharts
   const donationsOverTimeData = Object.entries(
     statistics?.donations_over_time || {},
   ).map(([date, amount]) => ({
-    date: moment(date).format('MMM D'), // Format date using moment
+    date: moment(date).format('MMM D'),
     amount: typeof amount === 'number' ? amount : parseFloat(amount),
   }));
 
-  // Format campaigns by category for Recharts
   const campaignsByCategoryData = Object.entries(
     statistics?.campaigns_by_category || {},
   ).map(([category, count]) => ({
@@ -106,7 +101,6 @@ export default function DashboardCharts({
     value: count,
   }));
 
-  // Format campaign performance for Recharts
   const campaignPerformanceData = statistics?.campaign_performance?.map(
     (campaign) => ({
       name: campaign.title,
@@ -116,17 +110,13 @@ export default function DashboardCharts({
     }),
   );
 
-  // Colors for pie chart
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
-  // Colors for the bars
   const barColors = ['#8884d8', '#82ca9d', '#ffc658'];
 
-  // Custom Tooltip for Top Campaigns Chart
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-neutral-800 p-3 rounded-lg shadow-md border border-gray-200 dark:border-neutral-700">
+        <div className="bg-white p-3 rounded-lg shadow-md border border-gray-200">
           <p className="font-semibold">{label}</p>
           <p>Performance: {payload[0].value}%</p>
           <p>Total Days: {payload[0].payload.totalDays}</p>
@@ -140,9 +130,9 @@ export default function DashboardCharts({
   return (
     <>
       {/* Campaigns by Category Chart */}
-      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none">
+      <Card className="p-4 bg-white rounded-lg border-none shadow-none">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+          <CardTitle className="text-lg font-semibold text-gray-600">
             Campaigns by Category
           </CardTitle>
         </CardHeader>
@@ -174,17 +164,16 @@ export default function DashboardCharts({
       </Card>
 
       {/* Funding Over Time Chart */}
-      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
+      <Card className="p-4 bg-white rounded-lg border-none shadow-none my-4">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+          <CardTitle className="text-lg font-semibold text-gray-600">
             Funding Over Time
           </CardTitle>
-          {/* Dropdown for Month and Year */}
           <div className="mt-2 flex gap-2">
             <select
               value={selectedMonth}
               onChange={handleMonthChange}
-              className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+              className="p-2 border border-gray-300 rounded-md"
             >
               {getMonthOptions().map((month) => (
                 <option key={month.value} value={month.value}>
@@ -195,7 +184,7 @@ export default function DashboardCharts({
             <select
               value={selectedYear}
               onChange={handleYearChange}
-              className="p-2 border border-gray-300 rounded-md dark:bg-neutral-700 dark:text-white"
+              className="p-2 border border-gray-300 rounded-md"
             >
               {getYearOptions().map((year) => (
                 <option key={year.value} value={year.value}>
@@ -244,9 +233,9 @@ export default function DashboardCharts({
       </Card>
 
       {/* Campaign Performance Chart */}
-      <Card className="p-4 bg-white dark:bg-neutral-800 rounded-lg border-none shadow-none my-4">
+      <Card className="p-4 bg-white rounded-lg border-none shadow-none my-4">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+          <CardTitle className="text-lg font-semibold text-gray-600">
             Campaign Performance
           </CardTitle>
         </CardHeader>
