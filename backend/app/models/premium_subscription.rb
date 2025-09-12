@@ -19,16 +19,24 @@ class PremiumSubscription < ApplicationRecord
     # Cancel on Paystack first if we have a subscription code
     if paystack_subscription_code.present?
       paystack_service = PaystackService.new
-      response = paystack_service.cancel_subscription(
-        code: paystack_subscription_code,
-        token: paystack_email_token 
-      )
+      
+      # Check if we need the email token
+      if paystack_email_token.present?
+        response = paystack_service.cancel_subscription(
+          code: paystack_subscription_code,
+          token: paystack_email_token 
+        )
+      else
+        # Try without token if not available
+        response = paystack_service.cancel_subscription(
+          code: paystack_subscription_code
+        )
+      end
       
       # Check if Paystack cancellation was successful
       unless response[:status]
         Rails.logger.error("Failed to cancel Paystack subscription: #{response[:message]}")
-        # You might want to handle this differently - maybe just update local status
-        # instead of raising an exception
+        # Update local status anyway
         update(status: 'cancelled', auto_renew: false)
         return
       end

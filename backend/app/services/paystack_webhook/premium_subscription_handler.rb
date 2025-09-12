@@ -77,12 +77,21 @@ module PaystackWebhook
       # For recurring subscriptions, extract subscription code from multiple possible locations
       if is_recurring
         subscription_code = extract_subscription_code
+        email_token = @data.dig(:authorization, :email_token) || 
+              @metadata[:email_token] ||
+              @data[:email_token]
+
         
         if subscription_code.present?
           subscription_attrs[:paystack_subscription_code] = subscription_code
           Rails.logger.info "Setting subscription code: #{subscription_code}"
         else
           Rails.logger.warn "No subscription code found for recurring subscription"
+        end
+
+        if email_token.present?
+          subscription_attrs[:paystack_email_token] = email_token
+          Rails.logger.info "Setting email token: #{email_token}"
         end
       end
       
