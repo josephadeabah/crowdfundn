@@ -26,7 +26,7 @@ begin
     plans = [
       {
         name: 'Starter - monthly',
-        price: 99.99,
+        price: 0.50,
         currency: 'GHS',
         interval: 'monthly',
         description: 'Perfect for individual fundraisers',
