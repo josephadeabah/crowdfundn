@@ -77,6 +77,7 @@ module Api
 
           when 'subscription.create'
             Rails.logger.info "Processing subscription.create event"
+            # Always process subscription.create events, even without metadata
             PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_create)
 
           when 'subscription.disable', 'subscription.not_renew'
@@ -90,9 +91,9 @@ module Api
           when 'refund.processed'
             metadata = event[:data][:metadata] || {}
             if metadata[:type] == 'equity_investment'
-              PaystackWebhook::Handlers::RefundProcessedHandler.new(event[:data]).call  # Remove data: keyword
+              PaystackWebhook::Handlers::RefundProcessedHandler.new(event[:data]).call
             else
-              PaystackWebhook::Handlers::DonationRefundHandler.new(event[:data]).call   # Remove data: keyword
+              PaystackWebhook::Handlers::DonationRefundHandler.new(event[:data]).call
             end
 
           else
@@ -105,7 +106,6 @@ module Api
           Rails.logger.error "Error processing webhook event: #{e.message}"
           Rails.logger.error e.backtrace.join("\n")
           # Don't raise the error again to prevent returning 500 to Paystack
-          # Paystack will retry if we don't return 200
         end
       end
     end
