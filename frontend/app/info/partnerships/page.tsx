@@ -145,7 +145,7 @@ const Partners = () => {
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8 text-primary text-center">
+          <h1 className="text-4xl font-bold mb-8 text-blue-600 text-center">
             Our Partners
           </h1>
           <p className="text-center text-gray-700 mb-12 max-w-2xl mx-auto">

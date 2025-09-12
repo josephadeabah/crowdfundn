@@ -24,7 +24,7 @@ const Features = () => {
     <div className="min-h-screen bg-white text-gray-700">
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8 text-primary text-center">
+          <h1 className="text-4xl font-bold mb-8 text-blue-600 text-center">
             Platform Features
           </h1>
 
