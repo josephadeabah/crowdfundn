@@ -340,7 +340,9 @@ const Campaigns: React.FC = () => {
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-800">My Campaigns</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            My Campaigns
+          </h2>
           <p className="text-gray-500">
             Manage your active and past campaigns.
           </p>
@@ -366,7 +368,9 @@ const Campaigns: React.FC = () => {
       </div>
 
       {userCampaigns && userCampaigns.length === 0 ? (
-        <p className="text-gray-500 mt-4">You have no campaigns yet.</p>
+        <p className="text-gray-500 mt-4">
+          You have no campaigns yet.
+        </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           {userCampaigns?.map((campaign) => {
@@ -431,7 +435,9 @@ const Campaigns: React.FC = () => {
                   campaign.team_members &&
                   campaign.team_members.length > 0 && (
                     <div className="mt-3">
-                      <p className="text-sm text-gray-500 mb-2">Team Members</p>
+                      <p className="text-sm text-gray-500 mb-2">
+                        Team Members
+                      </p>
                       <div className="flex -space-x-3">
                         {campaign.team_members
                           .slice(0, 5)
@@ -573,7 +579,7 @@ const Campaigns: React.FC = () => {
 
                   <div className="flex gap-2 w-full sm:w-auto">
                     <Button
-                      className="w-full bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-700 sm:w-auto px-3 py-1.5 text-sm"
+                      className="w-full sm:w-auto px-3 py-1.5 text-sm"
                       variant="outline"
                       size="sm"
                       onClick={() => handleViewCampaignDetails(campaign)}
@@ -581,7 +587,7 @@ const Campaigns: React.FC = () => {
                       View
                     </Button>
                     <Button
-                      className="w-full bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-700 sm:w-auto px-3 py-1.5 text-sm"
+                      className="w-full sm:w-auto px-3 py-1.5 text-sm"
                       variant="outline"
                       size="sm"
                       onClick={() => handleOpenModal(campaign)}
