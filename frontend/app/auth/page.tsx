@@ -30,7 +30,7 @@ import Link from 'next/link';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white text-gray-800">
       {/* Hero div */}
       <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div

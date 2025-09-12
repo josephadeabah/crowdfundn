@@ -119,7 +119,7 @@ const LoginPage = () => {
         </div>
 
         {/* Right Side - Login Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white text-gray-800">
           <div className="w-full max-w-md">
             {/* Back to Home Button */}
             <Link

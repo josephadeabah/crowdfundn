@@ -1,47 +1,50 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Label } from '@/app/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/app/components/ui/radio-group';
-import { FaTimes } from 'react-icons/fa';
 import InfoTooltip from '@/app/components/tooltip/tooltip';
 
-const CONTRACT_OPTIONS = [
-  {
-    id: 'safe',
-    label: 'Future Equity (SAFE)',
-    tooltip: `Best for high-growth startups in SF\n\nA Simple Agreement for Future Equity (SAFE) is common in Silicon Valley among startups that expect to raise venture capital. It delays the valuation of your company until the next equity financing.\n\n<a href="/learn/safe-agreements" target="_blank" class="text-blue-400 hover:underline">Learn more about SAFE agreements</a>`,
-  },
-  {
-    id: 'convertible-note',
-    label: 'Convertible Note',
-    tooltip: `Best for startups in conservative areas\n\nA convertible note is more common outside of Silicon Valley or NYC among startups that intend to raise venture capital. Like a SAFE, it delays the valuation of your company until the next equity financing. Unlike a SAFE, a convertible note is debt (until it converts to equity at the next financing).\n\n<a href="/learn/convertible-notes" target="_blank" class="text-blue-400 hover:underline">Learn more about Convertible Notes</a>`,
-  },
-  {
-    id: 'revenue-share',
-    label: 'Revenue Share',
-    tooltip: `Best for mainstreet companies\n\nRevenue Shares are best for cash-generating businesses that don't plan to get acquired for millions of dollars. It offers investors a percent of your revenues - each quarter - until they earn a multiple of their money back. If you have no revenue, nothing is owed. Once you pay back the multiple of their investment, nothing is owed.\n\n<a href="/learn/revenue-sharing" target="_blank" class="text-blue-400 hover:underline">Learn more about Revenue Sharing</a>`,
-  },
-  {
-    id: 'equity-revenue',
-    label: 'Future Equity + Revenue Share',
-    tooltip: `Good deal for investors\n\nIf you'd like to offer a good deal to your investors, combine a Simple Agreement for Future Equity (SAFE) with a Revenue Share. The revenue share offers investors 10% of your revenues - each quarter - until they earn 2X their investment back. The SAFE can eventually give your earliest investors equity in your company, if you raise a priced round from a venture capitalist or other major investor.\n\n<a href="/learn/equity-revenue" target="_blank" class="text-blue-400 hover:underline">Learn more about this hybrid approach</a>`,
-  },
-  {
-    id: 'simple-loan',
-    label: 'Simple Loan',
-    tooltip: `Best for grandma\n\nA 10% interest 5 year loan is the simplest investment agreement. It's like your car payment. If you borrow $20,000, you'll pay back $424.94 a month for 5 years. You'll start paying 6 months after you receive the money. In most cases, a revenue share is more exciting to investors because of higher potential returns. It's also often preferred by companies, as it can be less risky if revenues are less than you expect.\n\n<a href="/learn/simple-loans" target="_blank" class="text-blue-400 hover:underline">Learn more about Simple Loans</a>`,
-  },
-  {
-    id: 'preferred-stock',
-    label: 'Preferred Stock',
-    tooltip: `Best for those with good lawyers\n\nBantu Hive doesn't have an out-of-the-box stock subscription agreement. However, we can work with any documents that your lawyer has drafted up. They also can customize templates like the Series Seed documents.\n\n<a href="/learn/preferred-stock" target="_blank" class="text-blue-400 hover:underline">Learn more about Preferred Stock</a>`,
-  },
-  {
-    id: 'other',
-    label: "Other/I don't know yet",
-    tooltip: `That's okay!\n\nYou can always select your contract and set your terms later. If none of the above contracts look right for you, you can set up a custom contract.\n\n<a href="/contact" target="_blank" class="text-blue-400 hover:underline">Contact us for custom agreements</a>`,
-  },
-];
+const CONTRACT_OPTIONS = {
+  recognized: [
+    {
+      id: 'equity-shares',
+      label: 'Equity Shares',
+      tooltip: `Standard ownership stake under Ghana’s Companies Act, with voting rights and dividend entitlements. Fully recognized under the Securities Industry Act, 2016 (Act 929).\n\n<a href="/investment-contracts/equity-shares" target="_blank" class="text-blue-400 hover:underline">Learn more about Equity Shares</a>`,
+    },
+    {
+      id: 'preference-shares',
+      label: 'Preference Shares',
+      tooltip: `Priority shares with fixed dividend rights and preferential treatment in liquidation. Commonly used for investors who want predictable returns.\n\n<a href="/investment-contracts/preference-shares" target="_blank" class="text-blue-400 hover:underline">Learn more about Preference Shares</a>`,
+    },
+    {
+      id: 'convertible-bonds',
+      label: 'Convertible Bonds',
+      tooltip: `Hybrid debt instruments that can convert into equity under agreed conditions. Recognized by SEC Ghana and suitable for startups expecting growth.\n\n<a href="/investment-contracts/convertible-bonds" target="_blank" class="text-blue-400 hover:underline">Learn more about Convertible Bonds</a>`,
+    },
+    {
+      id: 'debt-securities',
+      label: 'Debt Securities',
+      tooltip: `Fixed-income investments (e.g., bonds, notes, debentures) with guaranteed returns and repayment obligations. Fully regulated by SEC Ghana.\n\n<a href="/investment-contracts/debt-securities" target="_blank" class="text-blue-400 hover:underline">Learn more about Debt Securities</a>`,
+    },
+  ],
+  alternative: [
+    {
+      id: 'revenue-sharing',
+      label: 'Revenue Sharing',
+      tooltip: `Investors receive a percentage of company revenues until a multiple of their investment is repaid. Not a standard SEC Ghana security, but can be structured contractually for private offerings.\n\n<a href="/investment-contracts/revenue-sharing" target="_blank" class="text-blue-400 hover:underline">Learn more about Revenue Sharing</a>`,
+    },
+    {
+      id: 'profit-sharing',
+      label: 'Profit Sharing',
+      tooltip: `Investors share in profits without ownership or voting rights. Requires careful structuring under Ghana law; often used in private contracts rather than public offerings.\n\n<a href="/investment-contracts/profit-sharing" target="_blank" class="text-blue-400 hover:underline">Learn more about Profit Sharing</a>`,
+    },
+    {
+      id: 'other',
+      label: 'Other / Custom Agreement',
+      tooltip: `If your preferred structure is not listed, you can work with legal counsel to draft a custom investment contract that complies with Ghana’s SEC rules.\n\n<a href="/contact" target="_blank" class="text-blue-400 hover:underline">Contact us for custom agreements</a>`,
+    },
+  ],
+};
 
 interface TermsContractProps {
   contractType: string;
@@ -58,22 +61,54 @@ const TermsContract = ({
         <h3 className="font-semibold mb-3">
           Choose an investment contract structure
         </h3>
+
         <RadioGroup
           value={contractType}
           onValueChange={setContractType}
-          className="space-y-3"
+          className="space-y-4"
         >
-          {CONTRACT_OPTIONS.map((option) => (
-            <div key={option.id} className="flex items-center space-x-2">
-              <RadioGroupItem value={option.id} id={option.id} />
-              <Label htmlFor={option.id}>{option.label}</Label>
-              <InfoTooltip
-                id={`${option.id}-tooltip`}
-                content={option.tooltip}
-                className="ml-2"
-              />
+          {/* SEC Ghana Recognized Contracts */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">
+              SEC Ghana Recognized
+            </h4>
+            <div className="space-y-3 pl-2 border-l-2 border-green-500">
+              {CONTRACT_OPTIONS.recognized.map((option) => (
+                <div key={option.id} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option.id} id={option.id} />
+                  <Label htmlFor={option.id}>{option.label}</Label>
+                  <InfoTooltip
+                    id={`${option.id}-tooltip`}
+                    content={option.tooltip}
+                    className="ml-2"
+                  />
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Divider */}
+          <hr className="my-4 border-gray-200" />
+
+          {/* Alternative / Private Agreements */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">
+              Alternative / Private Agreements
+            </h4>
+            <div className="space-y-3 pl-2 border-l-2 border-orange-400">
+              {CONTRACT_OPTIONS.alternative.map((option) => (
+                <div key={option.id} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option.id} id={option.id} />
+                  <Label htmlFor={option.id}>{option.label}</Label>
+                  <InfoTooltip
+                    id={`${option.id}-tooltip`}
+                    content={option.tooltip}
+                    className="ml-2"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </RadioGroup>
       </CardContent>
     </Card>

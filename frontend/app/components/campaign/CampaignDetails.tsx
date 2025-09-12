@@ -226,9 +226,7 @@ const CampaignDetails = ({
                 {/* Part 2: The Terms */}
                 <AccordionItemWrapper value="terms">
                   <AccordionTriggerWrapper>
-                    <span className="font-medium">
-                      Terms & Contract Documents
-                    </span>
+                    <span className="font-medium">Contract Terms</span>
                   </AccordionTriggerWrapper>
                   <AccordionContentWrapper>
                     <div className="space-y-6">
