@@ -7,7 +7,6 @@ import {
   FaIdCard,
   FaBars,
   FaCashRegister,
-  FaCrown,
 } from 'react-icons/fa';
 import { MdAccountCircle } from 'react-icons/md';
 import PaymentMethod from './paymentmethod/PaymentMethod';
@@ -21,7 +20,7 @@ const AccountSettings = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const subscriptionRef = useRef<HTMLDivElement>(null);
 
-  // Check if we should highlight the subscription section from URL parameters
+  // Handle ?subscribe=true parameter
   useEffect(() => {
     const checkSubscriptionParam = () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -30,7 +29,6 @@ const AccountSettings = () => {
       if (subscribeParam === 'true') {
         setActiveTab('subscription');
 
-        // Scroll to subscription section after a short delay to allow rendering
         setTimeout(() => {
           if (subscriptionRef.current) {
             subscriptionRef.current.scrollIntoView({
@@ -38,7 +36,6 @@ const AccountSettings = () => {
               block: 'start',
             });
 
-            // Add highlight effect
             subscriptionRef.current.classList.add(
               'ring-2',
               'ring-green-500',
@@ -56,7 +53,7 @@ const AccountSettings = () => {
           }
         }, 300);
 
-        // Clean up the URL parameter
+        // Clean URL
         const url = new URL(window.location.href);
         url.searchParams.delete('subscribe');
         window.history.replaceState(null, '', url.toString());
@@ -125,7 +122,7 @@ const AccountSettings = () => {
         </button>
       </div>
 
-      {/* Tabs Container */}
+      {/* Tabs */}
       <div className="relative">
         {/* Desktop Tabs */}
         <div className="hidden lg:flex border-b border-gray-200 mb-6 overflow-x-auto">
@@ -134,7 +131,7 @@ const AccountSettings = () => {
               key={tab.id}
               className={`flex items-center px-4 py-2 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'border-gray-500 text-gray-600'
+                  ? 'border-green-600 text-green-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
               onClick={() => setActiveTab(tab.id)}
@@ -145,7 +142,7 @@ const AccountSettings = () => {
           ))}
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Dropdown */}
         {showMobileMenu && (
           <div className="lg:hidden absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 mb-4">
             {tabs.map((tab) => (
@@ -153,7 +150,7 @@ const AccountSettings = () => {
                 key={tab.id}
                 className={`flex items-center w-full px-4 py-3 text-left ${
                   activeTab === tab.id
-                    ? 'bg-gray-100 text-gray-900'
+                    ? 'bg-green-50 text-green-700 font-semibold'
                     : 'text-gray-700 hover:bg-gray-50'
                 } border-b border-gray-100 last:border-b-0`}
                 onClick={() => {
@@ -169,8 +166,8 @@ const AccountSettings = () => {
         )}
       </div>
 
-      {/* Content container */}
-      <div className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50 p-3 shadow min-h-[calc(100vh-150px)] pb-16">
+      {/* Content */}
+      <div className="bg-white text-gray-800 p-3 shadow min-h-[calc(100vh-150px)] pb-16 rounded-lg">
         {renderTabContent()}
       </div>
     </div>

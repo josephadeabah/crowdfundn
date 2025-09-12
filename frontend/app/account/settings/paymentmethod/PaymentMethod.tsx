@@ -28,15 +28,13 @@ type Bank = {
   type: string; // nuban or ghipss
 };
 
-// Utility function to mask the account number
+// Utility to mask account numbers
 const maskAccountNumber = (accountNumber: string): string => {
   if (!accountNumber || accountNumber.length <= 4) return accountNumber;
-
-  const visibleDigits = 4; // Number of visible digits
+  const visibleDigits = 4;
   const maskedLength = accountNumber.length - visibleDigits;
-  const maskedPart = '•'.repeat(maskedLength); // Replace the rest with gray circles
-  const visiblePart = accountNumber.slice(-visibleDigits); // Last 4 digits
-
+  const maskedPart = '•'.repeat(maskedLength);
+  const visiblePart = accountNumber.slice(-visibleDigits);
   return `${maskedPart}${visiblePart}`;
 };
 
@@ -55,20 +53,14 @@ const PaymentMethod = () => {
     type: 'success' as 'success' | 'error' | 'warning',
   });
 
-  const { user, token } = useAuth(); // Make sure token is available from useAuth
+  const { user, token } = useAuth();
 
-  // Utility for toast messages
   const showToast = (
     title: string,
     description: string,
     type: 'success' | 'error' | 'warning',
   ) => {
-    setToast({
-      isOpen: true,
-      title,
-      description,
-      type,
-    });
+    setToast({ isOpen: true, title, description, type });
   };
 
   const closeToast = () =>
@@ -105,7 +97,7 @@ const PaymentMethod = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users/${user?.id}/subaccount`,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Add authorization header
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         },
@@ -132,7 +124,7 @@ const PaymentMethod = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/resolve_account_details?account_number=${accountNumber}&bank_code=${selectedBank?.value}&country=${user?.country.toLowerCase()}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Add authorization header
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         },
@@ -146,7 +138,7 @@ const PaymentMethod = () => {
     }
   };
 
-  // Submit Subaccount
+  // Submit subaccount
   const handleSubmitSubaccount = async (
     e: React.FormEvent<HTMLFormElement>,
     isUpdate: boolean,
@@ -159,17 +151,15 @@ const PaymentMethod = () => {
     }
 
     setIsLoading(true);
-
     const accountName = await verifyAccountNumber();
     if (!accountName) {
       setIsLoading(false);
       return;
     }
 
-    // Prepare the payload based on whether we are creating or updating
     const payload = isUpdate
       ? {
-          subaccount_code: subaccountData?.subaccount_code || '', // For updating
+          subaccount_code: subaccountData?.subaccount_code || '',
           business_name: user?.full_name,
           settlement_bank: selectedBank.value,
           account_number: accountNumber,
@@ -216,7 +206,7 @@ const PaymentMethod = () => {
         method,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Add authorization header
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
@@ -259,9 +249,10 @@ const PaymentMethod = () => {
         description={toast.description}
         type={toast.type}
       />
+
       <div className="max-w-xl mx-auto p-6 space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+          <h2 className="text-2xl font-bold flex items-center gap-3 text-gray-900">
             <div className="p-2 bg-green-500 rounded-xl">
               <CreditCard className="h-6 w-6 text-white" />
             </div>
@@ -277,11 +268,11 @@ const PaymentMethod = () => {
           <BankAccountLoader />
         ) : subaccountData ? (
           <div className="space-y-4">
-            <div className="p-6 bg-gray-50 rounded-none shadow-sm">
+            <div className="p-6 bg-gray-50 rounded-lg shadow-sm">
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-gray-100/50 rounded-lg">
+                <div className="flex justify-between items-center p-4 bg-gray-100 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
+                    <div className="p-2 bg-green-100 rounded-lg">
                       <User className="h-4 w-4 text-green-600" />
                     </div>
                     <span className="font-medium text-gray-600">Name</span>
@@ -291,9 +282,9 @@ const PaymentMethod = () => {
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center p-4 bg-gray-100/50 rounded-lg">
+                <div className="flex justify-between items-center p-4 bg-gray-100 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
+                    <div className="p-2 bg-green-100 rounded-lg">
                       <CreditCard className="h-4 w-4 text-green-600" />
                     </div>
                     <span className="font-medium text-gray-600">
@@ -305,9 +296,9 @@ const PaymentMethod = () => {
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center p-4 bg-gray-100/50 rounded-lg">
+                <div className="flex justify-between items-center p-4 bg-gray-100 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
+                    <div className="p-2 bg-green-100 rounded-lg">
                       <Building2 className="h-4 w-4 text-green-600" />
                     </div>
                     <span className="font-medium text-gray-600">Bank</span>
@@ -320,7 +311,7 @@ const PaymentMethod = () => {
             </div>
 
             <Button
-              className="flex items-center justify-center gap-3 w-full p-4 bg-green-600 hover:bg-green-700 text-white rounded-none font-semibold shadow-button transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center justify-center gap-3 w-full p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold shadow transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
               onClick={() => setIsUpdateModalOpen(true)}
             >
               <Edit3 className="h-5 w-5" />
@@ -329,7 +320,7 @@ const PaymentMethod = () => {
           </div>
         ) : (
           <Button
-            className="flex items-center justify-center gap-3 w-full p-6 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold shadow-button transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] border-2 border-dashed border-green-300"
+            className="flex items-center justify-center gap-3 w-full p-6 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold shadow transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] border-2 border-dashed border-green-300"
             onClick={() => setIsAddModalOpen(true)}
           >
             <Plus className="h-6 w-6" />
@@ -398,14 +389,14 @@ const PaymentMethod = () => {
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-gray-900 placeholder-gray-400 font-mono"
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 text-gray-900 placeholder-gray-400 font-mono transition-all duration-200"
                 />
               </div>
 
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-button transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
+                className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>
@@ -485,14 +476,14 @@ const PaymentMethod = () => {
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-gray-900 placeholder-gray-400 font-mono"
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 text-gray-900 placeholder-gray-400 font-mono transition-all duration-200"
                 />
               </div>
 
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-button transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
+                className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>

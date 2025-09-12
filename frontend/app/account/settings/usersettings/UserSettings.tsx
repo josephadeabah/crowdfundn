@@ -115,8 +115,8 @@ const UserSettings = () => {
   }, [userAccountData, profileData]);
 
   return (
-    <div className="mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-50">
-      <div className="mx-auto bg-white dark:bg-gray-700">
+    <div className="mx-auto bg-white text-gray-800">
+      <div className="mx-auto bg-white">
         <div className="px-4 py-5 sm:p-6">
           <div className="font-semibold flex items-center gap-2">
             <FaInfoCircle
@@ -126,9 +126,9 @@ const UserSettings = () => {
             />
             <Tooltip
               id="tooltip-user-account-setting"
-              className="max-w-xs text-gray-600 dark:text-gray-400 text-sm p-2 rounded z-10"
+              className="max-w-xs text-gray-600 text-sm p-2 rounded z-10"
             />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-gray-900">
               Account Settings
             </h2>
           </div>
@@ -153,7 +153,7 @@ const UserSettings = () => {
                       className="h-24 w-24 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="h-24 w-24 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                    <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center">
                       <FaUser className="text-gray-400 text-3xl" />
                     </div>
                   )}
@@ -218,7 +218,7 @@ const UserSettings = () => {
           </div>
         </div>
 
-        <div className="px-4 py-3 bg-gray-50 text-right sm:px-6 dark:bg-gray-600">
+        <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

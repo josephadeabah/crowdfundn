@@ -99,7 +99,7 @@ const SystemSettingsPage = () => {
   };
 
   return (
-    <div className="mx-auto bg-white dark:bg-gray-900">
+    <div className="mx-auto bg-white text-gray-800">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Settings</h1>
 
       <div className="space-y-8">
