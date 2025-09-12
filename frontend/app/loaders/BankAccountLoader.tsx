@@ -6,7 +6,7 @@ import { Button } from '../components/ui/button';
 const BankAccountLoader: React.FC = () => {
   return (
     <div className="space-y-4">
-      <div className="p-6 bg-white rounded-none shadow-card border border-gray-200">
+      <div className="p-6 bg-white rounded-sm shadow-sm">
         <div className="space-y-4">
           {/* Name Row */}
           <div className="flex justify-between items-center p-4 bg-gray-100/50 rounded-lg">
