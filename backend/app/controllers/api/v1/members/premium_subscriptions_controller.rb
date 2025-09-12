@@ -29,7 +29,7 @@ module Api
               paystack_subscription_code: active_subscription.paystack_subscription_code,
               expires_at: active_subscription.expires_at,
               start_date: active_subscription.start_date,
-              is_recurring: active_subscription.auto_renew # ✅ Use auto_renew instead of checking subscription code
+              is_recurring: active_subscription.paystack_subscription_code.present? # Check if it has subscription code
             } : nil
           }, status: :ok
         end

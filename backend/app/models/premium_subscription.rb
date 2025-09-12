@@ -27,8 +27,10 @@ class PremiumSubscription < ApplicationRecord
       # Check if Paystack cancellation was successful
       unless response[:status]
         Rails.logger.error("Failed to cancel Paystack subscription: #{response[:message]}")
-        # You might want to raise an exception here
-        raise "Paystack cancellation failed: #{response[:message]}"
+        # You might want to handle this differently - maybe just update local status
+        # instead of raising an exception
+        update(status: 'cancelled', auto_renew: false)
+        return
       end
     end
     

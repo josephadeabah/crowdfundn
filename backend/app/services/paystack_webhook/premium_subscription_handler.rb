@@ -11,6 +11,10 @@ module PaystackWebhook
     
     # ADD THE event_type PARAMETER HERE
     def call(event_type = nil)
+      Rails.logger.info "=== PAYSTACK WEBHOOK DATA ==="
+      Rails.logger.info "Full data: #{@data.inspect}"
+      Rails.logger.info "Metadata: #{@metadata.inspect}"
+      Rails.logger.info "============================"
       Rails.logger.info "PremiumSubscriptionHandler.call invoked with event_type: #{event_type}"
       Rails.logger.info "Checking premium_access: #{@metadata[:premium_access]}, premium_plan_id: #{@metadata[:premium_plan_id]}"
       
@@ -41,10 +45,10 @@ module PaystackWebhook
       
       user_id = @metadata[:user_id].to_i
       plan_id = @metadata[:premium_plan_id].to_i
-      is_recurring = @metadata[:is_recurring] == 'true'
+      is_recurring = ActiveModel::Type::Boolean.new.cast(@metadata[:is_recurring])
       
       Rails.logger.info "Looking for user #{user_id} and plan #{plan_id}, recurring: #{is_recurring}"
-      
+
       user = User.find_by(id: user_id)
       plan = PremiumPlan.find_by(id: plan_id)
       
@@ -70,11 +74,9 @@ module PaystackWebhook
         auto_renew: is_recurring
       }
       
-      # For recurring subscriptions, look for subscription code in authorization or metadata
+      # For recurring subscriptions, extract subscription code from multiple possible locations
       if is_recurring
-        subscription_code = @data.dig(:authorization, :subscription_code) || 
-                           @metadata[:subscription_code] ||
-                           @data[:subscription_code]
+        subscription_code = extract_subscription_code
         
         if subscription_code.present?
           subscription_attrs[:paystack_subscription_code] = subscription_code
@@ -86,7 +88,7 @@ module PaystackWebhook
       
       Rails.logger.info "Creating/updating subscription with attributes: #{subscription_attrs}"
       
-      if subscription.update!(subscription_attrs)
+      if subscription.update(subscription_attrs)
         Rails.logger.info "Subscription created/updated successfully: #{subscription.id}"
       else
         Rails.logger.error "Failed to create/update subscription: #{subscription.errors.full_messages}"
@@ -109,6 +111,18 @@ module PaystackWebhook
       PremiumSubscriptionEmailService.send_payment_success_email(user, subscription, @data)
       
       Rails.logger.info "Confirmation emails sent successfully"
+    end
+
+    # Add this helper method to extract subscription code from various locations
+    def extract_subscription_code
+      # Check multiple possible locations for subscription code
+      code = @data.dig(:subscription, :subscription_code) ||
+            @data.dig(:authorization, :subscription_code) ||
+            @metadata[:subscription_code] ||
+            @data[:subscription_code]
+      
+      Rails.logger.info "Extracted subscription code: #{code}"
+      code
     end
     
     def calculate_end_date(plan, start_date = Time.current)
