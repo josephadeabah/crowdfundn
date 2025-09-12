@@ -9,18 +9,15 @@ const TransferCampaignLoader = () => {
       {Array(3) // Assuming there are 3 campaigns, adjust as necessary
         .fill(null)
         .map((_, index) => (
-          <div
-            key={index}
-            className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow w-full"
-          >
+          <div key={index} className="p-4 bg-white rounded-lg shadow w-full">
             <div className="flex justify-between items-center">
               <div>
                 {/* Loading title */}
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                <h3 className="text-lg font-semibold text-gray-800">
                   <Skeleton width={200} />
                 </h3>
                 {/* Loading raised amount and goal amount */}
-                <p className="text-gray-500 dark:text-neutral-400">
+                <p className="text-gray-500">
                   <Skeleton width={150} />
                 </p>
               </div>

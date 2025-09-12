@@ -95,7 +95,6 @@ export default function Transfers() {
     }
   };
 
-  // Function to check if transfer should be disabled for a campaign
   const isTransferDisabled = (campaign: CampaignResponseDataType) => {
     const currentAmount = parseFloat(
       campaign.current_amount?.toString() || '0',
@@ -103,16 +102,13 @@ export default function Transfers() {
     const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
     const minimumAmount = 60.0;
 
-    // For equity campaigns, check if current amount is at least half of goal amount AND meets minimum
     if (campaign.type === 'EquityCampaign') {
       return currentAmount < goalAmount * 0.5 || currentAmount < minimumAmount;
     }
 
-    // For regular campaigns, check if current amount equals goal amount AND meets minimum
     return currentAmount < goalAmount || currentAmount < minimumAmount;
   };
 
-  // Function to get transfer restriction message
   const getTransferRestrictionMessage = (
     campaign: CampaignResponseDataType,
   ) => {
@@ -141,12 +137,10 @@ export default function Transfers() {
 
       {/* Header Section */}
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-          Transfers
-        </h2>
-        <p className="text-gray-500 dark:text-neutral-400">
+        <h2 className="text-2xl font-semibold text-gray-800">Transfers</h2>
+        <p className="text-gray-600">
           Review your transfer history or request new transfers.
-          <span className="text-muted-foreground">
+          <span className="text-gray-500">
             {' '}
             Typically request for transfer weekdays from 10:30AM
           </span>
@@ -165,7 +159,7 @@ export default function Transfers() {
         {/* Left Column - Campaigns */}
         <div className="space-y-4">
           <div className="flex items-center">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+            <h3 className="text-lg font-semibold text-gray-800">
               Campaigns Available for Transfer
             </h3>
           </div>
@@ -173,19 +167,16 @@ export default function Transfers() {
           {isLoadingCampaigns ? (
             <TransferCampaignLoader />
           ) : userCampaigns === null ? (
-            <div className="text-center py-4 text-gray-500 dark:text-neutral-400">
+            <div className="text-center py-4 text-gray-600">
               Loading your campaigns...
             </div>
           ) : userCampaigns.length === 0 ? (
-            <div className="text-center py-4 text-gray-500 dark:text-neutral-400">
+            <div className="text-center py-4 text-gray-600">
               You have no campaigns available for transfer
             </div>
           ) : (
             userCampaigns.map((campaign: CampaignResponseDataType) => (
-              <div
-                key={campaign.id}
-                className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow"
-              >
+              <div key={campaign.id} className="p-4 bg-white rounded-lg shadow">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="flex items-center gap-4 w-full sm:w-auto">
                     <div className="shrink-0">
@@ -206,7 +197,7 @@ export default function Transfers() {
                     </div>
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center">
-                        <h3 className="font-medium text-gray-800 dark:text-white">
+                        <h3 className="font-medium text-gray-800">
                           {campaign.title}
                         </h3>
                         {isTransferDisabled(campaign) && (
@@ -218,7 +209,7 @@ export default function Transfers() {
                           />
                         )}
                       </div>
-                      <p className="text-sm text-gray-500 dark:text-neutral-400">
+                      <p className="text-sm text-gray-600">
                         <span
                           className={
                             parseFloat(
@@ -241,7 +232,7 @@ export default function Transfers() {
                         </span>
                       </p>
                       {campaign.type === 'EquityCampaign' && (
-                        <p className="text-xs text-blue-600 dark:text-blue-400">
+                        <p className="text-xs text-blue-600">
                           Equity Campaign (50% threshold)
                         </p>
                       )}
@@ -250,7 +241,7 @@ export default function Transfers() {
 
                   <Button
                     onClick={() => handleRequestTransfer(campaign.id)}
-                    className="w-full sm:w-auto px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 dark:hover:bg-green-700 whitespace-nowrap"
+                    className="w-full sm:w-auto px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 whitespace-nowrap"
                     disabled={
                       loadingCampaigns[campaign.id] ||
                       isTransferDisabled(campaign)
@@ -268,39 +259,39 @@ export default function Transfers() {
 
         {/* Right Column - Transfer History */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+          <h3 className="text-lg font-semibold text-gray-800">
             Transaction History
           </h3>
 
-          <div className="bg-white dark:bg-neutral-800 rounded-lg shadow overflow-hidden">
-            <div className="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-                <thead className="bg-gray-50 dark:bg-neutral-700">
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-gray-100">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider whitespace-nowrap">
                       Amount
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider whitespace-nowrap">
                       Date
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider whitespace-nowrap">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider whitespace-nowrap">
                       Reference
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider whitespace-nowrap">
                       Account
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider whitespace-nowrap">
                       Bank
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider whitespace-nowrap">
                       Reason
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-neutral-800 divide-y divide-gray-200 dark:divide-neutral-700">
+                <tbody className="bg-white divide-y divide-gray-200">
                   {loading ? (
                     <tr>
                       <td colSpan={7} className="px-4 py-4">
@@ -311,24 +302,21 @@ export default function Transfers() {
                     <tr>
                       <td
                         colSpan={7}
-                        className="px-4 py-4 text-center text-gray-500 dark:text-neutral-400"
+                        className="px-4 py-4 text-center text-gray-600"
                       >
                         You have no transfer history.
                       </td>
                     </tr>
                   ) : (
                     transfers?.map((transfer) => (
-                      <tr
-                        key={transfer.id}
-                        className="hover:bg-gray-50 dark:hover:bg-neutral-700"
-                      >
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                      <tr key={transfer.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800">
                           {transfer.currency}{' '}
                           {parseFloat(
                             transfer.amount.toString(),
                           ).toLocaleString()}
                         </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-neutral-400">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
                           {moment(transfer.created_at).format(
                             'MMM D, YYYY h:mm A',
                           )}
@@ -339,21 +327,21 @@ export default function Transfers() {
                               PAID
                             </span>
                           ) : (
-                            <span className="text-gray-500 dark:text-gray-400">
+                            <span className="text-gray-600">
                               {transfer.status}
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800">
                           {transfer.reference}
                         </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800">
                           {transfer.account_number || 'N/A'}
                         </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-800">
                           {transfer.bank_name || 'N/A'}
                         </td>
-                        <td className="px-4 py-4 text-sm text-gray-800 dark:text-white max-w-xs truncate">
+                        <td className="px-4 py-4 text-sm text-gray-800 max-w-xs truncate">
                           {transfer.reason}
                         </td>
                       </tr>
@@ -364,7 +352,7 @@ export default function Transfers() {
             </div>
 
             {totalPages > 1 && (
-              <div className="px-4 py-3 bg-gray-50 dark:bg-neutral-700 border-t border-gray-200 dark:border-neutral-700">
+              <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}

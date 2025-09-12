@@ -107,9 +107,7 @@ const CampaignUpdates: React.FC = () => {
         onCancel={() => setUpdateToDelete(null)}
       />
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-          Updates
-        </h2>
+        <h2 className="text-2xl font-semibold text-gray-800">Updates</h2>
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
@@ -118,7 +116,7 @@ const CampaignUpdates: React.FC = () => {
           Add Update
         </button>
       </div>
-      <div className="text-gray-500 dark:text-neutral-400 mb-4">
+      <div className="text-gray-500 mb-4">
         Keep your supporters updated on the progress of your campaign
       </div>
       {/* Modal */}
@@ -136,17 +134,17 @@ const CampaignUpdates: React.FC = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.5, opacity: 0 }}
               transition={{ type: 'spring', damping: 15 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-sm shadow-xl w-full max-w-md"
+              className="bg-white p-6 rounded-sm shadow-xl w-full max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+              <h2 className="text-2xl font-bold mb-6 text-gray-800">
                 Add New Update
               </h2>
               <form onSubmit={handleSubmit}>
                 {/* Campaign Selector */}
                 <div className="relative mb-8">
                   <label
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    className="block text-sm font-medium text-gray-700 mb-2"
                     htmlFor="campaign-select"
                   >
                     Select Campaign
@@ -155,7 +153,7 @@ const CampaignUpdates: React.FC = () => {
                     id="campaign-select"
                     value={selectedCampaign}
                     onChange={(e) => handleCampaignSelect(e.target.value)}
-                    className="block w-full rounded-lg border-gray-300 border p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:focus:ring-gray-500 appearance-none"
+                    className="block w-full rounded-lg border-gray-300 border p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-200 appearance-none"
                     aria-label="Select campaign"
                   >
                     <option value="">Choose a campaign</option>
@@ -165,11 +163,11 @@ const CampaignUpdates: React.FC = () => {
                       </option>
                     ))}
                   </select>
-                  <FiChevronDown className="absolute right-3 top-10 text-gray-400 dark:text-gray-300" />
+                  <FiChevronDown className="absolute right-3 top-10 text-gray-400" />
                 </div>
                 <div className="mb-4">
                   <label
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    className="block text-sm font-medium text-gray-700 mb-2"
                     htmlFor="description"
                   >
                     Description
@@ -183,8 +181,8 @@ const CampaignUpdates: React.FC = () => {
                     className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${
                       errors.content
                         ? 'border-red-500 focus:ring-red-500'
-                        : 'border-gray-300 dark:border-gray-600 focus:ring-gray-200 dark:focus:ring-gray-500'
-                    } dark:bg-gray-700 dark:text-gray-200`}
+                        : 'border-gray-300 focus:ring-gray-200'
+                    }`}
                   ></textarea>
                   {errors.content && (
                     <p className="mt-1 text-sm text-red-500 flex items-center">
@@ -197,7 +195,7 @@ const CampaignUpdates: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                   >
                     Cancel
                   </button>
@@ -217,7 +215,7 @@ const CampaignUpdates: React.FC = () => {
       {/* Updates Display */}
       <div>
         {userCampaigns?.every((campaign) => campaign.updates.length === 0) ? (
-          <p className="text-gray-500 dark:text-gray-400 text-lg">
+          <p className="text-gray-500 text-lg">
             You have not created any updates yet!
           </p>
         ) : (
@@ -228,9 +226,9 @@ const CampaignUpdates: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md"
+                className="bg-white p-6 rounded-lg shadow-md"
               >
-                <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+                <h2 className="text-xl font-semibold mb-4 text-gray-800">
                   {campaign.title}
                 </h2>
                 <div className="space-y-4">
@@ -239,12 +237,10 @@ const CampaignUpdates: React.FC = () => {
                       key={update.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="border-l-4 border-orange-400 pl-4 py-2 dark:border-orange-500 flex items-center"
+                      className="border-l-4 border-orange-400 pl-4 py-2 flex items-center"
                     >
                       <div className="flex-grow">
-                        <p className="text-gray-600 dark:text-gray-300 mt-1">
-                          {update.content}
-                        </p>
+                        <p className="text-gray-600 mt-1">{update.content}</p>
                       </div>
                       <div className="flex-shrink-0 ml-2">
                         <FiTrash2

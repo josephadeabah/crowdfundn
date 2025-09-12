@@ -9,25 +9,25 @@ const TransferLoader = () => {
         .fill(null)
         .map((_, index) => (
           <tr key={index}>
-            <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+            <td className="px-4 py-2 text-gray-800 whitespace-nowrap">
               <Skeleton width={100} />
             </td>
-            <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+            <td className="px-4 py-2 text-gray-800 whitespace-nowrap">
               <Skeleton width={120} />
             </td>
-            <td className="px-4 py-2 text-green-500 dark:text-green-400 whitespace-nowrap">
+            <td className="px-4 py-2 text-green-500 whitespace-nowrap">
               <Skeleton width={80} />
             </td>
-            <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+            <td className="px-4 py-2 text-gray-800 whitespace-nowrap">
               <Skeleton width={150} />
             </td>
-            <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+            <td className="px-4 py-2 text-gray-800 whitespace-nowrap">
               <Skeleton width={120} />
             </td>
-            <td className="px-4 py-2 text-gray-800 dark:text-white whitespace-nowrap">
+            <td className="px-4 py-2 text-gray-800 whitespace-nowrap">
               <Skeleton width={150} />
             </td>
-            <td className="px-4 py-2 truncate text-gray-800 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
+            <td className="px-4 py-2 truncate text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis">
               <Skeleton width={200} />
             </td>
           </tr>
