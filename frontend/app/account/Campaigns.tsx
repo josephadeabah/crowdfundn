@@ -262,7 +262,7 @@ const Campaigns: React.FC = () => {
         <>
           <li>
             <button
-              className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+              className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md"
               onClick={() => handleAction(campaign, 'cancel')}
               disabled={
                 campaign.status === 'canceled' ||
@@ -288,7 +288,7 @@ const Campaigns: React.FC = () => {
       actions.push(
         <li key="submit">
           <button
-            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+            className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md"
             onClick={() => handleAction(campaign, 'submit')}
           >
             Submit for Approval
@@ -299,7 +299,7 @@ const Campaigns: React.FC = () => {
       actions.push(
         <li key="launch">
           <button
-            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+            className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md"
             onClick={() => handleAction(campaign, 'launch')}
           >
             Launch Campaign
@@ -310,7 +310,7 @@ const Campaigns: React.FC = () => {
       actions.push(
         <li key="close">
           <button
-            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+            className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md"
             onClick={() => handleAction(campaign, 'close')}
           >
             Close Campaign
@@ -340,10 +340,10 @@ const Campaigns: React.FC = () => {
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+          <h2 className="text-2xl font-semibold text-gray-800">
             My Campaigns
           </h2>
-          <p className="text-gray-500 dark:text-neutral-400">
+          <p className="text-gray-500">
             Manage your active and past campaigns.
           </p>
         </div>
@@ -368,7 +368,7 @@ const Campaigns: React.FC = () => {
       </div>
 
       {userCampaigns && userCampaigns.length === 0 ? (
-        <p className="text-gray-500 dark:text-neutral-400 mt-4">
+        <p className="text-gray-500 mt-4">
           You have no campaigns yet.
         </p>
       ) : (
@@ -378,15 +378,15 @@ const Campaigns: React.FC = () => {
             return (
               <div
                 key={campaign.id}
-                className="relative p-4 bg-white dark:bg-neutral-800 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-neutral-700 flex flex-col justify-between"
+                className="relative p-4 bg-white rounded-lg shadow hover:bg-gray-100 flex flex-col justify-between"
               >
                 <div className="flex justify-between items-start gap-2">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white line-clamp-2 break-words">
+                  <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 break-words">
                     {campaign.title}
                   </h3>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <button className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-200 flex-shrink-0">
+                      <button className="text-gray-400 hover:text-gray-600 flex-shrink-0">
                         <DotsVerticalIcon className="h-6 w-6" />
                       </button>
                     </PopoverTrigger>
@@ -394,7 +394,7 @@ const Campaigns: React.FC = () => {
                       <ul className="space-y-2">
                         <li>
                           <button
-                            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                            className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md"
                             onClick={() => handleEditCampaign(campaign)}
                           >
                             Edit Campaign
@@ -402,7 +402,7 @@ const Campaigns: React.FC = () => {
                         </li>
                         <li>
                           <button
-                            className="w-full text-left text-sm text-gray-700 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 p-2 rounded-md"
+                            className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md"
                             onClick={() => handleAction(campaign, 'delete')}
                           >
                             Delete Campaign
@@ -414,7 +414,7 @@ const Campaigns: React.FC = () => {
                   </Popover>
                 </div>
 
-                <div className="mt-2 text-gray-500 dark:text-neutral-400 grid grid-cols-2 gap-2">
+                <div className="mt-2 text-gray-500 grid grid-cols-2 gap-2">
                   <div className="flex flex-col">
                     <span className="text-xs">Goal:</span>
                     <span className="font-medium">
@@ -435,7 +435,7 @@ const Campaigns: React.FC = () => {
                   campaign.team_members &&
                   campaign.team_members.length > 0 && (
                     <div className="mt-3">
-                      <p className="text-sm text-gray-500 dark:text-neutral-400 mb-2">
+                      <p className="text-sm text-gray-500 mb-2">
                         Team Members
                       </p>
                       <div className="flex -space-x-3">
@@ -515,7 +515,7 @@ const Campaigns: React.FC = () => {
                             </Popover>
                           ))}
                         {campaign.team_members.length > 5 && (
-                          <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300">
+                          <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-sm font-semibold text-gray-600">
                             +{campaign.team_members.length - 5}
                           </div>
                         )}
@@ -553,7 +553,7 @@ const Campaigns: React.FC = () => {
                             : 'bg-gray-500'
                         }`}
                       ></span>
-                      <span className="text-xs text-gray-500 dark:text-neutral-400">
+                      <span className="text-xs text-gray-500">
                         {campaign.permissions.is_public ? 'Public' : 'Private'}
                       </span>
                     </div>
@@ -648,19 +648,19 @@ const Campaigns: React.FC = () => {
           size="xlarge"
           closeOnBackdropClick={false}
         >
-          <div className="overflow-y-auto max-h-[60vh] p-2 bg-white dark:bg-neutral-800">
-            <span className="text-xs font-semibold mb-5 text-gray-400 dark:text-gray-500">
+          <div className="overflow-y-auto max-h-[60vh] p-2 bg-white">
+            <span className="text-xs font-semibold mb-5 text-gray-400">
               This is how your campaign looks to others when they see it.
             </span>
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+            <h2 className="text-xl font-semibold text-gray-800">
               {selectedCampaign.title}
             </h2>
-            <p className="text-gray-800 dark:text-neutral-200">
+            <p className="text-gray-800">
               <strong>Goal Amount:</strong>{' '}
               {selectedCampaign?.currency?.toUpperCase()}{' '}
               {parseFloat(selectedCampaign.goal_amount).toLocaleString()}
             </p>
-            <p className="text-gray-800 dark:text-neutral-200">
+            <p className="text-gray-800">
               <strong>Raised Amount:</strong>{' '}
               {selectedCampaign?.currency?.toUpperCase()}{' '}
               {parseFloat(selectedCampaign.transferred_amount).toLocaleString()}
@@ -673,7 +673,7 @@ const Campaigns: React.FC = () => {
               />
             )}
             <div
-              className="prose dark:prose-dark max-w-none"
+              className="prose max-w-none"
               dangerouslySetInnerHTML={{
                 __html: selectedCampaign.description.body,
               }}
