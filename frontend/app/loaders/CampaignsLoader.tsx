@@ -20,7 +20,7 @@ const CampaignsLoader = () => {
         </div>
       </div>
 
-      <p className="text-gray-500 dark:text-neutral-400 mb-4">
+      <p className="text-gray-500 mb-4">
         Manage your active and past campaigns.
       </p>
 
@@ -30,7 +30,7 @@ const CampaignsLoader = () => {
           .map((_, index) => (
             <div
               key={index}
-              className="p-4 bg-white dark:bg-neutral-800 rounded-lg shadow-sm hover:bg-gray-100"
+              className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-100"
             >
               <Skeleton height={20} className="mb-2" />
               <Skeleton height={15} className="mb-2" />

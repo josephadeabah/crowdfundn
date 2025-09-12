@@ -673,7 +673,7 @@ const Campaigns: React.FC = () => {
               />
             )}
             <div
-              className="prose max-w-none"
+              className="prose dark:prose-dark max-w-none"
               dangerouslySetInnerHTML={{
                 __html: selectedCampaign.description.body,
               }}
