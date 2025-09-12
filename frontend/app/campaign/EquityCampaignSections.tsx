@@ -32,7 +32,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
       (doc) => doc.document_type === 'contract',
     ) || [];
 
-const CONTRACT_TERM = `The contract term for this investment opportunity will depend on the structure agreed between the company and investors.\n\n
+  const CONTRACT_TERM = `The contract term for this investment opportunity will depend on the structure agreed between the company and investors.\n\n
 In Ghana, common investment structures include:\n
 - **Ordinary Shares**: Investors become shareholders and participate in the growth of the company.\n
 - **Preferred Shares**: Investors are issued special classes of shares, usually with priority rights on dividends or liquidation.\n
@@ -41,7 +41,6 @@ In Ghana, common investment structures include:\n
 - **Custom Agreements**: Businesses may work with licensed lawyers to prepare other suitable investment contracts that comply with the Companies Act, 2019 (Act 992) and SEC Ghana regulations.\n\n
 Please note: BantuHive does not provide default legal documents. Companies should work with their legal advisors to ensure all agreements meet regulatory standards.\n\n
 <a href="/investments-contracts" target="_blank" class="text-blue-400 hover:underline">Learn more about investment contracts in Ghana</a>`;
-
 
   return (
     <div className="mb-10">
