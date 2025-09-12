@@ -1,99 +1,91 @@
+# app/services/paystack_webhook/handlers/premium_subscription_handler.rb
 module PaystackWebhook
   module Handlers
     class PremiumSubscriptionHandler
       include PaystackWebhook::JsonHelper
 
-      def initialize(event, data)
-        @event = event
-        @data  = data.deep_symbolize_keys
+      def initialize(data)
+        @data = data.deep_symbolize_keys
       end
 
       def call
-        case @event
+        event = @data[:event]
+        payload = @data[:data]
+        metadata = payload[:metadata]&.with_indifferent_access || {}
+
+        case event
         when "charge.success"
-          handle_charge_success
+          handle_one_time_payment(payload, metadata)
         when "subscription.create"
-          handle_subscription_create
+          handle_subscription_create(payload, metadata)
+        when "subscription.disable"
+          handle_subscription_disable(payload, metadata)
+        when "invoice.payment_failed"
+          handle_payment_failed(payload, metadata)
         else
-          Rails.logger.info "Unhandled PremiumSubscription event: #{@event}"
+          Rails.logger.info "Unhandled premium subscription event: #{event}"
         end
       end
 
       private
 
-      # -------------------------
-      # STEP 1: charge.success
-      # -------------------------
-      def handle_charge_success
-        customer_email = dig_value(@data, :customer, :email)
-        plan_code      = dig_value(@data, :plan)
-        reference      = @data[:reference]
+      def handle_one_time_payment(payload, metadata)
+        return unless metadata[:type] == "premium_subscription"
 
-        user = User.find_by(email: customer_email)
-        return unless user
+        user = User.find_by(id: metadata[:user_id])
+        plan = PremiumPlan.find_by(id: metadata[:premium_plan_id])
 
-        premium_plan = PremiumPlan.find_by(paystack_plan_code: plan_code)
+        return unless user && plan
 
-        subscription = user.premium_subscriptions.create!(
-          premium_plan: premium_plan,
+        PremiumSubscription.create!(
+          user: user,
+          premium_plan: plan,
+          transaction_reference: payload[:reference],
           status: "active",
-          transaction_reference: reference,
-          auto_renew: metadata_auto_renew?,
-          is_recurring: metadata_auto_renew?, # mark recurring intent
-          paystack_subscription_code: nil,    # will be filled at subscription.create
-          started_at: Time.current
+          start_date: Time.zone.parse(payload[:paid_at]),
+          expires_at: plan.expires_at_from(Time.zone.parse(payload[:paid_at])),
+          auto_renew: false
         )
-
-        Rails.logger.info "Created subscription (##{subscription.id}) for user #{user.id} via charge.success"
       end
 
-      # -------------------------
-      # STEP 2: subscription.create
-      # -------------------------
-      def handle_subscription_create
-        subscription_code = @data[:subscription_code]
-        email_token       = @data[:email_token]
-        customer_email    = dig_value(@data, :customer, :email)
+      def handle_subscription_create(payload, metadata)
+        return unless metadata[:type] == "premium_subscription"
 
-        user = User.find_by(email: customer_email)
-        return unless user
+        user = User.find_by(id: metadata[:user_id])
+        plan = PremiumPlan.find_by(id: metadata[:premium_plan_id])
 
-        # Find the most recent active subscription without subscription_code
-        subscription = user.premium_subscriptions
-                           .where(paystack_subscription_code: nil, status: "active")
-                           .order(created_at: :desc)
-                           .first
+        return unless user && plan
 
-        # Fallback: look for recent subscription created within last 10 minutes
-        if subscription.nil?
-          subscription = user.premium_subscriptions
-                             .where(status: "active", created_at: 10.minutes.ago..Time.current)
-                             .order(created_at: :desc)
-                             .first
-        end
-
-        return unless subscription
-
-        subscription.update!(
-          paystack_subscription_code: subscription_code,
-          paystack_email_token: email_token,
+        PremiumSubscription.create!(
+          user: user,
+          premium_plan: plan,
+          transaction_reference: payload[:reference],
+          status: "active",
+          start_date: Time.zone.parse(payload[:createdAt]),
+          expires_at: plan.expires_at_from(Time.zone.parse(payload[:createdAt])),
           auto_renew: true,
-          is_recurring: true
+          paystack_subscription_code: payload[:subscription_code]
+        )
+      end
+
+      def handle_subscription_disable(payload, metadata)
+        subscription = PremiumSubscription.find_by(
+          paystack_subscription_code: payload[:subscription_code]
         )
 
-        Rails.logger.info "Updated subscription (##{subscription.id}) with Paystack subscription_code #{subscription_code}"
+        if subscription
+          subscription.update!(status: "cancelled")
+        end
       end
 
-      # -------------------------
-      # Helpers
-      # -------------------------
-      def dig_value(data, *keys)
-        keys.reduce(data) { |acc, key| acc.is_a?(Hash) ? acc[key] : nil }
-      end
+      def handle_payment_failed(payload, metadata)
+        subscription = PremiumSubscription.find_by(
+          paystack_subscription_code: payload[:subscription_code]
+        )
 
-      def metadata_auto_renew?
-        meta = @data[:metadata]
-        meta.is_a?(Hash) ? meta[:is_recurring].to_s == "true" : false
+        if subscription
+          subscription.update!(status: "inactive")
+        end
       end
     end
   end
