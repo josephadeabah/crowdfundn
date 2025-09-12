@@ -62,7 +62,7 @@ export default function DonationsLoader() {
                   <td className="py-3 px-4">
                     <Button
                       variant="outline"
-                      className="px-3 py-1 text-sm rounded-full hover:bg-gray-100 transition duration-200"
+                      className="px-3 py-1 bg-white text-gray-700 text-sm rounded-full hover:bg-gray-100 transition duration-200"
                     >
                       <Skeleton width={60} />
                     </Button>

@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import Image from 'next/image';
 import Link from 'next/link';
 import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
-import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { FaBookmark } from 'react-icons/fa';
+import CampaignCardSkeleton from '../loaders/CampaignCardSkeleton';
 
 const Favorites = () => {
   const {
@@ -22,7 +22,7 @@ const Favorites = () => {
   if (loading && favoritedCampaigns.length === 0) {
     return (
       <div className="py-8">
-        <CampaignCardLoader />
+        <CampaignCardSkeleton />
       </div>
     );
   }
@@ -35,10 +35,10 @@ const Favorites = () => {
 
   return (
     <div className="px-2 py-4">
-      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+      <h2 className="text-2xl font-semibold text-gray-800">
         Favorites
       </h2>
-      <p className="text-gray-500 dark:text-neutral-400 mb-4">
+      <p className="text-gray-500 mb-4">
         Keep track of your saved campaigns and monitor their performance.
       </p>
 
@@ -51,7 +51,7 @@ const Favorites = () => {
           favoritedCampaigns.map((campaign) => (
             <div
               key={`fav-${campaign.id}`}
-              className="relative bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300"
+              className="relative bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300"
             >
               <Link href={`/campaign/${campaign.id}?${generateRandomString()}`}>
                 <div className="relative w-full h-48">
