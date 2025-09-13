@@ -116,7 +116,7 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
                 <FaUsers className="text-yellow-300" />
               </div>
               <h3 className="font-medium text-gray-700">
-                Shares Available For Investment
+                Selling Shares 
               </h3>
             </div>
             <p className="text-2xl font-bold text-gray-700">
