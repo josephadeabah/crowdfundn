@@ -96,16 +96,18 @@ export default function Transfers() {
   };
 
   const isTransferDisabled = (campaign: CampaignResponseDataType) => {
-    const currentAmount = parseFloat(
-      campaign.current_amount?.toString() || '0',
-    );
+    const currentAmount = parseFloat(campaign.current_amount?.toString() || '0');
     const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
-    const minimumAmount = 60.0;
+    
+    // For regular campaigns: minimum is 1/2 of goal amount
+    const minimumAmount = goalAmount * 0.5;
 
     if (campaign.type === 'EquityCampaign') {
-      return currentAmount < goalAmount * 0.5 || currentAmount < minimumAmount;
+      // Equity campaigns still use 50% of goal as minimum
+      return currentAmount < goalAmount * 0.5;
     }
 
+    // Regular campaigns: disabled if current < goal OR current < (goal * 0.5)
     return currentAmount < goalAmount || currentAmount < minimumAmount;
   };
 
