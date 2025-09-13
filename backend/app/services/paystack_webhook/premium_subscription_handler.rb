@@ -1,4 +1,3 @@
-# app/services/paystack_webhook/premium_subscription_handler.rb
 module PaystackWebhook
   class PremiumSubscriptionHandler
     def initialize(data)
@@ -9,25 +8,13 @@ module PaystackWebhook
       Rails.logger.info "Metadata: #{@metadata.inspect}"
     end
     
-    # ADD THE event_type PARAMETER HERE
     def call(event_type = nil)
       Rails.logger.info "PremiumSubscriptionHandler.call invoked with event_type: #{event_type}"
       Rails.logger.info "Checking premium_access: #{@metadata[:premium_access]}, premium_plan_id: #{@metadata[:premium_plan_id]}"
       
       return unless @metadata[:premium_access] && @metadata[:premium_plan_id]
       
-      # Handle different event types if needed
-      case event_type
-      when :charge_success, :subscription_create
-        Rails.logger.info "Processing premium subscription payment/creation"
-        handle_successful_payment
-      when :subscription_disable
-        Rails.logger.info "Processing premium subscription disable"
-        handle_subscription_disable
-      else
-        Rails.logger.info "Processing premium subscription (default)"
-        handle_successful_payment
-      end
+      handle_successful_payment
     rescue => e
       Rails.logger.error "Error in PremiumSubscriptionHandler: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
@@ -41,9 +28,8 @@ module PaystackWebhook
       
       user_id = @metadata[:user_id].to_i
       plan_id = @metadata[:premium_plan_id].to_i
-      is_recurring = @metadata[:is_recurring] == 'true'
       
-      Rails.logger.info "Looking for user #{user_id} and plan #{plan_id}, recurring: #{is_recurring}"
+      Rails.logger.info "Looking for user #{user_id} and plan #{plan_id}"
       
       user = User.find_by(id: user_id)
       plan = PremiumPlan.find_by(id: plan_id)
@@ -67,22 +53,8 @@ module PaystackWebhook
         expires_at: calculate_end_date(plan),
         amount: @data[:amount].to_f / 100,
         currency: @data[:currency],
-        auto_renew: is_recurring
+        auto_renew: false
       }
-      
-      # For recurring subscriptions, look for subscription code in authorization or metadata
-      if is_recurring
-        subscription_code = @data.dig(:authorization, :subscription_code) || 
-                           @metadata[:subscription_code] ||
-                           @data[:subscription_code]
-        
-        if subscription_code.present?
-          subscription_attrs[:paystack_subscription_code] = subscription_code
-          Rails.logger.info "Setting subscription code: #{subscription_code}"
-        else
-          Rails.logger.warn "No subscription code found for recurring subscription"
-        end
-      end
       
       Rails.logger.info "Creating/updating subscription with attributes: #{subscription_attrs}"
       

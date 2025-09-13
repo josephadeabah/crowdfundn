@@ -128,26 +128,26 @@ class User < ApplicationRecord
     premium_subscriptions.active.last
   end
   
-  def upgrade_to_premium(plan, transaction_reference, subscription_code = nil, is_recurring = false)
+  def upgrade_to_premium(plan, transaction_reference)
     transaction do 
       update_columns(
         premium_access: true,
         premium_plan_id: plan.id,
         premium_expires_at: calculate_premium_expiry(plan),
-        premium_subscription_id: subscription_code,
+        premium_subscription_id: nil,
         updated_at: Time.current
       )
       
       PremiumSubscription.create!(
         user: self,
         premium_plan: plan,
-        paystack_subscription_code: subscription_code,
+        paystack_subscription_code: nil,
         amount: plan.price,
         currency: plan.currency,
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_premium_expiry(plan),
-        auto_renew: is_recurring, # This should be true for recurring subscriptions
+        auto_renew: false,
         transaction_reference: transaction_reference
       )
     end
@@ -155,8 +155,6 @@ class User < ApplicationRecord
 
   def downgrade_from_premium
     transaction do
-      # Don't cancel on Paystack here - let the subscription.cancel! method handle it
-      # Just update local records
       update_columns(
         premium_access: false,
         premium_plan_id: nil,
@@ -166,7 +164,6 @@ class User < ApplicationRecord
       )
       
       # Cancel any active subscriptions locally
-      # This will now call the updated cancel! method that handles Paystack
       active_premium_subscription&.cancel!
     end
   end
@@ -266,7 +263,7 @@ class User < ApplicationRecord
 
   def calculate_premium_expiry(plan)
     case plan.interval
-    when 'one_time', 'monthly'
+    when 'monthly'
       1.month.from_now
     when 'quarterly'
       3.months.from_now

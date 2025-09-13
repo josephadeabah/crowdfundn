@@ -53,7 +53,7 @@ module Api
             # Route to appropriate handler based on metadata
             if metadata[:premium_access]
               Rails.logger.info "Routing to PremiumSubscriptionHandler for charge.success"
-              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:charge_success)
+              PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
             else
               Rails.logger.info "Routing to ChargeSuccessHandler"
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
@@ -75,24 +75,12 @@ module Api
             Rails.logger.info "Processing transfer.reversed event"
             PaystackWebhook::TransferReversedHandler.new(event[:data]).call
 
-          when 'subscription.create'
-            Rails.logger.info "Processing subscription.create event"
-            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_create)
-
-          when 'subscription.disable', 'subscription.not_renew'
-            Rails.logger.info "Processing #{event_type} event"
-            PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call(:subscription_disable)
-
-          when 'subscription.charge.failed'
-            Rails.logger.info "Processing subscription.charge.failed event"
-            PaystackWebhook::SubscriptionChargeFailedHandler.new(event[:data]).call
-
           when 'refund.processed'
             metadata = event[:data][:metadata] || {}
             if metadata[:type] == 'equity_investment'
-              PaystackWebhook::Handlers::RefundProcessedHandler.new(event[:data]).call  # Remove data: keyword
+              PaystackWebhook::Handlers::RefundProcessedHandler.new(event[:data]).call
             else
-              PaystackWebhook::Handlers::DonationRefundHandler.new(event[:data]).call   # Remove data: keyword
+              PaystackWebhook::Handlers::DonationRefundHandler.new(event[:data]).call
             end
 
           else
