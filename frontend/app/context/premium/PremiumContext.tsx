@@ -16,12 +16,10 @@ export interface PremiumPlan {
   price: number;
   currency: string;
   interval: string;
-  is_recurring: boolean;
   trial_period_days: number | null;
   created_at: string;
   updated_at: string;
   paystack_plan_code: string | null;
-  paystack_subscription_code: string | null;
   description: string;
   features: Record<string, string | boolean>;
 }
@@ -35,8 +33,6 @@ export interface PremiumSubscription {
     id: number;
     status: string;
     auto_renew: boolean;
-    is_recurring: boolean;
-    paystack_subscription_code: string | null;
     expires_at: string;
     start_date: string;
   } | null;
@@ -45,7 +41,6 @@ export interface PremiumSubscription {
 interface CreateSubscriptionResponse {
   authorization_url: string;
   reference: string;
-  is_recurring: boolean;
 }
 
 interface PremiumState {
@@ -58,10 +53,7 @@ interface PremiumState {
   error: string | null;
   fetchPlans: () => Promise<void>;
   fetchSubscription: () => Promise<void>;
-  createSubscription: (
-    planId: number,
-    isRecurring: boolean,
-  ) => Promise<CreateSubscriptionResponse>;
+  createSubscription: (planId: number) => Promise<CreateSubscriptionResponse>;
   cancelSubscription: () => Promise<void>;
 }
 
@@ -156,10 +148,7 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
   }, [token]);
 
   const createSubscription = useCallback(
-    async (
-      planId: number,
-      isRecurring: boolean = false,
-    ): Promise<CreateSubscriptionResponse> => {
+    async (planId: number): Promise<CreateSubscriptionResponse> => {
       if (!token) throw new Error('Authentication token is missing');
 
       setActionLoading(true);
@@ -175,7 +164,6 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
             },
             body: JSON.stringify({
               plan_id: planId,
-              recurring: isRecurring, // Send as boolean
             }),
           },
         );
@@ -189,7 +177,6 @@ export const PremiumProvider = ({ children }: { children: ReactNode }) => {
         return {
           authorization_url: result.authorization_url,
           reference: result.reference,
-          is_recurring: result.is_recurring || false,
         };
       } catch (err) {
         const errorMessage =

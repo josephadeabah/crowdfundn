@@ -1,4 +1,3 @@
-// app/info/upgrade/PricingCard.tsx
 'use client';
 import React, { useState } from 'react';
 import { Check } from 'lucide-react';
@@ -20,19 +19,12 @@ const PricingCard = ({
   proPlus = false,
 }: PricingCardProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentType, setPaymentType] = useState<'one-time' | 'recurring'>(
-    'one-time',
-  );
   const { createSubscription, subscription } = usePremium();
 
-  const isRecurringPlan = plan.interval !== 'one_time';
-
-  const handleSubscribe = async (paymentType: 'one-time' | 'recurring') => {
+  const handleSubscribe = async () => {
     setIsProcessing(true);
     try {
-      // Convert paymentType to boolean for backend
-      const isRecurring = paymentType === 'recurring';
-      const result = await createSubscription(plan.id, isRecurring);
+      const result = await createSubscription(plan.id);
       window.location.href = result.authorization_url;
     } catch (error) {
       console.error('Failed to create subscription:', error);
@@ -91,7 +83,7 @@ const PricingCard = ({
               proPlus ? 'text-purple-700' : 'text-gray-600',
             )}
           >
-            {isRecurringPlan ? `/${plan.interval}` : ' one-time'}
+            one-time
           </span>
         </div>
       </div>
@@ -105,27 +97,6 @@ const PricingCard = ({
         {plan.description}
       </p>
 
-      {isRecurringPlan && (
-        <div className="mb-4 flex gap-2">
-          <Button
-            variant={paymentType === 'one-time' ? 'secondary' : 'outline'}
-            size="sm"
-            onClick={() => setPaymentType('one-time')}
-            className="flex-1"
-          >
-            One-Time
-          </Button>
-          <Button
-            variant={paymentType === 'recurring' ? 'secondary' : 'outline'}
-            size="sm"
-            onClick={() => setPaymentType('recurring')}
-            className="flex-1"
-          >
-            Subscribe
-          </Button>
-        </div>
-      )}
-
       <Button
         className={cn(
           'w-full mt-2',
@@ -137,7 +108,7 @@ const PricingCard = ({
           (isCurrentPlan || subscription?.has_premium) &&
             'bg-gray-400 cursor-not-allowed',
         )}
-        onClick={() => handleSubscribe(paymentType)}
+        onClick={handleSubscribe}
         disabled={isCurrentPlan || isProcessing || subscription?.has_premium}
       >
         {isProcessing
@@ -146,9 +117,7 @@ const PricingCard = ({
             ? 'Current Plan'
             : subscription?.has_premium
               ? 'Already Premium'
-              : isRecurringPlan && paymentType === 'recurring'
-                ? 'Subscribe Now'
-                : 'Get Started'}
+              : 'Get Started'}
       </Button>
 
       <ul className="mt-8 space-y-3 flex-grow">

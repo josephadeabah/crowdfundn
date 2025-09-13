@@ -1,4 +1,3 @@
-// app/components/premium/SubscriptionStatus.tsx
 'use client';
 import React, { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
@@ -69,10 +68,6 @@ const SubscriptionStatus = () => {
     return null;
   }
 
-  const isRecurring =
-    subscription.active_subscription?.is_recurring === true ||
-    (subscription.current_plan?.is_recurring &&
-      subscription.active_subscription?.paystack_subscription_code !== null);
   const isCancelled = subscription.active_subscription?.status === 'cancelled';
 
   const handleCancelConfirm = async () => {
@@ -82,9 +77,7 @@ const SubscriptionStatus = () => {
       await cancelSubscription();
       setCancelResult({
         type: 'success',
-        message: isRecurring
-          ? 'Subscription cancelled successfully. You will retain access until the end of your billing period.'
-          : 'Subscription cancelled successfully.',
+        message: 'Subscription cancelled successfully. You will lose access to premium features immediately.',
       });
     } catch (error) {
       setCancelResult({
@@ -130,22 +123,15 @@ const SubscriptionStatus = () => {
 
             {subscription.expires_at && (
               <p className="text-green-700 text-sm mt-1">
-                {isCancelled ? 'Access ends ' : 'Expires '}
+                {isCancelled ? 'Access ended ' : 'Expires '}
                 {formatExpiryDate(subscription.expires_at)}
-              </p>
-            )}
-
-            {isRecurring && !isCancelled && (
-              <p className="text-green-600 text-sm mt-1 flex items-center">
-                <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                Auto-renewal enabled
               </p>
             )}
 
             {isCancelled && (
               <p className="text-amber-600 text-sm mt-1 flex items-center">
                 <span className="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>
-                Cancelled - access until expiry
+                Cancelled
               </p>
             )}
           </div>
@@ -176,28 +162,15 @@ const SubscriptionStatus = () => {
         title="Cancel Subscription"
         message={
           <span>
-            {isRecurring ? (
-              <>
-                Are you sure you want to cancel your recurring subscription? You
-                will retain access to premium features until{' '}
-                {subscription.expires_at
-                  ? formatExpiryDate(subscription.expires_at)
-                  : 'the end of your billing period'}
-                . This action cannot be undone.
-              </>
-            ) : (
-              <>
-                Are you sure you want to cancel your subscription? You will lose
-                access to premium features immediately.
-              </>
-            )}
+            Are you sure you want to cancel your subscription? You will lose
+            access to premium features immediately. This action cannot be undone.
           </span>
         }
         isOpen={showCancelConfirm}
         setIsOpen={setShowCancelConfirm}
         onConfirm={handleCancelConfirm}
         icon={<FaExclamationTriangle className="w-6 h-6 text-red-600" />}
-        confirmText={isRecurring ? 'Yes, Cancel Renewal' : 'Yes, Cancel'}
+        confirmText="Yes, Cancel"
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
         loading={actionLoading}
       />
