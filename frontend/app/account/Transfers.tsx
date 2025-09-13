@@ -96,7 +96,7 @@ export default function Transfers() {
   };
 
   const isTransferDisabled = (campaign: CampaignResponseDataType) => {
-    const currentAmount = parseFloat(campaign.current_amount?.toString() || '0');
+    const currentAmount = parseFloat(campaign.transferred_amount?.toString() || '0');
     const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
     
     // For regular campaigns: minimum is 1/2 of goal amount
@@ -115,7 +115,7 @@ export default function Transfers() {
     campaign: CampaignResponseDataType,
   ) => {
     const currentAmount = parseFloat(
-      campaign.current_amount?.toString() || '0',
+      campaign.transferred_amount?.toString() || '0',
     );
     const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
 
@@ -185,7 +185,7 @@ export default function Transfers() {
                       <ProgressRing
                         value={Math.round(
                           (parseFloat(
-                            campaign.current_amount?.toString() || '0',
+                            campaign.transferred_amount?.toString() || '0',
                           ) /
                             parseFloat(
                               campaign.goal_amount?.toString() || '1',
@@ -215,7 +215,7 @@ export default function Transfers() {
                         <span
                           className={
                             parseFloat(
-                              campaign.current_amount?.toString() || '0',
+                              campaign.transferred_amount?.toString() || '0',
                             ) >=
                             parseFloat(campaign.goal_amount?.toString() || '0')
                               ? 'text-green-600'
@@ -224,7 +224,7 @@ export default function Transfers() {
                         >
                           {campaign.currency.toUpperCase()}
                           {parseFloat(
-                            campaign.current_amount?.toString() || '0',
+                            campaign.transferred_amount?.toString() || '0',
                           ).toLocaleString()}
                         </span>
                         <span> raised of </span>
