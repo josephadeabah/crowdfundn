@@ -77,7 +77,8 @@ const SubscriptionStatus = () => {
       await cancelSubscription();
       setCancelResult({
         type: 'success',
-        message: 'Subscription cancelled successfully. You will lose access to premium features immediately.',
+        message:
+          'Subscription cancelled successfully. You will lose access to premium features immediately.',
       });
     } catch (error) {
       setCancelResult({
@@ -163,7 +164,8 @@ const SubscriptionStatus = () => {
         message={
           <span>
             Are you sure you want to cancel your subscription? You will lose
-            access to premium features immediately. This action cannot be undone.
+            access to premium features immediately. This action cannot be
+            undone.
           </span>
         }
         isOpen={showCancelConfirm}
