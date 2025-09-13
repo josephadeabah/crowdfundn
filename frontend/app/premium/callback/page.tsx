@@ -51,7 +51,7 @@ export default function PremiumCallback() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center p-8 bg-white rounded-xl shadow-lg border border-gray-200 max-w-md mx-4">
+      <div className="text-center p-8 bg-white rounded-xl shadow-none border border-gray-200 max-w-md mx-4">
         {/* Clean spinner */}
         <div className="relative mx-auto mb-6 w-16 h-16">
           <div className="w-16 h-16 border-4 border-gray-200 rounded-full"></div>
