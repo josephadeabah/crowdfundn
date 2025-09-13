@@ -123,7 +123,7 @@ export default function Transfers() {
       const requiredAmount = Math.max(goalAmount * 0.5, 60.0);
       return `Transfer available when campaign reaches at least 50% of goal (${campaign.currency.toUpperCase()}${requiredAmount.toLocaleString()})`;
     } else {
-      return `Transfer available only when campaign reaches 100% or half of goal (${campaign.currency.toUpperCase()}${goalAmount.toLocaleString()})`;
+      return `Transfer available only when campaign reaches at least 50% of goal (${campaign.currency.toUpperCase()}${goalAmount.toLocaleString()})`;
     }
   };
 
