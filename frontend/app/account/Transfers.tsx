@@ -120,8 +120,8 @@ export default function Transfers() {
     const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
 
     if (campaign.type === 'EquityCampaign') {
-      const requiredAmount = Math.max(goalAmount * 0.5, 60.0);
-      return `Transfer available when campaign reaches at least 50% of goal (${campaign.currency.toUpperCase()}${requiredAmount.toLocaleString()})`;
+      const requiredAmount = Math.max(goalAmount * 0.5, 10000);
+      return `Transfer available when campaign reaches at least 50% of goal or minimum GHS10,000 (${campaign.currency.toUpperCase()}${requiredAmount.toLocaleString()})`;
     } else {
       return `Transfer available only when campaign reaches at least 50% of goal (${campaign.currency.toUpperCase()}${goalAmount.toLocaleString()})`;
     }
