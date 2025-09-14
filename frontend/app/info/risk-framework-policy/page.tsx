@@ -4,7 +4,7 @@ const RiskFramework = () => {
   return (
     <div className="min-h-screen bg-white text-gray-700">
       {/* Hero Section */}
-      <section className="bg-primary text-primary-foreground py-16">
+      <div className="bg-primary text-primary-foreground py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -15,10 +15,10 @@ const RiskFramework = () => {
             </p>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Main Content */}
-      <section className="py-16">
+      <div className="py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto space-y-12">
 
@@ -605,7 +605,7 @@ const RiskFramework = () => {
 
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
