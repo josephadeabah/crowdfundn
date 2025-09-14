@@ -96,9 +96,11 @@ export default function Transfers() {
   };
 
   const isTransferDisabled = (campaign: CampaignResponseDataType) => {
-    const currentAmount = parseFloat(campaign.transferred_amount?.toString() || '0');
+    const currentAmount = parseFloat(
+      campaign.transferred_amount?.toString() || '0',
+    );
     const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
-    
+
     // For regular campaigns: minimum is 1/2 of goal amount
     const minimumAmount = goalAmount * 0.5;
 

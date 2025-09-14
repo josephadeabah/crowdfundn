@@ -115,9 +115,7 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
               <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-full mr-3">
                 <FaUsers className="text-yellow-300" />
               </div>
-              <h3 className="font-medium text-gray-700">
-                Selling Shares 
-              </h3>
+              <h3 className="font-medium text-gray-700">Selling Shares</h3>
             </div>
             <p className="text-2xl font-bold text-gray-700">
               {parseFloat(

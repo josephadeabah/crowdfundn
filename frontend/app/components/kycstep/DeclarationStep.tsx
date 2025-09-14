@@ -10,9 +10,11 @@ import {
   FormDescription,
 } from '@/app/components/ui/form';
 import { Checkbox } from '@/app/components/ui/checkbox';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 export const DeclarationStep: React.FC = () => {
   const form = useFormContext();
+  const { user } = useAuth();
 
   return (
     <div className="space-y-6">
@@ -43,8 +45,35 @@ export const DeclarationStep: React.FC = () => {
             <div className="space-y-1 leading-none">
               <FormLabel>I am an accredited investor (optional)</FormLabel>
               <FormDescription>
-                Check this box if you meet the criteria for an accredited
-                investor as defined by securities regulations.
+                I, {user?.full_name}, hereby declare that: I am a qualified
+                investor because I am a (a) government, or an institution which
+                performs the functions of a central bank, or a multilateral
+                agency; (b) authorised, approved or licensed securities
+                exchange; (c) licensed market operator, or any other person
+                carrying on the business of providing investment services and
+                regulated under the law of any foreign jurisdiction; (d)
+                authorized or licensed financial institution, or any bank which
+                is not an authorized or licensed institution but is regulated
+                under the law of any foreign jurisdiction; (e) insurer licensed
+                under the Insurance Act 2006 (Act 724), or any other person
+                carrying on insurance business and regulated under the law of
+                any foreign jurisdiction; (f) licensed unit trust, mutual fund
+                or other licensed collective investment scheme, and any
+                authorised collective investment scheme regulated under the law
+                of any foreign jurisdiction; (g) individual, either alone or
+                with any of his associates on a joint account, having proven
+                liquid assets of not less than 500,000 Ghana cedis or its
+                equivalent in any foreign currency; (h) company or partnership
+                having proven liquid assets of not less than 5 million Ghana
+                cedis or its equivalent in any foreign currency; (i) person
+                declared by the Commission to be a qualified investor; and (j)
+                similarly, defined investor in any other securities legislation
+                of any foreign jurisdiction. (Delete that which does not apply)
+                and that I recognise that: some the protections afforded to
+                clients by the Securities Industry (Conduct of Business)
+                Guidelines 2020 will not apply; and I may be advised to engage
+                in transactions that may not be regarded as suitable for the
+                generality of investment clients.
               </FormDescription>
             </div>
           </FormItem>
