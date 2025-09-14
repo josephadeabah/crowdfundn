@@ -58,6 +58,7 @@ Rails.application.routes.draw do
             get :stats 
             get :status
             get :upgrade_status
+            get :export
           end
         end
       end

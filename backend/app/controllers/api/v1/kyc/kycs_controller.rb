@@ -298,7 +298,77 @@ module Api
           render json: { error: 'Could not fetch KYC stats' }, status: :internal_server_error
         end
 
+        def export
+          unless @current_user.admin?
+            return render json: { error: 'Unauthorized' }, status: :forbidden
+          end
+
+          @kycs = Kyc.includes(:user, :kyc_documents, :kyc_addresses)
+                    .order(created_at: :desc)
+
+          # Apply filters
+          @kycs = @kycs.where(status: params[:status]) if params[:status].present?
+          @kycs = @kycs.where(kyc_type: params[:kyc_type]) if params[:kyc_type].present?
+          
+          if params[:search].present?
+            search_term = "%#{params[:search].downcase}%"
+            @kycs = @kycs.joins(:user).where(
+              "kycs.reference ILIKE :search OR 
+              kycs.id_number ILIKE :search OR 
+              users.email ILIKE :search OR 
+              users.full_name ILIKE :search",
+              search: search_term
+            )
+          end
+
+          csv_data = generate_kyc_csv(@kycs)
+
+          send_data csv_data,
+                    type: 'text/csv; charset=utf-8; header=present',
+                    disposition: "attachment; filename=kycs-export-#{Date.today}.csv"
+        end
+
         private
+
+        def generate_kyc_csv(kycs)
+          CSV.generate(headers: true) do |csv|
+            csv << [
+              'Reference',
+              'User ID',
+              'User Email',
+              'User Name',
+              'KYC Type',
+              'Status',
+              'Verification Type',
+              'ID Number',
+              'Nationality',
+              'Date of Birth',
+              'Created At',
+              'Updated At',
+              'Verified At',
+              'Rejection Reason'
+            ]
+
+            kycs.each do |kyc|
+              csv << [
+                kyc.reference,
+                kyc.user.id,
+                kyc.user.email,
+                kyc.user.full_name,
+                kyc.kyc_type,
+                kyc.status,
+                kyc.verification_type,
+                kyc.id_number,
+                kyc.nationality,
+                kyc.date_of_birth,
+                kyc.created_at,
+                kyc.updated_at,
+                kyc.verified_at,
+                kyc.rejection_reason
+              ]
+            end
+          end
+        end
 
         def set_kyc
           @kyc = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns]).find(params[:id])
