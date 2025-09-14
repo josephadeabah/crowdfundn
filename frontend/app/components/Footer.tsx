@@ -44,7 +44,10 @@ const Footer = () => {
         { name: 'SEC Regulations', path: '/info/sec-regulations' },
         { name: 'Investment Compliance', path: '/info/investment-compliance' },
         { name: 'Venture Funding Laws', path: '/info/venture-funding-laws' },
-        { name: 'Risk Policy & Framework', path: '/info/risk-framework-policy' },
+        {
+          name: 'Risk Policy & Framework',
+          path: '/info/risk-framework-policy',
+        },
         {
           name: 'Impact Investing Standards',
           path: '/info/impact-investing-standards',
