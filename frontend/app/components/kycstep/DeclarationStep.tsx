@@ -43,7 +43,7 @@ export const DeclarationStep: React.FC = () => {
               />
             </FormControl>
             <div className="space-y-1 leading-none">
-              <FormLabel>I am an accredited investor (optional)</FormLabel>
+              <FormLabel>I am an accredited investor (optional: Check this box if you meet the criteria for an accredited investor as defined by securities regulations.)</FormLabel>
               <FormDescription>
                 I, {user?.full_name}, hereby declare that: I am a qualified
                 investor because I am a (a) government, or an institution which
