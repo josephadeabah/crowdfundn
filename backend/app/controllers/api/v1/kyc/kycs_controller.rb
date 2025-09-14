@@ -1,3 +1,5 @@
+require 'csv'
+
 module Api
   module V1
     module Kyc
@@ -14,7 +16,8 @@ module Api
 
         def index
           @kycs = if @current_user.admin?
-            Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns]).all.order(created_at: :desc)
+            # Use ::Kyc instead of just Kyc to avoid namespace conflicts
+            ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns]).all.order(created_at: :desc)
           else
             @current_user.kycs.includes(:kyc_documents, :kyc_addresses).order(created_at: :desc)
           end
@@ -303,8 +306,9 @@ module Api
             return render json: { error: 'Unauthorized' }, status: :forbidden
           end
 
-          @kycs = Kyc.includes(:user, :kyc_documents, :kyc_addresses)
-                    .order(created_at: :desc)
+          # Use ::Kyc to explicitly reference the model, not the module
+          @kycs = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses)
+                      .order(created_at: :desc)
 
           # Apply filters
           @kycs = @kycs.where(status: params[:status]) if params[:status].present?
