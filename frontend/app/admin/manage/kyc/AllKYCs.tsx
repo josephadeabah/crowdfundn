@@ -164,8 +164,7 @@ const AllKYCs = () => {
   const exportKYCs = async () => {
     try {
       const params = new URLSearchParams({
-        ...filters,
-        export: 'true',
+        ...filters
       });
 
       const response = await fetch(
