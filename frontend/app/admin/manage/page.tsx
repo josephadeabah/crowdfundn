@@ -40,6 +40,7 @@ import CampaignManager from './campaigns/CampaignsManager';
 import ContentManagerAdminPage from './content/ContentManager';
 import { CampaignReview } from './equitycampaigns/CampaignReview';
 import KYCReview from './kyc/KYCReview';
+import AllKYCs from './kyc/AllKYCs';
 
 // Type definitions for better type safety
 type TabGroup = {
@@ -199,6 +200,12 @@ const AdminDashboard = () => {
           label: 'User Manager',
           icon: <UsersIcon className="h-5 w-5" />,
           component: <UserManagement />,
+        },
+        {
+          id: 'allKycs',
+          label: 'All KYC Records',
+          icon: <ShieldCheckIcon className="h-5 w-5" />,
+          component: <AllKYCs />,
         },
         {
           id: 'support',
