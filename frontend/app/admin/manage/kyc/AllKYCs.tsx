@@ -327,7 +327,7 @@ const AllKYCs = () => {
         <div>
           <h1 className="text-3xl font-bold">All KYC Records</h1>
           <p className="text-muted-foreground">
-            Complete database of all user verification records for SEC reporting
+            Complete database of all user verification records
           </p>
         </div>
         <div className="flex gap-2">
