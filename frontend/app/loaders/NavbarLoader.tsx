@@ -27,9 +27,9 @@ const NavbarLoader = () => {
           <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
             Contact
           </span>
-          <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
+          {/* <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
             Education
-          </span>
+          </span> */}
           <span className="mx-2 text-sm font-semibold p-2 text-gray-700 hover:outline-none">
             Events
           </span>

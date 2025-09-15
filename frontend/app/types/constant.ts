@@ -91,20 +91,20 @@ export const dropdownLinks: DropdownLinks = {
       description: 'Reach out to our Eswatini office.',
     },
   ],
-  Education: [
-    {
-      label: 'Scholarships',
-      href: '/info/education/schorlaships',
-      icon: AcademicCapIcon, // Better represents academic achievements
-      description: 'Learn about available scholarships for brilliant minds.',
-    },
-    {
-      label: 'Grants',
-      href: '/info/education/grants',
-      icon: TrophyIcon, // Represents awards and achievements
-      description: 'Explore various grants available to support you.',
-    },
-  ],
+  // Education: [
+  //   {
+  //     label: 'Scholarships',
+  //     href: '/info/education/schorlaships',
+  //     icon: AcademicCapIcon, 
+  //     description: 'Learn about available scholarships for brilliant minds.',
+  //   },
+  //   {
+  //     label: 'Grants',
+  //     href: '/info/education/grants',
+  //     icon: TrophyIcon, 
+  //     description: 'Explore various grants available to support you.',
+  //   },
+  // ],
   Events: [
     {
       label: 'Upcoming Events',
