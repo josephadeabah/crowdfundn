@@ -10,8 +10,7 @@ const InvestorGuide = () => {
             Everything you need to know about investing through BantuHive's
             crowdfunding platform.
           </p>
-
-                    {/* New Due Diligence Guide Section */}
+          {/* New Due Diligence Guide Section */}
           <div className="mb-12">
             <h2 className="text-2xl font-semibold mb-6 text-green-600">
               Standard Due Diligence Guide
@@ -19,8 +18,19 @@ const InvestorGuide = () => {
             <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                 <div className="flex-shrink-0">
-                  <svg className="w-16 h-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <svg
+                    className="w-16 h-16 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                   </svg>
                 </div>
                 <div className="flex-grow">
@@ -28,16 +38,33 @@ const InvestorGuide = () => {
                     BantuHive's Standard Due Diligence Guide
                   </h3>
                   <p className="text-gray-700 mb-4">
-                    Our mission is to provide all types of investors with the opportunity to invest in exciting early-stage and growth stage businesses, often presenting opportunities that investors could not access elsewhere. In doing so, we believe it is right that investors understand both the risks of investing in this asset class and the extent of, and limits to, the protections they receive.
+                    Our mission is to provide all types of investors with the
+                    opportunity to invest in exciting early-stage and growth
+                    stage businesses, often presenting opportunities that
+                    investors could not access elsewhere. In doing so, we
+                    believe it is right that investors understand both the risks
+                    of investing in this asset class and the extent of, and
+                    limits to, the protections they receive.
                   </p>
-                  <a 
-                    href="https://bantuhive-space-media.nyc3.digitaloceanspaces.com/bantuhive-space-media.nyc3.digitaloceanspaces.com/aa1zecbld0iq2f6olh2lb3v8yw18" 
-                    target="_blank" 
+                  <a
+                    href="https://bantuhive-space-media.nyc3.digitaloceanspaces.com/bantuhive-space-media.nyc3.digitaloceanspaces.com/aa1zecbld0iq2f6olh2lb3v8yw18"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
                   >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13l-3 3m0 0l-3-3m3 3V8m0 13a9 9 0 110-18 9 9 0 010 18z" />
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 13l-3 3m0 0l-3-3m3 3V8m0 13a9 9 0 110-18 9 9 0 010 18z"
+                      />
                     </svg>
                     View Due Diligence Guide
                   </a>
