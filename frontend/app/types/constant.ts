@@ -84,12 +84,12 @@ export const dropdownLinks: DropdownLinks = {
       icon: PhoneIcon,
       description: 'Reach out to our Ghana office.',
     },
-    {
-      label: 'Eswatini',
-      href: '/info/contactus',
-      icon: PhoneIcon,
-      description: 'Reach out to our Eswatini office.',
-    },
+    // {
+    //   label: 'Eswatini',
+    //   href: '/info/contactus',
+    //   icon: PhoneIcon,
+    //   description: 'Reach out to our Eswatini office.',
+    // },
   ],
   // Education: [
   //   {
