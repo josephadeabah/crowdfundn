@@ -95,13 +95,13 @@ export const dropdownLinks: DropdownLinks = {
   //   {
   //     label: 'Scholarships',
   //     href: '/info/education/schorlaships',
-  //     icon: AcademicCapIcon, 
+  //     icon: AcademicCapIcon,
   //     description: 'Learn about available scholarships for brilliant minds.',
   //   },
   //   {
   //     label: 'Grants',
   //     href: '/info/education/grants',
-  //     icon: TrophyIcon, 
+  //     icon: TrophyIcon,
   //     description: 'Explore various grants available to support you.',
   //   },
   // ],

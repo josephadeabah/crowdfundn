@@ -1,8 +1,6 @@
-import React from 'react';
-
 const RiskFramework = () => {
   return (
-    <div className="min-h-screen bg-white text-gray-700">
+    <div className="min-h-screen bg-white text-gray-800">
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground py-16">
         <div className="container mx-auto px-6">
@@ -639,6 +637,349 @@ const RiskFramework = () => {
                       Vendor agreements for emergency hardware and services
                     </li>
                     <li>Regular business continuity testing and simulations</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Operational Manual Framework */}
+            <div className="bg-card p-8 rounded-lg border">
+              <h2 className="text-2xl font-bold mb-6 text-primary">
+                Operational Manual Framework
+              </h2>
+
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Manual Structure and Components
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    BantuHive's Operational Manual serves as the comprehensive
+                    guide for all business operations, procedures, and
+                    compliance requirements. The manual is structured to ensure
+                    consistent application of policies and procedures across all
+                    operational activities.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="border rounded p-4">
+                      <h4 className="font-semibold mb-2">Core Procedures</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• Platform user registration and KYC</li>
+                        <li>• Project evaluation and approval</li>
+                        <li>• Investment processing and settlement</li>
+                        <li>• Fund custody and disbursement</li>
+                        <li>• Reporting and compliance procedures</li>
+                      </ul>
+                    </div>
+                    <div className="border rounded p-4">
+                      <h4 className="font-semibold mb-2">
+                        Risk Management Procedures
+                      </h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• Due diligence checklists</li>
+                        <li>• Fraud detection protocols</li>
+                        <li>• AML/KYC verification steps</li>
+                        <li>• Incident response procedures</li>
+                        <li>• Escalation matrices</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Manual Maintenance and Updates
+                  </h3>
+                  <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                    <li>
+                      Quarterly review of all procedures by department heads
+                    </li>
+                    <li>
+                      Annual comprehensive manual review by Risk Committee
+                    </li>
+                    <li>Immediate updates following regulatory changes</li>
+                    <li>Version control and change management procedures</li>
+                    <li>Staff training on manual updates and new procedures</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Breach Detection and Investigation */}
+            <div className="bg-card p-8 rounded-lg border">
+              <h2 className="text-2xl font-bold mb-6 text-primary">
+                Breach Detection and Investigation Framework
+              </h2>
+
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Breach Categories and Detection
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="border rounded p-4 border-red-200">
+                      <h4 className="font-semibold mb-2 text-red-700">
+                        Category A: Critical Breaches
+                      </h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• Regulatory compliance violations</li>
+                        <li>• Fraud or misrepresentation</li>
+                        <li>• Unauthorized fund access</li>
+                        <li>• Data protection breaches</li>
+                        <li>• AML/KYC violations</li>
+                      </ul>
+                      <p className="text-xs text-red-600 mt-2">
+                        Investigation: Immediate (within 2 hours)
+                      </p>
+                    </div>
+                    <div className="border rounded p-4 border-yellow-200">
+                      <h4 className="font-semibold mb-2 text-yellow-700">
+                        Category B: Material Breaches
+                      </h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• Platform terms violations</li>
+                        <li>• Incomplete disclosure</li>
+                        <li>• Process non-compliance</li>
+                        <li>• Reporting failures</li>
+                        <li>• Conduct violations</li>
+                      </ul>
+                      <p className="text-xs text-yellow-600 mt-2">
+                        Investigation: Within 24 hours
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Investigation Process
+                  </h3>
+                  <ol className="list-decimal pl-6 space-y-3 text-muted-foreground">
+                    <li>
+                      <strong>Initial Assessment (0-4 hours)</strong>
+                      <ul className="list-disc pl-4 mt-1 text-sm">
+                        <li>Breach notification receipt and logging</li>
+                        <li>Preliminary impact assessment</li>
+                        <li>Investigation team assignment</li>
+                        <li>Immediate containment measures</li>
+                      </ul>
+                    </li>
+                    <li>
+                      <strong>Detailed Investigation (1-5 days)</strong>
+                      <ul className="list-disc pl-4 mt-1 text-sm">
+                        <li>Evidence collection and preservation</li>
+                        <li>Stakeholder interviews</li>
+                        <li>System and transaction analysis</li>
+                        <li>Legal and regulatory consultation</li>
+                      </ul>
+                    </li>
+                    <li>
+                      <strong>Findings and Recommendations (5-10 days)</strong>
+                      <ul className="list-disc pl-4 mt-1 text-sm">
+                        <li>Investigation report preparation</li>
+                        <li>Disciplinary recommendations</li>
+                        <li>Remedial action proposals</li>
+                        <li>Process improvement suggestions</li>
+                      </ul>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            {/* Disciplinary Actions and Remedial Measures */}
+            <div className="bg-card p-8 rounded-lg border">
+              <h2 className="text-2xl font-bold mb-6 text-primary">
+                Disciplinary Actions and Remedial Measures
+              </h2>
+
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Progressive Disciplinary Framework
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="border rounded p-4">
+                      <h4 className="font-semibold mb-2">
+                        Level 1: Administrative Actions
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        For minor breaches and first-time violations
+                      </p>
+                      <ul className="text-sm text-muted-foreground list-disc pl-4">
+                        <li>Written warning and counseling</li>
+                        <li>Mandatory compliance training</li>
+                        <li>Enhanced monitoring period (30-90 days)</li>
+                        <li>Process correction requirements</li>
+                      </ul>
+                    </div>
+
+                    <div className="border rounded p-4">
+                      <h4 className="font-semibold mb-2">
+                        Level 2: Operational Restrictions
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        For repeated violations or material breaches
+                      </p>
+                      <ul className="text-sm text-muted-foreground list-disc pl-4">
+                        <li>Temporary suspension of specific privileges</li>
+                        <li>Transaction or investment limits</li>
+                        <li>Supervised operations requirement</li>
+                        <li>Additional documentation requirements</li>
+                      </ul>
+                    </div>
+
+                    <div className="border rounded p-4">
+                      <h4 className="font-semibold mb-2">
+                        Level 3: Severe Sanctions
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        For serious violations or regulatory breaches
+                      </p>
+                      <ul className="text-sm text-muted-foreground list-disc pl-4">
+                        <li>Suspension from platform (temporary/indefinite)</li>
+                        <li>Project or campaign termination</li>
+                        <li>Fund escrow and investigation</li>
+                        <li>Regulatory authority notification</li>
+                      </ul>
+                    </div>
+
+                    <div className="border rounded p-4 border-red-200">
+                      <h4 className="font-semibold mb-2 text-red-700">
+                        Level 4: Expulsion and Legal Action
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        For critical breaches, fraud, or criminal activity
+                      </p>
+                      <ul className="text-sm text-muted-foreground list-disc pl-4">
+                        <li>Permanent expulsion from platform</li>
+                        <li>Asset freezing and recovery procedures</li>
+                        <li>Law enforcement referral</li>
+                        <li>Legal action for damages and recovery</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Remedial Measures Implementation
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <h4 className="font-semibold">
+                        Individual Remedial Actions
+                      </h4>
+                      <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
+                        <li>Mandatory retraining and certification</li>
+                        <li>Corrective action plan development</li>
+                        <li>Regular progress monitoring</li>
+                        <li>Performance improvement requirements</li>
+                        <li>Mentorship or supervision assignment</li>
+                      </ul>
+                    </div>
+                    <div className="space-y-3">
+                      <h4 className="font-semibold">
+                        Systemic Remedial Actions
+                      </h4>
+                      <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
+                        <li>Process and procedure enhancements</li>
+                        <li>System controls implementation</li>
+                        <li>Staff training program updates</li>
+                        <li>Policy clarification and communication</li>
+                        <li>Technology solution deployment</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Appeals Process */}
+            <div className="bg-card p-8 rounded-lg border">
+              <h2 className="text-2xl font-bold mb-6 text-primary">
+                Appeals and Review Process
+              </h2>
+
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Appeal Rights and Procedures
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    BantuHive ensures fair treatment by providing comprehensive
+                    appeal rights for all disciplinary decisions. The appeals
+                    process is designed to be transparent, timely, and
+                    impartial.
+                  </p>
+
+                  <div className="space-y-4">
+                    <div className="border rounded p-4">
+                      <h4 className="font-semibold mb-2">
+                        Stage 1: Internal Review
+                      </h4>
+                      <ul className="text-sm text-muted-foreground list-disc pl-4">
+                        <li>
+                          Appeal must be submitted within 14 days of
+                          disciplinary decision
+                        </li>
+                        <li>
+                          Review by senior management not involved in original
+                          decision
+                        </li>
+                        <li>
+                          Review of evidence, procedures, and proportionality
+                        </li>
+                        <li>Decision within 21 days of appeal submission</li>
+                      </ul>
+                    </div>
+
+                    <div className="border rounded p-4">
+                      <h4 className="font-semibold mb-2">
+                        Stage 2: Independent Panel Review
+                      </h4>
+                      <ul className="text-sm text-muted-foreground list-disc pl-4">
+                        <li>Available for material disciplinary actions</li>
+                        <li>Panel includes external independent expert</li>
+                        <li>Full hearing with right to representation</li>
+                        <li>Decision within 30 days of panel formation</li>
+                      </ul>
+                    </div>
+
+                    <div className="border rounded p-4">
+                      <h4 className="font-semibold mb-2">
+                        Stage 3: SEC Ghana Review
+                      </h4>
+                      <ul className="text-sm text-muted-foreground list-disc pl-4">
+                        <li>Final appeal avenue for serious sanctions</li>
+                        <li>Referral to Securities and Exchange Commission</li>
+                        <li>Commission review of decision and process</li>
+                        <li>Binding determination by regulatory authority</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Appeals Documentation and Records
+                  </h3>
+                  <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                    <li>
+                      Complete record keeping of all disciplinary actions and
+                      appeals
+                    </li>
+                    <li>
+                      Documentation of decision rationale and supporting
+                      evidence
+                    </li>
+                    <li>
+                      Tracking of appeal outcomes and precedent establishment
+                    </li>
+                    <li>Regular review of appeals process effectiveness</li>
+                    <li>
+                      Communication of appeal rights to all affected parties
+                    </li>
                   </ul>
                 </div>
               </div>
