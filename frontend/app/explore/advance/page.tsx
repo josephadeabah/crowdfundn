@@ -191,7 +191,8 @@ const CampaignsPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 bg-white min-h-screen">
+     <div className="w-full bg-white min-h-screen">
+    <div className="max-w-7xl mx-auto p-4">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -543,6 +544,7 @@ const CampaignsPage = () => {
           />
         )}
       </div>
+    </div>
     </div>
   );
 };
