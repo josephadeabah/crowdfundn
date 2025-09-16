@@ -1,4 +1,3 @@
-# app/controllers/api/v1/fundraisers/documents/investor_documents_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -83,8 +82,14 @@ module Api
 
           # DELETE /api/v1/campaigns/:campaign_id/investor_documents/:id
           def destroy
-            @document.destroy
-            head :no_content
+            if @document.destroy
+              render json: { message: 'Document deleted successfully' }, status: :ok
+            else
+              render json: { 
+                error: 'Failed to delete document',
+                errors: @document.errors.full_messages 
+              }, status: :unprocessable_entity
+            end
           end
 
           private
