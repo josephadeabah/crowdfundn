@@ -169,7 +169,7 @@ const CategoryList: React.FC = () => {
                         <div className="flex justify-between items-center mt-4">
                           <button
                             onClick={() => handleClick(String(campaign.id))}
-                            className="bg-gray-800 text-white px-5 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-300"
+                            className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-300"
                           >
                             Support Now
                           </button>
