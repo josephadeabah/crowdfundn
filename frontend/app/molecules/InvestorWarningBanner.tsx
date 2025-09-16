@@ -64,10 +64,10 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
               </p>
 
               {/* New SEC Regulation Notice with red background */}
-              <div className="bg-red-600 text-white p-3 rounded-md mt-2">
+              <div className="bg-red-600 text-white p-1 rounded-sm">
                 <p className="font-semibold mb-1">
                   Important Regulatory Notice:
-                  <span className="text-xs">
+                  <span className="text-xs ms-1">
                   BantuHive is currently undergoing SEC regulation review before
                   commencing acceptance of investment campaigns. However,
                   Rewards and Donation crowdfunding remains open to both
