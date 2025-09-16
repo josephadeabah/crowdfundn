@@ -195,7 +195,7 @@ const AdminDashboard = () => {
           label: 'Overview',
           icon: <ChartBarIcon className="h-5 w-5" />,
           component: <GeneralDashboard />,
-          // Accessible to all admin roles
+          requiredRole: [ROLES.ADMIN],
         },
         {
           id: 'analytics',
