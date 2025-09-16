@@ -49,8 +49,8 @@ const CategoryListPage: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-      <div className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-50 pt-6">
+    <div className="relative w-full bg-white">
+      <div className="text-gray-800 pt-6  max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto">
           <motion.h4
             ref={ref}
@@ -58,9 +58,9 @@ const CategoryListPage: React.FC = () => {
             initial="hidden"
             animate={controls}
             transition={{ duration: 0.5 }}
-            className="text-4xl font-bold text-center mb-8 text-gray-800"
+            className="text-3xl md:text-4xl font-bold text-center mb-8"
           >
-            Explore Campaigns in Categories
+            Explore Campaigns by Category
           </motion.h4>
           <div className="">
             <CategoryList />

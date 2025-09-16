@@ -11,6 +11,7 @@ import { useCategoryContext } from '@/app/context/categories/CategoryContext';
 import Pagination from '@/app/components/categories/PaginateCategory';
 import CategoryBadgeLoader from '@/app/loaders/CategoryBadgeLoader';
 import Progress from '../progressbar/ProgressBar';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const CategoryList: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -63,9 +64,9 @@ const CategoryList: React.FC = () => {
   };
 
   return (
-    <div className="w-full px-2 py-4 bg-gradient-to-br from-gray-50 to-neutral-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="w-full px-2 py-4 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
           {loading ? (
             <CategoryBadgeLoader />
           ) : (
@@ -74,24 +75,25 @@ const CategoryList: React.FC = () => {
                 campaignsGroupedByCategory[category.value]?.campaigns.length ||
                 0;
               return (
-                <Badge
+                <div
                   key={category.value}
-                  className={`cursor-pointer transform hover:scale-105 transition-transform duration-300 w-fit ${
-                    selectedCategory === category.value
-                      ? 'bg-orange-400 text-white'
-                      : 'text-gray-800 dark:bg-slate-950 dark:text-gray-50'
-                  }`}
+                  className="cursor-pointer transform hover:scale-105 transition-transform duration-300"
                   onClick={() => handleCategoryClick(category.value)}
-                  variant="secondary"
                 >
-                  <div className="flex items-center gap-2">
-                    {category.icon}
-                    <span>
-                      {category.label}{' '}
-                      {campaignCount > 0 && `(${campaignCount})`}
-                    </span>
+                  <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors duration-300 h-full">
+                    <div className="text-2xl mb-2 text-gray-600">
+                      {category.icon}
+                    </div>
+                    <div className="text-center">
+                      <h3 className="text-sm font-medium text-gray-800">
+                        {category.label}
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {campaignCount} {campaignCount === 1 ? 'campaign' : 'campaigns'}
+                      </p>
+                    </div>
                   </div>
-                </Badge>
+                </div>
               );
             })
           )}
@@ -104,20 +106,20 @@ const CategoryList: React.FC = () => {
           size="xxlarge"
           closeOnBackdropClick={false}
         >
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-200">
+          <div className="p-6">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6">
               {categories.find((c) => c.value === selectedCategory)?.label}{' '}
               Fundraisers
             </h3>
-            <div className="space-y-6 mt-4">
+            <div className="space-y-4">
               {filteredCampaigns(selectedCategory || '').length > 0 ? (
                 filteredCampaigns(selectedCategory || '').map((campaign) => (
                   <div
                     key={campaign.id}
-                    className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow-sm"
+                    className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-300"
                   >
-                    <div className="flex flex-col md:flex-row gap-4">
-                      <div className="w-full md:w-1/3">
+                    <div className="flex flex-col md:flex-row gap-5">
+                      <div className="w-full md:w-1/4">
                         <img
                           src={campaign.media}
                           alt={campaign.title}
@@ -127,12 +129,12 @@ const CategoryList: React.FC = () => {
                           }}
                         />
                       </div>
-                      <div className="w-full md:w-2/3">
-                        <h4 className="text-lg font-semibold">
+                      <div className="w-full md:w-3/4">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-2">
                           {campaign.title}
                         </h4>
-                        <div className="space-y-2">
-                          <div className="w-full text-base">
+                        <div className="space-y-3">
+                          <div className="w-full">
                             <Progress
                               firstProgress={
                                 (Number(campaign?.transferred_amount) /
@@ -147,16 +149,16 @@ const CategoryList: React.FC = () => {
                             />
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span className="font-medium">
+                            <span className="font-medium text-gray-800">
                               {campaign.currency_symbol ||
                                 campaign?.currency?.toUpperCase()}{' '}
                               {parseFloat(
                                 campaign.transferred_amount,
                               ).toLocaleString()}
+                              <span className="text-xs text-gray-500 block">raised</span>
                             </span>
-                            <span className="text-gray-600 dark:text-gray-400">
-                              of{' '}
-                              {campaign.currency_symbol ||
+                            <span className="text-gray-600">
+                              Goal: {campaign.currency_symbol ||
                                 campaign?.currency?.toUpperCase()}
                               {parseFloat(
                                 campaign.goal_amount,
@@ -164,14 +166,14 @@ const CategoryList: React.FC = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="w-full flex justify-between items-center">
+                        <div className="flex justify-between items-center mt-4">
                           <button
                             onClick={() => handleClick(String(campaign.id))}
-                            className="w-full mt-4 bg-green-500 text-white px-5 py-1.5 rounded-lg hover:bg-green-600 transition-colors"
+                            className="bg-gray-800 text-white px-5 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-300"
                           >
-                            Back Now
+                            Support Now
                           </button>
-                          <div className="w-full text-xs font-semibold text-right text-gray-600">
+                          <div className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                             {campaign.remaining_days} days left
                           </div>
                         </div>
@@ -180,8 +182,8 @@ const CategoryList: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 dark:text-gray-400">
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500">
                     No fundraising campaigns available for this category.
                   </p>
                 </div>
@@ -191,20 +193,29 @@ const CategoryList: React.FC = () => {
             {/* Pagination Component */}
             {selectedCategory &&
               campaignsGroupedByCategory[selectedCategory]?.total_pages > 1 && (
-                <Pagination
-                  currentPage={
-                    campaignsGroupedByCategory[selectedCategory]?.current_page
-                  }
-                  totalPages={
-                    campaignsGroupedByCategory[selectedCategory]?.total_pages
-                  }
-                  onPreviousPage={() =>
-                    handlePageChange(selectedCategory, 'prev')
-                  }
-                  onNextPage={() => handlePageChange(selectedCategory, 'next')}
-                  onLoading={loading}
-                  onError={error}
-                />
+                <div className="flex justify-center items-center mt-8 space-x-4">
+                  <button
+                    onClick={() => handlePageChange(selectedCategory, 'prev')}
+                    disabled={campaignsGroupedByCategory[selectedCategory]?.current_page === 1}
+                    className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+                  >
+                    <FaArrowLeft className="mr-2" />
+                    Previous
+                  </button>
+                  <span className="text-gray-600">
+                    Page {campaignsGroupedByCategory[selectedCategory]?.current_page} of{' '}
+                    {campaignsGroupedByCategory[selectedCategory]?.total_pages}
+                  </span>
+                  <button
+                    onClick={() => handlePageChange(selectedCategory, 'next')}
+                    disabled={campaignsGroupedByCategory[selectedCategory]?.current_page === 
+                             campaignsGroupedByCategory[selectedCategory]?.total_pages}
+                    className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+                  >
+                    Next
+                    <FaArrowRight className="ml-2" />
+                  </button>
+                </div>
               )}
           </div>
         </Modal>
