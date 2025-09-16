@@ -51,17 +51,30 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
             </div>
             <div className="text-xs md:text-sm leading-relaxed space-y-1">
               <p>
-                <strong>Capital at risk:</strong> Investments in unlisted
-                companies are speculative and carry high risks. You may lose
-                100% of your investment and should only invest money you can
-                afford to lose.
+                <strong>Capital at risk:</strong> Investments in startups and
+                unlisted companies are speculative and carry high risks. You may
+                lose 100% of your investment and should only invest money you
+                can afford to lose.
               </p>
-              <p className="hidden sm:block text-xs">
+              <p className="text-xs">
                 <strong>Diversify your portfolio:</strong> To mitigate risk,
                 consider spreading your investments across multiple
                 opportunities rather than concentrating your capital in a single
                 venture.
               </p>
+
+              {/* New SEC Regulation Notice with red background */}
+              <div className="bg-red-600 text-white p-3 rounded-md mt-2">
+                <p className="font-semibold mb-1">
+                  Important Regulatory Notice:
+                </p>
+                <p className="text-xs">
+                  BantuHive is currently undergoing SEC regulation review before
+                  commencing acceptance of investment campaigns. However,
+                  Rewards and Donation crowdfunding remains open to both
+                  fundraisers and supporters at this time.
+                </p>
+              </div>
             </div>
           </div>
 
