@@ -39,10 +39,6 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
       <div className="max-w-7xl mx-auto">
         <div className="flex items-start gap-2">
           <div className="flex-shrink-0 mt-0.5">
-            <AlertTriangle
-              className="h-4 w-4 text-amber-600"
-              aria-hidden="true"
-            />
           </div>
 
           <div className="flex-1 min-w-0">
