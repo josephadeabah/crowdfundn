@@ -29,7 +29,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
   return (
     <div
       className={cn(
-        'bg-gray-300 border-b border-gray-300 text-black z-50',
+        'bg-amber-50 border-b border-amber-200 text-amber-800 z-50',
         'px-2 py-1 md:px-3 md:py-2',
         className,
       )}
@@ -37,42 +37,41 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
       aria-live="polite"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-2">
           <div className="flex-shrink-0 mt-0.5">
             <AlertTriangle
-              className="h-5 w-5 text-amber-600"
+              className="h-4 w-4 text-amber-600"
               aria-hidden="true"
             />
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="text-sm md:text-base font-medium mb-1">
+            <div className="flex items-center gap-1 text-sm md:text-base font-medium mb-1">
+              <AlertTriangle className="h-4 w-4 text-amber-600" />
               Investment Risk Warning
             </div>
-            <div className="text-xs md:text-sm leading-relaxed space-y-1">
+            <div className="text-xs leading-relaxed space-y-1">
               <p>
-                <strong>Capital at risk:</strong> Investments in startups and
-                unlisted companies are speculative and carry high risks. You may
-                lose 100% of your investment and should only invest money you
-                can afford to lose.
+                Investments in startups and unlisted companies are speculative and carry 
+                high risks. You may lose your entire investment and should only invest 
+                money you can afford to lose.
               </p>
-              <p className="text-xs">
-                <strong>Diversify your portfolio:</strong> To mitigate risk,
-                consider spreading your investments across multiple
-                opportunities rather than concentrating your capital in a single
-                venture.
+              <p>
+                <strong>Diversify your portfolio:</strong> To mitigate risk, consider 
+                spreading your investments across multiple opportunities rather than 
+                concentrating your capital in a single venture.
               </p>
 
-              {/* New SEC Regulation Notice with red background */}
-              <div className="bg-gray-200 border-l-4 border-red-500 text-red-700 p-1 rounded-sm">
-                <p className="font-semibold mb-1">
+              {/* New SEC Regulation Notice */}
+              <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-2 rounded-sm mt-2">
+                <p className="font-semibold text-xs mb-1">
                   Important Regulatory Notice:
-                  <span className="ms-1">
+                </p>
+                <p className="text-xs">
                   BantuHive is currently undergoing SEC regulation review before
                   commencing acceptance of investment campaigns. However,
                   Rewards and Donation crowdfunding remains open to both
                   fundraisers and supporters at this time.
-                </span>
                 </p>
               </div>
             </div>
@@ -84,10 +83,10 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={handleDismiss}
-                className="h-8 w-8 text-gray-600 hover:bg-gray-300 hover:text-gray-800"
+                className="h-6 w-6 text-amber-600 hover:bg-amber-100 hover:text-amber-800"
                 aria-label="Dismiss warning"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3" />
               </Button>
             </div>
           )}
