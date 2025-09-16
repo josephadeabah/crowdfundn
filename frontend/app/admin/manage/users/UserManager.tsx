@@ -215,8 +215,9 @@ const UserManagement = () => {
                   >
                     <option value="">Assign Role</option>
                     <option value="Admin">Admin</option>
-                    <option value="User">User</option>
                     <option value="Manager">Manager</option>
+                    <option value="Moderator">Moderator</option>
+                    <option value="User">User</option>
                   </select>
                 </td>
                 <td className="p-2 truncate">
