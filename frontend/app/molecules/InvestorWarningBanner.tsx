@@ -29,7 +29,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
   return (
     <div
       className={cn(
-        'bg-amber-50 border-b border-amber-200 text-amber-800 z-50',
+        'bg-gray-300 border-b border-gray-300 text-black z-50',
         'px-2 py-1 md:px-3 md:py-2',
         className,
       )}
@@ -59,7 +59,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
               </p>
 
               {/* New SEC Regulation Notice */}
-              <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-2 rounded-sm mt-2">
+              <div className="border-l-4 border-red-500 text-red-700 p-1 rounded-sm">
                 <p className="font-semibold text-xs mb-1">
                   Important Regulatory Notice:
                 </p>
