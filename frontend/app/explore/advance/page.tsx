@@ -186,7 +186,7 @@ const CampaignsPage = () => {
       <motion.div
         variants={fadeInUp}
         transition={{ duration: 0.5 }}
-        className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300"
+        className="group relative bg-white dark:bg-gray-900 flex flex-col h-full dark:text-gray-50 cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-sm transition-shadow duration-300"
       >
         <Link href={`/campaign/${campaign?.id}?${generateRandomString()}`}>
           <div className="relative w-full h-48 overflow-hidden">
