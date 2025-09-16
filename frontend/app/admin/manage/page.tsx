@@ -196,7 +196,7 @@ const AdminDashboard = () => {
           icon: <ClipboardDocumentCheckIcon className="h-5 w-5" />,
           component: <KYCReview />,
           badgeCount: 5,
-          requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
+          requiredRole: [ROLES.MANAGER, ROLES.ADMIN],
         },
         {
           id: 'contentManager',
