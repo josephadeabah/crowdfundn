@@ -223,7 +223,7 @@ const CampaignsPage = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="w-full px-4 py-3 focus:outline-none text-gray-800 bg-white"
                 placeholder="Search for a campaign..."
               />
