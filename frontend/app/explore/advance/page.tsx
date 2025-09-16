@@ -393,7 +393,7 @@ const CampaignsPage = () => {
                 />
                 <Button
                   onClick={handleSearch}
-                  className="absolute right-1 bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-primary-dark transition-colors duration-300"
+                  className="absolute right-1 bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-600-dark transition-colors duration-300"
                 >
                   Search
                 </Button>
@@ -530,7 +530,7 @@ const CampaignsPage = () => {
             <div className="hidden lg:block space-y-4">
               <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
+                  <div className="p-2 bg-green-600/10 rounded-lg">
                     <TrendingUp className="h-5 w-5 text-primary" />
                   </div>
                   <div>
