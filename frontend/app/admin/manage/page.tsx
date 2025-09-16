@@ -189,13 +189,14 @@ const AdminDashboard = () => {
       id: 'dashboard',
       title: 'Dashboard',
       icon: <PresentationChartBarIcon className="h-5 w-5" />,
+      requiredAdmin: true, // Only top-level admins can access dashboard section
       items: [
         {
           id: 'general-dashboard',
           label: 'Overview',
           icon: <ChartBarIcon className="h-5 w-5" />,
           component: <GeneralDashboard />,
-          requiredRole: [ROLES.ADMIN],
+          requiredAdmin: true, // Only top-level admins can access general dashboard
         },
         {
           id: 'analytics',
@@ -203,7 +204,7 @@ const AdminDashboard = () => {
           icon: <PresentationChartBarIcon className="h-5 w-5" />,
           component: <AnalyticsComponent />,
           badgeCount: 3,
-          requiredRole: [ROLES.MANAGER, ROLES.ADMIN],
+          requiredAdmin: true, // Only top-level admins can access analytics
         },
       ],
     },
@@ -329,7 +330,7 @@ const AdminDashboard = () => {
   // Find the active tab component
   const activeComponent = filteredTabGroups
     .flatMap((group) => group.items)
-    .find((item) => item.id === activeTab)?.component || <GeneralDashboard />;
+    .find((item) => item.id === activeTab)?.component;
 
   // If user has no access to any tabs, show access denied
   if (filteredTabGroups.length === 0) {
@@ -350,6 +351,14 @@ const AdminDashboard = () => {
       </div>
     );
   }
+
+  // If active tab is not accessible, redirect to first accessible tab
+  useEffect(() => {
+    const accessibleTabs = filteredTabGroups.flatMap(group => group.items);
+    if (!accessibleTabs.find(tab => tab.id === activeTab) && accessibleTabs.length > 0) {
+      setActiveTab(accessibleTabs[0].id);
+    }
+  }, [filteredTabGroups, activeTab]);
 
   return (
     <div className="flex h-screen bg-white text-gray-800">
@@ -451,7 +460,21 @@ const AdminDashboard = () => {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        <main className="mx-auto px-4 py-8 max-w-7xl">{activeComponent}</main>
+        <main className="mx-auto px-4 py-8 max-w-7xl">
+          {activeComponent || (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <ExclamationTriangleIcon className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  No Access
+                </h2>
+                <p className="text-gray-600">
+                  You don't have permission to access this section.
+                </p>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );
