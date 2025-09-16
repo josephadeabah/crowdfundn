@@ -28,6 +28,7 @@ import {
   LifebuoyIcon,
   ShieldCheckIcon,
   AdjustmentsHorizontalIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/solid';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import TransfersManager from './transfers/TransfersManager';
@@ -41,6 +42,8 @@ import ContentManagerAdminPage from './content/ContentManager';
 import { CampaignReview } from './equitycampaigns/CampaignReview';
 import KYCReview from './kyc/KYCReview';
 import AllKYCs from './kyc/AllKYCs';
+import { useUserContext } from '@/app/context/users/UserContext';
+import { UserProfile } from '@/app/types/user_profiles.types';
 
 // Type definitions for better type safety
 type TabGroup = {
@@ -49,6 +52,8 @@ type TabGroup = {
   icon: React.ReactNode;
   items: TabItem[];
   badgeCount?: number;
+  requiredRole?: string[];
+  requiredAdmin?: boolean;
 };
 
 type TabItem = {
@@ -57,6 +62,72 @@ type TabItem = {
   icon: React.ReactNode;
   component: React.ReactNode;
   badgeCount?: number;
+  requiredRole?: string[];
+  requiredAdmin?: boolean;
+};
+
+// Role definitions matching your system
+const ROLES = {
+  ADMIN: 'Admin',
+  MANAGER: 'Manager',
+  MODERATOR: 'Moderator',
+} as const;
+
+// Role hierarchy - higher roles inherit permissions of lower roles
+const ROLE_HIERARCHY = {
+  [ROLES.ADMIN]: 100,
+  [ROLES.MANAGER]: 80,
+  [ROLES.MODERATOR]: 60,
+};
+
+// Helper function to check if user has required role
+const hasRequiredRole = (
+  user: UserProfile | null,
+  requiredRoles?: string[],
+  requiredAdmin?: boolean,
+): boolean => {
+  if (!user) return false;
+
+  // Check admin access first (top-level permission)
+  if (requiredAdmin && !user.admin) return false;
+
+  // If no specific roles required and admin check passed, allow access
+  if (!requiredRoles || requiredRoles.length === 0) {
+    return true;
+  }
+
+  // Check if user has any of the required roles
+  const userRoles = user.roles?.map((role) => role.name) || [];
+
+  // Get user's highest role level
+  let userRoleLevel = 0;
+  if (user.admin) {
+    userRoleLevel = ROLE_HIERARCHY[ROLES.ADMIN]; // Admin gets highest access
+  } else {
+    userRoleLevel = Math.max(
+      ...userRoles.map((role) => {
+        // Handle role names that might not exactly match our constants
+        if (role === ROLES.ADMIN) return ROLE_HIERARCHY[ROLES.ADMIN];
+        if (role === ROLES.MANAGER) return ROLE_HIERARCHY[ROLES.MANAGER];
+        if (role === ROLES.MODERATOR) return ROLE_HIERARCHY[ROLES.MODERATOR];
+        return 0;
+      }),
+    );
+  }
+
+  return requiredRoles.some((requiredRole) => {
+    let requiredRoleLevel = 0;
+
+    // Map required role to hierarchy level
+    if (requiredRole === ROLES.ADMIN)
+      requiredRoleLevel = ROLE_HIERARCHY[ROLES.ADMIN];
+    else if (requiredRole === ROLES.MANAGER)
+      requiredRoleLevel = ROLE_HIERARCHY[ROLES.MANAGER];
+    else if (requiredRole === ROLES.MODERATOR)
+      requiredRoleLevel = ROLE_HIERARCHY[ROLES.MODERATOR];
+
+    return userRoleLevel >= requiredRoleLevel;
+  });
 };
 
 const AdminDashboard = () => {
@@ -70,6 +141,8 @@ const AdminDashboard = () => {
       administration: false,
     },
   );
+
+  const { userAccountData } = useUserContext();
 
   // Initialize with default open accordions
   useEffect(() => {
@@ -110,7 +183,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // Tab groups configuration - easily extensible
+  // Tab groups configuration with role-based access
   const tabGroups: TabGroup[] = [
     {
       id: 'dashboard',
@@ -122,13 +195,15 @@ const AdminDashboard = () => {
           label: 'Overview',
           icon: <ChartBarIcon className="h-5 w-5" />,
           component: <GeneralDashboard />,
+          // Accessible to all admin roles
         },
         {
           id: 'analytics',
           label: 'Analytics',
           icon: <PresentationChartBarIcon className="h-5 w-5" />,
           component: <AnalyticsComponent />,
-          badgeCount: 3, // Example badge
+          badgeCount: 3,
+          requiredRole: [ROLES.MANAGER, ROLES.ADMIN],
         },
       ],
     },
@@ -136,38 +211,44 @@ const AdminDashboard = () => {
       id: 'content',
       title: 'Content Management',
       icon: <DocumentTextIcon className="h-5 w-5" />,
+      requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
       items: [
         {
           id: 'campaignsManager',
           label: 'All Campaigns',
           icon: <InboxIcon className="h-5 w-5" />,
           component: <CampaignManager />,
+          requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
         },
         {
           id: 'campaignReview',
           label: 'Campaign Review',
           icon: <ClipboardDocumentCheckIcon className="h-5 w-5" />,
           component: <CampaignReview />,
-          badgeCount: 5, // Pending reviews
+          badgeCount: 5,
+          requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
         },
         {
           id: 'kycReview',
           label: 'KYC Review',
           icon: <ClipboardDocumentCheckIcon className="h-5 w-5" />,
           component: <KYCReview />,
-          badgeCount: 5, // Pending reviews
+          badgeCount: 5,
+          requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
         },
         {
           id: 'contentManager',
           label: 'Content Manager',
           icon: <Cog6ToothIcon className="h-5 w-5" />,
           component: <ContentManagerAdminPage />,
+          requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
         },
         {
           id: 'promotions',
           label: 'Promotions',
           icon: <MegaphoneIcon className="h-5 w-5" />,
           component: <PromotionScheduler />,
+          requiredRole: [ROLES.MANAGER, ROLES.ADMIN],
         },
       ],
     },
@@ -175,18 +256,21 @@ const AdminDashboard = () => {
       id: 'financial',
       title: 'Financial',
       icon: <CurrencyDollarIcon className="h-5 w-5" />,
+      requiredRole: [ROLES.MANAGER, ROLES.ADMIN],
       items: [
         {
           id: 'moneyTransfers',
           label: 'Transactions',
           icon: <ShoppingBagIcon className="h-5 w-5" />,
           component: <TransfersManager />,
+          requiredRole: [ROLES.MANAGER, ROLES.ADMIN],
         },
         {
           id: 'payouts',
           label: 'Payouts',
           icon: <ShieldCheckIcon className="h-5 w-5" />,
-          component: <div>Payouts Management</div>, // Replace with actual component
+          component: <div>Payouts Management</div>,
+          requiredRole: [ROLES.MANAGER, ROLES.ADMIN],
         },
       ],
     },
@@ -194,40 +278,78 @@ const AdminDashboard = () => {
       id: 'administration',
       title: 'Administration',
       icon: <AdjustmentsHorizontalIcon className="h-5 w-5" />,
+      requiredAdmin: true, // Only admins can access administration section
       items: [
         {
           id: 'userManagement',
           label: 'User Manager',
           icon: <UsersIcon className="h-5 w-5" />,
           component: <UserManagement />,
+          requiredAdmin: true, // Only full admins can manage users
         },
         {
           id: 'allKycs',
           label: 'All KYC Records',
           icon: <ShieldCheckIcon className="h-5 w-5" />,
           component: <AllKYCs />,
+          requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
         },
         {
           id: 'support',
           label: 'Support',
           icon: <LifebuoyIcon className="h-5 w-5" />,
-          component: <div>Support Center</div>, // Replace with actual component
-          badgeCount: 12, // Open tickets
+          component: <div>Support Center</div>,
+          badgeCount: 12,
+          requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
         },
         {
           id: 'settings',
           label: 'Settings',
           icon: <Cog6ToothIcon className="h-5 w-5" />,
           component: <AdminSettings />,
+          requiredAdmin: true, // Only full admins can access settings
         },
       ],
     },
   ];
 
+  // Filter tab groups and items based on user permissions
+  const filteredTabGroups = tabGroups
+    .filter((group) =>
+      hasRequiredRole(userAccountData, group.requiredRole, group.requiredAdmin),
+    )
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) =>
+        hasRequiredRole(userAccountData, item.requiredRole, item.requiredAdmin),
+      ),
+    }))
+    .filter((group) => group.items.length > 0); // Remove empty groups
+
   // Find the active tab component
-  const activeComponent = tabGroups
+  const activeComponent = filteredTabGroups
     .flatMap((group) => group.items)
     .find((item) => item.id === activeTab)?.component || <GeneralDashboard />;
+
+  // If user has no access to any tabs, show access denied
+  if (filteredTabGroups.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center">
+          <ExclamationTriangleIcon className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Access Denied
+          </h2>
+          <p className="text-gray-600">
+            You don't have permission to access the admin dashboard.
+          </p>
+          <p className="text-gray-500 text-sm mt-2">
+            Contact your administrator for access.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-white text-gray-800">
@@ -259,7 +381,7 @@ const AdminDashboard = () => {
           </div>
 
           <List className="p-0">
-            {tabGroups.map((group) => (
+            {filteredTabGroups.map((group) => (
               <Accordion
                 key={group.id}
                 open={openAccordions[group.id]}

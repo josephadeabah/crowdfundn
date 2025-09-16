@@ -54,7 +54,9 @@ export const NavbarUserMenu: React.FC<NavbarUserMenuProps> = ({
           </div>
         </div>
         {(userAccountData?.admin ||
-          userAccountData?.roles?.some((r) => r.name === 'Admin')) && (
+          userAccountData?.roles?.some((r) => r.name === 'Admin') ||
+          userAccountData?.roles?.some((r) => r.name === 'Manager') ||
+          userAccountData?.roles?.some((r) => r.name === 'Moderator')) && (
           <Link
             href="/admin/manage"
             passHref
