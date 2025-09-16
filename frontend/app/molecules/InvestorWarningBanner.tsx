@@ -29,7 +29,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
   return (
     <div
       className={cn(
-        'bg-gray-300 border-b border-gray-300 text-black z-50',
+        'bg-gray-200 border-b border-gray-300 text-black z-50',
         'px-2 py-1 md:px-3 md:py-2',
         className,
       )}
@@ -38,8 +38,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex items-start gap-2">
-          <div className="flex-shrink-0 mt-0.5">
-          </div>
+          <div className="flex-shrink-0 mt-0.5"></div>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1 text-sm md:text-base font-medium mb-1">
@@ -48,14 +47,15 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
             </div>
             <div className="text-xs leading-relaxed space-y-1">
               <p>
-                Investments in startups and unlisted companies are speculative and carry 
-                high risks. You may lose your entire investment and should only invest 
-                money you can afford to lose.
+                Investments in startups and unlisted companies are speculative
+                and carry high risks. You may lose your entire investment and
+                should only invest money you can afford to lose.
               </p>
               <p>
-                <strong>Diversify your portfolio:</strong> To mitigate risk, consider 
-                spreading your investments across multiple opportunities rather than 
-                concentrating your capital in a single venture.
+                <strong>Diversify your portfolio:</strong> To mitigate risk,
+                consider spreading your investments across multiple
+                opportunities rather than concentrating your capital in a single
+                venture.
               </p>
 
               {/* New SEC Regulation Notice */}
