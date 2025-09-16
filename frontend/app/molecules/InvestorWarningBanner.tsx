@@ -64,7 +64,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
               </p>
 
               {/* New SEC Regulation Notice with red background */}
-              <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-1 rounded-sm">
+              <div className="bg-gray-100 border-l-4 border-red-500 text-red-700 p-1 rounded-sm">
                 <p className="font-semibold mb-1">
                   Important Regulatory Notice:
                   <span className="ms-1">
