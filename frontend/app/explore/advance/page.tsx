@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
 import { useUserContext } from '@/app/context/users/UserContext';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
@@ -18,6 +17,7 @@ import ToastComponent from '@/app/components/toast/Toast';
 import Avatar from '@/app/components/avatar/Avatar';
 import { Card, Collapse } from '@material-tailwind/react'; // Import Collapse and Button
 import { Button } from '@/app/components/button/Button';
+import CampaignCardSkeleton from '@/app/loaders/CampaignCardSkeleton';
 
 const CampaignsPage = () => {
   const {
@@ -380,7 +380,7 @@ const CampaignsPage = () => {
         {/* Campaigns Section */}
         <div className="w-full bg-gray-100 md:p-4">
           {loading ? (
-            <CampaignCardLoader />
+            <CampaignCardSkeleton />
           ) : (
             <div>
               {campaigns && campaigns.length > 0 ? (
