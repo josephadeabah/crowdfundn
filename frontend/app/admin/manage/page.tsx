@@ -279,12 +279,20 @@ const AdminDashboard = () => {
   const filteredTabGroups = React.useMemo(() => {
     return tabGroups
       .filter((group) =>
-        hasRequiredRole(userAccountData, group.requiredRole, group.requiredAdmin),
+        hasRequiredRole(
+          userAccountData,
+          group.requiredRole,
+          group.requiredAdmin,
+        ),
       )
       .map((group) => ({
         ...group,
         items: group.items.filter((item) =>
-          hasRequiredRole(userAccountData, item.requiredRole, item.requiredAdmin),
+          hasRequiredRole(
+            userAccountData,
+            item.requiredRole,
+            item.requiredAdmin,
+          ),
         ),
       }))
       .filter((group) => group.items.length > 0); // Remove empty groups
@@ -298,7 +306,7 @@ const AdminDashboard = () => {
   // Initialize with default active tab
   useEffect(() => {
     const storedTab = localStorage.getItem('activeTab');
-    if (storedTab && accessibleTabs.some(tab => tab.id === storedTab)) {
+    if (storedTab && accessibleTabs.some((tab) => tab.id === storedTab)) {
       setActiveTab(storedTab);
     } else if (accessibleTabs.length > 0) {
       // Set to first accessible tab if stored tab is not accessible
@@ -326,7 +334,7 @@ const AdminDashboard = () => {
   };
 
   const selectTab = (tabId: string) => {
-    if (accessibleTabs.some(tab => tab.id === tabId)) {
+    if (accessibleTabs.some((tab) => tab.id === tabId)) {
       setActiveTab(tabId);
       if (window.innerWidth < 1024) {
         setSidebarOpen(false);
@@ -335,7 +343,9 @@ const AdminDashboard = () => {
   };
 
   // Find the active tab component
-  const activeComponent = accessibleTabs.find((item) => item.id === activeTab)?.component;
+  const activeComponent = accessibleTabs.find(
+    (item) => item.id === activeTab,
+  )?.component;
 
   // If user has no access to any tabs, show access denied
   if (filteredTabGroups.length === 0) {
