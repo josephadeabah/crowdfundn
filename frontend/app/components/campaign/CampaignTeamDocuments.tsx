@@ -1,4 +1,3 @@
-// app/components/campaign/CampaignTeamDocuments.tsx
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -58,6 +57,7 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     type: 'team' | 'pitch' | 'contract' | 'financial' | 'business_plan';
     id: string;
   } | null>(null);
+  const [deletingItems, setDeletingItems] = useState<Set<string>>(new Set());
 
   // Get the current campaign to calculate available equity
   const currentCampaign = userCampaigns?.find(
@@ -81,6 +81,24 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
   // Helper function to safely format numbers
   const formatPercentage = (value: number): string => {
     return (typeof value === 'number' ? value : 0).toFixed(1);
+  };
+
+  // Helper function to get delete error message
+  const getDeleteErrorMessage = (type: string): string => {
+    switch (type) {
+      case 'team':
+        return 'Failed to remove team member';
+      case 'pitch':
+        return 'Failed to delete pitch document';
+      case 'contract':
+        return 'Failed to delete contract document';
+      case 'financial':
+        return 'Failed to delete financial statement';
+      case 'business_plan':
+        return 'Failed to delete business plan';
+      default:
+        return 'Failed to delete item';
+    }
   };
 
   useEffect(() => {
@@ -310,34 +328,42 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
       message:
         'Are you sure you want to delete this item? This action cannot be undone.',
       onConfirm: async () => {
+        setDeletingItems((prev) => new Set(prev).add(`${type}-${id}`));
         try {
           if (type === 'team') {
             await removeTeamMember(campaignId, Number(id));
             await fetchTeamMembers(campaignId);
-            // Show success message
-            setAlertConfig({
-              title: 'Success',
-              message: 'Team member removed successfully',
-              onConfirm: () => setIsAlertOpen(false),
-              onCancel: () => setIsAlertOpen(false),
-            });
           } else {
             await deleteDocument(campaignId, Number(id));
             await fetchDocuments(campaignId);
           }
+
+          // Show success message
+          setAlertConfig({
+            title: 'Success',
+            message: 'Item deleted successfully',
+            onConfirm: () => setIsAlertOpen(false),
+            onCancel: () => setIsAlertOpen(false),
+          });
         } catch (error) {
+          // Show error message
           setAlertConfig({
             title: 'Deletion Failed',
             message:
               error instanceof Error
                 ? error.message
-                : 'There was an error deleting the item.',
+                : getDeleteErrorMessage(type),
             onConfirm: () => setIsAlertOpen(false),
             onCancel: () => setIsAlertOpen(false),
           });
         } finally {
           setIsAlertOpen(true);
           setItemToDelete(null);
+          setDeletingItems((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(`${type}-${id}`);
+            return newSet;
+          });
         }
       },
       onCancel: () => {
@@ -363,6 +389,10 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
     setContractFiles([]);
     setFinancialFiles([]);
     setBusinessPlanFiles([]);
+  };
+
+  const isDeleting = (type: string, id: string): boolean => {
+    return deletingItems.has(`${type}-${id}`);
   };
 
   return (
@@ -436,12 +466,16 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                     <span className="text-sm mr-2">
                       {member.equity_percentage}%
                     </span>
-                    <FiTrash2
-                      className="cursor-pointer text-red-600"
-                      onClick={() =>
-                        openDeleteConfirmation('team', String(member.id))
-                      }
-                    />
+                    {isDeleting('team', String(member.id)) ? (
+                      <FiLoader className="animate-spin text-gray-500" />
+                    ) : (
+                      <FiTrash2
+                        className="cursor-pointer text-red-600 hover:text-red-800"
+                        onClick={() =>
+                          openDeleteConfirmation('team', String(member.id))
+                        }
+                      />
+                    )}
                   </div>
                 </div>
               ))
@@ -494,12 +528,16 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                         ))}
                       </p>
                     </div>
-                    <FiTrash2
-                      className="cursor-pointer text-red-600"
-                      onClick={() =>
-                        openDeleteConfirmation('pitch', String(doc.id))
-                      }
-                    />
+                    {isDeleting('pitch', String(doc.id)) ? (
+                      <FiLoader className="animate-spin text-gray-500" />
+                    ) : (
+                      <FiTrash2
+                        className="cursor-pointer text-red-600 hover:text-red-800"
+                        onClick={() =>
+                          openDeleteConfirmation('pitch', String(doc.id))
+                        }
+                      />
+                    )}
                   </div>
                 ))
             ) : (
@@ -551,12 +589,16 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                         ))}
                       </p>
                     </div>
-                    <FiTrash2
-                      className="cursor-pointer text-red-600"
-                      onClick={() =>
-                        openDeleteConfirmation('contract', String(doc.id))
-                      }
-                    />
+                    {isDeleting('contract', String(doc.id)) ? (
+                      <FiLoader className="animate-spin text-gray-500" />
+                    ) : (
+                      <FiTrash2
+                        className="cursor-pointer text-red-600 hover:text-red-800"
+                        onClick={() =>
+                          openDeleteConfirmation('contract', String(doc.id))
+                        }
+                      />
+                    )}
                   </div>
                 ))
             ) : (
@@ -608,12 +650,16 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                         ))}
                       </p>
                     </div>
-                    <FiTrash2
-                      className="cursor-pointer text-red-600"
-                      onClick={() =>
-                        openDeleteConfirmation('financial', String(doc.id))
-                      }
-                    />
+                    {isDeleting('financial', String(doc.id)) ? (
+                      <FiLoader className="animate-spin text-gray-500" />
+                    ) : (
+                      <FiTrash2
+                        className="cursor-pointer text-red-600 hover:text-red-800"
+                        onClick={() =>
+                          openDeleteConfirmation('financial', String(doc.id))
+                        }
+                      />
+                    )}
                   </div>
                 ))
             ) : (
@@ -665,12 +711,19 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                         ))}
                       </p>
                     </div>
-                    <FiTrash2
-                      className="cursor-pointer text-red-600"
-                      onClick={() =>
-                        openDeleteConfirmation('business_plan', String(doc.id))
-                      }
-                    />
+                    {isDeleting('business_plan', String(doc.id)) ? (
+                      <FiLoader className="animate-spin text-gray-500" />
+                    ) : (
+                      <FiTrash2
+                        className="cursor-pointer text-red-600 hover:text-red-800"
+                        onClick={() =>
+                          openDeleteConfirmation(
+                            'business_plan',
+                            String(doc.id),
+                          )
+                        }
+                      />
+                    )}
                   </div>
                 ))
             ) : (
