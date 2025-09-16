@@ -144,45 +144,6 @@ const AdminDashboard = () => {
 
   const { userAccountData } = useUserContext();
 
-  // Initialize with default open accordions
-  useEffect(() => {
-    const storedTab = localStorage.getItem('activeTab');
-    if (storedTab) {
-      setActiveTab(storedTab);
-    }
-
-    const storedAccordions = localStorage.getItem('openAccordions');
-    if (storedAccordions) {
-      setOpenAccordions(JSON.parse(storedAccordions));
-    }
-  }, []);
-
-  // Persist state to localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('activeTab', activeTab);
-      localStorage.setItem('openAccordions', JSON.stringify(openAccordions));
-    }
-  }, [activeTab, openAccordions]);
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const toggleAccordion = (group: string) => {
-    setOpenAccordions((prev) => ({
-      ...prev,
-      [group]: !prev[group],
-    }));
-  };
-
-  const selectTab = (tabId: string) => {
-    setActiveTab(tabId);
-    if (window.innerWidth < 1024) {
-      setSidebarOpen(false);
-    }
-  };
-
   // Tab groups configuration with role-based access
   const tabGroups: TabGroup[] = [
     {
@@ -315,22 +276,66 @@ const AdminDashboard = () => {
   ];
 
   // Filter tab groups and items based on user permissions
-  const filteredTabGroups = tabGroups
-    .filter((group) =>
-      hasRequiredRole(userAccountData, group.requiredRole, group.requiredAdmin),
-    )
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) =>
-        hasRequiredRole(userAccountData, item.requiredRole, item.requiredAdmin),
-      ),
-    }))
-    .filter((group) => group.items.length > 0); // Remove empty groups
+  const filteredTabGroups = React.useMemo(() => {
+    return tabGroups
+      .filter((group) =>
+        hasRequiredRole(userAccountData, group.requiredRole, group.requiredAdmin),
+      )
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) =>
+          hasRequiredRole(userAccountData, item.requiredRole, item.requiredAdmin),
+        ),
+      }))
+      .filter((group) => group.items.length > 0); // Remove empty groups
+  }, [userAccountData]);
+
+  // Get all accessible tabs
+  const accessibleTabs = React.useMemo(() => {
+    return filteredTabGroups.flatMap((group) => group.items);
+  }, [filteredTabGroups]);
+
+  // Initialize with default active tab
+  useEffect(() => {
+    const storedTab = localStorage.getItem('activeTab');
+    if (storedTab && accessibleTabs.some(tab => tab.id === storedTab)) {
+      setActiveTab(storedTab);
+    } else if (accessibleTabs.length > 0) {
+      // Set to first accessible tab if stored tab is not accessible
+      setActiveTab(accessibleTabs[0].id);
+    }
+  }, [accessibleTabs]);
+
+  // Persist state to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('activeTab', activeTab);
+      localStorage.setItem('openAccordions', JSON.stringify(openAccordions));
+    }
+  }, [activeTab, openAccordions]);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const toggleAccordion = (group: string) => {
+    setOpenAccordions((prev) => ({
+      ...prev,
+      [group]: !prev[group],
+    }));
+  };
+
+  const selectTab = (tabId: string) => {
+    if (accessibleTabs.some(tab => tab.id === tabId)) {
+      setActiveTab(tabId);
+      if (window.innerWidth < 1024) {
+        setSidebarOpen(false);
+      }
+    }
+  };
 
   // Find the active tab component
-  const activeComponent = filteredTabGroups
-    .flatMap((group) => group.items)
-    .find((item) => item.id === activeTab)?.component;
+  const activeComponent = accessibleTabs.find((item) => item.id === activeTab)?.component;
 
   // If user has no access to any tabs, show access denied
   if (filteredTabGroups.length === 0) {
@@ -351,17 +356,6 @@ const AdminDashboard = () => {
       </div>
     );
   }
-
-  // If active tab is not accessible, redirect to first accessible tab
-  useEffect(() => {
-    const accessibleTabs = filteredTabGroups.flatMap((group) => group.items);
-    if (
-      !accessibleTabs.find((tab) => tab.id === activeTab) &&
-      accessibleTabs.length > 0
-    ) {
-      setActiveTab(accessibleTabs[0].id);
-    }
-  }, [filteredTabGroups, activeTab]);
 
   return (
     <div className="flex h-screen bg-white text-gray-800">
