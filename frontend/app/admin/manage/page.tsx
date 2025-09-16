@@ -354,8 +354,11 @@ const AdminDashboard = () => {
 
   // If active tab is not accessible, redirect to first accessible tab
   useEffect(() => {
-    const accessibleTabs = filteredTabGroups.flatMap(group => group.items);
-    if (!accessibleTabs.find(tab => tab.id === activeTab) && accessibleTabs.length > 0) {
+    const accessibleTabs = filteredTabGroups.flatMap((group) => group.items);
+    if (
+      !accessibleTabs.find((tab) => tab.id === activeTab) &&
+      accessibleTabs.length > 0
+    ) {
       setActiveTab(accessibleTabs[0].id);
     }
   }, [filteredTabGroups, activeTab]);
