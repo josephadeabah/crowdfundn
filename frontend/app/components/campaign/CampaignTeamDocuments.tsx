@@ -456,21 +456,21 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                   key={member.id}
                   className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
                 >
-                  <div>
-                    <p className="font-medium">{member.name}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{member.name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                       {member.role}
                     </p>
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-sm mr-2">
+                  <div className="flex items-center ml-2 flex-shrink-0">
+                    <span className="text-sm mr-2 whitespace-nowrap">
                       {member.equity_percentage}%
                     </span>
                     {isDeleting('team', String(member.id)) ? (
-                      <FiLoader className="animate-spin text-gray-500" />
+                      <FiLoader className="animate-spin text-gray-500 flex-shrink-0" />
                     ) : (
                       <FiTrash2
-                        className="cursor-pointer text-red-600 hover:text-red-800"
+                        className="cursor-pointer text-red-600 hover:text-red-800 flex-shrink-0"
                         onClick={() =>
                           openDeleteConfirmation('team', String(member.id))
                         }
@@ -510,34 +510,36 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                     key={doc.id}
                     className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
                   >
-                    <div>
-                      <p className="font-medium">{doc.display_name}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{doc.display_name}</p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         {doc.files.length} file
                         {doc.files.length !== 1 ? 's' : ''}
                       </p>
-                      <p>
+                      <div className="space-y-1 mt-1">
                         {doc.files.map((file) => (
                           <div
                             key={file.uploaded_at}
-                            className="text-sm text-gray-400 flex gap-2"
+                            className="text-sm text-gray-400 flex flex-wrap gap-2 items-center"
                           >
-                            <span>{file.human_size}</span>
-                            <span>{file.filename}</span>
+                            <span className="whitespace-nowrap">{file.human_size}</span>
+                            <span className="truncate flex-1 min-w-0">{file.filename}</span>
                           </div>
                         ))}
-                      </p>
+                      </div>
                     </div>
-                    {isDeleting('pitch', String(doc.id)) ? (
-                      <FiLoader className="animate-spin text-gray-500" />
-                    ) : (
-                      <FiTrash2
-                        className="cursor-pointer text-red-600 hover:text-red-800"
-                        onClick={() =>
-                          openDeleteConfirmation('pitch', String(doc.id))
-                        }
-                      />
-                    )}
+                    <div className="ml-2 flex-shrink-0">
+                      {isDeleting('pitch', String(doc.id)) ? (
+                        <FiLoader className="animate-spin text-gray-500" />
+                      ) : (
+                        <FiTrash2
+                          className="cursor-pointer text-red-600 hover:text-red-800"
+                          onClick={() =>
+                            openDeleteConfirmation('pitch', String(doc.id))
+                          }
+                        />
+                      )}
+                    </div>
                   </div>
                 ))
             ) : (
@@ -571,34 +573,36 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                     key={doc.id}
                     className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
                   >
-                    <div>
-                      <p className="font-medium">{doc.display_name}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{doc.display_name}</p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         {doc.files.length} file
                         {doc.files.length !== 1 ? 's' : ''}
                       </p>
-                      <p>
+                      <div className="space-y-1 mt-1">
                         {doc.files.map((file) => (
                           <div
                             key={file.uploaded_at}
-                            className="text-sm text-gray-400 flex gap-2"
+                            className="text-sm text-gray-400 flex flex-wrap gap-2 items-center"
                           >
-                            <span>{file.human_size}</span>
-                            <span>{file.filename}</span>
+                            <span className="whitespace-nowrap">{file.human_size}</span>
+                            <span className="truncate flex-1 min-w-0">{file.filename}</span>
                           </div>
                         ))}
-                      </p>
+                      </div>
                     </div>
-                    {isDeleting('contract', String(doc.id)) ? (
-                      <FiLoader className="animate-spin text-gray-500" />
-                    ) : (
-                      <FiTrash2
-                        className="cursor-pointer text-red-600 hover:text-red-800"
-                        onClick={() =>
-                          openDeleteConfirmation('contract', String(doc.id))
-                        }
-                      />
-                    )}
+                    <div className="ml-2 flex-shrink-0">
+                      {isDeleting('contract', String(doc.id)) ? (
+                        <FiLoader className="animate-spin text-gray-500" />
+                      ) : (
+                        <FiTrash2
+                          className="cursor-pointer text-red-600 hover:text-red-800"
+                          onClick={() =>
+                            openDeleteConfirmation('contract', String(doc.id))
+                          }
+                        />
+                      )}
+                    </div>
                   </div>
                 ))
             ) : (
@@ -632,103 +636,41 @@ const CampaignTeamDocuments: React.FC<TeamDocumentsProps> = ({
                     key={doc.id}
                     className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
                   >
-                    <div>
-                      <p className="font-medium">{doc.display_name}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{doc.display_name}</p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         {doc.files.length} file
                         {doc.files.length !== 1 ? 's' : ''}
                       </p>
-                      <p>
+                      <div className="space-y-1 mt-1">
                         {doc.files.map((file) => (
                           <div
                             key={file.uploaded_at}
-                            className="text-sm text-gray-400 flex gap-2"
+                            className="text-sm text-gray-400 flex flex-wrap gap-2 items-center"
                           >
-                            <span>{file.human_size}</span>
-                            <span>{file.filename}</span>
+                            <span className="whitespace-nowrap">{file.human_size}</span>
+                            <span className="truncate flex-1 min-w-0">{file.filename}</span>
                           </div>
                         ))}
-                      </p>
+                      </div>
                     </div>
-                    {isDeleting('financial', String(doc.id)) ? (
-                      <FiLoader className="animate-spin text-gray-500" />
-                    ) : (
-                      <FiTrash2
-                        className="cursor-pointer text-red-600 hover:text-red-800"
-                        onClick={() =>
-                          openDeleteConfirmation('financial', String(doc.id))
-                        }
-                      />
-                    )}
+                    <div className="ml-2 flex-shrink-0">
+                      {isDeleting('financial', String(doc.id)) ? (
+                        <FiLoader className="animate-spin text-gray-500" />
+                      ) : (
+                        <FiTrash2
+                          className="cursor-pointer text-red-600 hover:text-red-800"
+                          onClick={() =>
+                            openDeleteConfirmation('financial', String(doc.id))
+                          }
+                        />
+                      )}
+                    </div>
                   </div>
                 ))
             ) : (
               <p className="text-gray-500 dark:text-gray-400 text-sm">
                 No financial statements uploaded yet
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Business Plan Card */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium flex items-center">
-              <FiBriefcase className="mr-2" /> Business Plan
-            </h3>
-            <button
-              onClick={() => setActiveModal('business_plan')}
-              className="flex items-center px-3 py-1 bg-fundify-primary text-white rounded-md hover:bg-fundify-primary"
-            >
-              <FiPlus className="mr-1" /> Upload
-            </button>
-          </div>
-
-          <div className="space-y-2">
-            {documents?.length ? (
-              documents
-                .filter((doc) => doc.document_type === 'business_plan')
-                .map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
-                  >
-                    <div>
-                      <p className="font-medium">{doc.display_name}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {doc.files.length} file
-                        {doc.files.length !== 1 ? 's' : ''}
-                      </p>
-                      <p>
-                        {doc.files.map((file) => (
-                          <div
-                            key={file.uploaded_at}
-                            className="text-sm text-gray-400 flex gap-2"
-                          >
-                            <span>{file.human_size}</span>
-                            <span>{file.filename}</span>
-                          </div>
-                        ))}
-                      </p>
-                    </div>
-                    {isDeleting('business_plan', String(doc.id)) ? (
-                      <FiLoader className="animate-spin text-gray-500" />
-                    ) : (
-                      <FiTrash2
-                        className="cursor-pointer text-red-600 hover:text-red-800"
-                        onClick={() =>
-                          openDeleteConfirmation(
-                            'business_plan',
-                            String(doc.id),
-                          )
-                        }
-                      />
-                    )}
-                  </div>
-                ))
-            ) : (
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                No business plan documents uploaded yet
               </p>
             )}
           </div>
