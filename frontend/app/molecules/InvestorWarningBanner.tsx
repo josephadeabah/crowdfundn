@@ -29,7 +29,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
   return (
     <div
       className={cn(
-        'bg-gray-200 border-b border-gray-300 text-black z-50',
+        'bg-black border-b border-gray-700 text-white z-50',
         'px-2 py-1 md:px-3 md:py-2',
         className,
       )}
@@ -38,11 +38,12 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex items-start gap-2">
-          <div className="flex-shrink-0 mt-0.5"></div>
+          <div className="flex-shrink-0 mt-0.5">
+            <AlertTriangle className="h-4 w-4 text-amber-400" />
+          </div>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1 text-sm md:text-base font-medium mb-1">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
               Investment Risk Warning
             </div>
             <div className="text-xs leading-relaxed space-y-1">
@@ -59,7 +60,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
               </p>
 
               {/* New SEC Regulation Notice */}
-              <div className="border-l-4 border-red-500 text-red-700 p-1 rounded-sm">
+              <div className="border-l-4 border-amber-500 bg-amber-500/10 text-amber-300 p-2 rounded-sm">
                 <p className="font-semibold text-xs mb-1">
                   Important Regulatory Notice:
                 </p>
@@ -79,7 +80,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={handleDismiss}
-                className="h-6 w-6 text-amber-600 hover:bg-amber-100 hover:text-amber-800"
+                className="h-6 w-6 text-gray-400 hover:bg-gray-800 hover:text-white"
                 aria-label="Dismiss warning"
               >
                 <X className="h-3 w-3" />
