@@ -38,13 +38,16 @@ const InvestorGuide = () => {
                     BantuHive's Standard Due Diligence Guide
                   </h3>
                   <p className="text-gray-700 mb-4">
-                    Our mission is to provide all types of investors with the
-                    opportunity to invest in exciting early-stage and growth
-                    stage businesses, often presenting opportunities that
-                    investors could not access elsewhere. In doing so, we
-                    believe it is right that investors understand both the risks
-                    of investing in this asset class and the extent of, and
-                    limits to, the protections they receive.
+                    Our mission is to democratize access to funding, empowering
+                    individuals and communities to build legacies, spark
+                    innovation, and make good things happen. In doing so,
+                    we provide all types of investors with the opportunity to
+                    invest in exciting early-stage and growth stage businesses,
+                    often presenting opportunities that investors could not
+                    access elsewhere. Therefore, we believe it is right that
+                    investors understand both the risks of investing in this
+                    asset class and the extent of, and limits to, the
+                    protections they receive.
                   </p>
                   <a
                     href="https://bantuhive-space-media.nyc3.digitaloceanspaces.com/bantuhive-space-media.nyc3.digitaloceanspaces.com/aa1zecbld0iq2f6olh2lb3v8yw18"
