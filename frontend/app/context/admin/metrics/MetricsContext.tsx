@@ -15,8 +15,15 @@ interface MetricsState {
 }
 
 // Add these interfaces to your MetricsContext.tsx file
-// Update your Metrics interface to match the new backend structure
 export interface Metrics {
+  premium_subscriptions: {
+    active: number;
+    total_revenue: number;
+    mrr: number;
+    churn_rate: number;
+    plan_distribution: Record<string, number>;
+    revenue_by_plan: Record<string, number>;
+  };
   users: {
     total: number;
     new_last_week: number;

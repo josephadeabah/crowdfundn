@@ -87,7 +87,6 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     }
   }, [paymentAmount, isEquityCampaign]);
 
-
   // Handle errors and show toast
   useEffect(() => {
     if (donationError) {

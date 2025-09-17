@@ -40,8 +40,8 @@ const InvestorGuide = () => {
                   <p className="text-gray-700 mb-4">
                     Our mission is to democratize access to funding, empowering
                     individuals and communities to build legacies, spark
-                    innovation, and make good things happen. In doing so,
-                    we provide all types of investors with the opportunity to
+                    innovation, and make good things happen. In doing so, we
+                    provide all types of investors with the opportunity to
                     invest in exciting early-stage and growth stage businesses,
                     often presenting opportunities that investors could not
                     access elsewhere. Therefore, we believe it is right that

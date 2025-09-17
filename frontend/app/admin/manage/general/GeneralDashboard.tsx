@@ -18,7 +18,7 @@ const GeneralDashboard = () => {
     const csvRows = [];
     csvRows.push('Category,Key,Value');
 
-    // Add all metrics to CSV
+    // Add all metrics to CSV including premium subscriptions
     Object.entries(metrics).forEach(([category, data]: [string, any]) => {
       if (typeof data === 'object' && data !== null) {
         Object.entries(data).forEach(([key, value]) => {
@@ -463,33 +463,89 @@ const GeneralDashboard = () => {
           </div>
         </div>
 
-        {/* Subscriptions */}
+        {/* Premium Subscriptions */}
         <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
           <h2 className="text-xl font-semibold mb-4 text-gray-900">
-            Subscriptions
+            Premium Subscriptions
           </h2>
           <div className="bg-gray-50 rounded-lg p-4 space-y-3">
             <div className="flex justify-between">
               <span>Active Subscriptions</span>
               <span className="font-semibold">
-                {metrics?.subscriptions.active}
+                {metrics?.premium_subscriptions?.active || 0}
               </span>
             </div>
             <div className="flex justify-between">
               <span>Monthly Recurring Revenue</span>
               <span className="font-semibold">
-                {formatValue(metrics?.subscriptions.mrr || 0, 'currency')}
+                {formatValue(
+                  metrics?.premium_subscriptions?.mrr || 0,
+                  'currency',
+                )}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>Total Revenue</span>
+              <span className="font-semibold">
+                {formatValue(
+                  metrics?.premium_subscriptions?.total_revenue || 0,
+                  'currency',
+                )}
               </span>
             </div>
             <div className="flex justify-between">
               <span>Churn Rate</span>
               <span className="font-semibold">
-                {metrics?.subscriptions.churn_rate}%
+                {metrics?.premium_subscriptions?.churn_rate || 0}%
               </span>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Premium Subscription Details */}
+      {metrics?.premium_subscriptions && (
+        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 mb-8">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900">
+            Premium Subscription Details
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Plan Distribution */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="font-semibold mb-2">Plan Distribution</h3>
+              <div className="space-y-2">
+                {metrics.premium_subscriptions.plan_distribution &&
+                  Object.entries(
+                    metrics.premium_subscriptions.plan_distribution,
+                  ).map(([plan, count]) => (
+                    <div key={plan} className="flex justify-between">
+                      <span className="text-gray-600">{plan}</span>
+                      <span className="font-semibold">{count}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            {/* Revenue by Plan */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="font-semibold mb-2">Revenue by Plan</h3>
+              <div className="space-y-2">
+                {metrics.premium_subscriptions.revenue_by_plan &&
+                  Object.entries(
+                    metrics.premium_subscriptions.revenue_by_plan,
+                  ).map(([plan, revenue]) => (
+                    <div key={plan} className="flex justify-between">
+                      <span className="text-gray-600">{plan}</span>
+                      <span className="font-semibold">
+                        {formatValue(revenue, 'currency')}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Geography and Subaccounts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
