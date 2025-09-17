@@ -39,18 +39,14 @@ const MediaContent: React.FC<{
   onVideoPlay: (index: number) => void;
 }> = ({ slide, absoluteIndex, videoRefs, isLoaded, onLoad, onVideoPlay }) => {
   return (
-    <div className="carousel-media-container">
+    <div className="carousel-media-container h-full">
       {!isLoaded && <MediaSkeleton />}
-
-      {/* <div className="absolute top-3 left-3 bg-black/50 text-white text-xs font-semibold px-3 py-1 rounded-full z-10 backdrop-blur-sm">
-        Sponsored
-      </div> */}
 
       {slide.type === 'image' ? (
         <img
           src={slide.url}
           alt={slide.alt}
-          className={`carousel-media ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`carousel-media object-cover w-full h-full ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={onLoad}
           loading="lazy"
         />
@@ -60,7 +56,7 @@ const MediaContent: React.FC<{
             ref={(el) => (videoRefs.current[absoluteIndex] = el)}
             src={slide.url}
             poster={slide.thumbnail}
-            className={`carousel-media ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            className={`carousel-media object-cover w-full h-full ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoadedData={onLoad}
             loop
             muted
@@ -204,7 +200,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                         <div
                           className={`${
                             slidesPerPage === 2 ? 'lg:w-1/2' : 'w-full'
-                          }`}
+                          } h-full`}
                         >
                           <MediaContent
                             slide={slide}
@@ -217,7 +213,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                         </div>
 
                         <div
-                          className={`p-6 flex flex-col justify-between ${
+                          className={`p-6 flex flex-col ${
                             slidesPerPage === 2 ? 'lg:w-1/2' : 'w-full'
                           }`}
                         >
@@ -225,11 +221,6 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                             <p className="text-gray-700 mb-6 leading-relaxed text-sm lg:text-base">
                               {slide.description}
                             </p>
-                          </div>
-                          <div className="flex justify-end">
-                            <button className="carousel-cta-button">
-                              Learn More
-                            </button>
                           </div>
                         </div>
                       </div>
