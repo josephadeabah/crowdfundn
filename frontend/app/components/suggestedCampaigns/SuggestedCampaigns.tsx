@@ -9,7 +9,13 @@ import { generateRandomString } from '@/app/utils/helpers/generate.random-string
 import Image from 'next/image';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { FaBookmark, FaRegBookmark, FaClock, FaUser, FaHeart } from 'react-icons/fa';
+import {
+  FaBookmark,
+  FaRegBookmark,
+  FaClock,
+  FaUser,
+  FaHeart,
+} from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 import CampaignCardSkeleton from '@/app/loaders/CampaignCardSkeleton';
@@ -87,20 +93,31 @@ const SuggestedCampaignsComponent = ({
   if (loading)
     return (
       <div className="w-full max-w-7xl mx-auto p-4 bg-white rounded-lg">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">You May Also Support</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-6">
+          You May Also Support
+        </h2>
         <CampaignCardSkeleton />
       </div>
     );
-    
-  if (error) return <p className="text-center text-red-500 p-4 bg-white rounded-lg">Error loading campaigns</p>;
-  
+
+  if (error)
+    return (
+      <p className="text-center text-red-500 p-4 bg-white rounded-lg">
+        Error loading campaigns
+      </p>
+    );
+
   if (!filteredCampaigns.length)
     return (
       <div className="w-full max-w-7xl mx-auto p-6 bg-white rounded-lg text-center">
         <div className="bg-gray-50 rounded-lg p-8">
           <FaHeart className="text-gray-300 text-4xl mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-600">No suggested campaigns available</h3>
-          <p className="text-gray-500 mt-2">Check back later for new campaigns in this category</p>
+          <h3 className="text-lg font-medium text-gray-600">
+            No suggested campaigns available
+          </h3>
+          <p className="text-gray-500 mt-2">
+            Check back later for new campaigns in this category
+          </p>
         </div>
       </div>
     );
@@ -114,11 +131,11 @@ const SuggestedCampaignsComponent = ({
         description={toast.description}
         type={toast.type}
       />
-      
+
       <h2 className="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-100">
         You May Also Support
       </h2>
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
         {filteredCampaigns
           .filter(
@@ -133,9 +150,11 @@ const SuggestedCampaignsComponent = ({
           .map((campaign, index) => {
             const fundraiserCurrency =
               campaign?.currency_symbol || campaign?.currency?.toUpperCase();
-              
-            const progressPercentage = (Number(campaign?.transferred_amount) /
-              Number(campaign?.goal_amount)) * 100;
+
+            const progressPercentage =
+              (Number(campaign?.transferred_amount) /
+                Number(campaign?.goal_amount)) *
+              100;
 
             return (
               <motion.div
@@ -179,7 +198,7 @@ const SuggestedCampaignsComponent = ({
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="p-4 flex flex-col flex-grow">
                     <div className="flex items-center mb-3">
                       <Avatar
@@ -191,11 +210,11 @@ const SuggestedCampaignsComponent = ({
                         {campaign?.fundraiser?.profile?.name}
                       </span>
                     </div>
-                    
+
                     <h3 className="text-base font-bold text-gray-800 mb-3 line-clamp-2 leading-tight group-hover:text-gray-600 transition-colors">
                       {campaign?.title}
                     </h3>
-                    
+
                     {/* Progress bar placed below the title */}
                     <div className="w-full mb-3">
                       <Progress
@@ -203,23 +222,27 @@ const SuggestedCampaignsComponent = ({
                         firstTooltipContent={`Progress: ${progressPercentage.toFixed(1)}%`}
                       />
                     </div>
-                    
+
                     <div className="mt-auto">
                       <div className="flex justify-between items-center mb-2">
                         <div className="text-sm font-semibold text-gray-800">
-                          <span className="text-xs text-gray-500 block">Raised</span>
+                          <span className="text-xs text-gray-500 block">
+                            Raised
+                          </span>
                           {fundraiserCurrency}
                           {parseFloat(
-                            campaign?.transferred_amount?.toString() || '0'
+                            campaign?.transferred_amount?.toString() || '0',
                           ).toLocaleString()}
                         </div>
                         <div className="text-sm text-gray-600 text-right">
-                          <span className="text-xs text-gray-500 block">Goal</span>
+                          <span className="text-xs text-gray-500 block">
+                            Goal
+                          </span>
                           {fundraiserCurrency}
                           {parseFloat(campaign.goal_amount).toLocaleString()}
                         </div>
                       </div>
-                      
+
                       <div className="flex justify-between items-center text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
                         <div className="flex items-center space-x-1">
                           <FaUser className="text-gray-400" />
