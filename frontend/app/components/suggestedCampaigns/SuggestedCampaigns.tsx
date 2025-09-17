@@ -178,16 +178,6 @@ const SuggestedCampaignsComponent = ({
                         )}
                       </div>
                     </div>
-                    
-                    {/* Progress bar overlay on image */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                      <div className="w-full mb-1">
-                        <Progress
-                          firstProgress={progressPercentage}
-                          firstTooltipContent={`Progress: ${progressPercentage.toFixed(1)}%`}
-                        />
-                      </div>
-                    </div>
                   </div>
                   
                   <div className="p-4 flex flex-col flex-grow">
@@ -205,6 +195,14 @@ const SuggestedCampaignsComponent = ({
                     <h3 className="text-base font-bold text-gray-800 mb-3 line-clamp-2 leading-tight group-hover:text-gray-600 transition-colors">
                       {campaign?.title}
                     </h3>
+                    
+                    {/* Progress bar placed below the title */}
+                    <div className="w-full mb-3">
+                      <Progress
+                        firstProgress={progressPercentage}
+                        firstTooltipContent={`Progress: ${progressPercentage.toFixed(1)}%`}
+                      />
+                    </div>
                     
                     <div className="mt-auto">
                       <div className="flex justify-between items-center mb-2">
