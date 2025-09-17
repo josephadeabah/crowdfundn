@@ -25,9 +25,7 @@ interface MediaLoadingState {
 }
 
 const MediaSkeleton = () => (
-  <div className="carousel-media-container">
-    <div className="skeleton w-full h-full rounded-lg" />
-  </div>
+  <div className="w-full h-64 bg-gray-200 animate-pulse rounded-lg" />
 );
 
 const MediaContent: React.FC<{
@@ -39,14 +37,14 @@ const MediaContent: React.FC<{
   onVideoPlay: (index: number) => void;
 }> = ({ slide, absoluteIndex, videoRefs, isLoaded, onLoad, onVideoPlay }) => {
   return (
-    <div className="carousel-media-container h-full">
+    <div className="w-full h-64 overflow-hidden rounded-lg">
       {!isLoaded && <MediaSkeleton />}
 
       {slide.type === 'image' ? (
         <img
           src={slide.url}
           alt={slide.alt}
-          className={`carousel-media object-cover w-full h-full ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`w-full h-full object-cover ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={onLoad}
           loading="lazy"
         />
@@ -56,7 +54,7 @@ const MediaContent: React.FC<{
             ref={(el) => (videoRefs.current[absoluteIndex] = el)}
             src={slide.url}
             poster={slide.thumbnail}
-            className={`carousel-media object-cover w-full h-full ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            className={`w-full h-full object-cover ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoadedData={onLoad}
             loop
             muted
@@ -163,7 +161,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="carousel-container">
+      <div className="carousel-container relative overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-in-out"
           style={{
@@ -191,7 +189,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                     return (
                       <div
                         key={absoluteIndex}
-                        className={`flex-1 min-w-0 carousel-slide ${
+                        className={`flex-1 min-w-0 bg-white rounded-lg overflow-hidden ${
                           slidesPerPage === 2
                             ? 'flex flex-col lg:flex-row'
                             : 'flex flex-col'
@@ -200,7 +198,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                         <div
                           className={`${
                             slidesPerPage === 2 ? 'lg:w-1/2' : 'w-full'
-                          } h-full`}
+                          }`}
                         >
                           <MediaContent
                             slide={slide}
@@ -213,12 +211,12 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                         </div>
 
                         <div
-                          className={`p-6 flex flex-col ${
+                          className={`p-6 flex flex-col justify-center ${
                             slidesPerPage === 2 ? 'lg:w-1/2' : 'w-full'
                           }`}
                         >
                           <div className="flex-grow">
-                            <p className="text-gray-700 mb-6 leading-relaxed text-sm lg:text-base">
+                            <p className="text-gray-700 leading-relaxed text-sm lg:text-base">
                               {slide.description}
                             </p>
                           </div>
@@ -233,7 +231,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
 
         <button
           onClick={goToPrev}
-          className="carousel-nav-button left-4"
+          className="absolute top-1/2 -translate-y-1/2 left-6 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-md z-10 transition-all"
           aria-label="Previous slide"
         >
           <FaArrowLeft className="w-4 h-4" />
@@ -241,7 +239,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
 
         <button
           onClick={goToNext}
-          className="carousel-nav-button right-4"
+          className="absolute top-1/2 -translate-y-1/2 right-6 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-md z-10 transition-all"
           aria-label="Next slide"
         >
           <FaArrowRight className="w-4 h-4" />
@@ -253,8 +251,8 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`carousel-indicator ${
-              currentIndex === index ? 'active' : 'inactive'
+            className={`w-3 h-3 rounded-full ${
+              currentIndex === index ? 'bg-gray-800' : 'bg-gray-300'
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
