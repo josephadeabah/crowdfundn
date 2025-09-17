@@ -144,6 +144,7 @@ class User < ApplicationRecord
         paystack_subscription_code: nil,
         amount: plan.price,
         currency: plan.currency,
+        interval: plan.interval, # Add this line
         status: 'active',
         start_date: Time.current,
         expires_at: calculate_premium_expiry(plan),

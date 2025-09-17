@@ -1,3 +1,4 @@
+# app/controllers/api/v1/metrics/metrics_controller.rb
 module Api
   module V1
     module Metrics
@@ -23,12 +24,16 @@ module Api
           
           average_contribution = total_count > 0 ? (total_amount / total_count).round(2) : 0
 
+          # Calculate premium subscription metrics
+          premium_metrics = calculate_premium_metrics
+
           metrics = {
             users: {
               total: User.count,
               new_last_week: User.where('created_at >= ?', 7.days.ago).count,
               active: User.where('last_sign_in_at >= ?', 7.days.ago).count,
-              email_confirmation_rate: calculate_email_confirmation_rate
+              email_confirmation_rate: calculate_email_confirmation_rate,
+              premium_users: User.where(premium_access: true).count
             },
             campaigns: {
               total: Campaign.count,
@@ -55,11 +60,8 @@ module Api
             },
             platform_fees: total_platform_fees,
             roles: Role.joins(:users).group(:name).count,
-            subscriptions: {
-              active: Subscription.where(status: 'active').count,
-              mrr: Subscription.sum(:amount) || 0, # Changed from where clause to sum all
-              churn_rate: calculate_churn_rate
-            },
+            # FIXED: Use premium subscription metrics instead of general subscriptions
+            premium_subscriptions: premium_metrics,
             geography: {
               users_by_country: User.group(:country).count,
               top_countries_by_donations: calculate_top_countries_by_donations
@@ -80,6 +82,53 @@ module Api
         end
 
         private
+
+        # NEW: Calculate premium subscription metrics
+        def calculate_premium_metrics
+          active_subscriptions = PremiumSubscription.active
+          total_revenue = active_subscriptions.sum(:amount) || 0
+          total_count = active_subscriptions.count
+          
+          # Calculate MRR (Monthly Recurring Revenue)
+          mrr = active_subscriptions.where(interval: 'monthly').sum(:amount) || 0
+          
+          # Add quarterly and annual contributions converted to monthly equivalent
+          active_subscriptions.where(interval: 'quarterly').each do |sub|
+            mrr += sub.amount / 3
+          end
+          
+          active_subscriptions.where(interval: 'annually').each do |sub|
+            mrr += sub.amount / 12
+          end
+          
+          # Count by plan
+          plan_distribution = PremiumSubscription.joins(:premium_plan)
+                                                .group('premium_plans.name')
+                                                .count
+          
+          # Revenue by plan
+          revenue_by_plan = PremiumSubscription.joins(:premium_plan)
+                                              .group('premium_plans.name')
+                                              .sum(:amount)
+          
+          {
+            active: total_count,
+            total_revenue: total_revenue.to_f.round(2),
+            mrr: mrr.round(2),
+            plan_distribution: plan_distribution,
+            revenue_by_plan: revenue_by_plan.transform_values { |v| v.to_f.round(2) },
+            churn_rate: calculate_premium_churn_rate
+          }
+        end
+
+        # NEW: Calculate premium subscription churn rate
+        def calculate_premium_churn_rate
+          total_subscriptions = PremiumSubscription.count
+          return 0 if total_subscriptions.zero?
+
+          canceled_subscriptions = PremiumSubscription.where(status: 'cancelled').count
+          (canceled_subscriptions.to_f / total_subscriptions * 100).round(2)
+        end
 
         def calculate_total_platform_fees
           donation_fees = Donation.where(processed: false).sum(:platform_fee) || 0
