@@ -11,7 +11,7 @@ const InvestorPitchSection = () => {
             See What You Could Be a Part Of
           </h1>
           <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-            Discover how communities around the world are transforming ideas
+            Discover how communities in Ghana are transforming ideas
             into reality through the power of collective funding and shared
             dreams.
           </p>
