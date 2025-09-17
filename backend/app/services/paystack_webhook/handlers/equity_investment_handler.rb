@@ -40,24 +40,39 @@ module PaystackWebhook::Handlers
     private
 
     def process_successful_transaction(response)
-      gross_amount = response.dig(:data, :amount).to_f / 100.0
-      net_amount = gross_amount * 0.93 # 7% platform fee
-      platform_fee = gross_amount * 0.07
-      paystack_fee = platform_fee * 0.0195 # Paystack's 1.95% fee
-      adjusted_platform_fee = platform_fee - paystack_fee
-
       metadata = parse_metadata(response)
+
+      # Fetch the nested metadata amounts
+      original_amount = metadata.dig(:metadata, :originalAmount).to_f
+      processing_fee  = metadata.dig(:metadata, :processingFee).to_f
+
+      if original_amount <= 0
+        Rails.logger.error "Invalid original amount from metadata: #{original_amount}"
+        raise "Invalid original amount"
+      end
+
+      # Use originalAmount as gross amount
+      gross_amount = original_amount
+
+      # Deduct 3% platform fee (campaign pays this)
+      base_platform_fee = gross_amount * 0.03
+
+      # Add the processing fee (platform keeps it too)
+      platform_fee = base_platform_fee + processing_fee
+
+      # Net amount that goes to campaign (ignores processing fee completely)
+      net_amount = gross_amount - base_platform_fee
+
       investment = find_investment(metadata)
 
       if investment && (investment.pending? || investment.initialized?)
         ActiveRecord::Base.transaction do
-          update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
-          update_campaign(investment, net_amount)
+          update_investment(investment, response, metadata, gross_amount, net_amount, platform_fee, processing_fee)
+          update_campaign(investment, net_amount)  # ✅ only net, no processing_fee
           create_pledges_from_rewards(investment, metadata)
 
           if equity_limits_exceeded?(investment)
             result = handle_oversubscription(investment, response, metadata)
-            # Return the result instead of raising an exception
             return result
           end
 
@@ -359,16 +374,20 @@ module PaystackWebhook::Handlers
       :oversubscription_handled
     end
 
-    def rollback_campaign_updates(investment, net_amount)
+    def rollback_campaign_updates(investment)
       campaign = investment.campaign
-      campaign.update!(
-        current_amount: campaign.current_amount - net_amount,
-        total_successful_donations: campaign.total_successful_donations - net_amount,
-        total_equity_invested: campaign.total_equity_invested - net_amount
-      )
+
+      campaign.with_lock do
+        campaign.update!(
+          current_amount: campaign.current_amount - investment.net_amount,
+          total_successful_donations: campaign.total_successful_donations - investment.net_amount,
+          total_equity_invested: campaign.total_equity_invested - investment.net_amount
+        )
+      end
     end
 
-    def update_investment(investment, response, metadata, gross_amount, net_amount, adjusted_platform_fee)
+
+    def update_investment(investment, response, metadata, gross_amount, net_amount, platform_fee, processing_fee)
       donor_ip = response.dig(:data, :ip_address)
       donor_country = response.dig(:data, :authorization, :country_code)
       final_country = donor_country.presence || Geocoder.search(donor_ip).first&.country || 'Unknown'
@@ -376,7 +395,8 @@ module PaystackWebhook::Handlers
       update_attributes = {
         gross_amount: gross_amount,
         net_amount: net_amount,
-        platform_fee: adjusted_platform_fee,
+        platform_fee: platform_fee,
+        processing_fee: processing_fee,   # ✅ new column saved here
         subaccount_code: response.dig(:data, :subaccount, :subaccount_code),
         processed: false,
         country: final_country,
@@ -414,7 +434,7 @@ module PaystackWebhook::Handlers
         phone: metadata[:phone],
         investor_signature_data: metadata[:investor_signature_data],
         reward: metadata[:reward],
-        processing_fee: metadata.dig(:metadata, :processingFee),
+        processing_fee: metadata.dig(:metadata, :processingFee),   # ✅ saved for reference
         original_amount: metadata.dig(:metadata, :originalAmount),
         referrer: metadata[:referrer],
         payment_details: {
