@@ -8,14 +8,12 @@ import Link from 'next/link';
 import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
 import Image from 'next/image';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-import { deslugify } from '@/app/utils/helpers/categories';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { FaBookmark, FaRegBookmark, FaClock, FaUser } from 'react-icons/fa';
+import { FaBookmark, FaRegBookmark, FaClock, FaUser, FaHeart } from 'react-icons/fa';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
-import CampaignCardLoader from '@/app/loaders/CampaignCardLoader';
-import Avatar from '../avatar/Avatar';
 import CampaignCardSkeleton from '@/app/loaders/CampaignCardSkeleton';
+import Avatar from '../avatar/Avatar';
 
 const SuggestedCampaignsComponent = ({
   currentCategory,
@@ -65,8 +63,8 @@ const SuggestedCampaignsComponent = ({
   const handleFavorite = async (campaignId: string) => {
     if (!user) {
       showToast(
-        'Error',
-        'You must log in first to add to your favorite and track campaign progress.',
+        'Login Required',
+        'Please log in to save campaigns to your favorites.',
         'error',
       );
       return;
@@ -77,8 +75,8 @@ const SuggestedCampaignsComponent = ({
   const handleUnfavorite = async (campaignId: string) => {
     if (!user) {
       showToast(
-        'Error',
-        'You must log in first to add to your favorite and track campaign progress.',
+        'Login Required',
+        'Please log in to manage your favorite campaigns.',
         'error',
       );
       return;
@@ -88,20 +86,27 @@ const SuggestedCampaignsComponent = ({
 
   if (loading)
     return (
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full max-w-7xl mx-auto p-4 bg-white rounded-lg">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">You May Also Support</h2>
         <CampaignCardSkeleton />
       </div>
     );
-  if (error) return <p className="text-center text-red-500">Error: {error}</p>;
+    
+  if (error) return <p className="text-center text-red-500 p-4 bg-white rounded-lg">Error loading campaigns</p>;
+  
   if (!filteredCampaigns.length)
     return (
-      <p className="w-full bg-white p-4 text-center text-gray-500">
-        No suggested campaigns available.
-      </p>
+      <div className="w-full max-w-7xl mx-auto p-6 bg-white rounded-lg text-center">
+        <div className="bg-gray-50 rounded-lg p-8">
+          <FaHeart className="text-gray-300 text-4xl mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-600">No suggested campaigns available</h3>
+          <p className="text-gray-500 mt-2">Check back later for new campaigns in this category</p>
+        </div>
+      </div>
     );
 
   return (
-    <div className="w-full max-w-7xl mx-auto bg-white md:p-4 rounded-lg">
+    <div className="w-full max-w-7xl mx-auto bg-white p-6 rounded-lg">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -109,10 +114,12 @@ const SuggestedCampaignsComponent = ({
         description={toast.description}
         type={toast.type}
       />
-      <h2 className="text-xl font-bold text-gray-800 mb-4 p-2">
+      
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-100">
         You May Also Support
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 px-4">
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
         {filteredCampaigns
           .filter(
             (campaign) =>
@@ -126,109 +133,102 @@ const SuggestedCampaignsComponent = ({
           .map((campaign, index) => {
             const fundraiserCurrency =
               campaign?.currency_symbol || campaign?.currency?.toUpperCase();
+              
+            const progressPercentage = (Number(campaign?.transferred_amount) /
+              Number(campaign?.goal_amount)) * 100;
 
             return (
               <motion.div
                 key={campaign.id}
-                initial="hidden"
-                animate="visible"
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative bg-white flex flex-col h-full text-gray-800 rounded-lg cursor-pointer overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="group relative bg-white flex flex-col h-full rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100"
               >
                 <Link
                   href={`/campaign/${campaign.id}?${generateRandomString()}`}
+                  className="flex flex-col h-full"
                 >
-                  <div className="relative w-full h-0 pb-[100%]">
+                  <div className="relative w-full h-0 pb-[70%] overflow-hidden">
                     <Image
                       src={campaign?.media || '/bantuhive.svg'}
-                      alt="media thumbnail"
+                      alt="Campaign image"
                       layout="fill"
                       objectFit="cover"
                       unoptimized
-                      className="absolute top-0 left-0 w-full h-full rounded-t"
+                      className="absolute top-0 left-0 w-full h-full group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
-                        console.error('Image failed to load:', e);
-                        e.currentTarget.src = '/bantuhive.svg'; // Fallback on error
+                        e.currentTarget.src = '/bantuhive.svg';
                       }}
                     />
-                  </div>
-                  <div className="px-2 py-2 bg-white hover:bg-gray-100">
-                    <div className="w-full text-xs">
-                      <Progress
-                        firstProgress={
-                          (Number(campaign?.transferred_amount) /
-                            Number(campaign?.goal_amount)) *
-                          100
-                        }
-                        firstTooltipContent={`Progress: ${
-                          (Number(campaign?.transferred_amount) /
-                            Number(campaign?.goal_amount)) *
-                          100
-                        }%`}
-                      />
-                    </div>
-                    <div className="w-full text-xs text-gray-600 flex flex-col py-2">
-                      <div className="flex justify-between items-center mb-2">
-                        <div className="flex items-center space-x-2">
-                          <Avatar
-                            name={campaign?.fundraiser?.profile?.name}
-                            size="sm"
-                            imageUrl={campaign?.fundraiser?.profile?.avatar}
-                          />
-                          <span className="text-sm font-semibold w-14 md:w-32 truncate">
-                            {campaign?.fundraiser?.profile?.name}
-                          </span>
-                        </div>
-                        <div
-                          className="p-2 bg-white text-gray-800 rounded-full shadow-md cursor-pointer hover:bg-gray-50 hover:text-gray-800 transition-colors duration-300"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            campaign.favorited
-                              ? handleUnfavorite(campaign.id.toString())
-                              : handleFavorite(campaign.id.toString());
-                          }}
-                        >
-                          {campaign.favorited ? (
-                            <FaBookmark className="text-orange-500" />
-                          ) : (
-                            <FaRegBookmark className="text-gray-700" />
-                          )}
-                        </div>
+                    <div className="absolute top-3 right-3">
+                      <div
+                        className="p-2 bg-white rounded-full shadow-md cursor-pointer hover:bg-gray-50 transition-colors duration-300"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          campaign.favorited
+                            ? handleUnfavorite(campaign.id.toString())
+                            : handleFavorite(campaign.id.toString());
+                        }}
+                      >
+                        {campaign.favorited ? (
+                          <FaBookmark className="text-orange-500" />
+                        ) : (
+                          <FaRegBookmark className="text-gray-500" />
+                        )}
                       </div>
-                      <h3 className="text-lg font-bold text-gray-700 truncate mb-1">
-                        {campaign?.title}
-                      </h3>
-                      <p className="flex justify-between items-center text-sm font-semibold mt-2 break-words">
-                        <span
-                          className={`${
-                            parseFloat(
-                              campaign?.transferred_amount?.toString() || '0',
-                            ) >=
-                            parseFloat(campaign?.goal_amount?.toString() || '0')
-                              ? 'text-green-600'
-                              : 'text-orange-500'
-                          }`}
-                        >
-                          <span className="text-gray-600 mr-1">
-                            {fundraiserCurrency}
-                          </span>
+                    </div>
+                    
+                    {/* Progress bar overlay on image */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
+                      <div className="w-full mb-1">
+                        <Progress
+                          firstProgress={progressPercentage}
+                          firstTooltipContent={`Progress: ${progressPercentage.toFixed(1)}%`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 flex flex-col flex-grow">
+                    <div className="flex items-center mb-3">
+                      <Avatar
+                        name={campaign?.fundraiser?.profile?.name}
+                        size="sm"
+                        imageUrl={campaign?.fundraiser?.profile?.avatar}
+                      />
+                      <span className="text-sm font-medium text-gray-700 ml-2 truncate">
+                        {campaign?.fundraiser?.profile?.name}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-base font-bold text-gray-800 mb-3 line-clamp-2 leading-tight group-hover:text-gray-600 transition-colors">
+                      {campaign?.title}
+                    </h3>
+                    
+                    <div className="mt-auto">
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="text-sm font-semibold text-gray-800">
+                          <span className="text-xs text-gray-500 block">Raised</span>
+                          {fundraiserCurrency}
                           {parseFloat(
-                            campaign?.transferred_amount?.toString() || '0',
+                            campaign?.transferred_amount?.toString() || '0'
                           ).toLocaleString()}
-                        </span>{' '}
-                        <span className="text-gray-600 truncate">
-                          <span className="text-xs p-1">of</span>
+                        </div>
+                        <div className="text-sm text-gray-600 text-right">
+                          <span className="text-xs text-gray-500 block">Goal</span>
                           {fundraiserCurrency}
                           {parseFloat(campaign.goal_amount).toLocaleString()}
-                        </span>
-                      </p>
-                      <div className="block md:flex justify-between items-center text-xs font-semibold text-gray-700 mt-2">
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
                         <div className="flex items-center space-x-1">
-                          <FaUser />
-                          <span>{campaign?.total_donors} Backers</span>
+                          <FaUser className="text-gray-400" />
+                          <span>{campaign?.total_donors || 0} Backers</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <FaClock />
+                          <FaClock className="text-gray-400" />
                           <span>{campaign.remaining_days} days left</span>
                         </div>
                       </div>
