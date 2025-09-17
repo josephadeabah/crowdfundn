@@ -77,14 +77,16 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   useEffect(() => {
     const amount = parseFloat(paymentAmount) || 0;
     if (isEquityCampaign && amount > 0) {
-      const fee = Math.min(amount * 0.07, 300);
+      const rawFee = Math.min(amount * 0.07, 300);
+      const fee = parseFloat(rawFee.toFixed(2)); // ✅ round to 2 decimals
       setProcessingFee(fee);
-      setTotalAmount(amount + fee);
+      setTotalAmount(parseFloat((amount + fee).toFixed(2))); // ✅ also round total
     } else {
       setProcessingFee(0);
       setTotalAmount(amount);
     }
   }, [paymentAmount, isEquityCampaign]);
+
 
   // Handle errors and show toast
   useEffect(() => {
