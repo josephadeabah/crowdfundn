@@ -223,6 +223,40 @@ const EquityInvestments = () => {
     return status === 'successful';
   };
 
+  // Helper function to get investment action text based on status
+  const getInvestmentActionText = (
+    status: string,
+    amount: string,
+    campaignName: string,
+  ) => {
+    const formattedAmount = formatCurrency(
+      parseNumber(amount),
+      user?.currency || 'GHS',
+      user?.currency_symbol || '₵',
+    );
+
+    switch (status) {
+      case 'successful':
+        return `You invested ${formattedAmount} in ${campaignName}`;
+      case 'pending':
+      case 'processing':
+      case 'ongoing':
+      case 'queued':
+        return `You attempted to invest ${formattedAmount} in ${campaignName}`;
+      case 'failed':
+        return `Your investment of ${formattedAmount} in ${campaignName} failed`;
+      case 'abandoned':
+        return `You abandoned your ${formattedAmount} investment in ${campaignName}`;
+      case 'reversed':
+      case 'refunded':
+        return `Your ${formattedAmount} investment in ${campaignName} was refunded`;
+      case 'canceled':
+        return `You canceled your ${formattedAmount} investment in ${campaignName}`;
+      default:
+        return `Investment activity with ${campaignName}`;
+    }
+  };
+
   if (loading) {
     return <EquityInvestmentsLoader />;
   }
@@ -612,34 +646,36 @@ const EquityInvestments = () => {
                 'MMM dd, yyyy',
               );
 
+              // Get the appropriate action text based on status
+              const actionText = getInvestmentActionText(
+                investment.status,
+                investment.amount.toString(),
+                campaignName,
+              );
+
               return (
                 <div
                   key={investment.id}
                   className="p-4 rounded-xl border border-gray-200 bg-gray-50 shadow-sm hover:shadow-md transition"
                 >
-                  <p className="text-sm text-gray-700 mb-3">
-                    You invested{' '}
-                    <span className="font-semibold text-pink-600">
-                      {amount}
-                    </span>{' '}
-                    in{' '}
-                    <span className="font-semibold text-teal-600">
-                      {campaignName}
-                    </span>
-                  </p>
+                  <p className="text-sm text-gray-700 mb-3">{actionText}</p>
 
                   <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
                     <div className="flex items-center gap-1">
                       🆔 <span className="font-medium">ID:</span>{' '}
                       {investment_id}
                     </div>
-                    <div className="flex items-center gap-1">
-                      📈 <span className="font-medium">Shares:</span> {shares}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      🎯 <span className="font-medium">Equity:</span>{' '}
-                      {percentage}%
-                    </div>
+                    {shares && (
+                      <div className="flex items-center gap-1">
+                        📈 <span className="font-medium">Shares:</span> {shares}
+                      </div>
+                    )}
+                    {percentage && (
+                      <div className="flex items-center gap-1">
+                        🎯 <span className="font-medium">Equity:</span>{' '}
+                        {percentage}%
+                      </div>
+                    )}
                     {certificate && (
                       <div className="flex items-center gap-1">
                         🎖️ <span className="font-medium">Cert:</span>{' '}
@@ -649,7 +685,11 @@ const EquityInvestments = () => {
                   </div>
 
                   <p className="text-xs text-gray-500 mt-3 flex items-center gap-1">
-                    ⏰ Invested on {date}
+                    ⏰{' '}
+                    {investment.status === 'successful'
+                      ? 'Invested'
+                      : 'Attempted'}{' '}
+                    on {date}
                   </p>
                 </div>
               );
