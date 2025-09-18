@@ -18,7 +18,7 @@ export interface RewardCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
   loading: boolean;
   error: string | null;
-  title: string;
+  title?: string;
   onLoadMore?: (page: number) => Promise<CampaignResponseDataType[]>;
   hasNextPage?: boolean;
   totalCount?: number;
