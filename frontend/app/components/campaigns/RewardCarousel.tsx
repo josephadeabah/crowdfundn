@@ -18,7 +18,7 @@ export interface RewardCarouselProps {
   campaigns: CampaignResponseDataType[] | undefined;
   loading: boolean;
   error: string | null;
-  title?: string;
+  title: string;
   onLoadMore?: (page: number) => Promise<CampaignResponseDataType[]>;
   hasNextPage?: boolean;
   totalCount?: number;
@@ -51,16 +51,10 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
   const [canScrollRight, setCanScrollRight] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(hasNextPage);
 
-  // Extract rewards and group by reward.id
-  const groupedRewards = useMemo(() => {
+  // Extract rewards from campaigns
+  const rewards = useMemo(() => {
     if (!campaigns) return [];
-
-    const rewardMap = new Map<
-      number,
-      { reward: any; campaign: CampaignResponseDataType }
-    >();
-
-    campaigns
+    return campaigns
       .filter(
         (campaign) =>
           campaign.status !== 'completed' &&
@@ -68,15 +62,12 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
           campaign.rewards &&
           campaign.rewards.length > 0,
       )
-      .forEach((campaign) => {
-        campaign.rewards.forEach((reward) => {
-          if (!rewardMap.has(reward.id)) {
-            rewardMap.set(reward.id, { reward, campaign });
-          }
-        });
-      });
-
-    return Array.from(rewardMap.values());
+      .flatMap((campaign) =>
+        campaign.rewards.map((reward) => ({
+          ...reward,
+          campaign,
+        })),
+      );
   }, [campaigns]);
 
   // Initialize displayed campaigns with the first batch
@@ -117,11 +108,13 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
     setIsLoadingMore(true);
     try {
       if (onLoadMore) {
+        // Custom load more function provided
         const newCampaigns = await onLoadMore(currentPage + 1);
         setDisplayedCampaigns((prev) => [...prev, ...newCampaigns]);
         setCurrentPage((prev) => prev + 1);
         setHasMore(newCampaigns.length > 0);
       } else if (campaigns) {
+        // Load from existing campaigns array
         const nextPageStart = currentPage * initialItemsPerPage;
         const nextBatch = campaigns.slice(
           nextPageStart,
@@ -161,8 +154,10 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
       const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
       const isNearEnd = scrollLeft > scrollWidth - clientWidth - 400;
 
+      // Load more if we're near the end and have more to load
       if (isNearEnd && hasMore && !isLoadingMore && autoLoad) {
         await loadMoreCampaigns();
+        // Wait a bit for the new content to render, then scroll
         setTimeout(() => {
           carouselRef.current?.scrollBy({ left: 320, behavior: 'smooth' });
         }, 100);
@@ -191,18 +186,18 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
       );
     }
 
-    if (groupedRewards.length > 0) {
+    if (rewards.length > 0) {
       return (
         <>
-          {groupedRewards
+          {rewards
             .slice(0, displayedCampaigns.length * 2)
-            .map(({ reward, campaign }, index) => (
+            .map((reward, index) => (
               <div
-                key={`${reward.id}-${campaign.id}-${index}`}
+                key={`${reward.campaign.id}-${reward.id}-${index}`}
                 className="snap-start flex-none w-[220px] md:w-[280px] my-3 mx-2"
               >
                 <RewardCard
-                  campaign={campaign}
+                  campaign={reward.campaign}
                   reward={reward}
                   loading={false}
                   error={null}
@@ -210,6 +205,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
               </div>
             ))}
 
+          {/* Loading indicator for more campaigns */}
           {isLoadingMore && (
             <div className="flex-shrink-0 flex items-center justify-center w-[280px] h-full">
               <div className="flex flex-col items-center space-y-2 text-muted-foreground">
@@ -219,6 +215,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
             </div>
           )}
 
+          {/* Load more button as fallback */}
           {hasMore && !isLoadingMore && (
             <div className="flex-shrink-0 flex items-center justify-center w-[280px] h-full">
               <Button
@@ -306,6 +303,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
         {showContent()}
       </div>
 
+      {/* Optional: Show total progress */}
       {hasMore && displayedCampaigns.length > 0 && (
         <div className="flex justify-center mt-4">
           <Button
@@ -320,11 +318,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
                 Loading...
               </>
             ) : (
-              `Load more rewards ${
-                totalCount > 0
-                  ? `(${totalCount - displayedCampaigns.length} remaining)`
-                  : ''
-              }`
+              `Load more rewards ${totalCount > 0 ? `(${totalCount - displayedCampaigns.length} remaining)` : ''}`
             )}
           </Button>
         </div>
