@@ -101,15 +101,38 @@ export default function Transfers() {
     );
     const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
 
-    // For regular campaigns: minimum is 1/2 of goal amount
-    const minimumAmount = goalAmount * 0.5;
-
     if (campaign.type === 'EquityCampaign') {
-      // Equity campaigns still use 50% of goal as minimum
-      return currentAmount < goalAmount * 0.5;
+      // For equity campaigns, use more flexible conditions:
+
+      // 1. Check if campaign is completed
+      if (campaign.status === 'completed') {
+        return false; // Allow transfer for completed equity campaigns
+      }
+
+      // 2. Check if campaign has reached a reasonable threshold
+      // Either 25% of goal OR minimum of GHS 5,000 (whichever is lower)
+      const percentageThreshold = 0.25; // 25% of goal
+      const absoluteThreshold = 5000; // GHS 5,000 minimum
+
+      const percentageMet = currentAmount >= goalAmount * percentageThreshold;
+      const absoluteMet = currentAmount >= absoluteThreshold;
+
+      // Also consider if campaign has been running for a reasonable time
+      // (e.g., at least 30 days) to prevent premature transfers
+      const campaignAgeInDays = campaign.created_at
+        ? moment().diff(moment(campaign.created_at), 'days')
+        : 0;
+
+      const minimumCampaignAge = 30; // 30 days minimum
+
+      return !(
+        (percentageMet || absoluteMet) &&
+        campaignAgeInDays >= minimumCampaignAge
+      );
     }
 
-    // Regular campaigns: disabled if current < goal OR current < (goal * 0.5)
+    // For regular campaigns: minimum is 1/2 of goal amount
+    const minimumAmount = goalAmount * 0.5;
     return currentAmount < goalAmount || currentAmount < minimumAmount;
   };
 
@@ -122,11 +145,51 @@ export default function Transfers() {
     const goalAmount = parseFloat(campaign.goal_amount?.toString() || '0');
 
     if (campaign.type === 'EquityCampaign') {
-      const requiredAmount = Math.max(goalAmount * 0.5, 4);
-      return `Transfer available when campaign reaches at least 50% of goal or minimum GHS10,000 (${campaign.currency.toUpperCase()}${requiredAmount.toLocaleString()})`;
+      // For equity campaigns, provide more specific guidance
+      const percentageThreshold = 0.25; // 25%
+      const absoluteThreshold = 5000; // GHS 5,000
+      const minimumDays = 30;
+
+      const campaignAgeInDays = campaign.created_at
+        ? moment().diff(moment(campaign.created_at), 'days')
+        : 0;
+
+      if (campaign.status === 'completed' || campaign.status === 'successful') {
+        return 'Transfer available for completed equity campaigns';
+      }
+
+      if (currentAmount < absoluteThreshold) {
+        return `Transfer available when campaign reaches at least ${campaign.currency.toUpperCase()}${absoluteThreshold.toLocaleString()} (currently at ${campaign.currency.toUpperCase()}${currentAmount.toLocaleString()})`;
+      }
+
+      if (currentAmount < goalAmount * percentageThreshold) {
+        return `Transfer available when campaign reaches at least 25% of goal (${campaign.currency.toUpperCase()}${(goalAmount * percentageThreshold).toLocaleString()})`;
+      }
+
+      if (campaignAgeInDays < minimumDays) {
+        return `Transfer available after campaign has been running for ${minimumDays} days (currently ${campaignAgeInDays} days)`;
+      }
+
+      return 'Transfer available for this equity campaign';
     } else {
-      return `Transfer available only when campaign reaches at least 50% of goal (${campaign.currency.toUpperCase()}${goalAmount.toLocaleString()})`;
+      return `Transfer available only when campaign reaches at least 50% of goal (${campaign.currency.toUpperCase()}${(goalAmount * 0.5).toLocaleString()})`;
     }
+  };
+
+  // Additional check to see if transfer should be completely blocked (not just disabled)
+  const isTransferEligible = (campaign: CampaignResponseDataType) => {
+    if (campaign.type === 'EquityCampaign') {
+      // For equity campaigns, check if they meet basic eligibility
+      const currentAmount = parseFloat(
+        campaign.transferred_amount?.toString() || '0',
+      );
+
+      // Minimum absolute amount to even consider transfer
+      const minimumEligibleAmount = 1000; // GHS 1,000
+
+      return currentAmount >= minimumEligibleAmount;
+    }
+    return true; // Regular campaigns are always eligible
   };
 
   return (
@@ -179,85 +242,103 @@ export default function Transfers() {
               You have no campaigns available for transfer
             </div>
           ) : (
-            userCampaigns.map((campaign: CampaignResponseDataType) => (
-              <div key={campaign.id} className="p-4 bg-white rounded-lg shadow">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <div className="flex items-center gap-4 w-full sm:w-auto">
-                    <div className="shrink-0">
-                      <ProgressRing
-                        value={Math.round(
-                          (parseFloat(
-                            campaign.transferred_amount?.toString() || '0',
-                          ) /
-                            parseFloat(
-                              campaign.goal_amount?.toString() || '1',
-                            )) *
-                            100,
-                        )}
-                        size={60}
-                        strokeWidth={5}
-                        color="#22c55e"
-                      />
-                    </div>
-                    <div className="space-y-1 flex-1">
-                      <div className="flex items-center">
-                        <h3 className="font-medium text-gray-800">
-                          {campaign.title}
-                        </h3>
-                        {isTransferDisabled(campaign) && (
-                          <InfoTooltip
-                            id={`tooltip-${campaign.id}`}
-                            content={getTransferRestrictionMessage(campaign)}
-                            className="ml-2"
-                            iconSize={14}
-                          />
+            userCampaigns
+              .filter(isTransferEligible) // Filter out completely ineligible campaigns
+              .map((campaign: CampaignResponseDataType) => (
+                <div
+                  key={campaign.id}
+                  className="p-4 bg-white rounded-lg shadow"
+                >
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                      <div className="shrink-0">
+                        <ProgressRing
+                          value={Math.round(
+                            (parseFloat(
+                              campaign.transferred_amount?.toString() || '0',
+                            ) /
+                              parseFloat(
+                                campaign.goal_amount?.toString() || '1',
+                              )) *
+                              100,
+                          )}
+                          size={60}
+                          strokeWidth={5}
+                          color="#22c55e"
+                        />
+                      </div>
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center">
+                          <h3 className="font-medium text-gray-800">
+                            {campaign.title}
+                          </h3>
+                          {isTransferDisabled(campaign) && (
+                            <InfoTooltip
+                              id={`tooltip-${campaign.id}`}
+                              content={getTransferRestrictionMessage(campaign)}
+                              className="ml-2"
+                              iconSize={14}
+                            />
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          <span
+                            className={
+                              parseFloat(
+                                campaign.transferred_amount?.toString() || '0',
+                              ) >=
+                              parseFloat(
+                                campaign.goal_amount?.toString() || '0',
+                              )
+                                ? 'text-green-600'
+                                : 'text-orange-500'
+                            }
+                          >
+                            {campaign.currency.toUpperCase()}
+                            {parseFloat(
+                              campaign.transferred_amount?.toString() || '0',
+                            ).toLocaleString()}
+                          </span>
+                          <span> raised of </span>
+                          <span className="text-green-600">
+                            {campaign.currency.toUpperCase()}
+                            {parseFloat(campaign.goal_amount).toLocaleString()}
+                          </span>
+                        </p>
+                        {campaign.type === 'EquityCampaign' && (
+                          <p className="text-xs text-blue-600">
+                            Equity Campaign - {campaign.status || 'Active'}
+                          </p>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600">
-                        <span
-                          className={
-                            parseFloat(
-                              campaign.transferred_amount?.toString() || '0',
-                            ) >=
-                            parseFloat(campaign.goal_amount?.toString() || '0')
-                              ? 'text-green-600'
-                              : 'text-orange-500'
-                          }
-                        >
-                          {campaign.currency.toUpperCase()}
-                          {parseFloat(
-                            campaign.transferred_amount?.toString() || '0',
-                          ).toLocaleString()}
-                        </span>
-                        <span> raised of </span>
-                        <span className="text-green-600">
-                          {campaign.currency.toUpperCase()}
-                          {parseFloat(campaign.goal_amount).toLocaleString()}
-                        </span>
-                      </p>
-                      {campaign.type === 'EquityCampaign' && (
-                        <p className="text-xs text-blue-600">
-                          Equity Campaign (50% threshold)
-                        </p>
-                      )}
                     </div>
+
+                    <Button
+                      onClick={() => handleRequestTransfer(campaign.id)}
+                      className="w-full sm:w-auto px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 whitespace-nowrap"
+                      disabled={
+                        loadingCampaigns[campaign.id] ||
+                        isTransferDisabled(campaign) ||
+                        !isTransferEligible(campaign)
+                      }
+                    >
+                      {loadingCampaigns[campaign.id]
+                        ? 'Transferring...'
+                        : 'Request Transfer'}
+                    </Button>
                   </div>
 
-                  <Button
-                    onClick={() => handleRequestTransfer(campaign.id)}
-                    className="w-full sm:w-auto px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-600 whitespace-nowrap"
-                    disabled={
-                      loadingCampaigns[campaign.id] ||
-                      isTransferDisabled(campaign)
-                    }
-                  >
-                    {loadingCampaigns[campaign.id]
-                      ? 'Transferring...'
-                      : 'Request Transfer'}
-                  </Button>
+                  {/* Additional info for equity campaigns */}
+                  {campaign.type === 'EquityCampaign' && (
+                    <div className="mt-2 text-xs text-gray-500">
+                      <p>
+                        Equity campaigns have flexible transfer requirements
+                        based on amount raised and campaign duration.
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))
+              ))
           )}
         </div>
 
