@@ -25,6 +25,7 @@ interface RewardCardProps {
   };
   loading: boolean;
   error: string | null;
+  count?: number; // number of occurrences / available copies
 }
 
 const RewardCard: React.FC<RewardCardProps> = ({
@@ -32,6 +33,7 @@ const RewardCard: React.FC<RewardCardProps> = ({
   reward,
   loading,
   error,
+  count = 1,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorited, setIsFavorited] = useState(campaign.favorited || false);
@@ -97,6 +99,10 @@ const RewardCard: React.FC<RewardCardProps> = ({
     return <CampaignCardLoader />;
   }
 
+  // Build display title with count if more than 1
+  const displayTitle =
+    count && count > 1 ? `${reward.title} (${count} available)` : reward.title;
+
   return (
     <>
       <ToastComponent
@@ -131,6 +137,7 @@ const RewardCard: React.FC<RewardCardProps> = ({
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
+
             <span className="absolute top-4 left-4 px-2 py-1 text-xs font-semibold bg-white/90 text-orange-600 rounded-full">
               {deslugify(campaign?.category)}
             </span>
@@ -149,11 +156,18 @@ const RewardCard: React.FC<RewardCardProps> = ({
             >
               <Heart className={cn('h-4 w-4', isFavorited && 'fill-current')} />
             </button>
+
+            {/* Count badge (small) */}
+            {count > 1 && (
+              <div className="absolute bottom-4 left-4 px-2 py-1 text-xs font-semibold bg-white/90 text-gray-800 rounded-full">
+                {count} available
+              </div>
+            )}
           </div>
 
           <div className="p-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              {reward.title}
+              {displayTitle}
             </h3>
             <p className="text-sm text-gray-600 truncate">
               {reward.description}
