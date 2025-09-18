@@ -27,16 +27,6 @@ export interface RewardCarouselProps {
   autoLoad?: boolean;
 }
 
-interface UniqueReward {
-  id: number;
-  title: string;
-  description: string;
-  image?: string;
-  amount: number;
-  campaign: CampaignResponseDataType;
-  totalAvailable: number;
-}
-
 const RewardCarousel: React.FC<RewardCarouselProps> = ({
   campaigns = [],
   loading,
@@ -45,21 +35,31 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
   onLoadMore,
   hasNextPage = false,
   totalCount = 0,
-  initialItemsPerPage = 12, // Show more rewards since they're unique now
+  initialItemsPerPage = 6,
   showProgress = true,
   autoLoad = true,
 }) => {
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  // Progressive loading state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [displayedCampaigns, setDisplayedCampaigns] = useState<
+    CampaignResponseDataType[]
+  >([]);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [canScrollLeft, setCanScrollLeft] = useState<boolean>(false);
   const [canScrollRight, setCanScrollRight] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(hasNextPage);
 
-  // Extract and group unique rewards
-  const uniqueRewards = useMemo(() => {
+  // Extract rewards and group by reward.id
+  const groupedRewards = useMemo(() => {
     if (!campaigns) return [];
-    
-    const rewardMap = new Map<number, UniqueReward>();
-    
+
+    const rewardMap = new Map<
+      number,
+      { reward: any; campaign: CampaignResponseDataType }
+    >();
+
     campaigns
       .filter(
         (campaign) =>
@@ -70,32 +70,28 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
       )
       .forEach((campaign) => {
         campaign.rewards.forEach((reward) => {
-          if (rewardMap.has(reward.id)) {
-            // Update count for existing reward
-            const existing = rewardMap.get(reward.id)!;
-            rewardMap.set(reward.id, {
-              ...existing,
-              totalAvailable: existing.totalAvailable + 1,
-            });
-          } else {
-            // Add new unique reward
-            rewardMap.set(reward.id, {
-              id: reward.id,
-              title: reward.title,
-              description: reward.description,
-              image: reward.image,
-              amount: reward.amount,
-              campaign: campaign,
-              totalAvailable: 1,
-            });
+          if (!rewardMap.has(reward.id)) {
+            rewardMap.set(reward.id, { reward, campaign });
           }
         });
       });
-    
+
     return Array.from(rewardMap.values());
   }, [campaigns]);
 
-  // Check scroll position
+  // Initialize displayed campaigns with the first batch
+  useEffect(() => {
+    if (campaigns && campaigns.length > 0) {
+      const initialCampaigns = campaigns.slice(0, initialItemsPerPage);
+      setDisplayedCampaigns(initialCampaigns);
+      setHasMore(campaigns.length > initialItemsPerPage || hasNextPage);
+    } else {
+      setDisplayedCampaigns([]);
+      setHasMore(false);
+    }
+  }, [campaigns, initialItemsPerPage, hasNextPage]);
+
+  // Check scroll position to enable/disable scroll buttons
   const checkScrollPosition = useCallback(() => {
     if (carouselRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
@@ -108,10 +104,51 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
     const carousel = carouselRef.current;
     if (carousel) {
       carousel.addEventListener('scroll', checkScrollPosition);
-      checkScrollPosition();
+      checkScrollPosition(); // Initial check
+
       return () => carousel.removeEventListener('scroll', checkScrollPosition);
     }
-  }, [checkScrollPosition, uniqueRewards]);
+  }, [checkScrollPosition, displayedCampaigns]);
+
+  // Load more campaigns when user scrolls right and reaches near the end
+  const loadMoreCampaigns = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return;
+
+    setIsLoadingMore(true);
+    try {
+      if (onLoadMore) {
+        const newCampaigns = await onLoadMore(currentPage + 1);
+        setDisplayedCampaigns((prev) => [...prev, ...newCampaigns]);
+        setCurrentPage((prev) => prev + 1);
+        setHasMore(newCampaigns.length > 0);
+      } else if (campaigns) {
+        const nextPageStart = currentPage * initialItemsPerPage;
+        const nextBatch = campaigns.slice(
+          nextPageStart,
+          nextPageStart + initialItemsPerPage,
+        );
+
+        if (nextBatch.length > 0) {
+          setDisplayedCampaigns((prev) => [...prev, ...nextBatch]);
+          setCurrentPage((prev) => prev + 1);
+          setHasMore(nextPageStart + nextBatch.length < campaigns.length);
+        } else {
+          setHasMore(false);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load more campaigns:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [
+    isLoadingMore,
+    hasMore,
+    onLoadMore,
+    currentPage,
+    campaigns,
+    initialItemsPerPage,
+  ]);
 
   const scrollLeft = () => {
     if (carouselRef.current) {
@@ -119,14 +156,24 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
     }
   };
 
-  const scrollRight = () => {
+  const scrollRight = async () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+      const isNearEnd = scrollLeft > scrollWidth - clientWidth - 400;
+
+      if (isNearEnd && hasMore && !isLoadingMore && autoLoad) {
+        await loadMoreCampaigns();
+        setTimeout(() => {
+          carouselRef.current?.scrollBy({ left: 320, behavior: 'smooth' });
+        }, 100);
+      } else {
+        carouselRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+      }
     }
   };
 
   const showContent = () => {
-    if (loading) {
+    if (loading && displayedCampaigns.length === 0) {
       return (
         <div className="flex space-x-4 w-full">
           {Array.from({ length: 6 }).map((_, index) => (
@@ -136,7 +183,7 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
       );
     }
 
-    if (error) {
+    if (error && displayedCampaigns.length === 0) {
       return (
         <div className="w-full">
           <ErrorPage />
@@ -144,31 +191,51 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
       );
     }
 
-    if (uniqueRewards.length > 0) {
+    if (groupedRewards.length > 0) {
       return (
         <>
-          {uniqueRewards.map((reward, index) => (
-            <div
-              key={`${reward.id}-${index}`}
-              className="snap-start flex-none w-[220px] md:w-[280px] my-3 mx-2"
-            >
-              <RewardCard
-                campaign={reward.campaign}
-                reward={{
-                  id: reward.id,
-                  title: reward.totalAvailable > 1 
-                    ? `${reward.title} (${reward.totalAvailable} available)` 
-                    : reward.title,
-                  description: reward.description,
-                  image: reward.image,
-                  amount: reward.amount,
-                  campaign_id: reward.campaign.id,
-                }}
-                loading={false}
-                error={null}
-              />
+          {groupedRewards
+            .slice(0, displayedCampaigns.length * 2)
+            .map(({ reward, campaign }, index) => (
+              <div
+                key={`${reward.id}-${campaign.id}-${index}`}
+                className="snap-start flex-none w-[220px] md:w-[280px] my-3 mx-2"
+              >
+                <RewardCard
+                  campaign={campaign}
+                  reward={reward}
+                  loading={false}
+                  error={null}
+                />
+              </div>
+            ))}
+
+          {isLoadingMore && (
+            <div className="flex-shrink-0 flex items-center justify-center w-[280px] h-full">
+              <div className="flex flex-col items-center space-y-2 text-muted-foreground">
+                <Loader2 className="h-6 w-6 animate-spin" />
+                <span className="text-sm">Loading more...</span>
+              </div>
             </div>
-          ))}
+          )}
+
+          {hasMore && !isLoadingMore && (
+            <div className="flex-shrink-0 flex items-center justify-center w-[280px] h-full">
+              <Button
+                variant="outline"
+                onClick={loadMoreCampaigns}
+                className="flex flex-col items-center space-y-2 h-32 w-full"
+              >
+                <ChevronRight className="h-6 w-6" />
+                <span className="text-sm">Load More</span>
+                {totalCount > 0 && (
+                  <span className="text-xs text-muted-foreground">
+                    {displayedCampaigns.length} of {totalCount}
+                  </span>
+                )}
+              </Button>
+            </div>
+          )}
         </>
       );
     }
@@ -180,15 +247,24 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
     );
   };
 
+  const progress =
+    totalCount > 0 ? (displayedCampaigns.length / totalCount) * 100 : 0;
+
   return (
     <div className="w-full my-6">
       <div className="flex justify-between items-center mb-3">
         <div className="flex flex-col">
           <h2 className="text-xl font-bold">{title}</h2>
-          {showProgress && uniqueRewards.length > 0 && (
+          {showProgress && totalCount > 0 && (
             <div className="flex items-center space-x-2 mt-1">
+              <div className="w-24 h-1 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-trust transition-all duration-300 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
               <span className="text-xs text-muted-foreground">
-                {uniqueRewards.length} unique rewards available
+                {displayedCampaigns.length} of {totalCount}
               </span>
             </div>
           )}
@@ -211,10 +287,10 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
             variant="outline"
             size="icon"
             onClick={scrollRight}
-            disabled={!canScrollRight}
+            disabled={!canScrollRight && !hasMore}
             className={cn(
               'bg-white text-gray-800 hover:bg-white hover:text-gray-800 rounded-full transition-all duration-200',
-              !canScrollRight && 'opacity-50 cursor-not-allowed',
+              !canScrollRight && !hasMore && 'opacity-50 cursor-not-allowed',
             )}
           >
             <ChevronRight className="h-4 w-4" />
@@ -230,11 +306,27 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
         {showContent()}
       </div>
 
-      {uniqueRewards.length > 0 && (
-        <div className="text-center mt-2">
-          <p className="text-sm text-gray-500">
-            Showing {uniqueRewards.length} unique rewards
-          </p>
+      {hasMore && displayedCampaigns.length > 0 && (
+        <div className="flex justify-center mt-4">
+          <Button
+            variant="ghost"
+            onClick={loadMoreCampaigns}
+            disabled={isLoadingMore}
+            className="bg-white text-sm text-gray-800"
+          >
+            {isLoadingMore ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              `Load more rewards ${
+                totalCount > 0
+                  ? `(${totalCount - displayedCampaigns.length} remaining)`
+                  : ''
+              }`
+            )}
+          </Button>
         </div>
       )}
     </div>
