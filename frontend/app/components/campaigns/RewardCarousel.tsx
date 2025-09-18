@@ -62,30 +62,22 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
 
     const map = new Map<string, GroupedReward>();
 
-    campaigns.forEach((campaign) => {
-      if (!campaign.rewards || campaign.rewards.length === 0) return;
+    campaign.rewards.forEach((reward: any) => {
+      // group by campaign + reward id
+      const key = `${campaign.id}-${reward.id}`;
+      const existing = map.get(key);
 
-      campaign.rewards.forEach((reward: any) => {
-        const key = String(reward.id);
-        const existing = map.get(key);
-
-        if (!existing) {
-          map.set(key, {
-            reward,
-            campaigns: [campaign],
-            count: 1,
-          });
-        } else {
-          // increase occurrence count
-          existing.count += 1;
-
-          // keep a unique list of campaigns (avoid duplicates)
-          if (!existing.campaigns.find((c) => c.id === campaign.id)) {
-            existing.campaigns.push(campaign);
-          }
-        }
-      });
+      if (!existing) {
+        map.set(key, {
+          reward,
+          campaigns: [campaign],
+          count: 1,
+        });
+      } else {
+        existing.count += 1;
+      }
     });
+
 
     // Convert to array and return
     return Array.from(map.values());
