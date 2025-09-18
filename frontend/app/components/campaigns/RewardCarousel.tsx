@@ -27,6 +27,16 @@ export interface RewardCarouselProps {
   autoLoad?: boolean;
 }
 
+interface GroupedReward {
+  id: number;
+  title: string;
+  description: string;
+  image?: string;
+  amount: number;
+  campaign: CampaignResponseDataType;
+  count: number; // Number of rewards with this ID
+}
+
 const RewardCarousel: React.FC<RewardCarouselProps> = ({
   campaigns = [],
   loading,
@@ -51,10 +61,12 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
   const [canScrollRight, setCanScrollRight] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(hasNextPage);
 
-  // Extract rewards from campaigns
-  const rewards = useMemo(() => {
+  // Group rewards by their ID to avoid duplicates
+  const groupedRewards = useMemo(() => {
     if (!campaigns) return [];
-    return campaigns
+    
+    // First, get all rewards from eligible campaigns
+    const allRewards = campaigns
       .filter(
         (campaign) =>
           campaign.status !== 'completed' &&
@@ -68,6 +80,33 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
           campaign,
         })),
       );
+
+    // Group rewards by their ID
+    const rewardGroups = new Map<number, GroupedReward>();
+    
+    allRewards.forEach((reward) => {
+      if (rewardGroups.has(reward.id)) {
+        // If reward ID already exists, increment the count
+        const existing = rewardGroups.get(reward.id)!;
+        rewardGroups.set(reward.id, {
+          ...existing,
+          count: existing.count + 1,
+        });
+      } else {
+        // Create new grouped reward
+        rewardGroups.set(reward.id, {
+          id: reward.id,
+          title: reward.title,
+          description: reward.description,
+          image: reward.image,
+          amount: reward.amount,
+          campaign: reward.campaign,
+          count: 1,
+        });
+      }
+    });
+
+    return Array.from(rewardGroups.values());
   }, [campaigns]);
 
   // Initialize displayed campaigns with the first batch
@@ -186,19 +225,28 @@ const RewardCarousel: React.FC<RewardCarouselProps> = ({
       );
     }
 
-    if (rewards.length > 0) {
+    if (groupedRewards.length > 0) {
       return (
         <>
-          {rewards
-            .slice(0, displayedCampaigns.length * 2)
-            .map((reward, index) => (
+          {groupedRewards
+            .slice(0, displayedCampaigns.length * 2) // Adjust slice based on displayed campaigns
+            .map((groupedReward, index) => (
               <div
-                key={`${reward.campaign.id}-${reward.id}-${index}`}
+                key={`${groupedReward.id}-${index}`}
                 className="snap-start flex-none w-[220px] md:w-[280px] my-3 mx-2"
               >
                 <RewardCard
-                  campaign={reward.campaign}
-                  reward={reward}
+                  campaign={groupedReward.campaign}
+                  reward={{
+                    id: groupedReward.id,
+                    title: groupedReward.count > 1 
+                      ? `${groupedReward.title} (${groupedReward.count} available)` 
+                      : groupedReward.title,
+                    description: groupedReward.description,
+                    image: groupedReward.image,
+                    amount: groupedReward.amount,
+                    campaign_id: groupedReward.campaign.id,
+                  }}
                   loading={false}
                   error={null}
                 />
