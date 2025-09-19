@@ -260,11 +260,11 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             <div className="mb-5 p-3 bg-blue-50 rounded-lg">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-blue-700">
+                  <span className="text-sm font-medium text-gray-700">
                     Minimum Investment
                   </span>
                 </div>
-                <span className="text-base font-semibold text-blue-900">
+                <span className="text-base font-semibold text-gray-900">
                   {campaign?.currency_symbol ||
                     campaign?.currency?.toUpperCase()}{' '}
                   {parseFloat(
