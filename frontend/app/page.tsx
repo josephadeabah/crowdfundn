@@ -48,9 +48,9 @@ const HomePage = () => {
             <InvestmentContracts />
           </div>
         </div>
-        <section className="">
+        <div className="">
           <BrandIdentity />
-        </section>
+        </div>
         <div className="w-full bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <PartnersCarousel />
