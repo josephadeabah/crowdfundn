@@ -178,9 +178,18 @@ const RiskWarning = () => {
           </div>
           <p className="text-gray-700 mb-4">
             If you are interested in learning more about how to protect
-            yourself, visit the SEC Ghana's website. For further information
-            about investment-based crowdfunding, consult with a qualified
-            financial advisor familiar with Ghana's investment landscape.
+            yourself, visit the{' '}
+            <a
+              href="https://www.sec.gov.gh"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 underline font-medium"
+            >
+              SEC Ghana's website
+            </a>
+            . For further information about investment-based crowdfunding,
+            consult with a qualified financial advisor familiar with Ghana's
+            investment landscape.
           </p>
           <div className="bg-amber-100 border border-amber-200 rounded-md p-4">
             <p className="text-amber-800 text-sm font-medium">
