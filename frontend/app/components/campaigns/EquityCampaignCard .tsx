@@ -117,7 +117,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
         type={toast.type}
       />
       <div
-        className="group relative overflow-hidden bg-white hover:shadow-lg transition-all duration-300 h-full flex flex-col rounded-none border border-gray-100"
+        className="group relative overflow-hidden bg-white hover:shadow-lg transition-all duration-300 h-full flex flex-col rounded-lg border border-gray-200"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -125,12 +125,12 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
           href={`/campaign/${campaign.slug || campaign.id}?tab=invest&${generateRandomString()}`}
           className="block flex-1"
         >
-          <div className="relative aspect-[3/2] overflow-hidden">
+          <div className="relative aspect-[4/3] overflow-hidden">
             <Image
               src={campaign?.media || '/bantuhive.svg'}
               alt={campaign.title}
               fill
-              sizes="(max-width: 768px) 280px, 350px"
+              sizes="(max-width: 768px) 320px, 380px"
               className={cn(
                 'object-cover transition-transform duration-700',
                 isHovered ? 'scale-105' : 'scale-100',
@@ -153,7 +153,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
 
             <button
               className={cn(
-                'absolute top-4 right-4 p-2 rounded-full transition-colors bg-white/90 backdrop-blur-sm',
+                'absolute top-4 right-4 p-2.5 rounded-full transition-colors bg-white/90 backdrop-blur-sm',
                 isFavorited
                   ? 'text-green-600'
                   : 'text-gray-400 hover:text-green-600',
@@ -163,47 +163,47 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
                 isFavorited ? 'Remove from favorites' : 'Add to favorites'
               }
             >
-              <Heart className={cn('h-4 w-4', isFavorited && 'fill-current')} />
+              <Heart className={cn('h-5 w-5', isFavorited && 'fill-current')} />
             </button>
           </div>
 
           {/* Fundraiser profile positioned to overlap */}
-          <div className="relative px-4 -mt-5 z-10 flex items-end justify-end">
+          <div className="relative px-5 -mt-6 z-10 flex items-end justify-end">
             <div className="flex flex-col items-end">
-              <div className="bg-white rounded-full p-0.5 shadow-lg ring-1 ring-gray-200">
+              <div className="bg-white rounded-full p-1 shadow-lg ring-2 ring-white">
                 <Avatar
                   name={campaign?.fundraiser?.profile?.name}
-                  size="sm"
+                  size="md"
                   imageUrl={campaign?.fundraiser?.profile?.avatar}
                 />
               </div>
-              <span className="mt-1 text-xs font-medium text-gray-700 bg-white/95 px-2 py-0.5 rounded-full shadow-sm">
+              <span className="mt-2 text-sm font-medium text-gray-700 bg-white/95 px-3 py-1 rounded-full shadow-sm">
                 {campaign?.fundraiser?.profile?.name}
               </span>
             </div>
           </div>
 
-          <div className="p-4 pt-1">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 leading-tight">
+          <div className="p-5 pt-2">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2 leading-tight">
               {campaign.title}
             </h3>
 
             {/* Category badge */}
-            <span className="inline-block mb-4 px-2.5 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full">
+            <span className="inline-block mb-4 px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-full">
               {deslugify(campaign?.category)}
             </span>
 
             {/* Investment Metrics Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-2 gap-4 mb-5">
               {/* Valuation */}
-              <div className="rounded-lg p-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <TrendingUp className="h-3 w-3 text-gray-600" />
-                  <span className="text-xs text-gray-600 font-medium">
+              <div className="rounded-lg p-2 bg-gray-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm text-gray-600 font-medium">
                     Valuation
                   </span>
                 </div>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-base font-semibold text-gray-900">
                   {campaign?.currency_symbol ||
                     campaign?.currency?.toUpperCase()}{' '}
                   {parseFloat(
@@ -213,14 +213,14 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
               </div>
 
               {/* Raised Amount */}
-              <div className="rounded-lg p-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <DollarSign className="h-3 w-3 text-gray-600" />
-                  <span className="text-xs text-gray-600 font-medium">
+              <div className="rounded-lg p-2 bg-gray-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <DollarSign className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm text-gray-600 font-medium">
                     Raised
                   </span>
                 </div>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-base font-semibold text-gray-900">
                   {campaign?.currency_symbol ||
                     campaign?.currency?.toUpperCase()}{' '}
                   {parseFloat(
@@ -230,41 +230,41 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
               </div>
 
               {/* Investors */}
-              <div className="rounded-lg p-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <Users className="h-3 w-3 text-gray-600" />
-                  <span className="text-xs text-gray-600 font-medium">
+              <div className="rounded-lg p-2 bg-gray-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm text-gray-600 font-medium">
                     Investors
                   </span>
                 </div>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-base font-semibold text-gray-900">
                   {campaign.total_investors}
                 </p>
               </div>
 
               {/* Days Left */}
-              <div className="rounded-lg p-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <Clock className="h-3 w-3 text-gray-600" />
-                  <span className="text-xs text-gray-600 font-medium">
+              <div className="rounded-lg p-2 bg-gray-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm text-gray-600 font-medium">
                     Days Left
                   </span>
                 </div>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-base font-semibold text-gray-900">
                   {campaign.remaining_days}
                 </p>
               </div>
             </div>
 
             {/* Minimum Investment */}
-            <div className="mb-4">
-              <div className="flex justify-between items-center rounded-lg p-1">
+            <div className="mb-5 p-3 bg-blue-50 rounded-lg">
+              <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-600 font-medium">
+                  <span className="text-sm font-medium text-blue-700">
                     Minimum Investment
                   </span>
                 </div>
-                <span className="text-sm font-semibold text-gray-900">
+                <span className="text-base font-semibold text-blue-900">
                   {campaign?.currency_symbol ||
                     campaign?.currency?.toUpperCase()}{' '}
                   {parseFloat(
@@ -278,14 +278,14 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             <div className="flex justify-between items-center">
               <Button
                 variant="outline"
-                className="flex-1 bg-white hover:bg-white hover:text-gray-800 text-gray-800 font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 text-sm"
+                className="flex-1 bg-white hover:bg-white hover:text-gray-800 text-gray-800 font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-base"
               >
                 Invest Now
               </Button>
               <InfoTooltip
                 id={`tooltip-${campaign.id}`}
                 content="This offering is hosted by BantuHive LLC"
-                className="ml-2"
+                className="ml-3"
               />
             </div>
           </div>

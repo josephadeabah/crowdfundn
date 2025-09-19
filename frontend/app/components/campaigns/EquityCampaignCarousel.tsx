@@ -3,7 +3,6 @@ import { Button } from '../ui/button';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
-import CampaignCard from './CampaignCard';
 import ErrorPage from '../errorpage/ErrorPage';
 import CampaignCardSkeleton from '@/app/loaders/CampaignCardSkeleton';
 import EquityCampaignCard from './EquityCampaignCard ';
@@ -108,7 +107,7 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
 
   const scrollLeft = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+      carouselRef.current.scrollBy({ left: -380, behavior: 'smooth' });
     }
   };
 
@@ -122,10 +121,10 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
         await loadMoreCampaigns();
         // Wait a bit for the new content to render, then scroll
         setTimeout(() => {
-          carouselRef.current?.scrollBy({ left: 320, behavior: 'smooth' });
+          carouselRef.current?.scrollBy({ left: 380, behavior: 'smooth' });
         }, 100);
       } else {
-        carouselRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+        carouselRef.current.scrollBy({ left: 380, behavior: 'smooth' });
       }
     }
   };
@@ -155,7 +154,7 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
           {displayedCampaigns.map((campaign) => (
             <div
               key={campaign.id}
-              className="snap-start flex-none w-[220px] md:w-[280px] my-3 mx-2"
+              className="snap-start flex-none w-[300px] md:w-[380px] my-4 mx-3" // Increased width
             >
               <EquityCampaignCard
                 campaign={campaign}
@@ -167,7 +166,7 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
 
           {/* Loading indicator for more campaigns */}
           {isLoadingMore && (
-            <div className="flex-shrink-0 flex items-center justify-center w-[280px] h-full">
+            <div className="flex-shrink-0 flex items-center justify-center w-[380px] h-full">
               <div className="flex flex-col items-center space-y-2 text-muted-foreground">
                 <Loader2 className="h-6 w-6 animate-spin" />
                 <span className="text-sm">Loading more...</span>
@@ -177,7 +176,7 @@ const EquityCampaignCarousel: React.FC<CampaignCarouselProps> = ({
 
           {/* Load more button as fallback */}
           {hasMore && !isLoadingMore && (
-            <div className="flex-shrink-0 flex items-center justify-center w-[280px] h-full">
+            <div className="flex-shrink-0 flex items-center justify-center w-[380px] h-full">
               <Button
                 variant="outline"
                 onClick={loadMoreCampaigns}
