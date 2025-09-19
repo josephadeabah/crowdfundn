@@ -28,11 +28,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
 
   return (
     <div
-      className={cn(
-        'bg-gray-300 text-black z-50',
-        'px-4 py-3',
-        className,
-      )}
+      className={cn('bg-gray-300 text-black z-50', 'px-4 py-3', className)}
       role="alert"
       aria-live="polite"
     >
@@ -40,11 +36,11 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <p className="text-sm">
-              Don't invest unless you're prepared to lose all the money you invest. 
-              This is a high-risk investment and you are unlikely to be protected if 
-              something goes wrong.{' '}
-              <a 
-                href="/info/risk-warning" 
+              Don't invest unless you're prepared to lose all the money you
+              invest. This is a high-risk investment and you are unlikely to be
+              protected if something goes wrong.{' '}
+              <a
+                href="/info/risk-warning"
                 className="text-gray-700-600 hover:text-gray-800 underline font-medium"
               >
                 Take 2 mins to learn more
