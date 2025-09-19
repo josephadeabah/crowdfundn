@@ -10,6 +10,7 @@ import {
 
 const RiskWarning = () => {
   return (
+    <div className="min-h-screen bg-white">
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8">
@@ -209,6 +210,7 @@ const RiskWarning = () => {
         </p>
         <p className="mt-1">Last updated: {new Date().toLocaleDateString()}</p>
       </div>
+    </div>
     </div>
   );
 };
