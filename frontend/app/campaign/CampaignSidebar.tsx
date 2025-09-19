@@ -3,6 +3,7 @@ import DonationButton from '@/app/components/donate/DonationButton';
 import ProgressRing from '@/app/components/ring/ProgressRing';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
 import Link from 'next/link';
+import TinyProgressRing from '@/app/components/ring/TinyProgressRing';
 
 interface CampaignSidebarProps {
   campaign: SingleCampaignResponseDataType | null;
@@ -119,9 +120,15 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                 <strong>{backersCount}</strong>{' '}
                 {isEquityCampaign ? 'Investors' : 'Backers'}
               </p>
-              <p className="mt-2 text-sm text-gray-600">
-                <strong>{campaign?.remaining_days || 0}</strong> days left
-              </p>
+              <div className="mt-2 flex items-center gap-2">
+                <TinyProgressRing
+                  remainingDays={Number(campaign?.remaining_days) || 0}
+                  customColor="#22c55e" // Green color to match your theme
+                />
+                {/* <span className="text-sm text-gray-600">
+                  <strong>{campaign?.remaining_days || 0}</strong> days left
+                </span> */}
+              </div>
             </div>
             <div className="flex justify-center sm:justify-end w-full sm:w-auto">
               <ProgressRing
