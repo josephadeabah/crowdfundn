@@ -44,7 +44,7 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
               This is a high-risk investment and you are unlikely to be protected if 
               something goes wrong.{' '}
               <a 
-                href="/risk-warning" 
+                href="/info/risk-warning" 
                 className="text-gray-700-600 hover:text-gray-800 underline font-medium"
               >
                 Take 2 mins to learn more
