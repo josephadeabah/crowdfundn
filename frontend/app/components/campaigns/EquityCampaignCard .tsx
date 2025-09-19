@@ -257,14 +257,14 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             </div>
 
             {/* Minimum Investment */}
-            <div className="mb-5 p-3 bg-blue-50 rounded-lg">
+            <div className="mb-5 p-3 bg-orange-50 rounded-lg">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-orange-700">
                     Minimum Investment
                   </span>
                 </div>
-                <span className="text-base font-semibold text-gray-900">
+                <span className="text-base font-semibold text-orange-900">
                   {campaign?.currency_symbol ||
                     campaign?.currency?.toUpperCase()}{' '}
                   {parseFloat(
