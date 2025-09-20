@@ -16,20 +16,32 @@ const ClocklikeProgressRing = ({
 
   // SVG parameters
   const size = 60;
-  const strokeWidth = 4;
   const center = size / 2;
-  const radius = center - strokeWidth;
-  const circumference = 2 * Math.PI * radius;
+  const radius = size / 2;
 
   useEffect(() => {
-    // progress = % of days remaining
+    // % of days remaining
     const percentRemaining = (remainingDays / totalDays) * 100;
     setProgress(percentRemaining);
   }, [remainingDays, totalDays]);
 
-  // Stroke offset for the progress ring
-  const strokeDashoffset =
-    circumference - (progress / 100) * circumference;
+  // Convert progress % to angle in radians
+  const angle = (progress / 100) * 2 * Math.PI;
+
+  // End point of arc
+  const x = center + radius * Math.sin(angle);
+  const y = center - radius * Math.cos(angle);
+
+  // Large arc flag (for angles > 180°)
+  const largeArcFlag = angle > Math.PI ? 1 : 0;
+
+  // Path for filled "pie slice"
+  const pathData = `
+    M ${center} ${center}
+    L ${center} 0
+    A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x} ${y}
+    Z
+  `;
 
   return (
     <div className="flex items-center gap-2">
@@ -40,57 +52,21 @@ const ClocklikeProgressRing = ({
         aria-label={`${progress.toFixed(0)}% time remaining`}
       >
         <svg
-          className="transform transition-transform duration-300 ease-in-out group-hover:scale-105"
           width={size}
           height={size}
           viewBox={`0 0 ${size} ${size}`}
+          className="transform transition-transform duration-300 ease-in-out group-hover:scale-105"
         >
-          {/* Inner circle filled with teal */}
+          {/* Background circle (light gray) */}
           <circle
             cx={center}
             cy={center}
             r={radius}
-            fill={customColor}
-            opacity={0.15}
+            fill="#E5E7EB"
           />
 
-          {/* Background track */}
-          <circle
-            stroke="#E5E7EB"
-            strokeWidth={strokeWidth}
-            fill="none"
-            cx={center}
-            cy={center}
-            r={radius}
-          />
-
-          {/* Progress ring */}
-          <circle
-            stroke={customColor}
-            strokeWidth={strokeWidth}
-            fill="none"
-            cx={center}
-            cy={center}
-            r={radius}
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            strokeLinecap="round"
-            className="transition-all duration-700 ease-in-out"
-            transform={`rotate(-90 ${center} ${center})`}
-          />
-
-          {/* Percentage text */}
-          <text
-            x="50%"
-            y="50%"
-            textAnchor="middle"
-            dy="0.3em"
-            fontSize="12"
-            fontWeight="bold"
-            fill={customColor}
-          >
-            {progress.toFixed(0)}%
-          </text>
+          {/* Sweeping filled sector */}
+          <path d={pathData} fill={customColor} />
         </svg>
       </div>
 
