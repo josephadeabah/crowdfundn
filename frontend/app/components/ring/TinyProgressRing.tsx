@@ -18,11 +18,13 @@ const ClocklikeProgressRing = ({
   const strokeWidth = 2;
   const center = size / 2;
   const radius = center - strokeWidth;
+  const circumference = 2 * Math.PI * radius;
 
   useEffect(() => {
-    // Calculate progress based on day change (not total days)
-    // This creates a smooth visual transition as days pass
-    const targetProgress = 100 - ((remainingDays % 1) * 100);
+    // Calculate progress based on the fractional part of remaining days
+    // This represents progress through the current day (0-100%)
+    const fractionalDay = remainingDays % 1;
+    const targetProgress = 100 - (fractionalDay * 100);
     
     const timer = setTimeout(() => {
       setProgress(targetProgress);
@@ -35,6 +37,9 @@ const ClocklikeProgressRing = ({
   // Calculate rotation angle for clock-like movement
   // The hand makes a full rotation each day
   const rotation = (progress / 100) * 360;
+
+  // Calculate stroke dash for the filled progress ring
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   // Generate marks that show the progression of a single day
   const generateHourMarks = () => {
@@ -77,7 +82,7 @@ const ClocklikeProgressRing = ({
     const markLength = 2;
     const markWidth = 1;
     
-    // Show progress through current day (simulated)
+    // Show progress through current day
     const progressMarks = Math.floor(progress / 8.33); // 12 marks for 100%
     
     for (let i = 0; i < progressMarks; i++) {
@@ -132,6 +137,22 @@ const ClocklikeProgressRing = ({
             cx={center}
             cy={center}
             r={radius}
+          />
+
+          {/* Filled progress ring - shows percentage completion of current day */}
+          <circle
+            stroke={customColor}
+            strokeWidth={strokeWidth}
+            fill="none"
+            cx={center}
+            cy={center}
+            r={radius}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            opacity={0.3}
+            className="transition-all duration-500 ease-in-out"
+            transform={`rotate(-90 ${center} ${center})`}
           />
 
           {/* Hour marks (static) */}
