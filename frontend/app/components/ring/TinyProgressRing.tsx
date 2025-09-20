@@ -128,12 +128,12 @@ const ClocklikeProgressRing = ({
           height={size}
           viewBox={`0 0 ${size} ${size}`}
         >
-          {/* Background circle */}
+          {/* Background circle - NO FILL */}
           <circle
             className="text-gray-200"
             stroke="currentColor"
             strokeWidth={strokeWidth}
-            fill="none"
+            fill="transparent" // Changed from default fill to transparent
             cx={center}
             cy={center}
             r={radius}
@@ -150,7 +150,7 @@ const ClocklikeProgressRing = ({
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
-            opacity={0.3}
+            opacity={0.6} // Increased opacity for better visibility
             className="transition-all duration-500 ease-in-out"
             transform={`rotate(-90 ${center} ${center})`}
           />
