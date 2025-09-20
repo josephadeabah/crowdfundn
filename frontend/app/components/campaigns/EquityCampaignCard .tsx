@@ -248,7 +248,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className="h-4 w-4 text-gray-600" />
                   <span className="text-sm text-gray-600 font-medium">
-                    Days Left
+                    Duration
                   </span>
                 </div>
                 <p className="text-base font-semibold text-gray-900">
