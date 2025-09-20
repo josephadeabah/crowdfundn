@@ -164,12 +164,11 @@ const DonationButton: React.FC<DonationButtonProps> = ({
                 id="payment-info-tooltip"
                 content={paymentInfoTooltip}
                 iconSize={18}
-                className="hidden md:block" // Hide tooltip on mobile to save space
               />
             </div>
 
-            {/* Action buttons - stack on mobile, row on desktop */}
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            {/* Action buttons - always in a row, even on mobile */}
+            <div className="flex flex-row gap-3 w-full md:w-auto">
               <Button
                 type="button"
                 size="sm"
@@ -189,19 +188,6 @@ const DonationButton: React.FC<DonationButtonProps> = ({
                 {isProcessing ? 'Processing...' : 'Proceed'}
               </Button>
             </div>
-          </div>
-
-          {/* Mobile tooltip - show below title on mobile */}
-          <div className="md:hidden mb-4">
-            <InfoTooltip
-              id="payment-info-tooltip-mobile"
-              content={paymentInfoTooltip}
-              iconSize={16}
-              className="text-gray-500"
-            />
-            <span className="text-sm text-gray-600 ml-2">
-              Tap for payment info
-            </span>
           </div>
 
           <hr className="mb-6" />
