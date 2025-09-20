@@ -150,7 +150,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
       <Modal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        size="xlarge"
+        size="small"
         closeOnBackdropClick={true}
       >
         <div className="overflow-y-auto max-h-[80vh] p-6 bg-white text-gray-800">
