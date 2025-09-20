@@ -144,7 +144,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
         size="xlarge"
         closeOnBackdropClick={true}
       >
-        <div className="overflow-y-auto max-h-[60vh] p-2 bg-white text-gray-800">
+        <div className="overflow-y-auto max-h-[60vh] p-2 top-12 bg-white text-gray-800">
           <h2 className="text-2xl font-bold mb-1">Select Payment Type</h2>
           <div className="text-orange-500 text-xs">
             We currently support payment with PayStack. If your preferred
