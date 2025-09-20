@@ -1,5 +1,5 @@
-"use client";
-import React, { useEffect, useState } from "react";
+'use client';
+import React, { useEffect, useState } from 'react';
 
 interface ClocklikeProgressRingProps {
   remainingDays: number;
@@ -8,7 +8,7 @@ interface ClocklikeProgressRingProps {
 
 const ClocklikeProgressRing = ({
   remainingDays,
-  customColor = "#2DD4BF", // teal
+  customColor = '#2DD4BF', // teal
 }: ClocklikeProgressRingProps) => {
   const [progress, setProgress] = useState(0);
 
@@ -67,12 +67,7 @@ const ClocklikeProgressRing = ({
           className="transform transition-transform duration-300 ease-in-out group-hover:scale-105"
         >
           {/* Background circle (light gray) */}
-          <circle
-            cx={center}
-            cy={center}
-            r={radius}
-            fill="#E5E7EB"
-          />
+          <circle cx={center} cy={center} r={radius} fill="#E5E7EB" />
 
           {/* Sweeping filled sector - shows elapsed time */}
           <path d={pathData} fill={customColor} opacity={0.7} />
@@ -90,24 +85,17 @@ const ClocklikeProgressRing = ({
           />
 
           {/* Center dot */}
-          <circle
-            cx={center}
-            cy={center}
-            r={1.5}
-            fill="#ffffff"
-          />
+          <circle cx={center} cy={center} r={1.5} fill="#ffffff" />
         </svg>
       </div>
 
       <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800 transition-colors duration-300">
         {Math.floor(remainingDays)} days left
       </span>
-      
+
       {/* Optional: Show compressed scale indicator for long campaigns */}
       {remainingDays > 90 && (
-        <span className="text-xs text-gray-500 ml-1">
-          (compressed scale)
-        </span>
+        <span className="text-xs text-gray-500 ml-1">(compressed scale)</span>
       )}
     </div>
   );
