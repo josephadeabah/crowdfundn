@@ -128,7 +128,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
   const paymentInfoTooltip = `
     We currently support payment with PayStack. If your preferred
     payment method is disabled, kindly wait for future availability.
-    <br /><br />
+    <br />
     You'll receive one email from us and one from Paystack after payment.
   `;
 
@@ -157,15 +157,17 @@ const DonationButton: React.FC<DonationButtonProps> = ({
           {/* Header with title and action buttons - responsive layout */}
           <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl md:text-2xl font-bold">Select Payment Type</h2>
-              <InfoTooltip 
-                id="payment-info-tooltip" 
+              <h2 className="text-xl md:text-2xl font-bold">
+                Select Payment Type
+              </h2>
+              <InfoTooltip
+                id="payment-info-tooltip"
                 content={paymentInfoTooltip}
                 iconSize={18}
                 className="hidden md:block" // Hide tooltip on mobile to save space
               />
             </div>
-            
+
             {/* Action buttons - stack on mobile, row on desktop */}
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <Button
@@ -191,8 +193,8 @@ const DonationButton: React.FC<DonationButtonProps> = ({
 
           {/* Mobile tooltip - show below title on mobile */}
           <div className="md:hidden mb-4">
-            <InfoTooltip 
-              id="payment-info-tooltip-mobile" 
+            <InfoTooltip
+              id="payment-info-tooltip-mobile"
               content={paymentInfoTooltip}
               iconSize={16}
               className="text-gray-500"
@@ -203,7 +205,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
           </div>
 
           <hr className="mb-6" />
-          
+
           <form id="payment-form" onSubmit={handlePaymentSubmit}>
             <div className="space-y-4 mb-6">
               {paymentMethods.map((method) => (
@@ -246,7 +248,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
                 </label>
               ))}
             </div>
-            
+
             {error && (
               <p className="text-red-500 mb-4 text-sm" role="alert">
                 {error}
