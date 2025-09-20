@@ -239,11 +239,6 @@ const DonationButton: React.FC<DonationButtonProps> = ({
               </p>
             )}
           </form>
-
-          {/* Additional information at bottom */}
-          <div className="text-sm text-gray-600 mt-6 p-3 bg-gray-50 rounded-lg">
-            <p>Secure payment processing powered by PayStack</p>
-          </div>
         </div>
       </Modal>
 
