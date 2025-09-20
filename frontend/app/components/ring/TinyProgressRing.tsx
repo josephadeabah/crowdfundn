@@ -43,6 +43,42 @@ const ClocklikeProgressRing = ({
   // Calculate rotation angle for clock-like movement (inverse for countdown)
   const rotation = (progress / 100) * 360;
 
+  // Generate marks around the circumference (30 marks for 30 days)
+  const generateMarks = () => {
+    const marks = [];
+    const markLength = 2;
+    const markWidth = 1;
+    
+    for (let i = 0; i < 30; i++) {
+      const angle = (i / 30) * 360;
+      const isPast = i >= (30 - validRemainingDays);
+      
+      // Calculate mark position
+      const startAngle = angle - 90; // Start from top (12 o'clock)
+      const startX = center + radius * Math.cos((startAngle * Math.PI) / 180);
+      const startY = center + radius * Math.sin((startAngle * Math.PI) / 180);
+      const endX = center + (radius - markLength) * Math.cos((startAngle * Math.PI) / 180);
+      const endY = center + (radius - markLength) * Math.sin((startAngle * Math.PI) / 180);
+
+      marks.push(
+        <line
+          key={i}
+          x1={startX}
+          y1={startY}
+          x2={endX}
+          y2={endY}
+          stroke={isPast ? customColor : '#E5E7EB'}
+          strokeWidth={markWidth}
+          strokeLinecap="round"
+          opacity={isPast ? 0.7 : 0.5}
+          className="transition-all duration-300"
+        />
+      );
+    }
+    
+    return marks;
+  };
+
   return (
     <div className="flex items-center gap-2">
       <div
@@ -68,6 +104,9 @@ const ClocklikeProgressRing = ({
             cy={center}
             r={radius}
           />
+
+          {/* Circumference marks */}
+          {generateMarks()}
 
           {/* Progress trace (sweeping color behind the hand) */}
           <circle
