@@ -3,16 +3,17 @@ import React, { useEffect, useState } from "react";
 
 interface ClocklikeProgressRingProps {
   remainingDays: number;
-  totalDays?: number; // total campaign days
   customColor?: string;
 }
 
 const ClocklikeProgressRing = ({
   remainingDays,
-  totalDays = 30, // default campaign length
   customColor = "#2DD4BF", // teal
 }: ClocklikeProgressRingProps) => {
   const [progress, setProgress] = useState(0);
+
+  // Fixed total days for visual representation
+  const totalDays = 30;
 
   // SVG parameters
   const size = 30;
@@ -20,13 +21,13 @@ const ClocklikeProgressRing = ({
   const radius = size / 2;
 
   useEffect(() => {
-    // % of days remaining
+    // % of days remaining (inverse for visual progress)
     const percentRemaining = (remainingDays / totalDays) * 100;
     setProgress(percentRemaining);
-  }, [remainingDays, totalDays]);
+  }, [remainingDays]);
 
-  // Convert progress % to angle in radians
-  const angle = (progress / 100) * 2 * Math.PI;
+  // Convert progress % to angle in radians (inverse for countdown)
+  const angle = ((100 - progress) / 100) * 2 * Math.PI;
 
   // End point of arc
   const x = center + radius * Math.sin(angle);
@@ -35,7 +36,7 @@ const ClocklikeProgressRing = ({
   // Large arc flag (for angles > 180°)
   const largeArcFlag = angle > Math.PI ? 1 : 0;
 
-  // Path for filled "pie slice"
+  // Path for filled "pie slice" - starts from top (12 o'clock)
   const pathData = `
     M ${center} ${center}
     L ${center} 0
@@ -48,8 +49,8 @@ const ClocklikeProgressRing = ({
       <div
         className="relative inline-flex items-center justify-center group"
         role="timer"
-        aria-valuenow={progress}
-        aria-label={`${progress.toFixed(0)}% time remaining`}
+        aria-valuenow={remainingDays}
+        aria-label={`${remainingDays} days remaining`}
       >
         <svg
           width={size}
@@ -65,8 +66,28 @@ const ClocklikeProgressRing = ({
             fill="#E5E7EB"
           />
 
-          {/* Sweeping filled sector */}
-          <path d={pathData} fill={customColor} />
+          {/* Sweeping filled sector - shows elapsed time */}
+          <path d={pathData} fill={customColor} opacity={0.7} />
+
+          {/* Clock hand */}
+          <line
+            x1={center}
+            y1={center}
+            x2={center}
+            y2={center - radius + 3} // Slightly shorter than full radius
+            stroke="#ffffff"
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            transform={`rotate(${(100 - progress) * 3.6} ${center} ${center})`} // Convert % to degrees
+          />
+
+          {/* Center dot */}
+          <circle
+            cx={center}
+            cy={center}
+            r={1.5}
+            fill="#ffffff"
+          />
         </svg>
       </div>
 
