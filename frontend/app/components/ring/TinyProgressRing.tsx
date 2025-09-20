@@ -12,7 +12,7 @@ const ClocklikeProgressRing = ({
   maxDays = 100,       // fallback scaling if no total days
   customColor = "#2DD4BF", // teal
 }: ClocklikeProgressRingProps) => {
-  const size = 60;
+  const size = 30;
   const center = size / 2;
   const radius = size / 2;
 
