@@ -197,7 +197,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
             {/* Investment Metrics Grid */}
             <div className="grid grid-cols-2 gap-4 mb-5">
               {/* Valuation */}
-              <div className="rounded-lg p-2 bg-gray-50">
+              <div className="rounded-lg p-2 bg-white">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="h-4 w-4 text-gray-600" />
                   <span className="text-sm text-gray-600 font-medium">
@@ -214,7 +214,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
               </div>
 
               {/* Raised Amount */}
-              <div className="rounded-lg p-2 bg-gray-50">
+              <div className="rounded-lg p-2 bg-white">
                 <div className="flex items-center gap-2 mb-2">
                   <DollarSign className="h-4 w-4 text-gray-600" />
                   <span className="text-sm text-gray-600 font-medium">
@@ -231,7 +231,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
               </div>
 
               {/* Investors */}
-              <div className="rounded-lg p-2 bg-gray-50">
+              <div className="rounded-lg p-2 bg-white">
                 <div className="flex items-center gap-2 mb-2">
                   <Users className="h-4 w-4 text-gray-600" />
                   <span className="text-sm text-gray-600 font-medium">
@@ -244,7 +244,7 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
               </div>
 
               {/* Days Left */}
-              <div className="rounded-lg p-2 bg-gray-50">
+              <div className="rounded-lg p-2 bg-white">
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className="h-4 w-4 text-gray-600" />
                   <span className="text-sm text-gray-600 font-medium">

@@ -50,7 +50,7 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
               <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full mr-3">
                 <FaMoneyBillWave className="text-green-300" />
               </div>
-              <h3 className="font-medium text-gray-700">Valuation</h3>
+              <h3 className="font-medium text-gray-700">Pre-money Valuation</h3>
             </div>
             <p className="text-2xl font-bold text-gray-700">
               {fundraiserCurrency}
