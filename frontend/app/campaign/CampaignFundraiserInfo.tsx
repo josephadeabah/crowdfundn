@@ -37,11 +37,11 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
               <div className="text-sm text-gray-500 font-medium mb-2 uppercase tracking-wide">
                 Fundraiser
               </div>
-              
+
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 {fundraiserName}
               </h3>
-              
+
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-gray-700 text-sm leading-relaxed">
                   {campaign?.fundraiser?.profile?.description ||
