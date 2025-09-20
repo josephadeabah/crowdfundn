@@ -153,33 +153,34 @@ const DonationButton: React.FC<DonationButtonProps> = ({
         size="xlarge"
         closeOnBackdropClick={true}
       >
-        <div className="overflow-y-auto max-h-[80vh] py-6 bg-white text-gray-800">
-          {/* Header with title and action buttons at the top */}
-          <div className="flex justify-between items-start mb-6">
+        <div className="overflow-y-auto max-h-[80vh] p-6 bg-white text-gray-800">
+          {/* Header with title and action buttons - responsive layout */}
+          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6">
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold">Select Payment Type</h2>
-              <InfoTooltip
-                id="payment-info-tooltip"
+              <h2 className="text-xl md:text-2xl font-bold">Select Payment Type</h2>
+              <InfoTooltip 
+                id="payment-info-tooltip" 
                 content={paymentInfoTooltip}
                 iconSize={18}
+                className="hidden md:block" // Hide tooltip on mobile to save space
               />
             </div>
-
-            {/* Action buttons moved to top */}
-            <div className="flex space-x-3">
+            
+            {/* Action buttons - stack on mobile, row on desktop */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <Button
                 type="button"
                 size="sm"
                 variant="outline"
                 onClick={() => setIsPaymentModalOpen(false)}
-                className="px-4 py-2 text-gray-600 border-gray-300 hover:bg-gray-50"
+                className="w-full sm:w-auto px-4 py-2 text-gray-600 border-gray-300 hover:bg-gray-50"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 form="payment-form"
-                className="px-4 py-2 bg-green-600 text-white hover:bg-green-700"
+                className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white hover:bg-green-700"
                 disabled={isProcessing}
                 size="sm"
               >
@@ -188,8 +189,21 @@ const DonationButton: React.FC<DonationButtonProps> = ({
             </div>
           </div>
 
-          <hr className="mb-6" />
+          {/* Mobile tooltip - show below title on mobile */}
+          <div className="md:hidden mb-4">
+            <InfoTooltip 
+              id="payment-info-tooltip-mobile" 
+              content={paymentInfoTooltip}
+              iconSize={16}
+              className="text-gray-500"
+            />
+            <span className="text-sm text-gray-600 ml-2">
+              Tap for payment info
+            </span>
+          </div>
 
+          <hr className="mb-6" />
+          
           <form id="payment-form" onSubmit={handlePaymentSubmit}>
             <div className="space-y-4 mb-6">
               {paymentMethods.map((method) => (
@@ -232,7 +246,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
                 </label>
               ))}
             </div>
-
+            
             {error && (
               <p className="text-red-500 mb-4 text-sm" role="alert">
                 {error}
