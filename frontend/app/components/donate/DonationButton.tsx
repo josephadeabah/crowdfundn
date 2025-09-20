@@ -7,6 +7,7 @@ import ProcessingPayment from '@/app/components/donate/ProcessingPayment';
 import { Button } from '../button/Button';
 import { useUserContext } from '@/app/context/users/UserContext';
 import { cn } from '@/app/lib/utils';
+import InfoTooltip from '../tooltip/tooltip';
 
 interface DonationButtonProps {
   selectedTier: number | null;
@@ -123,6 +124,14 @@ const DonationButton: React.FC<DonationButtonProps> = ({
     }, 6000);
   };
 
+  // Tooltip content with the payment information
+  const paymentInfoTooltip = `
+    We currently support payment with PayStack. If your preferred
+    payment method is disabled, kindly wait for future availability.
+    <br /><br />
+    You'll receive one email from us and one from Paystack after payment.
+  `;
+
   return (
     <div className="flex items-center max-w-full">
       <button
@@ -144,26 +153,52 @@ const DonationButton: React.FC<DonationButtonProps> = ({
         size="xlarge"
         closeOnBackdropClick={true}
       >
-        <div className="overflow-y-auto max-h-[60vh] p-2 top-12 bg-white text-gray-800">
-          <h2 className="text-2xl font-bold mb-1">Select Payment Type</h2>
-          <div className="text-orange-500 text-xs">
-            We currently support payment with PayStack. If your preferred
-            payment method is disabled, kindly wait for future availability.
-            <p className="text-gray-600">
-              You'll receive one email from us and one from Paystack after
-              payment.
-            </p>
+        <div className="overflow-y-auto max-h-[80vh] p-6 bg-white text-gray-800">
+          {/* Header with title and action buttons at the top */}
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold">Select Payment Type</h2>
+              <InfoTooltip
+                id="payment-info-tooltip"
+                content={paymentInfoTooltip}
+                iconSize={18}
+              />
+            </div>
+
+            {/* Action buttons moved to top */}
+            <div className="flex space-x-3">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => setIsPaymentModalOpen(false)}
+                className="px-4 py-2 text-gray-600 border-gray-300 hover:bg-gray-50"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                form="payment-form"
+                className="px-4 py-2 bg-green-600 text-white hover:bg-green-700"
+                disabled={isProcessing}
+                size="sm"
+              >
+                {isProcessing ? 'Processing...' : 'Proceed'}
+              </Button>
+            </div>
           </div>
-          <hr className="my-4" />
-          <form onSubmit={handlePaymentSubmit}>
+
+          <hr className="mb-6" />
+
+          <form id="payment-form" onSubmit={handlePaymentSubmit}>
             <div className="space-y-4 mb-6">
               {paymentMethods.map((method) => (
                 <label
                   key={method.id}
-                  className={`flex items-center p-3 border rounded-lg text-sm cursor-pointer transition-all duration-200 ${
+                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
                     selectedPaymentMethod === method.id
-                      ? 'border-green bg-green-100'
-                      : 'border-green-200 hover:border-green-800'
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-200 hover:border-green-300'
                   } ${method.id !== 'paystack' ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <input
@@ -179,46 +214,36 @@ const DonationButton: React.FC<DonationButtonProps> = ({
                     className="sr-only"
                     disabled={method.id !== 'paystack'}
                   />
-                  <span className="flex items-center">
-                    {method.icon}
-                    <span className="ml-3">{method.name}</span>
+                  <span className="flex items-center flex-1">
+                    <span className="text-lg mr-3">{method.icon}</span>
+                    <span className="text-sm font-medium">{method.name}</span>
                   </span>
                   <span
-                    className={`ml-auto w-5 h-5 border-2 rounded-full ${
+                    className={`ml-3 flex-shrink-0 w-5 h-5 border-2 rounded-full flex items-center justify-center ${
                       selectedPaymentMethod === method.id
-                        ? 'border-green-600 bg-green-600'
-                        : 'border-green-300'
+                        ? 'border-green-500 bg-green-500'
+                        : 'border-gray-300'
                     }`}
-                  ></span>
+                  >
+                    {selectedPaymentMethod === method.id && (
+                      <span className="w-2 h-2 bg-white rounded-full"></span>
+                    )}
+                  </span>
                 </label>
               ))}
             </div>
+
             {error && (
-              <p className="text-red-500 mb-4" role="alert">
+              <p className="text-red-500 mb-4 text-sm" role="alert">
                 {error}
               </p>
             )}
-            <div className="flex justify-end space-x-3">
-              <Button
-                type="button"
-                size="lg"
-                variant="default"
-                onClick={() => setIsPaymentModalOpen(false)}
-                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="px-4 py-2 bg-green-600 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex items-center"
-                disabled={isProcessing}
-                size="lg"
-                variant="outline"
-              >
-                {isProcessing ? 'Processing...' : 'Proceed to Payment'}
-              </Button>
-            </div>
           </form>
+
+          {/* Additional information at bottom */}
+          <div className="text-sm text-gray-600 mt-6 p-3 bg-gray-50 rounded-lg">
+            <p>Secure payment processing powered by PayStack</p>
+          </div>
         </div>
       </Modal>
 
@@ -233,7 +258,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
           <ProcessingPayment
             selectedPaymentMethod={selectedPaymentMethod}
             paymentDetails={paymentDetails}
-            billing={billing} // Ensure billing is correctly structured
+            billing={billing}
             fundraiserDetails={{
               id: String(fundraiserDetails?.id),
               campaignId: String(fundraiserDetails?.campaignId),
