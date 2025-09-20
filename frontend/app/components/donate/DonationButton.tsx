@@ -153,7 +153,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
         size="xlarge"
         closeOnBackdropClick={true}
       >
-        <div className="overflow-y-auto max-h-[80vh] py-12 bg-white text-gray-800">
+        <div className="overflow-y-auto py-12 bg-white text-gray-800">
           {/* Header with title and action buttons at the top */}
           <div className="flex justify-between items-start mb-6">
             <div className="flex items-center gap-2">
