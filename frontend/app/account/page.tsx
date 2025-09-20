@@ -231,7 +231,7 @@ const ProfileTabs = () => {
             {/* Bottom Subscribe/Plan */}
             <div className="sticky bottom-0 bg-white pt-2 pb-4 px-3 border-t border-dashed border-orange-200">
               {hasPremium ? (
-                <div className="w-full py-2 px-4 border-2 border-purple-600 text-purple-800 rounded-full text-center shadow-sm">
+                <div className="w-full py-2 px-4 z-50 border-2 border-purple-600 text-purple-800 rounded-full text-center shadow-sm">
                   <div className="flex text-xs items-center justify-center mb-1">
                     <FaCrown className="mr-2" />
                     <div className="opacity-90">
@@ -242,7 +242,7 @@ const ProfileTabs = () => {
               ) : (
                 <button
                   onClick={handleSubscribeClick}
-                  className="w-full py-2 px-4 bg-green-600 text-white rounded-full flex items-center justify-center hover:bg-green-700 transition-colors duration-300 shadow-sm"
+                  className="w-full py-2 px-4 z-50 bg-green-600 text-white rounded-full flex items-center justify-center hover:bg-green-700 transition-colors duration-300 shadow-sm"
                 >
                   <FaCashRegister className="mr-2" />
                   Subscribe plan
