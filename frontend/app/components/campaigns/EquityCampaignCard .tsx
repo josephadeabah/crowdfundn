@@ -14,6 +14,7 @@ import InfoTooltip from '../tooltip/tooltip';
 import Avatar from '../avatar/Avatar';
 import { Button } from '../ui/button';
 import ToastComponent from '../toast/Toast';
+import TinyProgressRing from '../ring/TinyProgressRing';
 
 interface EquityCardProps {
   campaign: CampaignResponseDataType;
@@ -251,7 +252,10 @@ const EquityCampaignCard: React.FC<EquityCardProps> = ({
                   </span>
                 </div>
                 <p className="text-base font-semibold text-gray-900">
-                  {campaign.remaining_days}
+                  <TinyProgressRing
+                    remainingDays={Number(campaign?.remaining_days) || 0}
+                    customColor="#22c55e" // Green color to match your theme
+                  />
                 </p>
               </div>
             </div>
