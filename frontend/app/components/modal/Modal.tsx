@@ -87,7 +87,7 @@ const Modal: React.FC<ModalProps> = ({
         >
           <motion.div
             ref={modalRef}
-            className={`relative w-full ${sizeClasses[size]} bg-white rounded-sm shadow-xl modal-scrollbar my-auto`} // Added my-auto here
+            className={`relative w-full ${sizeClasses[size]} bg-white rounded-sm shadow-xl modal-scrollbar my-auto mt-16`}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
