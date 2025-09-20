@@ -92,11 +92,6 @@ const ClocklikeProgressRing = ({
       <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800 transition-colors duration-300">
         {Math.floor(remainingDays)} days left
       </span>
-
-      {/* Optional: Show compressed scale indicator for long campaigns */}
-      {remainingDays > 90 && (
-        <span className="text-xs text-gray-500 ml-1">(compressed scale)</span>
-      )}
     </div>
   );
 };
