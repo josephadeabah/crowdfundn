@@ -12,8 +12,16 @@ const ClocklikeProgressRing = ({
 }: ClocklikeProgressRingProps) => {
   const [progress, setProgress] = useState(0);
 
-  // Fixed total days for visual representation
-  const totalDays = 30;
+  // For very long campaigns, we'll use a logarithmic scale or cap the visual representation
+  // This ensures the visual remains meaningful even with hundreds of days
+  const getVisualDays = (days: number) => {
+    if (days <= 30) return days; // For short campaigns, use actual days
+    if (days <= 90) return days / 3; // For medium campaigns, compress 3:1
+    return 30; // For long campaigns, cap at 30 visual days
+  };
+
+  const visualDays = getVisualDays(remainingDays);
+  const totalVisualDays = 30; // Fixed visual scale
 
   // SVG parameters
   const size = 30;
@@ -21,10 +29,10 @@ const ClocklikeProgressRing = ({
   const radius = size / 2;
 
   useEffect(() => {
-    // % of days remaining (inverse for visual progress)
-    const percentRemaining = (remainingDays / totalDays) * 100;
+    // % of visual days remaining
+    const percentRemaining = (visualDays / totalVisualDays) * 100;
     setProgress(percentRemaining);
-  }, [remainingDays]);
+  }, [visualDays]);
 
   // Convert progress % to angle in radians (inverse for countdown)
   const angle = ((100 - progress) / 100) * 2 * Math.PI;
@@ -94,6 +102,13 @@ const ClocklikeProgressRing = ({
       <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800 transition-colors duration-300">
         {Math.floor(remainingDays)} days left
       </span>
+      
+      {/* Optional: Show compressed scale indicator for long campaigns */}
+      {remainingDays > 90 && (
+        <span className="text-xs text-gray-500 ml-1">
+          (compressed scale)
+        </span>
+      )}
     </div>
   );
 };
