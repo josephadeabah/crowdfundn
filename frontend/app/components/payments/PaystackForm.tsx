@@ -72,15 +72,16 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
   const [totalAmount, setTotalAmount] = useState(0);
   const [toastMessage, setToastMessage] = useState<string>('');
   const [toastType, setToastType] = useState<'error' | 'success'>('error');
+  const [isAnonymous, setIsAnonymous] = useState(false);
 
   // Calculate processing fee and total amount - 7% capped at 300
   useEffect(() => {
     const amount = parseFloat(paymentAmount) || 0;
     if (isEquityCampaign && amount > 0) {
       const rawFee = Math.min(amount * 0.07, 300);
-      const fee = parseFloat(rawFee.toFixed(2)); // ✅ round to 2 decimals
+      const fee = parseFloat(rawFee.toFixed(2));
       setProcessingFee(fee);
-      setTotalAmount(parseFloat((amount + fee).toFixed(2))); // ✅ also round total
+      setTotalAmount(parseFloat((amount + fee).toFixed(2)));
     } else {
       setProcessingFee(0);
       setTotalAmount(amount);
@@ -116,6 +117,16 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
       return false;
     }
 
+    // For anonymous donations, we still need email for payment processing
+    if (!paymentEmail && isAnonymous) {
+      setToastMessage(
+        'Email is required for payment processing, even for anonymous donations',
+      );
+      setToastType('error');
+      setShowToast(true);
+      return false;
+    }
+
     return true;
   };
 
@@ -125,12 +136,13 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     const amount = parseFloat(paymentAmount);
     const transactionData: DonationTransactionData = {
       email: paymentEmail,
-      fullName: cardholderName,
-      phoneNumber: paymentPhone,
+      fullName: isAnonymous ? 'Anonymous' : cardholderName,
+      phoneNumber: isAnonymous ? '' : paymentPhone,
       amount: amount,
       campaignId: campaignId,
       campaignTitle: campaignTitle,
       billingFrequency: billingFrequency,
+      anonymous: isAnonymous,
       metadata: {
         shippingData: shippingData,
         selectedRewards: selectedRewards?.map((reward) => ({
@@ -148,7 +160,6 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     }
   };
 
-  // In your PaystackForm component
   const handleEquityInvestment = async () => {
     if (!validateForm()) return;
 
@@ -157,7 +168,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
       // Create properly structured payload for backend
       const investmentPayload: InvestmentCreatePayload = {
         equity_investment: {
-          amount: totalAmount, // Use total amount including fee
+          amount: totalAmount,
           email: paymentEmail,
           phone: paymentPhone,
           full_name: cardholderName,
@@ -176,9 +187,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
       if (!result.success) {
         let errorMessage = result.error || 'Investment failed';
 
-        // Enhanced error handling for validation errors
         if (result.validationErrors) {
-          // Format all validation errors
           const formattedErrors = Object.entries(result.validationErrors)
             .map(([field, messages]) => {
               const fieldName =
@@ -193,7 +202,6 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
           errorMessage = formattedErrors || errorMessage;
         }
 
-        // Special handling for share availability errors
         if (result.data?.shares_available !== undefined) {
           const pricePerShare =
             result.data.shares_available > 0
@@ -210,7 +218,6 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         setToastType('error');
         setShowToast(true);
       } else {
-        // Handle successful investment
         setToastMessage('Investment created successfully!');
         setToastType('success');
         setShowToast(true);
@@ -248,12 +255,34 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
         )}
 
         <div className="space-y-4">
+          {/* Anonymous Donation Checkbox - Only show for non-equity campaigns */}
+          {!isEquityCampaign && (
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="anonymousDonation"
+                checked={isAnonymous}
+                onChange={(e) => setIsAnonymous(e.target.checked)}
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label
+                htmlFor="anonymousDonation"
+                className="ml-2 block text-sm text-gray-700"
+              >
+                Donate anonymously (your name won't appear publicly)
+              </label>
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="cardholderName"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Full Name
+              Full Name{' '}
+              {isAnonymous &&
+                !isEquityCampaign &&
+                '(Will not be shown publicly)'}
             </label>
             <input
               type="text"
@@ -266,6 +295,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               placeholder="John Doe"
               value={cardholderName}
               onChange={(e) => setCardholderName(e.target.value)}
+              disabled={isAnonymous && !isEquityCampaign}
               aria-invalid={!!errors.cardholderName}
               aria-describedby={
                 errors.cardholderName ? 'cardholderName-error' : undefined
@@ -286,7 +316,10 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="paymentEmail"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Email Address
+              Email Address{' '}
+              {isAnonymous &&
+                !isEquityCampaign &&
+                '(Required for payment receipt)'}
             </label>
             <input
               type="email"
@@ -317,7 +350,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="paymentPhone"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Phone Number
+              Phone Number {isAnonymous && !isEquityCampaign && '(Optional)'}
             </label>
             <input
               type="tel"
@@ -326,6 +359,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               placeholder="+233 XX XXX XXXX"
               value={paymentPhone}
               onChange={(e) => setPaymentPhone(e.target.value)}
+              disabled={isAnonymous && !isEquityCampaign}
             />
           </div>
 
@@ -334,7 +368,9 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               htmlFor="paymentAmount"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Investment Amount (GHS)
+              {isEquityCampaign
+                ? 'Investment Amount (GHS)'
+                : 'Donation Amount (GHS)'}
             </label>
             <input
               type="number"
@@ -370,11 +406,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
 
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">
-                    {isEquityCampaign
-                      ? 'Investment Amount:'
-                      : 'Donation Amount'}
-                  </span>
+                  <span className="text-gray-600">Investment Amount:</span>
                   <span className="font-medium">
                     {parseFloat(paymentAmount || '0').toFixed(2)} GHS
                   </span>

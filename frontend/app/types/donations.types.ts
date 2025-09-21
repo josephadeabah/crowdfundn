@@ -75,4 +75,5 @@ export interface DonationTransactionData {
   campaignTitle: string;
   billingFrequency: BillingFrequency | null;
   metadata?: DonationMetadata;
+  anonymous: boolean;
 }
