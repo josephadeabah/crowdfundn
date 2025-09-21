@@ -176,6 +176,7 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
       campaignTitle,
       billingFrequency,
       metadata,
+      anonymous,
     } = transactionData;
 
     setLoading(true);
@@ -186,7 +187,8 @@ export const DonationsProvider = ({ children }: { children: ReactNode }) => {
         'Content-Type': 'application/json',
       };
 
-      if (user && token) {
+      // Only add Authorization header if user is logged in AND it's not anonymous
+      if (user && token && !anonymous) {
         headers.Authorization = `Bearer ${token}`;
       }
 
