@@ -2,7 +2,7 @@ module Api
   module V1
     module Fundraisers
       class DonationsController < ApplicationController
-        before_action :authenticate_request, only: %i[index create send_thank_you_emails]
+        before_action :authenticate_request, only: %i[index send_thank_you_emails]
         before_action :set_campaign, only: [:public_donations, :create]
         before_action :validate_subaccount, only: [:create]
 
@@ -110,11 +110,6 @@ module Api
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
           donation.plan = params[:donation][:plan]
-          
-          # Merge existing metadata without overwriting anonymous token
-          if params[:donation][:metadata].is_a?(Hash)
-            donation.metadata = (donation.metadata || {}).merge(params[:donation][:metadata])
-          end
           
           donation
         end
