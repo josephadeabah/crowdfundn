@@ -97,13 +97,14 @@ module Api
           if params[:donation][:anonymous] == true || params[:donation][:anonymous] == 'true'
             donation.anonymous = true
             donation.full_name = 'Anonymous'
-            # Generate anonymous token and store it in metadata
             anonymous_token = SecureRandom.uuid
             donation.metadata = (donation.metadata || {}).merge(anonymous_token: anonymous_token)
           else
             donation.full_name = params[:donation][:full_name].presence
             donation.anonymous = false
           end
+          # ADD THIS LINE: Associate user if logged in (for non-anonymous donations)
+          donation.user = @current_user if @current_user && !donation.anonymous?
           
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
