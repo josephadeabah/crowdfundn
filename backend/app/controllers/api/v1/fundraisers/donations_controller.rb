@@ -1,4 +1,3 @@
-# app/controllers/api/v1/fundraisers/donations_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -15,11 +14,12 @@ module Api
           formatted_donations = donations.map do |donation|
             {
               id: donation.id,
-              full_name: donation.full_name || 'Anonymous',
+              full_name: donation.anonymous? ? 'Anonymous' : donation.full_name,
               amount: donation.gross_amount,
-              email: donation.email,
+              email: donation.anonymous? ? '' : donation.email,
               date: donation.created_at.iso8601,
-              status: donation.status
+              status: donation.status,
+              anonymous: donation.anonymous?
             }
           end
 
@@ -92,21 +92,28 @@ module Api
           donation = Donation.new(donation_params)
           donation.campaign = @campaign
           donation.status = Donation::STATUS_PENDING
-          donation.full_name = params[:donation][:full_name].presence || 'Anonymous'
           
-          if @current_user
-            donation.user = @current_user
-          else
-            # Generate anonymous token and store it in a simple metadata field
+          # Handle anonymous donation
+          if params[:donation][:anonymous] == true || params[:donation][:anonymous] == 'true'
+            donation.anonymous = true
+            donation.full_name = 'Anonymous'
+            # Generate anonymous token and store it in metadata
             anonymous_token = SecureRandom.uuid
-            donation.metadata = { anonymous_token: anonymous_token }
+            donation.metadata = (donation.metadata || {}).merge(anonymous_token: anonymous_token)
+          else
+            donation.full_name = params[:donation][:full_name].presence
+            donation.anonymous = false
           end
           
           donation.email = params[:donation][:email]
           donation.amount = params[:donation][:amount]
           donation.phone = params[:donation][:phone]
           donation.plan = params[:donation][:plan]
-          donation.metadata = params[:donation][:metadata]
+          
+          # Merge existing metadata without overwriting anonymous token
+          if params[:donation][:metadata].is_a?(Hash)
+            donation.metadata = (donation.metadata || {}).merge(params[:donation][:metadata])
+          end
           
           donation
         end
@@ -142,7 +149,9 @@ module Api
             currency_symbol: campaign.currency_symbol,
             fundraiser_id: campaign.fundraiser_id,
             fundraiser_name: campaign.fundraiser.full_name,
-            phone: donation.phone
+            phone: donation.phone,
+            anonymous: donation.anonymous?,
+            anonymous_token: donation.metadata&.[]('anonymous_token')
           }
           
           # Merge with existing metadata if any, but avoid deep nesting
@@ -216,6 +225,7 @@ module Api
             :full_name, 
             :phone, 
             :plan,
+            :anonymous,
             metadata: {}
           )
         end

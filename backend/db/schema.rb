@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_17_211328) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_21_005448) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -191,6 +191,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_17_211328) do
     t.string "ip_address"
     t.string "country"
     t.bigint "campaign_id"
+    t.boolean "anonymous"
     t.index ["status"], name: "index_donations_on_status"
     t.index ["user_id"], name: "index_donations_on_user_id"
   end

@@ -7,7 +7,11 @@ class Donation < ApplicationRecord
   has_many :pledges, dependent: :destroy
 
   validates :transaction_reference, presence: true
-  validates :email, presence: true
+  validates :email, presence: true, unless: :anonymous?
+  validates :full_name, presence: true, unless: :anonymous?
+
+  # Add anonymous field to database 
+  attribute :anonymous, :boolean, default: false
 
   # Define status constants like EquityInvestment
   STATUS_PENDING = 'pending'
@@ -31,6 +35,15 @@ class Donation < ApplicationRecord
   validates :status, inclusion: { in: VALID_STATUSES }
 
   scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
+
+
+  # Method to check if donation is anonymous
+  def anonymous?
+    anonymous || full_name == 'Anonymous'
+  end
+  
+  # Serialize metadata
+  serialize :metadata, JSON
 
   # Status query methods like EquityInvestment
   def pending?
