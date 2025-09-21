@@ -1,3 +1,4 @@
+# app/services/paystack_webhook/handlers/donation_handler.rb
 module PaystackWebhook::Handlers
   class DonationHandler
     include PaystackWebhook::JsonHelper
@@ -281,14 +282,6 @@ module PaystackWebhook::Handlers
       selected_rewards = Array(metadata[:selectedRewards]).map { |r| r.is_a?(Hash) ? r.deep_symbolize_keys : r }
       delivery_option = metadata[:deliveryOption].presence || 'pickup'
 
-      # Handle anonymous donations
-      is_anonymous = metadata[:anonymous] == true || metadata[:anonymous] == 'true'
-      donor_name = if is_anonymous
-                     'Anonymous'
-                   else
-                     metadata[:donor_name].presence || response.dig(:data, :customer, :name) || "Anonymous Donor"
-                   end
-
       donation_attributes = {
         transaction_reference: response.dig(:data, :reference),
         status: Donation::STATUS_SUCCESSFUL,
@@ -298,15 +291,13 @@ module PaystackWebhook::Handlers
         amount: net_amount,
         user_id: metadata[:user_id].presence,
         campaign_id: metadata[:campaign_id].presence,
-        full_name: donor_name,
+        full_name: metadata[:donor_name].presence || "Anonymous Donor",
         email: response.dig(:data, :customer, :email),
         phone: metadata[:phone],
         country: final_country,
         ip_address: donor_ip,
-        anonymous: is_anonymous,
         metadata: {
           anonymous_token: metadata[:anonymous_token],
-          anonymous: is_anonymous,
           user_id: metadata[:user_id],
           campaign_id: metadata[:campaign_id],
           campaign_metadata: campaign_metadata,
