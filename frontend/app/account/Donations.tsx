@@ -485,13 +485,20 @@ export default function Donations() {
                         donation.metadata?.campaign_metadata || {};
                       const backerId = `donation_${donation.id}`;
                       const canSendThankYou = donation.status === 'successful';
+                      const isAnonymous =
+                        donation.anonymous ||
+                        donation.full_name === 'Anonymous';
 
                       return (
                         <BackerRow
                           key={backerId}
                           backerId={backerId}
                           type="donation"
-                          backerName={donation.full_name || 'Anonymous'}
+                          backerName={
+                            isAnonymous
+                              ? 'Anonymous'
+                              : donation.full_name || 'Anonymous'
+                          }
                           amount={parseFloat(donation.gross_amount.toString())}
                           currency={
                             campaign.currency ||

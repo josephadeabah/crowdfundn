@@ -18,6 +18,7 @@ export interface Donation {
   user_id?: string;
   campaign_id: string;
   metadata?: Record<string, any>;
+  anonymous?: boolean;
 }
 
 export interface Pagination {
