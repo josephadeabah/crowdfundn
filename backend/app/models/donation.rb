@@ -36,14 +36,10 @@ class Donation < ApplicationRecord
 
   scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
 
-
   # Method to check if donation is anonymous
   def anonymous?
     anonymous || full_name == 'Anonymous'
   end
-  
-  # Serialize metadata
-  serialize :metadata, JSON
 
   # Status query methods like EquityInvestment
   def pending?
