@@ -187,7 +187,7 @@ const ProfileTabs = () => {
   }
 
   return (
-    <div className="w-full bg-white">
+    <section className="w-full bg-white">
       <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
         {/* Tabs Menu */}
         <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 flex flex-col sticky top-0">
@@ -276,7 +276,7 @@ const ProfileTabs = () => {
           />
         )}
       </div>
-    </div>
+    </section>
   );
 };
 
