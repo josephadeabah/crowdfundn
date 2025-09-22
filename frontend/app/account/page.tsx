@@ -187,7 +187,7 @@ const ProfileTabs = () => {
   }
 
   return (
-    <section className="w-full bg-white">
+    <div className="w-full bg-white">
       <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
         {/* Tabs Menu */}
         <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 flex flex-col sticky top-0">
@@ -253,7 +253,7 @@ const ProfileTabs = () => {
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 flex flex-col bg-orange-50 px-1 mb-0 overflow-auto h-full md:h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+        <div className="flex-1 flex flex-col bg-gray-50 px-3 mb-0 overflow-auto h-full md:h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
           <div
             role="tabpanel"
             id={`vertical-tab-${activeTab}`}
@@ -276,7 +276,7 @@ const ProfileTabs = () => {
           />
         )}
       </div>
-    </section>
+    </div>
   );
 };
 
