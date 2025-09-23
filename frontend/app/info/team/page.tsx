@@ -2,7 +2,7 @@
 import { TeamSection } from '@/app/components/theteam/TeamSection';
 
 const Teams = () => {
-  const ceoHeadshot = '/avatar-default.png';
+  const ceoHeadshot = '/joe_abe_ansah.png';
   const ctoHeadshot = '/avatar-default.png';
   const cfoHeadshot = '/avatar-default.png';
   const nqobaMananaHeadshot = '/Nqoba.JPG';
@@ -15,7 +15,7 @@ const Teams = () => {
       id: '1',
       name: 'Member Pending',
       position: 'Chairman of the Board',
-      image: ceoHeadshot,
+      image: ctoHeadshot,
       email: 'john.harrison@company.com',
       linkedin: 'https://linkedin.com/in/',
       level: 'board' as const,
@@ -129,7 +129,7 @@ const Teams = () => {
       id: '8',
       name: 'Member Pending',
       position: 'Senior Software Engineer',
-      image: ceoHeadshot,
+      image: ctoHeadshot,
       email: 'tom.anderson@company.com',
       level: 'member' as const,
     },
