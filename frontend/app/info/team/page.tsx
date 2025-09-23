@@ -24,7 +24,7 @@ const Teams = () => {
       id: '2',
       name: 'Joseph Adeabah',
       position: 'Secretary of the Board',
-      image: legalDirector,
+      image: ceoHeadshot,
       email: 'joseph.adeabah@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
       level: 'board' as const,
