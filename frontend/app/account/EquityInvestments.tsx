@@ -637,10 +637,6 @@ const EquityInvestments = () => {
               const campaignName =
                 investment.campaign?.title ||
                 `Campaign #${investment.campaign_id}`;
-              const investment_id = investment.id;
-              const shares = parseNumber(investment.shares)?.toLocaleString();
-              const percentage = parseNumber(investment.percentage)?.toFixed(2);
-              const certificate = investment.certificate?.number;
               const date = format(
                 new Date(investment.created_at),
                 'MMM dd, yyyy',
@@ -653,6 +649,13 @@ const EquityInvestments = () => {
                 campaignName,
               );
 
+              // Only show detailed information for successful investments
+              const isSuccessful = investment.status === 'successful';
+              const investment_id = investment.id;
+              const shares = parseNumber(investment.shares)?.toLocaleString();
+              const percentage = parseNumber(investment.percentage)?.toFixed(2);
+              const certificate = investment.certificate?.number;
+
               return (
                 <div
                   key={investment.id}
@@ -660,29 +663,38 @@ const EquityInvestments = () => {
                 >
                   <p className="text-sm text-gray-700 mb-3">{actionText}</p>
 
-                  <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      🆔 <span className="font-medium">ID:</span>{' '}
-                      {investment_id}
+                  {/* Only show detailed information for successful investments */}
+                  {isSuccessful ? (
+                    <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        🆔 <span className="font-medium">ID:</span>{' '}
+                        {investment_id}
+                      </div>
+                      {shares && (
+                        <div className="flex items-center gap-1">
+                          📈 <span className="font-medium">Shares:</span>{' '}
+                          {shares}
+                        </div>
+                      )}
+                      {percentage && (
+                        <div className="flex items-center gap-1">
+                          🎯 <span className="font-medium">Equity:</span>{' '}
+                          {percentage}%
+                        </div>
+                      )}
+                      {certificate && (
+                        <div className="flex items-center gap-1">
+                          🎖️ <span className="font-medium">Cert:</span>{' '}
+                          {certificate}
+                        </div>
+                      )}
                     </div>
-                    {shares && (
-                      <div className="flex items-center gap-1">
-                        📈 <span className="font-medium">Shares:</span> {shares}
-                      </div>
-                    )}
-                    {percentage && (
-                      <div className="flex items-center gap-1">
-                        🎯 <span className="font-medium">Equity:</span>{' '}
-                        {percentage}%
-                      </div>
-                    )}
-                    {certificate && (
-                      <div className="flex items-center gap-1">
-                        🎖️ <span className="font-medium">Cert:</span>{' '}
-                        {certificate}
-                      </div>
-                    )}
-                  </div>
+                  ) : (
+                    <div className="text-sm text-gray-500 italic">
+                      Investment details will be available upon successful
+                      completion
+                    </div>
+                  )}
 
                   <p className="text-xs text-gray-500 mt-3 flex items-center gap-1">
                     ⏰{' '}
