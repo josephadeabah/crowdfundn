@@ -20,7 +20,7 @@ interface EquityCampaigndivsProps {
   campaign: SingleCampaignResponseDataType | null;
 }
 
-const EquityCampaigndivs: React.FC<EquityCampaigndivsProps> = ({
+const EquityCampaignSections: React.FC<EquityCampaigndivsProps> = ({
   campaign,
 }) => {
   const fundraiserCurrency =
@@ -289,4 +289,4 @@ const InfoLink = ({
   </div>
 );
 
-export default EquityCampaigndivs;
+export default EquityCampaignSections;
