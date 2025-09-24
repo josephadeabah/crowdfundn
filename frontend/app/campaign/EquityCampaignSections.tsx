@@ -153,7 +153,7 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
       </div>
       {/* Investment Documents */}
       {contractDocuments.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-md p-8">
+        <div className="bg-white rounded-2xl shadow-sm p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
             <FaFileContract className="mr-3 text-orange-500" />
             Contract Documents
