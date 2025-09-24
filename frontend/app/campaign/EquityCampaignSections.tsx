@@ -39,7 +39,7 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
   return (
     <div className="mb-16 space-y-12">
       {/* Investment Details */}
-      <div className="bg-white rounded-2xl shadow-md p-8">
+      <div className="bg-white rounded-2xl shadow-sm p-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
           <FaChartLine className="mr-3 text-green-600" />
           Investment Details
@@ -112,7 +112,7 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
         </div>
       </div>
       {/* Company Information */}
-      <div className="bg-white rounded-2xl shadow-md p-8">
+      <div className="bg-white rounded-2xl shadow-sm p-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
           <FaBuilding className="mr-3 text-blue-600" />
           Company Information
