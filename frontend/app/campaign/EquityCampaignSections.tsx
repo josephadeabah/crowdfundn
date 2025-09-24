@@ -35,6 +35,31 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
 
   const CONTRACT_TERM = `The contract term for this investment opportunity will depend on the structure agreed between the company and investors.\n\nPlease note: BantuHive does not provide default legal documents. Companies should work with their legal advisors to ensure all agreements meet regulatory standards.\n\n<a href="/investment-contracts" target="_blank" class="text-blue-500 hover:underline">Learn more about investment contracts in Ghana</a>`;
 
+  // Format large numbers with compact notation for better readability
+  const formatLargeNumber = (value: string | number): string => {
+    const num = parseFloat(String(value || '0'));
+    
+    if (num >= 1000000) {
+      return `$${(num / 1000000).toFixed(1)}M`;
+    } else if (num >= 1000) {
+      return `$${(num / 1000).toFixed(1)}K`;
+    }
+    
+    return parseFloat(String(value || '0')).toLocaleString();
+  };
+
+  const formatCurrency = (value: string | number): string => {
+    const num = parseFloat(String(value || '0'));
+    
+    if (num >= 1000000) {
+      return `${fundraiserCurrency}${(num / 1000000).toFixed(1)}M`;
+    } else if (num >= 1000) {
+      return `${fundraiserCurrency}${(num / 1000).toFixed(1)}K`;
+    }
+    
+    return `${fundraiserCurrency}${num.toLocaleString()}`;
+  };
+
   return (
     <div className="space-y-8">
       {/* Investment Details */}
@@ -50,10 +75,11 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
           <MetricCard
             icon={<FaMoneyBillWave className="text-green-600" />}
             label="Valuation"
-            value={`${fundraiserCurrency}${parseFloat(
+            value={formatCurrency(campaign?.valuation || '0')}
+            gradient="from-green-50 to-green-100"
+            fullValue={`${fundraiserCurrency}${parseFloat(
               String(campaign?.valuation || '0'),
             ).toLocaleString()}`}
-            gradient="from-green-50 to-green-100"
           />
 
           <MetricCard
@@ -67,33 +93,37 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
             currency={fundraiserCurrency || ''}
             min={campaign?.minimum_investment || '0'}
             max={campaign?.maximum_investment || '0'}
+            formatCurrency={formatCurrency}
           />
 
           <MetricCard
             icon={<FaShareAlt className="text-orange-600" />}
             label="Shares Issued"
-            value={parseFloat(
+            value={formatLargeNumber(campaign?.shares_issued || '0')}
+            gradient="from-orange-50 to-orange-100"
+            fullValue={parseFloat(
               campaign?.shares_issued?.toString() || '0',
             ).toLocaleString()}
-            gradient="from-orange-50 to-orange-100"
           />
 
           <MetricCard
             icon={<FaUsers className="text-purple-600" />}
             label="Selling Shares"
-            value={parseFloat(
+            value={formatLargeNumber(campaign?.shares_available || '0')}
+            gradient="from-purple-50 to-purple-100"
+            fullValue={parseFloat(
               campaign?.shares_available?.toString() || '0',
             ).toLocaleString()}
-            gradient="from-purple-50 to-purple-100"
           />
 
           <MetricCard
             icon={<FaShareAlt className="text-indigo-600" />}
             label="Total Shares"
-            value={parseFloat(
+            value={formatLargeNumber(campaign?.total_equity_shares || '0')}
+            gradient="from-indigo-50 to-indigo-100"
+            fullValue={parseFloat(
               campaign?.total_equity_shares?.toString() || '0',
             ).toLocaleString()}
-            gradient="from-indigo-50 to-indigo-100"
           />
         </div>
       </div>
@@ -205,17 +235,29 @@ interface MetricCardProps {
   label: string;
   value: string | number;
   gradient: string;
+  fullValue?: string; // For tooltip display
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({ icon, label, value, gradient }) => (
-  <div className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
+const MetricCard: React.FC<MetricCardProps> = ({ icon, label, value, gradient, fullValue }) => (
+  <div className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg relative">
     <div className="flex items-center mb-4">
-      <div className={`p-3 rounded-xl ${gradient} mr-3 group-hover:scale-110 transition-transform`}>
+      <div className={`p-3 rounded-xl ${gradient} mr-3 group-hover:scale-110 transition-transform flex-shrink-0`}>
         {icon}
       </div>
-      <h3 className="font-semibold text-gray-700">{label}</h3>
+      <h3 className="font-semibold text-gray-700 text-sm lg:text-base">{label}</h3>
     </div>
-    <p className="text-3xl font-bold text-gray-900">{value}</p>
+    <div className="flex items-center justify-between">
+      <p className="text-2xl lg:text-3xl font-bold text-gray-900 truncate min-w-0">
+        {value}
+      </p>
+      {fullValue && fullValue !== value && (
+        <InfoTooltip 
+          id={`${label}-tooltip`} 
+          content={`Full value: ${fullValue}`}
+          className="flex-shrink-0 ml-2"
+        />
+      )}
+    </div>
   </div>
 );
 
@@ -223,32 +265,55 @@ interface InvestmentRangeCardProps {
   currency: string;
   min: string | number;
   max: string | number;
+  formatCurrency: (value: string | number) => string;
 }
 
-const InvestmentRangeCard: React.FC<InvestmentRangeCardProps> = ({ currency, min, max }) => (
-  <div className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
-    <div className="flex items-center mb-4">
-      <div className="p-3 bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl mr-3 group-hover:scale-110 transition-transform">
-        <FaHandHoldingUsd className="text-amber-600" />
+const InvestmentRangeCard: React.FC<InvestmentRangeCardProps> = ({ currency, min, max, formatCurrency }) => {
+  const minNum = parseFloat(String(min || '0'));
+  const maxNum = parseFloat(String(max || '0'));
+  const showCompact = minNum >= 1000 || maxNum >= 1000;
+
+  return (
+    <div className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
+      <div className="flex items-center mb-4">
+        <div className="p-3 bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl mr-3 group-hover:scale-110 transition-transform flex-shrink-0">
+          <FaHandHoldingUsd className="text-amber-600" />
+        </div>
+        <h3 className="font-semibold text-gray-700 text-sm lg:text-base">Investment Range</h3>
       </div>
-      <h3 className="font-semibold text-gray-700">Investment Range</h3>
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <span className="text-gray-600 text-sm lg:text-base">Min:</span>
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-gray-900 text-lg lg:text-xl text-right">
+              {showCompact ? formatCurrency(min) : `${currency}${minNum.toLocaleString()}`}
+            </span>
+            {showCompact && (
+              <InfoTooltip 
+                id="min-investment-tooltip" 
+                content={`Full amount: ${currency}${minNum.toLocaleString()}`}
+              />
+            )}
+          </div>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-gray-600 text-sm lg:text-base">Max:</span>
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-gray-900 text-lg lg:text-xl text-right">
+              {showCompact ? formatCurrency(max) : `${currency}${maxNum.toLocaleString()}`}
+            </span>
+            {showCompact && (
+              <InfoTooltip 
+                id="max-investment-tooltip" 
+                content={`Full amount: ${currency}${maxNum.toLocaleString()}`}
+              />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
-    <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <span className="text-gray-600">Min:</span>
-        <span className="font-semibold text-gray-900">
-          {currency}{parseFloat(String(min)).toLocaleString()}
-        </span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="text-gray-600">Max:</span>
-        <span className="font-semibold text-gray-900">
-          {currency}{parseFloat(String(max)).toLocaleString()}
-        </span>
-      </div>
-    </div>
-  </div>
-);
+  );
+};
 
 interface InfoFieldProps {
   label: string;
@@ -264,14 +329,14 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, value, isLink }) => (
         href={value}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors bg-blue-50 rounded-xl p-4 hover:bg-blue-100"
+        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors bg-blue-50 rounded-xl p-4 hover:bg-blue-100 break-all"
       >
-        <FaLink className="text-sm" />
+        <FaLink className="text-sm flex-shrink-0" />
         <span className="truncate">{value}</span>
-        <FaExternalLinkAlt className="text-xs ml-auto" />
+        <FaExternalLinkAlt className="text-xs ml-auto flex-shrink-0" />
       </a>
     ) : (
-      <p className="text-gray-700 bg-gray-50 rounded-xl p-4">{value || 'Not specified'}</p>
+      <p className="text-gray-700 bg-gray-50 rounded-xl p-4 break-words">{value || 'Not specified'}</p>
     )}
   </div>
 );
@@ -285,12 +350,12 @@ interface DocumentCardProps {
 
 const DocumentCard: React.FC<DocumentCardProps> = ({ name, size, type, url }) => (
   <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:border-orange-300 transition-all duration-300 group">
-    <div className="flex items-center gap-4">
-      <div className="p-3 bg-orange-50 rounded-xl group-hover:scale-110 transition-transform">
+    <div className="flex items-center gap-4 min-w-0">
+      <div className="p-3 bg-orange-50 rounded-xl group-hover:scale-110 transition-transform flex-shrink-0">
         <FaFileContract className="text-2xl text-orange-600" />
       </div>
-      <div>
-        <h3 className="font-semibold text-gray-900">{name}</h3>
+      <div className="min-w-0">
+        <h3 className="font-semibold text-gray-900 truncate">{name}</h3>
         <p className="text-sm text-gray-600">{size} • {type}</p>
       </div>
     </div>
@@ -298,7 +363,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ name, size, type, url }) =>
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors font-medium flex items-center gap-2 group-hover:shadow-lg"
+      className="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors font-medium flex items-center gap-2 group-hover:shadow-lg flex-shrink-0 ml-4"
     >
       View
       <FaExternalLinkAlt className="text-xs" />
@@ -320,10 +385,10 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => (
           imageUrl={member.avatar_url}
         />
       </div>
-      <div className="flex-1 min-w-0">
-        <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
-        <p className="text-purple-600 font-semibold mb-3">{member.title}</p>
-        <p className="text-gray-700 leading-relaxed">{member.description}</p>
+      <div className="min-w-0 flex-1">
+        <h3 className="text-xl font-bold text-gray-900 mb-1 truncate">{member.name}</h3>
+        <p className="text-purple-600 font-semibold mb-3 truncate">{member.title}</p>
+        <p className="text-gray-700 leading-relaxed break-words">{member.description}</p>
       </div>
     </div>
   </div>
