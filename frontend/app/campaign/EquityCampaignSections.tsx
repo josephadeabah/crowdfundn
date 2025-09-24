@@ -1,5 +1,5 @@
-"use client";
-import React from "react";
+'use client';
+import React from 'react';
 import {
   FaChartLine,
   FaMoneyBillWave,
@@ -10,17 +10,17 @@ import {
   FaLink,
   FaFileContract,
   FaShareAlt,
-} from "react-icons/fa";
-import Avatar from "@/app/components/avatar/Avatar";
-import { SingleCampaignResponseDataType } from "../types/campaigns.types";
-import InfoTooltip from "../components/tooltip/tooltip";
-import { deslugify } from "../utils/helpers/categories";
+} from 'react-icons/fa';
+import Avatar from '@/app/components/avatar/Avatar';
+import { SingleCampaignResponseDataType } from '../types/campaigns.types';
+import InfoTooltip from '../components/tooltip/tooltip';
+import { deslugify } from '../utils/helpers/categories';
 
-interface EquityCampaignSectionsProps {
+interface EquityCampaigndivsProps {
   campaign: SingleCampaignResponseDataType | null;
 }
 
-const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
+const EquityCampaigndivs: React.FC<EquityCampaigndivsProps> = ({
   campaign,
 }) => {
   const fundraiserCurrency =
@@ -29,7 +29,7 @@ const EquityCampaignSections: React.FC<EquityCampaignSectionsProps> = ({
 
   const contractDocuments =
     campaign?.investor_documents?.filter(
-      (doc) => doc.document_type === "contract"
+      (doc) => doc.document_type === 'contract',
     ) || [];
 
   const CONTRACT_TERM = `The contract term for this investment opportunity will depend on the structure agreed between the company and investors.\n\n
@@ -39,7 +39,7 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
   return (
     <div className="mb-16 space-y-12">
       {/* Investment Details */}
-      <section className="bg-white rounded-2xl shadow-md p-8">
+      <div className="bg-white rounded-2xl shadow-md p-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
           <FaChartLine className="mr-3 text-green-600" />
           Investment Details
@@ -50,7 +50,7 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
             icon={<FaMoneyBillWave className="text-green-500" />}
             label="Valuation"
             value={`${fundraiserCurrency}${parseFloat(
-              String(campaign?.valuation || "0")
+              String(campaign?.valuation || '0'),
             ).toLocaleString()}`}
           />
 
@@ -72,13 +72,13 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
             <p className="text-lg font-semibold text-gray-900">
               Min: {fundraiserCurrency}
               {parseFloat(
-                String(campaign?.minimum_investment || "0")
+                String(campaign?.minimum_investment || '0'),
               ).toLocaleString()}
             </p>
             <p className="text-sm text-gray-600 mt-1">
               Max: {fundraiserCurrency}
               {parseFloat(
-                String(campaign?.maximum_investment || "0")
+                String(campaign?.maximum_investment || '0'),
               ).toLocaleString()}
             </p>
           </div>
@@ -88,7 +88,7 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
             icon={<FaShareAlt className="text-orange-500" />}
             label="Shares Issued"
             value={parseFloat(
-              campaign?.shares_issued?.toString() || "0"
+              campaign?.shares_issued?.toString() || '0',
             ).toLocaleString()}
           />
 
@@ -97,7 +97,7 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
             icon={<FaUsers className="text-yellow-500" />}
             label="Selling Shares"
             value={parseFloat(
-              campaign?.shares_available?.toString() || "0"
+              campaign?.shares_available?.toString() || '0',
             ).toLocaleString()}
           />
 
@@ -106,23 +106,25 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
             icon={<FaShareAlt className="text-indigo-500" />}
             label="Total Shares"
             value={parseFloat(
-              campaign?.total_equity_shares?.toString() || "0"
+              campaign?.total_equity_shares?.toString() || '0',
             ).toLocaleString()}
           />
         </div>
-      </section>
-
+      </div>
       {/* Company Information */}
-      <section className="bg-white rounded-2xl shadow-md p-8">
+      <div className="bg-white rounded-2xl shadow-md p-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
           <FaBuilding className="mr-3 text-blue-600" />
           Company Information
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
-          <InfoItem label="Name" value={campaign?.company_info?.name || "N/A"} />
+          <InfoItem
+            label="Name"
+            value={campaign?.company_info?.name || 'N/A'}
+          />
           <InfoItem
             label="Headquarters"
-            value={campaign?.company_info?.headquarters || "N/A"}
+            value={campaign?.company_info?.headquarters || 'N/A'}
           />
           <div className="md:col-span-2">
             <h3 className="font-semibold text-gray-800 flex items-center gap-2">
@@ -130,14 +132,14 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
               <InfoTooltip id="contract-term-tooltip" content={CONTRACT_TERM} />
             </h3>
             <p className="text-gray-700 mt-1">
-              {deslugify(campaign?.company_info?.contract_term || "N/A")}
+              {deslugify(campaign?.company_info?.contract_term || 'N/A')}
             </p>
           </div>
           <div className="md:col-span-2">
             <h3 className="font-semibold text-gray-800">Description</h3>
             <p className="text-gray-700 mt-1 leading-relaxed">
               {campaign?.company_info?.description ||
-                "No description provided."}
+                'No description provided.'}
             </p>
           </div>
           {campaign?.company_info?.website && (
@@ -148,11 +150,10 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
             />
           )}
         </div>
-      </section>
-
+      </div>
       {/* Investment Documents */}
       {contractDocuments.length > 0 && (
-        <section className="bg-white rounded-2xl shadow-md p-8">
+        <div className="bg-white rounded-2xl shadow-md p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
             <FaFileContract className="mr-3 text-orange-500" />
             Contract Documents
@@ -187,48 +188,54 @@ Please note: BantuHive does not provide default legal documents. Companies shoul
                     View
                   </a>
                 </div>
-              ))
+              )),
             )}
           </div>
-        </section>
+        </div>
       )}
-
       {/* Team Members */}
-      <section className="bg-white rounded-2xl shadow-md p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
-          <FaUsers className="mr-3 text-purple-600" />
-          Team Members
-        </h2>
+      <div className="bg-white text-gray-800 px-1 py-6 mb-8">
+        {' '}
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+          {' '}
+          <FaUsers className="mr-2 text-purple-600" /> Team Members{' '}
+        </h2>{' '}
         {campaign?.team_members?.length ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-2">
+            {' '}
             {campaign.team_members.map((member) => (
-              <div
-                key={member.id}
-                className="flex items-start gap-4 bg-gray-50 rounded-xl p-6 shadow-sm hover:shadow-md transition"
-              >
-                <Avatar
-                  name={member.name}
-                  size="xl"
-                  imageUrl={member.avatar_url}
-                />
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    {member.name}
-                  </h3>
-                  <p className="text-sm font-medium text-gray-600">
-                    {member.title}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                    {member.description}
-                  </p>
-                </div>
+              <div key={member.id} className="bg-white p-6 shadow-sm">
+                {' '}
+                <div className="flex items-start space-x-4 gap-3">
+                  {' '}
+                  <div className="w-16 h-16 flex-shrink-0">
+                    {' '}
+                    <Avatar
+                      name={member.name}
+                      size="xl"
+                      imageUrl={member.avatar_url}
+                    />{' '}
+                  </div>{' '}
+                  <div>
+                    {' '}
+                    <h3 className="text-lg font-bold text-gray-900">
+                      {' '}
+                      {member.name}{' '}
+                    </h3>{' '}
+                    <p className="text-gray-600 font-medium">{member.title}</p>{' '}
+                    <p className="text-sm text-gray-600 mt-2">
+                      {' '}
+                      {member.description}{' '}
+                    </p>{' '}
+                  </div>{' '}
+                </div>{' '}
               </div>
-            ))}
+            ))}{' '}
           </div>
         ) : (
           <p className="text-gray-600">No team members available.</p>
-        )}
-      </section>
+        )}{' '}
+      </div>{' '}
     </div>
   );
 };
@@ -282,4 +289,4 @@ const InfoLink = ({
   </div>
 );
 
-export default EquityCampaignSections;
+export default EquityCampaigndivs;
