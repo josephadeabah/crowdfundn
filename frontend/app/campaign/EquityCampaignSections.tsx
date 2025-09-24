@@ -38,25 +38,25 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
   // Format large numbers with compact notation for better readability
   const formatLargeNumber = (value: string | number): string => {
     const num = parseFloat(String(value || '0'));
-    
+
     if (num >= 1000000) {
       return `${(num / 1000000).toFixed(1)}M`;
     } else if (num >= 1000) {
       return `${(num / 1000).toFixed(1)}K`;
     }
-    
+
     return parseFloat(String(value || '0')).toLocaleString();
   };
 
   const formatCurrency = (value: string | number): string => {
     const num = parseFloat(String(value || '0'));
-    
+
     if (num >= 1000000) {
       return `${fundraiserCurrency}${(num / 1000000).toFixed(1)}M`;
     } else if (num >= 1000) {
       return `${fundraiserCurrency}${(num / 1000).toFixed(1)}K`;
     }
-    
+
     return `${fundraiserCurrency}${num.toLocaleString()}`;
   };
 
@@ -68,9 +68,11 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
           <div className="p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl mr-4">
             <FaChartLine className="text-2xl text-green-600" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Investment Details</h2>
+          <h2 className="text-3xl font-bold text-gray-900">
+            Investment Details
+          </h2>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <MetricCard
             icon={<FaMoneyBillWave className="text-green-600" />}
@@ -134,37 +136,55 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
           <div className="p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl mr-4">
             <FaBuilding className="text-2xl text-blue-600" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Company Information</h2>
+          <h2 className="text-3xl font-bold text-gray-900">
+            Company Information
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <InfoField label="Company Name" value={campaign?.company_info?.name} />
-            <InfoField label="Headquarters" value={campaign?.company_info?.headquarters} />
+            <InfoField
+              label="Company Name"
+              value={campaign?.company_info?.name}
+            />
+            <InfoField
+              label="Headquarters"
+              value={campaign?.company_info?.headquarters}
+            />
             {campaign?.company_info?.website && (
-              <InfoField 
-                label="Website" 
-                value={campaign.company_info.website} 
-                isLink 
+              <InfoField
+                label="Website"
+                value={campaign.company_info.website}
+                isLink
               />
             )}
           </div>
-          
+
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <label className="font-semibold text-gray-900">Contract Term</label>
-                <InfoTooltip id="contract-term-tooltip" content={CONTRACT_TERM} />
+                <label className="font-semibold text-gray-900">
+                  Contract Term
+                </label>
+                <InfoTooltip
+                  id="contract-term-tooltip"
+                  content={CONTRACT_TERM}
+                />
               </div>
               <p className="text-gray-700 bg-gray-50 rounded-xl p-4">
-                {deslugify(campaign?.company_info?.contract_term || 'Not specified')}
+                {deslugify(
+                  campaign?.company_info?.contract_term || 'Not specified',
+                )}
               </p>
             </div>
-            
+
             <div>
-              <label className="font-semibold text-gray-900 block mb-3">Description</label>
+              <label className="font-semibold text-gray-900 block mb-3">
+                Description
+              </label>
               <p className="text-gray-700 bg-gray-50 rounded-xl p-4 leading-relaxed">
-                {campaign?.company_info?.description || 'No description provided.'}
+                {campaign?.company_info?.description ||
+                  'No description provided.'}
               </p>
             </div>
           </div>
@@ -178,13 +198,15 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
             <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl mr-4">
               <FaFileContract className="text-2xl text-orange-600" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900">Contract Documents</h2>
+            <h2 className="text-3xl font-bold text-gray-900">
+              Contract Documents
+            </h2>
           </div>
 
           <p className="text-gray-600 mb-6">
             Review the legal documents for this investment opportunity
           </p>
-          
+
           <div className="grid gap-4">
             {contractDocuments.map((document) =>
               document.files.map((file) => (
@@ -204,7 +226,7 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
       {/* Team Members */}
       <div className="bg-white rounded-3xl border border-gray-100 p-8">
         <div className="flex items-center mb-8">
-          <div className="p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl mr-4">
+          <div className="p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl mr-4">
             <FaUsers className="text-2xl text-purple-600" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Team Members</h2>
@@ -220,7 +242,9 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
           <div className="text-center py-12">
             <div className="bg-gray-50 rounded-2xl p-8 max-w-md mx-auto">
               <FaUsers className="text-4xl text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 font-medium">No team members available</p>
+              <p className="text-gray-600 font-medium">
+                No team members available
+              </p>
             </div>
           </div>
         )}
@@ -238,21 +262,31 @@ interface MetricCardProps {
   fullValue?: string; // For tooltip display
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({ icon, label, value, gradient, fullValue }) => (
+const MetricCard: React.FC<MetricCardProps> = ({
+  icon,
+  label,
+  value,
+  gradient,
+  fullValue,
+}) => (
   <div className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg relative">
     <div className="flex items-center mb-4">
-      <div className={`p-3 rounded-xl ${gradient} mr-3 group-hover:scale-110 transition-transform flex-shrink-0`}>
+      <div
+        className={`p-3 rounded-xl ${gradient} mr-3 group-hover:scale-110 transition-transform flex-shrink-0`}
+      >
         {icon}
       </div>
-      <h3 className="font-semibold text-gray-700 text-sm lg:text-base">{label}</h3>
+      <h3 className="font-semibold text-gray-700 text-sm lg:text-base">
+        {label}
+      </h3>
     </div>
     <div className="flex items-center justify-between">
       <p className="text-2xl lg:text-3xl font-bold text-gray-900 truncate min-w-0">
         {value}
       </p>
       {fullValue && fullValue !== value && (
-        <InfoTooltip 
-          id={`${label}-tooltip`} 
+        <InfoTooltip
+          id={`${label}-tooltip`}
           content={`Full value: ${fullValue}`}
           className="flex-shrink-0 ml-2"
         />
@@ -268,7 +302,12 @@ interface InvestmentRangeCardProps {
   formatCurrency: (value: string | number) => string;
 }
 
-const InvestmentRangeCard: React.FC<InvestmentRangeCardProps> = ({ currency, min, max, formatCurrency }) => {
+const InvestmentRangeCard: React.FC<InvestmentRangeCardProps> = ({
+  currency,
+  min,
+  max,
+  formatCurrency,
+}) => {
   const minNum = parseFloat(String(min || '0'));
   const maxNum = parseFloat(String(max || '0'));
   const showCompact = minNum >= 1000 || maxNum >= 1000;
@@ -279,18 +318,22 @@ const InvestmentRangeCard: React.FC<InvestmentRangeCardProps> = ({ currency, min
         <div className="p-3 bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl mr-3 group-hover:scale-110 transition-transform flex-shrink-0">
           <FaHandHoldingUsd className="text-amber-600" />
         </div>
-        <h3 className="font-semibold text-gray-700 text-sm lg:text-base">Investment Range</h3>
+        <h3 className="font-semibold text-gray-700 text-sm lg:text-base">
+          Investment Range
+        </h3>
       </div>
       <div className="space-y-3">
         <div className="flex justify-between items-center">
           <span className="text-gray-600 text-sm lg:text-base">Min:</span>
           <div className="flex items-center gap-2">
             <span className="font-semibold text-gray-900 text-lg lg:text-xl text-right">
-              {showCompact ? formatCurrency(min) : `${currency}${minNum.toLocaleString()}`}
+              {showCompact
+                ? formatCurrency(min)
+                : `${currency}${minNum.toLocaleString()}`}
             </span>
             {showCompact && (
-              <InfoTooltip 
-                id="min-investment-tooltip" 
+              <InfoTooltip
+                id="min-investment-tooltip"
                 content={`Full amount: ${currency}${minNum.toLocaleString()}`}
               />
             )}
@@ -300,11 +343,13 @@ const InvestmentRangeCard: React.FC<InvestmentRangeCardProps> = ({ currency, min
           <span className="text-gray-600 text-sm lg:text-base">Max:</span>
           <div className="flex items-center gap-2">
             <span className="font-semibold text-gray-900 text-lg lg:text-xl text-right">
-              {showCompact ? formatCurrency(max) : `${currency}${maxNum.toLocaleString()}`}
+              {showCompact
+                ? formatCurrency(max)
+                : `${currency}${maxNum.toLocaleString()}`}
             </span>
             {showCompact && (
-              <InfoTooltip 
-                id="max-investment-tooltip" 
+              <InfoTooltip
+                id="max-investment-tooltip"
                 content={`Full amount: ${currency}${maxNum.toLocaleString()}`}
               />
             )}
@@ -336,7 +381,9 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, value, isLink }) => (
         <FaExternalLinkAlt className="text-xs ml-auto flex-shrink-0" />
       </a>
     ) : (
-      <p className="text-gray-700 bg-gray-50 rounded-xl p-4 break-words">{value || 'Not specified'}</p>
+      <p className="text-gray-700 bg-gray-50 rounded-xl p-4 break-words">
+        {value || 'Not specified'}
+      </p>
     )}
   </div>
 );
@@ -348,7 +395,12 @@ interface DocumentCardProps {
   url: string;
 }
 
-const DocumentCard: React.FC<DocumentCardProps> = ({ name, size, type, url }) => (
+const DocumentCard: React.FC<DocumentCardProps> = ({
+  name,
+  size,
+  type,
+  url,
+}) => (
   <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:border-orange-300 transition-all duration-300 group">
     <div className="flex items-center gap-4 min-w-0">
       <div className="p-3 bg-orange-50 rounded-xl group-hover:scale-110 transition-transform flex-shrink-0">
@@ -356,7 +408,9 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ name, size, type, url }) =>
       </div>
       <div className="min-w-0">
         <h3 className="font-semibold text-gray-900 truncate">{name}</h3>
-        <p className="text-sm text-gray-600">{size} • {type}</p>
+        <p className="text-sm text-gray-600">
+          {size} • {type}
+        </p>
       </div>
     </div>
     <a
@@ -376,19 +430,21 @@ interface TeamMemberCardProps {
 }
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => (
-  <div className="bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:border-purple-300 transition-all duration-300 group">
+  <div className="bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 group">
     <div className="flex items-start gap-6">
       <div className="flex-shrink-0">
-        <Avatar
-          name={member.name}
-          size="xl"
-          imageUrl={member.avatar_url}
-        />
+        <Avatar name={member.name} size="xl" imageUrl={member.avatar_url} />
       </div>
       <div className="min-w-0 flex-1">
-        <h3 className="text-xl font-bold text-gray-900 mb-1 truncate">{member.name}</h3>
-        <p className="text-purple-600 font-semibold mb-3 truncate">{member.title}</p>
-        <p className="text-gray-700 leading-relaxed break-words">{member.description}</p>
+        <h3 className="text-xl font-bold text-gray-900 mb-1 truncate">
+          {member.name}
+        </h3>
+        <p className="text-gray-700 font-semibold mb-3 truncate">
+          {member.title}
+        </p>
+        <p className="text-gray-700 leading-relaxed break-words">
+          {member.description}
+        </p>
       </div>
     </div>
   </div>
