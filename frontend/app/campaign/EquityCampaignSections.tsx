@@ -281,7 +281,7 @@ const InfoLink = ({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-1 text-blue-600 hover:underline mt-1"
+      className="flex items-center gap-1 text-gray-700 hover:underline mt-1"
     >
       {icon}
       {href}
