@@ -49,7 +49,6 @@ Rails.application.routes.draw do
             post :verify
             post :reject
             post :request_info
-            post :upload_multiple_documents
             get :documents
             post :upload_document
             get :show_documents
