@@ -81,6 +81,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const [isNonProfit, setIsNonProfit] = useState<boolean>(false);
   const [effectiveSteps, setEffectiveSteps] = useState<any[]>([]);
   const [effectiveCurrentStep, setEffectiveCurrentStep] = useState(0);
+  const [shouldSkipCertificate, setShouldSkipCertificate] = useState(false);
 
   const isCreator = userType === 'issuer';
   const isInvestor = userType === 'investor';
@@ -169,28 +170,20 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     return actualIndex;
   };
 
-  const getActualStepIndex = (effectiveIndex: number): number => {
-    if (!isNonProfit || (!isCreator && !isBoth)) {
-      return effectiveIndex;
-    }
-
-    const effectiveStepTypes = [];
-    for (const stepType of stepDefinitions[userType]) {
-      if (stepType === 'businessInfo' || stepType === 'certificate') continue;
-      effectiveStepTypes.push(stepType);
-    }
-
-    if (effectiveIndex < effectiveStepTypes.length) {
-      const targetType = effectiveStepTypes[effectiveIndex];
-      return stepDefinitions[userType].indexOf(targetType);
-    }
-
-    return effectiveIndex;
-  };
-
   useEffect(() => {
     setEffectiveCurrentStep(getEffectiveStepIndex(currentStep));
   }, [currentStep, isNonProfit]);
+
+  // Handle certificate step skipping for nonprofits
+  useEffect(() => {
+    if (shouldSkipCertificate && isNonProfit && (isCreator || isBoth)) {
+      const reviewIndex = stepDefinitions[userType].indexOf('review');
+      if (reviewIndex !== -1) {
+        setCurrentStep(reviewIndex);
+        setShouldSkipCertificate(false);
+      }
+    }
+  }, [shouldSkipCertificate, isNonProfit, isCreator, isBoth, userType]);
 
   useEffect(() => {
     // Show alert when there are KYC errors
@@ -681,7 +674,18 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         setIsSubmitting(false);
       }
     } else if (currentStep < stepDefinitions[userType].length - 1) {
-      setCurrentStep(currentStep + 1);
+      // Handle automatic certificate step skipping for nonprofits
+      if (stepType === 'documents' && isNonProfit && (isCreator || isBoth)) {
+        // For nonprofits, after documents, skip certificate and go to review
+        const reviewIndex = stepDefinitions[userType].indexOf('review');
+        if (reviewIndex !== -1) {
+          setCurrentStep(reviewIndex);
+        } else {
+          setCurrentStep(currentStep + 1);
+        }
+      } else {
+        setCurrentStep(currentStep + 1);
+      }
       setIsSubmitting(false);
     }
   };
@@ -858,14 +862,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       case 'declaration':
         return <DeclarationStep />;
       case 'certificate':
+        // For nonprofits, show a message and auto-proceed (handled in useEffect)
         if (isNonProfit && (isCreator || isBoth)) {
-          // Skip certificate step for nonprofits - auto-proceed to review
-          useEffect(() => {
-            const reviewIndex = stepDefinitions[userType].indexOf('review');
-            if (reviewIndex !== -1) {
-              setCurrentStep(reviewIndex);
-            }
-          }, []);
           return (
             <div className="text-center p-8">
               <p>Skipping certificate step for nonprofit verification...</p>
