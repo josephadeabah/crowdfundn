@@ -136,15 +136,16 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   // Calculate effective steps based on nonprofit selection
   useEffect(() => {
     let steps = [...kycSteps];
-    
+
     if (isNonProfit && (isCreator || isBoth)) {
       // Remove business info and certificate steps for nonprofits
-      steps = steps.filter(step => 
-        !step.title.toLowerCase().includes('business') && 
-        !step.title.toLowerCase().includes('certificate')
+      steps = steps.filter(
+        (step) =>
+          !step.title.toLowerCase().includes('business') &&
+          !step.title.toLowerCase().includes('certificate'),
       );
     }
-    
+
     setEffectiveSteps(steps);
   }, [kycSteps, isNonProfit, isCreator, isBoth]);
 
@@ -155,18 +156,18 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
 
     const stepType = stepDefinitions[userType][actualIndex];
-    
+
     // For nonprofits, map the step types to effective steps
     if (stepType === 'personalInfo') return 0;
     if (stepType === 'nonProfitSelection') return 1;
     if (stepType === 'documents') return 2;
     if (stepType === 'review') return 3;
-    
+
     // For steps that are skipped, return the next available index
     if (stepType === 'businessInfo' || stepType === 'certificate') {
       return getEffectiveStepIndex(actualIndex + 1);
     }
-    
+
     return actualIndex;
   };
 
@@ -696,7 +697,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       let previousStep = currentStep - 1;
       while (previousStep > 0) {
         const stepType = stepDefinitions[userType][previousStep];
-        if (!isNonProfit || (stepType !== 'businessInfo' && stepType !== 'certificate')) {
+        if (
+          !isNonProfit ||
+          (stepType !== 'businessInfo' && stepType !== 'certificate')
+        ) {
           setCurrentStep(previousStep);
           return;
         }
@@ -906,11 +910,16 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
   return (
     <div>
-      <ProgressSteps steps={effectiveSteps} currentStep={effectiveCurrentStep} />
+      <ProgressSteps
+        steps={effectiveSteps}
+        currentStep={effectiveCurrentStep}
+      />
 
       <Card className="bg-white shadow-sm">
         <CardHeader>
-          <CardTitle>{effectiveSteps[effectiveCurrentStep]?.title || 'Verification'}</CardTitle>
+          <CardTitle>
+            {effectiveSteps[effectiveCurrentStep]?.title || 'Verification'}
+          </CardTitle>
         </CardHeader>
 
         <CardContent>
