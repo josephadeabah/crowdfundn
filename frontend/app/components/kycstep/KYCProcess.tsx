@@ -53,6 +53,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const {
     createKyc,
     uploadDocument,
+    uploadMultipleDocuments,
     loading: kycLoading,
     errors: kycErrors,
     clearErrors,
@@ -236,7 +237,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
 
     if (data instanceof Date) {
-      return data.toISOString();
+      return data.toISOString().split('T')[0];
     }
 
     if (data instanceof File) {
@@ -422,6 +423,23 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     } catch (error) {
       showErrorMessage(`Failed to upload ${documentType.replace('_', ' ')}`);
       console.error('Upload error:', error);
+    }
+  };
+
+  const handleMultipleDocumentUpload = async (
+    documents: Array<{ documentType: string; file: File }>,
+  ) => {
+    try {
+      const newUploads: { [key: string]: File } = {};
+      documents.forEach(({ documentType, file }) => {
+        newUploads[documentType] = file;
+      });
+
+      setUploadedDocuments((prev) => ({ ...prev, ...newUploads }));
+      showSuccessMessage(`${documents.length} documents uploaded successfully`);
+    } catch (error) {
+      showErrorMessage(`Failed to upload documents`);
+      console.error('Bulk upload error:', error);
     }
   };
 
@@ -872,7 +890,12 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         return <BusinessInfoStep />;
       case 'documents':
         return (
-          <DocumentVerificationStep onDocumentUpload={handleDocumentUpload} />
+          <DocumentVerificationStep
+            onDocumentUpload={handleDocumentUpload}
+            onMultipleDocumentUpload={handleMultipleDocumentUpload}
+            userType={userType}
+            isNonProfit={isNonProfit}
+          />
         );
       case 'experience':
         return <MentorExperienceStep />;
