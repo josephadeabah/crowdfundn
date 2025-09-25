@@ -589,8 +589,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     // Handle the actual submission when on review step
     if (stepType === 'review') {
       // For nonprofits, we don't require signature
-      // For regular businesses, require signature
-      if (!isNonProfit && !isSigned) {
+      if (isCreator && !isNonProfit && !isSigned) {
         showErrorMessage('Please sign your certificate before submitting.');
         setIsSubmitting(false);
         return;
@@ -606,10 +605,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
       try {
         const kycData = prepareKycData();
-        console.log('Submitting KYC data:', kycData); // Add debug log
+        console.log('Submitting KYC data:', kycData);
 
         const newKyc = await createKyc(kycData);
-        console.log('KYC created:', newKyc); // Add debug log
+        console.log('KYC created:', newKyc);
 
         if (Object.keys(uploadedDocuments).length > 0) {
           await uploadAllDocuments(newKyc.id!);
@@ -618,10 +617,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         const userTypeLabel = isCreator
           ? 'Campaign creator'
           : isInvestor
-            ? 'Investor'
-            : isBoth
-              ? 'Full platform access'
-              : 'Mentor';
+          ? 'Investor'
+          : isBoth
+          ? 'Full platform access'
+          : 'Mentor';
 
         const nonprofitLabel = isNonProfit ? ' (Nonprofit)' : '';
 
@@ -644,7 +643,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       } finally {
         setIsSubmitting(false);
       }
-      return; // Important: return after handling review step
+      return;
     }
 
     // Handle other steps (non-review steps)
