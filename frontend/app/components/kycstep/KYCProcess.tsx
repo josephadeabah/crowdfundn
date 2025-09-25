@@ -145,8 +145,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         
         return !(
           title.includes('business') || 
-          title.includes('cert') || 
-          title.includes('sign') ||
+          title.includes('certificate') || 
+          title.includes('signing') ||
           id.includes('business') ||
           id.includes('certificate')
         );
