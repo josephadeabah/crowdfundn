@@ -116,10 +116,6 @@ export interface KycState {
     documentType: string,
     file: File,
   ) => Promise<KycDocument>;
-  uploadMultipleDocuments: (
-    kycId: number,
-    documents: Array<{ documentType: string; file: File }>,
-  ) => Promise<KycDocument[]>;
 }
 
 // app/types/kyc.types.ts

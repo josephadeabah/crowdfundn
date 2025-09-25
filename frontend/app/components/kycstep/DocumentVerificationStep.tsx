@@ -48,14 +48,13 @@ const DOCUMENT_TYPES = {
 
 export const DocumentVerificationStep: React.FC<
   DocumentVerificationStepProps
-> = ({
-  onDocumentUpload,
-  userType,
-  isNonProfit = false,
-}) => {
+> = ({ onDocumentUpload, userType, isNonProfit = false }) => {
   const form = useFormContext();
-  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File }>({});
-  const [selectedDocumentType, setSelectedDocumentType] = useState<string>('id_front');
+  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File }>(
+    {},
+  );
+  const [selectedDocumentType, setSelectedDocumentType] =
+    useState<string>('id_front');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -120,7 +119,9 @@ export const DocumentVerificationStep: React.FC<
               <SelectContent>
                 <SelectItem value="national_id">National ID</SelectItem>
                 <SelectItem value="passport">Passport</SelectItem>
-                <SelectItem value="drivers_license">Driver's License</SelectItem>
+                <SelectItem value="drivers_license">
+                  Driver's License
+                </SelectItem>
                 <SelectItem value="voter_id">Voter ID</SelectItem>
               </SelectContent>
             </Select>

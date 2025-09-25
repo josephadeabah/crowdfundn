@@ -467,65 +467,6 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Upload multiple documents
-  const uploadMultipleDocuments = useCallback(
-    async (
-      kycId: number,
-      documents: Array<{ documentType: string; file: File }>,
-    ): Promise<KycDocument[]> => {
-      setLoading(true);
-      setError(null);
-      clearErrors();
-
-      try {
-        const formData = new FormData();
-
-        // Add each document to the form data
-        documents.forEach((doc, index) => {
-          formData.append(
-            `documents[${index}][document_type]`,
-            doc.documentType,
-          );
-          formData.append(`documents[${index}][file]`, doc.file);
-        });
-
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${kycId}/upload_multiple_documents`,
-          {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            body: formData,
-          },
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          if (data.errors) {
-            setErrors(data.errors);
-          }
-          throw new Error(
-            data.errors?.[0]?.message ||
-              data.full_messages?.[0] ||
-              'Failed to upload documents',
-          );
-        }
-
-        return data.documents || [];
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Unknown error';
-        setError(errorMessage);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [token],
-  );
-
   const contextValue: KycContextType = React.useMemo(
     () => ({
       kycs,
@@ -544,7 +485,6 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
       rejectKyc,
       fetchKycDocuments,
       uploadDocument,
-      uploadMultipleDocuments,
     }),
     [
       kycs,
@@ -562,7 +502,6 @@ export const KycProvider = ({ children }: { children: ReactNode }) => {
       rejectKyc,
       fetchKycDocuments,
       uploadDocument,
-      uploadMultipleDocuments,
     ],
   );
 

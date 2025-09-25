@@ -586,6 +586,68 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       return;
     }
 
+    // Handle the actual submission when on review step
+    if (stepType === 'review') {
+      // For nonprofits, we don't require signature
+      // For regular businesses, require signature
+      if (!isNonProfit && !isSigned) {
+        showErrorMessage('Please sign your certificate before submitting.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      if ((isInvestor || isBoth) && !isQuizPassed()) {
+        showErrorMessage(
+          'Please complete the investor quiz correctly before submitting.',
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      try {
+        const kycData = prepareKycData();
+        console.log('Submitting KYC data:', kycData); // Add debug log
+
+        const newKyc = await createKyc(kycData);
+        console.log('KYC created:', newKyc); // Add debug log
+
+        if (Object.keys(uploadedDocuments).length > 0) {
+          await uploadAllDocuments(newKyc.id!);
+        }
+
+        const userTypeLabel = isCreator
+          ? 'Campaign creator'
+          : isInvestor
+            ? 'Investor'
+            : isBoth
+              ? 'Full platform access'
+              : 'Mentor';
+
+        const nonprofitLabel = isNonProfit ? ' (Nonprofit)' : '';
+
+        showSuccessMessage(
+          `${userTypeLabel}${nonprofitLabel} verification submitted successfully`,
+        );
+
+        // Reset form
+        localStorage.removeItem(`${userType}Signature`);
+        setFormData({});
+        setSignature([]);
+        setIsSigned(false);
+        setUploadedDocuments({});
+        setIsNonProfit(false);
+        setCurrentStep(0);
+        setEffectiveCurrentStep(0);
+      } catch (error) {
+        console.error('Error submitting KYC:', error);
+        showErrorMessage('Failed to submit verification. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
+      return; // Important: return after handling review step
+    }
+
+    // Handle other steps (non-review steps)
     if (stepType === 'quiz') {
       const results: { [key: string]: boolean } = {};
       const incorrect: {
@@ -625,58 +687,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       }
     }
 
-    if (stepType === 'review') {
-      if (!isNonProfit && !isSigned) {
-        showErrorMessage('Please sign your certificate before submitting.');
-        setIsSubmitting(false);
-        return;
-      }
-
-      if ((isInvestor || isBoth) && !isQuizPassed()) {
-        showErrorMessage(
-          'Please complete the investor quiz correctly before submitting.',
-        );
-        setIsSubmitting(false);
-        return;
-      }
-
-      try {
-        const kycData = prepareKycData();
-
-        const newKyc = await createKyc(kycData);
-
-        if (Object.keys(uploadedDocuments).length > 0) {
-          await uploadAllDocuments(newKyc.id!);
-        }
-
-        const userTypeLabel = isCreator
-          ? 'Campaign creator'
-          : isInvestor
-            ? 'Investor'
-            : isBoth
-              ? 'Full platform access'
-              : 'Mentor';
-
-        const nonprofitLabel = isNonProfit ? ' (Nonprofit)' : '';
-
-        showSuccessMessage(
-          `${userTypeLabel}${nonprofitLabel} verification submitted successfully`,
-        );
-
-        localStorage.removeItem(`${userType}Signature`);
-        setFormData({});
-        setSignature([]);
-        setIsSigned(false);
-        setUploadedDocuments({});
-        setIsNonProfit(false);
-        setCurrentStep(0);
-        setEffectiveCurrentStep(0);
-      } catch (error) {
-        console.error('Error submitting KYC:', error);
-      } finally {
-        setIsSubmitting(false);
-      }
-    } else if (currentStep < stepDefinitions[userType].length - 1) {
+    // Handle navigation to next step for non-review steps
+    if (currentStep < stepDefinitions[userType].length - 1) {
       // Handle automatic certificate step skipping for nonprofits (only for issuer)
       if (stepType === 'documents' && isNonProfit && isCreator) {
         // For nonprofits, after documents, skip certificate and go to review
@@ -689,8 +701,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       } else {
         setCurrentStep(currentStep + 1);
       }
-      setIsSubmitting(false);
     }
+
+    setIsSubmitting(false);
   };
 
   const goToPreviousStep = () => {
@@ -892,19 +905,24 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       case 'certificate':
         // For nonprofits, skip certificate step and go directly to review
         if (isNonProfit && isCreator) {
-          // Skip to review immediately
-          useEffect(() => {
-            const reviewIndex = stepDefinitions[userType].indexOf('review');
-            if (reviewIndex !== -1 && currentStep !== reviewIndex) {
-              setCurrentStep(reviewIndex);
-            }
-          }, []);
+          // Instead of using useEffect here (which is invalid in render), handle the navigation differently
+          // Remove the useEffect and handle the navigation in the onSubmit function
           return (
             <div className="text-center p-8">
-              <p>Skipping certificate step for nonprofit verification...</p>
-              <p className="text-sm text-gray-500 mt-2">
-                Redirecting to review step...
-              </p>
+              <p>Nonprofit organizations skip certificate signing.</p>
+              <Button
+                onClick={() => {
+                  // Move to review step immediately
+                  const reviewIndex =
+                    stepDefinitions[userType].indexOf('review');
+                  if (reviewIndex !== -1) {
+                    setCurrentStep(reviewIndex);
+                  }
+                }}
+                className="mt-4"
+              >
+                Continue to Review
+              </Button>
             </div>
           );
         }
@@ -984,7 +1002,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Processing...
                       </span>
-                    ) : currentStep === stepDefinitions[userType].length - 1 ? (
+                    ) : getCurrentStepType() === 'review' ? ( // Changed this condition
                       'Submit Verification'
                     ) : (
                       'Continue'
