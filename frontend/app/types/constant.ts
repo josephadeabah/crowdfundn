@@ -28,6 +28,9 @@ import {
   Users,
   Building,
   Briefcase,
+  Building2,
+  PenTool,
+  CheckCircle,
 } from 'lucide-react';
 
 export const dropdownLinks: DropdownLinks = {
@@ -193,10 +196,11 @@ export interface Partner {
 
 export const creatorKycSteps = [
   { id: 'personalInfo', title: 'Personal Information', icon: UserCheck },
-  { id: 'businessInfo', title: 'Business Information', icon: Building },
-  { id: 'document', title: 'Document Verification', icon: FileText },
-  { id: 'certificate', title: 'Certificate Signing', icon: Pencil },
-  { id: 'review', title: 'Review & Submit', icon: Shield },
+  { id: 'nonProfitSelection', title: 'Organization Type', icon: Building2 }, // NEW
+  { id: 'businessInfo', title: 'Business Information', icon: Briefcase },
+  { id: 'documents', title: 'Document Verification', icon: FileText },
+  { id: 'certificate', title: 'Certificate Signing', icon: PenTool },
+  { id: 'review', title: 'Review & Submit', icon: CheckCircle },
 ];
 
 export const investorKycSteps = [
@@ -210,6 +214,7 @@ export const investorKycSteps = [
 
 export const bothKycSteps = [
   { id: 'personalInfo', title: 'Personal Information', icon: UserCheck },
+  { id: 'nonProfitSelection', title: 'Organization Type', icon: Building2 }, // NEW
   { id: 'businessInfo', title: 'Business Information', icon: Building },
   { id: 'document', title: 'Document Verification', icon: FileText },
   { id: 'quiz', title: 'Investor Quiz', icon: BookOpen },
