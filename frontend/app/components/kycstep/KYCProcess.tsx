@@ -78,10 +78,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [currentError, setCurrentError] = useState<string>('');
   const [currentSuccess, setCurrentSuccess] = useState<string>('');
-  const [isNonProfit, setIsNonProfit] = useState<boolean>(false);
-  const [effectiveSteps, setEffectiveSteps] = useState<any[]>([]);
-  const [effectiveCurrentStep, setEffectiveCurrentStep] = useState(0);
-  const [shouldSkipCertificate, setShouldSkipCertificate] = useState(false);
 
   const isCreator = userType === 'issuer';
   const isInvestor = userType === 'investor';
@@ -92,7 +88,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const stepDefinitions = {
     issuer: [
       'personalInfo',
-      'nonProfitSelection',
       'businessInfo',
       'documents',
       'certificate',
@@ -131,59 +126,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       : isBoth
         ? bothKycSteps
         : mentorKycSteps;
-
-  // Calculate effective steps based on nonprofit selection (only for issuer)
-  useEffect(() => {
-    let steps = [...kycSteps];
-    
-    // Only apply nonprofit skipping for issuer, not for both
-    if (isNonProfit && isCreator) {
-      // Remove business info and certificate steps for nonprofits
-      steps = steps.filter(step => 
-        !step.title.toLowerCase().includes('business') && 
-        !step.title.toLowerCase().includes('certificate')
-      );
-    }
-    
-    setEffectiveSteps(steps);
-  }, [kycSteps, isNonProfit, isCreator]);
-
-  // Map between actual step index and effective step index (only for issuer)
-  const getEffectiveStepIndex = (actualIndex: number): number => {
-    if (!isNonProfit || !isCreator) {
-      return actualIndex;
-    }
-
-    const stepType = stepDefinitions[userType][actualIndex];
-    
-    // For nonprofits, map the step types to effective steps
-    if (stepType === 'personalInfo') return 0;
-    if (stepType === 'nonProfitSelection') return 1;
-    if (stepType === 'documents') return 2;
-    if (stepType === 'review') return 3;
-    
-    // For steps that are skipped, return the next available index
-    if (stepType === 'businessInfo' || stepType === 'certificate') {
-      return getEffectiveStepIndex(actualIndex + 1);
-    }
-    
-    return actualIndex;
-  };
-
-  useEffect(() => {
-    setEffectiveCurrentStep(getEffectiveStepIndex(currentStep));
-  }, [currentStep, isNonProfit, isCreator]);
-
-  // Handle certificate step skipping for nonprofits (only for issuer)
-  useEffect(() => {
-    if (shouldSkipCertificate && isNonProfit && isCreator) {
-      const reviewIndex = stepDefinitions[userType].indexOf('review');
-      if (reviewIndex !== -1) {
-        setCurrentStep(reviewIndex);
-        setShouldSkipCertificate(false);
-      }
-    }
-  }, [shouldSkipCertificate, isNonProfit, isCreator, userType]);
 
   useEffect(() => {
     // Show alert when there are KYC errors
@@ -257,6 +199,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     if (savedSignature) {
       try {
         const parsedSignature = JSON.parse(savedSignature);
+        // Add validation to ensure it's a proper signature array
         if (
           Array.isArray(parsedSignature) &&
           parsedSignature.every(
@@ -285,10 +228,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     switch (stepType) {
       case 'personalInfo':
         return personalInfoSchema;
-      case 'nonProfitSelection':
-        return z.object({
-          isNonProfit: z.string().transform((val) => val === 'true'),
-        });
       case 'businessInfo':
         return creatorBusinessSchema;
       case 'documents':
@@ -330,10 +269,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             country: formData.country || '',
             occupation: formData.occupation || '',
             sourceOfFunds: formData.sourceOfFunds || '',
-          };
-        case 'nonProfitSelection':
-          return {
-            isNonProfit: formData.isNonProfit ? 'true' : 'false',
           };
         case 'businessInfo':
           return {
@@ -384,7 +319,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         case 'declaration':
           return {
             accreditedInvestor:
-              (formData as InvestorKYCFormData).accreditedInvestor || false,
+              (formData as InvestorKYCFormData).accreditedInvestor || false, // Default to false
             riskAcknowledgment:
               (formData as InvestorKYCFormData).riskAcknowledgment || false,
             termsAcceptance:
@@ -422,6 +357,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
   };
 
+  // Helper function to format dates safely
   const formatDateSafe = (date: any): string | undefined => {
     if (!date) return undefined;
 
@@ -431,6 +367,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       }
 
       if (typeof date === 'string') {
+        // Try to parse and format string dates
         const parsedDate = new Date(date);
         if (!isNaN(parsedDate.getTime())) {
           return parsedDate.toISOString().split('T')[0];
@@ -445,6 +382,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   };
 
   const prepareKycData = (): KycFormData => {
+    // Create properly formatted signature data
     const formattedSignature =
       signature && Array.isArray(signature) && signature.length > 0
         ? signature.map((point) => ({
@@ -453,6 +391,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           }))
         : undefined;
 
+    // Determine KYC type based on user selection
     const kycType =
       userType === 'both'
         ? 'both'
@@ -503,10 +442,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           ? formattedSignature
           : null,
       issuer_accepted_terms: true,
-      is_non_profit: isNonProfit,
     };
 
-    if ((kycType === 'issuer' || kycType === 'both') && !isNonProfit) {
+    if (kycType === 'issuer' || kycType === 'both') {
       return {
         ...baseData,
         business_name: (formData as CreatorKYCFormData).businessName || '',
@@ -520,7 +458,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       } as KycFormData;
     }
 
-    return baseData as KycFormData;
+    return {
+      ...baseData,
+    } as KycFormData;
   };
 
   const uploadAllDocuments = async (kycId: number) => {
@@ -554,35 +494,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
     const stepType = getCurrentStepType();
 
-    // Handle nonprofit selection (only for issuer)
-    if (stepType === 'nonProfitSelection') {
-      console.log('Nonprofit selection data:', data);
-
-      // Convert string to boolean
-      const isNonProfitSelected =
-        data.isNonProfit === true || data.isNonProfit === 'true';
-      setIsNonProfit(isNonProfitSelected);
-
-      // Update formData with the boolean value
-      setFormData((prev) => ({ ...prev, isNonProfit: isNonProfitSelected }));
-
-      // Skip to the next appropriate step based on nonprofit selection
-      if (isNonProfitSelected) {
-        // For nonprofits, skip businessInfo step and go to documents
-        const documentsIndex = stepDefinitions[userType].indexOf('documents');
-        if (documentsIndex !== -1) {
-          setCurrentStep(documentsIndex);
-        } else {
-          setCurrentStep(currentStep + 1);
-        }
-      } else {
-        // For regular businesses, proceed to businessInfo
-        setCurrentStep(currentStep + 1);
-      }
-      setIsSubmitting(false);
-      return;
-    }
-
     if (stepType === 'quiz') {
       const results: { [key: string]: boolean } = {};
       const incorrect: {
@@ -614,7 +525,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       setIncorrectAnswers(incorrect);
     }
 
-    if (stepType === 'certificate' && !isNonProfit) {
+    if (stepType === 'certificate') {
       if (!isSigned) {
         showErrorMessage('Please sign your certificate before proceeding.');
         setIsSubmitting(false);
@@ -623,7 +534,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
 
     if (stepType === 'review') {
-      if (!isNonProfit && !isSigned) {
+      if (!isSigned) {
         showErrorMessage('Please sign your certificate before submitting.');
         setIsSubmitting(false);
         return;
@@ -654,10 +565,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
               ? 'Full platform access'
               : 'Mentor';
 
-        const nonprofitLabel = isNonProfit ? ' (Nonprofit)' : '';
-
         showSuccessMessage(
-          `${userTypeLabel}${nonprofitLabel} verification submitted successfully`,
+          `${userTypeLabel} verification submitted successfully`,
         );
 
         localStorage.removeItem(`${userType}Signature`);
@@ -665,44 +574,20 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         setSignature([]);
         setIsSigned(false);
         setUploadedDocuments({});
-        setIsNonProfit(false);
-        setCurrentStep(0);
-        setEffectiveCurrentStep(0);
       } catch (error) {
         console.error('Error submitting KYC:', error);
       } finally {
         setIsSubmitting(false);
       }
-    } else if (currentStep < stepDefinitions[userType].length - 1) {
-      // Handle automatic certificate step skipping for nonprofits (only for issuer)
-      if (stepType === 'documents' && isNonProfit && isCreator) {
-        // For nonprofits, after documents, skip certificate and go to review
-        const reviewIndex = stepDefinitions[userType].indexOf('review');
-        if (reviewIndex !== -1) {
-          setCurrentStep(reviewIndex);
-        } else {
-          setCurrentStep(currentStep + 1);
-        }
-      } else {
-        setCurrentStep(currentStep + 1);
-      }
+    } else if (currentStep < kycSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
       setIsSubmitting(false);
     }
   };
 
   const goToPreviousStep = () => {
     if (currentStep > 0) {
-      // Find the previous non-skipped step (only for issuer nonprofits)
-      let previousStep = currentStep - 1;
-      while (previousStep > 0) {
-        const stepType = stepDefinitions[userType][previousStep];
-        if (!isNonProfit || !isCreator || (stepType !== 'businessInfo' && stepType !== 'certificate')) {
-          setCurrentStep(previousStep);
-          return;
-        }
-        previousStep--;
-      }
-      setCurrentStep(0);
+      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -751,114 +636,12 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     return Object.values(quizResults).every((result) => result === true);
   };
 
-  // New component for nonprofit selection step (only for issuer)
-  const NonProfitSelectionStep = () => {
-    // If not issuer, show a message or skip this step
-    if (!isCreator) {
-      return (
-        <div className="text-center p-8">
-          <p>Nonprofit selection is only available for fundraiser verification.</p>
-          <Button 
-            onClick={() => setCurrentStep(currentStep + 1)}
-            className="mt-4"
-          >
-            Continue
-          </Button>
-        </div>
-      );
-    }
-
-    const { watch, setValue } = form;
-    const selectedValue = watch('isNonProfit');
-
-    return (
-      <div className="space-y-6">
-        <div className="text-center">
-          <h3 className="text-lg font-semibold mb-2">Organization Type</h3>
-          <p className="text-gray-600">
-            Are you verifying as a nonprofit organization?
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div
-            className={`flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 ${
-              selectedValue === 'true' ? 'bg-blue-50 border-blue-300' : ''
-            }`}
-            onClick={() => setValue('isNonProfit', 'true')}
-          >
-            <input
-              type="radio"
-              id="nonprofit-yes"
-              value="true"
-              checked={selectedValue === 'true'}
-              onChange={() => setValue('isNonProfit', 'true')}
-              className="h-4 w-4 text-bantu-green focus:ring-bantu-green"
-            />
-            <label
-              htmlFor="nonprofit-yes"
-              className="flex flex-col cursor-pointer"
-            >
-              <span className="font-medium">Yes, Nonprofit Organization</span>
-              <span className="text-sm text-gray-500">
-                Skip business registration details
-              </span>
-            </label>
-          </div>
-
-          <div
-            className={`flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 ${
-              selectedValue === 'false' ? 'bg-blue-50 border-blue-300' : ''
-            }`}
-            onClick={() => setValue('isNonProfit', 'false')}
-          >
-            <input
-              type="radio"
-              id="nonprofit-no"
-              value="false"
-              checked={selectedValue === 'false'}
-              onChange={() => setValue('isNonProfit', 'false')}
-              className="h-4 w-4 text-bantu-green focus:ring-bantu-green"
-            />
-            <label
-              htmlFor="nonprofit-no"
-              className="flex flex-col cursor-pointer"
-            >
-              <span className="font-medium">No, For-Profit Business</span>
-              <span className="text-sm text-gray-500">
-                Complete full business verification
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-blue-900 mb-2">
-            What's the difference?
-          </h4>
-          <ul className="text-sm text-blue-800 space-y-1">
-            <li>
-              • <strong>Nonprofit</strong>: Simplified process, no business
-              registration required
-            </li>
-            <li>
-              • <strong>For-Profit</strong>: Complete business verification with
-              registration details
-            </li>
-          </ul>
-        </div>
-      </div>
-    );
-  };
-
   const renderStepContent = () => {
     const stepType = getCurrentStepType();
 
     switch (stepType) {
       case 'personalInfo':
         return <PersonalInfoStep />;
-      case 'nonProfitSelection':
-        return <NonProfitSelectionStep />;
       case 'businessInfo':
         return <BusinessInfoStep />;
       case 'documents':
@@ -877,17 +660,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       case 'declaration':
         return <DeclarationStep />;
       case 'certificate':
-        // For nonprofits, show a message and auto-proceed (handled in useEffect) - only for issuer
-        if (isNonProfit && isCreator) {
-          return (
-            <div className="text-center p-8">
-              <p>Skipping certificate step for nonprofit verification...</p>
-              <p className="text-sm text-gray-500 mt-2">
-                Redirecting to review step...
-              </p>
-            </div>
-          );
-        }
         return (
           <CertificateSigningStep
             isSigned={isSigned}
@@ -909,7 +681,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             isInvestor={isInvestor}
             isBoth={isBoth}
             isMentor={isMentor}
-            isNonProfit={isNonProfit}
             uploadedDocuments={uploadedDocuments}
             signatureType={isInvestor || isBoth ? 'Investor' : 'Issuer'}
           />
@@ -921,11 +692,11 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
   return (
     <div>
-      <ProgressSteps steps={effectiveSteps} currentStep={effectiveCurrentStep} />
+      <ProgressSteps steps={kycSteps} currentStep={currentStep} />
 
       <Card className="bg-white shadow-sm">
         <CardHeader>
-          <CardTitle>{effectiveSteps[effectiveCurrentStep]?.title || 'Verification'}</CardTitle>
+          <CardTitle>{kycSteps[currentStep]?.title}</CardTitle>
         </CardHeader>
 
         <CardContent>
@@ -959,7 +730,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Processing...
                       </span>
-                    ) : currentStep === stepDefinitions[userType].length - 1 ? (
+                    ) : currentStep === kycSteps.length - 1 ? (
                       'Submit Verification'
                     ) : (
                       'Continue'
@@ -979,6 +750,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         onCancel={handleCancelSignature}
       />
 
+      {/* Error Alert Popup */}
       <AlertPopup
         title="Error"
         message={currentError}
@@ -997,6 +769,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       />
 
+      {/* Success Alert Popup */}
       <AlertPopup
         title="Success"
         message={currentSuccess}
