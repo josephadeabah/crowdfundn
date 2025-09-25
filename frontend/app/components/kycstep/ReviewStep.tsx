@@ -23,6 +23,7 @@ interface ReviewStepProps {
   isMentor: boolean;
   uploadedDocuments: { [key: string]: File };
   signatureType: string;
+  isNonProfit: boolean;
 }
 
 export const ReviewStep: React.FC<ReviewStepProps> = ({

@@ -136,6 +136,7 @@ export interface BaseKYCFormData {
   occupation?: string;
   sourceOfFunds?: string;
   state?: string;
+  isNonProfit: boolean
 }
 
 export type CreatorKYCFormData = BaseKYCFormData & {
