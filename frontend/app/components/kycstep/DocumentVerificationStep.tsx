@@ -21,9 +21,6 @@ import { Upload, FileText, X, Plus } from 'lucide-react';
 
 interface DocumentVerificationStepProps {
   onDocumentUpload: (documentType: string, file: File) => void;
-  onMultipleDocumentUpload?: (
-    documents: Array<{ documentType: string; file: File }>,
-  ) => void;
   userType: 'issuer' | 'investor' | 'both' | 'mentor';
   isNonProfit?: boolean;
 }
@@ -53,25 +50,16 @@ export const DocumentVerificationStep: React.FC<
   DocumentVerificationStepProps
 > = ({
   onDocumentUpload,
-  onMultipleDocumentUpload,
   userType,
   isNonProfit = false,
 }) => {
   const form = useFormContext();
-  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File }>(
-    {},
-  );
-  const [selectedDocumentType, setSelectedDocumentType] =
-    useState<string>('id_front');
-  const [bulkUploadFiles, setBulkUploadFiles] = useState<
-    Array<{ documentType: string; file: File }>
-  >([]);
+  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File }>({});
+  const [selectedDocumentType, setSelectedDocumentType] = useState<string>('id_front');
 
-  // Create refs for file inputs
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const bulkFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Get available document types based on user type
+  // Get available document types based on user type (same as before)
   const getAvailableDocumentTypes = () => {
     const baseTypes = [...DOCUMENT_TYPES.common];
 
@@ -97,43 +85,7 @@ export const DocumentVerificationStep: React.FC<
   const handleFileUpload = (documentType: string, file: File) => {
     setUploadedFiles((prev) => ({ ...prev, [documentType]: file }));
     onDocumentUpload(documentType, file);
-
-    // Update form state
     form.setValue(`document_${documentType}`, file, { shouldValidate: true });
-  };
-
-  const handleBulkFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files) return;
-
-    const newFiles = Array.from(files).map((file) => ({
-      documentType: selectedDocumentType,
-      file,
-    }));
-
-    setBulkUploadFiles((prev) => [...prev, ...newFiles]);
-  };
-
-  const handleBulkUpload = () => {
-    if (bulkUploadFiles.length === 0) return;
-
-    if (onMultipleDocumentUpload) {
-      onMultipleDocumentUpload(bulkUploadFiles);
-    } else {
-      // Fallback to individual uploads
-      bulkUploadFiles.forEach(({ documentType, file }) => {
-        handleFileUpload(documentType, file);
-      });
-    }
-
-    setBulkUploadFiles([]);
-    if (bulkFileInputRef.current) {
-      bulkFileInputRef.current.value = '';
-    }
-  };
-
-  const removeBulkFile = (index: number) => {
-    setBulkUploadFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const removeUploadedFile = (documentType: string) => {
@@ -142,19 +94,12 @@ export const DocumentVerificationStep: React.FC<
       delete newFiles[documentType];
       return newFiles;
     });
-
     form.setValue(`document_${documentType}`, null, { shouldValidate: true });
   };
 
   const triggerFileInput = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
-    }
-  };
-
-  const triggerBulkFileInput = () => {
-    if (bulkFileInputRef.current) {
-      bulkFileInputRef.current.click();
     }
   };
 
@@ -175,9 +120,7 @@ export const DocumentVerificationStep: React.FC<
               <SelectContent>
                 <SelectItem value="national_id">National ID</SelectItem>
                 <SelectItem value="passport">Passport</SelectItem>
-                <SelectItem value="drivers_license">
-                  Driver's License
-                </SelectItem>
+                <SelectItem value="drivers_license">Driver's License</SelectItem>
                 <SelectItem value="voter_id">Voter ID</SelectItem>
               </SelectContent>
             </Select>
@@ -203,7 +146,7 @@ export const DocumentVerificationStep: React.FC<
       <div className="space-y-6">
         <FormLabel>Upload Documents</FormLabel>
 
-        {/* Single Document Upload */}
+        {/* Document Upload Interface */}
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
             <div className="flex-1">
@@ -244,7 +187,7 @@ export const DocumentVerificationStep: React.FC<
                 onClick={triggerFileInput}
               >
                 <Upload className="mr-2 h-4 w-4" />
-                Upload Single
+                Upload Document
               </Button>
             </div>
           </div>
@@ -283,83 +226,6 @@ export const DocumentVerificationStep: React.FC<
           </div>
         </div>
 
-        {/* Bulk Upload Section */}
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
-            <div className="flex-1">
-              <FormLabel>Bulk Upload (Multiple files for same type)</FormLabel>
-              <Select
-                value={selectedDocumentType}
-                onValueChange={setSelectedDocumentType}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select document type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableDocumentTypes.map((docType) => (
-                    <SelectItem key={docType.value} value={docType.value}>
-                      {docType.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex gap-2">
-              <Input
-                type="file"
-                accept="image/*,.pdf"
-                multiple
-                onChange={handleBulkFileSelect}
-                className="hidden"
-                ref={bulkFileInputRef}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={triggerBulkFileInput}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Files
-              </Button>
-              <Button
-                type="button"
-                onClick={handleBulkUpload}
-                disabled={bulkUploadFiles.length === 0}
-              >
-                <Upload className="mr-2 h-4 w-4" />
-                Upload All
-              </Button>
-            </div>
-          </div>
-
-          {/* Bulk Upload Files List */}
-          {bulkUploadFiles.length > 0 && (
-            <div className="space-y-2">
-              <div className="text-sm font-medium">Files to upload:</div>
-              {bulkUploadFiles.map((fileData, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-2 border rounded"
-                >
-                  <div className="flex items-center space-x-2">
-                    <FileText className="h-4 w-4" />
-                    <span className="text-sm">{fileData.file.name}</span>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeBulkFile(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Document Requirements Info */}
         <div className="bg-blue-50 p-4 rounded-lg">
           <h4 className="font-semibold text-blue-900 mb-2">
@@ -370,6 +236,7 @@ export const DocumentVerificationStep: React.FC<
             <li>• Accepted formats: PDF, JPEG, PNG</li>
             <li>• Ensure documents are clear and readable</li>
             <li>• All documents must be valid and not expired</li>
+            <li>• You can upload all required document types listed above</li>
           </ul>
         </div>
       </div>

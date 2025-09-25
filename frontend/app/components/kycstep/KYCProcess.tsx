@@ -53,7 +53,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const {
     createKyc,
     uploadDocument,
-    uploadMultipleDocuments,
     loading: kycLoading,
     errors: kycErrors,
     clearErrors,
@@ -423,23 +422,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     } catch (error) {
       showErrorMessage(`Failed to upload ${documentType.replace('_', ' ')}`);
       console.error('Upload error:', error);
-    }
-  };
-
-  const handleMultipleDocumentUpload = async (
-    documents: Array<{ documentType: string; file: File }>,
-  ) => {
-    try {
-      const newUploads: { [key: string]: File } = {};
-      documents.forEach(({ documentType, file }) => {
-        newUploads[documentType] = file;
-      });
-
-      setUploadedDocuments((prev) => ({ ...prev, ...newUploads }));
-      showSuccessMessage(`${documents.length} documents uploaded successfully`);
-    } catch (error) {
-      showErrorMessage(`Failed to upload documents`);
-      console.error('Bulk upload error:', error);
     }
   };
 
@@ -892,7 +874,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         return (
           <DocumentVerificationStep
             onDocumentUpload={handleDocumentUpload}
-            onMultipleDocumentUpload={handleMultipleDocumentUpload}
             userType={userType}
             isNonProfit={isNonProfit}
           />
