@@ -217,9 +217,9 @@ export const bothKycSteps = [
   { id: 'nonProfitSelection', title: 'Org Type', icon: Building2 }, // NEW
   { id: 'businessInfo', title: 'Business Info', icon: Building },
   { id: 'document', title: 'Doc Verification', icon: FileText },
-  { id: 'quiz', title: 'Investor Quiz', icon: BookOpen },
+  { id: 'quiz', title: 'Quiz', icon: BookOpen },
   { id: 'declaration', title: 'Declaration', icon: FileCheck },
-  { id: 'certificate', title: 'Cert Signing', icon: Pencil },
+  { id: 'certificate', title: 'Sign', icon: Pencil },
   { id: 'review', title: 'Review & Submit', icon: Shield },
 ];
 
