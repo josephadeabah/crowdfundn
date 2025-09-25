@@ -37,6 +37,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   isMentor,
   uploadedDocuments,
   signatureType,
+  isNonProfit,
 }) => {
   // Determine signature label based on signature type
   const signatureLabel =
@@ -79,7 +80,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         </CardContent>
       </Card>
 
-      {(isCreator || isBoth || isMentor) && (
+      {(isCreator || isBoth || isMentor) && !isNonProfit && (
         <Card>
           <CardHeader>
             <CardTitle>Business Information</CardTitle>
@@ -165,31 +166,35 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         </Card>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Signature Status</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-2 mb-2">
-            {isSigned ? (
-              <CheckCircle className="h-5 w-5 text-green-500" />
-            ) : (
-              <XCircle className="h-5 w-5 text-red-500" />
+      {/* Hide Signature Status for nonprofit organizations */}
+      {!isNonProfit && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Signature Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-2 mb-2">
+              {isSigned ? (
+                <CheckCircle className="h-5 w-5 text-green-500" />
+              ) : (
+                <XCircle className="h-5 w-5 text-red-500" />
+              )}
+              <span>
+                {signatureType} Signature: {isSigned ? 'Provided' : 'Pending'}
+              </span>
+            </div>
+            {isSigned && (
+              <p className="text-sm text-gray-600">
+                Your {signatureType.toLowerCase()} signature will be used for{' '}
+                {signatureLabel.toLowerCase()} verification and documents.
+              </p>
             )}
-            <span>
-              {signatureType} Signature: {isSigned ? 'Provided' : 'Pending'}
-            </span>
-          </div>
-          {isSigned && (
-            <p className="text-sm text-gray-600">
-              Your {signatureType.toLowerCase()} signature will be used for{' '}
-              {signatureLabel.toLowerCase()} verification and documents.
-            </p>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
-      {!isSigned && (
+      {/* Hide signature warning for nonprofit organizations */}
+      {!isSigned && !isNonProfit && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <p className="text-yellow-800">
             Please provide your {signatureType.toLowerCase()} signature before
@@ -212,6 +217,17 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
             <strong>Full Platform Access:</strong> You are applying for both
             fundraising AND investment capabilities. Once verified, you'll be
             able to create campaigns and invest in other startups.
+          </p>
+        </div>
+      )}
+
+      {/* Show nonprofit notice if applicable */}
+      {isNonProfit && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <p className="text-green-800">
+            <strong>Nonprofit Organization:</strong> Your verification process 
+            has been simplified as you are verifying as a nonprofit organization. 
+            Business registration details and certificate signing are not required.
           </p>
         </div>
       )}
