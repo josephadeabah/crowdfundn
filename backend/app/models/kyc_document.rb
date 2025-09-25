@@ -28,6 +28,18 @@ class KycDocument < ApplicationRecord
     financial_statements
   ].freeze
 
+  # Document type labels for frontend display
+  DOCUMENT_LABELS = {
+    'id_front' => 'ID Front',
+    'id_back' => 'ID Back', 
+    'proof_of_address' => 'Proof of Address',
+    'id_document' => 'ID Document',
+    'selfie_with_id' => 'Selfie with ID',
+    'business_registration' => 'Business Registration',
+    'tax_clearance' => 'Tax Clearance Certificate',
+    'financial_statements' => 'Financial Statements'
+  }.freeze
+
   def file_url
     return unless file.attached?
     
@@ -60,6 +72,10 @@ class KycDocument < ApplicationRecord
   rescue => e
     Rails.logger.error "Failed to check file existence for KycDocument #{id}: #{e.message}"
     false
+  end
+
+  def document_label
+    DOCUMENT_LABELS[document_type] || document_type.humanize
   end
 
   private

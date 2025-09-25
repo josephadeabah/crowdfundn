@@ -1,3 +1,4 @@
+# app/controllers/api/v1/kyc/kycs_controller.rb
 require 'csv'
 
 module Api
@@ -5,8 +6,8 @@ module Api
     module Kyc
       class KycsController < ApplicationController
         before_action :authenticate_request
-        before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info, :upload_document]
-        before_action :authorize_user_access, only: [:update, :destroy, :submit, :documents]
+        before_action :set_kyc, only: [:show, :update, :destroy, :submit, :documents, :verify, :reject, :request_info, :upload_document, :upload_multiple_documents]
+        before_action :authorize_user_access, only: [:update, :destroy, :submit, :documents, :upload_document, :upload_multiple_documents]
         before_action -> { authorize_admin_or_owner(@kyc) }, only: [:show]
         before_action :authorize_admin, only: [:all_needs_review, :stats, :verify, :reject, :request_info]
 
@@ -161,6 +162,87 @@ module Api
           end
         end
 
+        def upload_multiple_documents
+          begin
+            unless params[:documents].present?
+              return render json: { errors: ['No documents provided'] }, status: :unprocessable_entity
+            end
+
+            uploaded_documents = []
+            errors = []
+
+            params[:documents].each do |doc_params|
+              document_type = doc_params[:document_type]
+              file = doc_params[:file]
+
+              # Validate document type
+              unless KycDocument::DOCUMENT_TYPES.include?(document_type)
+                errors << "Invalid document type: #{document_type}"
+                next
+              end
+
+              # Validate file presence
+              unless file.present?
+                errors << "No file provided for #{document_type}"
+                next
+              end
+
+              # Validate file type and size
+              if file.size > 10.megabytes
+                errors << "File size must be less than 10MB for #{document_type}"
+                next
+              end
+
+              allowed_content_types = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg']
+              unless allowed_content_types.include?(file.content_type)
+                errors << "File must be PDF, JPEG, or PNG for #{document_type}"
+                next
+              end
+
+              # Find or create document
+              document = @kyc.kyc_documents.find_or_initialize_by(document_type: document_type)
+              
+              # Attach the file
+              document.file.attach(file)
+              
+              if document.save
+                # Force processing and analysis
+                KycDocumentProcessingJob.perform_later(document.id)
+                if document.file.attached?
+                  document.file.blob.analyze if document.file.blob.analyzed?
+                  document.update_column(:file_name, document.file.filename.to_s)
+                end
+                
+                uploaded_documents << document
+              else
+                errors << "Failed to save #{document_type}: #{document.errors.full_messages.join(', ')}"
+              end
+            end
+
+            # Reload the KYC to include updated documents
+            @kyc.reload
+
+            if errors.any?
+              render json: { 
+                message: 'Some documents failed to upload',
+                uploaded_documents: uploaded_documents.map { |doc| KycFrontendService.format_document(doc) },
+                errors: errors,
+                kyc: KycFrontendService.format_for_frontend(@kyc)
+              }, status: :multi_status
+            else
+              render json: { 
+                message: 'All documents uploaded successfully',
+                documents: uploaded_documents.map { |doc| KycFrontendService.format_document(doc) },
+                kyc: KycFrontendService.format_for_frontend(@kyc)
+              }
+            end
+            
+          rescue => e
+            Rails.logger.error "Multiple document upload failed: #{e.message}"
+            render json: { errors: ['Failed to upload documents'] }, status: :internal_server_error
+          end
+        end
+
         def submit
           # Check if user can submit (must be in pending status)
           unless @kyc.pending?
@@ -182,7 +264,16 @@ module Api
 
         def documents
           @documents = @kyc.kyc_documents
-          render json: { documents: @documents.map { |doc| KycFrontendService.format_document(doc) } }
+          render json: { 
+            documents: @documents.map { |doc| KycFrontendService.format_document(doc) },
+            available_document_types: KycDocument::DOCUMENT_TYPES.map do |doc_type|
+              {
+                value: doc_type,
+                label: KycDocument::DOCUMENT_LABELS[doc_type],
+                uploaded: @documents.any? { |doc| doc.document_type == doc_type && doc.file.attached? }
+              }
+            end
+          }
         end
 
         def all_needs_review
