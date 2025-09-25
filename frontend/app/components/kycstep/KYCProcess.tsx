@@ -155,13 +155,13 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
 
     const stepType = stepDefinitions[userType][actualIndex];
-    
+
     // For nonprofits, map the step types to effective steps
     if (stepType === 'personalInfo') return 0;
     if (stepType === 'nonProfitSelection') return 1;
     if (stepType === 'documents') return 2;
     if (stepType === 'review') return 3;
-    
+
     // For steps that are skipped, return the current effective step
     if (stepType === 'businessInfo' || stepType === 'certificate') {
       // If we're on a skipped step, find the next non-skipped step and map it
@@ -172,7 +172,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       }
       return 3; // Default to review if nothing else matches
     }
-    
+
     return actualIndex;
   };
 
@@ -184,11 +184,16 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
     // Map effective steps back to actual steps for nonprofits
     switch (effectiveIndex) {
-      case 0: return 0; // personalInfo
-      case 1: return 1; // nonProfitSelection
-      case 2: return 3; // documents (skip businessInfo)
-      case 3: return 5; // review (skip certificate)
-      default: return effectiveIndex;
+      case 0:
+        return 0; // personalInfo
+      case 1:
+        return 1; // nonProfitSelection
+      case 2:
+        return 3; // documents (skip businessInfo)
+      case 3:
+        return 5; // review (skip certificate)
+      default:
+        return effectiveIndex;
     }
   };
 
@@ -860,7 +865,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
             </li>
             <li>
               • <strong>For-Profit</strong>: Complete business verification with
-              registration details
+              registration details required
             </li>
           </ul>
         </div>
