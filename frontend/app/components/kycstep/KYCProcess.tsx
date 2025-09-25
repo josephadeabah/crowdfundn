@@ -138,11 +138,19 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     // Only apply nonprofit skipping for issuer, not for both
     if (isNonProfit && isCreator) {
       // Remove business info and certificate steps for nonprofits
-      steps = steps.filter(
-        (step) =>
-          !step.title.toLowerCase().includes('business') &&
-          !step.title.toLowerCase().includes('certificate'),
-      );
+      steps = steps.filter(step => {
+        // Check both title and id to ensure we catch all variations
+        const title = step.title.toLowerCase();
+        const id = step.id.toLowerCase();
+        
+        return !(
+          title.includes('business') || 
+          title.includes('cert') || 
+          title.includes('sign') ||
+          id.includes('business') ||
+          id.includes('certificate')
+        );
+      });
     }
 
     setEffectiveSteps(steps);
@@ -174,27 +182,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
 
     return actualIndex;
-  };
-
-  // Get the actual step index from effective step index
-  const getActualStepIndex = (effectiveIndex: number): number => {
-    if (!isNonProfit || !isCreator) {
-      return effectiveIndex;
-    }
-
-    // Map effective steps back to actual steps for nonprofits
-    switch (effectiveIndex) {
-      case 0:
-        return 0; // personalInfo
-      case 1:
-        return 1; // nonProfitSelection
-      case 2:
-        return 3; // documents (skip businessInfo)
-      case 3:
-        return 5; // review (skip certificate)
-      default:
-        return effectiveIndex;
-    }
   };
 
   useEffect(() => {
