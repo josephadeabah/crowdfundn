@@ -138,14 +138,14 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     // Only apply nonprofit skipping for issuer, not for both
     if (isNonProfit && isCreator) {
       // Remove business info and certificate steps for nonprofits
-      steps = steps.filter(step => {
+      steps = steps.filter((step) => {
         // Check both title and id to ensure we catch all variations
         const title = step.title.toLowerCase();
         const id = step.id.toLowerCase();
-        
+
         return !(
-          title.includes('business') || 
-          title.includes('certificate') || 
+          title.includes('business') ||
+          title.includes('certificate') ||
           title.includes('signing') ||
           id.includes('business') ||
           id.includes('certificate')

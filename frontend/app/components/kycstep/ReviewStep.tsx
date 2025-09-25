@@ -225,9 +225,10 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
       {isNonProfit && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <p className="text-green-800">
-            <strong>Nonprofit Organization:</strong> Your verification process 
-            has been simplified as you are verifying as a nonprofit organization. 
-            Business registration details and certificate signing are not required.
+            <strong>Nonprofit Organization:</strong> Your verification process
+            has been simplified as you are verifying as a nonprofit
+            organization. Business registration details and certificate signing
+            are not required.
           </p>
         </div>
       )}
