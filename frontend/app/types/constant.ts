@@ -195,16 +195,16 @@ export interface Partner {
 }
 
 export const creatorKycSteps = [
-  { id: 'personalInfo', title: 'Personal Information', icon: UserCheck },
-  { id: 'nonProfitSelection', title: 'Organization Type', icon: Building2 }, // NEW
-  { id: 'businessInfo', title: 'Business Information', icon: Briefcase },
-  { id: 'documents', title: 'Document Verification', icon: FileText },
-  { id: 'certificate', title: 'Certificate Signing', icon: PenTool },
+  { id: 'personalInfo', title: 'Personal Info', icon: UserCheck },
+  { id: 'nonProfitSelection', title: 'Org Type', icon: Building2 }, // NEW
+  { id: 'businessInfo', title: 'Business Info', icon: Briefcase },
+  { id: 'documents', title: 'Doc Verification', icon: FileText },
+  { id: 'certificate', title: 'Cert Signing', icon: PenTool },
   { id: 'review', title: 'Review & Submit', icon: CheckCircle },
 ];
 
 export const investorKycSteps = [
-  { id: 'personalInfo', title: 'Personal Information', icon: UserCheck },
+  { id: 'personalInfo', title: 'Personal Info', icon: UserCheck },
   { id: 'document', title: 'Document Verification', icon: FileText },
   { id: 'quiz', title: 'Investor Quiz', icon: BookOpen },
   { id: 'declaration', title: 'Declaration', icon: FileCheck },
@@ -213,13 +213,13 @@ export const investorKycSteps = [
 ];
 
 export const bothKycSteps = [
-  { id: 'personalInfo', title: 'Personal Information', icon: UserCheck },
-  { id: 'nonProfitSelection', title: 'Organization Type', icon: Building2 }, // NEW
-  { id: 'businessInfo', title: 'Business Information', icon: Building },
-  { id: 'document', title: 'Document Verification', icon: FileText },
+  { id: 'personalInfo', title: 'Personal Info', icon: UserCheck },
+  { id: 'nonProfitSelection', title: 'Org Type', icon: Building2 }, // NEW
+  { id: 'businessInfo', title: 'Business Info', icon: Building },
+  { id: 'document', title: 'Doc Verification', icon: FileText },
   { id: 'quiz', title: 'Investor Quiz', icon: BookOpen },
   { id: 'declaration', title: 'Declaration', icon: FileCheck },
-  { id: 'certificate', title: 'Certificate Signing', icon: Pencil },
+  { id: 'certificate', title: 'Cert Signing', icon: Pencil },
   { id: 'review', title: 'Review & Submit', icon: Shield },
 ];
 
