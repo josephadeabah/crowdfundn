@@ -81,7 +81,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   const [isNonProfit, setIsNonProfit] = useState<boolean>(false);
   const [effectiveSteps, setEffectiveSteps] = useState<any[]>([]);
   const [effectiveCurrentStep, setEffectiveCurrentStep] = useState(0);
-  const [shouldSkipCertificate, setShouldSkipCertificate] = useState(false);
 
   const isCreator = userType === 'issuer';
   const isInvestor = userType === 'investor';
@@ -156,35 +155,46 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
 
     const stepType = stepDefinitions[userType][actualIndex];
-
+    
     // For nonprofits, map the step types to effective steps
     if (stepType === 'personalInfo') return 0;
     if (stepType === 'nonProfitSelection') return 1;
     if (stepType === 'documents') return 2;
     if (stepType === 'review') return 3;
-
-    // For steps that are skipped, return the next available index
+    
+    // For steps that are skipped, return the current effective step
     if (stepType === 'businessInfo' || stepType === 'certificate') {
-      return getEffectiveStepIndex(actualIndex + 1);
+      // If we're on a skipped step, find the next non-skipped step and map it
+      for (let i = actualIndex + 1; i < stepDefinitions[userType].length; i++) {
+        const nextStepType = stepDefinitions[userType][i];
+        if (nextStepType === 'documents') return 2;
+        if (nextStepType === 'review') return 3;
+      }
+      return 3; // Default to review if nothing else matches
+    }
+    
+    return actualIndex;
+  };
+
+  // Get the actual step index from effective step index
+  const getActualStepIndex = (effectiveIndex: number): number => {
+    if (!isNonProfit || !isCreator) {
+      return effectiveIndex;
     }
 
-    return actualIndex;
+    // Map effective steps back to actual steps for nonprofits
+    switch (effectiveIndex) {
+      case 0: return 0; // personalInfo
+      case 1: return 1; // nonProfitSelection
+      case 2: return 3; // documents (skip businessInfo)
+      case 3: return 5; // review (skip certificate)
+      default: return effectiveIndex;
+    }
   };
 
   useEffect(() => {
     setEffectiveCurrentStep(getEffectiveStepIndex(currentStep));
   }, [currentStep, isNonProfit, isCreator]);
-
-  // Handle certificate step skipping for nonprofits (only for issuer)
-  useEffect(() => {
-    if (shouldSkipCertificate && isNonProfit && isCreator) {
-      const reviewIndex = stepDefinitions[userType].indexOf('review');
-      if (reviewIndex !== -1) {
-        setCurrentStep(reviewIndex);
-        setShouldSkipCertificate(false);
-      }
-    }
-  }, [shouldSkipCertificate, isNonProfit, isCreator, userType]);
 
   useEffect(() => {
     // Show alert when there are KYC errors
@@ -884,8 +894,15 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       case 'declaration':
         return <DeclarationStep />;
       case 'certificate':
-        // For nonprofits, show a message and auto-proceed (handled in useEffect) - only for issuer
+        // For nonprofits, skip certificate step and go directly to review
         if (isNonProfit && isCreator) {
+          // Skip to review immediately
+          useEffect(() => {
+            const reviewIndex = stepDefinitions[userType].indexOf('review');
+            if (reviewIndex !== -1 && currentStep !== reviewIndex) {
+              setCurrentStep(reviewIndex);
+            }
+          }, []);
           return (
             <div className="text-center p-8">
               <p>Skipping certificate step for nonprofit verification...</p>
