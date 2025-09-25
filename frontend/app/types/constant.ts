@@ -214,7 +214,6 @@ export const investorKycSteps = [
 
 export const bothKycSteps = [
   { id: 'personalInfo', title: 'Personal Info', icon: UserCheck },
-  { id: 'nonProfitSelection', title: 'Org Type', icon: Building2 }, // NEW
   { id: 'businessInfo', title: 'Business Info', icon: Building },
   { id: 'document', title: 'Doc Verification', icon: FileText },
   { id: 'quiz', title: 'Quiz', icon: BookOpen },

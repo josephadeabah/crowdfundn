@@ -108,7 +108,6 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     ],
     both: [
       'personalInfo',
-      'nonProfitSelection',
       'businessInfo',
       'documents',
       'quiz',
@@ -137,7 +136,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
   useEffect(() => {
     let steps = [...kycSteps];
 
-    if (isNonProfit && (isCreator || isBoth)) {
+    if (isNonProfit && isCreator) {
       // Remove business info and certificate steps for nonprofits
       steps = steps.filter(
         (step) =>
@@ -151,7 +150,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
   // Map between actual step index and effective step index
   const getEffectiveStepIndex = (actualIndex: number): number => {
-    if (!isNonProfit || (!isCreator && !isBoth)) {
+    if (!isNonProfit || !isCreator) {
       return actualIndex;
     }
 
@@ -177,14 +176,14 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
   // Handle certificate step skipping for nonprofits
   useEffect(() => {
-    if (shouldSkipCertificate && isNonProfit && (isCreator || isBoth)) {
+    if (shouldSkipCertificate && isNonProfit && isCreator) {
       const reviewIndex = stepDefinitions[userType].indexOf('review');
       if (reviewIndex !== -1) {
         setCurrentStep(reviewIndex);
         setShouldSkipCertificate(false);
       }
     }
-  }, [shouldSkipCertificate, isNonProfit, isCreator, isBoth, userType]);
+  }, [shouldSkipCertificate, isNonProfit, isCreator, userType]);
 
   useEffect(() => {
     // Show alert when there are KYC errors
@@ -303,7 +302,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       case 'certificate':
         return z.object({});
       case 'review':
-        return isCreator || isBoth ? creatorBusinessSchema : z.object({});
+        return isCreator ? creatorBusinessSchema : z.object({});
       default:
         return z.object({});
     }
@@ -676,7 +675,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       }
     } else if (currentStep < stepDefinitions[userType].length - 1) {
       // Handle automatic certificate step skipping for nonprofits
-      if (stepType === 'documents' && isNonProfit && (isCreator || isBoth)) {
+      if (stepType === 'documents' && isNonProfit && isCreator) {
         // For nonprofits, after documents, skip certificate and go to review
         const reviewIndex = stepDefinitions[userType].indexOf('review');
         if (reviewIndex !== -1) {
@@ -867,7 +866,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         return <DeclarationStep />;
       case 'certificate':
         // For nonprofits, show a message and auto-proceed (handled in useEffect)
-        if (isNonProfit && (isCreator || isBoth)) {
+        if (isNonProfit && isCreator) {
           return (
             <div className="text-center p-8">
               <p>Skipping certificate step for nonprofit verification...</p>
