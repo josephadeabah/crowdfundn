@@ -157,12 +157,12 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                     Verification Type
                   </div>
                   <div className="text-gray-600 capitalize">
-                    {campaign?.fundraiser_kyc_type || 'Standard'}
+                    {campaign?.fundraiser_kyc_type || 'N/A'}
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="font-medium text-gray-900">Status</div>
-                  <div className="text-green-600 font-medium">Active</div>
+                  <div className="text-green-600 font-medium">{campaign.fundraiser.kyc_status}</div>
                 </div>
                 <div className="text-center">
                   <div className="font-medium text-gray-900">Trust Level</div>
@@ -170,10 +170,10 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                     {isIssuerVerified && isInvestorVerified
                       ? 'Full Platform'
                       : isIssuerVerified
-                        ? 'Business Only'
+                        ? 'Fundraiser Only'
                         : isInvestorVerified
                           ? 'Investor Only'
-                          : 'Standard'}
+                          : 'N/A'}
                   </div>
                 </div>
               </div>
