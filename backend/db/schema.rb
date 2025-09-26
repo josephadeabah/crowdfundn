@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_21_005448) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_26_113628) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -358,8 +358,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_21_005448) do
     t.string "superseded_by_type"
     t.string "upgraded_from_type"
     t.boolean "is_upgrade", default: false
-    t.index ["business_registration_number"], name: "index_kycs_on_business_registration_number", unique: true
-    t.index ["business_tax_id"], name: "index_kycs_on_business_tax_id", unique: true
+    t.index ["business_name"], name: "index_kycs_on_business_name"
+    t.index ["business_registration_number"], name: "index_kycs_on_business_registration_number"
+    t.index ["business_tax_id"], name: "index_kycs_on_business_tax_id"
     t.index ["created_at"], name: "index_kycs_on_created_at"
     t.index ["id_number"], name: "index_kycs_on_id_number", unique: true
     t.index ["kyc_type"], name: "index_kycs_on_kyc_type"
