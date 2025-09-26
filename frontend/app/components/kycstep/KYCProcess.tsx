@@ -605,10 +605,10 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
 
       try {
         const kycData = prepareKycData();
-        console.log('Submitting KYC data:', kycData); // Add debug log
+        console.log('Submitting KYC data:', kycData);
 
         const newKyc = await createKyc(kycData);
-        console.log('KYC created:', newKyc); // Add debug log
+        console.log('KYC created:', newKyc);
 
         if (Object.keys(uploadedDocuments).length > 0) {
           await uploadAllDocuments(newKyc.id!);
@@ -904,14 +904,22 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
       case 'certificate':
         // For nonprofits, skip certificate step and go directly to review
         if (isNonProfit && isCreator) {
-          // Instead of using useEffect here (which is invalid in render), handle the navigation differently
-          // Remove the useEffect and handle the navigation in the onSubmit function
+          // Instead of trying to navigate here, let the user proceed manually
           return (
             <div className="text-center p-8">
-              <p>Nonprofit organizations skip certificate signing.</p>
+              <div className="mb-4">
+                <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-2" />
+                <h3 className="text-lg font-semibold">
+                  Nonprofit Verification
+                </h3>
+                <p className="text-gray-600">
+                  Certificate signing is not required for nonprofit
+                  organizations.
+                </p>
+              </div>
               <Button
                 onClick={() => {
-                  // Move to review step immediately
+                  // Move to review step
                   const reviewIndex =
                     stepDefinitions[userType].indexOf('review');
                   if (reviewIndex !== -1) {
@@ -956,6 +964,7 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
   };
 
+  // Update the JSX return section to ensure review step is wrapped in the form
   return (
     <div>
       <ProgressSteps
@@ -971,49 +980,66 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         </CardHeader>
 
         <CardContent>
-          {getCurrentStepType() === 'certificate' ? (
-            renderStepContent()
-          ) : (
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                {renderStepContent()}
+          {/* Remove the conditional rendering that was breaking the form */}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {renderStepContent()}
+
+              {/* Only show navigation buttons for steps that need them */}
+              {(getCurrentStepType() !== 'certificate' ||
+                (isNonProfit && isCreator)) && (
                 <div className="flex justify-between">
                   {currentStep > 0 && (
                     <Button
                       type="button"
                       variant="outline"
                       onClick={goToPreviousStep}
-                      disabled={kycLoading}
+                      disabled={kycLoading || isSubmitting}
                     >
                       Previous
                     </Button>
                   )}
-                  <Button
-                    type="submit"
-                    className="bg-bantu-green hover:bg-bantu-dark-green ml-auto"
-                    disabled={isSubmitting || kycLoading}
-                  >
-                    {isSubmitting || kycLoading ? (
-                      <span className="flex items-center">
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
-                      </span>
-                    ) : getCurrentStepType() === 'review' ? ( // Changed this condition
-                      'Submit Verification'
-                    ) : (
-                      'Continue'
-                    )}
-                  </Button>
+
+                  {/* Show appropriate button text based on step */}
+                  {getCurrentStepType() === 'review' ? (
+                    <Button
+                      type="submit"
+                      className="bg-bantu-green hover:bg-bantu-dark-green ml-auto"
+                      disabled={isSubmitting || kycLoading}
+                    >
+                      {isSubmitting || kycLoading ? (
+                        <span className="flex items-center">
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Submitting...
+                        </span>
+                      ) : (
+                        'Submit Verification'
+                      )}
+                    </Button>
+                  ) : getCurrentStepType() !== 'certificate' ? (
+                    <Button
+                      type="submit"
+                      className="bg-bantu-green hover:bg-bantu-dark-green ml-auto"
+                      disabled={isSubmitting || kycLoading}
+                    >
+                      {isSubmitting || kycLoading ? (
+                        <span className="flex items-center">
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Processing...
+                        </span>
+                      ) : (
+                        'Continue'
+                      )}
+                    </Button>
+                  ) : null}
                 </div>
-              </form>
-            </Form>
-          )}
+              )}
+            </form>
+          </Form>
         </CardContent>
       </Card>
 
+      {/* Rest of your components (SignatureDialog, AlertPopup, etc.) */}
       <SignatureDialog
         isOpen={isSignDialogOpen}
         onOpenChange={setIsSignDialogOpen}
