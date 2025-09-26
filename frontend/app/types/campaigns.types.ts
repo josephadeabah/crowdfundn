@@ -37,6 +37,10 @@ export interface CampaignResponseDataType {
     created_at: string;
     updated_at: string;
   };
+  fundraiser_kyc_verified: boolean;
+  fundraiser_kyc_status: string;
+  fundraiser_kyc_type: string;
+  fundraiser_kyc_expired: boolean;
   goal_amount: string;
   current_amount: string;
   transferred_amount: string;
@@ -184,6 +188,14 @@ export interface FundraiserDetailsType {
   created_at: string;
   updated_at: string;
   profile: FundraiserProfileType;
+  kyc_verified: boolean;
+  kyc_status: string;
+  kyc_type: string;
+  kyc_verified_at: string | null;
+  kyc_expired: boolean;
+  investor_kyc_verified: boolean;
+  issuer_kyc_verified: boolean;
+  both_kyc_verified: boolean;
 }
 
 export interface CampaignPermissions {
@@ -230,6 +242,10 @@ export interface SingleCampaignResponseDataType {
   total_social_media_shares: string; // social sharing total count
   total_equity_shares: string;
   shares_issued: string;
+  fundraiser_kyc_verified: boolean;
+  fundraiser_kyc_status: string;
+  fundraiser_kyc_type: string;
+  fundraiser_kyc_expired: boolean;
   description: CampaignDescription;
   permissions: CampaignPermissions;
   promotions: CampaignPromotions;
