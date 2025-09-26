@@ -90,7 +90,7 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                           className="bg-purple-50 text-purple-700 border-purple-200"
                         >
                           <TrendingUp className="h-3 w-3 mr-1" />
-                          Investor
+                          {campaign.fundraiser.kyc_type}
                         </Badge>
                       )}
                     </>
@@ -118,8 +118,10 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                         <span className="ml-2">
                           • Verified:{' '}
                           {campaign?.fundraiser.kyc_verified_at
-                                      ? moment(campaign.fundraiser.kyc_verified_at).format('D MMMM YYYY')
-                                      : 'Unknown Date'}
+                            ? moment(
+                                campaign.fundraiser.kyc_verified_at,
+                              ).format('D MMMM YYYY')
+                            : 'Unknown Date'}
                         </span>
                       )}
                       {campaign.fundraiser_kyc_expired && (
