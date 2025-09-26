@@ -4,6 +4,7 @@ import Avatar from '@/app/components/avatar/Avatar';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
 import { Mail, Shield, Building, TrendingUp } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
+import moment from 'moment';
 
 interface CampaignFundraiserInfoProps {
   campaign: SingleCampaignResponseDataType | null;
@@ -116,9 +117,9 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                       {campaign?.fundraiser.kyc_verified_at && (
                         <span className="ml-2">
                           • Verified:{' '}
-                          {new Date(
-                            campaign?.fundraiser.kyc_verified_at,
-                          ).toLocaleDateString()}
+                          {campaign?.fundraiser.kyc_verified_at
+                                      ? moment(campaign.fundraiser.kyc_verified_at).format('D MMMM YYYY')
+                                      : 'Unknown Date'}
                         </span>
                       )}
                       {campaign.fundraiser_kyc_expired && (
