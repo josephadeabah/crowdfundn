@@ -69,13 +69,13 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                 <div className="flex items-center gap-2">
                   {isVerified ? (
                     <>
-                          <Badge
-                            variant="outline"
-                            className="bg-purple-50 text-purple-700 border-purple-200"
-                          >
-                            <UserCheck className="h-3 w-3 mr-1" />
-                            {campaign.fundraiser.kyc_type}
-                          </Badge>
+                      <Badge
+                        variant="outline"
+                        className="bg-purple-50 text-purple-700 border-purple-200"
+                      >
+                        <UserCheck className="h-3 w-3 mr-1" />
+                        {campaign.fundraiser.kyc_type}
+                      </Badge>
                     </>
                   ) : (
                     <Badge
