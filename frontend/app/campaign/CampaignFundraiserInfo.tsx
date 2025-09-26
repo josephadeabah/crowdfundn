@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/app/components/button/Button';
 import Avatar from '@/app/components/avatar/Avatar';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
-import { Mail, Shield, Building, TrendingUp, Check } from 'lucide-react';
+import { Mail, Shield, Building, TrendingUp, Check, UserCheck } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import moment from 'moment';
 
@@ -62,22 +62,12 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                 <div className="flex items-center gap-2">
                   {isVerified ? (
                     <>
-                      {isIssuerVerified && (
-                        <Badge
-                          variant="outline"
-                          className="bg-blue-50 text-blue-700 border-blue-200"
-                        >
-                          <Building className="h-3 w-3 mr-1" />
-                          Business
-                        </Badge>
-                      )}
-
-                      {isInvestorVerified && (
+                      {isInvestorVerified || isIssuerVerified && (
                         <Badge
                           variant="outline"
                           className="bg-purple-50 text-purple-700 border-purple-200"
                         >
-                          <TrendingUp className="h-3 w-3 mr-1" />
+                          {isInvestorVerified ? <TrendingUp className="h-3 w-3 mr-1" /> : <UserCheck className="h-3 w-3 mr-1" />}
                           {campaign.fundraiser.kyc_type}
                         </Badge>
                       )}
