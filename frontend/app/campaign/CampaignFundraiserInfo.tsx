@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/app/components/button/Button';
 import Avatar from '@/app/components/avatar/Avatar';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
-import { Mail, Shield, Building, TrendingUp } from 'lucide-react';
+import { Mail, Shield, Building, TrendingUp, Check } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import moment from 'moment';
 
@@ -28,7 +28,7 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
       <div className="flex flex-col sm:flex-row items-start gap-6">
         {/* Avatar Section */}
         <div className="flex-shrink-0">
-          <div className="relative">
+          <div className="relative inline-block">
             <Avatar
               name={fundraiserName as string}
               size="xl"
@@ -36,14 +36,10 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
             />
             {/* Verification Badge on Avatar */}
             {isVerified && (
-              <div className="absolute -bottom-2 -right-2">
-                <Badge
-                  variant="default"
-                  className="bg-green-500 text-white px-2 py-1 text-xs"
-                >
-                  <Shield className="h-3 w-3 mr-1" />
-                  Verified
-                </Badge>
+              <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-md">
+                <div className="bg-green-500 rounded-full p-1 flex items-center justify-center">
+                  <Check className="h-3 w-3 text-white" />
+                </div>
               </div>
             )}
           </div>
