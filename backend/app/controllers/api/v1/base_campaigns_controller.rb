@@ -19,7 +19,8 @@ module Api
 
         @campaigns = campaign_scope.active
 
-          @campaigns = campaign_scope.active
+        # Include KYC association for all campaigns
+        @campaigns = @campaigns.includes(fundraiser: :latest_kyc)
 
         # Allow filtering by equity_status if provided
         if params[:equity_status].present? && campaign_class == EquityCampaign
@@ -59,7 +60,11 @@ module Api
       end
 
       def my_campaigns
-        @campaigns = @current_user.campaigns.order(created_at: :desc).page(params[:page]).per(params[:pageSize] || 12)
+        @campaigns = @current_user.campaigns
+                                  .includes(fundraiser: [:profile, :latest_kyc])  # Add KYC association
+                                  .order(created_at: :desc)
+                                  .page(params[:page])
+                                  .per(params[:pageSize] || 12)
 
         render json: {
           campaigns: @campaigns.map { |c| campaign_json(c) },
@@ -185,7 +190,7 @@ module Api
 
       def favorites
         @campaigns = @current_user.favorited_campaigns
-                                  .includes(:rewards, :updates, :comments, fundraiser: :profile)
+                                  .includes(:rewards, :updates, :comments, fundraiser: [:profile, :latest_kyc])  # Add KYC
                                   .page(params[:page])
                                   .per(params[:pageSize] || 20)
 
@@ -266,7 +271,7 @@ module Api
           :updates,
           :comments,
           :investor_documents,
-          fundraiser: :profile
+          fundraiser: [:profile, :latest_kyc]  # Add latest_kyc here
         )
       end
 
@@ -280,7 +285,31 @@ module Api
 
       # app/controllers/api/v1/base_campaigns_controller.rb
       def campaign_json(campaign)
-        
+        # Get KYC status for the fundraiser
+        kyc_status = if campaign.fundraiser.latest_kyc
+                      {
+                        verified: campaign.fundraiser.latest_kyc.verified?,
+                        status: campaign.fundraiser.latest_kyc.status,
+                        kyc_type: campaign.fundraiser.latest_kyc.kyc_type,
+                        verified_at: campaign.fundraiser.latest_kyc.verified_at,
+                        is_expired: campaign.fundraiser.latest_kyc.expired?,
+                        investor_verified: campaign.fundraiser.investor_kyc_verified?,
+                        issuer_verified: campaign.fundraiser.issuer_kyc_verified?,
+                        both_verified: campaign.fundraiser.verified_both?
+                      }
+                    else
+                      {
+                        verified: false,
+                        status: 'none',
+                        kyc_type: nil,
+                        verified_at: nil,
+                        is_expired: false,
+                        investor_verified: false,
+                        issuer_verified: false,
+                        both_verified: false
+                      }
+                    end
+
         json = campaign.as_json(
           only: %i[
             id title slug goal_amount current_amount transferred_amount start_date end_date
@@ -315,13 +344,33 @@ module Api
             website: campaign.company_website,
             contract_term: campaign.contract_term
           },
-          favorited: @current_user ? @current_user.favorited_campaigns.include?(campaign) : false
+          favorited: @current_user ? @current_user.favorited_campaigns.include?(campaign) : false,
+          # Add KYC verification status
+          fundraiser_kyc_verified: kyc_status[:verified],
+          fundraiser_kyc_status: kyc_status[:status],
+          fundraiser_kyc_type: kyc_status[:kyc_type],
+          fundraiser_kyc_expired: kyc_status[:is_expired]
         )
+        
         # Filter to only include contract documents
         if json[:investor_documents]
           json[:investor_documents] = json[:investor_documents].select do |doc|
             doc[:document_type] == 'contract'
           end
+        end
+
+        # Update fundraiser info to include KYC status
+        if json[:fundraiser]
+          json[:fundraiser].merge!(
+            kyc_verified: kyc_status[:verified],
+            kyc_status: kyc_status[:status],
+            kyc_type: kyc_status[:kyc_type],
+            kyc_verified_at: kyc_status[:verified_at],
+            kyc_expired: kyc_status[:is_expired],
+            investor_kyc_verified: kyc_status[:investor_verified],
+            issuer_kyc_verified: kyc_status[:issuer_verified],
+            both_kyc_verified: kyc_status[:both_verified]
+          )
         end
 
         if campaign.is_a?(EquityCampaign)

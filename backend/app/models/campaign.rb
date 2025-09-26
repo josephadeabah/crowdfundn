@@ -166,12 +166,37 @@ class Campaign < ApplicationRecord
       )
     end
 
+    # Add KYC verification status for the fundraiser
+    kyc_status = if fundraiser.latest_kyc
+                   {
+                     verified: fundraiser.latest_kyc.verified?,
+                     status: fundraiser.latest_kyc.status,
+                     kyc_type: fundraiser.latest_kyc.kyc_type,
+                     verified_at: fundraiser.latest_kyc.verified_at,
+                     is_expired: fundraiser.latest_kyc.expired?,
+                     # Specific verification types
+                     investor_verified: fundraiser.investor_kyc_verified?,
+                     issuer_verified: fundraiser.issuer_kyc_verified?,
+                     both_verified: fundraiser.verified_both?
+                   }
+                 else
+                   {
+                     verified: false,
+                     status: 'none',
+                     kyc_type: nil,
+                     verified_at: nil,
+                     is_expired: false,
+                     investor_verified: false,
+                     issuer_verified: false,
+                     both_verified: false
+                   }
+                 end
+
     # Add additional fields
     json.merge!(
       type: self.class.name,
       description: description.as_json,
-      # FIXED: Don't overwrite total_shares with social media shares
-      total_social_media_shares: total_social_media_shares, # Changed from total_shares
+      total_social_media_shares: total_social_media_shares,
       donations_over_time: donations_over_time,
       media_attached: media_attached?,
       media_content_type: media_attached? ? media.content_type : nil,
@@ -213,7 +238,10 @@ class Campaign < ApplicationRecord
                     profile: {
                       first_name: member.user.profile&.first_name,
                       last_name: member.user.profile&.last_name
-                    }
+                    },
+                    # Add KYC status for team member users too
+                    kyc_verified: member.user.latest_kyc&.verified? || false,
+                    kyc_status: member.user.latest_kyc&.status || 'none'
                   }
                 end
         }
@@ -223,8 +251,21 @@ class Campaign < ApplicationRecord
         name: fundraiser.full_name,
         currency: fundraiser.currency,
         currency_symbol: fundraiser.currency_symbol,
-        profile: fundraiser.profile
+        profile: fundraiser.profile,
+        # Include KYC verification status in fundraiser object
+        kyc_verified: kyc_status[:verified],
+        kyc_status: kyc_status[:status],
+        kyc_type: kyc_status[:kyc_type],
+        kyc_verified_at: kyc_status[:verified_at],
+        kyc_expired: kyc_status[:is_expired],
+        investor_kyc_verified: kyc_status[:investor_verified],
+        issuer_kyc_verified: kyc_status[:issuer_verified],
+        both_kyc_verified: kyc_status[:both_verified]
       },
+      # Also include KYC status at the campaign level for easy access
+      fundraiser_kyc_verified: kyc_status[:verified],
+      fundraiser_kyc_status: kyc_status[:status],
+      fundraiser_kyc_type: kyc_status[:kyc_type],
       total_days: total_days,
       remaining_days: remaining_days,
       favorited: options[:user] ? options[:user].favorited_campaigns.include?(self) : false
