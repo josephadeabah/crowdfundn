@@ -70,7 +70,8 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                   {isVerified ? (
                     <>
                       {isInvestorVerified ||
-                        (isIssuerVerified && (
+                        isIssuerVerified ||
+                        (isIssuerVerified && isInvestorVerified && (
                           <Badge
                             variant="outline"
                             className="bg-purple-50 text-purple-700 border-purple-200"
