@@ -426,22 +426,12 @@ module Api
         end
 
         def render_kyc_errors(errors)
-          # Format errors for frontend display
+          # Simplified error formatting - no need to handle business uniqueness separately
           formatted_errors = errors.full_messages.map do |message|
-            if message.include?('has already been taken')
-              # Extract field name from error message
-              field = message.split(' ').first
-              {
-                field: field.underscore,
-                message: message,
-                type: 'uniqueness'
-              }
-            else
-              {
-                message: message,
-                type: 'validation'
-              }
-            end
+            {
+              message: message,
+              type: 'validation'
+            }
           end
 
           render json: { 
