@@ -66,14 +66,6 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                 <div className="flex items-center gap-2">
                   {isVerified ? (
                     <>
-                      <Badge
-                        variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200"
-                      >
-                        <Shield className="h-3 w-3 mr-1" />
-                        KYC Verified
-                      </Badge>
-
                       {isIssuerVerified && (
                         <Badge
                           variant="outline"
@@ -111,9 +103,13 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                   <div className="mb-3">
                     <div className="text-xs text-gray-500">
                       KYC Status:{' '}
-                      <span className="font-medium capitalize">
-                        {campaign.fundraiser_kyc_status.replace('_', ' ')}
-                      </span>
+                                            <Badge
+                        variant="outline"
+                        className="bg-green-50 text-green-700 border-green-200 font-medium capitalize"
+                      >
+                        <Shield className="h-3 w-3 mr-1" />
+                       {campaign.fundraiser_kyc_status.replace('_', ' ')}
+                      </Badge>
                       {campaign?.fundraiser.kyc_verified_at && (
                         <span className="ml-2">
                           • On:{' '}
