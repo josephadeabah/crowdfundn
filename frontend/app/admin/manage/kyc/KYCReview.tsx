@@ -18,34 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/app/components/ui/table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/app/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/app/components/ui/dialog';
 import { Badge } from '@/app/components/ui/badge';
 import { Textarea } from '@/app/components/ui/textarea';
 import {
   Search,
   Filter,
-  MoreHorizontal,
   CheckCircle,
   XCircle,
   Clock,
@@ -55,10 +32,20 @@ import {
   Building,
   FileText,
   RefreshCw,
+  Mail,
+  Calendar,
+  MapPin,
+  FileQuestion,
+  Users,
+  DollarSign,
+  TrendingUp,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import ToastComponent from '@/app/components/toast/Toast';
 import Pagination from '@/app/components/pagination/Pagination';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
+import { Progress } from '@/app/components/ui/progress';
+import { Separator } from '@/app/components/ui/seperator';
 
 const KYCReview = () => {
   const {
@@ -84,6 +71,7 @@ const KYCReview = () => {
   const [reviewNotes, setReviewNotes] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedReview, setExpandedReview] = useState<number | null>(null);
 
   // Toast states
   const [toast, setToast] = useState({
@@ -113,20 +101,19 @@ const KYCReview = () => {
 
   const handleFilterChange = (key: string, value: string) => {
     if (value === 'all') {
-      // Remove the filter when 'all' is selected
       const newFilters = { ...filters };
       delete newFilters[key as keyof typeof filters];
       updateFilters(newFilters);
-      setCurrentPage(1); // Reset to first page when filters change
+      setCurrentPage(1);
     } else {
       updateFilters({ ...filters, [key]: value });
-      setCurrentPage(1); // Reset to first page when filters change
+      setCurrentPage(1);
     }
   };
 
   const handleSearch = () => {
     updateFilters({ ...filters, search: searchTerm });
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
   };
 
   const handleClearSearch = () => {
@@ -134,7 +121,7 @@ const KYCReview = () => {
     const newFilters = { ...filters };
     delete newFilters.search;
     updateFilters(newFilters);
-    setCurrentPage(1); // Reset to first page when clearing search
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page: number) => {
@@ -163,7 +150,7 @@ const KYCReview = () => {
       setActionDialog({ open: false, action: null });
       setRejectionReason('');
       setReviewNotes('');
-      fetchReviews(filters, currentPage); // Refresh current page
+      fetchReviews(filters, currentPage);
       fetchStats();
     } catch (error: any) {
       showToast('Error', 'Failed to update KYC review', 'error');
@@ -174,6 +161,10 @@ const KYCReview = () => {
     fetchReviews(filters, currentPage);
     fetchStats();
     showToast('Refreshed', 'KYC list has been refreshed', 'success');
+  };
+
+  const toggleExpand = (reviewId: number) => {
+    setExpandedReview(expandedReview === reviewId ? null : reviewId);
   };
 
   const getStatusBadge = (status: string) => {
@@ -219,6 +210,42 @@ const KYCReview = () => {
     return <Icon className="h-4 w-4" />;
   };
 
+  const DocumentSection = ({ review }: { review: any }) => {
+    return (
+      <div className="mt-4">
+        <h4 className="font-medium mb-3">Verification Documents</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {review.documents?.map((document: any) => (
+            <div key={document.id} className="border rounded-lg p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium capitalize">
+                  {document.document_type.replace('_', ' ')}
+                </span>
+                <Badge variant="outline" className="text-xs">
+                  {document.verification_status}
+                </Badge>
+              </div>
+              <div className="text-sm text-gray-600 mb-2">
+                {document.file_name || 'No file uploaded'}
+              </div>
+              {document.file_url && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(document.file_url, '_blank')}
+                  className="w-full"
+                >
+                  <Download className="h-3 w-3 mr-1" />
+                  Download
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   if (error) {
     return (
       <div className="p-6">
@@ -262,54 +289,75 @@ const KYCReview = () => {
         </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-        {[
-          { key: 'total', label: 'Total', value: stats.total },
-          {
-            key: 'pending',
-            label: 'Pending',
-            value: stats.pending,
-            color: 'text-amber-500',
-          },
-          {
-            key: 'in_review',
-            label: 'In Review',
-            value: stats.in_review,
-            color: 'text-blue-500',
-          },
-          {
-            key: 'verified',
-            label: 'Verified',
-            value: stats.verified,
-            color: 'text-green-500',
-          },
-          {
-            key: 'rejected',
-            label: 'Rejected',
-            value: stats.rejected,
-            color: 'text-red-500',
-          },
-          {
-            key: 'expired',
-            label: 'Expired',
-            value: stats.expired,
-            color: 'text-gray-500',
-          },
-        ].map((stat) => (
-          <Card key={stat.key}>
-            <CardHeader className="p-4">
-              <CardTitle className="text-sm font-medium">
-                {stat.label}
-              </CardTitle>
-              <CardDescription
-                className={`text-2xl font-bold ${stat.color || ''}`}
-              >
-                {stat.value}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        ))}
+      {/* Stats Cards - Similar to Campaign Review */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Pending Reviews
+                </p>
+                <p className="text-3xl font-bold text-yellow-600">
+                  {stats.pending + stats.in_review}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-6 h-6 text-yellow-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Applications
+                </p>
+                <p className="text-3xl font-bold text-green-600">
+                  {stats.total}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <FileText className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Verified</p>
+                <p className="text-3xl font-bold text-purple-600">
+                  {stats.verified}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Rejected</p>
+                <p className="text-3xl font-bold text-red-600">
+                  {stats.rejected}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <XCircle className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters */}
@@ -357,7 +405,6 @@ const KYCReview = () => {
                   <SelectItem value="in_review">In Review</SelectItem>
                   <SelectItem value="verified">Verified</SelectItem>
                   <SelectItem value="rejected">Rejected</SelectItem>
-                  <SelectItem value="expired">Expired</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -383,243 +430,348 @@ const KYCReview = () => {
         </CardContent>
       </Card>
 
-      {/* Reviews Table */}
+      {/* KYC Applications List - Inline Style like Campaign Review */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>KYC Applications</CardTitle>
-            <CardDescription>
-              {pagination.total_count} application(s) found
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>KYC Applications Pending Review</span>
+            <span className="text-sm font-normal text-gray-500">
+              {pagination.total_count} application(s)
               {loading && ' - Loading...'}
-            </CardDescription>
-          </div>
-          <Button
-            onClick={handleRefresh}
-            variant="outline"
-            size="sm"
-            className="gap-2"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Refresh
-          </Button>
+            </span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Reference</TableHead>
-                  <TableHead>User</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>ID Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                        <span className="ml-3">
-                          Loading KYC applications...
+          <div className="space-y-4">
+            {loading ? (
+              <div className="text-center py-8">
+                Loading KYC applications...
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                {Object.keys(filters).length > 0
+                  ? 'No KYC applications match your filters'
+                  : 'No KYC applications found'}
+              </div>
+            ) : (
+              reviews.map((review) => {
+                const isExpanded = expandedReview === review.id;
+                const residentialAddress = review.addresses?.find(
+                  (addr: any) => addr.address_type === 'residential',
+                );
+
+                return (
+                  <div
+                    key={review.id}
+                    className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+                  >
+                    {/* Header Section */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {review.user?.full_name || 'Unknown User'}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {review.user?.email || 'No email provided'}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Reference: {review.reference}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {getStatusBadge(review.status)}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleExpand(review.id)}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Basic Info Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                      <div className="flex items-center space-x-2">
+                        {getKycTypeIcon(review.kyc_type)}
+                        <span className="text-sm text-gray-600 capitalize">
+                          {review.kyc_type}
                         </span>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ) : reviews.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      <div className="text-muted-foreground">
-                        {Object.keys(filters).length > 0
-                          ? 'No KYC applications match your filters'
-                          : 'No KYC applications found'}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  reviews.map((review) => (
-                    <TableRow key={review.id}>
-                      <TableCell className="font-mono text-sm">
-                        {review.reference}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">
-                            {review.user?.full_name || 'Unknown User'}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {review.user?.email || 'No email'}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {getKycTypeIcon(review.kyc_type)}
-                          <span className="capitalize">{review.kyc_type}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="capitalize">
+                      <div className="flex items-center space-x-2">
+                        <FileText className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600 capitalize">
                           {review.verification_type?.replace('_', ' ') || 'N/A'}
                         </span>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(review.status)}</TableCell>
-                      <TableCell>
-                        {review.created_at
-                          ? format(new Date(review.created_at), 'MMM dd, yyyy')
-                          : 'N/A'}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">
+                          {review.created_at
+                            ? format(
+                                new Date(review.created_at),
+                                'MMM dd, yyyy',
+                              )
+                            : 'N/A'}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <FileText className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">
+                          {review.documents?.length || 0} Documents
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Expanded Details */}
+                    {isExpanded && (
+                      <div className="mt-4 space-y-4 border-t pt-4">
+                        {/* Personal Information */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <h4 className="font-medium mb-2">
+                              Personal Details
+                            </h4>
+                            <div className="space-y-2 text-sm">
+                              <div>
+                                <span className="text-gray-600">
+                                  Date of Birth:
+                                </span>{' '}
+                                {review.date_of_birth
+                                  ? format(
+                                      new Date(review.date_of_birth),
+                                      'MMM dd, yyyy',
+                                    )
+                                  : 'Not provided'}
+                              </div>
+                              <div>
+                                <span className="text-gray-600">
+                                  Nationality:
+                                </span>{' '}
+                                {review.nationality || 'Not provided'}
+                              </div>
+                              <div>
+                                <span className="text-gray-600">
+                                  Occupation:
+                                </span>{' '}
+                                {review.occupation || 'Not provided'}
+                              </div>
+                              <div>
+                                <span className="text-gray-600">
+                                  Source of Funds:
+                                </span>{' '}
+                                {review.source_of_funds || 'Not provided'}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Address Information */}
+                          {residentialAddress && (
+                            <div>
+                              <h4 className="font-medium mb-2">Address</h4>
+                              <div className="flex items-start space-x-2 text-sm">
+                                <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
+                                <div>
+                                  <div>{residentialAddress.street}</div>
+                                  <div>
+                                    {residentialAddress.city},{' '}
+                                    {residentialAddress.state}
+                                  </div>
+                                  <div>
+                                    {residentialAddress.country}{' '}
+                                    {residentialAddress.postal_code &&
+                                      `- ${residentialAddress.postal_code}`}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Business Information (for issuers/both) */}
+                        {review.kyc_type !== 'investor' && (
+                          <div>
+                            <h4 className="font-medium mb-2">
+                              Business Information
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="text-gray-600">
+                                  Business Name:
+                                </span>{' '}
+                                {review.business_name || 'Not provided'}
+                              </div>
+                              <div>
+                                <span className="text-gray-600">
+                                  Registration Number:
+                                </span>{' '}
+                                {review.business_registration_number ||
+                                  'Not provided'}
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Tax ID:</span>{' '}
+                                {review.business_tax_id || 'Not provided'}
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Industry:</span>{' '}
+                                {review.business_industry || 'Not provided'}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Documents Section */}
+                        <DocumentSection review={review} />
+
+                        {/* Action Buttons */}
+                        {(review.status === 'pending' ||
+                          review.status === 'in_review') && (
+                          <div className="flex items-center justify-end space-x-2 pt-4 border-t">
+                            <Button
+                              variant="outline"
+                              size="sm"
                               onClick={() => {
-                                window.open(
-                                  `/admin/manage/kyc/${review.id}`,
-                                  '_blank',
-                                );
+                                setSelectedReview(review);
+                                setActionDialog({
+                                  open: true,
+                                  action: 'request_info',
+                                });
                               }}
                             >
-                              <Eye className="h-4 w-4 mr-2" />
-                              View Details
-                            </DropdownMenuItem>
-                            {(review.status === 'pending' ||
-                              review.status === 'in_review') && (
-                              <>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setSelectedReview(review);
-                                    setActionDialog({
-                                      open: true,
-                                      action: 'verify',
-                                    });
-                                  }}
-                                >
-                                  <CheckCircle className="h-4 w-4 mr-2" />
-                                  Verify
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setSelectedReview(review);
-                                    setActionDialog({
-                                      open: true,
-                                      action: 'reject',
-                                    });
-                                  }}
-                                >
-                                  <XCircle className="h-4 w-4 mr-2" />
-                                  Reject
-                                </DropdownMenuItem>
-                              </>
-                            )}
-                            <DropdownMenuItem>
-                              <Download className="h-4 w-4 mr-2" />
-                              Download Documents
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-
-            {/* Pagination */}
-            {pagination.total_pages > 1 && (
-              <div className="border-t">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={pagination.total_pages}
-                  onPageChange={handlePageChange}
-                />
-              </div>
+                              <FileQuestion className="w-4 h-4 mr-2" />
+                              Request Info
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedReview(review);
+                                setActionDialog({
+                                  open: true,
+                                  action: 'reject',
+                                });
+                              }}
+                            >
+                              <XCircle className="w-4 h-4 mr-2" />
+                              Reject
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700"
+                              onClick={() => {
+                                setSelectedReview(review);
+                                setActionDialog({
+                                  open: true,
+                                  action: 'verify',
+                                });
+                              }}
+                            >
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Verify
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
+
+          {/* Pagination */}
+          {pagination.total_pages > 1 && (
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={pagination.total_pages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Action Dialogs */}
-      <Dialog
-        open={actionDialog.open}
-        onOpenChange={(open) => {
+      <AlertPopup
+        title={
+          actionDialog.action === 'verify'
+            ? 'Verify KYC Application'
+            : actionDialog.action === 'reject'
+              ? 'Reject KYC Application'
+              : 'Request Additional Information'
+        }
+        message={
+          <div className="space-y-4">
+            <p>
+              {actionDialog.action === 'verify' &&
+                `Are you sure you want to verify ${selectedReview?.user?.full_name || 'this user'}'s KYC application?`}
+              {actionDialog.action === 'reject' &&
+                `Please provide a reason for rejecting ${selectedReview?.user?.full_name || 'this user'}'s KYC application.`}
+              {actionDialog.action === 'request_info' &&
+                `Request additional information from ${selectedReview?.user?.full_name || 'the user'}.`}
+            </p>
+
+            {actionDialog.action === 'verify' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Review Notes (Optional)
+                </label>
+                <Textarea
+                  placeholder="Add any notes about this verification..."
+                  value={reviewNotes}
+                  onChange={(e) => setReviewNotes(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            )}
+
+            {actionDialog.action === 'reject' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Reason for Rejection *
+                </label>
+                <Textarea
+                  placeholder="Provide a clear reason for rejection..."
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  rows={4}
+                  required
+                />
+              </div>
+            )}
+          </div>
+        }
+        isOpen={actionDialog.open}
+        setIsOpen={(open) => {
           setActionDialog({ open, action: null });
           setRejectionReason('');
           setReviewNotes('');
         }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {actionDialog.action === 'verify' && 'Verify KYC Application'}
-              {actionDialog.action === 'reject' && 'Reject KYC Application'}
-            </DialogTitle>
-            <DialogDescription>
-              {actionDialog.action === 'verify' &&
-                'Are you sure you want to verify this KYC application?'}
-              {actionDialog.action === 'reject' &&
-                'Please provide a reason for rejecting this KYC application.'}
-            </DialogDescription>
-          </DialogHeader>
-
-          {actionDialog.action === 'verify' && (
-            <div className="space-y-4">
-              <Textarea
-                placeholder="Add review notes (optional)"
-                value={reviewNotes}
-                onChange={(e) => setReviewNotes(e.target.value)}
-                rows={3}
-              />
-            </div>
-          )}
-
-          {actionDialog.action === 'reject' && (
-            <div className="space-y-4">
-              <Textarea
-                placeholder="Reason for rejection *"
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                required
-                rows={4}
-                className="resize-none"
-              />
-              <p className="text-sm text-muted-foreground">
-                This reason will be included in the rejection email sent to the
-                user.
-              </p>
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setActionDialog({ open: false, action: null });
-                setRejectionReason('');
-                setReviewNotes('');
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleAction}
-              disabled={
-                actionDialog.action === 'reject' && !rejectionReason.trim()
-              }
-            >
-              {actionDialog.action === 'verify' ? 'Verify' : 'Reject'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onConfirm={handleAction}
+        onCancel={() => {
+          setActionDialog({ open: false, action: null });
+          setRejectionReason('');
+          setReviewNotes('');
+        }}
+        confirmText={
+          actionDialog.action === 'verify'
+            ? 'Verify'
+            : actionDialog.action === 'reject'
+              ? 'Reject'
+              : 'Request Info'
+        }
+        confirmDisabled={
+          actionDialog.action === 'reject' && !rejectionReason.trim()
+        }
+        confirmButtonClass={
+          actionDialog.action === 'verify'
+            ? 'bg-green-600 hover:bg-green-700'
+            : actionDialog.action === 'reject'
+              ? 'bg-red-600 hover:bg-red-700'
+              : 'bg-blue-600 hover:bg-blue-700'
+        }
+      />
     </div>
   );
 };
