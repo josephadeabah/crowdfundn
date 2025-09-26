@@ -98,7 +98,7 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                 campaign.fundraiser_kyc_status !== 'none' && (
                   <div className="mb-3">
                     <div className="text-xs text-gray-500">
-                      KYC Status:{' '}
+                      User Status:{' '}
                       <Badge
                         variant="outline"
                         className="bg-green-50 text-green-700 border-green-200 font-medium capitalize"
@@ -158,7 +158,9 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                 </div>
                 <div className="text-center">
                   <div className="font-medium text-gray-900">Status</div>
-                  <div className="text-green-600 font-medium">{campaign.fundraiser.kyc_status}</div>
+                  <div className="text-green-600 font-medium">
+                    {campaign.fundraiser.kyc_status}
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="font-medium text-gray-900">Trust Level</div>
