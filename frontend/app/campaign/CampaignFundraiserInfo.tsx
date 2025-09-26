@@ -73,11 +73,7 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                             variant="outline"
                             className="bg-purple-50 text-purple-700 border-purple-200"
                           >
-                            {isInvestorVerified ? (
-                              <TrendingUp className="h-3 w-3 mr-1" />
-                            ) : (
-                              <UserCheck className="h-3 w-3 mr-1" />
-                            )}
+                            <UserCheck className="h-3 w-3 mr-1" />
                             {campaign.fundraiser.kyc_type}
                           </Badge>
                     </>
