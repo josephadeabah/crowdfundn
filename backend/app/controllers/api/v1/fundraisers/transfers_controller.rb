@@ -5,7 +5,7 @@ module Api
         include ErrorHandler
         before_action :authenticate_request,
                       only: %i[fetch_user_transfers fetch_transfers_from_paystack initialize_transfer]
-        before_action :verify_kyc_requirements, only: %i[initialize_transfer]
+        before_action :verify_kyc_requirements, only: %i[initialize_transfer, create_transfer_recipient]
         before_action :set_transfer_service
 
         # Approve or reject a transfer based on the payload
