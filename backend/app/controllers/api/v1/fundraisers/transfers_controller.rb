@@ -508,7 +508,7 @@ module Api
 
         def verify_kyc_requirements
           # For transfers, we need to verify that the fundraiser has completed KYC as an issuer
-          unless @current_user.verified_issuer?
+          unless @current_user&.verified_issuer?
             render json: { 
               success: false, 
               error: 'You must complete user verification before initiating transfers',
@@ -519,7 +519,7 @@ module Api
           end
 
           # Additional check: ensure KYC is not expired
-          if @current_user.latest_kyc&.expired?
+          if @current_user&.latest_kyc&.expired?
             render json: { 
               success: false, 
               error: 'Your KYC verification has expired. Please renew your verification before initiating transfers.',
