@@ -6,6 +6,7 @@ module Api
         before_action :authenticate_request,
                       only: %i[fetch_user_transfers fetch_transfers_from_paystack initialize_transfer]
         before_action :set_transfer_service
+        # Add KYC verification check for transfer actions that require verification
         before_action :verify_kyc_requirements, only: [:initialize_transfer, :create_transfer_recipient]
 
         # Approve or reject a transfer based on the payload
@@ -478,6 +479,31 @@ module Api
 
         private
 
+        def verify_kyc_requirements
+          # For transfers, we need to verify that the fundraiser has completed KYC as an issuer
+          unless @current_user.verified_issuer?
+            render json: { 
+              success: false, 
+              error: 'You must complete business verification before initiating transfers',
+              code: 'KYC_VERIFICATION_REQUIRED',
+              kyc_status: @current_user.kyc_status_info
+            }, status: :forbidden
+            return false
+          end
+
+          # Additional check: ensure KYC is not expired
+          if @current_user.latest_kyc&.expired?
+            render json: { 
+              success: false, 
+              error: 'Your KYC verification has expired. Please renew your verification before initiating transfers.',
+              code: 'KYC_EXPIRED'
+            }, status: :forbidden
+            return false
+          end
+
+          true
+        end
+
         def filter_bank_params
           params.permit(:country, :use_cursor, :per_page, :next, :previous).except(:format)
         end
@@ -504,31 +530,6 @@ module Api
 
         def transfer_params
           params.require(:transfer).permit(:amount, :recipient, :reason, :currency)
-        end
-
-        def verify_kyc_requirements
-          # For transfers, we need to verify that the fundraiser has completed KYC as an issuer
-          unless @current_user.verified_issuer?
-            render json: { 
-              success: false, 
-              error: 'You must complete user verification before initiating transfers',
-              code: 'KYC_VERIFICATION_REQUIRED',
-              kyc_status: @current_user.kyc_status_info
-            }, status: :forbidden
-            return false
-          end
-
-          # Additional check: ensure KYC is not expired
-          if @current_user.latest_kyc&.expired?
-            render json: { 
-              success: false, 
-              error: 'Your KYC verification has expired. Please renew your verification before initiating transfers.',
-              code: 'KYC_EXPIRED'
-            }, status: :forbidden
-            return false
-          end
-
-          true
         end
       end
     end
