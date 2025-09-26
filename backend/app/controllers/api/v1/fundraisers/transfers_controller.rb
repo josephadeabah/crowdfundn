@@ -507,7 +507,7 @@ module Api
         end
 
         def verify_kyc_requirements
-          # For transfers, we need to verify that the fundraiser has completed KYC as an issuer
+          # For transfers, we need to verify that the fundraiser has completed KYC as an issuer or investor or both
           unless @current_user.verified_issuer? || @current_user.verified_both? || @current_user.verified_investor?
             render json: { 
               success: false, 
