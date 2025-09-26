@@ -71,7 +71,7 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                     <>
                       {isInvestorVerified ||
                         isIssuerVerified ||
-                        (isIssuerVerified && isInvestorVerified && (
+                        (isIssuerVerified && isInvestorVerified) && (
                           <Badge
                             variant="outline"
                             className="bg-purple-50 text-purple-700 border-purple-200"
@@ -83,7 +83,7 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                             )}
                             {campaign.fundraiser.kyc_type}
                           </Badge>
-                        ))}
+                        )}
                     </>
                   ) : (
                     <Badge
