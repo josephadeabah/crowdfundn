@@ -116,7 +116,7 @@ const CampaignFundraiserInfo: React.FC<CampaignFundraiserInfoProps> = ({
                       </span>
                       {campaign?.fundraiser.kyc_verified_at && (
                         <span className="ml-2">
-                          • Verified:{' '}
+                          • On:{' '}
                           {campaign?.fundraiser.kyc_verified_at
                             ? moment(
                                 campaign.fundraiser.kyc_verified_at,
