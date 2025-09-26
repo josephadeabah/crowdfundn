@@ -372,7 +372,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
                 <Clock className="h-4 w-4" />
                 <AlertTitle>Pending Review</AlertTitle>
                 <AlertDescription>
-                  Your KYC submission is pending review. This usually takes 1-2
+                  Your KYC submission is pending review. This usually takes 2-4
                   business days.
                 </AlertDescription>
               </Alert>
