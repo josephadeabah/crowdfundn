@@ -6,7 +6,7 @@ import {
   useUserContext,
 } from '@/app/context/users/UserContext';
 import { exportUsersToCSV } from '@/app/utils/helpers/exportCSV';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaSearch, FaTrash, FaLock, FaUnlock } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -33,44 +33,54 @@ const UserManagement = () => {
   const [perPage] = useState(10);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
-  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
-    null,
-  );
+  const [isSearching, setIsSearching] = useState(false);
 
-  // Debounced search function
-  const debouncedSearch = useCallback(
-    (term: string) => {
-      if (searchTimeout) {
-        clearTimeout(searchTimeout);
-      }
+  // Use ref for timeout to avoid dependency issues
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-      const timeout = setTimeout(async () => {
-        setPage(1); // Reset to first page when searching
-        const { users, meta } = await fetchAllUsers(1, perPage, term);
-        setUsers(users);
-        setMetadata(meta);
-      }, 300);
-
-      setSearchTimeout(timeout);
-    },
-    [fetchAllUsers, perPage, searchTimeout],
-  );
-
+  // Main useEffect that handles both pagination and search
   useEffect(() => {
     const fetchUsers = async () => {
-      const { users, meta } = await fetchAllUsers(page, perPage, searchTerm);
-      setUsers(users);
-      setMetadata(meta);
+      setIsSearching(true);
+      try {
+        const { users, meta } = await fetchAllUsers(page, perPage, searchTerm);
+        setUsers(users);
+        setMetadata(meta);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+      } finally {
+        setIsSearching(false);
+      }
     };
 
-    fetchUsers();
-  }, [page, fetchAllUsers, perPage]);
+    // Clear any existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
 
-  // Handle search input with debouncing
+    // If search term is changing, debounce the API call
+    if (searchTerm) {
+      searchTimeoutRef.current = setTimeout(() => {
+        fetchUsers();
+      }, 500); // Increased debounce time to 500ms for better typing experience
+    } else {
+      // If no search term, fetch immediately
+      fetchUsers();
+    }
+
+    // Cleanup function
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [page, searchTerm, fetchAllUsers, perPage]);
+
+  // Handle search input - simpler approach
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-    debouncedSearch(value);
+    setPage(1); // Reset to first page when search changes
   };
 
   const handleSort = (criteria: string) => {
@@ -165,12 +175,25 @@ const UserManagement = () => {
     return 0;
   });
 
-  if (loading) {
-    return <div>Loading...</div>;
+  // Combined loading state
+  const isLoading = loading || isSearching;
+
+  if (isLoading && users.length === 0) {
+    return (
+      <div className="mx-auto p-4">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">Loading users...</div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="mx-auto p-4">
+        <div className="text-red-500 text-center">Error: {error}</div>
+      </div>
+    );
   }
 
   return (
@@ -179,11 +202,13 @@ const UserManagement = () => {
         <h1 className="text-3xl font-bold mb-6">User Management</h1>
         <button
           onClick={() => exportUsersToCSV(fetchAllUsers)}
-          className="p-2 bg-green-500 text-white rounded"
+          className="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+          disabled={isLoading}
         >
-          Export CSV
+          {isLoading ? 'Exporting...' : 'Export CSV'}
         </button>
       </div>
+
       <div className="mb-4 flex items-center">
         <div className="relative flex-grow">
           <input
@@ -192,18 +217,30 @@ const UserManagement = () => {
             className="w-full p-2 pl-8 rounded border focus:outline-none focus:ring-2 focus:ring-blue-300"
             value={searchTerm}
             onChange={handleSearch}
+            disabled={isLoading}
           />
           <FaSearch className="absolute left-2 top-3 text-gray-400" />
+          {isSearching && (
+            <div className="absolute right-2 top-2">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+            </div>
+          )}
         </div>
         <select
           className="ml-4 p-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-300"
           onChange={(e) => handleSort(e.target.value)}
           value={sortCriteria}
+          disabled={isLoading}
         >
           <option value="name">Sort by Name</option>
           <option value="role">Sort by Role</option>
         </select>
       </div>
+
+      {/* Loading indicator for search */}
+      {isSearching && users.length > 0 && (
+        <div className="mb-2 text-blue-500 text-sm">Searching...</div>
+      )}
 
       <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
         <table className="min-w-full table-auto border-collapse">
@@ -229,6 +266,7 @@ const UserManagement = () => {
                     value={user.role}
                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
                     className="border p-1 rounded"
+                    disabled={isLoading}
                   >
                     <option value="">Assign Role</option>
                     <option value="Admin">Admin</option>
@@ -248,6 +286,7 @@ const UserManagement = () => {
                         onClick={() => handleRemoveRole(user.id, role.name)}
                         className="ml-2 text-red-500 hover:text-red-700"
                         aria-label={`Remove ${role.name}`}
+                        disabled={isLoading}
                       >
                         &times;
                       </button>
@@ -273,7 +312,8 @@ const UserManagement = () => {
                         user.admin
                           ? 'bg-yellow-500 text-white'
                           : 'bg-gray-200 text-black'
-                      }`}
+                      } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80'}`}
+                      disabled={isLoading}
                     >
                       {user.admin ? 'Remove' : 'Admin'}
                     </button>
@@ -288,17 +328,21 @@ const UserManagement = () => {
                       user.status === 'active'
                         ? 'text-red-500 hover:text-red-700'
                         : 'text-green-500 hover:text-green-700'
-                    }`}
+                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     aria-label={`${
                       user.status === 'active' ? 'Block' : 'Unblock'
                     } user`}
+                    disabled={isLoading}
                   >
                     {user.status === 'active' ? <FaLock /> : <FaUnlock />}
                   </button>
                   <button
                     onClick={() => handleDeleteUser(user.id)}
-                    className="w-24 text-red-500 hover:text-red-700"
+                    className={`w-24 text-red-500 hover:text-red-700 ${
+                      isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                     aria-label="Delete user"
+                    disabled={isLoading}
                   >
                     <FaTrash />
                   </button>
@@ -310,7 +354,7 @@ const UserManagement = () => {
       </div>
 
       {/* Show message when no users found */}
-      {sortedUsers.length === 0 && (
+      {sortedUsers.length === 0 && !isLoading && (
         <div className="text-center py-8 text-gray-500">
           {searchTerm
             ? 'No users found matching your search.'
@@ -323,6 +367,7 @@ const UserManagement = () => {
         totalPages={metadata.total_pages || 1}
         onPageChange={(newPage) => setPage(newPage)}
       />
+
       <AlertPopup
         title="Delete User"
         message="Are you sure you want to delete this user?"
@@ -340,7 +385,7 @@ const UserManagement = () => {
               );
               setUsers(users);
               setMetadata(meta);
-              toast.error('User deleted!');
+              toast.success('User deleted successfully!');
             } catch (err) {
               toast.error('Failed to delete user');
             }
