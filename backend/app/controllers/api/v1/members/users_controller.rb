@@ -302,7 +302,7 @@ module Api
         def make_admin
           admin_status = params[:admin] == true
           
-          if @user.update(admin: admin_status)
+          if @user.update_column(:admin, admin_status)
             render json: @user.as_json(include: :profile), status: :ok
           else
             render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
