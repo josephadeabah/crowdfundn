@@ -14,6 +14,8 @@ import {
   BarChartIcon,
   HeartIcon,
   CubeIcon,
+  HamburgerMenuIcon,
+  Cross1Icon,
 } from '@radix-ui/react-icons';
 import { HiOutlineTruck } from 'react-icons/hi';
 import { BiTransfer } from 'react-icons/bi';
@@ -65,6 +67,7 @@ const ProfileTabs = () => {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
     new Set(['dashboard', 'fundraising']),
   );
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Get premium subscription status
   const { subscription, fetchSubscription } = usePremium();
@@ -239,6 +242,8 @@ const ProfileTabs = () => {
   const handleTabClick = (tab: string) => {
     setLoading(true);
     setActiveTab(tab);
+    // Close mobile menu when a tab is selected
+    setIsMobileMenuOpen(false);
     setTimeout(() => {
       setLoading(false);
     }, 500);
@@ -283,11 +288,212 @@ const ProfileTabs = () => {
     return badgeColor || 'bg-blue-100 text-blue-800';
   };
 
+  // Mobile sidebar component
+  const MobileSidebar = () => (
+    <div className={`fixed inset-0 z-50 lg:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50"
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+      
+      {/* Sidebar */}
+      <div className="relative bg-white w-80 h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+                <CubeIcon className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-gray-900">Bantu Hive</h2>
+                <p className="text-xs text-gray-500">Account Portal</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-lg hover:bg-gray-100"
+            >
+              <Cross1Icon className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Navigation Groups */}
+          <div className="flex-1 overflow-y-auto py-4">
+            <nav className="space-y-1 px-3">
+              {tabGroups.map((group) => {
+                const isExpanded = expandedGroups.has(group.id);
+                const hasActiveTab = group.tabs.some(
+                  (tab) => tab.label === activeTab,
+                );
+
+                return (
+                  <div key={group.id} className="space-y-1">
+                    <button
+                      onClick={() => handleGroupToggle(group.id)}
+                      className={`flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 group ${
+                        hasActiveTab
+                          ? 'bg-orange-50 text-orange-700'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span
+                          className={`${hasActiveTab ? 'text-orange-500' : 'text-gray-400 group-hover:text-gray-600'}`}
+                        >
+                          {group.icon}
+                        </span>
+                        <span>{group.name}</span>
+                      </div>
+                      <svg
+                        className={`w-4 h-4 transform transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180' : ''
+                        } ${hasActiveTab ? 'text-orange-400' : 'text-gray-400'}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="ml-4 space-y-1 border-l-2 border-gray-100 pl-3">
+                        {group.tabs.map((tab) => {
+                          const isActive = activeTab === tab.label;
+                          const isOnboarding =
+                            showOnboarding &&
+                            currentStep ===
+                              allTabs.findIndex((t) => t.label === tab.label);
+
+                          return (
+                            <button
+                              key={tab.label}
+                              onClick={() => handleTabClick(tab.label)}
+                              className={`flex items-center justify-between w-full px-3 py-2 text-sm rounded-lg transition-all duration-200 group relative ${
+                                isActive
+                                  ? 'bg-orange-500 text-white shadow-sm'
+                                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                              } ${isOnboarding ? 'ring-2 ring-green-400' : ''}`}
+                            >
+                              <div className="flex items-center space-x-3">
+                                <span
+                                  className={
+                                    isActive
+                                      ? 'text-white'
+                                      : 'text-gray-400 group-hover:text-gray-600'
+                                  }
+                                >
+                                  {tab.icon}
+                                </span>
+                                <span>{tab.label}</span>
+                              </div>
+                              {tab.badge && (
+                                <span
+                                  className={`text-xs px-2 py-1 rounded-full ${getBadgeColorClasses(tab.badgeColor)}`}
+                                >
+                                  {tab.badge}
+                                </span>
+                              )}
+                              {isActive && (
+                                <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-orange-500 rounded-full" />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Premium Status Section */}
+          <div className="p-4 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+            {hasPremium ? (
+              <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+                  <FaCrown className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-purple-900 truncate">
+                    {subscription.current_plan?.name} Plan
+                  </p>
+                  <p className="text-xs text-purple-600">Active</p>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={handleSubscribeClick}
+                className="w-full flex items-center space-x-3 p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                  <FaCashRegister className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-medium">
+                  Upgrade to Premium
+                </span>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="w-full bg-white">
-      <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
-        {/* Enhanced Sidebar with Groups */}
-        <div className="md:w-64 border-b h-auto md:h-screen md:border-b-0 md:border-r border-gray-200 flex flex-col sticky top-0 bg-white">
+    <div className="w-full bg-white min-h-screen">
+      {/* Mobile Header */}
+      <div className="lg:hidden sticky top-0 z-40 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="p-2 rounded-lg hover:bg-gray-100"
+            >
+              <HamburgerMenuIcon className="w-5 h-5" />
+            </button>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+                <CubeIcon className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-gray-900">Bantu Hive</h2>
+                <p className="text-xs text-gray-500">Account Portal</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Mobile Premium Badge */}
+          {hasPremium && (
+            <div className="flex items-center space-x-2 bg-gradient-to-r from-purple-50 to-indigo-50 px-3 py-1 rounded-full border border-purple-200">
+              <FaCrown className="w-3 h-3 text-purple-600" />
+              <span className="text-xs font-medium text-purple-900">Premium</span>
+            </div>
+          )}
+        </div>
+        
+        {/* Current Tab Display */}
+        <div className="px-4 pb-4">
+          <h1 className="text-xl font-bold text-gray-900">
+            {allTabs.find((tab) => tab.label === activeTab)?.label || 'Dashboard'}
+          </h1>
+          <p className="text-sm text-gray-600 mt-1">
+            {allTabs.find((tab) => tab.label === activeTab)?.description || 'Your account overview'}
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row h-screen lg:mt-0">
+        {/* Desktop Sidebar - Hidden on mobile */}
+        <div className="hidden lg:flex lg:w-64 border-r border-gray-200 flex-col sticky top-0 bg-white h-screen">
           <div className="flex flex-col h-full">
             {/* Header */}
             <div className="p-4 border-b border-gray-200">
@@ -429,10 +635,13 @@ const ProfileTabs = () => {
           </div>
         </div>
 
+        {/* Mobile Sidebar */}
+        <MobileSidebar />
+
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col bg-gray-50 overflow-auto h-full md:h-screen">
-          {/* Content Header */}
-          <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex-1 flex flex-col bg-gray-50 overflow-auto lg:h-screen">
+          {/* Desktop Content Header - Hidden on mobile */}
+          <div className="hidden lg:block bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
@@ -451,7 +660,7 @@ const ProfileTabs = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="flex-1 overflow-auto px-6 py-6">
+          <div className="flex-1 overflow-auto px-4 lg:px-6 py-4 lg:py-6">
             <div role="tabpanel" className="min-h-full">
               {allTabs.find((tab) => tab.label === activeTab)?.component || (
                 <Dashboard />
@@ -462,22 +671,21 @@ const ProfileTabs = () => {
           {/* Footer */}
           <div className="bg-white border-t border-gray-200 px-6 py-4 text-center">
             <p className="text-sm text-gray-600">
-              © 2025 Bantu Hive Ltd • Building the future of African
-              fundraising
+              © 2025 Bantu Hive Ltd • Building the future of African fundraising
             </p>
           </div>
         </div>
-
-        {/* Onboarding Modal */}
-        {showOnboarding && (
-          <OnboardingModal
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
-            completeOnboarding={completeOnboarding}
-            tabs={allTabs}
-          />
-        )}
       </div>
+
+      {/* Onboarding Modal */}
+      {showOnboarding && (
+        <OnboardingModal
+          currentStep={currentStep}
+          setCurrentStep={setCurrentStep}
+          completeOnboarding={completeOnboarding}
+          tabs={allTabs}
+        />
+      )}
     </div>
   );
 };
