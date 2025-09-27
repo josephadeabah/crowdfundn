@@ -205,7 +205,7 @@ const UserManagement = () => {
           className="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
           disabled={isLoading}
         >
-          {isLoading ? 'Exporting...' : 'Export CSV'}
+          Export CSV
         </button>
       </div>
 
