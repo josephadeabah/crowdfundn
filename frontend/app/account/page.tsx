@@ -10,9 +10,22 @@ import {
   ChatBubbleIcon,
   StarIcon,
   MaskOffIcon,
+  PersonIcon,
+  BarChartIcon,
+  HeartIcon,
+  CubeIcon,
 } from '@radix-ui/react-icons';
 import { HiOutlineTruck } from 'react-icons/hi';
 import { BiTransfer } from 'react-icons/bi';
+import {
+  FaCashRegister,
+  FaCrown,
+  FaUsers,
+  FaChartLine,
+  FaHandHoldingUsd,
+} from 'react-icons/fa';
+import { MdOutlinePayments, MdUpdate } from 'react-icons/md';
+import { IoGitPullRequest } from 'react-icons/io5';
 import Rewards from '@/app/account/Rewards';
 import Campaigns from '@/app/account/Campaigns';
 import Transfers from '@/app/account/Transfers';
@@ -25,14 +38,33 @@ import OnboardingModal from '@/app/components/onboarding/OnboardingModal';
 import Favorites from '@/app/account/Favorites';
 import PledgesListPage from '@/app/account/Pledges';
 import EquityInvestments from './EquityInvestments';
-import { FaCashRegister, FaCrown } from 'react-icons/fa';
 import { usePremium } from '@/app/context/premium/PremiumContext';
+
+// Define proper TypeScript interfaces
+interface Tab {
+  label: string;
+  icon: JSX.Element;
+  component: JSX.Element;
+  description: string;
+  badge?: string | null;
+  badgeColor?: string;
+}
+
+interface TabGroup {
+  id: string;
+  name: string;
+  icon: JSX.Element;
+  tabs: Tab[];
+}
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    new Set(['dashboard', 'fundraising']),
+  );
 
   // Get premium subscription status
   const { subscription, fetchSubscription } = usePremium();
@@ -56,70 +88,118 @@ const ProfileTabs = () => {
     }
   }, [fetchSubscription, subscription]);
 
-  const tabs = [
+  // Grouped tabs with proper type definitions
+  const tabGroups: TabGroup[] = [
     {
-      label: 'Dashboard',
-      icon: <DashboardIcon />,
-      component: <Dashboard />,
-      description:
-        'Your overall dashboard where you can see an overview of activities and analytics.',
+      id: 'dashboard',
+      name: 'Overview',
+      icon: <BarChartIcon className="w-4 h-4" />,
+      tabs: [
+        {
+          label: 'Dashboard',
+          icon: <DashboardIcon className="w-4 h-4" />,
+          component: <Dashboard />,
+          description: 'Your overall dashboard with activities and analytics.',
+        },
+      ],
     },
     {
-      label: 'Investments',
-      icon: <MaskOffIcon />,
-      component: <EquityInvestments />,
-      description: 'Manage your equity investments and portfolio.',
+      id: 'investing',
+      name: 'Investing',
+      icon: <FaChartLine className="w-4 h-4" />,
+      tabs: [
+        {
+          label: 'Investments',
+          icon: <MaskOffIcon className="w-4 h-4" />,
+          component: <EquityInvestments />,
+          description: 'Manage your equity investments and portfolio.',
+          badge: 'New',
+          badgeColor: 'bg-green-100 text-green-800',
+        },
+        {
+          label: 'Pledges',
+          icon: <IoGitPullRequest className="w-4 h-4" />,
+          component: <PledgesListPage />,
+          description: 'View and manage your investment pledges.',
+        },
+      ],
     },
     {
-      label: 'Backers',
-      icon: <HandIcon />,
-      component: <Donations />,
-      description: 'Manage your backers and send thank you to them here.',
+      id: 'fundraising',
+      name: 'Fundraising',
+      icon: <FaHandHoldingUsd className="w-4 h-4" />,
+      tabs: [
+        {
+          label: 'Campaigns',
+          icon: <RocketIcon className="w-4 h-4" />,
+          component: <Campaigns />,
+          description: 'Create and manage your fundraising campaigns.',
+        },
+        {
+          label: 'Backers',
+          icon: <FaUsers className="w-4 h-4" />,
+          component: <Donations />,
+          description: 'Manage your backers and send thank you messages.',
+        },
+        {
+          label: 'Updates',
+          icon: <MdUpdate className="w-4 h-4" />,
+          component: <CampaignUpdates />,
+          description: 'Add updates and communicate with your supporters.',
+        },
+        {
+          label: 'Rewards',
+          icon: <IconJarLogoIcon className="w-4 h-4" />,
+          component: <Rewards />,
+          description: 'Manage rewards for your backers.',
+        },
+      ],
     },
     {
-      label: 'Transfers',
-      icon: <BiTransfer />,
-      component: <Transfers />,
-      description: 'View and manage your transfers.',
+      id: 'payments',
+      name: 'Payments',
+      icon: <MdOutlinePayments className="w-4 h-4" />,
+      tabs: [
+        {
+          label: 'Transfers',
+          icon: <BiTransfer className="w-4 h-4" />,
+          component: <Transfers />,
+          description: 'View and manage your fund transfers.',
+        },
+      ],
     },
     {
-      label: 'Pledges',
-      icon: <HiOutlineTruck />,
-      component: <PledgesListPage />,
-      description: 'View and manage your pledges here.',
+      id: 'engagement',
+      name: 'Engagement',
+      icon: <HeartIcon className="w-4 h-4" />,
+      tabs: [
+        {
+          label: 'Favorites',
+          icon: <StarIcon className="w-4 h-4" />,
+          component: <Favorites />,
+          description: 'Your favorite campaigns and projects.',
+        },
+      ],
     },
     {
-      label: 'Rewards',
-      icon: <IconJarLogoIcon />,
-      component: <Rewards />,
-      description: 'Receive and give rewards to your backers here.',
-    },
-    {
-      label: 'Campaigns',
-      icon: <RocketIcon />,
-      component: <Campaigns />,
-      description: 'Create and manage your fundraising campaigns.',
-    },
-    {
-      label: 'Updates',
-      icon: <ChatBubbleIcon />,
-      component: <CampaignUpdates />,
-      description: 'Add your fundraising updates in this tab.',
-    },
-    {
-      label: 'Favorites',
-      icon: <StarIcon />,
-      component: <Favorites />,
-      description: 'View your favorited campaigns here.',
-    },
-    {
-      label: 'Settings',
-      icon: <GearIcon />,
-      component: <AccountSettings />,
-      description:
-        'Manage your account and Payment settings here. <p class="text-white bg-red-500 text-xs px-1">IMPORTANT: Please add your bank or mobile money account in this tab after you click Finish or Skip button.</p>',
+      id: 'settings',
+      name: 'Account',
+      icon: <PersonIcon className="w-4 h-4" />,
+      tabs: [
+        {
+          label: 'Settings',
+          icon: <GearIcon className="w-4 h-4" />,
+          component: <AccountSettings />,
+          description: 'Manage your account and payment settings.',
+          badge: 'Important',
+          badgeColor: 'bg-red-100 text-red-800',
+        },
+      ],
     },
   ];
+
+  // Flatten all tabs for easy access
+  const allTabs: Tab[] = tabGroups.flatMap((group) => group.tabs);
 
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
@@ -132,12 +212,12 @@ const ProfileTabs = () => {
     if (subscribeParam === 'true') {
       window.history.replaceState(null, '', '/account#Settings?subscribe=true');
       setActiveTab('Settings');
-    } else if (hashTab && tabs.find((tab) => tab.label === hashTab)) {
+    } else if (hashTab && allTabs.find((tab) => tab.label === hashTab)) {
       setActiveTab(hashTab);
     } else if (savedTab) {
       setActiveTab(savedTab);
     } else {
-      setActiveTab(tabs[0].label);
+      setActiveTab(allTabs[0]?.label || '');
     }
 
     if (!onboardingCompleted) {
@@ -164,6 +244,18 @@ const ProfileTabs = () => {
     }, 500);
   };
 
+  const handleGroupToggle = (groupId: string) => {
+    setExpandedGroups((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupId)) {
+        newSet.delete(groupId);
+      } else {
+        newSet.add(groupId);
+      }
+      return newSet;
+    });
+  };
+
   const handleSubscribeClick = () => {
     const url = new URL(window.location.href);
     url.hash = 'Settings';
@@ -186,83 +278,193 @@ const ProfileTabs = () => {
     return <ProfileTabsLoader />;
   }
 
+  // Helper function to get badge color classes
+  const getBadgeColorClasses = (badgeColor?: string) => {
+    return badgeColor || 'bg-blue-100 text-blue-800';
+  };
+
   return (
     <div className="w-full bg-white">
       <div className="max-w-7xl mx-auto flex flex-col mt-0 md:flex-row h-screen">
-        {/* Tabs Menu */}
-        <div className="md:w-1/6 border-b h-auto md:h-screen md:border-b-0 md:border-r-2 border-dashed border-orange-200 flex flex-col sticky top-0">
+        {/* Enhanced Sidebar with Groups */}
+        <div className="md:w-64 border-b h-auto md:h-screen md:border-b-0 md:border-r border-gray-200 flex flex-col sticky top-0 bg-white">
           <div className="flex flex-col h-full">
-            <div
-              className="flex lg:flex-col overflow-x-auto lg:overflow-visible p-2 space-x-1 lg:space-x-0 lg:space-y-1"
-              aria-label="Tabs"
-            >
-              {tabs.map(({ label, icon }, index) => {
-                const isActive = activeTab === label;
-                const isOnboarding = showOnboarding && currentStep === index;
-
-                return (
-                  <button
-                    key={label}
-                    className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap min-w-fit lg:min-w-full lg:w-full relative group ${
-                      isActive
-                        ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-600'
-                        : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                    }  focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 ${
-                      isOnboarding ? 'bg-green-600 text-white' : ''
-                    }`}
-                    onClick={() => handleTabClick(label)}
-                    aria-selected={isActive}
-                    aria-controls={`vertical-tab-${label}`}
-                    role="tab"
-                    id={`tab-${label}`}
-                  >
-                    <span className="mr-2">{icon}</span>
-                    {label}
-                    {isActive && (
-                      <span className="ml-2 relative">
-                        <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-gray-300"></span>
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+            {/* Header */}
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+                  <CubeIcon className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-gray-900">Bantu Hive</h2>
+                  <p className="text-xs text-gray-500">Account Portal</p>
+                </div>
+              </div>
             </div>
 
-            {/* Bottom Subscribe/Plan */}
-            <div className="sticky bottom-0 bg-white pt-2 pb-4 px-3 border-t border-dashed border-orange-200">
-              {hasPremium ? (
-                <div className="w-full py-2 px-4 z-50 border-2 border-purple-600 text-purple-800 rounded-full text-center shadow-sm">
-                  <div className="flex text-xs items-center justify-center mb-1">
-                    <FaCrown className="mr-2" />
-                    <div className="opacity-90">
-                      {subscription.current_plan?.name} Plan
+            {/* Navigation Groups */}
+            <div className="flex-1 overflow-y-auto py-4">
+              <nav className="space-y-1 px-3">
+                {tabGroups.map((group) => {
+                  const isExpanded = expandedGroups.has(group.id);
+                  const hasActiveTab = group.tabs.some(
+                    (tab) => tab.label === activeTab,
+                  );
+
+                  return (
+                    <div key={group.id} className="space-y-1">
+                      <button
+                        onClick={() => handleGroupToggle(group.id)}
+                        className={`flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 group ${
+                          hasActiveTab
+                            ? 'bg-orange-50 text-orange-700'
+                            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span
+                            className={`${hasActiveTab ? 'text-orange-500' : 'text-gray-400 group-hover:text-gray-600'}`}
+                          >
+                            {group.icon}
+                          </span>
+                          <span>{group.name}</span>
+                        </div>
+                        <svg
+                          className={`w-4 h-4 transform transition-transform duration-200 ${
+                            isExpanded ? 'rotate-180' : ''
+                          } ${hasActiveTab ? 'text-orange-400' : 'text-gray-400'}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+
+                      {isExpanded && (
+                        <div className="ml-4 space-y-1 border-l-2 border-gray-100 pl-3">
+                          {group.tabs.map((tab) => {
+                            const isActive = activeTab === tab.label;
+                            const isOnboarding =
+                              showOnboarding &&
+                              currentStep ===
+                                allTabs.findIndex((t) => t.label === tab.label);
+
+                            return (
+                              <button
+                                key={tab.label}
+                                onClick={() => handleTabClick(tab.label)}
+                                className={`flex items-center justify-between w-full px-3 py-2 text-sm rounded-lg transition-all duration-200 group relative ${
+                                  isActive
+                                    ? 'bg-orange-500 text-white shadow-sm'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                } ${isOnboarding ? 'ring-2 ring-green-400' : ''}`}
+                              >
+                                <div className="flex items-center space-x-3">
+                                  <span
+                                    className={
+                                      isActive
+                                        ? 'text-white'
+                                        : 'text-gray-400 group-hover:text-gray-600'
+                                    }
+                                  >
+                                    {tab.icon}
+                                  </span>
+                                  <span>{tab.label}</span>
+                                </div>
+                                {tab.badge && (
+                                  <span
+                                    className={`text-xs px-2 py-1 rounded-full ${getBadgeColorClasses(tab.badgeColor)}`}
+                                  >
+                                    {tab.badge}
+                                  </span>
+                                )}
+                                {isActive && (
+                                  <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-orange-500 rounded-full" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Premium Status Section */}
+            <div className="p-4 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+              {hasPremium ? (
+                <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+                    <FaCrown className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-purple-900 truncate">
+                      {subscription.current_plan?.name} Plan
+                    </p>
+                    <p className="text-xs text-purple-600">Active</p>
                   </div>
                 </div>
               ) : (
                 <button
                   onClick={handleSubscribeClick}
-                  className="w-full py-2 px-4 z-50 bg-green-600 text-white rounded-full flex items-center justify-center hover:bg-green-700 transition-colors duration-300 shadow-sm"
+                  className="w-full flex items-center space-x-3 p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md"
                 >
-                  <FaCashRegister className="mr-2" />
-                  Subscribe plan
+                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <FaCashRegister className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-medium">
+                    Upgrade to Premium
+                  </span>
                 </button>
               )}
             </div>
           </div>
         </div>
 
-        {/* Tab Content */}
-        <div className="flex-1 flex flex-col bg-gray-50 px-3 mb-0 overflow-auto h-full md:h-screen [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-          <div
-            role="tabpanel"
-            id={`vertical-tab-${activeTab}`}
-            className="flex-1 mb-8"
-          >
-            {tabs.find((tab) => tab.label === activeTab)?.component}
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col bg-gray-50 overflow-auto h-full md:h-screen">
+          {/* Content Header */}
+          <div className="bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {allTabs.find((tab) => tab.label === activeTab)?.label ||
+                    'Dashboard'}
+                </h1>
+                <p className="text-sm text-gray-600 mt-1">
+                  {allTabs.find((tab) => tab.label === activeTab)
+                    ?.description || 'Your account overview'}
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                {/* Add future header actions here */}
+              </div>
+            </div>
           </div>
-          <div className="bg-white w-full m-0 text-center py-4 text-gray-600">
-            © 2025 Bantu Hive Ltd
+
+          {/* Tab Content */}
+          <div className="flex-1 overflow-auto px-6 py-6">
+            <div role="tabpanel" className="min-h-full">
+              {allTabs.find((tab) => tab.label === activeTab)?.component || (
+                <Dashboard />
+              )}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-white border-t border-gray-200 px-6 py-4 text-center">
+            <p className="text-sm text-gray-600">
+              © 2025 Bantu Hive Ltd • Building the future of African
+              fundraising
+            </p>
           </div>
         </div>
 
@@ -272,7 +474,7 @@ const ProfileTabs = () => {
             currentStep={currentStep}
             setCurrentStep={setCurrentStep}
             completeOnboarding={completeOnboarding}
-            tabs={tabs}
+            tabs={allTabs}
           />
         )}
       </div>
