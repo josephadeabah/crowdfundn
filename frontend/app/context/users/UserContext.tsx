@@ -14,7 +14,7 @@ import {
   UserProfileState,
 } from '@/app/types/user_profiles.types';
 import { Role } from '@/app/types/user.types';
-import Cookies from 'js-cookie'; // Import js-cookie for cookie handling
+import Cookies from 'js-cookie';
 
 const UserContext = createContext<UserProfileState | undefined>(undefined);
 
@@ -27,21 +27,31 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Function to store roles in cookies
   const storeRolesInCookies = useCallback((roles: Role[]) => {
     const roleNames = roles.map((role) => role.name);
-    Cookies.set('roles', JSON.stringify(roleNames), { expires: 30 }); // Expires in 30 days
+    Cookies.set('roles', JSON.stringify(roleNames), { expires: 30 });
   }, []);
 
-  // Function to fetch all users
+  // Updated fetchAllUsers to support search
   const fetchAllUsers = useCallback(
-    async (page = 1, perPage = 10) => {
+    async (page = 1, perPage = 10, search = '') => {
       setLoading(true);
       setError(null);
 
       try {
+        // Build query parameters
+        const queryParams = new URLSearchParams({
+          page: page.toString(),
+          per_page: perPage.toString(),
+        });
+
+        // Add search parameter if provided
+        if (search) {
+          queryParams.append('search', search);
+        }
+
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users?page=${page}&per_page=${perPage}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users?${queryParams}`,
           {
             method: 'GET',
             headers: {
@@ -57,8 +67,8 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
 
         const data = await response.json();
         return {
-          users: data.users, // Array of users
-          meta: data.meta, // Pagination metadata
+          users: data.users,
+          meta: data.meta,
         };
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -70,7 +80,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Function to delete a user
   const deleteUser = useCallback(
     async (userId: number) => {
       try {
@@ -89,7 +98,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         if (!response.ok) {
           throw new Error('Failed to delete user');
         }
-        // Optionally, you can trigger any necessary state updates or notifications
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
@@ -99,7 +107,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Function to fetch user profile data
   const fetchUserProfile = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -122,8 +129,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
 
       const data: UserProfile = await response.json();
       setUserAccountData(data);
-
-      // Store roles in cookies after fetching user data
       storeRolesInCookies(data.roles);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -132,7 +137,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token, storeRolesInCookies]);
 
-  // Function to update user profile
   const updateProfileData = useCallback(
     async (updatedProfile: Partial<Profile> | FormData) => {
       setLoading(true);
@@ -141,18 +145,18 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       try {
         const isFormData = updatedProfile instanceof FormData;
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${user?.id}`, // No user ID needed
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/profiles/${user?.id}`,
           {
             method: 'PUT',
             headers: isFormData
-              ? { Authorization: `Bearer ${token}` } // No 'Content-Type' for FormData
+              ? { Authorization: `Bearer ${token}` }
               : {
                   'Content-Type': 'application/json',
                   Authorization: `Bearer ${token}`,
                 },
             body: isFormData
-              ? updatedProfile // Send FormData directly
-              : JSON.stringify({ profile: updatedProfile }), // For JSON updates
+              ? updatedProfile
+              : JSON.stringify({ profile: updatedProfile }),
           },
         );
 
@@ -162,8 +166,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const data = await response.json();
-        setProfileData(data.profile); // Update local state
-
+        setProfileData(data.profile);
         return data.profile;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -175,7 +178,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token, user],
   );
 
-  // Function to update user profile
   const updateUserAccountData = useCallback(
     async (updatedProfile: Partial<UserProfile>) => {
       setLoading(true);
@@ -201,7 +203,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const updatedData: UserProfile = await response.json();
-        setUserAccountData(updatedData); // Update local state with new profile data
+        setUserAccountData(updatedData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
@@ -211,7 +213,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Function to assign a role to a user
   const assignRoleToUser = useCallback(
     async (userId: number, roleName: string) => {
       try {
@@ -240,7 +241,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Function to remove a role from a user
   const removeRoleFromUser = useCallback(
     async (userId: number, roleName: string) => {
       try {
@@ -269,7 +269,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Function to make a user Super Admin
   const makeUserAdmin = useCallback(
     async (userId: number, isAdmin: boolean) => {
       try {
@@ -298,7 +297,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Function to block a user
   const blockUser = useCallback(
     async (userId: number) => {
       try {
@@ -326,7 +324,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Function to activate a user
   const activateUser = useCallback(
     async (userId: number) => {
       try {
@@ -354,7 +351,6 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Automatically fetch user data when token changes (e.g., after login)
   useEffect(() => {
     if (token) {
       fetchUserProfile();

@@ -6,7 +6,7 @@ import {
   useUserContext,
 } from '@/app/context/users/UserContext';
 import { exportUsersToCSV } from '@/app/utils/helpers/exportCSV';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaSearch, FaTrash, FaLock, FaUnlock } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,7 +19,7 @@ const UserManagement = () => {
     blockUser,
     activateUser,
     makeUserAdmin,
-    removeRoleFromUser, // Added this function to the context
+    removeRoleFromUser,
     userAccountData,
     error,
     loading,
@@ -30,22 +30,47 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortCriteria, setSortCriteria] = useState('name');
   const [page, setPage] = useState(1);
-  const [perPage] = useState(10); // Pagination items per page
+  const [perPage] = useState(10);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
+    null,
+  );
+
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    (term: string) => {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+
+      const timeout = setTimeout(async () => {
+        setPage(1); // Reset to first page when searching
+        const { users, meta } = await fetchAllUsers(1, perPage, term);
+        setUsers(users);
+        setMetadata(meta);
+      }, 300);
+
+      setSearchTimeout(timeout);
+    },
+    [fetchAllUsers, perPage, searchTimeout],
+  );
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const { users, meta } = await fetchAllUsers(page, perPage); // Assuming `fetchAllUsers` returns `meta` with pagination info
+      const { users, meta } = await fetchAllUsers(page, perPage, searchTerm);
       setUsers(users);
-      setMetadata(meta); // Store pagination metadata here
+      setMetadata(meta);
     };
 
     fetchUsers();
   }, [page, fetchAllUsers, perPage]);
 
+  // Handle search input with debouncing
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
+    debouncedSearch(value);
   };
 
   const handleSort = (criteria: string) => {
@@ -68,7 +93,7 @@ const UserManagement = () => {
 
   const handleRemoveRole = async (userId: number, roleName: string) => {
     try {
-      await removeRoleFromUser(userId, roleName); // Assuming `removeRoleFromUser` is available in the context
+      await removeRoleFromUser(userId, roleName);
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === userId
@@ -130,19 +155,11 @@ const UserManagement = () => {
 
   const handleDeleteUser = (userId: number) => {
     setUserToDelete(userId);
-    setIsDeletePopupOpen(true); // Show the custom confirmation popup
+    setIsDeletePopupOpen(true);
   };
 
-  const filteredUsers = users.filter((user) => {
-    const userName = user.full_name?.toLowerCase() || ''; // Safeguard for undefined
-    const userEmail = user.email?.toLowerCase() || ''; // Safeguard for undefined
-    return (
-      userName.includes(searchTerm.toLowerCase()) ||
-      userEmail.includes(searchTerm.toLowerCase())
-    );
-  });
-
-  const sortedUsers = filteredUsers.sort((a, b) => {
+  // Client-side sorting for the current page results
+  const sortedUsers = [...users].sort((a, b) => {
     if (a[sortCriteria] < b[sortCriteria]) return -1;
     if (a[sortCriteria] > b[sortCriteria]) return 1;
     return 0;
@@ -171,7 +188,7 @@ const UserManagement = () => {
         <div className="relative flex-grow">
           <input
             type="text"
-            placeholder="Search users..."
+            placeholder="Search users by name or email..."
             className="w-full p-2 pl-8 rounded border focus:outline-none focus:ring-2 focus:ring-blue-300"
             value={searchTerm}
             onChange={handleSearch}
@@ -291,6 +308,16 @@ const UserManagement = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Show message when no users found */}
+      {sortedUsers.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          {searchTerm
+            ? 'No users found matching your search.'
+            : 'No users found.'}
+        </div>
+      )}
+
       <Pagination
         currentPage={metadata.current_page || page}
         totalPages={metadata.total_pages || 1}
@@ -305,9 +332,14 @@ const UserManagement = () => {
           if (userToDelete !== null) {
             try {
               await deleteUser(userToDelete);
-              setUsers((prevUsers) =>
-                prevUsers.filter((user) => user.id !== userToDelete),
+              // Refresh the user list after deletion
+              const { users, meta } = await fetchAllUsers(
+                page,
+                perPage,
+                searchTerm,
               );
+              setUsers(users);
+              setMetadata(meta);
               toast.error('User deleted!');
             } catch (err) {
               toast.error('Failed to delete user');

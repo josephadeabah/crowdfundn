@@ -49,6 +49,7 @@ export interface UserProfileState {
   fetchAllUsers: (
     page: number,
     perPage: number,
+    searchTerm: string,
   ) => Promise<{ users: any; meta: any }>;
   deleteUser: (userId: number) => Promise<void>;
   assignRoleToUser: (userId: number, role: string) => Promise<void>;
