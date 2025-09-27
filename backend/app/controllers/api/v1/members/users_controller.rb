@@ -4,11 +4,26 @@ module Api
       class UsersController < ApplicationController
         before_action :authenticate_request, except: [:index]
         before_action :authorize_admin, only: [:make_admin]
-        before_action :set_user, only: %i[make_admin make_admin_role show_by_id assign_role remove_role show_subaccount update_subaccount destroy block_user activate_user] # Added :assign_role
+        before_action :set_user, only: %i[make_admin make_admin_role show_by_id assign_role remove_role show_subaccount update_subaccount destroy block_user activate_user]
         rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
         def index
-          @users = User.includes(:profile, :roles).page(params[:page]).per(params[:per_page] || 10) # Default to 10 per page
+          # Support search across all users
+          users_scope = User.includes(:profile, :roles)
+          
+          # Apply search filter if search parameter is provided
+          if params[:search].present?
+            search_term = "%#{params[:search].downcase}%"
+            users_scope = users_scope.where(
+              "LOWER(users.full_name) LIKE ? OR LOWER(users.email) LIKE ?", 
+              search_term, 
+              search_term
+            )
+          end
+          
+          # Apply pagination
+          @users = users_scope.page(params[:page]).per(params[:per_page] || 10)
+          
           render json: {
             users: @users.as_json(include: %i[profile roles]),
             meta: {
