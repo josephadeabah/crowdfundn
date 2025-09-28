@@ -37,6 +37,7 @@ import {
   Search,
   Filter,
   Download,
+  Gift,
 } from 'lucide-react';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import PledgeListPageLoader from '../loaders/PledgeListPageLoader ';
@@ -159,10 +160,25 @@ const PledgesListPage = () => {
             </p>
           </div>
         </div>
-        <div className="text-center py-16">
-          <p className="text-gray-600 text-lg">
-            You have not received any pledges yet.
+
+        {/* Beautiful Empty State - Consistent with other pages */}
+        <div className="text-center p-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+          <div className="text-gray-400 mb-4">
+            <Gift className="w-16 h-16 mx-auto opacity-50" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-600 mb-2">
+            No pledges yet
+          </h3>
+          <p className="text-gray-500 max-w-md mx-auto mb-6">
+            When supporters pledge to your campaigns with rewards, their pledges
+            will appear here for you to manage, fulfill, and track shipping.
           </p>
+          <Button
+            onClick={() => (window.location.href = '/campaigns/create')}
+            className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105"
+          >
+            Create a Campaign with Rewards
+          </Button>
         </div>
       </div>
     );
