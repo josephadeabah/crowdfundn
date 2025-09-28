@@ -379,12 +379,6 @@ const Campaigns: React.FC = () => {
             Share your story, set your goals, and connect with supporters who
             believe in your vision.
           </p>
-          <Button
-            onClick={() => router.push('/account/dashboard/create')}
-            className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105"
-          >
-            Create Your First Campaign
-          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
