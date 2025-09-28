@@ -336,45 +336,6 @@ export default function Dashboard() {
           />
         </BlurredChartContainer>
       )}
-
-      {/* Equity Campaigns Section (if available) */}
-      {statistics?.equity_campaigns &&
-        statistics.equity_campaigns.total > 0 && (
-          <Card className="p-6 bg-white rounded-lg border-none shadow-none my-4">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold text-gray-700">
-                Equity Campaigns Overview
-              </CardTitle>
-            </CardHeader>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <h3 className="font-semibold text-blue-600">
-                  Total Equity Campaigns
-                </h3>
-                <p className="text-2xl font-bold text-blue-500">
-                  {statistics.equity_campaigns.total}
-                </p>
-              </div>
-              <div className="p-4 bg-green-50 rounded-lg">
-                <h3 className="font-semibold text-green-600">
-                  Active Equity Campaigns
-                </h3>
-                <p className="text-2xl font-bold text-green-500">
-                  {statistics.equity_campaigns.active}
-                </p>
-              </div>
-              <div className="p-4 bg-purple-50 rounded-lg">
-                <h3 className="font-semibold text-purple-600">
-                  Total Equity Raised
-                </h3>
-                <p className="text-2xl font-bold text-purple-500">
-                  {user?.currency?.toUpperCase()}{' '}
-                  {statistics.equity_campaigns.total_funds_raised?.toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </Card>
-        )}
     </div>
   );
 }
