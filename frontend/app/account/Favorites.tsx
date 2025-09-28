@@ -50,7 +50,8 @@ const Favorites = () => {
               No favorites yet
             </h3>
             <p className="text-gray-500 max-w-md mx-auto">
-              Start exploring campaigns and click the bookmark icon to save them here for easy access.
+              Start exploring campaigns and click the bookmark icon to save them
+              here for easy access.
             </p>
           </div>
         ) : (
@@ -59,7 +60,7 @@ const Favorites = () => {
               key={`fav-${campaign.id}`}
               className="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-200"
             >
-              <Link 
+              <Link
                 href={`/campaign/${campaign.id}?${generateRandomString()}`}
                 className="block"
               >
@@ -86,7 +87,7 @@ const Favorites = () => {
                   <h3 className="font-bold text-gray-900 line-clamp-2 mb-3 group-hover:text-green-600 transition-colors duration-200 text-base leading-tight">
                     {campaign.title}
                   </h3>
-                  
+
                   {/* Stats */}
                   <div className="flex items-center justify-between text-sm text-gray-600">
                     <div className="flex items-center gap-1">
@@ -107,24 +108,32 @@ const Favorites = () => {
                   {campaign.goal_amount && campaign.transferred_amount && (
                     <div className="mt-4">
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all duration-500"
                           style={{
                             width: `${Math.min(
-                              (Number(campaign.transferred_amount) / Number(campaign.goal_amount)) * 100,
-                              100
-                            )}%`
+                              (Number(campaign.transferred_amount) /
+                                Number(campaign.goal_amount)) *
+                                100,
+                              100,
+                            )}%`,
                           }}
                         />
                       </div>
                       <div className="flex justify-between text-xs text-gray-500 mt-1">
                         <span>
-                          {campaign.currency_symbol || campaign.currency?.toUpperCase()} 
-                          {parseFloat(campaign.transferred_amount?.toString() || '0').toLocaleString()}
+                          {campaign.currency_symbol ||
+                            campaign.currency?.toUpperCase()}
+                          {parseFloat(
+                            campaign.transferred_amount?.toString() || '0',
+                          ).toLocaleString()}
                         </span>
                         <span>
-                          {campaign.currency_symbol || campaign.currency?.toUpperCase()} 
-                          {parseFloat(campaign.goal_amount?.toString() || '0').toLocaleString()}
+                          {campaign.currency_symbol ||
+                            campaign.currency?.toUpperCase()}
+                          {parseFloat(
+                            campaign.goal_amount?.toString() || '0',
+                          ).toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -148,11 +157,13 @@ const Favorites = () => {
               {/* Campaign Type Badge */}
               {campaign.type && (
                 <div className="absolute top-3 left-3">
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    campaign.type === 'EquityCampaign' 
-                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                      : 'bg-purple-100 text-purple-700 border border-purple-200'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      campaign.type === 'EquityCampaign'
+                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                        : 'bg-purple-100 text-purple-700 border border-purple-200'
+                    }`}
+                  >
                     {campaign.type === 'EquityCampaign' ? 'Equity' : 'Donation'}
                   </span>
                 </div>
