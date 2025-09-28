@@ -23,7 +23,7 @@ import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { CampaignResponseDataType } from '../types/campaigns.types';
 import { generateRandomString } from '../utils/helpers/generate.random-string';
 import ErrorPage from '../components/errorpage/ErrorPage';
-import { FiPlus, FiPlusCircle } from 'react-icons/fi';
+import { FiPlus, FiPlusCircle, FiFolder } from 'react-icons/fi';
 import CampaignTeamDocuments from '@/app/components/campaign/CampaignTeamDocuments';
 import Avatar from '../components/avatar/Avatar';
 import ToastComponent from '@/app/components/toast/Toast';
@@ -366,7 +366,26 @@ const Campaigns: React.FC = () => {
       </div>
 
       {userCampaigns && userCampaigns.length === 0 ? (
-        <p className="text-gray-500 mt-4">You have no campaigns yet.</p>
+        // Beautiful Empty State - Consistent with Favorites
+        <div className="text-center p-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mt-6">
+          <div className="text-gray-400 mb-4">
+            <FiFolder className="w-16 h-16 mx-auto opacity-50" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-600 mb-2">
+            No campaigns yet
+          </h3>
+          <p className="text-gray-500 max-w-md mx-auto mb-6">
+            Start your fundraising journey by creating your first campaign.
+            Share your story, set your goals, and connect with supporters who
+            believe in your vision.
+          </p>
+          <Button
+            onClick={() => router.push('/account/dashboard/create')}
+            className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105"
+          >
+            Create Your First Campaign
+          </Button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           {userCampaigns?.map((campaign) => {
