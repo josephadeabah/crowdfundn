@@ -508,12 +508,14 @@ const ProfileTabs = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
                 <GroupIcon className="w-5 h-5 text-white" />
               </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="font-semibold text-gray-900 truncate">Bantu Hive</h2>
-                  <p className="text-xs text-gray-500 truncate">
-                    <UserNameDisplay name={user?.full_name} />
-                  </p>
-                </div>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-semibold text-gray-900 truncate">
+                  Bantu Hive
+                </h2>
+                <p className="text-xs text-gray-500 truncate">
+                  <UserNameDisplay name={user?.full_name} />
+                </p>
+              </div>
             </div>
           </div>
 
@@ -551,12 +553,14 @@ const ProfileTabs = () => {
                 <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
                   <GroupIcon className="w-5 h-5 text-white" />
                 </div>
-              <div className="min-w-0 flex-1">
-                <h2 className="font-semibold text-gray-900 truncate">Bantu Hive</h2>
-                <p className="text-xs text-gray-500 truncate">
-                  <UserNameDisplay name={user?.full_name} />
-                </p>
-              </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-semibold text-gray-900 truncate">
+                    Bantu Hive
+                  </h2>
+                  <p className="text-xs text-gray-500 truncate">
+                    <UserNameDisplay name={user?.full_name} />
+                  </p>
+                </div>
               </div>
             </div>
 
