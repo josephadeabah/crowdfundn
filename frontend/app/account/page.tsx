@@ -335,7 +335,7 @@ const ProfileTabs = () => {
           {/* Header */}
           <div className="p-4 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-gray-200 to-gray-100 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
                 <GroupIcon className="w-5 h-5 text-white" />
               </div>
               <div className="min-w-0 flex-1">
@@ -540,7 +540,7 @@ const ProfileTabs = () => {
             {/* Header */}
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-gray-200 to-gray-100 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
                   <GroupIcon className="w-5 h-5 text-white" />
                 </div>
                 <div className="min-w-0 flex-1">
