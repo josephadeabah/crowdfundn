@@ -57,6 +57,49 @@ interface TabGroup {
   tabs: Tab[];
 }
 
+// Smart truncation component with tooltip
+const UserNameDisplay = ({
+  name,
+  maxLength = 20,
+}: {
+  name?: string;
+  maxLength?: number;
+}) => {
+  if (!name) return <span>User's Account</span>;
+
+  const needsTruncation = name.length > maxLength;
+  const displayName = needsTruncation
+    ? `${name.substring(0, maxLength)}…`
+    : name;
+
+  return (
+    <span
+      className={`relative ${needsTruncation ? 'group cursor-help' : ''}`}
+      title={needsTruncation ? name : undefined}
+    >
+      {displayName}'s Account
+      {needsTruncation && (
+        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+          {name}'s Account
+          <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full border-4 border-transparent border-t-gray-900"></span>
+        </span>
+      )}
+    </span>
+  );
+};
+
+// Alternative: CSS-based truncation with ellipsis
+const UserNameDisplayCSS = ({ name }: { name?: string }) => {
+  return (
+    <span
+      className="max-w-[120px] truncate block"
+      title={name ? `${name}'s Account` : "User's Account"}
+    >
+      {name ? `${name}'s Account` : "User's Account"}
+    </span>
+  );
+};
+
 const ProfileTabs = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<string>('');
@@ -465,12 +508,12 @@ const ProfileTabs = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
                 <GroupIcon className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <h2 className="font-semibold text-gray-900">Bantu Hive</h2>
-                <p className="text-xs text-gray-500">
-                  {user?.full_name}'s Account
-                </p>
-              </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-semibold text-gray-900 truncate">Bantu Hive</h2>
+                  <p className="text-xs text-gray-500 truncate">
+                    <UserNameDisplay name={user?.full_name} />
+                  </p>
+                </div>
             </div>
           </div>
 
@@ -508,12 +551,12 @@ const ProfileTabs = () => {
                 <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
                   <GroupIcon className="w-5 h-5 text-white" />
                 </div>
-                <div>
-                  <h2 className="font-semibold text-gray-900">Bantu Hive</h2>
-                  <p className="text-xs text-gray-500">
-                    {user?.full_name}'s Account
-                  </p>
-                </div>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-semibold text-gray-900 truncate">Bantu Hive</h2>
+                <p className="text-xs text-gray-500 truncate">
+                  <UserNameDisplay name={user?.full_name} />
+                </p>
+              </div>
               </div>
             </div>
 
