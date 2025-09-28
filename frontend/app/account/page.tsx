@@ -88,18 +88,6 @@ const UserNameDisplay = ({
   );
 };
 
-// Alternative: CSS-based truncation with ellipsis
-const UserNameDisplayCSS = ({ name }: { name?: string }) => {
-  return (
-    <span
-      className="max-w-[120px] truncate block"
-      title={name ? `${name}'s Account` : "User's Account"}
-    >
-      {name ? `${name}'s Account` : "User's Account"}
-    </span>
-  );
-};
-
 const ProfileTabs = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<string>('');
