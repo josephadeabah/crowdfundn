@@ -309,7 +309,9 @@ const ProfileTabs = () => {
               </div>
               <div>
                 <h2 className="font-semibold text-gray-900">Bantu Hive</h2>
-                <p className="text-xs text-gray-500">{user?.full_name}'s Account</p>
+                <p className="text-xs text-gray-500">
+                  {user?.full_name}'s Account
+                </p>
               </div>
             </div>
             <button
@@ -465,7 +467,9 @@ const ProfileTabs = () => {
               </div>
               <div>
                 <h2 className="font-semibold text-gray-900">Bantu Hive</h2>
-                <p className="text-xs text-gray-500">{user?.full_name}'s Account</p>
+                <p className="text-xs text-gray-500">
+                  {user?.full_name}'s Account
+                </p>
               </div>
             </div>
           </div>
@@ -506,7 +510,9 @@ const ProfileTabs = () => {
                 </div>
                 <div>
                   <h2 className="font-semibold text-gray-900">Bantu Hive</h2>
-                  <p className="text-xs text-gray-500">{user?.full_name}'s Account</p>
+                  <p className="text-xs text-gray-500">
+                    {user?.full_name}'s Account
+                  </p>
                 </div>
               </div>
             </div>
@@ -571,7 +577,7 @@ const ProfileTabs = () => {
                                 className={`flex items-center justify-between w-full px-3 py-2 text-sm rounded-lg transition-all duration-200 group relative ${
                                   isActive
                                     ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-600'
-                                  : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                    : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                                 } ${isOnboarding ? 'ring-2 ring-green-400' : ''}`}
                               >
                                 <div className="flex items-center space-x-3">
