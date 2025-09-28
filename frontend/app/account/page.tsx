@@ -706,7 +706,7 @@ const ProfileTabs = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="flex-1 overflow-auto px-3 py-4">
+          <div className="flex-1 overflow-auto px-4 py-4">
             <div role="tabpanel" className="min-h-full">
               {allTabs.find((tab) => tab.label === activeTab)?.component || (
                 <Dashboard />
