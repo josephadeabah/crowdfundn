@@ -141,7 +141,7 @@ const ProfileTabs = () => {
           label: 'Pledges',
           icon: <IoGitPullRequest className="w-4 h-4" />,
           component: <PledgesListPage />,
-          description: 'View and manage your investment pledges.',
+          description: 'View and manage your supporter pledges.',
         },
         {
           label: 'Updates',
