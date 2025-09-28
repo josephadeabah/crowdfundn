@@ -14,7 +14,7 @@ import { Button } from '../components/button/Button';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import Pagination from '../components/pagination/Pagination';
 import { useAuth } from '../context/auth/AuthContext';
-import { FaCheckCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaUsers } from 'react-icons/fa';
 import ToastComponent from '../components/toast/Toast';
 import { EquityInvestment } from '../types/equityCampaigns.types';
 import { Badge } from '../components/ui/badge';
@@ -380,6 +380,110 @@ export default function Donations() {
     return <ErrorPage />;
   }
 
+  if (totalItems === 0) {
+    return (
+      <div className="px-2 py-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Backer List
+            <p className="text-gray-500 text-xs font-medium">
+              Send Thank You to your Backers
+            </p>
+          </h2>
+          <div className="flex gap-2">
+            <select
+              value={backerType}
+              onChange={(e) => {
+                setBackerType(
+                  e.target.value as 'donation' | 'equity_investment',
+                );
+                setCurrentPage(1);
+                setSelectedBackers([]);
+              }}
+              className="p-2 border border-gray-300 rounded-md"
+            >
+              <option value="donation">Donations</option>
+              <option value="equity_investment">Investments</option>
+            </select>
+
+            {backerType === 'donation' && (
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setCurrentPage(1);
+                  setSelectedBackers([]);
+                }}
+                className="p-2 border border-gray-300 rounded-md"
+              >
+                <option value="all">All Statuses</option>
+                <option value="successful">Successful</option>
+                <option value="pending">Pending</option>
+                <option value="failed">Failed</option>
+                <option value="refunded">Refunded</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="processing">Processing</option>
+              </select>
+            )}
+
+            <Popover>
+              <PopoverTrigger>
+                <Button size="icon" variant="outline" className="rounded-full">
+                  <DotsVerticalIcon />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-fit">
+                <div className="p-4">
+                  <p className="mb-2 font-semibold">Filter Backers:</p>
+                  <RadioGroup
+                    className="flex flex-col gap-2"
+                    value={filter}
+                    onValueChange={(value) => {
+                      setFilter(value as 'all' | 'specific');
+                      setSelectedBackers([]);
+                    }}
+                  >
+                    <label className="flex items-center space-x-2">
+                      <RadioGroupItem value="all" />
+                      <span>All</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <RadioGroupItem value="specific" />
+                      <span>Specific People</span>
+                    </label>
+                  </RadioGroup>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        {/* Beautiful Empty State - Consistent with Favorites */}
+        <div className="text-center p-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+          <div className="text-gray-400 mb-4">
+            <FaUsers className="w-16 h-16 mx-auto opacity-50" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-600 mb-2">
+            No {backerType === 'donation' ? 'donations' : 'investments'} yet
+          </h3>
+          <p className="text-gray-500 max-w-md mx-auto mb-6">
+            {backerType === 'donation'
+              ? 'When you receive donations for your campaigns, they will appear here for you to manage and send thank you messages.'
+              : 'When investors support your equity campaigns, their investments will show up here for you to track and acknowledge.'}
+          </p>
+        </div>
+
+        <ToastComponent
+          isOpen={toastOpen}
+          onClose={() => setToastOpen(false)}
+          title={toastTitle}
+          description={toastDescription}
+          type={toastType}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="px-2 py-4">
       <div className="flex justify-between items-center mb-4">
@@ -455,125 +559,107 @@ export default function Donations() {
         </div>
       </div>
 
-      {totalItems === 0 ? (
-        <div className="text-center text-lg text-gray-600">
-          You have not received any{' '}
-          {backerType === 'donation' ? 'donations' : 'investments'} yet.
-        </div>
-      ) : (
-        <>
-          <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
-            <table className="min-w-full bg-white rounded-lg shadow-md">
-              <thead>
-                <tr className="text-left bg-gray-200 text-gray-800">
-                  {filter === 'specific' && (
-                    <th className="py-3 px-4">Select</th>
-                  )}
-                  <th className="py-3 px-4">Backer Name</th>
-                  <th className="py-3 px-4">Amount</th>
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4">Campaign Title</th>
-                  <th className="py-3 px-4">Type</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {backerType === 'donation'
-                  ? donations.map((donation) => {
-                      const campaign =
-                        donation.metadata?.campaign_metadata || {};
-                      const backerId = `donation_${donation.id}`;
-                      const canSendThankYou = donation.status === 'successful';
-                      const isAnonymous =
-                        donation.anonymous ||
-                        donation.full_name === 'Anonymous';
+      <div className="overflow-x-auto [&::-moz-scrollbar-thumb]:rounded-full [&::-moz-scrollbar-thumb]:bg-gray-200 [&::-moz-scrollbar-track]:m-1 [&::-moz-scrollbar]:w-1 [&::-ms-scrollbar-thumb]:rounded-full [&::-ms-scrollbar-thumb]:bg-gray-200 [&::-ms-scrollbar-track]:m-1 [&::-ms-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:m-1 [&::-webkit-scrollbar]:w-2">
+        <table className="min-w-full bg-white rounded-lg shadow-md">
+          <thead>
+            <tr className="text-left bg-gray-200 text-gray-800">
+              {filter === 'specific' && <th className="py-3 px-4">Select</th>}
+              <th className="py-3 px-4">Backer Name</th>
+              <th className="py-3 px-4">Amount</th>
+              <th className="py-3 px-4">Date</th>
+              <th className="py-3 px-4">Campaign Title</th>
+              <th className="py-3 px-4">Type</th>
+              <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {backerType === 'donation'
+              ? donations.map((donation) => {
+                  const campaign = donation.metadata?.campaign_metadata || {};
+                  const backerId = `donation_${donation.id}`;
+                  const canSendThankYou = donation.status === 'successful';
+                  const isAnonymous =
+                    donation.anonymous || donation.full_name === 'Anonymous';
 
-                      return (
-                        <BackerRow
-                          key={backerId}
-                          backerId={backerId}
-                          type="donation"
-                          backerName={
-                            isAnonymous
-                              ? 'Anonymous'
-                              : donation.full_name || 'Anonymous'
-                          }
-                          amount={parseFloat(donation.gross_amount.toString())}
-                          currency={
-                            campaign.currency ||
-                            campaign.currency_symbol ||
-                            'GHS'
-                          }
-                          date={new Date(
-                            donation.created_at,
-                          ).toLocaleDateString()}
-                          campaignTitle={campaign.title || 'No Title'}
-                          status={donation.status}
-                          filter={filter}
-                          isSelected={selectedBackers.includes(backerId)}
-                          onToggle={() => toggleBackerSelection(backerId)}
-                          onSendThankYou={handleSendThankYou}
-                          canSendThankYou={canSendThankYou}
-                        />
-                      );
-                    })
-                  : investments.map((investment) => {
-                      const campaign = investment.campaign || {};
-                      const backerId = `investment_${investment.id}`;
-                      const canSendThankYou =
-                        investment.status === 'successful';
+                  return (
+                    <BackerRow
+                      key={backerId}
+                      backerId={backerId}
+                      type="donation"
+                      backerName={
+                        isAnonymous
+                          ? 'Anonymous'
+                          : donation.full_name || 'Anonymous'
+                      }
+                      amount={parseFloat(donation.gross_amount.toString())}
+                      currency={
+                        campaign.currency || campaign.currency_symbol || 'GHS'
+                      }
+                      date={new Date(donation.created_at).toLocaleDateString()}
+                      campaignTitle={campaign.title || 'No Title'}
+                      status={donation.status}
+                      filter={filter}
+                      isSelected={selectedBackers.includes(backerId)}
+                      onToggle={() => toggleBackerSelection(backerId)}
+                      onSendThankYou={handleSendThankYou}
+                      canSendThankYou={canSendThankYou}
+                    />
+                  );
+                })
+              : investments.map((investment) => {
+                  const campaign = investment.campaign || {};
+                  const backerId = `investment_${investment.id}`;
+                  const canSendThankYou = investment.status === 'successful';
 
-                      return (
-                        <BackerRow
-                          key={backerId}
-                          backerId={backerId}
-                          type="equity_investment"
-                          backerName={investment.full_name || 'Anonymous'}
-                          amount={parseFloat(investment.amount.toString())}
-                          currency={
-                            campaign.currency ||
-                            campaign.currency_symbol ||
-                            investment.currency ||
-                            investment.currency_symbol ||
-                            'GHS'
-                          }
-                          date={new Date(
-                            investment.created_at,
-                          ).toLocaleDateString()}
-                          campaignTitle={campaign.title || 'No Title'}
-                          status={investment.status}
-                          filter={filter}
-                          isSelected={selectedBackers.includes(backerId)}
-                          onToggle={() => toggleBackerSelection(backerId)}
-                          onSendThankYou={handleSendThankYou}
-                          canSendThankYou={canSendThankYou}
-                        />
-                      );
-                    })}
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-6">
-            <Button
-              onClick={handleSendThankYouEmails}
-              disabled={!isThankYouButtonEnabled}
-              className="w-full"
-              variant="outline"
-            >
-              {filter === 'all'
-                ? `Send Thank You to All Successful ${backerType === 'donation' ? 'Donations' : 'Investments'}`
-                : 'Send Thank You to Selected'}
-            </Button>
-          </div>
-          {currentPagination.total_pages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={currentPagination.total_pages}
-              onPageChange={handlePageChange}
-            />
-          )}
-        </>
+                  return (
+                    <BackerRow
+                      key={backerId}
+                      backerId={backerId}
+                      type="equity_investment"
+                      backerName={investment.full_name || 'Anonymous'}
+                      amount={parseFloat(investment.amount.toString())}
+                      currency={
+                        campaign.currency ||
+                        campaign.currency_symbol ||
+                        investment.currency ||
+                        investment.currency_symbol ||
+                        'GHS'
+                      }
+                      date={new Date(
+                        investment.created_at,
+                      ).toLocaleDateString()}
+                      campaignTitle={campaign.title || 'No Title'}
+                      status={investment.status}
+                      filter={filter}
+                      isSelected={selectedBackers.includes(backerId)}
+                      onToggle={() => toggleBackerSelection(backerId)}
+                      onSendThankYou={handleSendThankYou}
+                      canSendThankYou={canSendThankYou}
+                    />
+                  );
+                })}
+          </tbody>
+        </table>
+      </div>
+      <div className="mt-6">
+        <Button
+          onClick={handleSendThankYouEmails}
+          disabled={!isThankYouButtonEnabled}
+          className="w-full"
+          variant="outline"
+        >
+          {filter === 'all'
+            ? `Send Thank You to All Successful ${backerType === 'donation' ? 'Donations' : 'Investments'}`
+            : 'Send Thank You to Selected'}
+        </Button>
+      </div>
+      {currentPagination.total_pages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={currentPagination.total_pages}
+          onPageChange={handlePageChange}
+        />
       )}
 
       <ToastComponent
