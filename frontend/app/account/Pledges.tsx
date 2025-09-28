@@ -173,12 +173,6 @@ const PledgesListPage = () => {
             When supporters pledge to your campaigns with rewards, their pledges
             will appear here for you to manage, fulfill, and track shipping.
           </p>
-          <Button
-            onClick={() => (window.location.href = '/campaigns/create')}
-            className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105"
-          >
-            Create a Campaign with Rewards
-          </Button>
         </div>
       </div>
     );
