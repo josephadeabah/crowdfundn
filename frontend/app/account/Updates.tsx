@@ -1,6 +1,12 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { FiChevronDown, FiAlertCircle, FiPlus, FiTrash2 } from 'react-icons/fi';
+import {
+  FiChevronDown,
+  FiAlertCircle,
+  FiPlus,
+  FiTrash2,
+  FiMessageSquare,
+} from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import { useCampaignUpdatesContext } from '@/app/context/account/updates/CampaignUpdatesContext';
@@ -8,6 +14,7 @@ import { truncateTitle } from '../utils/helpers/truncate.title';
 import CampaignUpdatesLoader from '../loaders/CampaignsUpdateLoader';
 import ErrorPage from '../components/errorpage/ErrorPage';
 import AlertPopup from '../components/alertpopup/AlertPopup';
+import { Button } from '@/app/components/ui/button';
 
 interface FormData {
   content: string;
@@ -96,6 +103,11 @@ const CampaignUpdates: React.FC = () => {
   if (loading) return <CampaignUpdatesLoader />;
   if (error) return <ErrorPage />;
 
+  // Check if there are any campaigns with updates
+  const hasUpdates = userCampaigns?.some(
+    (campaign) => campaign.updates && campaign.updates.length > 0,
+  );
+
   return (
     <div className="max-w-7xl mx-auto px-2 py-4">
       <AlertPopup
@@ -107,7 +119,9 @@ const CampaignUpdates: React.FC = () => {
         onCancel={() => setUpdateToDelete(null)}
       />
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-gray-800">Updates</h2>
+        <h2 className="text-2xl font-semibold text-gray-800">
+          Campaign Updates
+        </h2>
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
@@ -119,6 +133,7 @@ const CampaignUpdates: React.FC = () => {
       <div className="text-gray-500 mb-4">
         Keep your supporters updated on the progress of your campaign
       </div>
+
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
@@ -214,50 +229,73 @@ const CampaignUpdates: React.FC = () => {
 
       {/* Updates Display */}
       <div>
-        {userCampaigns?.every((campaign) => campaign.updates.length === 0) ? (
-          <p className="text-gray-500 text-lg">
-            You have not created any updates yet!
-          </p>
+        {!hasUpdates ? (
+          // Beautiful Empty State - Consistent with other pages
+          <div className="text-center p-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mt-6">
+            <div className="text-gray-400 mb-4">
+              <FiMessageSquare className="w-16 h-16 mx-auto opacity-50" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">
+              No updates yet
+            </h3>
+            <p className="text-gray-500 max-w-md mx-auto mb-6">
+              Keep your supporters engaged by sharing regular updates about your
+              campaign progress, milestones, and behind-the-scenes stories.
+              Updates help build trust and maintain momentum.
+            </p>
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105"
+            >
+              Create Your First Update
+            </Button>
+          </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {userCampaigns?.map((campaign) => (
-              <motion.div
-                key={campaign.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white p-6 rounded-lg shadow-md"
-              >
-                <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                  {campaign.title}
-                </h2>
-                <div className="space-y-4">
-                  {campaign.updates.map((update) => (
-                    <motion.div
-                      key={update.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="border-l-4 border-orange-400 pl-4 py-2 flex items-center"
-                    >
-                      <div className="flex-grow">
-                        <p className="text-gray-600 mt-1">{update.content}</p>
-                      </div>
-                      <div className="flex-shrink-0 ml-2">
-                        <FiTrash2
-                          className="cursor-pointer text-red-600"
-                          onClick={() =>
-                            openDeleteConfirmation(
-                              String(campaign.id),
-                              String(update.id),
-                            )
-                          }
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
+            {userCampaigns?.map(
+              (campaign) =>
+                campaign.updates &&
+                campaign.updates.length > 0 && (
+                  <motion.div
+                    key={campaign.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-white p-6 rounded-lg shadow-md"
+                  >
+                    <h2 className="text-xl font-semibold mb-4 text-gray-800">
+                      {campaign.title}
+                    </h2>
+                    <div className="space-y-4">
+                      {campaign.updates.map((update) => (
+                        <motion.div
+                          key={update.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="border-l-4 border-orange-400 pl-4 py-2 flex items-center"
+                        >
+                          <div className="flex-grow">
+                            <p className="text-gray-600 mt-1">
+                              {update.content}
+                            </p>
+                          </div>
+                          <div className="flex-shrink-0 ml-2">
+                            <FiTrash2
+                              className="cursor-pointer text-red-600"
+                              onClick={() =>
+                                openDeleteConfirmation(
+                                  String(campaign.id),
+                                  String(update.id),
+                                )
+                              }
+                            />
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                ),
+            )}
           </div>
         )}
       </div>
