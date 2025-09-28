@@ -1,3 +1,4 @@
+// TeamSection.tsx
 import React from 'react';
 import { TeamMemberCard } from './TeamMemberCard';
 
@@ -26,9 +27,9 @@ export const TeamSection = ({
 }: TeamSectionProps) => {
   const getGridCols = () => {
     if (level === 'board') {
-      return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+      return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
     }
-    return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+    return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
   };
 
   return (
@@ -46,7 +47,7 @@ export const TeamSection = ({
         )}
       </div>
 
-      <div className={`grid ${getGridCols()} gap-8 max-w-7xl mx-auto`}>
+      <div className={`grid ${getGridCols()} gap-6 max-w-7xl mx-auto`}>
         {members.map((member) => (
           <TeamMemberCard
             key={member.id}

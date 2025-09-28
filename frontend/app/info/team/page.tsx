@@ -204,7 +204,7 @@ const Teams = () => {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Board of Directors */}
         <TeamSection
           title="Board of Directors"

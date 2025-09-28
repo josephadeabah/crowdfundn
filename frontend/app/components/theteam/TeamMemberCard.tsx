@@ -1,3 +1,4 @@
+// TeamMemberCard.tsx
 import { Mail, Linkedin } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 
@@ -31,30 +32,26 @@ export const TeamMemberCard = ({
     }
   };
 
-  const getImageSize = () => {
-    return level === 'board' ? 'w-32 h-32' : 'w-24 h-24';
-  };
-
   return (
     <div
       className={`
       ${getCardStyles()}
       p-6 rounded-lg transition-all duration-300 ease-smooth group cursor-pointer
       ${level === 'board' ? 'hover:border-primary/30' : 'hover:border-primary/20'}
+      flex flex-col h-full
     `}
     >
-      <div className="flex flex-col items-center text-center space-y-4">
-        <div
-          className={`${getImageSize()} rounded-full overflow-hidden ring-4 ring-white shadow-subtle`}
-        >
+      <div className="flex flex-col items-center text-center space-y-4 flex-1">
+        {/* Rectangular Image Container */}
+        <div className="w-full aspect-[3/4] overflow-hidden rounded-lg shadow-subtle group-hover:shadow-card transition-shadow duration-300">
           <img
             src={image}
             alt={`${name} headshot`}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 flex-1 flex flex-col justify-center">
           <h3
             className={`font-semibold text-foreground ${level === 'board' ? 'text-xl' : 'text-lg'}`}
           >
