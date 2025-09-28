@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaShare, FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import { Button } from '@/app/components/button/Button';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
 import { LoginUserType } from '../types/auth.login.types';
+import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 
 interface CampaignShareSectionProps {
   campaign: SingleCampaignResponseDataType | null;
@@ -21,7 +22,13 @@ const CampaignShareSection: React.FC<CampaignShareSectionProps> = ({
 }) => {
   const [copyButtonText, setCopyButtonText] = useState<string>('Copy');
   const [error, setError] = useState<string | null>(null);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(campaign?.favorited || false);
+  const { favoriteCampaign, unfavoriteCampaign } = useCampaignContext();
+
+  // Sync with campaign prop changes
+  useEffect(() => {
+    setIsFavorited(campaign?.favorited || false);
+  }, [campaign?.favorited]);
 
   const stripHtmlTags = (html: string): string => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -77,15 +84,9 @@ const CampaignShareSection: React.FC<CampaignShareSectionProps> = ({
     }
   };
 
-  const toggleFavorite = () => {
-    if (isFavorite) {
-      handleUnfavorite(String(campaign?.id));
-    } else {
-      handleFavorite(String(campaign?.id));
-    }
-  };
+  const handleFavoriteClick = async () => {
+    if (!campaign?.id) return;
 
-  const handleFavorite = async (campaignId: string) => {
     if (!user) {
       showToast(
         'Error',
@@ -94,21 +95,20 @@ const CampaignShareSection: React.FC<CampaignShareSectionProps> = ({
       );
       return;
     }
-    setIsFavorite(true);
-    showToast('Success', 'Campaign added to favorites', 'success');
-  };
 
-  const handleUnfavorite = async (campaignId: string) => {
-    if (!user) {
-      showToast(
-        'Error',
-        'You must log in first to add to your favorite and track campaign progress.',
-        'error',
-      );
-      return;
+    try {
+      if (isFavorited) {
+        await unfavoriteCampaign(String(campaign.id));
+        setIsFavorited(false);
+        showToast('Success', 'Campaign removed from favorites', 'success');
+      } else {
+        await favoriteCampaign(String(campaign.id));
+        setIsFavorited(true);
+        showToast('Success', 'Campaign added to favorites', 'success');
+      }
+    } catch (error) {
+      showToast('Error', 'Failed to update favorite status', 'error');
     }
-    setIsFavorite(false);
-    showToast('Success', 'Campaign removed from favorites', 'success');
   };
 
   return (
@@ -133,16 +133,16 @@ const CampaignShareSection: React.FC<CampaignShareSectionProps> = ({
             {copyButtonText}
           </Button>
           <Button
-            onClick={toggleFavorite}
+            onClick={handleFavoriteClick}
             variant="outline"
             className="flex items-center justify-center bg-white hover:text-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 shadow-none"
           >
-            {isFavorite ? (
+            {isFavorited ? (
               <FaBookmark className="mr-2 text-emerald-500" />
             ) : (
               <FaRegBookmark className="mr-2" />
             )}
-            Watch For Updates
+            {isFavorited ? 'Watching For Updates' : 'Watch For Updates'}
           </Button>
         </div>
         {error && <p className="text-red-500 text-sm mt-3">{error}</p>}

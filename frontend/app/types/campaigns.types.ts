@@ -238,6 +238,7 @@ export interface SingleCampaignResponseDataType {
   updated_at: string;
   media: string;
   media_filename: string;
+  favorited: boolean;
   total_shares: string;
   total_social_media_shares: string; // social sharing total count
   total_equity_shares: string;
