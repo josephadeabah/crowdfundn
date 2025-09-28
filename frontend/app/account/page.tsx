@@ -8,11 +8,10 @@ import {
   RocketIcon,
   StarIcon,
   MaskOffIcon,
-  GroupIcon,
   PersonIcon,
   BarChartIcon,
   HeartIcon,
-  CubeIcon,
+  GroupIcon,
   DropdownMenuIcon,
   Cross1Icon,
 } from '@radix-ui/react-icons';
@@ -460,7 +459,7 @@ const ProfileTabs = () => {
             </button>
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
-                <CubeIcon className="w-5 h-5 text-white" />
+                <GroupIcon className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h2 className="font-semibold text-gray-900">Bantu Hive</h2>
@@ -501,7 +500,7 @@ const ProfileTabs = () => {
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
-                  <CubeIcon className="w-5 h-5 text-white" />
+                  <GroupIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <h2 className="font-semibold text-gray-900">Bantu Hive</h2>
