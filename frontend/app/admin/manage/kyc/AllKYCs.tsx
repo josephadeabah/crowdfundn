@@ -33,6 +33,7 @@ import {
   DropdownMenuTrigger,
 } from '@/app/components/ui/dropdown-menu';
 import { Badge } from '@/app/components/ui/badge';
+import { Textarea } from '@/app/components/ui/textarea';
 import {
   Search,
   Filter,
@@ -48,10 +49,21 @@ import {
   RefreshCw,
   FileDown,
   Shield,
+  Mail,
+  Calendar,
+  MapPin,
+  FileQuestion,
+  Check,
+  X,
+  FileCheck,
+  AlertTriangle,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import ToastComponent from '@/app/components/toast/Toast';
 import Pagination from '@/app/components/pagination/Pagination';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 
 interface KYC {
   id: number;
@@ -59,8 +71,42 @@ interface KYC {
   kyc_type: string;
   status: string;
   verification_type: string;
+  id_number: string;
+  date_of_birth: string;
+  nationality: string;
+  occupation: string;
+  source_of_funds: string;
+  business_name: string;
+  business_registration_number: string;
+  business_tax_id: string;
+  business_industry: string;
+  business_established_date: string;
+  accredited_investor: boolean;
+  nominee_agreement_accepted: boolean;
+  risk_acknowledgment: boolean;
+  terms_accepted: boolean;
+  data_consent: boolean;
   created_at: string;
   updated_at: string;
+  verified_at: string;
+  rejection_reason: string;
+  addresses: Array<{
+    id: number;
+    address_type: string;
+    street: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: string;
+    is_primary: boolean;
+  }>;
+  documents: Array<{
+    id: number;
+    document_type: string;
+    file_name: string;
+    file_url: string;
+    verification_status: string;
+  }>;
   user: {
     id: number;
     email: string;
@@ -71,7 +117,7 @@ interface KYC {
 interface PaginationMeta {
   current_page: number;
   next_page: number | null;
-  prev_page: number | null;
+  prev_page: null;
   total_pages: number;
   total_count: number;
   per_page: number;
@@ -101,6 +147,14 @@ const AllKYCs = () => {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedKyc, setExpandedKyc] = useState<number | null>(null);
+  const [selectedKyc, setSelectedKyc] = useState<KYC | null>(null);
+  const [actionDialog, setActionDialog] = useState<{
+    open: boolean;
+    action: 'verify' | 'reject' | 'request_info' | null;
+  }>({ open: false, action: null });
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [reviewNotes, setReviewNotes] = useState('');
 
   // Toast states
   const [toast, setToast] = useState({
@@ -198,6 +252,35 @@ const AllKYCs = () => {
     }
   };
 
+  const updateKYCStatus = async (kycId: number, action: string, data?: any) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/${kycId}/${action}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to update KYC status');
+      }
+
+      showToast('Success', `KYC has been ${action}ed successfully`, 'success');
+      fetchKYCs(currentPage, filters);
+      setActionDialog({ open: false, action: null });
+      setRejectionReason('');
+      setReviewNotes('');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      showToast('Error', errorMessage, 'error');
+    }
+  };
+
   useEffect(() => {
     fetchKYCs(currentPage, filters);
   }, [currentPage, filters]);
@@ -236,12 +319,25 @@ const AllKYCs = () => {
     showToast('Refreshed', 'KYC list has been refreshed', 'success');
   };
 
+  const toggleExpand = (kycId: number) => {
+    setExpandedKyc(expandedKyc === kycId ? null : kycId);
+  };
+
+  const handleAction = async () => {
+    if (!selectedKyc || !actionDialog.action) return;
+
+    await updateKYCStatus(selectedKyc.id, actionDialog.action, {
+      rejection_reason: actionDialog.action === 'reject' ? rejectionReason : undefined,
+      review_notes: actionDialog.action === 'verify' ? reviewNotes : undefined,
+    });
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { variant: 'secondary', icon: Clock, color: 'text-amber-500' },
       in_review: { variant: 'default', icon: Eye, color: 'text-blue-500' },
       verified: {
-        variant: 'success',
+        variant: 'default',
         icon: CheckCircle,
         color: 'text-green-500',
       },
@@ -290,6 +386,180 @@ const AllKYCs = () => {
     };
 
     return labels[kycType as keyof typeof labels] || kycType;
+  };
+
+  // Helper function to display boolean declarations
+  const renderDeclarationStatus = (value: boolean) => (
+    <span
+      className={`flex items-center ${value ? 'text-green-600' : 'text-red-600'}`}
+    >
+      {value ? (
+        <Check className="h-4 w-4 mr-1" />
+      ) : (
+        <X className="h-4 w-4 mr-1" />
+      )}
+      {value ? 'Accepted' : 'Not Accepted'}
+    </span>
+  );
+
+  // Component to show declarations section
+  const DeclarationsSection = ({ kyc }: { kyc: KYC }) => {
+    const declarations = [
+      {
+        label: 'Accredited Investor',
+        value: kyc.accredited_investor,
+        required: false,
+        description: 'User declared as accredited investor',
+      },
+      {
+        label: 'Nominee Agreement',
+        value: kyc.nominee_agreement_accepted,
+        required: false,
+        description: 'Accepted nominee agreement terms',
+      },
+      {
+        label: 'Risk Acknowledgment',
+        value: kyc.risk_acknowledgment,
+        required: true,
+        description: 'Acknowledged investment risks',
+      },
+      {
+        label: 'Terms & Conditions',
+        value: kyc.terms_accepted,
+        required: true,
+        description: 'Accepted platform terms and conditions',
+      },
+      {
+        label: 'Data Processing Consent',
+        value: kyc.data_consent,
+        required: true,
+        description: 'Consented to data processing',
+      },
+    ];
+
+    const requiredDeclarations = declarations.filter((d) => d.required);
+    const optionalDeclarations = declarations.filter((d) => !d.required);
+    const allRequiredAccepted = requiredDeclarations.every((d) => d.value);
+
+    return (
+      <div className="mt-4">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="font-medium flex items-center">
+            <FileCheck className="h-4 w-4 mr-2 text-blue-600" />
+            Declarations & Agreements
+          </h4>
+          <Badge
+            variant={allRequiredAccepted ? 'default' : 'destructive'}
+            className={
+              allRequiredAccepted
+                ? 'bg-green-100 text-green-800 hover:bg-green-100 border-green-200'
+                : ''
+            }
+          >
+            {allRequiredAccepted ? 'All Required Accepted' : 'Missing Required'}
+          </Badge>
+        </div>
+
+        {/* Required Declarations */}
+        <div className="mb-4">
+          <h5 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <Shield className="h-3 w-3 mr-1 text-red-500" />
+            Required Declarations
+          </h5>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {requiredDeclarations.map((declaration, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-2 border rounded-lg"
+              >
+                <div>
+                  <div className="font-medium text-sm">{declaration.label}</div>
+                  <div className="text-xs text-gray-500">
+                    {declaration.description}
+                  </div>
+                </div>
+                {renderDeclarationStatus(declaration.value)}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Optional Declarations */}
+        {optionalDeclarations.some((d) => d.value) && (
+          <div>
+            <h5 className="text-sm font-medium text-gray-700 mb-2">
+              Optional Declarations
+            </h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {optionalDeclarations.map((declaration, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-2 border rounded-lg"
+                >
+                  <div>
+                    <div className="font-medium text-sm">
+                      {declaration.label}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {declaration.description}
+                    </div>
+                  </div>
+                  {renderDeclarationStatus(declaration.value)}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Warning for missing required declarations */}
+        {!allRequiredAccepted && (
+          <div className="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <div className="flex items-center">
+              <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
+              <span className="text-sm text-yellow-700 font-medium">
+                User has not accepted all required declarations
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const DocumentSection = ({ kyc }: { kyc: KYC }) => {
+    return (
+      <div className="mt-4">
+        <h4 className="font-medium mb-3">Verification Documents</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {kyc.documents?.map((document) => (
+            <div key={document.id} className="border rounded-lg p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium capitalize">
+                  {document.document_type.replace('_', ' ')}
+                </span>
+                <Badge variant="outline" className="text-xs">
+                  {document.verification_status}
+                </Badge>
+              </div>
+              <div className="text-sm text-gray-600 mb-2">
+                {document.file_name || 'No file uploaded'}
+              </div>
+              {document.file_url && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(document.file_url, '_blank')}
+                  className="w-full"
+                >
+                  <Download className="h-3 w-3 mr-1" />
+                  Download
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   if (error) {
@@ -447,6 +717,7 @@ const AllKYCs = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12"></TableHead>
                   <TableHead>Reference</TableHead>
                   <TableHead>User</TableHead>
                   <TableHead>Type</TableHead>
@@ -460,7 +731,7 @@ const AllKYCs = () => {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={9} className="text-center py-8">
                       <div className="flex items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                         <span className="ml-3">Loading KYC records...</span>
@@ -469,7 +740,7 @@ const AllKYCs = () => {
                   </TableRow>
                 ) : kycs.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={9} className="text-center py-8">
                       <div className="text-muted-foreground">
                         {Object.keys(filters).length > 0
                           ? 'No KYC records match your filters'
@@ -478,94 +749,272 @@ const AllKYCs = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  kycs.map((kyc) => (
-                    <TableRow key={kyc.id}>
-                      <TableCell className="font-mono text-sm">
-                        {kyc.reference}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">
-                            {kyc.user?.full_name || 'Unknown User'}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {kyc.user?.email || 'No email'}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            ID: {kyc.user?.id}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {getKycTypeIcon(kyc.kyc_type)}
-                          <span>{getKycTypeLabel(kyc.kyc_type)}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="capitalize">
-                          {kyc.verification_type?.replace('_', ' ') || 'N/A'}
-                        </span>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(kyc.status)}</TableCell>
-                      <TableCell>
-                        {kyc.created_at
-                          ? format(new Date(kyc.created_at), 'MMM dd, yyyy')
-                          : 'N/A'}
-                      </TableCell>
-                      <TableCell>
-                        {kyc.updated_at
-                          ? format(new Date(kyc.updated_at), 'MMM dd, yyyy')
-                          : 'N/A'}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
+                  kycs.map((kyc) => {
+                    const isExpanded = expandedKyc === kyc.id;
+                    const residentialAddress = kyc.addresses?.find(
+                      (addr) => addr.address_type === 'residential',
+                    );
+
+                    return (
+                      <React.Fragment key={kyc.id}>
+                        {/* Main Table Row */}
+                        <TableRow className="cursor-pointer hover:bg-gray-50">
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => toggleExpand(kyc.id)}
+                              className="h-8 w-8"
+                            >
+                              {isExpanded ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4" />
+                              )}
                             </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => {
-                                window.open(
-                                  `/admin/manage/kyc/${kyc.id}`,
-                                  '_blank',
-                                );
-                              }}
-                            >
-                              <Eye className="h-4 w-4 mr-2" />
-                              View Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                // Open user profile
-                                window.open(
-                                  `/admin/users/${kyc.user?.id}`,
-                                  '_blank',
-                                );
-                              }}
-                            >
-                              <User className="h-4 w-4 mr-2" />
-                              View User Profile
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                // Download documents
-                                window.open(
-                                  `/admin/kyc/${kyc.id}/documents`,
-                                  '_blank',
-                                );
-                              }}
-                            >
-                              <Download className="h-4 w-4 mr-2" />
-                              Download Documents
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                          </TableCell>
+                          <TableCell className="font-mono text-sm">
+                            {kyc.reference}
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">
+                                {kyc.user?.full_name || 'Unknown User'}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {kyc.user?.email || 'No email'}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                ID: {kyc.user?.id}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              {getKycTypeIcon(kyc.kyc_type)}
+                              <span>{getKycTypeLabel(kyc.kyc_type)}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="capitalize">
+                              {kyc.verification_type?.replace('_', ' ') || 'N/A'}
+                            </span>
+                          </TableCell>
+                          <TableCell>{getStatusBadge(kyc.status)}</TableCell>
+                          <TableCell>
+                            {kyc.created_at
+                              ? format(new Date(kyc.created_at), 'MMM dd, yyyy')
+                              : 'N/A'}
+                          </TableCell>
+                          <TableCell>
+                            {kyc.updated_at
+                              ? format(new Date(kyc.updated_at), 'MMM dd, yyyy')
+                              : 'N/A'}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => toggleExpand(kyc.id)}
+                                >
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  {isExpanded ? 'Hide Details' : 'View Details'}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    window.open(
+                                      `/admin/users/${kyc.user?.id}`,
+                                      '_blank',
+                                    );
+                                  }}
+                                >
+                                  <User className="h-4 w-4 mr-2" />
+                                  View User Profile
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    window.open(
+                                      `/admin/kyc/${kyc.id}/documents`,
+                                      '_blank',
+                                    );
+                                  }}
+                                >
+                                  <Download className="h-4 w-4 mr-2" />
+                                  Download Documents
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+
+                        {/* Expanded Details Row */}
+                        {isExpanded && (
+                          <TableRow>
+                            <TableCell colSpan={9} className="p-0">
+                              <div className="bg-gray-50 p-6 border-t">
+                                <div className="space-y-6">
+                                  {/* Personal Information */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                      <h4 className="font-medium mb-2">
+                                        Personal Details
+                                      </h4>
+                                      <div className="space-y-2 text-sm">
+                                        <div>
+                                          <span className="text-gray-600">
+                                            Date of Birth:
+                                          </span>{' '}
+                                          {kyc.date_of_birth
+                                            ? format(
+                                                new Date(kyc.date_of_birth),
+                                                'MMM dd, yyyy',
+                                              )
+                                            : 'Not provided'}
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">
+                                            Nationality:
+                                          </span>{' '}
+                                          {kyc.nationality || 'Not provided'}
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">
+                                            Occupation:
+                                          </span>{' '}
+                                          {kyc.occupation || 'Not provided'}
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">
+                                            Source of Funds:
+                                          </span>{' '}
+                                          {kyc.source_of_funds || 'Not provided'}
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Address Information */}
+                                    {residentialAddress && (
+                                      <div>
+                                        <h4 className="font-medium mb-2">Address</h4>
+                                        <div className="flex items-start space-x-2 text-sm">
+                                          <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
+                                          <div>
+                                            <div>{residentialAddress.street}</div>
+                                            <div>
+                                              {residentialAddress.city},{' '}
+                                              {residentialAddress.state}
+                                            </div>
+                                            <div>
+                                              {residentialAddress.country}{' '}
+                                              {residentialAddress.postal_code &&
+                                                `- ${residentialAddress.postal_code}`}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Declarations Section */}
+                                  {(kyc.kyc_type === 'investor' || kyc.kyc_type === 'both') && (
+                                    <DeclarationsSection kyc={kyc} />
+                                  )}
+
+                                  {/* Business Information (for issuers/both) */}
+                                  {kyc.kyc_type !== 'investor' && (
+                                    <div>
+                                      <h4 className="font-medium mb-2">
+                                        Business Information
+                                      </h4>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                          <span className="text-gray-600">
+                                            Business Name:
+                                          </span>{' '}
+                                          {kyc.business_name || 'Not provided'}
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">
+                                            Registration Number:
+                                          </span>{' '}
+                                          {kyc.business_registration_number ||
+                                            'Not provided'}
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">Tax ID:</span>{' '}
+                                          {kyc.business_tax_id || 'Not provided'}
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">Industry:</span>{' '}
+                                          {kyc.business_industry || 'Not provided'}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Documents Section */}
+                                  <DocumentSection kyc={kyc} />
+
+                                  {/* Action Buttons for pending reviews */}
+                                  {(kyc.status === 'pending' || kyc.status === 'in_review') && (
+                                    <div className="flex items-center justify-end space-x-2 pt-4 border-t">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                          setSelectedKyc(kyc);
+                                          setActionDialog({
+                                            open: true,
+                                            action: 'request_info',
+                                          });
+                                        }}
+                                      >
+                                        <FileQuestion className="w-4 h-4 mr-2" />
+                                        Request Info
+                                      </Button>
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => {
+                                          setSelectedKyc(kyc);
+                                          setActionDialog({
+                                            open: true,
+                                            action: 'reject',
+                                          });
+                                        }}
+                                      >
+                                        <XCircle className="w-4 h-4 mr-2" />
+                                        Reject
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        className="bg-green-600 hover:bg-green-700"
+                                        onClick={() => {
+                                          setSelectedKyc(kyc);
+                                          setActionDialog({
+                                            open: true,
+                                            action: 'verify',
+                                          });
+                                        }}
+                                      >
+                                        <CheckCircle className="w-4 h-4 mr-2" />
+                                        Verify
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
+                    );
+                  })
                 )}
               </TableBody>
             </Table>
@@ -583,6 +1032,87 @@ const AllKYCs = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Action Dialogs */}
+      <AlertPopup
+        title={
+          actionDialog.action === 'verify'
+            ? 'Verify KYC Application'
+            : actionDialog.action === 'reject'
+              ? 'Reject KYC Application'
+              : 'Request Additional Information'
+        }
+        message={
+          <div className="space-y-4">
+            <p>
+              {actionDialog.action === 'verify' &&
+                `Are you sure you want to verify ${selectedKyc?.user?.full_name || 'this user'}'s KYC application?`}
+              {actionDialog.action === 'reject' &&
+                `Please provide a reason for rejecting ${selectedKyc?.user?.full_name || 'this user'}'s KYC application.`}
+              {actionDialog.action === 'request_info' &&
+                `Request additional information from ${selectedKyc?.user?.full_name || 'the user'}.`}
+            </p>
+
+            {actionDialog.action === 'verify' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Review Notes (Optional)
+                </label>
+                <Textarea
+                  placeholder="Add any notes about this verification..."
+                  value={reviewNotes}
+                  onChange={(e) => setReviewNotes(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            )}
+
+            {actionDialog.action === 'reject' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Reason for Rejection *
+                </label>
+                <Textarea
+                  placeholder="Provide a clear reason for rejection..."
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  rows={4}
+                  required
+                />
+              </div>
+            )}
+          </div>
+        }
+        isOpen={actionDialog.open}
+        setIsOpen={(open) => {
+          setActionDialog({ open, action: null });
+          setRejectionReason('');
+          setReviewNotes('');
+        }}
+        onConfirm={handleAction}
+        onCancel={() => {
+          setActionDialog({ open: false, action: null });
+          setRejectionReason('');
+          setReviewNotes('');
+        }}
+        confirmText={
+          actionDialog.action === 'verify'
+            ? 'Verify'
+            : actionDialog.action === 'reject'
+              ? 'Reject'
+              : 'Request Info'
+        }
+        confirmDisabled={
+          actionDialog.action === 'reject' && !rejectionReason.trim()
+        }
+        confirmButtonClass={
+          actionDialog.action === 'verify'
+            ? 'bg-green-600 hover:bg-green-700'
+            : actionDialog.action === 'reject'
+              ? 'bg-red-600 hover:bg-red-700'
+              : 'bg-blue-600 hover:bg-blue-700'
+        }
+      />
     </div>
   );
 };
