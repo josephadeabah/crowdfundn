@@ -13,7 +13,7 @@ const protectedRoutes = [
   '/account/dashboard/create',
   '/account/notifications',
   '/account/messages',
-  '/info/nominee_agreement'
+  '/info/nominee_agreement',
 ];
 const adminRoutes = ['/admin', '/admin/manage'];
 const publicRoutes = ['/auth', '/auth/login', '/auth/register', '/'];

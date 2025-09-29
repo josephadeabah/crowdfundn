@@ -101,7 +101,8 @@ export const DeclarationStep: React.FC = () => {
             </FormControl>
             <div className="space-y-1 leading-none">
               <FormLabel>
-                I have read, and that I agree and accept the Nominee Agreement (optional)
+                I have read, and that I agree and accept the Nominee Agreement
+                (optional)
               </FormLabel>
               <FormDescription>
                 I acknowledge that I have read and understood the{' '}

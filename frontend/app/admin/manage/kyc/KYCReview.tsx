@@ -438,9 +438,7 @@ const KYCReview = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Pending
-                </p>
+                <p className="text-sm font-medium text-gray-600">Pending</p>
                 <p className="text-3xl font-bold text-yellow-600">
                   {stats.pending + stats.in_review}
                 </p>
@@ -456,9 +454,7 @@ const KYCReview = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total
-                </p>
+                <p className="text-sm font-medium text-gray-600">Total</p>
                 <p className="text-3xl font-bold text-green-600">
                   {stats.total}
                 </p>

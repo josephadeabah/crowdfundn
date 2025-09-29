@@ -59,6 +59,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronRight,
+  FileUp,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import ToastComponent from '@/app/components/toast/Toast';
@@ -252,6 +253,49 @@ const AllKYCs = () => {
     }
   };
 
+  // Updated function to export individual KYC using the bulk export endpoint with filtering
+  const exportIndividualKYC = async (kyc: KYC) => {
+    try {
+      // Use the bulk export endpoint but filter for this specific KYC
+      const params = new URLSearchParams({
+        search: kyc.reference, // Use reference to filter to just this one
+      });
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/kyc/kycs/export?${params}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to export individual KYC');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `kyc-${kyc.reference}-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      showToast(
+        'Success',
+        `KYC ${kyc.reference} exported successfully`,
+        'success',
+      );
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      showToast('Error', errorMessage, 'error');
+    }
+  };
+
   const updateKYCStatus = async (kycId: number, action: string, data?: any) => {
     try {
       const response = await fetch(
@@ -327,7 +371,8 @@ const AllKYCs = () => {
     if (!selectedKyc || !actionDialog.action) return;
 
     await updateKYCStatus(selectedKyc.id, actionDialog.action, {
-      rejection_reason: actionDialog.action === 'reject' ? rejectionReason : undefined,
+      rejection_reason:
+        actionDialog.action === 'reject' ? rejectionReason : undefined,
       review_notes: actionDialog.action === 'verify' ? reviewNotes : undefined,
     });
   };
@@ -797,7 +842,8 @@ const AllKYCs = () => {
                           </TableCell>
                           <TableCell>
                             <span className="capitalize">
-                              {kyc.verification_type?.replace('_', ' ') || 'N/A'}
+                              {kyc.verification_type?.replace('_', ' ') ||
+                                'N/A'}
                             </span>
                           </TableCell>
                           <TableCell>{getStatusBadge(kyc.status)}</TableCell>
@@ -826,26 +872,10 @@ const AllKYCs = () => {
                                   {isExpanded ? 'Hide Details' : 'View Details'}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                  onClick={() => {
-                                    window.open(
-                                      `/admin/users/${kyc.user?.id}`,
-                                      '_blank',
-                                    );
-                                  }}
+                                  onClick={() => exportIndividualKYC(kyc)}
                                 >
-                                  <User className="h-4 w-4 mr-2" />
-                                  View User Profile
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    window.open(
-                                      `/admin/kyc/${kyc.id}/documents`,
-                                      '_blank',
-                                    );
-                                  }}
-                                >
-                                  <Download className="h-4 w-4 mr-2" />
-                                  Download Documents
+                                  <FileUp className="h-4 w-4 mr-2" />
+                                  Export KYC File
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -892,7 +922,8 @@ const AllKYCs = () => {
                                           <span className="text-gray-600">
                                             Source of Funds:
                                           </span>{' '}
-                                          {kyc.source_of_funds || 'Not provided'}
+                                          {kyc.source_of_funds ||
+                                            'Not provided'}
                                         </div>
                                       </div>
                                     </div>
@@ -900,11 +931,15 @@ const AllKYCs = () => {
                                     {/* Address Information */}
                                     {residentialAddress && (
                                       <div>
-                                        <h4 className="font-medium mb-2">Address</h4>
+                                        <h4 className="font-medium mb-2">
+                                          Address
+                                        </h4>
                                         <div className="flex items-start space-x-2 text-sm">
                                           <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
                                           <div>
-                                            <div>{residentialAddress.street}</div>
+                                            <div>
+                                              {residentialAddress.street}
+                                            </div>
                                             <div>
                                               {residentialAddress.city},{' '}
                                               {residentialAddress.state}
@@ -921,7 +956,8 @@ const AllKYCs = () => {
                                   </div>
 
                                   {/* Declarations Section */}
-                                  {(kyc.kyc_type === 'investor' || kyc.kyc_type === 'both') && (
+                                  {(kyc.kyc_type === 'investor' ||
+                                    kyc.kyc_type === 'both') && (
                                     <DeclarationsSection kyc={kyc} />
                                   )}
 
@@ -946,12 +982,18 @@ const AllKYCs = () => {
                                             'Not provided'}
                                         </div>
                                         <div>
-                                          <span className="text-gray-600">Tax ID:</span>{' '}
-                                          {kyc.business_tax_id || 'Not provided'}
+                                          <span className="text-gray-600">
+                                            Tax ID:
+                                          </span>{' '}
+                                          {kyc.business_tax_id ||
+                                            'Not provided'}
                                         </div>
                                         <div>
-                                          <span className="text-gray-600">Industry:</span>{' '}
-                                          {kyc.business_industry || 'Not provided'}
+                                          <span className="text-gray-600">
+                                            Industry:
+                                          </span>{' '}
+                                          {kyc.business_industry ||
+                                            'Not provided'}
                                         </div>
                                       </div>
                                     </div>
@@ -961,7 +1003,8 @@ const AllKYCs = () => {
                                   <DocumentSection kyc={kyc} />
 
                                   {/* Action Buttons for pending reviews */}
-                                  {(kyc.status === 'pending' || kyc.status === 'in_review') && (
+                                  {(kyc.status === 'pending' ||
+                                    kyc.status === 'in_review') && (
                                     <div className="flex items-center justify-end space-x-2 pt-4 border-t">
                                       <Button
                                         variant="outline"
