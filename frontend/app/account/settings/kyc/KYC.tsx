@@ -203,7 +203,7 @@ const KYC = () => {
               investment/fundraising rights)
             </li>
             <li>
-              • Verification typically takes 1-2 business days to complete
+              • Verification typically takes 2-4 business days to complete
             </li>
             <li>• Your information is securely stored and protected</li>
           </ul>
