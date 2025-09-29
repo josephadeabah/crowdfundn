@@ -457,7 +457,7 @@ const KYCReview = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Applications
+                  Total
                 </p>
                 <p className="text-3xl font-bold text-green-600">
                   {stats.total}
