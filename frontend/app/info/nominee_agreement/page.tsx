@@ -6,7 +6,7 @@ const NomineeAgreement = () => {
 
   return (
     <div className="min-h-screen bg-white p-6 text-gray-800">
-      <div className="max-w-7xl mx-auto px-3">
+      <div className="max-w-7xl mx-auto px-6">
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold uppercase mb-2">
