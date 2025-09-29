@@ -21,6 +21,12 @@ class KycFrontendService
       business_tax_id: kyc.business_tax_id,
       business_industry: kyc.business_industry,
       business_established_date: kyc.business_established_date,
+      # ADD DECLARATION FIELDS HERE
+      accredited_investor: kyc.accredited_investor || false,
+      nominee_agreement_accepted: kyc.nominee_agreement_accepted || false,
+      risk_acknowledgment: kyc.risk_acknowledgment || false,
+      terms_accepted: kyc.terms_accepted || false,
+      data_consent: kyc.data_consent || false,
       addresses: kyc.kyc_addresses.map { |a| format_address(a) },
       documents: kyc.kyc_documents.map { |d| format_document(d) },
       signature_data: kyc.signature_data,
@@ -124,6 +130,12 @@ class KycFrontendService
       investor_signature_data: frontend_data[:investor_signature_data],
       issuer_signature_data: frontend_data[:issuer_signature_data],
       issuer_accepted_terms: frontend_data[:issuer_accepted_terms],
+      # ADD DECLARATION FIELDS HERE
+      accredited_investor: frontend_data[:accredited_investor] || false,
+      nominee_agreement_accepted: frontend_data[:nominee_agreement_accepted] || false,
+      risk_acknowledgment: frontend_data[:risk_acknowledgment] || false,
+      terms_accepted: frontend_data[:terms_accepted] || false,
+      data_consent: frontend_data[:data_consent] || false,
       # Add upgrade fields if present
       upgraded_from_type: frontend_data[:upgraded_from_type],
       is_upgrade: frontend_data[:is_upgrade]
