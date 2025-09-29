@@ -95,7 +95,7 @@ const NomineeAgreement = () => {
         {/* Important */}
         <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-8">
           <p className="text-sm font-medium">
-            Important: This is the final Nominee Agreement that governs your
+            Important: This is the Nominee Agreement that governs your
             investment through BantuHive Crowdfunding. By accepting this
             agreement, you authorize BantuHive Crowdfunding Nominee Ltd. to hold
             legal title to your securities while you retain full beneficial
