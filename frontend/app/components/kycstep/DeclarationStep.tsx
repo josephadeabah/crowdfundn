@@ -106,7 +106,7 @@ export const DeclarationStep: React.FC = () => {
               <FormDescription>
                 I acknowledge that I have read and understood the{' '}
                 <Link
-                  href="/nominee_agreement"
+                  href="/info/nominee_agreement"
                   target="_blank"
                   className="text-blue-600 hover:text-blue-800 underline"
                 >
