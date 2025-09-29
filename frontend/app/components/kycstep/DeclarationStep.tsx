@@ -11,6 +11,7 @@ import {
 } from '@/app/components/ui/form';
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import Link from 'next/link';
 
 export const DeclarationStep: React.FC = () => {
   const form = useFormContext();
@@ -78,6 +79,42 @@ export const DeclarationStep: React.FC = () => {
                 Guidelines 2020 will not apply; and I may be advised to engage
                 in transactions that may not be regarded as suitable for the
                 generality of investment clients.
+              </FormDescription>
+            </div>
+          </FormItem>
+        )}
+      />
+
+      {/* Optional Nominee Agreement */}
+      <FormField
+        control={form.control}
+        name="nomineeAgreement"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+            <FormControl>
+              <Checkbox
+                checked={field.value || false}
+                onCheckedChange={(checked) => {
+                  field.onChange(checked === true);
+                }}
+              />
+            </FormControl>
+            <div className="space-y-1 leading-none">
+              <FormLabel>
+                I have read and accept the Nominee Agreement (optional)
+              </FormLabel>
+              <FormDescription>
+                I acknowledge that I have read and understood the{' '}
+                <Link
+                  href="/nominee_agreement"
+                  target="_blank"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Nominee Agreement
+                </Link>{' '}
+                which governs how BantuHive Crowdfunding Nominee Ltd. will hold
+                legal title to my securities while I retain beneficial
+                ownership.
               </FormDescription>
             </div>
           </FormItem>

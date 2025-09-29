@@ -506,6 +506,8 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
     }
   };
 
+  // In your KYCProcess component, update the prepareKycData function:
+
   const prepareKycData = (): KycFormData => {
     const formattedSignature =
       signature && Array.isArray(signature) && signature.length > 0
@@ -566,6 +568,16 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
           : null,
       issuer_accepted_terms: true,
       is_non_profit: isNonProfit,
+      // ADD DECLARATION FIELDS
+      accredited_investor:
+        (formData as InvestorKYCFormData).accreditedInvestor || false,
+      nominee_agreement_accepted:
+        (formData as InvestorKYCFormData).nomineeAgreement || false,
+      risk_acknowledgment:
+        (formData as InvestorKYCFormData).riskAcknowledgment || false,
+      terms_accepted:
+        (formData as InvestorKYCFormData).termsAcceptance || false,
+      data_consent: (formData as InvestorKYCFormData).dataConsent || false,
     };
 
     if ((kycType === 'issuer' || kycType === 'both') && !isNonProfit) {

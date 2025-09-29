@@ -7,8 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
-import { FileText, CheckCircle, XCircle } from 'lucide-react';
-import { CreatorKYCFormData } from '@/app/types/kyc.type';
+import { FileText, CheckCircle, XCircle, Check, X } from 'lucide-react';
+import { CreatorKYCFormData, InvestorKYCFormData } from '@/app/types/kyc.type';
 
 interface ReviewStepProps {
   formData: any;
@@ -19,7 +19,7 @@ interface ReviewStepProps {
   };
   isCreator: boolean;
   isInvestor: boolean;
-  isBoth: boolean; // Added isBoth prop
+  isBoth: boolean;
   isMentor: boolean;
   uploadedDocuments: { [key: string]: File };
   signatureType: string;
@@ -33,7 +33,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   incorrectAnswers,
   isCreator,
   isInvestor,
-  isBoth, // Added isBoth
+  isBoth,
   isMentor,
   uploadedDocuments,
   signatureType,
@@ -42,6 +42,20 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   // Determine signature label based on signature type
   const signatureLabel =
     signatureType === 'Investor' ? 'Investment' : 'Certificate';
+
+  // Helper function to display boolean values
+  const renderBoolean = (value: boolean) => (
+    <span
+      className={`flex items-center ${value ? 'text-green-600' : 'text-gray-400'}`}
+    >
+      {value ? (
+        <Check className="h-4 w-4 mr-1" />
+      ) : (
+        <X className="h-4 w-4 mr-1" />
+      )}
+      {value ? 'Yes' : 'No'}
+    </span>
+  );
 
   return (
     <div className="space-y-6">
@@ -115,6 +129,66 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
                 <strong>Business Description:</strong>{' '}
                 {(formData as CreatorKYCFormData).businessDescription}
               </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* NEW: Declarations Card */}
+      {(isInvestor || isBoth) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Declarations & Agreements</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <strong>Accredited Investor:</strong>{' '}
+                  {renderBoolean(
+                    (formData as InvestorKYCFormData).accreditedInvestor ||
+                      false,
+                  )}
+                </div>
+                <div>
+                  <strong>Nominee Agreement Accepted:</strong>{' '}
+                  {renderBoolean(
+                    (formData as InvestorKYCFormData).nomineeAgreement || false,
+                  )}
+                </div>
+                <div>
+                  <strong>Risk Acknowledgment:</strong>{' '}
+                  {renderBoolean(
+                    (formData as InvestorKYCFormData).riskAcknowledgment ||
+                      false,
+                  )}
+                </div>
+                <div>
+                  <strong>Terms & Conditions Accepted:</strong>{' '}
+                  {renderBoolean(
+                    (formData as InvestorKYCFormData).termsAcceptance || false,
+                  )}
+                </div>
+                <div>
+                  <strong>Data Processing Consent:</strong>{' '}
+                  {renderBoolean(
+                    (formData as InvestorKYCFormData).dataConsent || false,
+                  )}
+                </div>
+              </div>
+
+              {/* Show warning if required declarations are not accepted */}
+              {(!(formData as InvestorKYCFormData).riskAcknowledgment ||
+                !(formData as InvestorKYCFormData).termsAcceptance ||
+                !(formData as InvestorKYCFormData).dataConsent) && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <p className="text-yellow-800 text-sm">
+                    <strong>Note:</strong> Some required declarations are not
+                    accepted. You'll need to accept all required declarations
+                    before submission.
+                  </p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

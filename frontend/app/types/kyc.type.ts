@@ -159,6 +159,7 @@ export type InvestorKYCFormData = BaseKYCFormData & {
   diversification: string;
   exitStrategy: string;
   accreditedInvestor: boolean;
+  nomineeAgreement?: boolean;
   riskAcknowledgment: boolean;
   termsAcceptance: boolean;
   dataConsent: boolean;
@@ -267,6 +268,7 @@ export const investorQuizSchema = z.object({
 
 export const declarationSchema = z.object({
   accreditedInvestor: z.boolean().optional().default(false),
+  nomineeAgreement: z.boolean().optional(),
   riskAcknowledgment: z
     .boolean()
     .refine((val) => val === true, 'You must acknowledge the risks'),
