@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_26_113628) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_29_103842) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -358,6 +358,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_26_113628) do
     t.string "superseded_by_type"
     t.string "upgraded_from_type"
     t.boolean "is_upgrade", default: false
+    t.boolean "accredited_investor"
+    t.boolean "nominee_agreement_accepted"
+    t.boolean "risk_acknowledgment"
+    t.boolean "terms_accepted"
+    t.boolean "data_consent"
     t.index ["business_name"], name: "index_kycs_on_business_name"
     t.index ["business_registration_number"], name: "index_kycs_on_business_registration_number"
     t.index ["business_tax_id"], name: "index_kycs_on_business_tax_id"

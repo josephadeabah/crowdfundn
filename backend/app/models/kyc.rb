@@ -1,3 +1,4 @@
+# app/models/kyc.rb
 class Kyc < ApplicationRecord
   belongs_to :user, class_name: '::User'
   belongs_to :verified_by, class_name: 'User', optional: true
@@ -34,6 +35,13 @@ class Kyc < ApplicationRecord
     drivers_license: 'drivers_license',
     voter_id: 'voter_id'
   }, _prefix: :verification
+
+  # Declaration fields
+  attribute :accredited_investor, :boolean, default: false
+  attribute :nominee_agreement_accepted, :boolean, default: false
+  attribute :risk_acknowledgment, :boolean, default: false
+  attribute :terms_accepted, :boolean, default: false
+  attribute :data_consent, :boolean, default: false
 
   # ActiveStorage attachments
   has_one_attached :id_image

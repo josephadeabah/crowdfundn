@@ -1,3 +1,4 @@
+# app/controllers/api/v1/kyc/kycs_controller.rb
 require 'csv'
 
 module Api
@@ -55,8 +56,17 @@ module Api
             end
           end
 
-          # Use ALL permitted parameters (including signature data)
+          # Use ALL permitted parameters (including signature data and declaration data)
           @kyc = @current_user.kycs.build(kyc_params)
+
+          # Set declaration fields
+          if params[:declaration_data].present?
+            @kyc.accredited_investor = params[:declaration_data][:accredited_investor] || false
+            @kyc.nominee_agreement_accepted = params[:declaration_data][:nominee_agreement] || false
+            @kyc.risk_acknowledgment = params[:declaration_data][:risk_acknowledgment] || false
+            @kyc.terms_accepted = params[:declaration_data][:terms_acceptance] || false
+            @kyc.data_consent = params[:declaration_data][:data_consent] || false
+          end
 
           # Set upgrade fields if this is an upgrade
           if existing_active_kyc && requested_type == 'both'
@@ -82,6 +92,15 @@ module Api
           # Check if user can update (must be owner and in pending/in_review status)
           unless @kyc.pending? || @kyc.in_review?
             return render_kyc_error('KYC cannot be updated in its current state')
+          end
+          
+          # Update declaration fields if provided
+          if params[:declaration_data].present?
+            @kyc.accredited_investor = params[:declaration_data][:accredited_investor] if params[:declaration_data].key?(:accredited_investor)
+            @kyc.nominee_agreement_accepted = params[:declaration_data][:nominee_agreement] if params[:declaration_data].key?(:nominee_agreement)
+            @kyc.risk_acknowledgment = params[:declaration_data][:risk_acknowledgment] if params[:declaration_data].key?(:risk_acknowledgment)
+            @kyc.terms_accepted = params[:declaration_data][:terms_acceptance] if params[:declaration_data].key?(:terms_acceptance)
+            @kyc.data_consent = params[:declaration_data][:data_consent] if params[:declaration_data].key?(:data_consent)
           end
           
           # Use ALL permitted parameters (including signature data)
@@ -350,7 +369,12 @@ module Api
               'Created At',
               'Updated At',
               'Verified At',
-              'Rejection Reason'
+              'Rejection Reason',
+              'Accredited Investor',
+              'Nominee Agreement Accepted',
+              'Risk Acknowledgment',
+              'Terms Accepted',
+              'Data Consent'
             ]
 
             kycs.each do |kyc|
@@ -368,7 +392,12 @@ module Api
                 kyc.created_at,
                 kyc.updated_at,
                 kyc.verified_at,
-                kyc.rejection_reason
+                kyc.rejection_reason,
+                kyc.accredited_investor,
+                kyc.nominee_agreement_accepted,
+                kyc.risk_acknowledgment,
+                kyc.terms_accepted,
+                kyc.data_consent
               ]
             end
           end
@@ -388,7 +417,8 @@ module Api
             :date_of_birth, :nationality, :occupation, :source_of_funds,
             :business_name, :business_registration_number, :business_tax_id,
             :business_industry, :business_established_date,
-            :issuer_accepted_terms,
+            :issuer_accepted_terms, :accredited_investor, :nominee_agreement_accepted,
+            :risk_acknowledgment, :terms_accepted, :data_consent,
             :upgraded_from_type, :is_upgrade,
             signature_data: [:x, :y],
             investor_signature_data: [:x, :y],
