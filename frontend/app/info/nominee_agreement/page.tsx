@@ -1,3 +1,4 @@
+'use client';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
 const NomineeAgreement = () => {
