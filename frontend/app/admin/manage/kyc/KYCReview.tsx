@@ -39,6 +39,11 @@ import {
   Users,
   DollarSign,
   TrendingUp,
+  Check,
+  X,
+  Shield,
+  FileCheck,
+  AlertTriangle,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import ToastComponent from '@/app/components/toast/Toast';
@@ -210,6 +215,144 @@ const KYCReview = () => {
     return <Icon className="h-4 w-4" />;
   };
 
+  // Helper function to display boolean declarations
+  const renderDeclarationStatus = (value: boolean) => (
+    <span
+      className={`flex items-center ${value ? 'text-green-600' : 'text-red-600'}`}
+    >
+      {value ? (
+        <Check className="h-4 w-4 mr-1" />
+      ) : (
+        <X className="h-4 w-4 mr-1" />
+      )}
+      {value ? 'Accepted' : 'Not Accepted'}
+    </span>
+  );
+
+  // Component to show declarations section
+  const DeclarationsSection = ({ review }: { review: any }) => {
+    const declarations = [
+      {
+        label: 'Accredited Investor',
+        value: review.accredited_investor,
+        required: false,
+        description: 'User declared as accredited investor',
+      },
+      {
+        label: 'Nominee Agreement',
+        value: review.nominee_agreement_accepted,
+        required: false,
+        description: 'Accepted nominee agreement terms',
+      },
+      {
+        label: 'Risk Acknowledgment',
+        value: review.risk_acknowledgment,
+        required: true,
+        description: 'Acknowledged investment risks',
+      },
+      {
+        label: 'Terms & Conditions',
+        value: review.terms_accepted,
+        required: true,
+        description: 'Accepted platform terms and conditions',
+      },
+      {
+        label: 'Data Processing Consent',
+        value: review.data_consent,
+        required: true,
+        description: 'Consented to data processing',
+      },
+    ];
+
+    const requiredDeclarations = declarations.filter((d) => d.required);
+    const optionalDeclarations = declarations.filter((d) => !d.required);
+    const allRequiredAccepted = requiredDeclarations.every((d) => d.value);
+
+    return (
+      <div className="mt-4">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="font-medium flex items-center">
+            <FileCheck className="h-4 w-4 mr-2 text-blue-600" />
+            Declarations & Agreements
+          </h4>
+          <Badge
+            variant={allRequiredAccepted ? 'default' : 'destructive'}
+            className={
+              allRequiredAccepted
+                ? 'bg-green-100 text-green-800 hover:bg-green-100 border-green-200'
+                : ''
+            }
+          >
+            {allRequiredAccepted ? 'All Required Accepted' : 'Missing Required'}
+          </Badge>
+        </div>
+
+        {/* Required Declarations */}
+        <div className="mb-4">
+          <h5 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <Shield className="h-3 w-3 mr-1 text-red-500" />
+            Required Declarations
+          </h5>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {requiredDeclarations.map((declaration, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-2 border rounded-lg"
+              >
+                <div>
+                  <div className="font-medium text-sm">{declaration.label}</div>
+                  <div className="text-xs text-gray-500">
+                    {declaration.description}
+                  </div>
+                </div>
+                {renderDeclarationStatus(declaration.value)}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Optional Declarations */}
+        {optionalDeclarations.some((d) => d.value) && (
+          <div>
+            <h5 className="text-sm font-medium text-gray-700 mb-2">
+              Optional Declarations
+            </h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {optionalDeclarations.map((declaration, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-2 border rounded-lg"
+                >
+                  <div>
+                    <div className="font-medium text-sm">
+                      {declaration.label}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {declaration.description}
+                    </div>
+                  </div>
+                  {renderDeclarationStatus(declaration.value)}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Warning for missing required declarations */}
+        {!allRequiredAccepted && (
+          <div className="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <div className="flex items-center">
+              <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
+              <span className="text-sm text-yellow-700 font-medium">
+                User has not accepted all required declarations
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const DocumentSection = ({ review }: { review: any }) => {
     return (
       <div className="mt-4">
@@ -289,8 +432,8 @@ const KYCReview = () => {
         </Button>
       </div>
 
-      {/* Stats Cards - Similar to Campaign Review */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* Stats Cards - Enhanced with declarations stats */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -354,6 +497,27 @@ const KYCReview = () => {
               </div>
               <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
                 <XCircle className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Investors</p>
+                <p className="text-3xl font-bold text-blue-600">
+                  {
+                    reviews.filter(
+                      (r: any) =>
+                        r.kyc_type === 'investor' || r.kyc_type === 'both',
+                    ).length
+                  }
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </CardContent>
@@ -430,7 +594,7 @@ const KYCReview = () => {
         </CardContent>
       </Card>
 
-      {/* KYC Applications List - Inline Style like Campaign Review */}
+      {/* KYC Applications List */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
@@ -587,6 +751,12 @@ const KYCReview = () => {
                             </div>
                           )}
                         </div>
+
+                        {/* NEW: Declarations Section */}
+                        {(review.kyc_type === 'investor' ||
+                          review.kyc_type === 'both') && (
+                          <DeclarationsSection review={review} />
+                        )}
 
                         {/* Business Information (for issuers/both) */}
                         {review.kyc_type !== 'investor' && (

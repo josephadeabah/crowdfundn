@@ -19,8 +19,13 @@ const NomineeAgreement = () => {
     // Disable keyboard shortcuts for copy/cut
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
-        (e.ctrlKey || e.metaKey) && 
-        (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A')
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === 'c' ||
+          e.key === 'C' ||
+          e.key === 'x' ||
+          e.key === 'X' ||
+          e.key === 'a' ||
+          e.key === 'A')
       ) {
         e.preventDefault();
       }
@@ -68,14 +73,14 @@ const NomineeAgreement = () => {
   return (
     <div className="min-h-screen bg-white p-6 text-gray-800 no-copy">
       {/* Protection Overlay */}
-      <div 
+      <div
         className="fixed inset-0 z-50 pointer-events-none"
         style={{
           background: 'transparent',
-          mixBlendMode: 'difference'
+          mixBlendMode: 'difference',
         }}
       />
-      
+
       <div className="max-w-5xl mx-auto px-6 relative">
         {/* Header */}
         <div className="text-center mb-8">
@@ -94,8 +99,8 @@ const NomineeAgreement = () => {
             investment through BantuHive Crowdfunding. By accepting this
             agreement, you authorize BantuHive Crowdfunding Nominee Ltd. to hold
             legal title to your securities while you retain full beneficial
-            ownership. Please read this document carefully before proceeding with
-            your investment.
+            ownership. Please read this document carefully before proceeding
+            with your investment.
           </p>
         </div>
 
@@ -108,8 +113,8 @@ const NomineeAgreement = () => {
           </h1>
           <h2 className="text-xl font-semibold">NOMINEE AGREEMENT</h2>
           <p className="mt-4">
-            This NOMINEE AGREEMENT (this &quot;Agreement&quot;) is made and effective as of
-            September 29, 2025 (the &quot;Effective Date&quot;)
+            This NOMINEE AGREEMENT (this &quot;Agreement&quot;) is made and
+            effective as of September 29, 2025 (the &quot;Effective Date&quot;)
           </p>
         </div>
 
@@ -120,16 +125,18 @@ const NomineeAgreement = () => {
             <div>
               <p>
                 (1) BANTUHIVE CROWDFUNDING NOMINEE LTD., a company incorporated
-                under the Companies Act, 2019 (Act 992) of Ghana with registration
-                number [CS185241124], whose registered office is at [HOUSE NO.
-                B293, APOLLO, TAKORADI] (the &quot;Nominee&quot;); and
+                under the Companies Act, 2019 (Act 992) of Ghana with
+                registration number [CS185241124], whose registered office is at
+                [HOUSE NO. B293, APOLLO, TAKORADI] (the &quot;Nominee&quot;);
+                and
               </p>
             </div>
             <div>
               <p>
-                (2) {user?.full_name || '[INVESTOR NAME]'}, a [Individual/Entity]
-                residing/registered at [Address], with BantuHive Platform User ID:
-                [USER_ID] (the &quot;Beneficial Owner&quot; or &quot;You&quot;).
+                (2) {user?.full_name || '[INVESTOR NAME]'}, a
+                [Individual/Entity] residing/registered at [Address], with
+                BantuHive Platform User ID: [USER_ID] (the &quot;Beneficial
+                Owner&quot; or &quot;You&quot;).
               </p>
             </div>
           </div>
@@ -141,23 +148,23 @@ const NomineeAgreement = () => {
           <div className="ml-6 space-y-3">
             <p>
               <span className="font-semibold">A.</span> The Nominee is a
-              wholly-owned subsidiary of BantuHive Ltd. (&quot;BantuHive Platform&quot;) and
-              has been established to act as the registered shareholder of
-              securities in portfolio companies (&quot;Portfolio Companies&quot;) on behalf
-              of individuals who invest through the BantuHive crowdfunding
-              platform.
+              wholly-owned subsidiary of BantuHive Ltd. (&quot;BantuHive
+              Platform&quot;) and has been established to act as the registered
+              shareholder of securities in portfolio companies (&quot;Portfolio
+              Companies&quot;) on behalf of individuals who invest through the
+              BantuHive crowdfunding platform.
             </p>
             <p>
               <span className="font-semibold">B.</span> The Beneficial Owner
-              wishes to invest in securities offered by Portfolio Companies listed
-              on the BantuHive Platform.
+              wishes to invest in securities offered by Portfolio Companies
+              listed on the BantuHive Platform.
             </p>
             <p>
               <span className="font-semibold">C.</span> It is a condition of
               investment that the legal title to such securities be held by the
-              Nominee, with the Beneficial Owner retaining the full beneficial and
-              economic ownership, subject to the terms and conditions set forth
-              herein.
+              Nominee, with the Beneficial Owner retaining the full beneficial
+              and economic ownership, subject to the terms and conditions set
+              forth herein.
             </p>
           </div>
           <div className="mt-4 text-center font-semibold">
@@ -180,8 +187,8 @@ const NomineeAgreement = () => {
               <div className="ml-6">
                 <p>
                   (a) subscribe for, acquire, and hold legal title to the
-                  securities as detailed in the Investment Schedule (Annex A) (the
-                  &quot;Securities&quot;) in the Nominee&apos;s name; and
+                  securities as detailed in the Investment Schedule (Annex A)
+                  (the &quot;Securities&quot;) in the Nominee&apos;s name; and
                 </p>
                 <p>
                   (b) act as the registered shareholder of the Securities in the
@@ -200,21 +207,21 @@ const NomineeAgreement = () => {
             <h4 className="font-bold text-lg">2. BENEFICIAL OWNERSHIP</h4>
             <div className="ml-4 mt-2 space-y-2">
               <p>
-                <span className="font-semibold">2.1.</span> The parties expressly
-                agree and declare that the Nominee shall hold the legal title to
-                the Securities IN TRUST for the Beneficial Owner.
+                <span className="font-semibold">2.1.</span> The parties
+                expressly agree and declare that the Nominee shall hold the
+                legal title to the Securities IN TRUST for the Beneficial Owner.
               </p>
               <p>
                 <span className="font-semibold">2.2.</span> The Beneficial Owner
                 is and shall remain the absolute beneficial owner of the
                 Securities and is entitled to all economic benefits attaching
                 thereto, including but not limited to dividends, interest, and
-                other distributions, and the proceeds of any sale, redemption, or
-                exit event (collectively, &quot;Economic Benefits&quot;).
+                other distributions, and the proceeds of any sale, redemption,
+                or exit event (collectively, &quot;Economic Benefits&quot;).
               </p>
               <p>
-                <span className="font-semibold">2.3.</span> The Nominee shall have
-                no beneficial interest in the Securities and shall not use,
+                <span className="font-semibold">2.3.</span> The Nominee shall
+                have no beneficial interest in the Securities and shall not use,
                 pledge, charge, or otherwise encumber the Securities for its own
                 benefit.
               </p>
@@ -223,24 +230,26 @@ const NomineeAgreement = () => {
 
           {/* Section 3 */}
           <div>
-            <h4 className="font-bold text-lg">3. NOMINEE&apos;S POWERS AND DUTIES</h4>
+            <h4 className="font-bold text-lg">
+              3. NOMINEE&apos;S POWERS AND DUTIES
+            </h4>
             <p className="mt-2">
               The Nominee shall have the authority to exercise all rights and
               powers incidental to the legal ownership of the Securities, but
               SHALL ONLY EXERCISE SUCH POWERS STRICTLY IN ACCORDANCE WITH THE
-              DIRECT INSTRUCTIONS OF THE BENEFICIAL OWNER, as facilitated through
-              the BantuHive Platform&apos;s voting and instruction mechanisms.
-              Specifically:
+              DIRECT INSTRUCTIONS OF THE BENEFICIAL OWNER, as facilitated
+              through the BantuHive Platform&apos;s voting and instruction
+              mechanisms. Specifically:
             </p>
             <div className="ml-4 mt-2 space-y-2">
               <p>
                 <span className="font-semibold">3.1. Voting Rights:</span> The
                 Nominee shall not exercise any voting rights attached to the
-                Securities unless and until it has received instructions from the
-                Beneficial Owner via a poll or referendum conducted through the
-                BantuHive Platform. The Nominee shall cast its vote(s) strictly in
-                proportion to the instructions received from the Beneficial Owners
-                for each class of Security.
+                Securities unless and until it has received instructions from
+                the Beneficial Owner via a poll or referendum conducted through
+                the BantuHive Platform. The Nominee shall cast its vote(s)
+                strictly in proportion to the instructions received from the
+                Beneficial Owners for each class of Security.
               </p>
               <p>
                 <span className="font-semibold">
@@ -256,17 +265,17 @@ const NomineeAgreement = () => {
                 <span className="font-semibold">
                   3.3. Information &amp; Communications:
                 </span>{' '}
-                The Nominee shall promptly make available to the Beneficial Owner,
-                via the BantuHive Platform, all formal communications, reports,
-                and notices received from the Portfolio Company.
+                The Nominee shall promptly make available to the Beneficial
+                Owner, via the BantuHive Platform, all formal communications,
+                reports, and notices received from the Portfolio Company.
               </p>
               <p>
-                <span className="font-semibold">3.4. Standard of Care:</span> The
-                Nominee shall exercise the degree of care, diligence, and skill
-                that a reasonably prudent professional nominee would exercise in
-                comparable circumstances. The Nominee&apos;s duties are limited to
-                those expressly set out in this Agreement and are purely
-                administrative and ministerial in nature.
+                <span className="font-semibold">3.4. Standard of Care:</span>{' '}
+                The Nominee shall exercise the degree of care, diligence, and
+                skill that a reasonably prudent professional nominee would
+                exercise in comparable circumstances. The Nominee&apos;s duties
+                are limited to those expressly set out in this Agreement and are
+                purely administrative and ministerial in nature.
               </p>
             </div>
           </div>
@@ -279,27 +288,29 @@ const NomineeAgreement = () => {
             <div className="ml-4 mt-2 space-y-2">
               <p>
                 <span className="font-semibold">4.1.</span> No Liability for
-                Portfolio Company Actions: The Nominee shall not be liable for any
-                acts, omissions, defaults, or insolvency of the Portfolio Company.
+                Portfolio Company Actions: The Nominee shall not be liable for
+                any acts, omissions, defaults, or insolvency of the Portfolio
+                Company.
               </p>
               <p>
                 <span className="font-semibold">4.2.</span> Limitation of
-                Liability: The Nominee&apos;s aggregate liability to the Beneficial
-                Owner, whether in contract, tort (including negligence), or
-                otherwise, shall under no circumstances exceed the total fees paid
-                by the Beneficial Owner to the Nominee in the twelve (12) months
-                preceding the event giving rise to the claim.
+                Liability: The Nominee&apos;s aggregate liability to the
+                Beneficial Owner, whether in contract, tort (including
+                negligence), or otherwise, shall under no circumstances exceed
+                the total fees paid by the Beneficial Owner to the Nominee in
+                the twelve (12) months preceding the event giving rise to the
+                claim.
               </p>
               <p>
                 <span className="font-semibold">4.3.</span> Indemnity: The
                 Beneficial Owner agrees to indemnify and hold harmless the
                 Nominee, its directors, officers, and employees (including those
-                seconded from BantuHive Ltd.) from and against any and all losses,
-                claims, damages, and liabilities arising out of or in connection
-                with the Nominee&apos;s good faith performance of its duties under this
-                Agreement, except to the extent such losses are finally judicially
-                determined to have resulted from the Nominee&apos;s gross negligence,
-                willful misconduct, or fraud.
+                seconded from BantuHive Ltd.) from and against any and all
+                losses, claims, damages, and liabilities arising out of or in
+                connection with the Nominee&apos;s good faith performance of its
+                duties under this Agreement, except to the extent such losses
+                are finally judicially determined to have resulted from the
+                Nominee&apos;s gross negligence, willful misconduct, or fraud.
               </p>
             </div>
           </div>
@@ -310,10 +321,10 @@ const NomineeAgreement = () => {
             <div className="ml-4 mt-2 space-y-2">
               <p>
                 <span className="font-semibold">5.1.</span> The Beneficial Owner
-                agrees to pay the Nominee an annual administration fee as detailed
-                in the Fee Schedule on the BantuHive Platform. This fee may be
-                deducted directly from distributions before they are paid to the
-                Beneficial Owner.
+                agrees to pay the Nominee an annual administration fee as
+                detailed in the Fee Schedule on the BantuHive Platform. This fee
+                may be deducted directly from distributions before they are paid
+                to the Beneficial Owner.
               </p>
               <p>
                 <span className="font-semibold">5.2.</span> All stamp duties,
@@ -346,17 +357,18 @@ const NomineeAgreement = () => {
                 </p>
                 <p>(b) Compliance with applicable securities laws; and</p>
                 <p>
-                  (c) The receipt of a valid instrument of transfer and payment of
-                  any applicable transfer fees.
+                  (c) The receipt of a valid instrument of transfer and payment
+                  of any applicable transfer fees.
                 </p>
               </div>
               <p>
-                <span className="font-semibold">6.3.</span> The Nominee may resign
-                by giving [90] days&apos; written notice to the Beneficial Owner via
-                the platform. Upon resignation, the Nominee shall take all
-                necessary steps to transfer the legal title of the Securities to
-                the Beneficial Owner or a new nominee appointed by the Beneficial
-                Owner, subject to the same conditions in clause 6.2.
+                <span className="font-semibold">6.3.</span> The Nominee may
+                resign by giving [90] days&apos; written notice to the
+                Beneficial Owner via the platform. Upon resignation, the Nominee
+                shall take all necessary steps to transfer the legal title of
+                the Securities to the Beneficial Owner or a new nominee
+                appointed by the Beneficial Owner, subject to the same
+                conditions in clause 6.2.
               </p>
             </div>
           </div>
@@ -375,9 +387,9 @@ const NomineeAgreement = () => {
               <p>
                 <span className="font-semibold">7.2.</span> Any dispute arising
                 out of or in connection with this Agreement shall be first
-                submitted to mediation in accordance with the rules of the [Ghana
-                Arbitration Centre]. If mediation fails, the dispute shall be
-                finally settled by arbitration in [Accra, Ghana].
+                submitted to mediation in accordance with the rules of the
+                [Ghana Arbitration Centre]. If mediation fails, the dispute
+                shall be finally settled by arbitration in [Accra, Ghana].
               </p>
             </div>
           </div>
@@ -387,9 +399,9 @@ const NomineeAgreement = () => {
             <h4 className="font-bold text-lg">8. MISCELLANEOUS</h4>
             <div className="ml-4 mt-2 space-y-2">
               <p>
-                <span className="font-semibold">8.1.</span> Entire Agreement: This
-                Agreement, together with the BantuHive Platform Terms of Service,
-                constitutes the entire agreement between the parties.
+                <span className="font-semibold">8.1.</span> Entire Agreement:
+                This Agreement, together with the BantuHive Platform Terms of
+                Service, constitutes the entire agreement between the parties.
               </p>
               <p>
                 <span className="font-semibold">8.2.</span> Severability: If any
@@ -408,11 +420,11 @@ const NomineeAgreement = () => {
         {/* Signature Section */}
         <div className="mt-12 space-y-8">
           <div className="text-center italic">
-            IN WITNESS WHEREOF, the parties have executed this Agreement by their
-            duly authorized representatives. The Beneficial Owner acknowledges
-            agreement to these terms by clicking &quot;I Agree&quot; on the BantuHive
-            Platform investment page, which constitutes a binding electronic
-            signature.
+            IN WITNESS WHEREOF, the parties have executed this Agreement by
+            their duly authorized representatives. The Beneficial Owner
+            acknowledges agreement to these terms by clicking &quot;I
+            Agree&quot; on the BantuHive Platform investment page, which
+            constitutes a binding electronic signature.
           </div>
 
           <div className="flex justify-between">
