@@ -31,7 +31,7 @@ const Teams = () => {
     {
       id: '1',
       name: 'Member Pending',
-      position: 'Chairman of the Board',
+      position: 'Board Member',
       image: ctoHeadshot,
       email: 'john.harrison@company.com',
       linkedin: 'https://linkedin.com/in/',
@@ -45,14 +45,35 @@ const Teams = () => {
         'Investment Strategy',
       ],
       education: [
-        'MBA, Harvard Business School',
-        'BSc Computer Science, Stanford University',
+        'MBA, University of Finance',
+        'BSc Accounting & Finance, University of Economics',
       ],
     },
     {
       id: '2',
+      name: 'Member Pending',
+      position: 'Board Member',
+      image: ctoHeadshot,
+      email: 'john.harrison@company.com',
+      linkedin: 'https://linkedin.com/in/',
+      level: 'board' as const,
+      description:
+        'Seasoned executive with over 20 years of experience in strategic leadership and corporate governance. Previously served as CEO of multiple successful tech startups and brings extensive knowledge in scaling businesses globally.',
+      expertise: [
+        'Strategic Planning',
+        'Corporate Governance',
+        'Business Development',
+        'Investment Strategy',
+      ],
+      education: [
+        'MBA, University of Finance',
+        'BSc Accounting & Finance, University of Economics',
+      ],
+    },
+    {
+      id: '3',
       name: 'Joseph Adeabah',
-      position: 'Secretary of the Board',
+      position: 'Board Member',
       image: ceoHeadshot,
       email: 'joseph.adeabah@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
@@ -66,12 +87,11 @@ const Teams = () => {
         'Product Development',
       ],
       education: [
-        'MSc Computer Science, MIT',
-        'BSc Engineering, University of Ghana',
+        'BSc Computer Science, University of Energy and Natural Resources',
       ],
     },
     {
-      id: '3',
+      id: '4',
       name: 'Nqoba Manana',
       position: 'Board Member',
       image: nqobaMananaHeadshot,
@@ -86,13 +106,13 @@ const Teams = () => {
         'Team Building',
         'Strategic Execution',
       ],
-      education: ['MBA, INSEAD', 'BCom Finance, University of Pretoria'],
+      education: ['MBA Strategy', 'BCom Finance, University of Pretoria'],
     },
   ];
 
   const executiveLeadership = [
     {
-      id: '4',
+      id: '5',
       name: 'Joseph Adeabah',
       position: 'Chief Executive Officer',
       image: ceoHeadshot,
@@ -100,7 +120,7 @@ const Teams = () => {
       linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
       level: 'lead' as const,
       description:
-        'As CEO, Joseph provides strategic direction and leadership to drive company growth and innovation. With over 15 years in the tech industry, he is committed to building products that make a meaningful impact.',
+        'As CEO, Joseph provides strategic direction and leadership to drive company growth and innovation. With over 10 years in the tech industry, he is committed to building products that make a meaningful impact.',
       expertise: [
         'Executive Leadership',
         'Product Strategy',
@@ -108,12 +128,11 @@ const Teams = () => {
         'Innovation Management',
       ],
       education: [
-        'MSc Computer Science, MIT',
-        'Executive Program, Stanford Graduate School of Business',
+        'BSc Computer Science, University of Energy and Natural Resources',
       ],
     },
     {
-      id: '5',
+      id: '6',
       name: 'Nqoba Manana',
       position: 'Chief Operating Officer',
       image: nqobaMananaHeadshot,
@@ -128,19 +147,19 @@ const Teams = () => {
         'Team Building',
         'Strategic Execution',
       ],
-      education: ['MBA, INSEAD', 'BCom Finance, University of Pretoria'],
-    },
-    {
-      id: '6',
-      name: 'Sadat Adams',
-      position: 'Partner Relationship Manager',
-      image: ctoHeadshot,
-      email: 'sadat.adams@bantuhive.com',
-      linkedin: 'https://linkedin.com/in/sadatadams',
-      level: 'lead' as const,
+      education: ['MBA Strategy', 'BCom Finance, University of Pretoria'],
     },
     {
       id: '7',
+      name: 'Member Pending',
+      position: 'Chief Risk Officer',
+      image: ctoHeadshot,
+      email: 'cro@bantuhive.com',
+      linkedin: 'https://linkedin.com/in/cro',
+      level: 'lead' as const,
+    },
+    {
+      id: '8',
       name: 'Member Pending',
       position: 'Chief Financial Officer',
       image: ctoHeadshot,
@@ -150,9 +169,45 @@ const Teams = () => {
     },
   ];
 
-  const marketingTeam = [
+  const operationsTeam = [
+    {
+      id: '9',
+      name: 'Member Pending',
+      position: 'Human Resources Manager',
+      image: cooHeadshot,
+      email: 'hr@company.com',
+      linkedin: 'https://linkedin.com/in/hrmanager',
+      level: 'lead' as const,
+    },
     {
       id: '10',
+      name: 'Member Pending',
+      position: 'Administrative Assistant',
+      image: cooHeadshot,
+      email: 'admin@company.com',
+      level: 'member' as const,
+    },
+    {
+      id: '11',
+      name: 'Sadat Adams',
+      position: 'Public Relations Specialist',
+      image: cooHeadshot,
+      email: 'sadat.adams@bantuhive.com',
+      level: 'member' as const,
+    },
+    {
+      id: '12',
+      name: 'Member Pending',
+      position: 'Office Manager',
+      image: cooHeadshot,
+      email: 'om@company.com',
+      level: 'member' as const,
+    },
+  ];
+
+  const marketingTeam = [
+    {
+      id: '13',
       name: 'Member Pending',
       position: 'Marketing Director',
       image: marketingLead,
@@ -161,7 +216,7 @@ const Teams = () => {
       level: 'lead' as const,
     },
     {
-      id: '11',
+      id: '14',
       name: 'Member Pending',
       position: 'Digital Marketing Manager',
       image: marketingLead,
@@ -169,7 +224,7 @@ const Teams = () => {
       level: 'member' as const,
     },
     {
-      id: '12',
+      id: '15',
       name: 'Member Pending',
       position: 'Content Marketing Specialist',
       image: marketingLead,
@@ -177,7 +232,7 @@ const Teams = () => {
       level: 'member' as const,
     },
     {
-      id: '13',
+      id: '16',
       name: 'Member Pending',
       position: 'Brand Manager',
       image: marketingLead,
@@ -188,7 +243,7 @@ const Teams = () => {
 
   const engineeringTeam = [
     {
-      id: '14',
+      id: '17',
       name: 'Member Pending',
       position: 'Engineering Director',
       image: ctoHeadshot,
@@ -197,7 +252,7 @@ const Teams = () => {
       level: 'lead' as const,
     },
     {
-      id: '15',
+      id: '18',
       name: 'Member Pending',
       position: 'Senior Software Engineer',
       image: ctoHeadshot,
@@ -205,7 +260,7 @@ const Teams = () => {
       level: 'member' as const,
     },
     {
-      id: '16',
+      id: '19',
       name: 'Member Pending',
       position: 'Backend Developer',
       image: marketingLead,
@@ -213,7 +268,7 @@ const Teams = () => {
       level: 'member' as const,
     },
     {
-      id: '17',
+      id: '20',
       name: 'Member Pending',
       position: 'Frontend Developer',
       image: marketingLead,
@@ -224,7 +279,7 @@ const Teams = () => {
 
   const legalTeam = [
     {
-      id: '18',
+      id: '21',
       name: 'Member Pending',
       position: 'Legal Director',
       image: legalDirector,
@@ -233,7 +288,7 @@ const Teams = () => {
       level: 'lead' as const,
     },
     {
-      id: '19',
+      id: '22',
       name: 'Member Pending',
       position: 'Senior Administrative Associate',
       image: legalCounsel,
@@ -241,7 +296,7 @@ const Teams = () => {
       level: 'member' as const,
     },
     {
-      id: '20',
+      id: '23',
       name: 'Member Pending',
       position: 'Compliance Manager',
       image: legalDirector,
@@ -249,7 +304,7 @@ const Teams = () => {
       level: 'member' as const,
     },
     {
-      id: '21',
+      id: '24',
       name: 'Member Pending',
       position: 'Investment Associate',
       image: legalDirector,
@@ -293,6 +348,17 @@ const Teams = () => {
           title="Executive Leadership"
           subtitle="Senior executives driving operational excellence and strategic execution"
           members={executiveLeadership}
+          level="department"
+          onMemberClick={handleMemberClick}
+        />
+
+        {/* Separator */}
+        <div className="border-t border-gray-300 my-16"></div>
+        {/* Operations Team */}
+        <TeamSection
+          title="Operations Team"
+          subtitle="Ensuring smooth operations and exceptional service delivery across the organization"
+          members={operationsTeam}
           level="department"
           onMemberClick={handleMemberClick}
         />
