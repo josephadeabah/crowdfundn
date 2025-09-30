@@ -483,19 +483,19 @@ const ProfileTabs = () => {
   );
 
   return (
-    <div 
+    <div
       className="w-full bg-white min-h-screen relative"
       style={{
-        backgroundImage: 'url("/bantuhive.png")',
+        backgroundImage: 'url("/Heropage.png")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
+        backgroundAttachment: 'fixed',
       }}
     >
       {/* Overlay to ensure content readability */}
       <div className="absolute inset-0 bg-white/95 backdrop-blur-sm"></div>
-      
+
       {/* Content container */}
       <div className="relative z-10">
         {/* Mobile Header */}
@@ -619,7 +619,9 @@ const ProfileTabs = () => {
                               const isOnboarding =
                                 showOnboarding &&
                                 currentStep ===
-                                  allTabs.findIndex((t) => t.label === tab.label);
+                                  allTabs.findIndex(
+                                    (t) => t.label === tab.label,
+                                  );
 
                               return (
                                 <button
