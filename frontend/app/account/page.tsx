@@ -494,7 +494,7 @@ const ProfileTabs = () => {
       }}
     >
       {/* Overlay to ensure content readability */}
-      <div className="absolute inset-0 bg-white/95 backdrop-blur-sm"></div>
+      <div className="absolute inset-0"></div>
 
       {/* Content container */}
       <div className="relative z-10">
