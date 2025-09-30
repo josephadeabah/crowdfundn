@@ -26,7 +26,7 @@ export const MemberDetailModal = ({
   member,
 }: MemberDetailModalProps) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} size="xlarge" isDraggable={true} >
       <div className="flex flex-col md:flex-row max-h-[90vh] overflow-hidden">
         {/* Image Section */}
         <div className="md:w-2/5 relative">
