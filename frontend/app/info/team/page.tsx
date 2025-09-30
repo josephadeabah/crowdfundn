@@ -174,7 +174,7 @@ const Teams = () => {
     {
       id: '12',
       name: 'Member Pending',
-      position: 'Office Manager',
+      position: 'Operations Coordinator',
       image: cooHeadshot,
       email: 'om@company.com',
       level: 'member' as const,
