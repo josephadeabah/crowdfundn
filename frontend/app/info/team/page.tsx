@@ -210,7 +210,7 @@ const Teams = () => {
     {
       id: '16',
       name: 'Member Pending',
-      position: 'Brand Manager',
+      position: 'Community Manager',
       image: marketingLead,
       email: 'james.wilson@company.com',
       level: 'member' as const,
@@ -391,7 +391,10 @@ const Teams = () => {
           </h3>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
             We&apos;re always looking for talented individuals who share our
-            passion for innovation and excellence.
+            passion for innovation and excellence. If you want to be part of a
+            dynamic team that&apos;s making a difference, check out our current
+            job openings and apply today! or reach out to us at{' '}
+            careers@bantuhive.com
           </p>
           <button
             className="bg-orange-500 text-white px-8 py-3 rounded-lg font-medium hover:bg-orange-600 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
