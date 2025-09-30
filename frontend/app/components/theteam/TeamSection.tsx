@@ -1,3 +1,4 @@
+// app/components/theteam/TeamSection.tsx
 import React from 'react';
 import { TeamMemberCard } from './TeamMemberCard';
 

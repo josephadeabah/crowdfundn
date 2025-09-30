@@ -1,3 +1,4 @@
+// app/components/theteam/TeamMemberCard.tsx
 import { Mail, Linkedin, ArrowUpRight } from 'lucide-react';
 
 interface TeamMemberCardProps {
@@ -42,6 +43,17 @@ export const TeamMemberCard = ({
     return desc.substring(0, maxLength) + '...';
   };
 
+  const handleCardClick = () => {
+    if (onLearnMore) {
+      onLearnMore();
+    }
+  };
+
+  const handleButtonClick = (e: React.MouseEvent, action: () => void) => {
+    e.stopPropagation();
+    action();
+  };
+
   return (
     <div
       className={`
@@ -50,7 +62,7 @@ export const TeamMemberCard = ({
         ${level === 'board' ? 'hover:border-green-300' : 'hover:border-gray-300'}
         flex flex-col h-full
       `}
-      onClick={onLearnMore}
+      onClick={handleCardClick}
     >
       <div className="flex flex-col items-center text-center space-y-4 flex-1">
         {/* Image Container */}
@@ -114,20 +126,14 @@ export const TeamMemberCard = ({
         <div className="flex space-x-2 pt-2">
           <button
             className="border border-gray-300 hover:border-green-500 hover:bg-green-500 hover:text-white p-2 rounded-lg transition-colors duration-200"
-            onClick={(e) => {
-              e.stopPropagation();
-              window.location.href = `mailto:${email}`;
-            }}
+            onClick={(e) => handleButtonClick(e, () => window.location.href = `mailto:${email}`)}
           >
             <Mail className="w-4 h-4" />
           </button>
           {linkedin && (
             <button
               className="border border-gray-300 hover:border-green-500 hover:bg-green-500 hover:text-white p-2 rounded-lg transition-colors duration-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(linkedin, '_blank');
-              }}
+              onClick={(e) => handleButtonClick(e, () => window.open(linkedin, '_blank'))}
             >
               <Linkedin className="w-4 h-4" />
             </button>
