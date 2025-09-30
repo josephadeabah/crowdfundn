@@ -1,6 +1,5 @@
-// TeamMemberCard.tsx - Updated version
+// app/components/theteam/TeamMemberCard.tsx
 import { Mail, Linkedin, ArrowUpRight } from 'lucide-react';
-import { Button } from '@/app/components/ui/button';
 
 interface TeamMemberCardProps {
   name: string;
@@ -30,15 +29,16 @@ export const TeamMemberCard = ({
   const getCardStyles = () => {
     switch (level) {
       case 'board':
-        return 'bg-gradient-card border-2 border-primary/20 shadow-card-hover transform hover:scale-105';
+        return 'bg-gradient-to-br from-white to-gray-50 border-2 border-blue-200 shadow-lg hover:shadow-xl transform hover:scale-105';
       case 'lead':
-        return 'bg-gradient-card border border-primary/10 shadow-card hover:shadow-card-hover transform hover:scale-102';
+        return 'bg-white border border-gray-200 shadow-md hover:shadow-lg transform hover:scale-102';
       default:
-        return 'bg-card border border-border shadow-subtle hover:shadow-card transform hover:scale-102';
+        return 'bg-white border border-gray-200 shadow-sm hover:shadow-md transform hover:scale-102';
     }
   };
 
   const truncateDescription = (desc: string, maxLength: number = 100) => {
+    if (!desc) return '';
     if (desc.length <= maxLength) return desc;
     return desc.substring(0, maxLength) + '...';
   };
@@ -46,16 +46,16 @@ export const TeamMemberCard = ({
   return (
     <div
       className={`
-      ${getCardStyles()}
-      p-6 rounded-lg transition-all duration-300 ease-smooth group cursor-pointer
-      ${level === 'board' ? 'hover:border-primary/30' : 'hover:border-primary/20'}
-      flex flex-col h-full
-    `}
+        ${getCardStyles()}
+        p-6 rounded-lg transition-all duration-300 ease-in-out group cursor-pointer
+        ${level === 'board' ? 'hover:border-blue-300' : 'hover:border-gray-300'}
+        flex flex-col h-full
+      `}
       onClick={onLearnMore}
     >
       <div className="flex flex-col items-center text-center space-y-4 flex-1">
-        {/* Rectangular Image Container */}
-        <div className="relative w-full aspect-[3/4] overflow-hidden rounded-lg shadow-subtle group-hover:shadow-card transition-shadow duration-300">
+        {/* Image Container */}
+        <div className="relative w-full aspect-[3/4] overflow-hidden rounded-lg shadow-md group-hover:shadow-lg transition-shadow duration-300">
           <img
             src={image}
             alt={`${name} headshot`}
@@ -74,23 +74,23 @@ export const TeamMemberCard = ({
 
         <div className="space-y-3 flex-1 flex flex-col justify-center w-full">
           <h3
-            className={`font-semibold text-foreground ${level === 'board' ? 'text-xl' : 'text-lg'}`}
+            className={`font-semibold text-gray-900 ${level === 'board' ? 'text-xl' : 'text-lg'}`}
           >
             {name}
           </h3>
           <p
-            className={`text-primary font-medium ${level === 'board' ? 'text-base' : 'text-sm'}`}
+            className={`text-blue-600 font-medium ${level === 'board' ? 'text-base' : 'text-sm'}`}
           >
             {position}
           </p>
           {department && (
-            <p className="text-muted-foreground text-sm">{department}</p>
+            <p className="text-gray-500 text-sm">{department}</p>
           )}
-
+          
           {/* Description Preview */}
           {description && (
             <div className="mt-2">
-              <p className="text-muted-foreground text-sm text-left leading-relaxed">
+              <p className="text-gray-600 text-sm text-left leading-relaxed">
                 {truncateDescription(description)}
               </p>
               {expertise && expertise.length > 0 && (
@@ -98,13 +98,13 @@ export const TeamMemberCard = ({
                   {expertise.slice(0, 3).map((skill, index) => (
                     <span
                       key={index}
-                      className="inline-block bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"
+                      className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
                     >
                       {skill}
                     </span>
                   ))}
                   {expertise.length > 3 && (
-                    <span className="inline-block bg-muted text-muted-foreground text-xs px-2 py-1 rounded-full">
+                    <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
                       +{expertise.length - 3}
                     </span>
                   )}
@@ -115,29 +115,25 @@ export const TeamMemberCard = ({
         </div>
 
         <div className="flex space-x-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-primary/20 hover:border-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+          <button
+            className="border border-gray-300 hover:border-blue-500 hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors duration-200"
             onClick={(e) => {
               e.stopPropagation();
               window.location.href = `mailto:${email}`;
             }}
           >
             <Mail className="w-4 h-4" />
-          </Button>
+          </button>
           {linkedin && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-primary/20 hover:border-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+            <button
+              className="border border-gray-300 hover:border-blue-500 hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors duration-200"
               onClick={(e) => {
                 e.stopPropagation();
                 window.open(linkedin, '_blank');
               }}
             >
               <Linkedin className="w-4 h-4" />
-            </Button>
+            </button>
           )}
         </div>
       </div>
