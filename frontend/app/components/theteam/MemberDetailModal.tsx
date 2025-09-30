@@ -1,8 +1,6 @@
-// app/components/theteam/MemberDetailModal.tsx
 import React from 'react';
 import { Mail, Linkedin, GraduationCap, Award } from 'lucide-react';
-import Modal  from '../modal/Modal';
-
+import Modal from '../modal/Modal';
 
 interface TeamMember {
   name: string;
@@ -22,7 +20,11 @@ interface MemberDetailModalProps {
   member: TeamMember | null;
 }
 
-export const MemberDetailModal = ({ isOpen, onClose, member }: MemberDetailModalProps) => {
+export const MemberDetailModal = ({
+  isOpen,
+  onClose,
+  member,
+}: MemberDetailModalProps) => {
   if (!member) return null;
 
   return (
@@ -54,7 +56,7 @@ export const MemberDetailModal = ({ isOpen, onClose, member }: MemberDetailModal
           {/* Contact Buttons */}
           <div className="flex space-x-3 mb-6">
             <button
-              className="flex items-center space-x-2 border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="flex items-center space-x-2 border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors"
               onClick={() => (window.location.href = `mailto:${member.email}`)}
             >
               <Mail className="w-4 h-4" />
@@ -62,7 +64,7 @@ export const MemberDetailModal = ({ isOpen, onClose, member }: MemberDetailModal
             </button>
             {member.linkedin && (
               <button
-                className="flex items-center space-x-2 border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="flex items-center space-x-2 border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors"
                 onClick={() => window.open(member.linkedin, '_blank')}
               >
                 <Linkedin className="w-4 h-4" />
@@ -74,8 +76,8 @@ export const MemberDetailModal = ({ isOpen, onClose, member }: MemberDetailModal
           {/* Description */}
           {member.description && (
             <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">About</h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+              <h3 className="text-lg font-semibold mb-3 text-gray-900">About</h3>
+              <p className="text-gray-600 leading-relaxed">
                 {member.description}
               </p>
             </div>
@@ -84,7 +86,7 @@ export const MemberDetailModal = ({ isOpen, onClose, member }: MemberDetailModal
           {/* Expertise */}
           {member.expertise && member.expertise.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white flex items-center">
+              <h3 className="text-lg font-semibold mb-3 text-gray-900 flex items-center">
                 <Award className="w-5 h-5 mr-2" />
                 Areas of Expertise
               </h3>
@@ -92,7 +94,7 @@ export const MemberDetailModal = ({ isOpen, onClose, member }: MemberDetailModal
                 {member.expertise.map((skill, index) => (
                   <span
                     key={index}
-                    className="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-3 py-1 rounded-full text-sm"
+                    className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"
                   >
                     {skill}
                   </span>
@@ -104,13 +106,16 @@ export const MemberDetailModal = ({ isOpen, onClose, member }: MemberDetailModal
           {/* Education */}
           {member.education && member.education.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white flex items-center">
+              <h3 className="text-lg font-semibold mb-3 text-gray-900 flex items-center">
                 <GraduationCap className="w-5 h-5 mr-2" />
                 Education
               </h3>
               <ul className="space-y-2">
                 {member.education.map((edu, index) => (
-                  <li key={index} className="text-gray-600 dark:text-gray-300 text-sm">
+                  <li
+                    key={index}
+                    className="text-gray-600 text-sm"
+                  >
                     {edu}
                   </li>
                 ))}

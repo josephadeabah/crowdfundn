@@ -113,13 +113,13 @@ const Teams = () => {
       ],
     },
     {
-      id: '3',
+      id: '5',
       name: 'Nqoba Manana',
-      position: 'Board Member',
+      position: 'Chief Operating Officer',
       image: nqobaMananaHeadshot,
       email: 'nqoba.manana@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
-      level: 'board' as const,
+      level: 'lead' as const,
       description:
         'Experienced operations leader with a track record of optimizing business processes and driving operational excellence. Nqoba specializes in scaling operations and building high-performing teams.',
       expertise: [
@@ -188,7 +188,7 @@ const Teams = () => {
 
   const engineeringTeam = [
     {
-      id: '7',
+      id: '14',
       name: 'Member Pending',
       position: 'Engineering Director',
       image: ctoHeadshot,
@@ -197,7 +197,7 @@ const Teams = () => {
       level: 'lead' as const,
     },
     {
-      id: '8',
+      id: '15',
       name: 'Member Pending',
       position: 'Senior Software Engineer',
       image: ctoHeadshot,
@@ -205,7 +205,7 @@ const Teams = () => {
       level: 'member' as const,
     },
     {
-      id: '9',
+      id: '16',
       name: 'Member Pending',
       position: 'Backend Developer',
       image: marketingLead,
@@ -213,7 +213,7 @@ const Teams = () => {
       level: 'member' as const,
     },
     {
-      id: '10',
+      id: '17',
       name: 'Member Pending',
       position: 'Frontend Developer',
       image: marketingLead,
@@ -224,7 +224,7 @@ const Teams = () => {
 
   const legalTeam = [
     {
-      id: '14',
+      id: '18',
       name: 'Member Pending',
       position: 'Legal Director',
       image: legalDirector,
@@ -233,7 +233,7 @@ const Teams = () => {
       level: 'lead' as const,
     },
     {
-      id: '15',
+      id: '19',
       name: 'Member Pending',
       position: 'Senior Administrative Associate',
       image: legalCounsel,
@@ -241,7 +241,7 @@ const Teams = () => {
       level: 'member' as const,
     },
     {
-      id: '16',
+      id: '20',
       name: 'Member Pending',
       position: 'Compliance Manager',
       image: legalDirector,
@@ -249,7 +249,7 @@ const Teams = () => {
       level: 'member' as const,
     },
     {
-      id: '17',
+      id: '21',
       name: 'Member Pending',
       position: 'Investment Associate',
       image: legalDirector,
@@ -259,15 +259,15 @@ const Teams = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-bantu-green text-white py-20">
+      <div className="bg-green-600 text-white py-20">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-5xl font-bold mb-6">Meet Our Team</h1>
             <p className="text-xl text-white/90 leading-relaxed">
               Our diverse team of talented professionals brings together
-              expertise, innovation, and passion to drive our company's success
+              expertise, innovation, and passion to drive our company&apos;s success
               and deliver exceptional results for you.
             </p>
           </div>
@@ -279,14 +279,14 @@ const Teams = () => {
         {/* Board of Directors */}
         <TeamSection
           title="Board of Directors"
-          subtitle="Visionary leaders shaping our company's strategic direction and future growth"
+          subtitle="Visionary leaders shaping our company&apos;s strategic direction and future growth"
           members={boardMembers}
           level="board"
           onMemberClick={handleMemberClick}
         />
 
         {/* Separator */}
-        <div className="border-t border-border/50 my-16"></div>
+        <div className="border-t border-gray-300 my-16"></div>
 
         {/* Executive Leadership */}
         <TeamSection
@@ -298,7 +298,7 @@ const Teams = () => {
         />
 
         {/* Separator */}
-        <div className="border-t border-border/50 my-16"></div>
+        <div className="border-t border-gray-300 my-16"></div>
 
         {/* Engineering Team */}
         <TeamSection
@@ -310,7 +310,7 @@ const Teams = () => {
         />
 
         {/* Separator */}
-        <div className="border-t border-border/50 my-16"></div>
+        <div className="border-t border-gray-300 my-16"></div>
 
         {/* Marketing Team */}
         <TeamSection
@@ -322,7 +322,7 @@ const Teams = () => {
         />
 
         {/* Separator */}
-        <div className="border-t border-border/50 my-16"></div>
+        <div className="border-t border-gray-300 my-16"></div>
 
         {/* Legal Team */}
         <TeamSection
@@ -342,17 +342,17 @@ const Teams = () => {
       />
 
       {/* Footer */}
-      <div className="bg-muted/30 py-12 mt-20">
+      <div className="bg-gray-100 py-12 mt-20">
         <div className="container mx-auto px-6 text-center">
-          <h3 className="text-2xl font-semibold text-foreground mb-4">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-4">
             Want to Join Our Team?
           </h3>
-          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            We're always looking for talented individuals who share our passion
+          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            We&apos;re always looking for talented individuals who share our passion
             for innovation and excellence.
           </p>
           <button
-            className="bg-gradient-primary text-black px-8 py-3 rounded-lg font-medium hover:shadow-card-hover transition-all duration-300 transform hover:scale-105"
+            className="bg-orange-500 text-white px-8 py-3 rounded-lg font-medium hover:bg-orange-600 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             onClick={() => (window.location.href = '/info/careers')}
           >
             View Open Positions

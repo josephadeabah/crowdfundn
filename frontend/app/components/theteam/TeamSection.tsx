@@ -1,4 +1,3 @@
-// Teamdiv.tsx
 import React from 'react';
 import { TeamMemberCard } from './TeamMemberCard';
 
@@ -10,9 +9,9 @@ interface TeamMember {
   email: string;
   linkedin?: string;
   level: 'board' | 'lead' | 'member';
-  description?: string; // Add this line
-  expertise?: string[]; // Add areas of expertise
-  education?: string[]; // Add education background
+  description?: string;
+  expertise?: string[];
+  education?: string[];
 }
 
 interface TeamSectionProps {
@@ -20,7 +19,7 @@ interface TeamSectionProps {
   subtitle?: string;
   members: TeamMember[];
   level: 'board' | 'department';
-  onMemberClick: (member: any) => void;
+  onMemberClick: (member: TeamMember) => void;
 }
 
 export const TeamSection = ({
@@ -28,6 +27,7 @@ export const TeamSection = ({
   subtitle,
   members,
   level,
+  onMemberClick,
 }: TeamSectionProps) => {
   const getGridCols = () => {
     if (level === 'board') {
@@ -40,12 +40,12 @@ export const TeamSection = ({
     <div className="py-16">
       <div className="text-center mb-12">
         <h2
-          className={`font-bold text-foreground mb-4 ${level === 'board' ? 'text-4xl' : 'text-3xl'}`}
+          className={`font-bold text-gray-900 mb-4 ${level === 'board' ? 'text-4xl' : 'text-3xl'}`}
         >
           {title}
         </h2>
         {subtitle && (
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             {subtitle}
           </p>
         )}
@@ -61,6 +61,9 @@ export const TeamSection = ({
             email={member.email}
             linkedin={member.linkedin}
             level={member.level}
+            description={member.description}
+            expertise={member.expertise}
+            onLearnMore={() => onMemberClick(member)}
           />
         ))}
       </div>

@@ -1,4 +1,3 @@
-// app/components/theteam/TeamMemberCard.tsx
 import { Mail, Linkedin, ArrowUpRight } from 'lucide-react';
 
 interface TeamMemberCardProps {
@@ -29,7 +28,7 @@ export const TeamMemberCard = ({
   const getCardStyles = () => {
     switch (level) {
       case 'board':
-        return 'bg-gradient-to-br from-white to-gray-50 border-2 border-blue-200 shadow-lg hover:shadow-xl transform hover:scale-105';
+        return 'bg-white border-2 border-green-200 shadow-lg hover:shadow-xl transform hover:scale-105';
       case 'lead':
         return 'bg-white border border-gray-200 shadow-md hover:shadow-lg transform hover:scale-102';
       default:
@@ -48,7 +47,7 @@ export const TeamMemberCard = ({
       className={`
         ${getCardStyles()}
         p-6 rounded-lg transition-all duration-300 ease-in-out group cursor-pointer
-        ${level === 'board' ? 'hover:border-blue-300' : 'hover:border-gray-300'}
+        ${level === 'board' ? 'hover:border-green-300' : 'hover:border-gray-300'}
         flex flex-col h-full
       `}
       onClick={onLearnMore}
@@ -79,14 +78,12 @@ export const TeamMemberCard = ({
             {name}
           </h3>
           <p
-            className={`text-blue-600 font-medium ${level === 'board' ? 'text-base' : 'text-sm'}`}
+            className={`text-green-600 font-medium ${level === 'board' ? 'text-base' : 'text-sm'}`}
           >
             {position}
           </p>
-          {department && (
-            <p className="text-gray-500 text-sm">{department}</p>
-          )}
-          
+          {department && <p className="text-gray-500 text-sm">{department}</p>}
+
           {/* Description Preview */}
           {description && (
             <div className="mt-2">
@@ -98,7 +95,7 @@ export const TeamMemberCard = ({
                   {expertise.slice(0, 3).map((skill, index) => (
                     <span
                       key={index}
-                      className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+                      className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"
                     >
                       {skill}
                     </span>
@@ -116,7 +113,7 @@ export const TeamMemberCard = ({
 
         <div className="flex space-x-2 pt-2">
           <button
-            className="border border-gray-300 hover:border-blue-500 hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors duration-200"
+            className="border border-gray-300 hover:border-green-500 hover:bg-green-500 hover:text-white p-2 rounded-lg transition-colors duration-200"
             onClick={(e) => {
               e.stopPropagation();
               window.location.href = `mailto:${email}`;
@@ -126,7 +123,7 @@ export const TeamMemberCard = ({
           </button>
           {linkedin && (
             <button
-              className="border border-gray-300 hover:border-blue-500 hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors duration-200"
+              className="border border-gray-300 hover:border-green-500 hover:bg-green-500 hover:text-white p-2 rounded-lg transition-colors duration-200"
               onClick={(e) => {
                 e.stopPropagation();
                 window.open(linkedin, '_blank');
