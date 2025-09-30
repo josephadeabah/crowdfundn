@@ -1,4 +1,4 @@
-// TeamSection.tsx
+// Teamdiv.tsx
 import React from 'react';
 import { TeamMemberCard } from './TeamMemberCard';
 
@@ -10,6 +10,9 @@ interface TeamMember {
   email: string;
   linkedin?: string;
   level: 'board' | 'lead' | 'member';
+  description?: string; // Add this line
+  expertise?: string[]; // Add areas of expertise
+  education?: string[]; // Add education background
 }
 
 interface TeamSectionProps {
@@ -17,6 +20,7 @@ interface TeamSectionProps {
   subtitle?: string;
   members: TeamMember[];
   level: 'board' | 'department';
+  onMemberClick: (member: any) => void;
 }
 
 export const TeamSection = ({
@@ -33,7 +37,7 @@ export const TeamSection = ({
   };
 
   return (
-    <section className="py-16">
+    <div className="py-16">
       <div className="text-center mb-12">
         <h2
           className={`font-bold text-foreground mb-4 ${level === 'board' ? 'text-4xl' : 'text-3xl'}`}
@@ -60,6 +64,6 @@ export const TeamSection = ({
           />
         ))}
       </div>
-    </section>
+    </div>
   );
 };

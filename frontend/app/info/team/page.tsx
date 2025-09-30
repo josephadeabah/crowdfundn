@@ -1,7 +1,22 @@
 'use client';
+import { useState } from 'react';
 import { TeamSection } from '@/app/components/theteam/TeamSection';
+import { MemberDetailModal } from '@/app/components/theteam/MemberDetailModal';
 
 const Teams = () => {
+  const [selectedMember, setSelectedMember] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleMemberClick = (member: any) => {
+    setSelectedMember(member);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedMember(null);
+  };
+
   const ceoHeadshot = '/joe_abe_ansah.png';
   const ctoHeadshot = '/avatar-default.png';
   const cfoHeadshot = '/avatar-default.png';
@@ -10,24 +25,92 @@ const Teams = () => {
   const marketingLead = '/avatar-default.png';
   const legalDirector = '/avatar-default.png';
   const legalCounsel = '/avatar-default.png';
+
+  // Update your member data with descriptions, expertise, and education
   const boardMembers = [
     {
       id: '1',
       name: 'Member Pending',
       position: 'Chairman of the Board',
-      image: ctoHeadshot,
+      image: '/avatar-default.png',
       email: 'john.harrison@company.com',
       linkedin: 'https://linkedin.com/in/',
       level: 'board' as const,
+      description:
+        'Seasoned executive with over 20 years of experience in strategic leadership and corporate governance. Previously served as CEO of multiple successful tech startups and brings extensive knowledge in scaling businesses globally.',
+      expertise: [
+        'Strategic Planning',
+        'Corporate Governance',
+        'Business Development',
+        'Investment Strategy',
+      ],
+      education: [
+        'MBA, Harvard Business School',
+        'BSc Computer Science, Stanford University',
+      ],
     },
     {
       id: '2',
       name: 'Joseph Adeabah',
       position: 'Secretary of the Board',
-      image: ceoHeadshot,
+      image: '/joe_abe_ansah.png',
       email: 'joseph.adeabah@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
       level: 'board' as const,
+      description:
+        "Visionary leader with a passion for innovation and technology. Joseph brings extensive experience in software development and strategic business planning, driving our company's mission to deliver cutting-edge solutions.",
+      expertise: [
+        'Software Architecture',
+        'Strategic Planning',
+        'Team Leadership',
+        'Product Development',
+      ],
+      education: [
+        'MSc Computer Science, MIT',
+        'BSc Engineering, University of Ghana',
+      ],
+    },
+    {
+      id: '3',
+      name: 'Nqoba Manana',
+      position: 'Board Member',
+      image: '/Nqoba.JPG',
+      email: 'nqoba.manana@bantuhive.com',
+      linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
+      level: 'board' as const,
+      description:
+        'Experienced operations leader with a track record of optimizing business processes and driving operational excellence. Nqoba specializes in scaling operations and building high-performing teams.',
+      expertise: [
+        'Operations Management',
+        'Process Optimization',
+        'Team Building',
+        'Strategic Execution',
+      ],
+      education: ['MBA, INSEAD', 'BCom Finance, University of Pretoria'],
+    },
+  ];
+
+  const executiveLeadership = [
+    {
+      id: '4',
+      name: 'Joseph Adeabah',
+      position: 'Chief Executive Officer',
+      image: '/joe_abe_ansah.png',
+      email: 'joseph.adeabah@bantuhive.com',
+      linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
+      level: 'lead' as const,
+      description:
+        'As CEO, Joseph provides strategic direction and leadership to drive company growth and innovation. With over 15 years in the tech industry, he is committed to building products that make a meaningful impact.',
+      expertise: [
+        'Executive Leadership',
+        'Product Strategy',
+        'Business Development',
+        'Innovation Management',
+      ],
+      education: [
+        'MSc Computer Science, MIT',
+        'Executive Program, Stanford Graduate School of Business',
+      ],
     },
     {
       id: '3',
@@ -37,27 +120,15 @@ const Teams = () => {
       email: 'nqoba.manana@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
       level: 'board' as const,
-    },
-  ];
-
-  const executiveLeadership = [
-    {
-      id: '4',
-      name: 'Joseph Adeabah',
-      position: 'Chief Executive Officer',
-      image: ceoHeadshot,
-      email: 'joseph.adeabah@bantuhive.com',
-      linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
-      level: 'lead' as const,
-    },
-    {
-      id: '5',
-      name: 'Nqoba Manana',
-      position: 'Chief Operating Officer',
-      image: nqobaMananaHeadshot,
-      email: 'nqoba.manana@bantuhive.com',
-      linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
-      level: 'lead' as const,
+      description:
+        'Experienced operations leader with a track record of optimizing business processes and driving operational excellence. Nqoba specializes in scaling operations and building high-performing teams.',
+      expertise: [
+        'Operations Management',
+        'Process Optimization',
+        'Team Building',
+        'Strategic Execution',
+      ],
+      education: ['MBA, INSEAD', 'BCom Finance, University of Pretoria'],
     },
     {
       id: '6',
@@ -211,6 +282,7 @@ const Teams = () => {
           subtitle="Visionary leaders shaping our company's strategic direction and future growth"
           members={boardMembers}
           level="board"
+          onMemberClick={handleMemberClick}
         />
 
         {/* Separator */}
@@ -222,6 +294,7 @@ const Teams = () => {
           subtitle="Senior executives driving operational excellence and strategic execution"
           members={executiveLeadership}
           level="department"
+          onMemberClick={handleMemberClick}
         />
 
         {/* Separator */}
@@ -233,6 +306,7 @@ const Teams = () => {
           subtitle="Building innovative solutions with cutting-edge technology and best practices"
           members={engineeringTeam}
           level="department"
+          onMemberClick={handleMemberClick}
         />
 
         {/* Separator */}
@@ -244,6 +318,7 @@ const Teams = () => {
           subtitle="Crafting compelling brand stories and driving growth through strategic marketing initiatives"
           members={marketingTeam}
           level="department"
+          onMemberClick={handleMemberClick}
         />
 
         {/* Separator */}
@@ -255,8 +330,16 @@ const Teams = () => {
           subtitle="Ensuring compliance and providing strategic legal guidance for sustainable growth"
           members={legalTeam}
           level="department"
+          onMemberClick={handleMemberClick}
         />
       </div>
+
+      {/* Member Detail Modal */}
+      <MemberDetailModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        member={selectedMember}
+      />
 
       {/* Footer */}
       <div className="bg-muted/30 py-12 mt-20">
@@ -270,7 +353,7 @@ const Teams = () => {
           </p>
           <button
             className="bg-gradient-primary text-black px-8 py-3 rounded-lg font-medium hover:shadow-card-hover transition-all duration-300 transform hover:scale-105"
-            onClick={() => (window.location.href = '/careers')}
+            onClick={() => (window.location.href = '/info/careers')}
           >
             View Open Positions
           </button>
