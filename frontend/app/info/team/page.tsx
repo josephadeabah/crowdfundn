@@ -36,18 +36,6 @@ const Teams = () => {
       email: 'john.harrison@company.com',
       linkedin: 'https://linkedin.com/in/',
       level: 'board' as const,
-      description:
-        'Seasoned executive with over 20 years of experience in strategic leadership and corporate governance. Previously served as CEO of multiple successful tech startups and brings extensive knowledge in scaling businesses globally.',
-      expertise: [
-        'Strategic Planning',
-        'Corporate Governance',
-        'Business Development',
-        'Investment Strategy',
-      ],
-      education: [
-        'MBA, University of Finance',
-        'BSc Accounting & Finance, University of Economics',
-      ],
     },
     {
       id: '2',
@@ -57,18 +45,6 @@ const Teams = () => {
       email: 'john.harrison@company.com',
       linkedin: 'https://linkedin.com/in/',
       level: 'board' as const,
-      description:
-        'Seasoned executive with over 20 years of experience in strategic leadership and corporate governance. Previously served as CEO of multiple successful tech startups and brings extensive knowledge in scaling businesses globally.',
-      expertise: [
-        'Strategic Planning',
-        'Corporate Governance',
-        'Business Development',
-        'Investment Strategy',
-      ],
-      education: [
-        'MBA, University of Finance',
-        'BSc Accounting & Finance, University of Economics',
-      ],
     },
     {
       id: '3',
