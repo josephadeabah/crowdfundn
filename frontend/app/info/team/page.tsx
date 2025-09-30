@@ -267,8 +267,8 @@ const Teams = () => {
             <h1 className="text-5xl font-bold mb-6">Meet Our Team</h1>
             <p className="text-xl text-white/90 leading-relaxed">
               Our diverse team of talented professionals brings together
-              expertise, innovation, and passion to drive our company&apos;s success
-              and deliver exceptional results for you.
+              expertise, innovation, and passion to drive our company&apos;s
+              success and deliver exceptional results for you.
             </p>
           </div>
         </div>
@@ -279,7 +279,7 @@ const Teams = () => {
         {/* Board of Directors */}
         <TeamSection
           title="Board of Directors"
-          subtitle="Visionary leaders shaping our company&apos;s strategic direction and future growth"
+          subtitle="Visionary leaders shaping our company's strategic direction and future growth"
           members={boardMembers}
           level="board"
           onMemberClick={handleMemberClick}
@@ -348,8 +348,8 @@ const Teams = () => {
             Want to Join Our Team?
           </h3>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            We&apos;re always looking for talented individuals who share our passion
-            for innovation and excellence.
+            We&apos;re always looking for talented individuals who share our
+            passion for innovation and excellence.
           </p>
           <button
             className="bg-orange-500 text-white px-8 py-3 rounded-lg font-medium hover:bg-orange-600 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"

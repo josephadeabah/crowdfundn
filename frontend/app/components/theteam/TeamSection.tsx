@@ -45,9 +45,7 @@ export const TeamSection = ({
           {title}
         </h2>
         {subtitle && (
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            {subtitle}
-          </p>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">{subtitle}</p>
         )}
       </div>
 

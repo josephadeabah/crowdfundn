@@ -76,7 +76,9 @@ export const MemberDetailModal = ({
           {/* Description */}
           {member.description && (
             <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-3 text-gray-900">About</h3>
+              <h3 className="text-lg font-semibold mb-3 text-gray-900">
+                About
+              </h3>
               <p className="text-gray-600 leading-relaxed">
                 {member.description}
               </p>
@@ -112,10 +114,7 @@ export const MemberDetailModal = ({
               </h3>
               <ul className="space-y-2">
                 {member.education.map((edu, index) => (
-                  <li
-                    key={index}
-                    className="text-gray-600 text-sm"
-                  >
+                  <li key={index} className="text-gray-600 text-sm">
                     {edu}
                   </li>
                 ))}
