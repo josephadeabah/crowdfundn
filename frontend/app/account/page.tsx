@@ -486,7 +486,7 @@ const ProfileTabs = () => {
     <div
       className="w-full bg-white min-h-screen relative"
       style={{
-        backgroundImage: 'url("/Heropage.png")',
+        backgroundImage: 'url("/bg-dots.jpg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
