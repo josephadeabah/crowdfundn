@@ -126,14 +126,21 @@ export const TeamMemberCard = ({
         <div className="flex space-x-2 pt-2">
           <button
             className="border border-gray-300 hover:border-green-500 hover:bg-green-500 hover:text-white p-2 rounded-lg transition-colors duration-200"
-            onClick={(e) => handleButtonClick(e, () => window.location.href = `mailto:${email}`)}
+            onClick={(e) =>
+              handleButtonClick(
+                e,
+                () => (window.location.href = `mailto:${email}`),
+              )
+            }
           >
             <Mail className="w-4 h-4" />
           </button>
           {linkedin && (
             <button
               className="border border-gray-300 hover:border-green-500 hover:bg-green-500 hover:text-white p-2 rounded-lg transition-colors duration-200"
-              onClick={(e) => handleButtonClick(e, () => window.open(linkedin, '_blank'))}
+              onClick={(e) =>
+                handleButtonClick(e, () => window.open(linkedin, '_blank'))
+              }
             >
               <Linkedin className="w-4 h-4" />
             </button>
