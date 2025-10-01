@@ -22,6 +22,7 @@ import {
   PieChart,
   BarChart3,
   FileText,
+  Scale,
 } from 'lucide-react';
 
 const investmentContracts = [
@@ -46,6 +47,16 @@ const investmentContracts = [
     returnType: 'Fixed dividends',
   },
   {
+    id: '/investment-contracts/quasi-equity',
+    title: 'Quasi-Equity',
+    description:
+      'Hybrid investment with debt security and performance-linked equity-like returns.',
+    icon: Scale,
+    riskLevel: 'Medium',
+    minInvestment: 'GHS 1,000',
+    returnType: 'Performance linked',
+  },
+  {
     id: '/investment-contracts/convertible-bonds',
     title: 'Convertible Bonds',
     description:
@@ -54,6 +65,16 @@ const investmentContracts = [
     riskLevel: 'Medium',
     minInvestment: 'GHS 2,000',
     returnType: 'Interest + Conversion rights',
+  },
+  {
+    id: '/investment-contracts/debt-securities',
+    title: 'Debt Securities',
+    description:
+      'Fixed-income investments with guaranteed returns and principal protection.',
+    icon: FileText,
+    riskLevel: 'Low-Medium',
+    minInvestment: 'GHS 500',
+    returnType: 'Fixed interest',
   },
   {
     id: '/investment-contracts/revenue-sharing',
@@ -74,16 +95,6 @@ const investmentContracts = [
     riskLevel: 'Medium',
     minInvestment: 'GHS 1,000',
     returnType: 'Profit percentage',
-  },
-  {
-    id: '/investment-contracts/debt-securities',
-    title: 'Debt Securities',
-    description:
-      'Fixed-income investments with guaranteed returns and principal protection.',
-    icon: FileText,
-    riskLevel: 'Low-Medium',
-    minInvestment: 'GHS 500',
-    returnType: 'Fixed interest',
   },
 ];
 
