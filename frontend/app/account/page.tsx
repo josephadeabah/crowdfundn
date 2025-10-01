@@ -483,7 +483,7 @@ const ProfileTabs = () => {
   );
 
   return (
-    <div className="w-full bg-white min-h-screen">
+    <section className="w-full bg-white min-h-screen">
       {/* Mobile Header */}
       <div className="lg:hidden sticky top-0 z-40 bg-white border-b border-gray-200">
         <div className="flex items-center justify-between p-4">
@@ -733,7 +733,7 @@ const ProfileTabs = () => {
           tabs={allTabs}
         />
       )}
-    </div>
+    </section>
   );
 };
 
