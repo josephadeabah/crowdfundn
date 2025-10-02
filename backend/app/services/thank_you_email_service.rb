@@ -90,7 +90,7 @@ class ThankYouEmailService
               <!-- Content -->
               <div class="content">
                 <h1>Thank You, #{donor_name}!</h1>
-                <p>We are incredibly grateful for your generous donation of <strong>#{currency} #{amount}</strong> to the campaign <strong>#{campaign_title}</strong>.</p>
+                <p>We are incredibly grateful for your support of <strong>#{currency} #{amount}</strong> to the campaign <strong>#{campaign_title}</strong>.</p>
                 <p>Your support is helping us make a real difference, and we couldn't do it without you. Together, we are one step closer to achieving our goals.</p>
                 <p>With heartfelt gratitude,</p>
                 <p><strong>#{fundraiser_name}</strong></p>
@@ -98,7 +98,7 @@ class ThankYouEmailService
 
               <!-- Footer -->
               <div class="footer">
-                <p>You are receiving this email because you made a donation on Bantu Hive.</p>
+                <p>You are receiving this email because you either made a donation or invested on Bantu Hive.</p>
                 <p>Sent from Bantu Hive's Headquarters:</p>
                 <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
 
