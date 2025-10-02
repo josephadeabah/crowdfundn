@@ -303,7 +303,7 @@ const Teams = () => {
               <p className="text-xl text-white/90 leading-relaxed mb-6">
                 We're democratizing access to funding and providing all types of
                 investors with exclusive opportunities to invest in exciting
-                early-stage and growth-stage African businesses—opportunities
+                early-stage and growth-stage African business opportunities
                 that were previously inaccessible.
               </p>
             </div>
