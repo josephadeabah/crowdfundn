@@ -320,7 +320,7 @@ const Teams = () => {
               <p className="text-lg text-gray-600 italic">
                 Our diverse team of talented professionals brings together
                 expertise, innovation, and passion to drive Africa's economic
-                transformation through accessible investment opportunities.
+                transformation through accessible funding opportunities.
               </p>
             </div>
           </div>
