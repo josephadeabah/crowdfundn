@@ -291,44 +291,42 @@ const Teams = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-green-600 text-white py-20">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl font-bold mb-6">Meet Our Team</h1>
+{/* Hero Section */}
+<div className="bg-green-100 text-gray-800 py-16">
+  <div className="container mx-auto px-6">
+    <div className="text-center max-w-4xl mx-auto">
+      <h1 className="text-5xl font-bold mb-8">Meet Our Team</h1>
 
-            {/* Mission Statement */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
-              <p className="text-xl text-white/90 leading-relaxed mb-6">
-                We're democratizing access to funding and providing all types of
-                investors with exclusive opportunities to invest in exciting
-                early-stage and growth-stage African business opportunities
-                that were previously inaccessible.
-              </p>
-            </div>
-
-            {/* Vision Statement */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">Our Vision</h2>
-              <p className="text-xl text-white/90 leading-relaxed">
-                To become a beacon of Africa's economic transformation by
-                proving the continent's innovation power and enabling an influx
-                of local and global investment into African startups.
-              </p>
-            </div>
-
-            {/* Team Introduction */}
-            <div className="mt-12 pt-8 border-t border-white/20">
-              <p className="text-lg text-white/90 italic">
-                Our diverse team of talented professionals brings together
-                expertise, innovation, and passion to drive Africa's economic
-                transformation through accessible investment opportunities.
-              </p>
-            </div>
-          </div>
-        </div>
+      {/* Mission Statement */}
+      <div className="mb-10">
+        <p className="text-2xl font-bold leading-relaxed mb-6">
+          We're democratizing access to funding and providing all types of
+          investors with exclusive opportunities to invest in exciting
+          early-stage and growth-stage African business opportunities
+          that were previously inaccessible.
+        </p>
       </div>
+
+      {/* Vision Statement */}
+      <div className="mb-10">
+        <p className="text-xl font-semibold text-gray-700 leading-relaxed">
+          To become a beacon of Africa's economic transformation by
+          proving the continent's innovation power and enabling an influx
+          of local and global investment into African startups.
+        </p>
+      </div>
+
+      {/* Team Introduction */}
+      <div className="mt-12 pt-8 border-t border-gray-300">
+        <p className="text-lg text-gray-600 italic">
+          Our diverse team of talented professionals brings together
+          expertise, innovation, and passion to drive Africa's economic
+          transformation through accessible investment opportunities.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 
       {/* Content */}
       <div className="container mx-auto px-4 sm:px-6">
