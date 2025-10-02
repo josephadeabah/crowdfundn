@@ -296,11 +296,36 @@ const Teams = () => {
         <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-5xl font-bold mb-6">Meet Our Team</h1>
-            <p className="text-xl text-white/90 leading-relaxed">
-              Our diverse team of talented professionals brings together
-              expertise, innovation, and passion to drive our company&apos;s
-              success and deliver exceptional results for you.
-            </p>
+
+            {/* Mission Statement */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
+              <p className="text-xl text-white/90 leading-relaxed mb-6">
+                We're democratizing access to funding and providing all types of
+                investors with exclusive opportunities to invest in exciting
+                early-stage and growth-stage African businesses—opportunities
+                that were previously inaccessible.
+              </p>
+            </div>
+
+            {/* Vision Statement */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">Our Vision</h2>
+              <p className="text-xl text-white/90 leading-relaxed">
+                To become a beacon of Africa's economic transformation by
+                proving the continent's innovation power and enabling an influx
+                of local and global investment into African startups.
+              </p>
+            </div>
+
+            {/* Team Introduction */}
+            <div className="mt-12 pt-8 border-t border-white/20">
+              <p className="text-lg text-white/90 italic">
+                Our diverse team of talented professionals brings together
+                expertise, innovation, and passion to drive Africa's economic
+                transformation through accessible investment opportunities.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -310,7 +335,7 @@ const Teams = () => {
         {/* Board of Directors */}
         <TeamSection
           title="Board of Directors"
-          subtitle="Visionary leaders shaping our company's strategic direction and future growth"
+          subtitle="Visionary leaders shaping our strategic direction and driving Africa's investment revolution"
           members={boardMembers}
           level="board"
           onMemberClick={handleMemberClick}
@@ -322,7 +347,7 @@ const Teams = () => {
         {/* Executive Leadership */}
         <TeamSection
           title="Executive Leadership"
-          subtitle="Senior executives driving operational excellence and strategic execution"
+          subtitle="Senior executives driving operational excellence and strategic execution across Africa's investment landscape"
           members={executiveLeadership}
           level="department"
           onMemberClick={handleMemberClick}
@@ -333,7 +358,7 @@ const Teams = () => {
         {/* Operations Team */}
         <TeamSection
           title="Operations Team"
-          subtitle="Ensuring smooth operations and exceptional service delivery across the organization"
+          subtitle="Ensuring smooth operations and exceptional service delivery across our investment platform"
           members={operationsTeam}
           level="department"
           onMemberClick={handleMemberClick}
@@ -345,7 +370,7 @@ const Teams = () => {
         {/* Engineering Team */}
         <TeamSection
           title="Engineering Team"
-          subtitle="Building innovative solutions with cutting-edge technology and best practices"
+          subtitle="Building innovative investment solutions with cutting-edge technology and best practices"
           members={engineeringTeam}
           level="department"
           onMemberClick={handleMemberClick}
@@ -357,7 +382,7 @@ const Teams = () => {
         {/* Marketing Team */}
         <TeamSection
           title="Marketing Team"
-          subtitle="Crafting compelling brand stories and driving growth through strategic marketing initiatives"
+          subtitle="Crafting compelling stories about African innovation and driving growth through strategic marketing"
           members={marketingTeam}
           level="department"
           onMemberClick={handleMemberClick}
@@ -369,7 +394,7 @@ const Teams = () => {
         {/* Legal Team */}
         <TeamSection
           title="Legal Team"
-          subtitle="Ensuring compliance and providing strategic legal guidance for sustainable growth"
+          subtitle="Ensuring regulatory compliance and providing strategic legal guidance for sustainable growth across Africa"
           members={legalTeam}
           level="department"
           onMemberClick={handleMemberClick}
@@ -390,11 +415,11 @@ const Teams = () => {
             Want to Join Our Team?
           </h3>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            We&apos;re always looking for talented individuals who share our
-            passion for innovation and excellence. If you want to be part of a
-            dynamic team that&apos;s making a difference, check out our current
-            job openings and apply today! or reach out to us at{' '}
-            careers@bantuhive.com
+            We're always looking for talented individuals who share our passion
+            for transforming Africa's investment landscape. If you want to be
+            part of a dynamic team that's democratizing funding access across
+            the continent, check out our current job openings and apply today!
+            Or send us your CV at careers@bantuhive.com
           </p>
           <button
             className="bg-orange-500 text-white px-8 py-3 rounded-lg font-medium hover:bg-orange-600 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
