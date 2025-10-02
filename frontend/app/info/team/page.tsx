@@ -295,8 +295,6 @@ const Teams = () => {
       <div className="bg-green-50 text-gray-800 py-16">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl font-bold mb-8">Meet Our Team</h1>
-
             {/* Mission Statement */}
             <div className="mb-10">
               <p className="text-2xl font-bold leading-relaxed mb-4">
