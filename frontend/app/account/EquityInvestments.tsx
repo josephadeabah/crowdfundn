@@ -319,7 +319,6 @@ const EquityInvestments = () => {
       <div className="bg-white rounded-lg shadow overflow-hidden mb-8 mt-8">
         <div className="px-2 py-4">
           <h2 className="text-xl font-semibold mb-4">Your Investments</h2>
-          
           {/* Professional Disclaimer Banner */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-start gap-3">
@@ -329,9 +328,10 @@ const EquityInvestments = () => {
                   Investment Information Notice
                 </p>
                 <p className="text-xs text-blue-700">
-                  All values, returns, and equity allocations displayed are estimates and projections. 
-                  Final terms and conditions will be exclusively governed by the definitive investment 
-                  agreement executed between the investor and the company.
+                  All values, returns, and equity allocations displayed are
+                  estimates and projections. Final terms and conditions will be
+                  exclusively governed by the definitive investment agreement
+                  executed between the investor and the company.
                 </p>
               </div>
             </div>
