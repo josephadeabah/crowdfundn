@@ -328,10 +328,11 @@ const EquityInvestments = () => {
                   Investment Information Notice
                 </p>
                 <p className="text-xs text-blue-700">
-                  All values, returns, and equity allocations displayed are
-                  estimates and projections. Final terms and conditions will be
-                  exclusively governed by the definitive investment agreement
-                  executed between the investor and the company.
+                  The figures shown, returns, current values, and equity are
+                  based on careful projections and may change. While some
+                  results may align with these estimates, the final terms will
+                  always be set out in the investment instrument and agreement
+                  between you and the company.
                 </p>
               </div>
             </div>
