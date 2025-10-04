@@ -9,7 +9,7 @@ export const CookieBanner = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom duration-500">
-      <div className="w-full bg-card shadow-elegant backdrop-blur-sm p-4 md:p-6">
+      <div className="w-full bg-white shadow-elegant backdrop-blur-sm p-4 md:p-6">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center max-w-7xl mx-auto">
           <div className="flex-shrink-0">
             <div className="w-10 h-10 bg-gradient-to-br from-bantu-green to-bantu-orange flex items-center justify-center shadow-glass-lg">

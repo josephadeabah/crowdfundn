@@ -68,12 +68,12 @@ export const CookieSettings = () => {
 
   return (
     <Dialog open={showSettings} onOpenChange={closeSettings}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col bg-white text-gray-900">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-bantu-green to-bantu-orange bg-clip-text text-transparent">
             Cookie Settings
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-gray-700">
             Manage your cookie preferences. You can enable or disable different
             types of cookies below.
           </DialogDescription>
@@ -83,11 +83,17 @@ export const CookieSettings = () => {
           defaultValue="preferences"
           className="flex-1 overflow-hidden flex flex-col"
         >
-          <TabsList className="grid w-full grid-cols-2 rounded-none">
-            <TabsTrigger value="preferences" className="rounded-none">
+          <TabsList className="grid w-full grid-cols-2 rounded-none bg-gray-100">
+            <TabsTrigger 
+              value="preferences" 
+              className="rounded-none bg-white text-gray-900 data-[state=active]:bg-bantu-green data-[state=active]:text-white"
+            >
               Preferences
             </TabsTrigger>
-            <TabsTrigger value="details" className="rounded-none">
+            <TabsTrigger 
+              value="details" 
+              className="rounded-none bg-white text-gray-900 data-[state=active]:bg-bantu-green data-[state=active]:text-white"
+            >
               Details
             </TabsTrigger>
           </TabsList>
@@ -109,7 +115,7 @@ export const CookieSettings = () => {
               return (
                 <div
                   key={category}
-                  className="border border-border rounded-xl p-4 transition-smooth hover:border-bantu-green/50 hover:shadow-md"
+                  className="border border-gray-200 rounded-xl p-4 transition-smooth hover:border-bantu-green/50 hover:shadow-md bg-white"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-3 flex-1">
@@ -117,14 +123,14 @@ export const CookieSettings = () => {
                         className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                           isEnabled
                             ? 'bg-bantu-light-green text-bantu-dark-green'
-                            : 'bg-muted text-muted-foreground'
+                            : 'bg-gray-100 text-gray-500'
                         }`}
                       >
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-card-foreground">
+                          <h4 className="font-semibold text-gray-900">
                             {info.title}
                           </h4>
                           {isEssential && (
@@ -133,7 +139,7 @@ export const CookieSettings = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-gray-700">
                           {info.description}
                         </p>
                       </div>
@@ -156,10 +162,10 @@ export const CookieSettings = () => {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-lg mb-2 text-card-foreground">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">
                   What are cookies?
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-700">
                   Cookies are small text files that are placed on your device
                   when you visit a website. They help websites remember your
                   preferences and provide a better user experience.
@@ -167,13 +173,13 @@ export const CookieSettings = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-lg mb-2 text-card-foreground">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">
                   How we use cookies
                 </h3>
-                <p className="text-sm text-muted-foreground mb-3">
+                <p className="text-sm text-gray-700 mb-3">
                   BantuHive uses cookies to:
                 </p>
-                <ul className="space-y-2 text-sm text-muted-foreground">
+                <ul className="space-y-2 text-sm text-gray-700">
                   <li className="flex gap-2">
                     <span className="text-bantu-green">•</span>
                     <span>
@@ -201,10 +207,10 @@ export const CookieSettings = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-lg mb-2 text-card-foreground">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">
                   Your rights
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-700">
                   You have the right to accept or reject non-essential cookies.
                   You can change your preferences at any time through this
                   settings panel. Note that disabling certain cookies may affect
@@ -213,10 +219,10 @@ export const CookieSettings = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-lg mb-2 text-card-foreground">
+                <h3 className="font-semibold text-lg mb-2 text-gray-900">
                   Data retention
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-700">
                   Your cookie preferences are stored for 6 months. After this
                   period, you will be asked to review your preferences again.
                 </p>
@@ -225,7 +231,7 @@ export const CookieSettings = () => {
           </TabsContent>
         </Tabs>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
           <Button
             onClick={handleRejectAll}
             className="flex-1 gap-2 bg-gray-500 hover:bg-gray-700 text-white transition-smooth rounded-none"

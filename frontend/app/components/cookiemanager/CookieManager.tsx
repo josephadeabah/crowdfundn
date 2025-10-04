@@ -1,13 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/app/components/ui/dialog';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
@@ -38,7 +30,7 @@ import { toast } from '@/app/hooks/use-toast';
 
 const categoryColors: Record<CookieCategory, string> = {
   essential: 'bg-bantu-light-green text-bantu-dark-green border-bantu-green/20',
-  functional: 'bg-fundify-muted text-fundify-primary border-fundify-border',
+  functional: 'bg-gray-100 text-gray-700 border-gray-200',
   analytics: 'bg-blue-50 text-blue-600 border-blue-200',
   marketing: 'bg-bantu-soft-orange text-bantu-orange border-bantu-orange/20',
 };
@@ -52,17 +44,14 @@ const categoryIcons: Record<CookieCategory, any> = {
 
 export const CookieManager = () => {
   const [cookies, setCookies] = useState<DetectedCookie[]>([]);
-  const [open, setOpen] = useState(false);
 
   const loadCookies = () => {
     setCookies(getAllCookies());
   };
 
   useEffect(() => {
-    if (open) {
-      loadCookies();
-    }
-  }, [open]);
+    loadCookies();
+  }, []);
 
   const handleDelete = (name: string, domain: string) => {
     deleteCookie(name, domain);
@@ -93,132 +82,120 @@ export const CookieManager = () => {
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          <Cookie className="w-4 h-4" />
-          Manage Cookies
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <DialogTitle className="text-2xl font-bold">
-                Cookie Manager
-              </DialogTitle>
-              <DialogDescription>
-                View and manage all cookies stored by BantuHive
-              </DialogDescription>
-            </div>
-            <Button
-              onClick={handleRefresh}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Refresh
-            </Button>
-          </div>
-        </DialogHeader>
-
-        <div className="flex items-center gap-4 py-2">
-          <span className="text-sm text-muted-foreground">
-            Total cookies: <strong>{cookies.length}</strong>
-          </span>
+    <div className="w-full bg-white text-gray-900 p-6 rounded-lg border border-gray-200">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Cookie Manager</h2>
+          <p className="text-gray-700 mt-1">
+            View and manage all cookies stored by BantuHive
+          </p>
         </div>
+        <Button
+          onClick={handleRefresh}
+          variant="outline"
+          size="sm"
+          className="gap-2 border-gray-300 text-gray-700 hover:bg-gray-100"
+        >
+          <RefreshCw className="w-4 h-4" />
+          Refresh
+        </Button>
+      </div>
 
-        <ScrollArea className="flex-1 -mx-6 px-6">
-          <div className="space-y-6">
-            {Object.entries(groupedCookies).map(
-              ([category, categoryCookies]) => {
-                const Icon = categoryIcons[category as CookieCategory];
-                const colorClass = categoryColors[category as CookieCategory];
+      <div className="flex items-center gap-4 py-2 mb-4">
+        <span className="text-sm text-gray-700">
+          Total cookies: <strong className="text-gray-900">{cookies.length}</strong>
+        </span>
+      </div>
 
-                return (
-                  <div
-                    key={category}
-                    className="border border-border rounded-xl p-4"
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center ${colorClass}`}
-                      >
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold capitalize text-card-foreground">
-                          {category}
-                        </h3>
-                        <p className="text-xs text-muted-foreground">
-                          {categoryCookies.length} cookies
-                        </p>
-                      </div>
+      <ScrollArea className="w-full">
+        <div className="space-y-6">
+          {Object.entries(groupedCookies).map(
+            ([category, categoryCookies]) => {
+              const Icon = categoryIcons[category as CookieCategory];
+              const colorClass = categoryColors[category as CookieCategory];
+
+              return (
+                <div
+                  key={category}
+                  className="border border-gray-200 rounded-xl p-4 bg-white"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${colorClass}`}
+                    >
+                      <Icon className="w-4 h-4" />
                     </div>
-
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Domain</TableHead>
-                          <TableHead>Path</TableHead>
-                          <TableHead>Size</TableHead>
-                          <TableHead className="text-right">Action</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {categoryCookies.map((cookie, idx) => (
-                          <TableRow key={`${cookie.name}-${idx}`}>
-                            <TableCell className="font-medium">
-                              {cookie.name}
-                            </TableCell>
-                            <TableCell className="text-muted-foreground">
-                              {cookie.domain}
-                            </TableCell>
-                            <TableCell className="text-muted-foreground">
-                              {cookie.path}
-                            </TableCell>
-                            <TableCell className="text-muted-foreground">
-                              {cookie.size} bytes
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {category !== 'essential' ? (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    handleDelete(cookie.name, cookie.domain)
-                                  }
-                                  className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Delete
-                                </Button>
-                              ) : (
-                                <Badge variant="outline" className="text-xs">
-                                  Protected
-                                </Badge>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                    <div>
+                      <h3 className="font-semibold capitalize text-gray-900">
+                        {category}
+                      </h3>
+                      <p className="text-xs text-gray-700">
+                        {categoryCookies.length} cookies
+                      </p>
+                    </div>
                   </div>
-                );
-              },
-            )}
 
-            {cookies.length === 0 && (
-              <div className="text-center py-12">
-                <Cookie className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">No cookies found</p>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-gray-900">Name</TableHead>
+                        <TableHead className="text-gray-900">Domain</TableHead>
+                        <TableHead className="text-gray-900">Path</TableHead>
+                        <TableHead className="text-gray-900">Size</TableHead>
+                        <TableHead className="text-right text-gray-900">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {categoryCookies.map((cookie, idx) => (
+                        <TableRow key={`${cookie.name}-${idx}`}>
+                          <TableCell className="font-medium text-gray-900">
+                            {cookie.name}
+                          </TableCell>
+                          <TableCell className="text-gray-700">
+                            {cookie.domain}
+                          </TableCell>
+                          <TableCell className="text-gray-700">
+                            {cookie.path}
+                          </TableCell>
+                          <TableCell className="text-gray-700">
+                            {cookie.size} bytes
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {category !== 'essential' ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  handleDelete(cookie.name, cookie.domain)
+                                }
+                                className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Delete
+                              </Button>
+                            ) : (
+                              <Badge variant="outline" className="text-xs text-gray-700 border-gray-300">
+                                Protected
+                              </Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              );
+            },
+          )}
+
+          {cookies.length === 0 && (
+            <div className="text-center py-12">
+              <Cookie className="w-12 h-12 mx-auto mb-4 text-gray-500" />
+              <p className="text-gray-700">No cookies found</p>
+            </div>
+          )}
+        </div>
+      </ScrollArea>
+    </div>
   );
 };
