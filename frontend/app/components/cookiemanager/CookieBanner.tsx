@@ -10,10 +10,10 @@ export const CookieBanner = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6 animate-in slide-in-from-bottom duration-500">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-card border border-border rounded-2xl shadow-elegant backdrop-blur-sm p-6 md:p-8">
+        <div className="bg-card shadow-elegant backdrop-blur-sm p-6 md:p-8">
           <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
             <div className="flex-shrink-0">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-bantu-green to-bantu-orange flex items-center justify-center shadow-glass-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-bantu-green to-bantu-orange flex items-center justify-center shadow-glass-lg">
                 <Cookie className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -32,22 +32,20 @@ export const CookieBanner = () => {
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <Button
                 onClick={openSettings}
-                variant="outline"
-                className="gap-2 transition-smooth hover:border-bantu-green hover:text-bantu-green"
+                className="gap-2 bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
               >
-                <Settings className="w-4 h-4" />
+                <Settings className="w-4 h-4 text-white" />
                 Customize
               </Button>
               <Button
                 onClick={rejectAll}
-                variant="outline"
-                className="transition-smooth hover:border-destructive hover:text-destructive"
+                className="bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
               >
                 Reject All
               </Button>
               <Button
                 onClick={acceptAll}
-                className="bg-gradient-to-r from-bantu-green to-bantu-orange hover:opacity-90 transition-smooth shadow-glass-lg text-white"
+                className="bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
               >
                 Accept All
               </Button>
