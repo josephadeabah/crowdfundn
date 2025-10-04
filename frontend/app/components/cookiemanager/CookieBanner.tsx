@@ -22,12 +22,12 @@ export const CookieBanner = () => {
               We Value Your Privacy
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We're committed to your privacy. Our site uses cookies for
-              website functionality, analytics, and ads. You can tailor your
-              experience by accepting all cookies, customizing settings, or
-              declining non-essentials in 'Preferences'. No action means no
-              consent. You have full control to modify your choices in
-              'Privacy Options' at any time. For more details see our{' '}
+              We're committed to your privacy. Our site uses cookies for website
+              functionality, analytics, and ads. You can tailor your experience
+              by accepting all cookies, customizing settings, or declining
+              non-essentials in 'Preferences'. No action means no consent. You
+              have full control to modify your choices in 'Privacy Options' at
+              any time. For more details see our{' '}
               <a
                 href="/info/cookies"
                 className="text-bantu-green hover:text-bantu-orange underline"
