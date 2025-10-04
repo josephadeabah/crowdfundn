@@ -26,7 +26,7 @@ export const CookieBanner = () => {
               functionality, analytics, and ads. You can tailor your experience
               by accepting all cookies, customizing settings, or declining
               non-essentials in 'Preferences'. No action means no consent. You
-              have full control to modify your choices in 'Privacy Options' at
+              have full control to modify your choices at
               any time. For more details see our{' '}
               <a
                 href="/info/cookies"
