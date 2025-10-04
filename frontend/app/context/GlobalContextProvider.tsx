@@ -20,6 +20,7 @@ import { DrawerProvider } from './drawer/DrawerContext';
 import { KycProvider } from './kyc/KycContext';
 import { KycReviewProvider } from './kyc/KycReviewContext';
 import { PremiumProvider } from './premium/PremiumContext';
+import { CookieConsentProvider } from './cookie/CookieConsentContext';
 
 export const GlobalContextProvider = ({
   children,
@@ -29,41 +30,43 @@ export const GlobalContextProvider = ({
   return (
     <DrawerProvider>
       <AuthProvider>
-        <UserProfileProvider>
-          <PremiumProvider>
-            <KycProvider>
-              <KycReviewProvider>
-                <DonationsProvider>
-                  <RewardProvider>
-                    <CampaignProvider>
-                      <EquityCampaignProvider>
-                        <CampaignUpdatesProvider>
-                          <TransferProvider>
-                            <CampaignCommentsProvider>
-                              <CategoryProvider>
-                                <MetricsProvider>
-                                  <ArticlesProvider>
-                                    <LeaderboardProvider>
-                                      <PointRewardProvider>
-                                        <PledgesProvider>
-                                          {children}
-                                        </PledgesProvider>
-                                      </PointRewardProvider>
-                                    </LeaderboardProvider>
-                                  </ArticlesProvider>
-                                </MetricsProvider>
-                              </CategoryProvider>
-                            </CampaignCommentsProvider>
-                          </TransferProvider>
-                        </CampaignUpdatesProvider>
-                      </EquityCampaignProvider>
-                    </CampaignProvider>
-                  </RewardProvider>
-                </DonationsProvider>
-              </KycReviewProvider>
-            </KycProvider>
-          </PremiumProvider>
-        </UserProfileProvider>
+        <CookieConsentProvider>
+          <UserProfileProvider>
+            <PremiumProvider>
+              <KycProvider>
+                <KycReviewProvider>
+                  <DonationsProvider>
+                    <RewardProvider>
+                      <CampaignProvider>
+                        <EquityCampaignProvider>
+                          <CampaignUpdatesProvider>
+                            <TransferProvider>
+                              <CampaignCommentsProvider>
+                                <CategoryProvider>
+                                  <MetricsProvider>
+                                    <ArticlesProvider>
+                                      <LeaderboardProvider>
+                                        <PointRewardProvider>
+                                          <PledgesProvider>
+                                            {children}
+                                          </PledgesProvider>
+                                        </PointRewardProvider>
+                                      </LeaderboardProvider>
+                                    </ArticlesProvider>
+                                  </MetricsProvider>
+                                </CategoryProvider>
+                              </CampaignCommentsProvider>
+                            </TransferProvider>
+                          </CampaignUpdatesProvider>
+                        </EquityCampaignProvider>
+                      </CampaignProvider>
+                    </RewardProvider>
+                  </DonationsProvider>
+                </KycReviewProvider>
+              </KycProvider>
+            </PremiumProvider>
+          </UserProfileProvider>
+        </CookieConsentProvider>
       </AuthProvider>
     </DrawerProvider>
   );

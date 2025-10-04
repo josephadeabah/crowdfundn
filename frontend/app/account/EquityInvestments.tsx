@@ -328,11 +328,11 @@ const EquityInvestments = () => {
                   Investment Information Notice
                 </p>
                 <p className="text-xs text-blue-700">
-                  The figures shown, returns and current values are
-                  based on careful projections and may change. While some
-                  results may align with these estimates, the final terms will
-                  always be set out in the investment instrument and agreement
-                  between you and the company.
+                  The figures shown, returns and current values are based on
+                  careful projections and may change. While some results may
+                  align with these estimates, the final terms will always be set
+                  out in the investment instrument and agreement between you and
+                  the company.
                 </p>
               </div>
             </div>
