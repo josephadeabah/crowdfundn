@@ -9,7 +9,9 @@ interface CampaignHeaderProps {
 const CampaignHeader: React.FC<CampaignHeaderProps> = ({ campaign }) => {
   return (
     <>
-      <h1 className="text-4xl font-bold mb-4 text-gray-900">{campaign?.title}</h1>
+      <h1 className="text-4xl font-bold mb-4 text-gray-900">
+        {campaign?.title}
+      </h1>
       <div className="h-[600px]">
         <div className="relative w-full h-full mb-4">
           <Image

@@ -8,7 +8,7 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 import ToastComponent from '../toast/Toast';
 import Avatar from '../avatar/Avatar';
 import { cn } from '@/app/lib/utils';
-import { Heart, Award } from 'lucide-react';
+import { Heart, Award, Users, HandHeart } from 'lucide-react';
 import { deslugify } from '@/app/utils/helpers/categories';
 import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
@@ -101,6 +101,33 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
       default:
         return 'bg-gray-100 text-gray-800 border border-gray-200';
+    }
+  };
+
+  // Get the appropriate icon based on campaign type
+  const getSupportersIcon = () => {
+    if (campaign.type === 'EquityCampaign') {
+      return <Users className="h-3 w-3" />; // Investor/group icon
+    } else {
+      return <HandHeart className="h-3 w-3" />; // Donation/giving hand icon
+    }
+  };
+
+  // Get the appropriate label based on campaign type
+  const getSupportersLabel = () => {
+    if (campaign.type === 'EquityCampaign') {
+      return 'Investors';
+    } else {
+      return 'Supporters';
+    }
+  };
+
+  // Get the appropriate count based on campaign type
+  const getSupportersCount = () => {
+    if (campaign.type === 'EquityCampaign') {
+      return campaign.total_investors || 0;
+    } else {
+      return campaign.total_donors || 0;
     }
   };
 
@@ -290,14 +317,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
               <div className="flex justify-between items-center text-[10px]">
                 <div className="flex items-center gap-1 text-gray-800">
-                  <Award className="h-3 w-3" />
+                  {getSupportersIcon()}
                   <span className="font-medium">
-                    {campaign.type === 'EquityCampaign'
-                      ? campaign.total_investors || 0
-                      : campaign.total_donors || 0}{' '}
-                    {campaign.type === 'EquityCampaign'
-                      ? 'Investors'
-                      : 'Supporters'}
+                    {getSupportersCount()} {getSupportersLabel()}
                   </span>
                 </div>
                 <span className="text-muted-foreground">
