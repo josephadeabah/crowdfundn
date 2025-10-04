@@ -11,7 +11,7 @@ import { useCookieConsent } from '@/app/context/cookie/CookieConsentContext';
 import { CookieBanner } from '@/app/components/cookiemanager/CookieBanner';
 import { CookieSettings } from '@/app/components/cookiemanager/CookieSettings';
 import { Button } from './components/ui/button';
-import { Settings } from 'lucide-react';
+import { Cookie } from 'lucide-react';
 
 const HomePage = () => {
   const { openSettings } = useCookieConsent();
@@ -76,7 +76,7 @@ const HomePage = () => {
         size="icon"
         aria-label="Cookie Settings"
       >
-        <Settings className="h-5 w-5" />
+        <Cookie className="h-5 w-5" />
       </Button>
     </div>
   );

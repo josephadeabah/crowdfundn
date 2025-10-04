@@ -67,7 +67,7 @@ export const CookieSettings = () => {
     <Dialog open={showSettings} onOpenChange={closeSettings}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-bantu-green to-bantu-orange bg-clip-text text-transparent">
             Cookie Settings
           </DialogTitle>
           <DialogDescription>
@@ -102,14 +102,14 @@ export const CookieSettings = () => {
               return (
                 <div
                   key={category}
-                  className="border border-border rounded-xl p-4 transition-smooth hover:border-primary/50 hover:shadow-md"
+                  className="border border-border rounded-xl p-4 transition-smooth hover:border-bantu-green/50 hover:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-3 flex-1">
                       <div
                         className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                           isEnabled
-                            ? 'bg-primary/10 text-primary'
+                            ? 'bg-bantu-light-green text-bantu-dark-green'
                             : 'bg-muted text-muted-foreground'
                         }`}
                       >
@@ -121,7 +121,7 @@ export const CookieSettings = () => {
                             {info.title}
                           </h4>
                           {isEssential && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-bantu-light-green text-bantu-dark-green font-medium">
                               Required
                             </span>
                           )}
@@ -171,26 +171,26 @@ export const CookieSettings = () => {
                 </p>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex gap-2">
-                    <span className="text-primary">•</span>
+                    <span className="text-bantu-green">•</span>
                     <span>
                       Keep you signed in and remember your preferences
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-primary">•</span>
+                    <span className="text-bantu-green">•</span>
                     <span>
                       Understand how you use our platform to improve our
                       services
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-primary">•</span>
+                    <span className="text-bantu-green">•</span>
                     <span>
                       Personalize your experience and show relevant content
                     </span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-primary">•</span>
+                    <span className="text-bantu-green">•</span>
                     <span>Measure the effectiveness of our campaigns</span>
                   </li>
                 </ul>
@@ -238,7 +238,7 @@ export const CookieSettings = () => {
           </Button>
           <Button
             onClick={handleSave}
-            className="flex-1 gap-2 bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-smooth"
+            className="flex-1 gap-2 bg-gradient-to-r from-bantu-green to-bantu-orange hover:opacity-90 transition-smooth text-white"
           >
             <Save className="w-4 h-4" />
             Save Preferences

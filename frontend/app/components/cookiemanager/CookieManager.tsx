@@ -37,10 +37,10 @@ import {
 import { toast } from '@/app/hooks/use-toast';
 
 const categoryColors: Record<CookieCategory, string> = {
-  essential: 'bg-primary/10 text-primary border-primary/20',
-  functional: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
-  analytics: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-  marketing: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+  essential: 'bg-bantu-light-green text-bantu-dark-green border-bantu-green/20',
+  functional: 'bg-fundify-muted text-fundify-primary border-fundify-border',
+  analytics: 'bg-blue-50 text-blue-600 border-blue-200',
+  marketing: 'bg-bantu-soft-orange text-bantu-orange border-bantu-orange/20',
 };
 
 const categoryIcons: Record<CookieCategory, any> = {

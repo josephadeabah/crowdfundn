@@ -13,8 +13,8 @@ export const CookieBanner = () => {
         <div className="bg-card border border-border rounded-2xl shadow-elegant backdrop-blur-sm p-6 md:p-8">
           <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
             <div className="flex-shrink-0">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-glow">
-                <Cookie className="w-6 h-6 text-primary-foreground" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-bantu-green to-bantu-orange flex items-center justify-center shadow-glass-lg">
+                <Cookie className="w-6 h-6 text-white" />
               </div>
             </div>
 
@@ -33,7 +33,7 @@ export const CookieBanner = () => {
               <Button
                 onClick={openSettings}
                 variant="outline"
-                className="gap-2 transition-smooth hover:border-primary"
+                className="gap-2 transition-smooth hover:border-bantu-green hover:text-bantu-green"
               >
                 <Settings className="w-4 h-4" />
                 Customize
@@ -47,7 +47,7 @@ export const CookieBanner = () => {
               </Button>
               <Button
                 onClick={acceptAll}
-                className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-smooth shadow-glow"
+                className="bg-gradient-to-r from-bantu-green to-bantu-orange hover:opacity-90 transition-smooth shadow-glass-lg text-white"
               >
                 Accept All
               </Button>

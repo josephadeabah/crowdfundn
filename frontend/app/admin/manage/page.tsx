@@ -44,6 +44,8 @@ import KYCReview from './kyc/KYCReview';
 import AllKYCs from './kyc/AllKYCs';
 import { useUserContext } from '@/app/context/users/UserContext';
 import { UserProfile } from '@/app/types/user_profiles.types';
+import { CookieManager } from '@/app/components/cookiemanager/CookieManager';
+import { Cookie } from 'lucide-react';
 
 // Type definitions for better type safety
 type TabGroup = {
@@ -255,6 +257,13 @@ const AdminDashboard = () => {
           icon: <ShieldCheckIcon className="h-5 w-5" />,
           component: <AllKYCs />,
           requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
+        },
+        {
+          id: 'cookieManager',
+          label: 'Cookie Manager',
+          icon: <Cookie className="h-5 w-5" />,
+          component: <CookieManager />,
+          requiredAdmin: true, // Only full admins can manage cookies
         },
         {
           id: 'support',
