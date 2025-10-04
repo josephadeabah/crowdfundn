@@ -24,12 +24,11 @@ export interface DetectedCookie {
 }
 
 const CONSENT_VERSION = '1.0';
-const CONSENT_EXPIRY_DAYS = 180; // 6 months
+const CONSENT_EXPIRY_DAYS = 180;
 const STORAGE_KEY = 'bantuhive_cookie_consent';
 
-// Default consent (only essential enabled)
 export const DEFAULT_CONSENT: CookieConsent = {
-  essential: true, // Always true, can't be disabled
+  essential: true,
   functional: false,
   analytics: false,
   marketing: false,
@@ -37,35 +36,104 @@ export const DEFAULT_CONSENT: CookieConsent = {
   version: CONSENT_VERSION,
 };
 
-// Cookie categories with their purposes
 export const COOKIE_CATEGORIES = {
   essential: {
     title: 'Essential Cookies',
-    description:
-      'Required for the website to function properly. These cannot be disabled.',
-    cookies: ['bantuhive_cookie_consent', 'session_id', 'csrf_token'],
+    description: 'Required for the website to function properly.',
+    cookies: [
+      'bantuhive_cookie_consent',
+      'session_id',
+      'csrf_token',
+      'token',
+      'user',
+    ],
   },
   functional: {
     title: 'Functional Cookies',
-    description:
-      'Enable enhanced functionality and personalization, such as remembering your preferences.',
-    cookies: ['user_preferences', 'language', 'currency'],
+    description: 'Enable enhanced functionality and personalization.',
+    cookies: ['user_preferences', 'language', 'currency', 'theme'],
   },
   analytics: {
     title: 'Analytics Cookies',
-    description:
-      'Help us understand how visitors interact with our website by collecting and reporting information anonymously.',
-    cookies: ['_ga', '_gid', '_gat', 'analytics_session'],
+    description: 'Help us understand how visitors interact with our website.',
+    cookies: ['_ga', '_gid', '_gat', '_gcl_au', '_fbp', 'amplitude_id'],
   },
   marketing: {
     title: 'Marketing Cookies',
-    description:
-      'Used to track visitors across websites to display relevant advertisements.',
-    cookies: ['_fbp', 'fr', 'ads_id', 'conversion_id'],
+    description: 'Used to track visitors across websites for advertising.',
+    cookies: ['_gcl_aw', '_gcl_dc', 'fr', 'NID', 'IDE', 'test_cookie'],
   },
 };
 
-// Get saved consent from localStorage
+// Enhanced cookie detection with better categorization
+export const getAllCookies = (): DetectedCookie[] => {
+  const cookies: DetectedCookie[] = [];
+
+  try {
+    const cookieStrings = document.cookie.split(';');
+
+    cookieStrings.forEach((cookieString) => {
+      const [name, ...valueParts] = cookieString.trim().split('=');
+      const value = valueParts.join('='); // Handle cookies with = in value
+
+      if (name) {
+        let category: CookieCategory = 'essential';
+        const lowerName = name.toLowerCase();
+
+        // Enhanced categorization logic
+        if (
+          COOKIE_CATEGORIES.functional.cookies.some(
+            (cookie) =>
+              lowerName.includes(cookie.toLowerCase()) ||
+              cookie.toLowerCase().includes(lowerName),
+          )
+        ) {
+          category = 'functional';
+        } else if (
+          COOKIE_CATEGORIES.analytics.cookies.some(
+            (cookie) =>
+              lowerName.includes(cookie.toLowerCase()) ||
+              cookie.toLowerCase().includes(lowerName),
+          )
+        ) {
+          category = 'analytics';
+        } else if (
+          COOKIE_CATEGORIES.marketing.cookies.some(
+            (cookie) =>
+              lowerName.includes(cookie.toLowerCase()) ||
+              cookie.toLowerCase().includes(lowerName),
+          )
+        ) {
+          category = 'marketing';
+        } else if (
+          COOKIE_CATEGORIES.essential.cookies.some(
+            (cookie) =>
+              lowerName.includes(cookie.toLowerCase()) ||
+              cookie.toLowerCase().includes(lowerName),
+          )
+        ) {
+          category = 'essential';
+        }
+
+        cookies.push({
+          name,
+          value: value || '',
+          domain: window.location.hostname,
+          path: '/',
+          expires: 'Session',
+          size: name.length + (value?.length || 0),
+          category,
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Error reading cookies:', error);
+  }
+
+  return cookies;
+};
+
+// Enhanced consent management
 export const getSavedConsent = (): CookieConsent | null => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -73,12 +141,13 @@ export const getSavedConsent = (): CookieConsent | null => {
 
     const consent: CookieConsent = JSON.parse(saved);
 
-    // Check if consent has expired
+    // Check version and expiry
     const expiryDate = new Date(consent.timestamp);
     expiryDate.setDate(expiryDate.getDate() + CONSENT_EXPIRY_DAYS);
 
     if (new Date() > expiryDate || consent.version !== CONSENT_VERSION) {
-      return null; // Expired or version mismatch
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
     }
 
     return consent;
@@ -87,7 +156,6 @@ export const getSavedConsent = (): CookieConsent | null => {
   }
 };
 
-// Save consent to localStorage
 export const saveConsent = (consent: CookieConsent): void => {
   try {
     localStorage.setItem(
@@ -103,67 +171,35 @@ export const saveConsent = (consent: CookieConsent): void => {
   }
 };
 
-// Check if user needs to give consent
 export const needsConsent = (): boolean => {
   return getSavedConsent() === null;
 };
 
-// Get all cookies from document
-export const getAllCookies = (): DetectedCookie[] => {
-  const cookies: DetectedCookie[] = [];
-  const cookieStrings = document.cookie.split(';');
-
-  cookieStrings.forEach((cookieString) => {
-    const [name, value] = cookieString.trim().split('=');
-    if (name) {
-      // Determine category based on cookie name
-      let category: CookieCategory = 'essential';
-
-      for (const [cat, info] of Object.entries(COOKIE_CATEGORIES)) {
-        if (info.cookies.some((c) => name.includes(c) || c.includes(name))) {
-          category = cat as CookieCategory;
-          break;
-        }
-      }
-
-      cookies.push({
-        name,
-        value: value || '',
-        domain: window.location.hostname,
-        path: '/',
-        expires: 'Session',
-        size: name.length + (value?.length || 0),
-        category,
-      });
-    }
-  });
-
-  return cookies;
-};
-
-// Delete a specific cookie
 export const deleteCookie = (name: string, domain?: string): void => {
-  const domains = domain
-    ? [domain]
-    : [
-        window.location.hostname,
-        '.' + window.location.hostname,
-        window.location.hostname.replace(/^www\./, ''),
-      ];
+  try {
+    const domains = domain
+      ? [domain]
+      : [
+          window.location.hostname,
+          '.' + window.location.hostname,
+          window.location.hostname.replace(/^www\./, ''),
+        ];
 
-  const paths = ['/', '/path', '/path/to'];
+    const paths = ['/', '/admin', '/auth', '/dashboard'];
 
-  domains.forEach((d) => {
-    paths.forEach((p) => {
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${d}; path=${p}`;
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${p}`;
+    domains.forEach((d) => {
+      paths.forEach((p) => {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${d}; path=${p}; secure; samesite=lax`;
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${p}; secure; samesite=lax`;
+      });
     });
-  });
+  } catch (error) {
+    console.error('Error deleting cookie:', error);
+  }
 };
 
-// Delete cookies by category
 export const deleteCookiesByCategory = (category: CookieCategory): void => {
-  if (category === 'essential') return; // Can't delete essential cookies
+  if (category === 'essential') return;
 
   const cookies = getAllCookies();
   cookies.forEach((cookie) => {
@@ -173,46 +209,82 @@ export const deleteCookiesByCategory = (category: CookieCategory): void => {
   });
 };
 
-// Apply consent: delete cookies for disabled categories
 export const applyConsent = (consent: CookieConsent): void => {
-  Object.entries(consent).forEach(([category, enabled]) => {
-    if (
-      !enabled &&
-      category !== 'essential' &&
-      category !== 'timestamp' &&
-      category !== 'version'
-    ) {
-      deleteCookiesByCategory(category as CookieCategory);
-    }
+  // Delete cookies for disabled categories
+  (['functional', 'analytics', 'marketing'] as CookieCategory[]).forEach(
+    (category) => {
+      if (!consent[category]) {
+        deleteCookiesByCategory(category);
+      }
+    },
+  );
+};
+
+// Enhanced script management
+export const manageScripts = (consent: CookieConsent): void => {
+  // Remove existing non-essential scripts
+  const nonEssentialScripts = document.querySelectorAll(
+    'script[data-category="analytics"], script[data-category="marketing"], script[data-category="functional"]',
+  );
+
+  nonEssentialScripts.forEach((script) => script.remove());
+
+  // Load scripts based on consent
+  if (consent.analytics) {
+    loadAnalyticsScripts();
+  }
+
+  if (consent.marketing) {
+    loadMarketingScripts();
+  }
+
+  if (consent.functional) {
+    loadFunctionalScripts();
+  }
+
+  // Update feature visibility
+  updateFeatureVisibility(consent);
+};
+
+// Feature visibility management
+export const updateFeatureVisibility = (consent: CookieConsent): void => {
+  // Analytics features
+  const analyticsElements = document.querySelectorAll(
+    '[data-requires="analytics"]',
+  );
+  analyticsElements.forEach((el) => {
+    (el as HTMLElement).style.display = consent.analytics ? 'block' : 'none';
+  });
+
+  // Marketing features
+  const marketingElements = document.querySelectorAll(
+    '[data-requires="marketing"]',
+  );
+  marketingElements.forEach((el) => {
+    (el as HTMLElement).style.display = consent.marketing ? 'block' : 'none';
+  });
+
+  // Functional features
+  const functionalElements = document.querySelectorAll(
+    '[data-requires="functional"]',
+  );
+  functionalElements.forEach((el) => {
+    (el as HTMLElement).style.display = consent.functional ? 'block' : 'none';
   });
 };
 
-// Block/Unblock scripts based on consent
-export const manageScripts = (consent: CookieConsent): void => {
-  // Analytics scripts
-  if (consent.analytics) {
-    // Enable analytics scripts
-    console.log('Analytics enabled');
-  } else {
-    // Disable analytics scripts
-    console.log('Analytics disabled');
-  }
+// Example script loaders - implement based on your actual scripts
+const loadAnalyticsScripts = (): void => {
+  // Load Google Analytics, etc.
+  console.log('Loading analytics scripts...');
+};
 
-  // Marketing scripts
-  if (consent.marketing) {
-    // Enable marketing scripts
-    console.log('Marketing enabled');
-  } else {
-    // Disable marketing scripts
-    console.log('Marketing disabled');
-  }
+const loadMarketingScripts = (): void => {
+  // Load Facebook Pixel, etc.
+  console.log('Loading marketing scripts...');
+};
 
-  // Functional scripts
-  if (consent.functional) {
-    // Enable functional scripts
-    console.log('Functional enabled');
-  } else {
-    // Disable functional scripts
-    console.log('Functional disabled');
-  }
+const loadFunctionalScripts = (): void => {
+  // Load functional scripts
+  console.log('Loading functional scripts...');
 };
