@@ -33,7 +33,7 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
 
   return (
     <div className="sticky top-8">
-      <div className="bg-white p-4">
+      <div className="bg-gradient-to-br from-white to-gray-50 p-4">
         {isEquityCampaign ? (
           <>
             <h2 className="text-xl font-semibold mb-4">
