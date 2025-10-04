@@ -42,9 +42,8 @@ export const CookieBanner = () => {
             <a
               href="#"
               onClick={openSettings}
-              className="gap-2 bg-gray-500 hover:bg-gray-700 text-white transition-smooth rounded-none px-4 py-2 flex items-center justify-center text-sm font-medium underline"
+              className="gap-2 bg-white text-gray-700 transition-smooth rounded-none px-4 py-2 flex items-center justify-center text-sm font-medium underline"
             >
-              <Settings className="w-4 h-4 text-white mr-2" />
               Preferences
             </a>
             <Button
