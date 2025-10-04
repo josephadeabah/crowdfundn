@@ -4,17 +4,13 @@ import FeaturedCampaigns from './components/campaigns/FeaturedCampaigns';
 import Hero from './components/Hero';
 import React, { useEffect } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
-import BlogPosts from './components/blogs/BlogPosts';
 import BrandIdentity from './molecules/BrandIdentity';
 import InvestmentContracts from './investment-contracts/page';
-import { useCookieConsent } from '@/app/context/cookie/CookieConsentContext';
 import { CookieBanner } from '@/app/components/cookiemanager/CookieBanner';
 import { CookieSettings } from '@/app/components/cookiemanager/CookieSettings';
-import { Button } from './components/ui/button';
-import { Cookie } from 'lucide-react';
+
 
 const HomePage = () => {
-  const { openSettings, consent, showBanner } = useCookieConsent();
 
   useEffect(() => {
     // Initialize intersection observer for scroll animations
@@ -40,10 +36,6 @@ const HomePage = () => {
       animatedElements.forEach((el) => observer.unobserve(el));
     };
   }, []);
-
-  // Show floating button only when banner is visible OR user has made a choice but might want to change settings
-  // You can customize this logic based on when you want the button to appear
-  const showFloatingButton = showBanner || consent.functional; // Example: show if banner visible or functional cookies accepted
 
   return (
     <div className="min-h-screen flex flex-col w-full">
@@ -72,18 +64,6 @@ const HomePage = () => {
       {/* Cookie Components */}
       <CookieBanner />
       <CookieSettings />
-
-      {/* Floating Cookie Settings Button - Only show when appropriate */}
-      {showFloatingButton && (
-        <Button
-          onClick={openSettings}
-          className="fixed bottom-6 left-6 z-40 h-12 w-12 rounded-full shadow-lg bg-green-600 hover:bg-green-700 text-white transition-all duration-300 hover:scale-110 hover:shadow-xl"
-          size="icon"
-          aria-label="Cookie Settings"
-        >
-          <Cookie className="h-5 w-5" />
-        </Button>
-      )}
     </div>
   );
 };

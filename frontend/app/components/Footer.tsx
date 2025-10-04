@@ -2,8 +2,12 @@
 import React from 'react';
 import BantuHiveLogoIcon from './icons/BantuHiveLogoIcon';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { useCookieConsent } from '@/app/context/cookie/CookieConsentContext';
+import { Button } from '@/app/components/ui/button';
 
 const Footer = () => {
+  const { openSettings } = useCookieConsent();
+
   const footerSections = [
     {
       title: 'Product',
@@ -153,12 +157,19 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-gray-200 text-sm flex flex-col md:flex-row justify-between">
+        <div className="mt-12 pt-8 border-t border-gray-200 text-sm flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0 text-gray-400">
             &copy; {new Date().getFullYear()} BantuHive Ltd. All rights
             reserved.
           </div>
-          <div className="flex space-x-6">
+          <div className="flex items-center space-x-6">
+            <Button
+              onClick={openSettings}
+              variant="link"
+              className="text-gray-600 hover:text-orange-500 p-0 h-auto font-normal text-sm"
+            >
+              Cookie Settings
+            </Button>
             <a
               href="/info/terms"
               className="hover:text-orange-500 dark:hover:text-orange-400"
