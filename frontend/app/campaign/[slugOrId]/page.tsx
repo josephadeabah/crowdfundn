@@ -170,7 +170,7 @@ const SingleCampaignPage: React.FC = () => {
           </div>
 
           {/* Sidebar Column */}
-          <div className="lg:w-1/3 border border-gray-700">
+          <div className="lg:w-1/3 border border-gray-200 hover:border-gray-300">
             {!loading && <CampaignSidebar campaign={currentCampaign} />}
           </div>
         </div>

@@ -103,90 +103,94 @@ export const CookieManager = () => {
 
       <div className="flex items-center gap-4 py-2 mb-4">
         <span className="text-sm text-gray-700">
-          Total cookies: <strong className="text-gray-900">{cookies.length}</strong>
+          Total cookies:{' '}
+          <strong className="text-gray-900">{cookies.length}</strong>
         </span>
       </div>
 
       <ScrollArea className="w-full">
         <div className="space-y-6">
-          {Object.entries(groupedCookies).map(
-            ([category, categoryCookies]) => {
-              const Icon = categoryIcons[category as CookieCategory];
-              const colorClass = categoryColors[category as CookieCategory];
+          {Object.entries(groupedCookies).map(([category, categoryCookies]) => {
+            const Icon = categoryIcons[category as CookieCategory];
+            const colorClass = categoryColors[category as CookieCategory];
 
-              return (
-                <div
-                  key={category}
-                  className="border border-gray-200 rounded-xl p-4 bg-white"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${colorClass}`}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold capitalize text-gray-900">
-                        {category}
-                      </h3>
-                      <p className="text-xs text-gray-700">
-                        {categoryCookies.length} cookies
-                      </p>
-                    </div>
+            return (
+              <div
+                key={category}
+                className="border border-gray-200 rounded-xl p-4 bg-white"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${colorClass}`}
+                  >
+                    <Icon className="w-4 h-4" />
                   </div>
-
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-gray-900">Name</TableHead>
-                        <TableHead className="text-gray-900">Domain</TableHead>
-                        <TableHead className="text-gray-900">Path</TableHead>
-                        <TableHead className="text-gray-900">Size</TableHead>
-                        <TableHead className="text-right text-gray-900">Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {categoryCookies.map((cookie, idx) => (
-                        <TableRow key={`${cookie.name}-${idx}`}>
-                          <TableCell className="font-medium text-gray-900">
-                            {cookie.name}
-                          </TableCell>
-                          <TableCell className="text-gray-700">
-                            {cookie.domain}
-                          </TableCell>
-                          <TableCell className="text-gray-700">
-                            {cookie.path}
-                          </TableCell>
-                          <TableCell className="text-gray-700">
-                            {cookie.size} bytes
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {category !== 'essential' ? (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  handleDelete(cookie.name, cookie.domain)
-                                }
-                                className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                Delete
-                              </Button>
-                            ) : (
-                              <Badge variant="outline" className="text-xs text-gray-700 border-gray-300">
-                                Protected
-                              </Badge>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                  <div>
+                    <h3 className="font-semibold capitalize text-gray-900">
+                      {category}
+                    </h3>
+                    <p className="text-xs text-gray-700">
+                      {categoryCookies.length} cookies
+                    </p>
+                  </div>
                 </div>
-              );
-            },
-          )}
+
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-gray-900">Name</TableHead>
+                      <TableHead className="text-gray-900">Domain</TableHead>
+                      <TableHead className="text-gray-900">Path</TableHead>
+                      <TableHead className="text-gray-900">Size</TableHead>
+                      <TableHead className="text-right text-gray-900">
+                        Action
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {categoryCookies.map((cookie, idx) => (
+                      <TableRow key={`${cookie.name}-${idx}`}>
+                        <TableCell className="font-medium text-gray-900">
+                          {cookie.name}
+                        </TableCell>
+                        <TableCell className="text-gray-700">
+                          {cookie.domain}
+                        </TableCell>
+                        <TableCell className="text-gray-700">
+                          {cookie.path}
+                        </TableCell>
+                        <TableCell className="text-gray-700">
+                          {cookie.size} bytes
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {category !== 'essential' ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                handleDelete(cookie.name, cookie.domain)
+                              }
+                              className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Delete
+                            </Button>
+                          ) : (
+                            <Badge
+                              variant="outline"
+                              className="text-xs text-gray-700 border-gray-300"
+                            >
+                              Protected
+                            </Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            );
+          })}
 
           {cookies.length === 0 && (
             <div className="text-center py-12">

@@ -84,14 +84,14 @@ export const CookieSettings = () => {
           className="flex-1 overflow-hidden flex flex-col"
         >
           <TabsList className="grid w-full grid-cols-2 rounded-none bg-gray-100">
-            <TabsTrigger 
-              value="preferences" 
+            <TabsTrigger
+              value="preferences"
               className="rounded-none bg-white text-gray-900 data-[state=active]:bg-bantu-green data-[state=active]:text-white"
             >
               Preferences
             </TabsTrigger>
-            <TabsTrigger 
-              value="details" 
+            <TabsTrigger
+              value="details"
               className="rounded-none bg-white text-gray-900 data-[state=active]:bg-bantu-green data-[state=active]:text-white"
             >
               Details
