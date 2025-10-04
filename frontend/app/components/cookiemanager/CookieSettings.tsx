@@ -32,7 +32,10 @@ export const CookieSettings = () => {
 
   const handleToggle = (category: CookieCategory) => {
     if (category === 'essential') return; // Can't toggle essential
-    setTempConsent((prev) => ({ ...prev, [category]: !prev[category] }));
+    setTempConsent((prev: typeof consent) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
   };
 
   const handleSave = () => {
