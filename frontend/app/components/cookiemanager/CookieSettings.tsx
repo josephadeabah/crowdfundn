@@ -132,9 +132,9 @@ export const CookieSettings = () => {
                         <p className="text-sm text-muted-foreground">
                           {info.description}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-2">
+                        {/* <p className="text-xs text-muted-foreground mt-2">
                           Cookies: {info.cookies.join(', ')}
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                     <Switch
