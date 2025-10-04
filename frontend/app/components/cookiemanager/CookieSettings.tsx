@@ -227,23 +227,21 @@ export const CookieSettings = () => {
         <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
           <Button
             onClick={handleRejectAll}
-            variant="outline"
-            className="flex-1"
+            className="flex-1 gap-2 bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
           >
             Reject All
           </Button>
           <Button
             onClick={handleAcceptAll}
-            variant="outline"
-            className="flex-1"
+            className="flex-1 gap-2 bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
           >
             Accept All
           </Button>
           <Button
             onClick={handleSave}
-            className="flex-1 gap-2 bg-gradient-to-r from-bantu-green to-bantu-orange hover:opacity-90 transition-smooth text-white"
+            className="flex-1 gap-2 bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
           >
-            <Save className="w-4 h-4" />
+            <Save className="w-4 h-4 text-white" />
             Save Preferences
           </Button>
         </div>

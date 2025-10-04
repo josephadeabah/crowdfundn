@@ -9,9 +9,7 @@ import InvestmentContracts from './investment-contracts/page';
 import { CookieBanner } from '@/app/components/cookiemanager/CookieBanner';
 import { CookieSettings } from '@/app/components/cookiemanager/CookieSettings';
 
-
 const HomePage = () => {
-
   useEffect(() => {
     // Initialize intersection observer for scroll animations
     const observer = new IntersectionObserver(
