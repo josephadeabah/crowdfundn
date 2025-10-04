@@ -83,9 +83,13 @@ export const CookieSettings = () => {
           defaultValue="preferences"
           className="flex-1 overflow-hidden flex flex-col"
         >
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="preferences">Preferences</TabsTrigger>
-            <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 rounded-none">
+            <TabsTrigger value="preferences" className="rounded-none">
+              Preferences
+            </TabsTrigger>
+            <TabsTrigger value="details" className="rounded-none">
+              Details
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent
@@ -132,9 +136,6 @@ export const CookieSettings = () => {
                         <p className="text-sm text-muted-foreground">
                           {info.description}
                         </p>
-                        {/* <p className="text-xs text-muted-foreground mt-2">
-                          Cookies: {info.cookies.join(', ')}
-                        </p> */}
                       </div>
                     </div>
                     <Switch
@@ -227,19 +228,19 @@ export const CookieSettings = () => {
         <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
           <Button
             onClick={handleRejectAll}
-            className="flex-1 gap-2 bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
+            className="flex-1 gap-2 bg-gray-500 hover:bg-gray-700 text-white transition-smooth rounded-none"
           >
             Reject All
           </Button>
           <Button
             onClick={handleAcceptAll}
-            className="flex-1 gap-2 bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
+            className="flex-1 gap-2 bg-gray-500 hover:bg-gray-700 text-white transition-smooth rounded-none"
           >
             Accept All
           </Button>
           <Button
             onClick={handleSave}
-            className="flex-1 gap-2 bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
+            className="flex-1 gap-2 bg-gray-500 hover:bg-gray-700 text-white transition-smooth rounded-none"
           >
             <Save className="w-4 h-4 text-white" />
             Save Preferences

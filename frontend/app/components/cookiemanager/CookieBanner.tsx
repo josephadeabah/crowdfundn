@@ -32,20 +32,20 @@ export const CookieBanner = () => {
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <Button
                 onClick={openSettings}
-                className="gap-2 bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
+                className="gap-2 bg-gray-500 hover:bg-gray-700 text-white transition-smooth rounded-none"
               >
                 <Settings className="w-4 h-4 text-white" />
                 Customize
               </Button>
               <Button
                 onClick={rejectAll}
-                className="bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
+                className="bg-gray-500 hover:bg-gray-700 text-white transition-smooth rounded-none"
               >
                 Reject All
               </Button>
               <Button
                 onClick={acceptAll}
-                className="bg-gray-600 hover:bg-gray-700 text-white transition-smooth"
+                className="bg-gray-500 hover:bg-gray-700 text-white transition-smooth rounded-none"
               >
                 Accept All
               </Button>
