@@ -64,6 +64,20 @@ Rails.application.routes.draw do
         end
       end
 
+      namespace :admin do
+        resources :transfer_locks, only: [] do
+          collection do
+            get :index
+          end
+          member do
+            post :lock
+            post :unlock
+            post :reset_transfers
+            get :status
+          end
+        end
+      end
+
       namespace :fundraisers do
         resources :transfers, only: [] do
           collection do
@@ -88,21 +102,6 @@ Rails.application.routes.draw do
         end
 
         post 'paystack_webhook/receive'
-
-
-        namespace :admin do
-          resources :transfer_locks, only: [] do
-            collection do
-              get :index
-            end
-            member do
-              post :lock
-              post :unlock
-              post :reset_transfers
-              get :status
-            end
-          end
-        end
 
         resources :subscriptions, only: [] do
           collection do
