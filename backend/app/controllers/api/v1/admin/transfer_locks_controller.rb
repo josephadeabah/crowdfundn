@@ -117,7 +117,7 @@ module Api
         private
 
         def set_user
-          @user = User.find(params[:user_id])
+          @user = User.find(params[:id])  # Change from params[:user_id] to params[:id]
         rescue ActiveRecord::RecordNotFound
           render json: { error: "User not found" }, status: :not_found
         end
