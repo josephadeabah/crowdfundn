@@ -1,354 +1,490 @@
+// app/javascript/components/admin/TransferLockManager.jsx (Enhanced with visual styling)
 'use client';
 import React, { useState, useEffect } from 'react';
-import {
-  FaSort,
-  FaSortUp,
-  FaSortDown,
-  FaEye,
-  FaBan,
-  FaPlayCircle,
-  FaCheckCircle,
-  FaSearch,
-} from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import Modal from '@/app/components/modal/Modal';
+import { 
+  Search, 
+  Lock, 
+  Unlock, 
+  RotateCcw, 
+  AlertTriangle, 
+  CheckCircle,
+  Filter,
+  Download,
+  RefreshCw,
+  User,
+  Mail,
+  Calendar,
+  Shield
+} from 'lucide-react';
+// import { toast } from 'react-toast';
 
 const TransferManager = () => {
-  interface Transaction {
-    id: string;
-    amount: string;
-    timestamp: string;
-    fundraiserName: string;
-    status: string;
-    paymentMethod: string;
-    donorName: string;
-  }
-
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [sortColumn, setSortColumn] = useState('timestamp');
-  const [sortDirection, setSortDirection] = useState('asc');
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('pending');
-  const [filterDate, setFilterDate] = useState<Date | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    // Simulating real-time updates
-    const interval = setInterval(() => {
-      const newTransaction = generateRandomTransaction();
-      setTransactions((prevTransactions) => [
-        ...prevTransactions,
-        newTransaction,
-      ]);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const generateRandomTransaction = () => {
-    const id = Math.random().toString(36).substring(2, 11);
-    const amount = (Math.random() * 1000).toFixed(2);
-    const timestamp = new Date().toISOString();
-    const fundraiserName = `Fundraiser${Math.floor(Math.random() * 1000)}`;
-    const status = 'pending';
-    const paymentMethod = Math.random() > 0.5 ? 'Credit Card' : 'PayPal';
-    const donorName = `Donor${Math.floor(Math.random() * 1000)}`;
-
-    return {
-      id,
-      amount,
-      timestamp,
-      fundraiserName,
-      status,
-      paymentMethod,
-      donorName,
-    };
-  };
-
-  const handleSort = (column: keyof Transaction) => {
-    if (column === sortColumn) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortColumn(column);
-      setSortDirection('asc');
+  const [lockedUsers, setLockedUsers] = useState([
+    {
+      id: 1,
+      full_name: "John Smith",
+      email: "john.smith@example.com",
+      transfer_locked: true,
+      transfer_lock_info: {
+        locked_by: "Admin User",
+        reason: "Suspicious activity detected",
+        locked_at: "2024-01-15T10:30:00Z"
+      },
+      total_transferred_amount: 12500.50,
+      currency_symbol: "₵",
+      campaigns: [
+        { id: 1, title: "Education Fund", transferred_amount: 8500.00, goal_amount: 10000.00 },
+        { id: 2, title: "Community Project", transferred_amount: 4000.50, goal_amount: 5000.00 }
+      ]
+    },
+    {
+      id: 2,
+      full_name: "Sarah Johnson",
+      email: "sarah.j@example.com",
+      transfer_locked: true,
+      transfer_lock_info: {
+        locked_by: "System Admin",
+        reason: "KYC verification pending",
+        locked_at: "2024-01-14T14:20:00Z"
+      },
+      total_transferred_amount: 7800.00,
+      currency_symbol: "₵",
+      campaigns: [
+        { id: 3, title: "Medical Expenses", transferred_amount: 7800.00, goal_amount: 15000.00 }
+      ]
     }
-  };
+  ]);
 
-  const sortedTransactions = [...transactions].sort((a, b) => {
-    if (a[sortColumn as keyof Transaction] < b[sortColumn as keyof Transaction])
-      return sortDirection === 'asc' ? -1 : 1;
-    if (a[sortColumn as keyof Transaction] > b[sortColumn as keyof Transaction])
-      return sortDirection === 'asc' ? 1 : -1;
-    return 0;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
+  type Campaign = {
+    id: number;
+    title: string;
+    transferred_amount: number;
+    goal_amount: number;
+  };
+  
+  type TransferLockInfo = {
+    locked_by: string;
+    reason: string;
+    locked_at: string;
+  };
+  
+  type User = {
+    id: number;
+    full_name: string;
+    email: string;
+    transfer_locked: boolean;
+    transfer_lock_info?: TransferLockInfo;
+    total_transferred_amount: number;
+    currency_symbol: string;
+    campaigns: Campaign[];
+  };
+  
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [actionDialog, setActionDialog] = useState<{ open: boolean; action: string; user: User | null }>({ open: false, action: '', user: null });
+  const [reason, setReason] = useState('');
+  const [stats, setStats] = useState({
+    totalLocked: 2,
+    totalAmountLocked: 20300.50,
+    recentLocks: 1
   });
 
-  const handleView = (transaction: Transaction) => {
-    setSelectedTransaction(transaction);
+  // Mock search function
+  const searchUsers = async () => {
+    setLoading(true);
+    setTimeout(() => {
+      setSelectedUser({
+        id: 3,
+        full_name: "Michael Brown",
+        email: "michael.b@example.com",
+        transfer_locked: false,
+        total_transferred_amount: 4500.00,
+        currency_symbol: "₵",
+        campaigns: [
+          { id: 4, title: "Business Startup", transferred_amount: 4500.00, goal_amount: 20000.00 }
+        ]
+      });
+      setLoading(false);
+    }, 1000);
   };
 
-  const handleCloseModal = () => {
-    setSelectedTransaction(null);
+  const performAction = async (action: string, userId: number) => {
+    // Mock action performance
+    setTimeout(() => {
+      // toast.success(`Action ${action} completed successfully`);
+      setActionDialog({ open: false, action: '', user: null });
+      setReason('');
+    }, 1000);
   };
 
-  const handleMarkInProgress = (id: string) => {
-    setTransactions(
-      transactions.map((t) =>
-        t.id === id ? { ...t, status: 'inprogress' } : t,
-      ),
-    );
+  const openActionDialog = (action: string, user: any) => {
+    setActionDialog({ open: true, action, user });
   };
-
-  const handleMarkDelivered = (id: string) => {
-    setTransactions(
-      transactions.map((t) =>
-        t.id === id ? { ...t, status: 'delivered' } : t,
-      ),
-    );
-  };
-
-  const handleCancel = (id: string) => {
-    setTransactions(transactions.filter((t) => t.id !== id));
-  };
-
-  const getSortIcon = (column: keyof Transaction) => {
-    if (column === sortColumn) {
-      return sortDirection === 'asc' ? (
-        <FaSortUp className="inline ml-1" />
-      ) : (
-        <FaSortDown className="inline ml-1" />
-      );
-    }
-    return <FaSort className="inline ml-1" />;
-  };
-
-  const filteredTransactions = sortedTransactions
-    .filter((t) => t.status === activeTab)
-    .filter((t) => {
-      if (filterDate) {
-        const transactionDate = new Date(t.timestamp);
-        return (
-          transactionDate.getDate() === filterDate.getDate() &&
-          transactionDate.getMonth() === filterDate.getMonth() &&
-          transactionDate.getFullYear() === filterDate.getFullYear()
-        );
-      }
-      return true;
-    })
-    .filter(
-      (t) =>
-        t.fundraiserName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.donorName.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
 
   return (
-    <div className="mx-auto px-2 py-8">
-      <h1 className="text-3xl font-bold mb-6">Transaction Scheduler</h1>
-      {error && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
-          <strong className="font-bold">Error:</strong>
-          <span className="block sm:inline"> {error}</span>
-        </div>
-      )}
-      <div className="mb-4 flex flex-col sm:flex-row justify-between items-center">
-        <div className="flex border-b border-gray-200 mb-4 sm:mb-0">
-          <button
-            className={`py-2 px-4 ${
-              activeTab === 'pending'
-                ? 'border-b-2 border-gray-500 text-black'
-                : 'text-gray-500 hover:text-gray-500'
-            }`}
-            onClick={() => setActiveTab('pending')}
-          >
-            Pending
-          </button>
-          <button
-            className={`py-2 px-4 ${
-              activeTab === 'inprogress'
-                ? 'border-b-2 border-gray-500 text-black'
-                : 'text-gray-500 hover:text-gray-500'
-            }`}
-            onClick={() => setActiveTab('inprogress')}
-          >
-            In Progress
-          </button>
-          <button
-            className={`py-2 px-4 ${
-              activeTab === 'delivered'
-                ? 'border-b-2 border-gray-500 text-black'
-                : 'text-gray-500 hover:text-gray-500'
-            }`}
-            onClick={() => setActiveTab('delivered')}
-          >
-            Delivered
-          </button>
-        </div>
-        <div className="flex items-center space-x-4">
-          <DatePicker
-            selected={filterDate}
-            onChange={(date) => setFilterDate(date)}
-            placeholderText="Filter by date"
-            className="p-2 border rounded"
-          />
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-2 pl-8 border rounded"
-            />
-            <FaSearch className="absolute left-2 top-3 text-gray-400" />
+    <div className="min-h-screen bg-gray-50 p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Transfer Lock Manager</h1>
+            <p className="text-gray-600 mt-2">
+              Manage user transfer permissions and monitor locked accounts
+            </p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </button>
+            <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </button>
           </div>
         </div>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
-          <thead className="w-full text-left bg-gray-200">
-            <tr>
-              <th
-                className="px-4 py-2 cursor-pointer"
-                onClick={() => handleSort('id')}
-              >
-                Transaction ID {getSortIcon('id')}
-              </th>
-              <th
-                className="px-4 py-2 cursor-pointer"
-                onClick={() => handleSort('amount')}
-              >
-                Amount {getSortIcon('amount')}
-              </th>
-              <th
-                className="px-4 py-2 cursor-pointer"
-                onClick={() => handleSort('timestamp')}
-              >
-                Timestamp {getSortIcon('timestamp')}
-              </th>
-              <th
-                className="px-4 py-2 cursor-pointer"
-                onClick={() => handleSort('fundraiserName')}
-              >
-                Fundraiser {getSortIcon('fundraiserName')}
-              </th>
-              <th
-                className="px-4 py-2 cursor-pointer"
-                onClick={() => handleSort('donorName')}
-              >
-                Donor {getSortIcon('donorName')}
-              </th>
-              <th
-                className="px-4 py-2 cursor-pointer"
-                onClick={() => handleSort('status')}
-              >
-                Status {getSortIcon('status')}
-              </th>
-              <th className="px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <AnimatePresence>
-              {filteredTransactions.map((transaction) => (
-                <motion.tr
-                  key={transaction.id}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.3 }}
-                  className="border-b hover:bg-gray-100"
-                >
-                  <td className="px-4 py-2">{transaction.id}</td>
-                  <td className="px-4 py-2">{transaction.amount}</td>
-                  <td className="px-4 py-2">{transaction.timestamp}</td>
-                  <td className="px-4 py-2">{transaction.fundraiserName}</td>
-                  <td className="px-4 py-2">{transaction.donorName}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        transaction.status === 'pending'
-                          ? 'bg-yellow-200 text-yellow-800'
-                          : transaction.status === 'inprogress'
-                            ? 'bg-blue-200 text-blue-800'
-                            : 'bg-green-200 text-green-800'
-                      }`}
-                    >
-                      {transaction.status.charAt(0).toUpperCase() +
-                        transaction.status.slice(1)}
-                    </span>
-                  </td>
 
-                  <td className="px-4 py-2 flex gap-4 items-center space-x-2">
-                    {transaction.status === 'pending' && (
-                      <button
-                        className="text-blue-500"
-                        onClick={() => handleMarkInProgress(transaction.id)}
-                      >
-                        <FaPlayCircle />
-                      </button>
-                    )}
-                    {transaction.status === 'inprogress' && (
-                      <button
-                        className="text-green-500"
-                        onClick={() => handleMarkDelivered(transaction.id)}
-                      >
-                        <FaCheckCircle />
-                      </button>
-                    )}
-                    <button
-                      className="text-gray-500"
-                      onClick={() => handleView(transaction)}
-                    >
-                      <FaEye />
-                    </button>
-                    <button
-                      className="text-red-500"
-                      onClick={() => handleCancel(transaction.id)}
-                    >
-                      <FaBan />
-                    </button>
-                  </td>
-                </motion.tr>
-              ))}
-            </AnimatePresence>
-          </tbody>
-        </table>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="p-3 bg-red-100 rounded-lg">
+              <Lock className="w-6 h-6 text-red-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Locked Accounts</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalLocked}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="p-3 bg-orange-100 rounded-lg">
+              <Shield className="w-6 h-6 text-orange-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Amount Locked</p>
+              <p className="text-2xl font-bold text-gray-900">₵{stats.totalAmountLocked.toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="p-3 bg-blue-100 rounded-lg">
+              <Calendar className="w-6 h-6 text-blue-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Recent Locks (7d)</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.recentLocks}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Modal for viewing transaction details */}
-      {selectedTransaction && (
-        <Modal
-          isOpen={!!selectedTransaction}
-          onClose={handleCloseModal}
-          closeOnBackdropClick={false}
-        >
-          <h2 className="text-xl font-bold mb-4">Transaction Details</h2>
-          <p>
-            <strong>Transaction ID:</strong> {selectedTransaction.id}
-          </p>
-          <p>
-            <strong>Amount:</strong> {selectedTransaction.amount}
-          </p>
-          <p>
-            <strong>Timestamp:</strong> {selectedTransaction.timestamp}
-          </p>
-          <p>
-            <strong>Payment Method:</strong> {selectedTransaction.paymentMethod}
-          </p>
-          <p>
-            <strong>Fundraiser:</strong> {selectedTransaction.fundraiserName}
-          </p>
-          <p>
-            <strong>Donor:</strong> {selectedTransaction.donorName}
-          </p>
-          <p>
-            <strong>Status:</strong> {selectedTransaction.status}
-          </p>
-        </Modal>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column - Search & User Actions */}
+        <div className="space-y-6">
+          {/* Search Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Search User</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Find a user to manage their transfer permissions
+              </p>
+            </div>
+            <div className="p-6">
+              <div className="flex gap-3">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <input
+                    type="text"
+                    placeholder="Search by name or email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && searchUsers()}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <button
+                  onClick={searchUsers}
+                  disabled={loading}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center"
+                >
+                  {loading ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Search className="w-4 h-4 mr-2" />
+                  )}
+                  Search
+                </button>
+              </div>
+
+              {/* Selected User Card */}
+              {selectedUser && (
+                <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start space-x-4">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <User className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{selectedUser.full_name}</h3>
+                        <div className="flex items-center mt-1 text-sm text-gray-600">
+                          <Mail className="w-4 h-4 mr-1" />
+                          {selectedUser.email}
+                        </div>
+                        <div className="mt-2">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            selectedUser.transfer_locked 
+                              ? 'bg-red-100 text-red-800' 
+                              : 'bg-green-100 text-green-800'
+                          }`}>
+                            {selectedUser.transfer_locked ? (
+                              <>
+                                <Lock className="w-3 h-3 mr-1" />
+                                Transfers Locked
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle className="w-3 h-3 mr-1" />
+                                Transfers Allowed
+                              </>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      {selectedUser.transfer_locked ? (
+                        <>
+                          <button
+                            onClick={() => openActionDialog('unlock', selectedUser)}
+                            className="flex items-center px-3 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100"
+                          >
+                            <Unlock className="w-4 h-4 mr-1" />
+                            Unlock
+                          </button>
+                          <button
+                            onClick={() => openActionDialog('reset_transfers', selectedUser)}
+                            className="flex items-center px-3 py-2 text-sm font-medium text-orange-700 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100"
+                          >
+                            <RotateCcw className="w-4 h-4 mr-1" />
+                            Reset
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => openActionDialog('lock', selectedUser)}
+                          className="flex items-center px-3 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100"
+                        >
+                          <Lock className="w-4 h-4 mr-1" />
+                          Lock
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Campaign Details */}
+                  {selectedUser.campaigns && selectedUser.campaigns.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Campaigns</h4>
+                      <div className="space-y-2">
+                        {selectedUser.campaigns.map(campaign => (
+                          <div key={campaign.id} className="flex justify-between items-center text-sm">
+                            <span className="text-gray-600">{campaign.title}</span>
+                            <span className="font-medium">
+                              {selectedUser.currency_symbol}{campaign.transferred_amount?.toLocaleString()} 
+                              <span className="text-gray-400"> / {selectedUser.currency_symbol}{campaign.goal_amount?.toLocaleString()}</span>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - Locked Users Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Currently Locked Users</h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Users with transfers currently locked
+                </p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button className="p-2 text-gray-400 hover:text-gray-600">
+                  <Filter className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    User
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Lock Details
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {lockedUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className="font-medium text-gray-900">{user.full_name}</div>
+                        <div className="text-sm text-gray-500 flex items-center mt-1">
+                          <Mail className="w-3 h-3 mr-1" />
+                          {user.email}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm">
+                        <div className="text-gray-900">{user.transfer_lock_info?.locked_by}</div>
+                        <div className="text-gray-500 mt-1">{user.transfer_lock_info?.reason}</div>
+                        <div className="text-gray-400 text-xs mt-1 flex items-center">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          {new Date(user.transfer_lock_info?.locked_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900">
+                        {user.currency_symbol}{user.total_transferred_amount?.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {user.campaigns?.length || 0} campaign(s)
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => openActionDialog('unlock', user)}
+                          className="flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100"
+                        >
+                          <Unlock className="w-3 h-3 mr-1" />
+                          Unlock
+                        </button>
+                        <button
+                          onClick={() => openActionDialog('reset_transfers', user)}
+                          className="flex items-center px-3 py-1.5 text-xs font-medium text-orange-700 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100"
+                        >
+                          <RotateCcw className="w-3 h-3 mr-1" />
+                          Reset
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {lockedUsers.length === 0 && (
+              <div className="text-center py-12">
+                <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-gray-400" />
+                </div>
+                <h3 className="mt-4 text-sm font-medium text-gray-900">No locked users</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  All users currently have transfer access enabled.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Action Dialogs */}
+      {actionDialog.open && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className={`p-2 rounded-lg ${
+                actionDialog.action === 'lock' ? 'bg-red-100' :
+                actionDialog.action === 'reset_transfers' ? 'bg-orange-100' : 'bg-green-100'
+              }`}>
+                {actionDialog.action === 'lock' && <Lock className="w-5 h-5 text-red-600" />}
+                {actionDialog.action === 'unlock' && <Unlock className="w-5 h-5 text-green-600" />}
+                {actionDialog.action === 'reset_transfers' && <RotateCcw className="w-5 h-5 text-orange-600" />}
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                {actionDialog.action === 'lock' && 'Lock Transfers'}
+                {actionDialog.action === 'unlock' && 'Unlock Transfers'}
+                {actionDialog.action === 'reset_transfers' && 'Reset Transferred Amounts'}
+              </h3>
+            </div>
+
+            <p className="text-gray-600 mb-4">
+              {actionDialog.action === 'lock' && 
+                `Are you sure you want to lock transfers for ${actionDialog.user?.full_name}?`}
+              {actionDialog.action === 'unlock' && 
+                `Are you sure you want to unlock transfers for ${actionDialog.user?.full_name}?`}
+              {actionDialog.action === 'reset_transfers' && 
+                `This will reset all transferred amounts to zero for ${actionDialog.user?.full_name}. This action cannot be undone.`}
+            </p>
+
+            {actionDialog.action === 'lock' && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Reason for locking transfers (optional)
+                </label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Enter reason for locking transfers..."
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            )}
+
+            <div className="flex space-x-3 justify-end">
+              <button
+                onClick={() => setActionDialog({ open: false, action: '', user: null })}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (actionDialog.user && typeof actionDialog.user.id === 'number') {
+                    performAction(actionDialog.action, actionDialog.user.id);
+                  }
+                }}
+                className={`px-4 py-2 text-sm font-medium text-white rounded-lg ${
+                  actionDialog.action === 'lock' ? 'bg-red-600 hover:bg-red-700' :
+                  actionDialog.action === 'reset_transfers' ? 'bg-orange-600 hover:bg-orange-700' :
+                  'bg-green-600 hover:bg-green-700'
+                }`}
+              >
+                {actionDialog.action === 'lock' && 'Lock Transfers'}
+                {actionDialog.action === 'unlock' && 'Unlock Transfers'}
+                {actionDialog.action === 'reset_transfers' && 'Reset Amounts'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
