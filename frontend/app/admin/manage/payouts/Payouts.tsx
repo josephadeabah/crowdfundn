@@ -231,7 +231,7 @@ const PayoutsManager = () => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setSearchTerm(e.target.value)
               }
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               className="flex-1"
             />
             <Button onClick={searchUsers} disabled={loading}>
@@ -272,7 +272,9 @@ const PayoutsManager = () => {
                       <p>
                         Locked at:{' '}
                         {selectedUser.transfer_lock_info.locked_at
-                          ? selectedUser.transfer_lock_info.locked_at.toLocaleString()
+                          ? new Date(
+                              selectedUser.transfer_lock_info.locked_at,
+                            ).toLocaleString()
                           : 'N/A'}
                       </p>
                     </div>
@@ -300,7 +302,7 @@ const PayoutsManager = () => {
                     </>
                   ) : (
                     <Button
-                      variant="destructive"
+                      className="bg-green-600 hover:bg-green-700 text-white" // ADD GREEN STYLING
                       onClick={() => openActionDialog('lock', selectedUser)}
                     >
                       <Lock className="w-4 h-4 mr-2" />
@@ -314,7 +316,7 @@ const PayoutsManager = () => {
         </CardContent>
       </Card>
 
-      {/* Currently Locked Users */}
+      {/* Currently Locked Users - FIXED TABLE LAYOUT */}
       <Card>
         <CardHeader>
           <CardTitle>Currently Locked Users</CardTitle>
@@ -333,12 +335,20 @@ const PayoutsManager = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Locked By</TableHead>
-                  <TableHead>Reason</TableHead>
-                  <TableHead>Locked At</TableHead>
-                  <TableHead>Total Transferred</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="w-[200px]">User</TableHead>{' '}
+                  {/* Fixed width */}
+                  <TableHead className="w-[120px]">Locked By</TableHead>{' '}
+                  {/* Fixed width */}
+                  <TableHead className="min-w-[150px]">Reason</TableHead>{' '}
+                  {/* Minimum width */}
+                  <TableHead className="w-[150px]">Locked At</TableHead>{' '}
+                  {/* Fixed width */}
+                  <TableHead className="w-[140px]">
+                    Total Transferred
+                  </TableHead>{' '}
+                  {/* Fixed width */}
+                  <TableHead className="w-[180px]">Actions</TableHead>{' '}
+                  {/* MORE SPACE FOR ACTIONS */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -355,12 +365,19 @@ const PayoutsManager = () => {
                     <TableCell>
                       {user.transfer_lock_info?.locked_by || 'System'}
                     </TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {user.transfer_lock_info?.reason || 'No reason provided'}
+                    <TableCell className="max-w-[200px]">
+                      {' '}
+                      {/* Increased max width */}
+                      <div className="truncate">
+                        {user.transfer_lock_info?.reason ||
+                          'No reason provided'}
+                      </div>
                     </TableCell>
                     <TableCell>
                       {user.transfer_lock_info?.locked_at
-                        ? user.transfer_lock_info.locked_at.toLocaleString()
+                        ? new Date(
+                            user.transfer_lock_info.locked_at,
+                          ).toLocaleString()
                         : 'N/A'}
                     </TableCell>
                     <TableCell>
@@ -373,6 +390,7 @@ const PayoutsManager = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => openActionDialog('unlock', user)}
+                          className="whitespace-nowrap" /* PREVENT TEXT WRAP */
                         >
                           <Unlock className="w-3 h-3 mr-1" />
                           Unlock
@@ -383,9 +401,10 @@ const PayoutsManager = () => {
                           onClick={() =>
                             openActionDialog('reset_transfers', user)
                           }
+                          className="whitespace-nowrap" /* PREVENT TEXT WRAP */
                         >
                           <RotateCcw className="w-3 h-3 mr-1" />
-                          Reset
+                          Reset Amounts {/* FULL TEXT */}
                         </Button>
                       </div>
                     </TableCell>
@@ -443,12 +462,12 @@ const PayoutsManager = () => {
               Cancel
             </Button>
             <Button
-              variant={
+              className={
                 actionDialog.action === 'lock'
-                  ? 'destructive'
+                  ? 'bg-green-600 hover:bg-green-700 text-white' // GREEN FOR LOCK
                   : actionDialog.action === 'reset_transfers'
-                    ? 'destructive'
-                    : 'default'
+                    ? 'bg-orange-600 hover:bg-orange-700 text-white' // ORANGE FOR RESET
+                    : 'bg-blue-600 hover:bg-blue-700 text-white' // BLUE FOR UNLOCK
               }
               onClick={() =>
                 actionDialog.user &&
