@@ -46,6 +46,7 @@ import { useUserContext } from '@/app/context/users/UserContext';
 import { UserProfile } from '@/app/types/user_profiles.types';
 import { CookieManager } from '@/app/components/cookiemanager/CookieManager';
 import { Cookie } from 'lucide-react';
+import PayoutsManager from './payouts/Payouts';
 
 // Type definitions for better type safety
 type TabGroup = {
@@ -233,7 +234,7 @@ const AdminDashboard = () => {
           id: 'payouts',
           label: 'Payouts',
           icon: <ShieldCheckIcon className="h-5 w-5" />,
-          component: <div>Payouts Management</div>,
+          component: <PayoutsManager />,
           requiredRole: [ROLES.MANAGER, ROLES.ADMIN],
         },
       ],
