@@ -289,7 +289,7 @@ class User < ApplicationRecord
 
   def can_make_transfers?
     return false if transfer_locked?
-    return false if blocked?
+    return false if status == 'blocked'  # Use status check instead of blocked?
     true
   end
 
