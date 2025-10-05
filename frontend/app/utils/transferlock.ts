@@ -33,7 +33,7 @@ export const formatTransferLockInfo = (
   return {
     locked: true,
     reason: lockInfo.reason || 'No reason provided',
-    lockedBy: lockInfo.locked_by || 'System',
-    lockedAt: lockInfo.locked_at ? new Date(lockInfo.locked_at) : null,
+    locked_by: lockInfo.locked_by || 'System',
+    locked_at: lockInfo.locked_at ? new Date(lockInfo.locked_at) : null,
   };
 };

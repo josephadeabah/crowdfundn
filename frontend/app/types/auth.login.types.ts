@@ -9,8 +9,8 @@ export interface TransferLockInfo {
 export interface FormattedTransferLockInfo {
   locked: boolean;
   reason: string;
-  lockedBy: string;
-  lockedAt: Date | null;
+  locked_by: string;
+  locked_at: Date | null;
 }
 
 export interface LoginUserRequest {

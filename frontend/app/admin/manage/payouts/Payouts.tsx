@@ -262,7 +262,7 @@ const PayoutsManager = () => {
                   {selectedUser.transfer_lock_info && (
                     <div className="mt-2 text-sm text-gray-600">
                       <p>
-                        Locked by: {selectedUser.transfer_lock_info.lockedBy}
+                        Locked by: {selectedUser.transfer_lock_info.locked_by}
                       </p>
                       <p>
                         Reason:{' '}
@@ -271,8 +271,8 @@ const PayoutsManager = () => {
                       </p>
                       <p>
                         Locked at:{' '}
-                        {selectedUser.transfer_lock_info.lockedAt
-                          ? selectedUser.transfer_lock_info.lockedAt.toLocaleString()
+                        {selectedUser.transfer_lock_info.locked_at
+                          ? selectedUser.transfer_lock_info.locked_at.toLocaleString()
                           : 'N/A'}
                       </p>
                     </div>
@@ -353,14 +353,14 @@ const PayoutsManager = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {user.transfer_lock_info?.lockedBy || 'System'}
+                      {user.transfer_lock_info?.locked_by || 'System'}
                     </TableCell>
                     <TableCell className="max-w-xs truncate">
                       {user.transfer_lock_info?.reason || 'No reason provided'}
                     </TableCell>
                     <TableCell>
-                      {user.transfer_lock_info?.lockedAt
-                        ? user.transfer_lock_info.lockedAt.toLocaleString()
+                      {user.transfer_lock_info?.locked_at
+                        ? user.transfer_lock_info.locked_at.toLocaleString()
                         : 'N/A'}
                     </TableCell>
                     <TableCell>
