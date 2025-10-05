@@ -70,15 +70,15 @@ export default function Transfers() {
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
-    // Check if transfers are locked using existing user data from auth context
-    if (user?.transfer_locked) {
-      showToast(
-        'Transfer Locked',
-        `Transfers are currently locked for your account. Reason: ${user?.transfer_lock_info?.reason || 'Contact support for details'}`,
-        'error'
-      );
-      return;
-    }
+      // Check if transfers are locked using existing user data from auth context
+      if (user?.transfer_locked) {
+        showToast(
+          'Transfer Locked',
+          `Transfers are currently locked for your account. Reason: ${user?.transfer_lock_info?.reason || 'Contact support for details'}`,
+          'error',
+        );
+        return;
+      }
       const response = await createTransferRecipient(campaignId);
       if (response && response.recipient_code) {
         const initiateResponse = await initiateTransfer(
@@ -240,7 +240,9 @@ export default function Transfers() {
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center">
             <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
-            <span className="text-red-700 font-medium">Transfers are locked for your account</span>
+            <span className="text-red-700 font-medium">
+              Transfers are locked for your account
+            </span>
           </div>
           {user?.transfer_lock_info?.reason && (
             <p className="text-red-600 text-sm mt-1">

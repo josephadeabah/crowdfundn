@@ -1,17 +1,17 @@
 // types/auth.login.types.ts
 
 export interface TransferLockInfo {
-    reason?: string;
-    locked_by?: string;
-    locked_at?: string;
+  reason?: string;
+  locked_by?: string;
+  locked_at?: string;
 }
 
 export interface FormattedTransferLockInfo {
-    locked: boolean;
-    reason: string;
-    lockedBy: string;
-    lockedAt: Date | null;
-} 
+  locked: boolean;
+  reason: string;
+  lockedBy: string;
+  lockedAt: Date | null;
+}
 
 export interface LoginUserRequest {
   email: string;

@@ -3,14 +3,37 @@ import React, { useState, useEffect } from 'react';
 import { Search, Lock, Unlock, RotateCcw } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/app/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/app/components/ui/dialog';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from '@/app/context/auth/AuthContext';
-import { LoginUserType, FormattedTransferLockInfo } from '@/app/types/auth.login.types';
+import {
+  LoginUserType,
+  FormattedTransferLockInfo,
+} from '@/app/types/auth.login.types';
 import { CampaignResponseDataType } from '@/app/types/campaigns.types';
 
 // Extended type definitions for admin functionality
@@ -53,10 +76,10 @@ const PayoutsManager = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
-  const [actionDialog, setActionDialog] = useState<ActionDialogState>({ 
-    open: false, 
-    action: '', 
-    user: null 
+  const [actionDialog, setActionDialog] = useState<ActionDialogState>({
+    open: false,
+    action: '',
+    user: null,
   });
   const [reason, setReason] = useState<string>('');
 
@@ -67,13 +90,16 @@ const PayoutsManager = () => {
   const fetchLockedUsers = async (): Promise<void> => {
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
       if (response.ok) {
         const data: LockedUsersResponse = await response.json();
         setLockedUsers(data.locked_users || []);
@@ -90,19 +116,19 @@ const PayoutsManager = () => {
 
   const searchUsers = async (): Promise<void> => {
     if (!searchTerm.trim()) return;
-    
+
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users?search=${encodeURIComponent(searchTerm)}`, 
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/members/users?search=${encodeURIComponent(searchTerm)}`,
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
       );
-      
+
       if (response.ok) {
         const data: UsersSearchResponse = await response.json();
         setSelectedUser(data.users?.[0] || null);
@@ -117,15 +143,18 @@ const PayoutsManager = () => {
     }
   };
 
-  async function performAction(action: 'lock' | 'unlock' | 'reset_transfers', userId: number): Promise<void> {
+  async function performAction(
+    action: 'lock' | 'unlock' | 'reset_transfers',
+    userId: number,
+  ): Promise<void> {
     try {
       const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks/${userId}/${action}`;
       const options: RequestInit = {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       };
 
       if (action === 'lock') {
@@ -133,14 +162,14 @@ const PayoutsManager = () => {
       }
 
       const response = await fetch(endpoint, options);
-      
+
       if (response.ok) {
         const result: ActionResponse = await response.json();
         toast.success(result.message);
         setActionDialog({ open: false, action: '', user: null });
         setReason('');
         fetchLockedUsers();
-        
+
         // Clear selected user if it was the one we acted upon
         if (selectedUser && selectedUser.id === userId) {
           setSelectedUser(null);
@@ -155,7 +184,10 @@ const PayoutsManager = () => {
     }
   }
 
-  const openActionDialog = (action: 'lock' | 'unlock' | 'reset_transfers', user: AdminUser): void => {
+  const openActionDialog = (
+    action: 'lock' | 'unlock' | 'reset_transfers',
+    user: AdminUser,
+  ): void => {
     setActionDialog({ open: true, action, user });
   };
 
@@ -166,34 +198,39 @@ const PayoutsManager = () => {
   };
 
   const handleDialogOpenChange = (open: boolean): void => {
-    setActionDialog(prev => ({ ...prev, open }));
+    setActionDialog((prev) => ({ ...prev, open }));
   };
 
-  const filteredUsers = lockedUsers.filter((user: AdminUser) =>
-    user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = lockedUsers.filter(
+    (user: AdminUser) =>
+      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
     <div className="p-6 space-y-6">
       <ToastContainer />
-      
+
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Transfer Lock Management</h1>
+        <h1 className="text-3xl font-bold">Payouts Management</h1>
       </div>
 
       {/* Search Section */}
       <Card>
         <CardHeader>
           <CardTitle>Search User</CardTitle>
-          <CardDescription>Search for a user to manage their transfer permissions</CardDescription>
+          <CardDescription>
+            Search for a user to manage their transfer permissions
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
             <Input
               placeholder="Search by name or email..."
               value={searchTerm}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearchTerm(e.target.value)
+              }
               onKeyPress={handleKeyPress}
               className="flex-1"
             />
@@ -210,16 +247,34 @@ const PayoutsManager = () => {
                   <h3 className="font-semibold">{selectedUser.full_name}</h3>
                   <p className="text-sm text-gray-600">{selectedUser.email}</p>
                   <p className="text-sm">
-                    Status: 
-                    <Badge variant={selectedUser.transfer_locked ? "destructive" : "default"} className="ml-2">
-                      {selectedUser.transfer_locked ? 'Transfers Locked' : 'Transfers Allowed'}
+                    Status:
+                    <Badge
+                      variant={
+                        selectedUser.transfer_locked ? 'destructive' : 'default'
+                      }
+                      className="ml-2"
+                    >
+                      {selectedUser.transfer_locked
+                        ? 'Transfers Locked'
+                        : 'Transfers Allowed'}
                     </Badge>
                   </p>
                   {selectedUser.transfer_lock_info && (
                     <div className="mt-2 text-sm text-gray-600">
-                      <p>Locked by: {selectedUser.transfer_lock_info.lockedBy}</p>
-                      <p>Reason: {selectedUser.transfer_lock_info.reason || 'No reason provided'}</p>
-                      <p>Locked at: {selectedUser.transfer_lock_info.lockedAt ? selectedUser.transfer_lock_info.lockedAt.toLocaleString() : 'N/A'}</p>
+                      <p>
+                        Locked by: {selectedUser.transfer_lock_info.lockedBy}
+                      </p>
+                      <p>
+                        Reason:{' '}
+                        {selectedUser.transfer_lock_info.reason ||
+                          'No reason provided'}
+                      </p>
+                      <p>
+                        Locked at:{' '}
+                        {selectedUser.transfer_lock_info.lockedAt
+                          ? selectedUser.transfer_lock_info.lockedAt.toLocaleString()
+                          : 'N/A'}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -235,7 +290,9 @@ const PayoutsManager = () => {
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => openActionDialog('reset_transfers', selectedUser)}
+                        onClick={() =>
+                          openActionDialog('reset_transfers', selectedUser)
+                        }
                       >
                         <RotateCcw className="w-4 h-4 mr-2" />
                         Reset Amounts
@@ -261,7 +318,9 @@ const PayoutsManager = () => {
       <Card>
         <CardHeader>
           <CardTitle>Currently Locked Users</CardTitle>
-          <CardDescription>Users with transfers currently locked</CardDescription>
+          <CardDescription>
+            Users with transfers currently locked
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -288,20 +347,25 @@ const PayoutsManager = () => {
                     <TableCell>
                       <div>
                         <div className="font-medium">{user.full_name}</div>
-                        <div className="text-sm text-gray-600">{user.email}</div>
+                        <div className="text-sm text-gray-600">
+                          {user.email}
+                        </div>
                       </div>
                     </TableCell>
-                    <TableCell>{user.transfer_lock_info?.lockedBy || 'System'}</TableCell>
+                    <TableCell>
+                      {user.transfer_lock_info?.lockedBy || 'System'}
+                    </TableCell>
                     <TableCell className="max-w-xs truncate">
                       {user.transfer_lock_info?.reason || 'No reason provided'}
                     </TableCell>
                     <TableCell>
-                      {user.transfer_lock_info?.lockedAt ? 
-                        user.transfer_lock_info.lockedAt.toLocaleString() : 'N/A'
-                      }
+                      {user.transfer_lock_info?.lockedAt
+                        ? user.transfer_lock_info.lockedAt.toLocaleString()
+                        : 'N/A'}
                     </TableCell>
                     <TableCell>
-                      {user.currency_symbol} {user.total_transferred_amount?.toLocaleString()}
+                      {user.currency_symbol}{' '}
+                      {user.total_transferred_amount?.toLocaleString()}
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
@@ -316,7 +380,9 @@ const PayoutsManager = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => openActionDialog('reset_transfers', user)}
+                          onClick={() =>
+                            openActionDialog('reset_transfers', user)
+                          }
                         >
                           <RotateCcw className="w-3 h-3 mr-1" />
                           Reset
@@ -338,14 +404,15 @@ const PayoutsManager = () => {
             <DialogTitle>
               {actionDialog.action === 'lock' && 'Lock Transfers'}
               {actionDialog.action === 'unlock' && 'Unlock Transfers'}
-              {actionDialog.action === 'reset_transfers' && 'Reset Transferred Amounts'}
+              {actionDialog.action === 'reset_transfers' &&
+                'Reset Transferred Amounts'}
             </DialogTitle>
             <DialogDescription>
-              {actionDialog.action === 'lock' && 
+              {actionDialog.action === 'lock' &&
                 `Are you sure you want to lock transfers for ${actionDialog.user?.full_name}?`}
-              {actionDialog.action === 'unlock' && 
+              {actionDialog.action === 'unlock' &&
                 `Are you sure you want to unlock transfers for ${actionDialog.user?.full_name}?`}
-              {actionDialog.action === 'reset_transfers' && 
+              {actionDialog.action === 'reset_transfers' &&
                 `This will reset all transferred amounts to zero for ${actionDialog.user?.full_name}. This action cannot be undone.`}
             </DialogDescription>
           </DialogHeader>
@@ -359,7 +426,9 @@ const PayoutsManager = () => {
                 id="reason"
                 placeholder="Enter reason for locking transfers..."
                 value={reason}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReason(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setReason(e.target.value)
+                }
               />
             </div>
           )}
@@ -367,26 +436,42 @@ const PayoutsManager = () => {
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setActionDialog({ open: false, action: '', user: null })}
+              onClick={() =>
+                setActionDialog({ open: false, action: '', user: null })
+              }
             >
               Cancel
             </Button>
             <Button
               variant={
-                actionDialog.action === 'lock' ? 'destructive' :
-                actionDialog.action === 'reset_transfers' ? 'destructive' : 'default'
+                actionDialog.action === 'lock'
+                  ? 'destructive'
+                  : actionDialog.action === 'reset_transfers'
+                    ? 'destructive'
+                    : 'default'
               }
               onClick={() =>
                 actionDialog.user &&
-                ['lock', 'unlock', 'reset_transfers'].includes(actionDialog.action) &&
-                performAction(actionDialog.action as 'lock' | 'unlock' | 'reset_transfers', actionDialog.user.id)
+                ['lock', 'unlock', 'reset_transfers'].includes(
+                  actionDialog.action,
+                ) &&
+                performAction(
+                  actionDialog.action as 'lock' | 'unlock' | 'reset_transfers',
+                  actionDialog.user.id,
+                )
               }
               disabled={!actionDialog.user}
             >
-              {actionDialog.action === 'lock' && <Lock className="w-4 h-4 mr-2" />}
-              {actionDialog.action === 'unlock' && <Unlock className="w-4 h-4 mr-2" />}
-              {actionDialog.action === 'reset_transfers' && <RotateCcw className="w-4 h-4 mr-2" />}
-              
+              {actionDialog.action === 'lock' && (
+                <Lock className="w-4 h-4 mr-2" />
+              )}
+              {actionDialog.action === 'unlock' && (
+                <Unlock className="w-4 h-4 mr-2" />
+              )}
+              {actionDialog.action === 'reset_transfers' && (
+                <RotateCcw className="w-4 h-4 mr-2" />
+              )}
+
               {actionDialog.action === 'lock' && 'Lock Transfers'}
               {actionDialog.action === 'unlock' && 'Unlock Transfers'}
               {actionDialog.action === 'reset_transfers' && 'Reset Amounts'}
