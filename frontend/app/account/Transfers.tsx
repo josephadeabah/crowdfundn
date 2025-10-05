@@ -236,7 +236,7 @@ export default function Transfers() {
       </div>
 
       {/* Add transfer lock status display in the UI */}
-      {user?.transfer_locked && (
+      {user?.transfer_lock_info?.locked && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center">
             <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
