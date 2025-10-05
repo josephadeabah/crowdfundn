@@ -253,6 +253,16 @@ module Api
 
           @campaign = Campaign.find(params[:campaign_id])
 
+          # Check if transfers are locked for this user
+          unless @current_user.can_make_transfers?
+            render json: { 
+              error: 'Transfers are currently locked for your account. Please contact support.',
+              code: 'TRANSFERS_LOCKED',
+              lock_info: @current_user.transfer_lock_info
+            }, status: :forbidden
+            return
+          end
+
           unless @campaign.fundraiser_id == @current_user.id
             render json: { error: 'You are not authorized to perform this action' }, status: :forbidden
           end

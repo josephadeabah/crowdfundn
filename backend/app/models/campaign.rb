@@ -71,11 +71,25 @@ class Campaign < ApplicationRecord
     update!(status: :canceled)
   end
 
-  # Method to update the transferred_amount based on successful donations and previous transferred_amount
+  # Add validation to prevent transfers when user is locked
+  def can_transfer_funds?
+    return false unless fundraiser.can_make_transfers?
+    return false if fundraiser.transfer_locked?
+    true
+  end
+
+  # Update the transfer amount method to check locks
   def update_transferred_amount(new_donated_amount)
-    # Accumulate the new donated amount with the existing transferred amount
+    unless can_transfer_funds?
+      raise "Transfers are locked for this fundraiser"
+    end
+    
     updated_transferred_amount = transferred_amount + new_donated_amount
     update!(transferred_amount: updated_transferred_amount)
+    
+    # Update user's total transferred amount
+    fundraiser.update_column(:total_transferred_amount, 
+      fundraiser.total_transferred_amount + new_donated_amount)
   end
 
    def media_attached?

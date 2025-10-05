@@ -255,6 +255,67 @@ class User < ApplicationRecord
     new_kyc.save
   end
 
+    # Add transfer locking methods
+  def lock_transfers!(admin_user, reason = nil)
+    update!(
+      transfer_locked: true,
+      transfer_locked_reason: reason,
+      transfer_locked_at: Time.current,
+      transfer_locked_by: admin_user.id
+    )
+  end
+
+  def unlock_transfers!
+    update!(
+      transfer_locked: false,
+      transfer_locked_reason: nil,
+      transfer_locked_at: nil,
+      transfer_locked_by: nil
+    )
+  end
+
+  def reset_transferred_amount!
+    transaction do
+      # Reset campaign transferred amounts for this user
+      campaigns.update_all(transferred_amount: 0)
+      
+      # Update user's tracking
+      update!(
+        last_transfer_reset_at: Time.current,
+        total_transferred_amount: 0
+      )
+    end
+  end
+
+  def can_make_transfers?
+    return false if transfer_locked?
+    return false if blocked?
+    true
+  end
+
+  def transfer_lock_info
+    return nil unless transfer_locked?
+    
+    {
+      locked: true,
+      reason: transfer_locked_reason,
+      locked_at: transfer_locked_at,
+      locked_by: User.find_by(id: transfer_locked_by)&.full_name,
+      locked_by_id: transfer_locked_by
+    }
+  end
+
+  # Update the as_json method to include transfer lock status
+  def as_json(options = {})
+    super(options).merge(
+      transfer_locked: transfer_locked?,
+      transfer_lock_info: transfer_lock_info,
+      can_make_transfers: can_make_transfers?,
+      last_transfer_reset_at: last_transfer_reset_at,
+      total_transferred_amount: total_transferred_amount
+    )
+  end
+
   private
 
   def set_default_status

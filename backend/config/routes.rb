@@ -39,6 +39,7 @@ Rails.application.routes.draw do
         put 'users/:id/block', to: 'users#block_user'
         put 'users/:id/activate', to: 'users#activate_user'
         delete 'users/:id', to: 'users#destroy'
+        get 'users/transfer_status', to: 'users#transfer_status'
       end
 
       # Add KYC namespace with proper routes
@@ -87,6 +88,21 @@ Rails.application.routes.draw do
         end
 
         post 'paystack_webhook/receive'
+
+
+        namespace :admin do
+          resources :transfer_locks, only: [] do
+            collection do
+              get :index
+            end
+            member do
+              post :lock
+              post :unlock
+              post :reset_transfers
+              get :status
+            end
+          end
+        end
 
         resources :subscriptions, only: [] do
           collection do

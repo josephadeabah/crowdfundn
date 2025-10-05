@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_29_103842) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_05_020156) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -627,6 +627,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_29_103842) do
     t.bigint "premium_plan_id"
     t.string "premium_subscription_id"
     t.boolean "premium_auto_renew", default: true
+    t.boolean "transfer_locked", default: false
+    t.text "transfer_locked_reason"
+    t.datetime "transfer_locked_at"
+    t.bigint "transfer_locked_by"
+    t.datetime "last_transfer_reset_at"
+    t.decimal "total_transferred_amount", precision: 15, scale: 2, default: "0.0"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["premium_plan_id"], name: "index_users_on_premium_plan_id"
     t.index ["subaccount_id"], name: "index_users_on_subaccount_id"
@@ -675,4 +681,5 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_29_103842) do
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
   add_foreign_key "users", "premium_plans"
+  add_foreign_key "users", "users", column: "transfer_locked_by"
 end
