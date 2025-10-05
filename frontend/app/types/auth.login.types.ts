@@ -1,5 +1,18 @@
 // types/auth.login.types.ts
 
+export interface TransferLockInfo {
+    reason?: string;
+    locked_by?: string;
+    locked_at?: string;
+}
+
+export interface FormattedTransferLockInfo {
+    locked: boolean;
+    reason: string;
+    lockedBy: string;
+    lockedAt: Date | null;
+} 
+
 export interface LoginUserRequest {
   email: string;
   password: string;
@@ -42,6 +55,9 @@ export interface LoginUserType {
   kyc_status_info?: KYCStatusInfo;
   can_invest?: boolean; // Add can_invest property
   can_create_campaign?: boolean; // Add can_create_campaign property
+  transfer_locked?: boolean;
+  transfer_lock_info?: FormattedTransferLockInfo | null;
+  can_make_transfers?: boolean;
 }
 
 export interface LoginUserResponseSuccess {

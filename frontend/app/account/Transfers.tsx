@@ -11,6 +11,9 @@ import ProgressRing from '../components/ring/ProgressRing';
 import { CampaignResponseDataType } from '../types/campaigns.types';
 import TransferLoader from '../loaders/TransferLoader ';
 import InfoTooltip from '../components/tooltip/tooltip';
+import { AlertTriangle } from 'lucide-react';
+import { checkUserTransferStatus } from '../utils/transferlock';
+import { useAuth } from '../context/auth/AuthContext';
 
 export default function Transfers() {
   const {
@@ -18,6 +21,8 @@ export default function Transfers() {
     fetchUserCampaigns,
     loading: isLoadingCampaigns,
   } = useCampaignContext();
+
+  const { token, user } = useAuth();
 
   const {
     fetchTransfers,
@@ -65,6 +70,15 @@ export default function Transfers() {
 
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
+    // Check if transfers are locked using existing user data from auth context
+    if (user?.transfer_locked) {
+      showToast(
+        'Transfer Locked',
+        `Transfers are currently locked for your account. Reason: ${user?.transfer_lock_info?.reason || 'Contact support for details'}`,
+        'error'
+      );
+      return;
+    }
       const response = await createTransferRecipient(campaignId);
       if (response && response.recipient_code) {
         const initiateResponse = await initiateTransfer(
@@ -220,6 +234,24 @@ export default function Transfers() {
           Transfers are secure on our platform
         </Button>
       </div>
+
+      {/* Add transfer lock status display in the UI */}
+      {user?.transfer_locked && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center">
+            <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
+            <span className="text-red-700 font-medium">Transfers are locked for your account</span>
+          </div>
+          {user?.transfer_lock_info?.reason && (
+            <p className="text-red-600 text-sm mt-1">
+              Reason: {user?.transfer_lock_info.reason}
+            </p>
+          )}
+          <p className="text-red-600 text-sm">
+            Please contact support to unlock transfers.
+          </p>
+        </div>
+      )}
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
