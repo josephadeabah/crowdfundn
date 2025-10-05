@@ -67,7 +67,7 @@ const PayoutsManager = () => {
   const fetchLockedUsers = async (): Promise<void> => {
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/admin/transfer_locks`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -119,7 +119,7 @@ const PayoutsManager = () => {
 
   async function performAction(action: 'lock' | 'unlock' | 'reset_transfers', userId: number): Promise<void> {
     try {
-      const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/admin/transfer_locks/${userId}/${action}`;
+      const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks/${userId}/${action}`;
       const options: RequestInit = {
         method: 'POST',
         headers: {
