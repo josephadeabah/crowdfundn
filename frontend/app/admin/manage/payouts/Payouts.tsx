@@ -1,5 +1,4 @@
 'use client';
-// app/javascript/components/admin/TransferLockManager.jsx
 import React, { useState, useEffect } from 'react';
 import { Search, Lock, Unlock, RotateCcw, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
