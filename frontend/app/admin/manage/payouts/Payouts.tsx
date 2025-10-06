@@ -1,6 +1,6 @@
 // app/javascript/components/admin/TransferLockManager.jsx
 import React, { useState, useEffect } from 'react';
-import { Search, Lock, Unlock, RotateCcw } from 'lucide-react';
+import { Search, Lock, Unlock, RotateCcw, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import {
@@ -34,18 +34,42 @@ import {
   LoginUserType,
   FormattedTransferLockInfo,
 } from '@/app/types/auth.login.types';
-import { CampaignResponseDataType } from '@/app/types/campaigns.types';
+import {
+  CampaignResponseDataType,
+  FundraiserDetailsType,
+} from '@/app/types/campaigns.types';
 
 // Extended type definitions for admin functionality
-
 interface AdminUser extends Omit<LoginUserType, 'transfer_lock_info'> {
   transfer_lock_info?: FormattedTransferLockInfo;
   total_transferred_amount: number;
   campaigns?: CampaignResponseDataType[];
+  phone_code: string;
+}
+
+interface CompletedCampaign extends CampaignResponseDataType {
+  // Override the fundraiser type to include AdminUser properties we need
+  fundraiser: FundraiserDetailsType & {
+    id: number;
+    full_name?: string;
+    email?: string;
+    transfer_locked?: boolean;
+    transfer_lock_info?: FormattedTransferLockInfo;
+    total_transferred_amount?: number;
+  };
 }
 
 interface LockedUsersResponse {
   locked_users: AdminUser[];
+  pagination: {
+    current_page: number;
+    total_pages: number;
+    total_count: number;
+  };
+}
+
+interface CompletedCampaignsResponse {
+  campaigns: CompletedCampaign[];
   pagination: {
     current_page: number;
     total_pages: number;
@@ -61,25 +85,39 @@ interface ActionResponse {
   success: boolean;
   message: string;
   user?: AdminUser;
+  campaign?: CampaignResponseDataType;
   error?: string;
 }
 
 interface ActionDialogState {
   open: boolean;
-  action: 'lock' | 'unlock' | 'reset_transfers' | '';
+  action:
+    | 'lock'
+    | 'unlock'
+    | 'reset_transfers'
+    | 'reset_campaign_transfers'
+    | '';
   user: AdminUser | null;
+  campaign?: CampaignResponseDataType | null;
 }
 
 const PayoutsManager = () => {
   const { token } = useAuth();
   const [lockedUsers, setLockedUsers] = useState<AdminUser[]>([]);
+  const [completedCampaigns, setCompletedCampaigns] = useState<
+    CompletedCampaign[]
+  >([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [campaignsLoading, setCampaignsLoading] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [showCompletedCampaigns, setShowCompletedCampaigns] =
+    useState<boolean>(false);
   const [actionDialog, setActionDialog] = useState<ActionDialogState>({
     open: false,
     action: '',
     user: null,
+    campaign: null,
   });
   const [reason, setReason] = useState<string>('');
 
@@ -87,6 +125,7 @@ const PayoutsManager = () => {
     fetchLockedUsers();
   }, []);
 
+  // Fetch locked users
   const fetchLockedUsers = async (): Promise<void> => {
     setLoading(true);
     try {
@@ -114,6 +153,36 @@ const PayoutsManager = () => {
     }
   };
 
+  // Fetch completed campaigns with transferred amounts
+  const fetchCompletedCampaigns = async (): Promise<void> => {
+    setCampaignsLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks/completed_campaigns`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data: CompletedCampaignsResponse = await response.json();
+        setCompletedCampaigns(data.campaigns || []);
+        setShowCompletedCampaigns(true);
+      } else {
+        toast.error('Failed to fetch completed campaigns');
+      }
+    } catch (error) {
+      console.error('Error fetching completed campaigns:', error);
+      toast.error('Error fetching completed campaigns');
+    } finally {
+      setCampaignsLoading(false);
+    }
+  };
+
+  // Search users
   const searchUsers = async (): Promise<void> => {
     if (!searchTerm.trim()) return;
 
@@ -143,6 +212,7 @@ const PayoutsManager = () => {
     }
   };
 
+  // Perform user-level actions (lock/unlock)
   async function performAction(
     action: 'lock' | 'unlock' | 'reset_transfers',
     userId: number,
@@ -166,7 +236,12 @@ const PayoutsManager = () => {
       if (response.ok) {
         const result: ActionResponse = await response.json();
         toast.success(result.message);
-        setActionDialog({ open: false, action: '', user: null });
+        setActionDialog({
+          open: false,
+          action: '',
+          user: null,
+          campaign: null,
+        });
         setReason('');
         fetchLockedUsers();
 
@@ -184,11 +259,95 @@ const PayoutsManager = () => {
     }
   }
 
+  // Reset specific campaign transfers
+  const resetCampaignTransfers = async (
+    userId: number,
+    campaignId: number,
+    reason: string = '',
+  ): Promise<void> => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks/${userId}/reset_campaign_transfers`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            campaign_id: campaignId,
+            reason: reason,
+          }),
+        },
+      );
+
+      if (response.ok) {
+        const result: ActionResponse = await response.json();
+        toast.success(result.message);
+        setActionDialog({
+          open: false,
+          action: '',
+          user: null,
+          campaign: null,
+        });
+        setReason('');
+
+        // Refresh all data
+        fetchLockedUsers();
+        fetchCompletedCampaigns();
+
+        // Clear selected user if it was the one we acted upon
+        if (selectedUser && selectedUser.id === userId) {
+          setSelectedUser(null);
+        }
+      } else {
+        const error: ActionResponse = await response.json();
+        toast.error(error.error || 'Failed to reset campaign transfers');
+      }
+    } catch (error) {
+      console.error('Error resetting campaign transfers:', error);
+      toast.error('Error resetting campaign transfers');
+    }
+  };
+
+  // Helper function to create AdminUser from FundraiserDetailsType
+  const createAdminUserFromFundraiser = (
+    fundraiser: FundraiserDetailsType,
+  ): AdminUser => {
+    return {
+      id: fundraiser.id,
+      full_name: fundraiser.name || 'Unknown',
+      email: fundraiser.profile?.name || 'No email', // Using profile name as fallback
+      transfer_locked: false,
+      total_transferred_amount: 0,
+      currency_symbol: fundraiser.currency_symbol,
+      // Add other required properties from LoginUserType with defaults
+      admin: false,
+      status: 'active',
+      phone_number: '',
+      phone_code: '',
+      country: '',
+      payment_method: '',
+      mobile_money_provider: '',
+      currency: fundraiser.currency,
+      birth_date: '',
+      category: '',
+      target_amount: '0',
+      created_at: fundraiser.created_at,
+      updated_at: fundraiser.updated_at,
+      // Add missing required properties with default values
+      password_digest: '',
+      duration_in_days: 0,
+      national_id: '',
+    };
+  };
+
   const openActionDialog = (
-    action: 'lock' | 'unlock' | 'reset_transfers',
+    action: 'lock' | 'unlock' | 'reset_transfers' | 'reset_campaign_transfers',
     user: AdminUser,
+    campaign?: CampaignResponseDataType | null,
   ): void => {
-    setActionDialog({ open: true, action, user });
+    setActionDialog({ open: true, action, user, campaign });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -198,7 +357,10 @@ const PayoutsManager = () => {
   };
 
   const handleDialogOpenChange = (open: boolean): void => {
-    setActionDialog((prev) => ({ ...prev, open }));
+    if (!open) {
+      setActionDialog({ open: false, action: '', user: null, campaign: null });
+      setReason('');
+    }
   };
 
   const filteredUsers = lockedUsers.filter(
@@ -279,6 +441,44 @@ const PayoutsManager = () => {
                       </p>
                     </div>
                   )}
+
+                  {/* Show user's campaigns */}
+                  {selectedUser.campaigns &&
+                    selectedUser.campaigns.length > 0 && (
+                      <div className="mt-3">
+                        <h4 className="font-medium text-sm mb-2">Campaigns:</h4>
+                        <div className="space-y-2">
+                          {selectedUser.campaigns.map((campaign) => (
+                            <div
+                              key={campaign.id}
+                              className="flex justify-between items-center text-sm border-b pb-1"
+                            >
+                              <span className="truncate flex-1 mr-2">
+                                {campaign.title}
+                              </span>
+                              <span className="font-medium">
+                                {campaign.currency_symbol}{' '}
+                                {campaign.transferred_amount?.toLocaleString()}
+                              </span>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() =>
+                                  openActionDialog(
+                                    'reset_campaign_transfers',
+                                    selectedUser,
+                                    campaign,
+                                  )
+                                }
+                                className="ml-2"
+                              >
+                                <RotateCcw className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                 </div>
                 <div className="flex gap-2">
                   {selectedUser.transfer_locked ? (
@@ -290,19 +490,10 @@ const PayoutsManager = () => {
                         <Unlock className="w-4 h-4 mr-2" />
                         Unlock Transfers
                       </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          openActionDialog('reset_transfers', selectedUser)
-                        }
-                      >
-                        <RotateCcw className="w-4 h-4 mr-2" />
-                        Reset Amounts
-                      </Button>
                     </>
                   ) : (
                     <Button
-                      className="bg-green-600 hover:bg-green-700 text-white" // ADD GREEN STYLING
+                      className="bg-green-600 hover:bg-green-700 text-white"
                       onClick={() => openActionDialog('lock', selectedUser)}
                     >
                       <Lock className="w-4 h-4 mr-2" />
@@ -316,7 +507,121 @@ const PayoutsManager = () => {
         </CardContent>
       </Card>
 
-      {/* Currently Locked Users - FIXED TABLE LAYOUT */}
+      {/* Completed Campaigns Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Completed Campaigns with Funds</CardTitle>
+              <CardDescription>
+                Campaigns that have ended but still have transferred amounts
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              onClick={fetchCompletedCampaigns}
+              disabled={campaignsLoading}
+            >
+              {showCompletedCampaigns ? (
+                <EyeOff className="w-4 h-4 mr-2" />
+              ) : (
+                <Eye className="w-4 h-4 mr-2" />
+              )}
+              {showCompletedCampaigns ? 'Hide' : 'Show'} Completed Campaigns
+            </Button>
+          </div>
+        </CardHeader>
+        {showCompletedCampaigns && (
+          <CardContent>
+            {campaignsLoading ? (
+              <div className="text-center py-4">
+                Loading completed campaigns...
+              </div>
+            ) : completedCampaigns.length === 0 ? (
+              <div className="text-center py-4 text-gray-500">
+                No completed campaigns with transferred amounts found
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[250px]">Campaign</TableHead>
+                    <TableHead className="w-[200px]">Fundraiser</TableHead>
+                    <TableHead className="w-[100px]">Status</TableHead>
+                    <TableHead className="w-[150px]">
+                      Transferred Amount
+                    </TableHead>
+                    <TableHead className="w-[120px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {completedCampaigns.map((campaign) => (
+                    <TableRow key={campaign.id}>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{campaign.title}</div>
+                          <div className="text-sm text-gray-600">
+                            Ended:{' '}
+                            {new Date(campaign.end_date).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">
+                            {campaign.fundraiser.name}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {campaign.fundraiser.profile?.name ||
+                              'No contact info'}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            campaign.status === 'completed'
+                              ? 'default'
+                              : 'secondary'
+                          }
+                        >
+                          {campaign.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {campaign.currency_symbol}{' '}
+                        {campaign.transferred_amount?.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const adminUser = createAdminUserFromFundraiser(
+                              campaign.fundraiser,
+                            );
+                            openActionDialog(
+                              'reset_campaign_transfers',
+                              adminUser,
+                              campaign,
+                            );
+                          }}
+                          className="whitespace-nowrap"
+                        >
+                          <RotateCcw className="w-3 h-3 mr-1" />
+                          Reset
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        )}
+      </Card>
+
+      {/* Currently Locked Users */}
       <Card>
         <CardHeader>
           <CardTitle>Currently Locked Users</CardTitle>
@@ -335,20 +640,12 @@ const PayoutsManager = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[200px]">User</TableHead>{' '}
-                  {/* Fixed width */}
-                  <TableHead className="w-[120px]">Locked By</TableHead>{' '}
-                  {/* Fixed width */}
-                  <TableHead className="min-w-[150px]">Reason</TableHead>{' '}
-                  {/* Minimum width */}
-                  <TableHead className="w-[150px]">Locked At</TableHead>{' '}
-                  {/* Fixed width */}
-                  <TableHead className="w-[140px]">
-                    Total Transferred
-                  </TableHead>{' '}
-                  {/* Fixed width */}
-                  <TableHead className="w-[180px]">Actions</TableHead>{' '}
-                  {/* MORE SPACE FOR ACTIONS */}
+                  <TableHead className="w-[200px]">User</TableHead>
+                  <TableHead className="w-[120px]">Locked By</TableHead>
+                  <TableHead className="min-w-[150px]">Reason</TableHead>
+                  <TableHead className="w-[150px]">Locked At</TableHead>
+                  <TableHead className="w-[140px]">Total Transferred</TableHead>
+                  <TableHead className="w-[180px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -366,8 +663,6 @@ const PayoutsManager = () => {
                       {user.transfer_lock_info?.locked_by || 'System'}
                     </TableCell>
                     <TableCell className="max-w-[200px]">
-                      {' '}
-                      {/* Increased max width */}
                       <div className="truncate">
                         {user.transfer_lock_info?.reason ||
                           'No reason provided'}
@@ -390,21 +685,10 @@ const PayoutsManager = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => openActionDialog('unlock', user)}
-                          className="whitespace-nowrap" /* PREVENT TEXT WRAP */
+                          className="whitespace-nowrap"
                         >
                           <Unlock className="w-3 h-3 mr-1" />
                           Unlock
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            openActionDialog('reset_transfers', user)
-                          }
-                          className="whitespace-nowrap" /* PREVENT TEXT WRAP */
-                        >
-                          <RotateCcw className="w-3 h-3 mr-1" />
-                          Reset Amounts {/* FULL TEXT */}
                         </Button>
                       </div>
                     </TableCell>
@@ -424,7 +708,9 @@ const PayoutsManager = () => {
               {actionDialog.action === 'lock' && 'Lock Transfers'}
               {actionDialog.action === 'unlock' && 'Unlock Transfers'}
               {actionDialog.action === 'reset_transfers' &&
-                'Reset Transferred Amounts'}
+                'Reset All Transferred Amounts'}
+              {actionDialog.action === 'reset_campaign_transfers' &&
+                'Reset Campaign Transferred Amount'}
             </DialogTitle>
             <DialogDescription>
               {actionDialog.action === 'lock' &&
@@ -432,18 +718,28 @@ const PayoutsManager = () => {
               {actionDialog.action === 'unlock' &&
                 `Are you sure you want to unlock transfers for ${actionDialog.user?.full_name}?`}
               {actionDialog.action === 'reset_transfers' &&
-                `This will reset all transferred amounts to zero for ${actionDialog.user?.full_name}. This action cannot be undone.`}
+                `This will reset ALL transferred amounts to zero for ${actionDialog.user?.full_name}. This action cannot be undone.`}
+              {actionDialog.action === 'reset_campaign_transfers' &&
+                `This will reset the transferred amount to zero for campaign "${actionDialog.campaign?.title}" by ${actionDialog.user?.full_name}. This action cannot be undone.`}
             </DialogDescription>
           </DialogHeader>
 
-          {actionDialog.action === 'lock' && (
+          {(actionDialog.action === 'lock' ||
+            actionDialog.action === 'reset_campaign_transfers') && (
             <div className="space-y-4">
               <label htmlFor="reason" className="block text-sm font-medium">
-                Reason for locking transfers (optional)
+                Reason{' '}
+                {actionDialog.action === 'reset_campaign_transfers'
+                  ? '(optional)'
+                  : 'for locking transfers (optional)'}
               </label>
               <Input
                 id="reason"
-                placeholder="Enter reason for locking transfers..."
+                placeholder={
+                  actionDialog.action === 'reset_campaign_transfers'
+                    ? 'Enter reason for resetting campaign transfers...'
+                    : 'Enter reason for locking transfers...'
+                }
                 value={reason}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setReason(e.target.value)
@@ -456,7 +752,12 @@ const PayoutsManager = () => {
             <Button
               variant="outline"
               onClick={() =>
-                setActionDialog({ open: false, action: '', user: null })
+                setActionDialog({
+                  open: false,
+                  action: '',
+                  user: null,
+                  campaign: null,
+                })
               }
             >
               Cancel
@@ -464,22 +765,43 @@ const PayoutsManager = () => {
             <Button
               className={
                 actionDialog.action === 'lock'
-                  ? 'bg-green-600 hover:bg-green-700 text-white' // GREEN FOR LOCK
-                  : actionDialog.action === 'reset_transfers'
-                    ? 'bg-orange-600 hover:bg-orange-700 text-white' // ORANGE FOR RESET
-                    : 'bg-blue-600 hover:bg-blue-700 text-white' // BLUE FOR UNLOCK
+                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                  : actionDialog.action === 'reset_transfers' ||
+                      actionDialog.action === 'reset_campaign_transfers'
+                    ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
               }
-              onClick={() =>
-                actionDialog.user &&
-                ['lock', 'unlock', 'reset_transfers'].includes(
-                  actionDialog.action,
-                ) &&
-                performAction(
-                  actionDialog.action as 'lock' | 'unlock' | 'reset_transfers',
-                  actionDialog.user.id,
-                )
+              onClick={() => {
+                if (!actionDialog.user) return;
+
+                if (
+                  actionDialog.action === 'reset_campaign_transfers' &&
+                  actionDialog.campaign
+                ) {
+                  resetCampaignTransfers(
+                    actionDialog.user.id,
+                    actionDialog.campaign.id,
+                    reason,
+                  );
+                } else if (
+                  ['lock', 'unlock', 'reset_transfers'].includes(
+                    actionDialog.action,
+                  )
+                ) {
+                  performAction(
+                    actionDialog.action as
+                      | 'lock'
+                      | 'unlock'
+                      | 'reset_transfers',
+                    actionDialog.user.id,
+                  );
+                }
+              }}
+              disabled={
+                !actionDialog.user ||
+                (actionDialog.action === 'reset_campaign_transfers' &&
+                  !actionDialog.campaign)
               }
-              disabled={!actionDialog.user}
             >
               {actionDialog.action === 'lock' && (
                 <Lock className="w-4 h-4 mr-2" />
@@ -487,13 +809,16 @@ const PayoutsManager = () => {
               {actionDialog.action === 'unlock' && (
                 <Unlock className="w-4 h-4 mr-2" />
               )}
-              {actionDialog.action === 'reset_transfers' && (
+              {(actionDialog.action === 'reset_transfers' ||
+                actionDialog.action === 'reset_campaign_transfers') && (
                 <RotateCcw className="w-4 h-4 mr-2" />
               )}
 
               {actionDialog.action === 'lock' && 'Lock Transfers'}
               {actionDialog.action === 'unlock' && 'Unlock Transfers'}
-              {actionDialog.action === 'reset_transfers' && 'Reset Amounts'}
+              {actionDialog.action === 'reset_transfers' && 'Reset All Amounts'}
+              {actionDialog.action === 'reset_campaign_transfers' &&
+                'Reset Campaign Amount'}
             </Button>
           </DialogFooter>
         </DialogContent>
