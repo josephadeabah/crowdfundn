@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_05_020156) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_06_164643) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,6 +50,23 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_05_020156) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "admin_actions", force: :cascade do |t|
+    t.bigint "admin_user_id", null: false
+    t.bigint "target_user_id", null: false
+    t.bigint "campaign_id"
+    t.string "action", null: false
+    t.jsonb "metadata", default: {}
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action"], name: "index_admin_actions_on_action"
+    t.index ["admin_user_id"], name: "index_admin_actions_on_admin_user_id"
+    t.index ["campaign_id"], name: "index_admin_actions_on_campaign_id"
+    t.index ["created_at"], name: "index_admin_actions_on_created_at"
+    t.index ["target_user_id"], name: "index_admin_actions_on_target_user_id"
   end
 
   create_table "articles", force: :cascade do |t|
@@ -640,6 +657,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_05_020156) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "admin_actions", "campaigns"
+  add_foreign_key "admin_actions", "users", column: "admin_user_id"
+  add_foreign_key "admin_actions", "users", column: "target_user_id"
   add_foreign_key "backer_rewards", "users"
   add_foreign_key "campaign_shares", "campaigns"
   add_foreign_key "campaign_shares", "users"

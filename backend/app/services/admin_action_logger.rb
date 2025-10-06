@@ -3,11 +3,10 @@ class AdminActionLogger
   def self.log(user:, action:, target_user:, details: {})
     AdminAction.create!(
       admin_user: user,
-      action: action,
       target_user: target_user,
-      details: details,
-      ip_address: Current.request&.remote_ip,
-      user_agent: Current.request&.user_agent
+      action: action,
+      metadata: details
+      # Remove ip_address and user_agent if you don't have those columns
     )
   rescue => e
     Rails.logger.error "Failed to log admin action: #{e.message}"

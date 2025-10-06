@@ -2,7 +2,7 @@
 class AdminAction < ApplicationRecord
   belongs_to :admin_user, class_name: 'User'
   belongs_to :target_user, class_name: 'User'
-  belongs_to :campaign, optional: true # Add this association
+  belongs_to :campaign, optional: true
 
   validates :action, presence: true
 

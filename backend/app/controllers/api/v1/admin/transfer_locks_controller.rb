@@ -94,38 +94,41 @@ module Api
           end
         end
 
-        # POST /api/v1/admin/transfer_locks/:user_id/reset_transfers
-        # DEPRECATED: This resets ALL campaigns - keep for backward compatibility but mark as deprecated
-        def reset_transfers
-          render json: { 
-            success: false, 
-            error: "This action is deprecated. Use reset_campaign_transfers instead to reset specific campaigns." 
-          }, status: :unprocessable_entity
-        end
-
         # NEW: POST /api/v1/admin/transfer_locks/:user_id/reset_campaign_transfers
         def reset_campaign_transfers
           reason = params[:reason]
           
           begin
-            @campaign.reset_transferred_amount!(@current_user)
+            # Use the campaign_id from params
+            campaign = Campaign.find(params[:campaign_id])
+            
+            # Verify the campaign belongs to the user
+            unless campaign.fundraiser_id == @user.id
+              render json: { 
+                success: false, 
+                error: "Campaign does not belong to this user" 
+              }, status: :unprocessable_entity
+              return
+            end
+            
+            campaign.reset_transferred_amount!(@current_user)
             
             AdminActionLogger.log(
               user: @current_user,
               action: 'reset_transferred_amount',
               target_user: @user,
               details: { 
-                campaign_id: @campaign.id,
-                campaign_title: @campaign.title,
-                amount_reset: @campaign.transferred_amount_before_last_save,
+                campaign_id: campaign.id,
+                campaign_title: campaign.title,
+                amount_reset: campaign.transferred_amount_before_last_save,
                 reason: reason
               }
             )
 
             render json: {
               success: true,
-              message: "Transferred amount reset to zero for campaign: #{@campaign.title}",
-              campaign: @campaign.as_json(include: [:fundraiser]),
+              message: "Transferred amount reset to zero for campaign: #{campaign.title}",
+              campaign: campaign.as_json(include: [:fundraiser]),
               user: @user.as_json(include: [:campaigns])
             }
           rescue => e

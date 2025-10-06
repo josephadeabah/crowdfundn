@@ -92,10 +92,12 @@ class Campaign < ApplicationRecord
       fundraiser.total_transferred_amount + new_donated_amount)
   end
 
+  # app/models/campaign.rb
   def reset_transferred_amount!(admin_user = nil)
     transaction do
       # Store the amount being reset for logging
       amount_reset = transferred_amount
+      previous_user_total = fundraiser.total_transferred_amount
       
       # Reset this campaign's transferred amount
       update!(transferred_amount: 0)
@@ -114,7 +116,7 @@ class Campaign < ApplicationRecord
           metadata: {
             campaign_title: title,
             amount_reset: amount_reset,
-            previous_total: fundraiser.total_transferred_amount_before_last_save,
+            previous_total: previous_user_total,
             new_total: new_total
           }
         )
