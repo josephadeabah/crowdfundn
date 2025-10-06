@@ -257,21 +257,31 @@ class User < ApplicationRecord
 
     # Add transfer locking methods
   def lock_transfers!(admin_user, reason = nil)
-    update!(
+    # Use update_columns to bypass validations
+    update_columns(
       transfer_locked: true,
       transfer_locked_reason: reason,
       transfer_locked_at: Time.current,
       transfer_locked_by: admin_user.id
     )
+    true # Return true to indicate success
+  rescue => e
+    Rails.logger.error "Failed to lock transfers: #{e.message}"
+    false
   end
 
   def unlock_transfers!
-    update!(
+    # Use update_columns to bypass validations
+    update_columns(
       transfer_locked: false,
       transfer_locked_reason: nil,
       transfer_locked_at: nil,
       transfer_locked_by: nil
     )
+    true # Return true to indicate success
+  rescue => e
+    Rails.logger.error "Failed to unlock transfers: #{e.message}"
+    false
   end
 
   # Add method to reset specific campaign
