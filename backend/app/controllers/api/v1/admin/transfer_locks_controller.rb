@@ -6,7 +6,8 @@ module Api
         include ErrorHandler
         before_action :authenticate_request
         before_action :require_admin
-        before_action :set_user, except: [:index]
+        before_action :set_user, except: [:index, :completed_campaigns]
+        before_action :set_campaign, only: [:reset_campaign_transfers]
 
         # GET /api/v1/admin/transfer_locks
         def index
@@ -26,12 +27,30 @@ module Api
           }
         end
 
+        # GET /api/v1/admin/transfer_locks/completed_campaigns
+        def completed_campaigns
+          campaigns = Campaign.includes(:fundraiser)
+                            .completed
+                            .where('transferred_amount > 0')
+                            .order(end_date: :desc)
+                            .page(params[:page])
+                            .per(params[:per_page] || 20)
+
+          render json: {
+            campaigns: campaigns.as_json(include: [:fundraiser]),
+            pagination: {
+              current_page: campaigns.current_page,
+              total_pages: campaigns.total_pages,
+              total_count: campaigns.total_count
+            }
+          }
+        end
+
         # POST /api/v1/admin/transfer_locks/:user_id/lock
         def lock
           reason = params[:reason]
           
           if @user.lock_transfers!(@current_user, reason)
-            # Log the action
             AdminActionLogger.log(
               user: @current_user,
               action: 'lock_transfers',
@@ -55,7 +74,6 @@ module Api
         # POST /api/v1/admin/transfer_locks/:user_id/unlock
         def unlock
           if @user.unlock_transfers!
-            # Log the action
             AdminActionLogger.log(
               user: @current_user,
               action: 'unlock_transfers',
@@ -77,30 +95,43 @@ module Api
         end
 
         # POST /api/v1/admin/transfer_locks/:user_id/reset_transfers
+        # DEPRECATED: This resets ALL campaigns - keep for backward compatibility but mark as deprecated
         def reset_transfers
+          render json: { 
+            success: false, 
+            error: "This action is deprecated. Use reset_campaign_transfers instead to reset specific campaigns." 
+          }, status: :unprocessable_entity
+        end
+
+        # NEW: POST /api/v1/admin/transfer_locks/:user_id/reset_campaign_transfers
+        def reset_campaign_transfers
+          reason = params[:reason]
+          
           begin
-            @user.reset_transferred_amount!
+            @campaign.reset_transferred_amount!(@current_user)
             
-            # Log the action
             AdminActionLogger.log(
               user: @current_user,
               action: 'reset_transferred_amount',
               target_user: @user,
               details: { 
-                previous_total: @user.total_transferred_amount,
-                reset_at: Time.current 
+                campaign_id: @campaign.id,
+                campaign_title: @campaign.title,
+                amount_reset: @campaign.transferred_amount_before_last_save,
+                reason: reason
               }
             )
 
             render json: {
               success: true,
-              message: "Transferred amounts reset to zero for user #{@user.full_name}",
+              message: "Transferred amount reset to zero for campaign: #{@campaign.title}",
+              campaign: @campaign.as_json(include: [:fundraiser]),
               user: @user.as_json(include: [:campaigns])
             }
           rescue => e
             render json: { 
               success: false, 
-              error: "Failed to reset transferred amounts: #{e.message}" 
+              error: "Failed to reset transferred amount: #{e.message}" 
             }, status: :unprocessable_entity
           end
         end
@@ -110,16 +141,22 @@ module Api
           render json: {
             user: @user.as_json(include: [:campaigns]),
             transfer_lock_info: @user.transfer_lock_info,
-            campaigns: @user.campaigns.as_json(only: [:id, :title, :transferred_amount, :goal_amount])
+            campaigns: @user.campaigns.as_json(only: [:id, :title, :transferred_amount, :goal_amount, :status])
           }
         end
 
         private
 
         def set_user
-          @user = User.find(params[:id])  # Change from params[:user_id] to params[:id]
+          @user = User.find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: "User not found" }, status: :not_found
+        end
+
+        def set_campaign
+          @campaign = @user.campaigns.find(params[:campaign_id])
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: "Campaign not found for this user" }, status: :not_found
         end
 
         def require_admin

@@ -92,7 +92,37 @@ class Campaign < ApplicationRecord
       fundraiser.total_transferred_amount + new_donated_amount)
   end
 
-   def media_attached?
+  def reset_transferred_amount!(admin_user = nil)
+    transaction do
+      # Store the amount being reset for logging
+      amount_reset = transferred_amount
+      
+      # Reset this campaign's transferred amount
+      update!(transferred_amount: 0)
+      
+      # Recalculate user's total transferred amount by summing all campaigns
+      new_total = fundraiser.campaigns.sum(:transferred_amount)
+      fundraiser.update!(total_transferred_amount: new_total)
+      
+      # Log the admin action if an admin performed it
+      if admin_user && admin_user.admin?
+        AdminAction.create!(
+          admin_user: admin_user,
+          target_user: fundraiser,
+          campaign: self,
+          action: 'reset_transferred_amount',
+          metadata: {
+            campaign_title: title,
+            amount_reset: amount_reset,
+            previous_total: fundraiser.total_transferred_amount_before_last_save,
+            new_total: new_total
+          }
+        )
+      end
+    end
+  end
+
+  def media_attached?
     return false unless media.attached?
     
     # Check if blob record exists in database

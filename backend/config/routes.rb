@@ -68,11 +68,12 @@ Rails.application.routes.draw do
         resources :transfer_locks, only: [] do
           collection do
             get :index
+            get :completed_campaigns  # NEW: Get completed campaigns with funds
           end
           member do
             post :lock
             post :unlock
-            post :reset_transfers
+            post :reset_campaign_transfers  # NEW: Reset specific campaign
             get :status
           end
         end

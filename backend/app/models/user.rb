@@ -274,17 +274,10 @@ class User < ApplicationRecord
     )
   end
 
-  def reset_transferred_amount!
-    transaction do
-      # Reset campaign transferred amounts for this user
-      campaigns.update_all(transferred_amount: 0)
-      
-      # Update user's tracking
-      update!(
-        last_transfer_reset_at: Time.current,
-        total_transferred_amount: 0
-      )
-    end
+  # Add method to reset specific campaign
+  def reset_campaign_transferred_amount(campaign_id, admin_user = nil)
+    campaign = campaigns.find(campaign_id)
+    campaign.reset_transferred_amount!(admin_user)
   end
 
   def can_make_transfers?
