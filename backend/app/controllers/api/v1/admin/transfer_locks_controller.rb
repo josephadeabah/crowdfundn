@@ -66,7 +66,7 @@ module Api
           else
             render json: { 
               success: false, 
-              error: "Failed to lock transfers" 
+              error: "Failed to lock transfers for user #{@user.full_name}" 
             }, status: :unprocessable_entity
           end
         end
@@ -89,7 +89,7 @@ module Api
           else
             render json: { 
               success: false, 
-              error: "Failed to unlock transfers" 
+              error: "Failed to unlock transfers for user #{@user.full_name}" 
             }, status: :unprocessable_entity
           end
         end
