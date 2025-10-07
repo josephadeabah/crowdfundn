@@ -56,6 +56,7 @@ export interface LoginUserType {
   can_invest?: boolean; // Add can_invest property
   can_create_campaign?: boolean; // Add can_create_campaign property
   transfer_locked?: boolean;
+  transfer_locked_reason?: string | null;
   transfer_lock_info?: FormattedTransferLockInfo | null;
   can_make_transfers?: boolean;
 }

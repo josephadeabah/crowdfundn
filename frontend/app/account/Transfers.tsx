@@ -74,7 +74,7 @@ export default function Transfers() {
       if (user?.transfer_locked) {
         showToast(
           'Transfer Locked',
-          `Transfers are currently locked for your account. Reason: ${user?.transfer_lock_info?.reason || 'Contact support for details'}`,
+          `Transfers are currently locked for your account. Reason: ${user?.transfer_locked_reason || 'Contact support for details'}`,
           'error',
         );
         return;
@@ -236,7 +236,7 @@ export default function Transfers() {
       </div>
 
       {/* Add transfer lock status display in the UI */}
-      {user?.transfer_lock_info?.locked && (
+      {user?.transfer_locked && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center">
             <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
@@ -244,9 +244,9 @@ export default function Transfers() {
               Transfers are locked for your account
             </span>
           </div>
-          {user?.transfer_lock_info?.reason && (
+          {user?.transfer_locked_reason && (
             <p className="text-red-600 text-sm mt-1">
-              Reason: {user?.transfer_lock_info.reason}
+              Reason: {user?.transfer_locked_reason}
             </p>
           )}
           <p className="text-red-600 text-sm">
