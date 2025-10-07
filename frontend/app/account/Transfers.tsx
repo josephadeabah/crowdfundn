@@ -61,6 +61,10 @@ export default function Transfers() {
   }, [fetchUserCampaigns]);
 
   useEffect(() => {
+    checkUserTransferStatus(token)
+  }, [token]);
+
+  useEffect(() => {
     fetchTransfersFromPaystack();
   }, [fetchTransfersFromPaystack]);
 
