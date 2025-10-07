@@ -14,6 +14,8 @@ import InfoTooltip from '../components/tooltip/tooltip';
 import { AlertTriangle } from 'lucide-react';
 import { checkUserTransferStatus } from '../utils/transferlock';
 import { useAuth } from '../context/auth/AuthContext';
+import { useUserContext } from '../context/users/UserContext';
+import { LoginUserType } from '../types/auth.login.types';
 
 export default function Transfers() {
   const {
@@ -21,8 +23,9 @@ export default function Transfers() {
     fetchUserCampaigns,
     loading: isLoadingCampaigns,
   } = useCampaignContext();
+  const { userAccountData, fetchUserProfile } = useUserContext();
 
-  const { token, user } = useAuth();
+  const { token } = useAuth();
 
   const {
     fetchTransfers,
@@ -68,13 +71,19 @@ export default function Transfers() {
     fetchTransfers(currentPage);
   }, [fetchTransfers, currentPage]);
 
+
+  useEffect(() => {
+    // Fetch user profile when component mounts
+    fetchUserProfile();
+  }, [fetchUserProfile]);
+
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
       // Check if transfers are locked using existing user data from auth context
-      if (user?.transfer_locked) {
+      if (userAccountData?.transfer_locked) {
         showToast(
           'Transfer Locked',
-          `Transfers are currently locked for your account. Reason: ${user?.transfer_locked_reason || 'Contact support for details'}`,
+          `Transfers are currently locked for your account. Reason: ${userAccountData?.transfer_locked_reason || 'Contact support for details'}`,
           'error',
         );
         return;
@@ -236,7 +245,7 @@ export default function Transfers() {
       </div>
 
       {/* Add transfer lock status display in the UI */}
-      {user?.transfer_locked && (
+      {userAccountData?.transfer_locked && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center">
             <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
@@ -244,9 +253,9 @@ export default function Transfers() {
               Transfers are locked for your account
             </span>
           </div>
-          {user?.transfer_locked_reason && (
+          {userAccountData?.transfer_locked_reason && (
             <p className="text-red-600 text-sm mt-1">
-              Reason: {user?.transfer_locked_reason}
+              Reason: {userAccountData?.transfer_locked_reason}
             </p>
           )}
           <p className="text-red-600 text-sm">

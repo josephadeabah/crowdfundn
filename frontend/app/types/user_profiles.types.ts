@@ -1,3 +1,4 @@
+import { FormattedTransferLockInfo } from './auth.login.types';
 import { Role } from './user.types';
 
 export interface Profile {
@@ -35,6 +36,10 @@ export interface UserProfile {
   national_id: string;
   profile: Profile;
   roles: Role[];
+  transfer_locked?: boolean;
+  transfer_locked_reason?: string | null;
+  transfer_lock_info?: FormattedTransferLockInfo | null;
+  can_make_transfers?: boolean;
 }
 
 export interface UserProfileState {
