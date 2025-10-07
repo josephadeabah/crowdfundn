@@ -12,10 +12,7 @@ import { CampaignResponseDataType } from '../types/campaigns.types';
 import TransferLoader from '../loaders/TransferLoader ';
 import InfoTooltip from '../components/tooltip/tooltip';
 import { AlertTriangle } from 'lucide-react';
-import { checkUserTransferStatus } from '../utils/transferlock';
-import { useAuth } from '../context/auth/AuthContext';
 import { useUserContext } from '../context/users/UserContext';
-import { LoginUserType } from '../types/auth.login.types';
 
 export default function Transfers() {
   const {
@@ -24,8 +21,6 @@ export default function Transfers() {
     loading: isLoadingCampaigns,
   } = useCampaignContext();
   const { userAccountData, fetchUserProfile } = useUserContext();
-
-  const { token } = useAuth();
 
   const {
     fetchTransfers,
@@ -70,7 +65,6 @@ export default function Transfers() {
   useEffect(() => {
     fetchTransfers(currentPage);
   }, [fetchTransfers, currentPage]);
-
 
   useEffect(() => {
     // Fetch user profile when component mounts
