@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Search, Lock, Unlock, RotateCcw, Eye, EyeOff } from 'lucide-react';
+import { Search, Lock, Unlock, RotateCcw, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import {
@@ -101,18 +101,43 @@ interface ActionDialogState {
   campaign?: CampaignResponseDataType | null;
 }
 
+interface PaginationState {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  perPage: number;
+}
+
 const PayoutsManager = () => {
   const { token } = useAuth();
   const [lockedUsers, setLockedUsers] = useState<AdminUser[]>([]);
-  const [completedCampaigns, setCompletedCampaigns] = useState<
-    CompletedCampaign[]
-  >([]);
+  const [completedCampaigns, setCompletedCampaigns] = useState<CompletedCampaign[]>([]);
+  
+  // Search states
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [campaignSearchTerm, setCampaignSearchTerm] = useState<string>('');
+  
+  // Loading states
   const [loading, setLoading] = useState<boolean>(false);
   const [campaignsLoading, setCampaignsLoading] = useState<boolean>(false);
+  
+  // Pagination states
+  const [lockedUsersPagination, setLockedUsersPagination] = useState<PaginationState>({
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0,
+    perPage: 20
+  });
+  
+  const [completedCampaignsPagination, setCompletedCampaignsPagination] = useState<PaginationState>({
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0,
+    perPage: 20
+  });
+
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
-  const [showCompletedCampaigns, setShowCompletedCampaigns] =
-    useState<boolean>(false);
+  const [showCompletedCampaigns, setShowCompletedCampaigns] = useState<boolean>(false);
   const [actionDialog, setActionDialog] = useState<ActionDialogState>({
     open: false,
     action: '',
@@ -125,12 +150,18 @@ const PayoutsManager = () => {
     fetchLockedUsers();
   }, []);
 
-  // Fetch locked users
-  const fetchLockedUsers = async (): Promise<void> => {
+  // Fetch locked users with pagination and search
+  const fetchLockedUsers = async (page: number = 1, search: string = ''): Promise<void> => {
     setLoading(true);
     try {
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        per_page: lockedUsersPagination.perPage.toString(),
+        ...(search && { search })
+      });
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks?${queryParams}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -142,6 +173,12 @@ const PayoutsManager = () => {
       if (response.ok) {
         const data: LockedUsersResponse = await response.json();
         setLockedUsers(data.locked_users || []);
+        setLockedUsersPagination(prev => ({
+          ...prev,
+          currentPage: data.pagination.current_page,
+          totalPages: data.pagination.total_pages,
+          totalCount: data.pagination.total_count
+        }));
       } else {
         toast.error('Failed to fetch locked users');
       }
@@ -153,12 +190,18 @@ const PayoutsManager = () => {
     }
   };
 
-  // Fetch completed campaigns with transferred amounts
-  const fetchCompletedCampaigns = async (): Promise<void> => {
+  // Fetch completed campaigns with pagination and search
+  const fetchCompletedCampaigns = async (page: number = 1, search: string = ''): Promise<void> => {
     setCampaignsLoading(true);
     try {
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        per_page: completedCampaignsPagination.perPage.toString(),
+        ...(search && { search })
+      });
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks/completed_campaigns`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/admin/transfer_locks/completed_campaigns?${queryParams}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -170,6 +213,12 @@ const PayoutsManager = () => {
       if (response.ok) {
         const data: CompletedCampaignsResponse = await response.json();
         setCompletedCampaigns(data.campaigns || []);
+        setCompletedCampaignsPagination(prev => ({
+          ...prev,
+          currentPage: data.pagination.current_page,
+          totalPages: data.pagination.total_pages,
+          totalCount: data.pagination.total_count
+        }));
         setShowCompletedCampaigns(true);
       } else {
         toast.error('Failed to fetch completed campaigns');
@@ -212,6 +261,26 @@ const PayoutsManager = () => {
     }
   };
 
+  // Handle locked users search
+  const handleLockedUsersSearch = (): void => {
+    fetchLockedUsers(1, searchTerm);
+  };
+
+  // Handle completed campaigns search
+  const handleCompletedCampaignsSearch = (): void => {
+    fetchCompletedCampaigns(1, campaignSearchTerm);
+  };
+
+  // Handle pagination for locked users
+  const handleLockedUsersPageChange = (page: number): void => {
+    fetchLockedUsers(page, searchTerm);
+  };
+
+  // Handle pagination for completed campaigns
+  const handleCompletedCampaignsPageChange = (page: number): void => {
+    fetchCompletedCampaigns(page, campaignSearchTerm);
+  };
+
   // Perform user-level actions (lock/unlock)
   async function performAction(
     action: 'lock' | 'unlock' | 'reset_transfers',
@@ -243,7 +312,7 @@ const PayoutsManager = () => {
           campaign: null,
         });
         setReason('');
-        fetchLockedUsers();
+        fetchLockedUsers(lockedUsersPagination.currentPage, searchTerm);
 
         // Clear selected user if it was the one we acted upon
         if (selectedUser && selectedUser.id === userId) {
@@ -293,8 +362,8 @@ const PayoutsManager = () => {
         setReason('');
 
         // Refresh all data
-        fetchLockedUsers();
-        fetchCompletedCampaigns();
+        fetchLockedUsers(lockedUsersPagination.currentPage, searchTerm);
+        fetchCompletedCampaigns(completedCampaignsPagination.currentPage, campaignSearchTerm);
 
         // Clear selected user if it was the one we acted upon
         if (selectedUser && selectedUser.id === userId) {
@@ -350,10 +419,26 @@ const PayoutsManager = () => {
     setActionDialog({ open: true, action, user, campaign });
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, type: 'user' | 'campaign'): void => {
     if (e.key === 'Enter') {
-      searchUsers();
+      if (type === 'user') {
+        handleLockedUsersSearch();
+      } else {
+        handleCompletedCampaignsSearch();
+      }
     }
+  };
+
+  // Reset search for locked users
+  const resetLockedUsersSearch = (): void => {
+    setSearchTerm('');
+    fetchLockedUsers(1, '');
+  };
+
+  // Reset search for completed campaigns
+  const resetCompletedCampaignsSearch = (): void => {
+    setCampaignSearchTerm('');
+    fetchCompletedCampaigns(1, '');
   };
 
   const handleDialogOpenChange = (open: boolean): void => {
@@ -363,11 +448,43 @@ const PayoutsManager = () => {
     }
   };
 
-  const filteredUsers = lockedUsers.filter(
-    (user: AdminUser) =>
-      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  // Pagination Component
+  const PaginationControls: React.FC<{
+    pagination: PaginationState;
+    onPageChange: (page: number) => void;
+    loading: boolean;
+  }> = ({ pagination, onPageChange, loading }) => {
+    return (
+      <div className="flex items-center justify-between px-2 py-4">
+        <div className="text-sm text-gray-600">
+          Showing page {pagination.currentPage} of {pagination.totalPages} 
+          {pagination.totalCount > 0 && (
+            <> ({pagination.totalCount.toLocaleString()} total records)</>
+          )}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(pagination.currentPage - 1)}
+            disabled={pagination.currentPage === 1 || loading}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(pagination.currentPage + 1)}
+            disabled={pagination.currentPage === pagination.totalPages || loading}
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -393,12 +510,12 @@ const PayoutsManager = () => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setSearchTerm(e.target.value)
               }
-              onKeyDown={handleKeyPress}
+              onKeyDown={(e) => handleKeyPress(e, 'user')}
               className="flex-1"
             />
             <Button onClick={searchUsers} disabled={loading}>
               <Search className="w-4 h-4 mr-2" />
-              Search
+              Search User
             </Button>
           </div>
 
@@ -519,7 +636,13 @@ const PayoutsManager = () => {
             </div>
             <Button
               variant="outline"
-              onClick={fetchCompletedCampaigns}
+              onClick={() => {
+                if (!showCompletedCampaigns) {
+                  fetchCompletedCampaigns();
+                } else {
+                  setShowCompletedCampaigns(false);
+                }
+              }}
               disabled={campaignsLoading}
             >
               {showCompletedCampaigns ? (
@@ -533,89 +656,128 @@ const PayoutsManager = () => {
         </CardHeader>
         {showCompletedCampaigns && (
           <CardContent>
+            {/* Completed Campaigns Search */}
+            <div className="flex gap-4 mb-4">
+              <Input
+                placeholder="Search by fundraiser name or email..."
+                value={campaignSearchTerm}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setCampaignSearchTerm(e.target.value)
+                }
+                onKeyDown={(e) => handleKeyPress(e, 'campaign')}
+                className="flex-1"
+              />
+              <Button 
+                onClick={handleCompletedCampaignsSearch} 
+                disabled={campaignsLoading}
+              >
+                <Search className="w-4 h-4 mr-2" />
+                Search Campaigns
+              </Button>
+              {campaignSearchTerm && (
+                <Button 
+                  variant="outline" 
+                  onClick={resetCompletedCampaignsSearch}
+                  disabled={campaignsLoading}
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+
             {campaignsLoading ? (
               <div className="text-center py-4">
                 Loading completed campaigns...
               </div>
             ) : completedCampaigns.length === 0 ? (
               <div className="text-center py-4 text-gray-500">
-                No completed campaigns with transferred amounts found
+                {campaignSearchTerm 
+                  ? 'No completed campaigns found matching your search'
+                  : 'No completed campaigns with transferred amounts found'
+                }
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[250px]">Campaign</TableHead>
-                    <TableHead className="w-[200px]">Fundraiser</TableHead>
-                    <TableHead className="w-[100px]">Status</TableHead>
-                    <TableHead className="w-[150px]">
-                      Transferred Amount
-                    </TableHead>
-                    <TableHead className="w-[120px]">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {completedCampaigns.map((campaign) => (
-                    <TableRow key={campaign.id}>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{campaign.title}</div>
-                          <div className="text-sm text-gray-600">
-                            Ended:{' '}
-                            {new Date(campaign.end_date).toLocaleDateString()}
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[250px]">Campaign</TableHead>
+                      <TableHead className="w-[200px]">Fundraiser</TableHead>
+                      <TableHead className="w-[150px]">Fundraiser Email</TableHead>
+                      <TableHead className="w-[100px]">Status</TableHead>
+                      <TableHead className="w-[150px]">
+                        Transferred Amount
+                      </TableHead>
+                      <TableHead className="w-[120px]">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {completedCampaigns.map((campaign) => (
+                      <TableRow key={campaign.id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{campaign.title}</div>
+                            <div className="text-sm text-gray-600">
+                              Ended:{' '}
+                              {new Date(campaign.end_date).toLocaleDateString()}
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
+                        </TableCell>
+                        <TableCell>
                           <div className="font-medium">
                             {campaign.fundraiser.name}
                           </div>
-                          <div className="text-sm text-gray-600">
-                            {campaign.fundraiser.profile?.name ||
-                              'No contact info'}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            campaign.status === 'completed'
-                              ? 'default'
-                              : 'secondary'
-                          }
-                        >
-                          {campaign.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {campaign.currency_symbol}{' '}
-                        {campaign.transferred_amount?.toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            const adminUser = createAdminUserFromFundraiser(
-                              campaign.fundraiser,
-                            );
-                            openActionDialog(
-                              'reset_campaign_transfers',
-                              adminUser,
-                              campaign,
-                            );
-                          }}
-                          className="whitespace-nowrap"
-                        >
-                          <RotateCcw className="w-3 h-3 mr-1" />
-                          Reset
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                        </TableCell>
+                        <TableCell className="text-sm text-gray-600">
+                          {campaign.fundraiser.email || 'No email'}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              campaign.status === 'completed'
+                                ? 'default'
+                                : 'secondary'
+                            }
+                          >
+                            {campaign.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {campaign.currency_symbol}{' '}
+                          {campaign.transferred_amount?.toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const adminUser = createAdminUserFromFundraiser(
+                                campaign.fundraiser,
+                              );
+                              openActionDialog(
+                                'reset_campaign_transfers',
+                                adminUser,
+                                campaign,
+                              );
+                            }}
+                            className="whitespace-nowrap"
+                          >
+                            <RotateCcw className="w-3 h-3 mr-1" />
+                            Reset
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                
+                {/* Completed Campaigns Pagination */}
+                <PaginationControls
+                  pagination={completedCampaignsPagination}
+                  onPageChange={handleCompletedCampaignsPageChange}
+                  loading={campaignsLoading}
+                />
+              </>
             )}
           </CardContent>
         )}
@@ -630,72 +792,113 @@ const PayoutsManager = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Locked Users Search */}
+          <div className="flex gap-4 mb-4">
+            <Input
+              placeholder="Search by name or email..."
+              value={searchTerm}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearchTerm(e.target.value)
+              }
+              onKeyDown={(e) => handleKeyPress(e, 'user')}
+              className="flex-1"
+            />
+            <Button 
+              onClick={handleLockedUsersSearch} 
+              disabled={loading}
+            >
+              <Search className="w-4 h-4 mr-2" />
+              Search Users
+            </Button>
+            {searchTerm && (
+              <Button 
+                variant="outline" 
+                onClick={resetLockedUsersSearch}
+                disabled={loading}
+              >
+                Clear
+              </Button>
+            )}
+          </div>
+
           {loading ? (
             <div className="text-center py-4">Loading...</div>
-          ) : filteredUsers.length === 0 ? (
+          ) : lockedUsers.length === 0 ? (
             <div className="text-center py-4 text-gray-500">
-              No users with locked transfers
+              {searchTerm 
+                ? 'No locked users found matching your search'
+                : 'No users with locked transfers'
+              }
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[200px]">User</TableHead>
-                  <TableHead className="w-[120px]">Locked By</TableHead>
-                  <TableHead className="min-w-[150px]">Reason</TableHead>
-                  <TableHead className="w-[150px]">Locked At</TableHead>
-                  <TableHead className="w-[140px]">Total Transferred</TableHead>
-                  <TableHead className="w-[180px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user: AdminUser) => (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{user.full_name}</div>
-                        <div className="text-sm text-gray-600">
-                          {user.email}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {user.transfer_lock_info?.locked_by || 'System'}
-                    </TableCell>
-                    <TableCell className="max-w-[200px]">
-                      <div className="truncate">
-                        {user.transfer_lock_info?.reason ||
-                          'No reason provided'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {user.transfer_lock_info?.locked_at
-                        ? new Date(
-                            user.transfer_lock_info.locked_at,
-                          ).toLocaleString()
-                        : 'N/A'}
-                    </TableCell>
-                    <TableCell>
-                      {user.currency_symbol}{' '}
-                      {user.total_transferred_amount?.toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => openActionDialog('unlock', user)}
-                          className="whitespace-nowrap"
-                        >
-                          <Unlock className="w-3 h-3 mr-1" />
-                          Unlock
-                        </Button>
-                      </div>
-                    </TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[200px]">User</TableHead>
+                    <TableHead className="w-[120px]">Locked By</TableHead>
+                    <TableHead className="min-w-[150px]">Reason</TableHead>
+                    <TableHead className="w-[150px]">Locked At</TableHead>
+                    <TableHead className="w-[140px]">Total Transferred</TableHead>
+                    <TableHead className="w-[180px]">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {lockedUsers.map((user: AdminUser) => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{user.full_name}</div>
+                          <div className="text-sm text-gray-600">
+                            {user.email}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {user.transfer_lock_info?.locked_by || 'System'}
+                      </TableCell>
+                      <TableCell className="max-w-[200px]">
+                        <div className="truncate">
+                          {user.transfer_lock_info?.reason ||
+                            'No reason provided'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {user.transfer_lock_info?.locked_at
+                          ? new Date(
+                              user.transfer_lock_info.locked_at,
+                            ).toLocaleString()
+                          : 'N/A'}
+                      </TableCell>
+                      <TableCell>
+                        {user.currency_symbol}{' '}
+                        {user.total_transferred_amount?.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openActionDialog('unlock', user)}
+                            className="whitespace-nowrap"
+                          >
+                            <Unlock className="w-3 h-3 mr-1" />
+                            Unlock
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              
+              {/* Locked Users Pagination */}
+              <PaginationControls
+                pagination={lockedUsersPagination}
+                onPageChange={handleLockedUsersPageChange}
+                loading={loading}
+              />
+            </>
           )}
         </CardContent>
       </Card>
