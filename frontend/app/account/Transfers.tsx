@@ -14,8 +14,6 @@ import InfoTooltip from '../components/tooltip/tooltip';
 import { AlertTriangle } from 'lucide-react';
 import { checkUserTransferStatus } from '../utils/transferlock';
 import { useAuth } from '../context/auth/AuthContext';
-import { useUserContext } from '../context/users/UserContext';
-import { LoginUserType } from '../types/auth.login.types';
 
 export default function Transfers() {
   const {
@@ -23,7 +21,6 @@ export default function Transfers() {
     fetchUserCampaigns,
     loading: isLoadingCampaigns,
   } = useCampaignContext();
-  const { fetchUserProfile } = useUserContext();
 
   const { token, user } = useAuth();
 
@@ -38,16 +35,6 @@ export default function Transfers() {
     currentPage,
     totalPages,
   } = useTransferContext();
-
-    // Local state for transfer status that we can update
-  const [transferStatus, setTransferStatus] = useState<LoginUserType | null>(user ?? null);
-
-  // Sync with user data from auth context when it changes
-  useEffect(() => {
-    if (user) {
-      setTransferStatus(user);
-    }
-  }, [user]);
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -74,11 +61,6 @@ export default function Transfers() {
   }, [fetchUserCampaigns]);
 
   useEffect(() => {
-    checkUserTransferStatus(token)
-    fetchUserProfile();
-  }, [token]);
-
-  useEffect(() => {
     fetchTransfersFromPaystack();
   }, [fetchTransfersFromPaystack]);
 
@@ -86,36 +68,13 @@ export default function Transfers() {
     fetchTransfers(currentPage);
   }, [fetchTransfers, currentPage]);
 
-    // Refresh transfer status
-  const refreshTransferStatus = async () => {
-    try {
-      const status = await checkUserTransferStatus(token);
-      if (status) {
-        setTransferStatus(status);
-        showToast('Info', 'Transfer status updated', 'success');
-      }
-    } catch (error) {
-      console.error('Error refreshing transfer status:', error);
-      showToast('Error', 'Failed to refresh transfer status', 'error');
-    }
-  };
-
-  // Auto-refresh transfer status periodically
-  useEffect(() => {
-    if (!token) return;
-
-    const interval = setInterval(refreshTransferStatus, 30000); // Every 30 seconds
-    
-    return () => clearInterval(interval);
-  }, [token]);
-
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
-      // Check if transfers are locked using our local transferStatus
-      if (transferStatus && transferStatus.transfer_locked) {
+      // Check if transfers are locked using existing user data from auth context
+      if (user?.transfer_locked) {
         showToast(
           'Transfer Locked',
-          `Transfers are currently locked for your account. Reason: ${transferStatus.transfer_lock_info?.reason || 'Contact support for details'}`,
+          `Transfers are currently locked for your account. Reason: ${user?.transfer_lock_info?.reason || 'Contact support for details'}`,
           'error',
         );
         return;
