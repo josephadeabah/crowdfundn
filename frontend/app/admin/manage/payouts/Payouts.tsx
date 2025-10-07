@@ -659,7 +659,7 @@ const PayoutsManager = () => {
             {/* Completed Campaigns Search */}
             <div className="flex gap-4 mb-4">
               <Input
-                placeholder="Search by fundraiser name or email..."
+                placeholder="Search by fundraiser name or goal amount..."
                 value={campaignSearchTerm}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setCampaignSearchTerm(e.target.value)
@@ -703,7 +703,7 @@ const PayoutsManager = () => {
                     <TableRow>
                       <TableHead className="w-[250px]">Campaign</TableHead>
                       <TableHead className="w-[200px]">Fundraiser</TableHead>
-                      <TableHead className="w-[150px]">Fundraiser Email</TableHead>
+                      <TableHead className="w-[150px]">Goal Amount</TableHead>
                       <TableHead className="w-[100px]">Status</TableHead>
                       <TableHead className="w-[150px]">
                         Transferred Amount
@@ -728,8 +728,9 @@ const PayoutsManager = () => {
                             {campaign.fundraiser.name}
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm text-gray-600">
-                          {campaign.fundraiser.email || 'No email'}
+                        <TableCell className="font-medium">
+                          {campaign.currency_symbol}{' '}
+                          {campaign.goal_amount?.toLocaleString()}
                         </TableCell>
                         <TableCell>
                           <Badge
