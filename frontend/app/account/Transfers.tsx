@@ -14,6 +14,7 @@ import InfoTooltip from '../components/tooltip/tooltip';
 import { AlertTriangle } from 'lucide-react';
 import { checkUserTransferStatus } from '../utils/transferlock';
 import { useAuth } from '../context/auth/AuthContext';
+import { useUserContext } from '../context/users/UserContext';
 
 export default function Transfers() {
   const {
@@ -21,6 +22,7 @@ export default function Transfers() {
     fetchUserCampaigns,
     loading: isLoadingCampaigns,
   } = useCampaignContext();
+  const { fetchUserProfile } = useUserContext();
 
   const { token, user } = useAuth();
 
@@ -62,6 +64,7 @@ export default function Transfers() {
 
   useEffect(() => {
     checkUserTransferStatus(token)
+    fetchUserProfile();
   }, [token]);
 
   useEffect(() => {
