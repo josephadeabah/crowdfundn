@@ -40,14 +40,6 @@ module Api
           render json: @current_user.as_json(include: %i[profile roles]), status: :ok
         end
 
-        def transfer_status
-          render json: {
-            transfer_locked: @current_user.transfer_locked?,
-            transfer_lock_info: @current_user.transfer_lock_info,
-            can_make_transfers: @current_user.can_make_transfers?
-          }
-        end
-
         # In your subscriptions_controller or payment processor
         def create
           # Process payment...

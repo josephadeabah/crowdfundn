@@ -39,7 +39,6 @@ Rails.application.routes.draw do
         put 'users/:id/block', to: 'users#block_user'
         put 'users/:id/activate', to: 'users#activate_user'
         delete 'users/:id', to: 'users#destroy'
-        get 'users/transfer_status', to: 'users#transfer_status'
       end
 
       # Add KYC namespace with proper routes
