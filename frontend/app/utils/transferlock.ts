@@ -17,12 +17,14 @@ export const checkUserTransferStatus = async (token: string | null) => {
 
     if (response.ok) {
       return await response.json();
+    } else {
+      console.error('Failed to fetch transfer status');
+      return { transfer_locked: false, can_make_transfers: true };
     }
   } catch (error) {
     console.error('Error checking transfer status:', error);
+    return { transfer_locked: false, can_make_transfers: true };
   }
-
-  return { transfer_locked: false, can_make_transfers: true };
 };
 
 export const formatTransferLockInfo = (
