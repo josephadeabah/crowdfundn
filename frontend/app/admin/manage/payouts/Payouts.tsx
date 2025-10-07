@@ -1,6 +1,15 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Search, Lock, Unlock, RotateCcw, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Search,
+  Lock,
+  Unlock,
+  RotateCcw,
+  Eye,
+  EyeOff,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import {
@@ -111,33 +120,38 @@ interface PaginationState {
 const PayoutsManager = () => {
   const { token } = useAuth();
   const [lockedUsers, setLockedUsers] = useState<AdminUser[]>([]);
-  const [completedCampaigns, setCompletedCampaigns] = useState<CompletedCampaign[]>([]);
-  
+  const [completedCampaigns, setCompletedCampaigns] = useState<
+    CompletedCampaign[]
+  >([]);
+
   // Search states
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [campaignSearchTerm, setCampaignSearchTerm] = useState<string>('');
-  
+
   // Loading states
   const [loading, setLoading] = useState<boolean>(false);
   const [campaignsLoading, setCampaignsLoading] = useState<boolean>(false);
-  
+
   // Pagination states
-  const [lockedUsersPagination, setLockedUsersPagination] = useState<PaginationState>({
-    currentPage: 1,
-    totalPages: 1,
-    totalCount: 0,
-    perPage: 20
-  });
-  
-  const [completedCampaignsPagination, setCompletedCampaignsPagination] = useState<PaginationState>({
-    currentPage: 1,
-    totalPages: 1,
-    totalCount: 0,
-    perPage: 20
-  });
+  const [lockedUsersPagination, setLockedUsersPagination] =
+    useState<PaginationState>({
+      currentPage: 1,
+      totalPages: 1,
+      totalCount: 0,
+      perPage: 20,
+    });
+
+  const [completedCampaignsPagination, setCompletedCampaignsPagination] =
+    useState<PaginationState>({
+      currentPage: 1,
+      totalPages: 1,
+      totalCount: 0,
+      perPage: 20,
+    });
 
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
-  const [showCompletedCampaigns, setShowCompletedCampaigns] = useState<boolean>(false);
+  const [showCompletedCampaigns, setShowCompletedCampaigns] =
+    useState<boolean>(false);
   const [actionDialog, setActionDialog] = useState<ActionDialogState>({
     open: false,
     action: '',
@@ -151,13 +165,16 @@ const PayoutsManager = () => {
   }, []);
 
   // Fetch locked users with pagination and search
-  const fetchLockedUsers = async (page: number = 1, search: string = ''): Promise<void> => {
+  const fetchLockedUsers = async (
+    page: number = 1,
+    search: string = '',
+  ): Promise<void> => {
     setLoading(true);
     try {
       const queryParams = new URLSearchParams({
         page: page.toString(),
         per_page: lockedUsersPagination.perPage.toString(),
-        ...(search && { search })
+        ...(search && { search }),
       });
 
       const response = await fetch(
@@ -173,11 +190,11 @@ const PayoutsManager = () => {
       if (response.ok) {
         const data: LockedUsersResponse = await response.json();
         setLockedUsers(data.locked_users || []);
-        setLockedUsersPagination(prev => ({
+        setLockedUsersPagination((prev) => ({
           ...prev,
           currentPage: data.pagination.current_page,
           totalPages: data.pagination.total_pages,
-          totalCount: data.pagination.total_count
+          totalCount: data.pagination.total_count,
         }));
       } else {
         toast.error('Failed to fetch locked users');
@@ -191,13 +208,16 @@ const PayoutsManager = () => {
   };
 
   // Fetch completed campaigns with pagination and search
-  const fetchCompletedCampaigns = async (page: number = 1, search: string = ''): Promise<void> => {
+  const fetchCompletedCampaigns = async (
+    page: number = 1,
+    search: string = '',
+  ): Promise<void> => {
     setCampaignsLoading(true);
     try {
       const queryParams = new URLSearchParams({
         page: page.toString(),
         per_page: completedCampaignsPagination.perPage.toString(),
-        ...(search && { search })
+        ...(search && { search }),
       });
 
       const response = await fetch(
@@ -213,11 +233,11 @@ const PayoutsManager = () => {
       if (response.ok) {
         const data: CompletedCampaignsResponse = await response.json();
         setCompletedCampaigns(data.campaigns || []);
-        setCompletedCampaignsPagination(prev => ({
+        setCompletedCampaignsPagination((prev) => ({
           ...prev,
           currentPage: data.pagination.current_page,
           totalPages: data.pagination.total_pages,
-          totalCount: data.pagination.total_count
+          totalCount: data.pagination.total_count,
         }));
         setShowCompletedCampaigns(true);
       } else {
@@ -363,7 +383,10 @@ const PayoutsManager = () => {
 
         // Refresh all data
         fetchLockedUsers(lockedUsersPagination.currentPage, searchTerm);
-        fetchCompletedCampaigns(completedCampaignsPagination.currentPage, campaignSearchTerm);
+        fetchCompletedCampaigns(
+          completedCampaignsPagination.currentPage,
+          campaignSearchTerm,
+        );
 
         // Clear selected user if it was the one we acted upon
         if (selectedUser && selectedUser.id === userId) {
@@ -419,7 +442,10 @@ const PayoutsManager = () => {
     setActionDialog({ open: true, action, user, campaign });
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, type: 'user' | 'campaign'): void => {
+  const handleKeyPress = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    type: 'user' | 'campaign',
+  ): void => {
     if (e.key === 'Enter') {
       if (type === 'user') {
         handleLockedUsersSearch();
@@ -457,7 +483,7 @@ const PayoutsManager = () => {
     return (
       <div className="flex items-center justify-between px-2 py-4">
         <div className="text-sm text-gray-600">
-          Showing page {pagination.currentPage} of {pagination.totalPages} 
+          Showing page {pagination.currentPage} of {pagination.totalPages}
           {pagination.totalCount > 0 && (
             <> ({pagination.totalCount.toLocaleString()} total records)</>
           )}
@@ -476,7 +502,9 @@ const PayoutsManager = () => {
             variant="outline"
             size="sm"
             onClick={() => onPageChange(pagination.currentPage + 1)}
-            disabled={pagination.currentPage === pagination.totalPages || loading}
+            disabled={
+              pagination.currentPage === pagination.totalPages || loading
+            }
           >
             Next
             <ChevronRight className="h-4 w-4" />
@@ -667,16 +695,16 @@ const PayoutsManager = () => {
                 onKeyDown={(e) => handleKeyPress(e, 'campaign')}
                 className="flex-1"
               />
-              <Button 
-                onClick={handleCompletedCampaignsSearch} 
+              <Button
+                onClick={handleCompletedCampaignsSearch}
                 disabled={campaignsLoading}
               >
                 <Search className="w-4 h-4 mr-2" />
                 Search Campaigns
               </Button>
               {campaignSearchTerm && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={resetCompletedCampaignsSearch}
                   disabled={campaignsLoading}
                 >
@@ -691,10 +719,9 @@ const PayoutsManager = () => {
               </div>
             ) : completedCampaigns.length === 0 ? (
               <div className="text-center py-4 text-gray-500">
-                {campaignSearchTerm 
+                {campaignSearchTerm
                   ? 'No completed campaigns found matching your search'
-                  : 'No completed campaigns with transferred amounts found'
-                }
+                  : 'No completed campaigns with transferred amounts found'}
               </div>
             ) : (
               <>
@@ -771,7 +798,7 @@ const PayoutsManager = () => {
                     ))}
                   </TableBody>
                 </Table>
-                
+
                 {/* Completed Campaigns Pagination */}
                 <PaginationControls
                   pagination={completedCampaignsPagination}
@@ -804,16 +831,13 @@ const PayoutsManager = () => {
               onKeyDown={(e) => handleKeyPress(e, 'user')}
               className="flex-1"
             />
-            <Button 
-              onClick={handleLockedUsersSearch} 
-              disabled={loading}
-            >
+            <Button onClick={handleLockedUsersSearch} disabled={loading}>
               <Search className="w-4 h-4 mr-2" />
               Search Users
             </Button>
             {searchTerm && (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={resetLockedUsersSearch}
                 disabled={loading}
               >
@@ -826,10 +850,9 @@ const PayoutsManager = () => {
             <div className="text-center py-4">Loading...</div>
           ) : lockedUsers.length === 0 ? (
             <div className="text-center py-4 text-gray-500">
-              {searchTerm 
+              {searchTerm
                 ? 'No locked users found matching your search'
-                : 'No users with locked transfers'
-              }
+                : 'No users with locked transfers'}
             </div>
           ) : (
             <>
@@ -840,7 +863,9 @@ const PayoutsManager = () => {
                     <TableHead className="w-[120px]">Locked By</TableHead>
                     <TableHead className="min-w-[150px]">Reason</TableHead>
                     <TableHead className="w-[150px]">Locked At</TableHead>
-                    <TableHead className="w-[140px]">Total Transferred</TableHead>
+                    <TableHead className="w-[140px]">
+                      Total Transferred
+                    </TableHead>
                     <TableHead className="w-[180px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -892,7 +917,7 @@ const PayoutsManager = () => {
                   ))}
                 </TableBody>
               </Table>
-              
+
               {/* Locked Users Pagination */}
               <PaginationControls
                 pagination={lockedUsersPagination}
