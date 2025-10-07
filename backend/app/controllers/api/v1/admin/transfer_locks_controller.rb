@@ -43,12 +43,20 @@ module Api
                             .page(params[:page])
                             .per(params[:per_page] || 20)
 
-          # Add search functionality for fundraiser name or email
+          # Add search functionality for fundraiser name or goal_amount
           if params[:search].present?
+            # Search by fundraiser name
             campaigns = campaigns.joins(:fundraiser).where(
-              "users.full_name ILIKE :search OR users.email ILIKE :search", 
+              "users.full_name ILIKE :search", 
               search: "%#{params[:search]}%"
             )
+            
+            # Also try to search by goal_amount if search term is numeric
+            if params[:search].to_f > 0
+              campaigns = campaigns.or(
+                Campaign.where("goal_amount >= ?", params[:search].to_f)
+              )
+            end
           end
 
           render json: {
