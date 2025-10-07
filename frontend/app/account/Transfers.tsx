@@ -14,6 +14,7 @@ import InfoTooltip from '../components/tooltip/tooltip';
 import { AlertTriangle } from 'lucide-react';
 import { checkUserTransferStatus } from '../utils/transferlock';
 import { useAuth } from '../context/auth/AuthContext';
+import { LoginUserType } from '../types/auth.login.types';
 
 export default function Transfers() {
   const {
@@ -80,7 +81,7 @@ export default function Transfers() {
 
     const pollTransferStatus = async () => {
       try {
-        const status = await checkUserTransferStatus(token);
+        const status: LoginUserType = await checkUserTransferStatus(token);
         if (status && localUser.transfer_locked !== status.transfer_locked) {
           setLocalUser((prev) =>
             prev
