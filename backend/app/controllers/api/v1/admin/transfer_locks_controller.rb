@@ -1,4 +1,3 @@
-# app/controllers/api/v1/admin/transfer_locks_controller.rb
 module Api
   module V1
     module Admin
@@ -16,6 +15,14 @@ module Api
                      .order(transfer_locked_at: :desc)
                      .page(params[:page])
                      .per(params[:per_page] || 20)
+
+          # Add search functionality for locked users
+          if params[:search].present?
+            users = users.where(
+              "full_name ILIKE :search OR email ILIKE :search", 
+              search: "%#{params[:search]}%"
+            )
+          end
 
           render json: {
             locked_users: users.as_json(include: [:campaigns]),
@@ -35,6 +42,14 @@ module Api
                             .order(end_date: :desc)
                             .page(params[:page])
                             .per(params[:per_page] || 20)
+
+          # Add search functionality for fundraiser name or email
+          if params[:search].present?
+            campaigns = campaigns.joins(:fundraiser).where(
+              "users.full_name ILIKE :search OR users.email ILIKE :search", 
+              search: "%#{params[:search]}%"
+            )
+          end
 
           render json: {
             campaigns: campaigns.as_json(include: [:fundraiser]),
@@ -94,7 +109,7 @@ module Api
           end
         end
 
-        # NEW: POST /api/v1/admin/transfer_locks/:user_id/reset_campaign_transfers
+        # POST /api/v1/admin/transfer_locks/:user_id/reset_campaign_transfers
         def reset_campaign_transfers
           reason = params[:reason]
           
