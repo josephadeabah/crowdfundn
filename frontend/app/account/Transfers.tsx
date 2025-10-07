@@ -14,7 +14,6 @@ import InfoTooltip from '../components/tooltip/tooltip';
 import { AlertTriangle } from 'lucide-react';
 import { checkUserTransferStatus } from '../utils/transferlock';
 import { useAuth } from '../context/auth/AuthContext';
-import { LoginUserType } from '../types/auth.login.types';
 
 export default function Transfers() {
   const {
@@ -24,7 +23,6 @@ export default function Transfers() {
   } = useCampaignContext();
 
   const { token, user } = useAuth();
-  const [localUser, setLocalUser] = useState(user); // Local state for user
 
   const {
     fetchTransfers,
@@ -70,47 +68,13 @@ export default function Transfers() {
     fetchTransfers(currentPage);
   }, [fetchTransfers, currentPage]);
 
-  // Keep local user in sync with auth user
-  useEffect(() => {
-    setLocalUser(user);
-  }, [user]);
-
-  // Poll for transfer status updates
-  useEffect(() => {
-    if (!token || !localUser) return;
-
-    const pollTransferStatus = async () => {
-      try {
-        const status: LoginUserType = await checkUserTransferStatus(token);
-        if (status && localUser.transfer_locked !== status.transfer_locked) {
-          setLocalUser((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  transfer_locked: status.transfer_locked,
-                  transfer_lock_info: status.transfer_lock_info,
-                  can_make_transfers: status.can_make_transfers,
-                }
-              : null,
-          );
-        }
-      } catch (error) {
-        console.error('Error polling transfer status:', error);
-      }
-    };
-
-    // Check every 10 seconds
-    const interval = setInterval(pollTransferStatus, 10000);
-    return () => clearInterval(interval);
-  }, [token, localUser]);
-
   const handleRequestTransfer = async (campaignId: string | number) => {
     try {
-      // Check if transfers are locked using localUser data
-      if (localUser?.transfer_locked) {
+      // Check if transfers are locked using existing user data from auth context
+      if (user?.transfer_locked) {
         showToast(
           'Transfer Locked',
-          `Transfers are currently locked for your account. Reason: ${localUser?.transfer_lock_info?.reason || 'Contact support for details'}`,
+          `Transfers are currently locked for your account. Reason: ${user?.transfer_lock_info?.reason || 'Contact support for details'}`,
           'error',
         );
         return;
@@ -272,7 +236,7 @@ export default function Transfers() {
       </div>
 
       {/* Add transfer lock status display in the UI */}
-      {localUser?.transfer_lock_info?.locked && (
+      {user?.transfer_lock_info?.locked && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center">
             <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
