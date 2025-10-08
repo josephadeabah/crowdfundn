@@ -41,7 +41,8 @@ const TemplateSelector = ({
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               {selectedTemplate?.id === template.id && (
                 <div className="absolute top-3 right-3 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                  <Check className="h-5 w-5 text-white" /> {/* White checkmark */}
+                  <Check className="h-5 w-5 text-white" />{' '}
+                  {/* White checkmark */}
                 </div>
               )}
               <div className="absolute bottom-3 left-3 right-3">
@@ -51,7 +52,9 @@ const TemplateSelector = ({
               </div>
             </div>
             <CardContent className="p-4">
-              <p className="text-sm text-gray-600 line-clamp-2"> {/* Gray text */}
+              <p className="text-sm text-gray-600 line-clamp-2">
+                {' '}
+                {/* Gray text */}
                 {template.description}
               </p>
             </CardContent>
