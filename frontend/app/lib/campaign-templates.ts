@@ -1,10 +1,4 @@
-import productLaunchImg from '@/app/lib/templates-images/product-launch.jpg';
-import nonprofitCauseImg from '@/app/lib/templates-images/nonprofit-cause.jpg';
-import creativeProjectImg from '@/app/lib/templates-images/creative-project.jpg';
-import educationInitiativeImg from '@/app/lib/templates-images/education-initiative.jpg';
-import techInnovationImg from '@/app/lib/templates-images/tech-innovation.jpg';
-import communityProjectImg from '@/app/lib/templates-images/community-project.jpg';
-
+// campaign-templates.ts
 export interface CampaignTemplate {
   id: string;
   name: string;
@@ -25,7 +19,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Product Launch',
     description: 'Perfect for introducing a new product to the market',
     title: 'Introducing [Your Product]: The Future of [Industry]',
-    previewImage: productLaunchImg.src,
+    previewImage: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=300&fit=crop',
     content: `
       <h1>Introducing Our Groundbreaking Product</h1>
       <p>We're excited to unveil [Product Name], a revolutionary solution designed to transform how you [main benefit].</p>
@@ -49,7 +43,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: productLaunchImg.src,
+        url: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=300&fit=crop',
         alt: 'Product prototype',
       },
     ],
@@ -59,7 +53,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Nonprofit Cause',
     description: 'Ideal for charitable initiatives and social causes',
     title: 'Help Us [Accomplish Mission] for [Beneficiary Group]',
-    previewImage: nonprofitCauseImg.src,
+    previewImage: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=400&h=300&fit=crop',
     content: `
       <h1>Making a Difference Together</h1>
       <p>At [Organization Name], we believe that [core belief related to your cause]. Today, we're launching a campaign to [specific goal].</p>
@@ -83,7 +77,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: nonprofitCauseImg.src,
+        url: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=400&h=300&fit=crop',
         alt: 'Community volunteers working together',
       },
     ],
@@ -93,7 +87,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Creative Project',
     description: 'Great for films, books, music, and artistic ventures',
     title: '[Your Creative Project]: Bringing [Vision] to Life',
-    previewImage: creativeProjectImg.src,
+    previewImage: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop',
     content: `
       <h1>A Creative Vision Coming to Life</h1>
       <p>We're excited to share [Project Name] with you—a [type of creative project] that [brief description of concept and vision].</p>
@@ -112,7 +106,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: creativeProjectImg.src,
+        url: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop',
         alt: 'Creative project inspiration',
       },
     ],
@@ -122,7 +116,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Education Initiative',
     description: 'Perfect for educational programs, scholarships, or school projects',
     title: 'Support [Educational Initiative]: Empowering [Target Group]',
-    previewImage: educationInitiativeImg.src,
+    previewImage: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop',
     content: `
       <h1>Empowering Through Education</h1>
       <p>We're launching [Educational Initiative] to provide [specific educational opportunity] for [target group].</p>
@@ -146,7 +140,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: educationInitiativeImg.src,
+        url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop',
         alt: 'Students studying in a library',
       },
     ],
@@ -156,7 +150,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Tech Innovation',
     description: 'Ideal for tech startups and innovative projects',
     title: 'Revolutionizing [Industry] with [Tech Innovation]',
-    previewImage: techInnovationImg.src,
+    previewImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
     content: `
       <h1>Introducing [Tech Innovation]</h1>
       <p>We're developing [Tech Innovation], a cutting-edge solution that will transform [industry].</p>
@@ -180,7 +174,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: techInnovationImg.src,
+        url: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
         alt: 'Technology innovation concept',
       },
     ],
@@ -190,7 +184,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Community Project',
     description: 'Great for local community initiatives and events',
     title: 'Building a Better [Community Name] Together',
-    previewImage: communityProjectImg.src,
+    previewImage: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=300&fit=crop',
     content: `
       <h1>Join Us in Building a Better [Community Name]</h1>
       <p>We're launching [Community Project] to improve [specific aspect of community life].</p>
@@ -214,7 +208,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: communityProjectImg.src,
+        url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=300&fit=crop',
         alt: 'Community gathering',
       },
     ],
