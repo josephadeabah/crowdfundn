@@ -1,4 +1,3 @@
-import { StaticImageData } from 'next/image';
 import productLaunchImg from '@/app/lib/templates-images/product-launch.jpg';
 import nonprofitCauseImg from '@/app/lib/templates-images/nonprofit-cause.jpg';
 import creativeProjectImg from '@/app/lib/templates-images/creative-project.jpg';
@@ -12,10 +11,10 @@ export interface CampaignTemplate {
   description: string;
   title: string;
   content: string;
-  previewImage: string | StaticImageData;
+  previewImage: string;
   media?: {
     type: 'image' | 'video';
-    url: string | StaticImageData;
+    url: string;
     alt?: string;
   }[];
 }
@@ -26,7 +25,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Product Launch',
     description: 'Perfect for introducing a new product to the market',
     title: 'Introducing [Your Product]: The Future of [Industry]',
-    previewImage: productLaunchImg,
+    previewImage: productLaunchImg.src,
     content: `
       <h1>Introducing Our Groundbreaking Product</h1>
       <p>We're excited to unveil [Product Name], a revolutionary solution designed to transform how you [main benefit].</p>
@@ -50,7 +49,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: productLaunchImg,
+        url: productLaunchImg.src,
         alt: 'Product prototype',
       },
     ],
@@ -60,7 +59,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Nonprofit Cause',
     description: 'Ideal for charitable initiatives and social causes',
     title: 'Help Us [Accomplish Mission] for [Beneficiary Group]',
-    previewImage: nonprofitCauseImg,
+    previewImage: nonprofitCauseImg.src,
     content: `
       <h1>Making a Difference Together</h1>
       <p>At [Organization Name], we believe that [core belief related to your cause]. Today, we're launching a campaign to [specific goal].</p>
@@ -84,7 +83,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: nonprofitCauseImg,
+        url: nonprofitCauseImg.src,
         alt: 'Community volunteers working together',
       },
     ],
@@ -94,7 +93,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Creative Project',
     description: 'Great for films, books, music, and artistic ventures',
     title: '[Your Creative Project]: Bringing [Vision] to Life',
-    previewImage: creativeProjectImg,
+    previewImage: creativeProjectImg.src,
     content: `
       <h1>A Creative Vision Coming to Life</h1>
       <p>We're excited to share [Project Name] with you—a [type of creative project] that [brief description of concept and vision].</p>
@@ -113,7 +112,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: creativeProjectImg,
+        url: creativeProjectImg.src,
         alt: 'Creative project inspiration',
       },
     ],
@@ -121,10 +120,9 @@ export const campaignTemplates: CampaignTemplate[] = [
   {
     id: 'education',
     name: 'Education Initiative',
-    description:
-      'Perfect for educational programs, scholarships, or school projects',
+    description: 'Perfect for educational programs, scholarships, or school projects',
     title: 'Support [Educational Initiative]: Empowering [Target Group]',
-    previewImage: educationInitiativeImg,
+    previewImage: educationInitiativeImg.src,
     content: `
       <h1>Empowering Through Education</h1>
       <p>We're launching [Educational Initiative] to provide [specific educational opportunity] for [target group].</p>
@@ -148,7 +146,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: educationInitiativeImg,
+        url: educationInitiativeImg.src,
         alt: 'Students studying in a library',
       },
     ],
@@ -158,7 +156,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Tech Innovation',
     description: 'Ideal for tech startups and innovative projects',
     title: 'Revolutionizing [Industry] with [Tech Innovation]',
-    previewImage: techInnovationImg,
+    previewImage: techInnovationImg.src,
     content: `
       <h1>Introducing [Tech Innovation]</h1>
       <p>We're developing [Tech Innovation], a cutting-edge solution that will transform [industry].</p>
@@ -182,7 +180,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: techInnovationImg,
+        url: techInnovationImg.src,
         alt: 'Technology innovation concept',
       },
     ],
@@ -192,7 +190,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Community Project',
     description: 'Great for local community initiatives and events',
     title: 'Building a Better [Community Name] Together',
-    previewImage: communityProjectImg,
+    previewImage: communityProjectImg.src,
     content: `
       <h1>Join Us in Building a Better [Community Name]</h1>
       <p>We're launching [Community Project] to improve [specific aspect of community life].</p>
@@ -216,7 +214,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: communityProjectImg,
+        url: communityProjectImg.src,
         alt: 'Community gathering',
       },
     ],

@@ -34,11 +34,7 @@ const TemplateSelector = ({
           >
             <div className="relative h-48 overflow-hidden">
               <img
-                src={
-                  typeof template.previewImage === 'string'
-                    ? template.previewImage
-                    : template.previewImage.src
-                }
+                src={template.previewImage}
                 alt={template.name}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
