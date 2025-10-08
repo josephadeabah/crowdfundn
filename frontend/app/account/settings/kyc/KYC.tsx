@@ -209,7 +209,7 @@ const KYC = () => {
           </ul>
         </div>
 
-        {/* <div className="mt-6 p-4 bg-yellow-50 rounded-lg">
+        <div className="mt-6 p-4 bg-yellow-50 rounded-lg">
           <div className="flex items-start">
             <Info className="h-5 w-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
             <div>
@@ -224,7 +224,7 @@ const KYC = () => {
               </p>
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   );

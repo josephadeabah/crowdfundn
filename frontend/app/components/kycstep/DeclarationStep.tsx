@@ -73,12 +73,11 @@ export const DeclarationStep: React.FC = () => {
                 cedis or its equivalent in any foreign currency; (i) person
                 declared by the Commission to be a qualified investor; and (j)
                 similarly, defined investor in any other securities legislation
-                of any foreign jurisdiction. (Delete that which does not apply)
-                and that I recognise that: some the protections afforded to
-                clients by the Securities Industry (Conduct of Business)
-                Guidelines 2020 will not apply; and I may be advised to engage
-                in transactions that may not be regarded as suitable for the
-                generality of investment clients.
+                of any foreign jurisdiction. and that I recognise that: some the
+                protections afforded to clients by the Securities Industry
+                (Conduct of Business) Guidelines 2020 will not apply; and I may
+                be advised to engage in transactions that may not be regarded as
+                suitable for the generality of investment clients.
               </FormDescription>
             </div>
           </FormItem>
