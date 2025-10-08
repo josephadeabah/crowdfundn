@@ -27,8 +27,8 @@ const TemplateSelector = ({
             className={cn(
               'cursor-pointer border-2 transition-all duration-300 hover:shadow-lg group overflow-hidden',
               selectedTemplate?.id === template.id
-                ? 'border-primary ring-2 ring-primary/20 shadow-lg'
-                : 'border-border hover:border-primary/50',
+                ? 'border-orange-500 ring-2 ring-orange-200 shadow-lg' // Orange border
+                : 'border-gray-200 hover:border-orange-300', // Gray border, orange hover
             )}
             onClick={() => onSelectTemplate(template)}
           >
@@ -40,8 +40,8 @@ const TemplateSelector = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               {selectedTemplate?.id === template.id && (
-                <div className="absolute top-3 right-3 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                  <Check className="h-5 w-5 text-primary-foreground" />
+                <div className="absolute top-3 right-3 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                  <Check className="h-5 w-5 text-white" /> {/* White checkmark */}
                 </div>
               )}
               <div className="absolute bottom-3 left-3 right-3">
@@ -51,7 +51,7 @@ const TemplateSelector = ({
               </div>
             </div>
             <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground line-clamp-2">
+              <p className="text-sm text-gray-600 line-clamp-2"> {/* Gray text */}
                 {template.description}
               </p>
             </CardContent>
