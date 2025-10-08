@@ -36,7 +36,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
   showActions = true,
 }) => {
   const { token } = useAuth();
-    const { userAccountData, fetchUserProfile } = useUserContext();
+  const { userAccountData, fetchUserProfile } = useUserContext();
   const [upgradeEligibility, setUpgradeEligibility] = useState<{
     can_upgrade: boolean;
     current_type?: string;
@@ -45,10 +45,10 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
   } | null>(null);
   const [loadingUpgrade, setLoadingUpgrade] = useState(false);
 
-    useEffect(() => {
-      // Fetch user profile when component mounts
-      fetchUserProfile();
-    }, [fetchUserProfile]);
+  useEffect(() => {
+    // Fetch user profile when component mounts
+    fetchUserProfile();
+  }, [fetchUserProfile]);
 
   useEffect(() => {
     const checkUpgradeEligibility = async () => {
@@ -292,7 +292,9 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Can Invest:</span>
                       <Badge
-                        variant={userAccountData?.can_invest ? 'default' : 'secondary'}
+                        variant={
+                          userAccountData?.can_invest ? 'default' : 'secondary'
+                        }
                         className={
                           userAccountData.can_invest
                             ? 'bg-green-100 text-green-800'
@@ -306,7 +308,9 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
                       <span className="text-gray-600">Can Fundraise:</span>
                       <Badge
                         variant={
-                          userAccountData.can_create_campaign ? 'default' : 'secondary'
+                          userAccountData.can_create_campaign
+                            ? 'default'
+                            : 'secondary'
                         }
                         className={
                           userAccountData.can_create_campaign
