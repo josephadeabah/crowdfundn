@@ -17,6 +17,7 @@ import { Separator } from '../ui/seperator';
 import { useDropzone } from 'react-dropzone';
 import { FiX } from 'react-icons/fi';
 import { FormErrors } from './CampaignCreator';
+import { CardHeader, CardTitle } from '../card/Card';
 
 interface CampaignEditorProps {
   title: string;
@@ -199,7 +200,38 @@ const CampaignEditor = ({
                 <TemplateSelector
                   selectedTemplate={selectedTemplate}
                   onSelectTemplate={onSelectTemplate}
+                  className="mb-8"
                 />
+                {selectedTemplate && (
+                  <Card className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <CardHeader>
+                      <CardTitle className="text-2xl">
+                        Preview: {selectedTemplate.name}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="aspect-video overflow-hidden rounded-lg">
+                        <img
+                          src={selectedTemplate.previewImage}
+                          alt={selectedTemplate.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      <div>
+                        <h3 className="text-xl font-semibold mb-2">
+                          {selectedTemplate.title}
+                        </h3>
+                        <div
+                          className="prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{
+                            __html: selectedTemplate.content,
+                          }}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
           </TabsContent>

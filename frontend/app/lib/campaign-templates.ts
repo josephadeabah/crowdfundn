@@ -19,7 +19,8 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Product Launch',
     description: 'Perfect for introducing a new product to the market',
     title: 'Introducing [Your Product]: The Future of [Industry]',
-    previewImage: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=300&fit=crop',
+    previewImage:
+      'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=300&fit=crop',
     content: `
       <h1>Introducing Our Groundbreaking Product</h1>
       <p>We're excited to unveil [Product Name], a revolutionary solution designed to transform how you [main benefit].</p>
@@ -53,7 +54,8 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Nonprofit Cause',
     description: 'Ideal for charitable initiatives and social causes',
     title: 'Help Us [Accomplish Mission] for [Beneficiary Group]',
-    previewImage: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=400&h=300&fit=crop',
+    previewImage:
+      'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=400&h=300&fit=crop',
     content: `
       <h1>Making a Difference Together</h1>
       <p>At [Organization Name], we believe that [core belief related to your cause]. Today, we're launching a campaign to [specific goal].</p>
@@ -87,7 +89,8 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Creative Project',
     description: 'Great for films, books, music, and artistic ventures',
     title: '[Your Creative Project]: Bringing [Vision] to Life',
-    previewImage: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop',
+    previewImage:
+      'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop',
     content: `
       <h1>A Creative Vision Coming to Life</h1>
       <p>We're excited to share [Project Name] with you—a [type of creative project] that [brief description of concept and vision].</p>
@@ -114,7 +117,8 @@ export const campaignTemplates: CampaignTemplate[] = [
   {
     id: 'education',
     name: 'Education Initiative',
-    description: 'Perfect for educational programs, scholarships, or school projects',
+    description:
+      'Perfect for educational programs, scholarships, or school projects',
     title: 'Support [Educational Initiative]: Empowering [Target Group]',
     previewImage: '/template-images/education-initiative.jpg',
     content: `
@@ -184,7 +188,8 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Community Project',
     description: 'Great for local community initiatives and events',
     title: 'Building a Better [Community Name] Together',
-    previewImage: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=300&fit=crop',
+    previewImage:
+      'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=300&fit=crop',
     content: `
       <h1>Join Us in Building a Better [Community Name]</h1>
       <p>We're launching [Community Project] to improve [specific aspect of community life].</p>
