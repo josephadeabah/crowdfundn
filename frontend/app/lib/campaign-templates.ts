@@ -116,7 +116,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Education Initiative',
     description: 'Perfect for educational programs, scholarships, or school projects',
     title: 'Support [Educational Initiative]: Empowering [Target Group]',
-    previewImage: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop',
+    previewImage: '/template-images/education-initiative.jpg',
     content: `
       <h1>Empowering Through Education</h1>
       <p>We're launching [Educational Initiative] to provide [specific educational opportunity] for [target group].</p>
@@ -140,7 +140,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop',
+        url: '/template-images/education-initiative.jpg',
         alt: 'Students studying in a library',
       },
     ],
@@ -150,7 +150,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     name: 'Tech Innovation',
     description: 'Ideal for tech startups and innovative projects',
     title: 'Revolutionizing [Industry] with [Tech Innovation]',
-    previewImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
+    previewImage: '/template-images/tech-innovation.jpg',
     content: `
       <h1>Introducing [Tech Innovation]</h1>
       <p>We're developing [Tech Innovation], a cutting-edge solution that will transform [industry].</p>
@@ -174,7 +174,7 @@ export const campaignTemplates: CampaignTemplate[] = [
     media: [
       {
         type: 'image',
-        url: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
+        url: '/template-images/tech-innovation.jpg',
         alt: 'Technology innovation concept',
       },
     ],
