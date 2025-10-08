@@ -24,6 +24,7 @@ import {
   ArrowUpCircle,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useUserContext } from '@/app/context/users/UserContext';
 
 interface KYCStatusProps {
   compact?: boolean;
@@ -34,7 +35,8 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
   compact = false,
   showActions = true,
 }) => {
-  const { user, token } = useAuth();
+  const { token } = useAuth();
+    const { userAccountData, fetchUserProfile } = useUserContext();
   const [upgradeEligibility, setUpgradeEligibility] = useState<{
     can_upgrade: boolean;
     current_type?: string;
@@ -43,9 +45,14 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
   } | null>(null);
   const [loadingUpgrade, setLoadingUpgrade] = useState(false);
 
+    useEffect(() => {
+      // Fetch user profile when component mounts
+      fetchUserProfile();
+    }, [fetchUserProfile]);
+
   useEffect(() => {
     const checkUpgradeEligibility = async () => {
-      if (!user?.kyc_status_info?.verified) return;
+      if (!userAccountData?.kyc_status_info?.verified) return;
 
       setLoadingUpgrade(true);
       try {
@@ -71,9 +78,9 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
     };
 
     checkUpgradeEligibility();
-  }, [user]);
+  }, [userAccountData]);
 
-  if (!user) {
+  if (!userAccountData) {
     return (
       <Card className="bg-white border-0">
         <CardContent className="p-6">
@@ -85,7 +92,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
     );
   }
 
-  const kycInfo = user.kyc_status_info;
+  const kycInfo = userAccountData.kyc_status_info;
   const hasKYC = kycInfo?.has_kyc;
   const isVerified = kycInfo?.verified;
   const isExpired = kycInfo?.is_expired;
@@ -285,29 +292,29 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Can Invest:</span>
                       <Badge
-                        variant={user?.can_invest ? 'default' : 'secondary'}
+                        variant={userAccountData?.can_invest ? 'default' : 'secondary'}
                         className={
-                          user.can_invest
+                          userAccountData.can_invest
                             ? 'bg-green-100 text-green-800'
                             : 'bg-gray-100 text-gray-800'
                         }
                       >
-                        {user.can_invest ? 'Yes' : 'No'}
+                        {userAccountData.can_invest ? 'Yes' : 'No'}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Can Fundraise:</span>
                       <Badge
                         variant={
-                          user.can_create_campaign ? 'default' : 'secondary'
+                          userAccountData.can_create_campaign ? 'default' : 'secondary'
                         }
                         className={
-                          user.can_create_campaign
+                          userAccountData.can_create_campaign
                             ? 'bg-green-100 text-green-800'
                             : 'bg-gray-100 text-gray-800'
                         }
                       >
-                        {user.can_create_campaign ? 'Yes' : 'No'}
+                        {userAccountData.can_create_campaign ? 'Yes' : 'No'}
                       </Badge>
                     </div>
                   </div>

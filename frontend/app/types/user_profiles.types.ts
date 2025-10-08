@@ -1,4 +1,4 @@
-import { FormattedTransferLockInfo } from './auth.login.types';
+import { FormattedTransferLockInfo, KYCStatusInfo } from './auth.login.types';
 import { Role } from './user.types';
 
 export interface Profile {
@@ -40,6 +40,9 @@ export interface UserProfile {
   transfer_locked_reason?: string | null;
   transfer_lock_info?: FormattedTransferLockInfo | null;
   can_make_transfers?: boolean;
+  kyc_status_info?: KYCStatusInfo;
+  can_invest?: boolean; // Add can_invest property
+  can_create_campaign?: boolean; // Add can_create_campaign property
 }
 
 export interface UserProfileState {
