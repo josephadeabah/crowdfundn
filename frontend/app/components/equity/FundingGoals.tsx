@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '../ui/label';
+import { useUserContext } from '@/app/context/users/UserContext';
 
 interface FundingGoalsProps {
   minRaise: string;
@@ -24,13 +25,18 @@ const FundingGoals = ({
   equityOffered,
   setEquityOffered,
 }: FundingGoalsProps) => {
+  const { userAccountData, fetchUserProfile } = useUserContext();
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, [userAccountData, fetchUserProfile]);
+
   return (
     <Card>
       <CardContent className="p-4">
         <h3 className="font-semibold mb-3">Funding Goals</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Showing progress toward your goals can motivate investors to act. You
-          can edit your goals until your Form C is filed.
+          Define your funding targets and equity offerings for this campaign. 
         </p>
 
         <div className="space-y-4">
@@ -41,7 +47,9 @@ const FundingGoals = ({
             </p>
             <div className="relative mt-2">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                $
+                {userAccountData?.currency ||
+                  userAccountData?.currency_symbol ||
+                  '$'}
               </span>
               <Input
                 id="min-raise"
@@ -61,7 +69,9 @@ const FundingGoals = ({
             </p>
             <div className="relative mt-2">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                $
+                {userAccountData?.currency ||
+                  userAccountData?.currency_symbol ||
+                  '$'}
               </span>
               <Input
                 id="max-raise"
@@ -81,7 +91,9 @@ const FundingGoals = ({
             </p>
             <div className="relative mt-2">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                $
+                {userAccountData?.currency ||
+                  userAccountData?.currency_symbol ||
+                  '$'}
               </span>
               <Input
                 id="valuation"
