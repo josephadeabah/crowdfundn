@@ -202,7 +202,8 @@ const CampaignEditor = ({
                   onSelectTemplate={onSelectTemplate}
                   className="mb-8"
                 />
-                {selectedTemplate && (
+              </div>
+                              {selectedTemplate && (
                   <Card className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <CardHeader>
                       <CardTitle className="text-2xl">
@@ -232,7 +233,6 @@ const CampaignEditor = ({
                     </CardContent>
                   </Card>
                 )}
-              </div>
             </div>
           </TabsContent>
 
