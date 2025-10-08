@@ -23,9 +23,21 @@ import {
   BarChart3,
   FileText,
   Scale,
+  Target,
+  GitMerge,
+  Lock,
+  RotateCcw,
+  Leaf,
+  ShoppingCart,
+  Building,
+  Receipt,
+  Home,
+  Crown,
+  Layers,
 } from 'lucide-react';
 
 const investmentContracts = [
+  // Original contracts
   {
     id: '/investment-contracts/equity-shares',
     title: 'Equity Shares',
@@ -96,6 +108,137 @@ const investmentContracts = [
     minInvestment: 'GHS 1,000',
     returnType: 'Profit percentage',
   },
+  // Newly added contracts
+  {
+    id: '/investment-contracts/share-option-agreements',
+    title: 'Share Option Agreements',
+    description:
+      'Right to purchase shares at predetermined price with limited downside risk.',
+    icon: Target,
+    riskLevel: 'Medium',
+    minInvestment: 'GHS 1,000',
+    returnType: 'Price appreciation',
+  },
+  {
+    id: '/investment-contracts/convertible-securities',
+    title: 'Convertible Securities',
+    description:
+      'Hybrid instruments with debt and equity features for balanced risk-return.',
+    icon: GitMerge,
+    riskLevel: 'Medium',
+    minInvestment: 'GHS 5,000',
+    returnType: 'Interest + Conversion option',
+  },
+  {
+    id: '/investment-contracts/secured-unsecured-debt',
+    title: 'Secured & Unsecured Debt',
+    description:
+      'Fixed income investments with varying risk levels and collateral protection.',
+    icon: Lock,
+    riskLevel: 'Low-Medium',
+    minInvestment: 'GHS 2,000',
+    returnType: 'Fixed interest',
+  },
+  {
+    id: '/investment-contracts/redeemable-equity',
+    title: 'Redeemable Equity',
+    description:
+      'Equity with built-in exit mechanism through company repurchase.',
+    icon: RotateCcw,
+    riskLevel: 'Medium',
+    minInvestment: 'GHS 10,000',
+    returnType: 'Appreciation + Guaranteed exit',
+  },
+  {
+    id: '/investment-contracts/sustainable-debt',
+    title: 'Sustainable Debt',
+    description:
+      'Green, social and sustainability bonds financing positive environmental impact.',
+    icon: Leaf,
+    riskLevel: 'Low-Medium',
+    minInvestment: 'GHS 5,000',
+    returnType: 'Fixed interest + Impact',
+  },
+  {
+    id: '/investment-contracts/offtake-agreements',
+    title: 'Offtake Agreements',
+    description:
+      'Pre-arranged purchase contracts for future production with revenue certainty.',
+    icon: ShoppingCart,
+    riskLevel: 'Low',
+    minInvestment: 'GHS 25,000',
+    returnType: 'Revenue sharing',
+  },
+  {
+    id: '/investment-contracts/leasing-agreements',
+    title: 'Leasing Agreements',
+    description:
+      'Asset financing through rental arrangements with regular income streams.',
+    icon: Building,
+    riskLevel: 'Low',
+    minInvestment: 'GHS 50,000',
+    returnType: 'Monthly rentals',
+  },
+  {
+    id: '/investment-contracts/factoring-agreements',
+    title: 'Factoring Agreements',
+    description:
+      'Accounts receivable financing with short-term, secured returns.',
+    icon: Receipt,
+    riskLevel: 'Low',
+    minInvestment: 'GHS 10,000',
+    returnType: 'Factoring fees',
+  },
+  {
+    id: '/investment-contracts/rental-agreements',
+    title: 'Rental Agreements',
+    description:
+      'Property investment through tenant rentals with dual return potential.',
+    icon: Home,
+    riskLevel: 'Low',
+    minInvestment: 'GHS 50,000',
+    returnType: 'Rent + Appreciation',
+  },
+  {
+    id: '/investment-contracts/repurchase-agreements',
+    title: 'Repurchase Agreements',
+    description:
+      'Guaranteed exit through company buy-back at predetermined price.',
+    icon: RotateCcw,
+    riskLevel: 'Low',
+    minInvestment: 'GHS 25,000',
+    returnType: 'Fixed premium',
+  },
+  {
+    id: '/investment-contracts/royalty-agreements',
+    title: 'Royalty Agreements',
+    description:
+      'Revenue-based returns from intellectual property or product sales.',
+    icon: Crown,
+    riskLevel: 'Medium',
+    minInvestment: 'GHS 20,000',
+    returnType: 'Revenue percentage',
+  },
+  {
+    id: '/investment-contracts/impact-linked-investments',
+    title: 'Impact-linked Investments',
+    description:
+      'Financial returns tied to achievement of social and environmental impact.',
+    icon: Target,
+    riskLevel: 'Medium',
+    minInvestment: 'GHS 100,000',
+    returnType: 'Base + Impact premium',
+  },
+  {
+    id: '/investment-contracts/blended-investments',
+    title: 'Blended Investments',
+    description:
+      'Combining different capital sources for optimal impact and returns.',
+    icon: Layers,
+    riskLevel: 'Medium',
+    minInvestment: 'GHS 250,000',
+    returnType: 'Risk-adjusted returns',
+  },
 ];
 
 const InvestmentContracts = () => {
@@ -112,7 +255,8 @@ const InvestmentContracts = () => {
               How you earn a return depends on the investment contract
             </p>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Learn more with our resources for first-time investors.
+              Explore our comprehensive range of investment instruments tailored
+              for the Ghanaian market.
             </p>
           </div>
         </div>

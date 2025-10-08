@@ -17,6 +17,31 @@ const CONTRACT_OPTIONS = {
       tooltip: `Priority shares with fixed dividend rights and preferential treatment in liquidation.\n\n<a href="/investment-contracts/preference-shares" target="_blank" class="text-blue-400 hover:underline">Learn more about Preference Shares</a>`,
     },
     {
+      id: 'share-options',
+      label: 'Share Option Agreements',
+      tooltip: `Agreements granting the right to purchase shares at a predetermined price in the future.\n\n<a href="/investment-contracts/share-options" target="_blank" class="text-blue-400 hover:underline">Learn more about Share Option Agreements</a>`,
+    },
+    {
+      id: 'convertible-securities',
+      label: 'Convertible Securities',
+      tooltip: `Financial instruments that can be converted into other securities, typically equity shares.\n\n<a href="/investment-contracts/convertible-securities" target="_blank" class="text-blue-400 hover:underline">Learn more about Convertible Securities</a>`,
+    },
+    {
+      id: 'secured-debt',
+      label: 'Secured and Unsecured Debt',
+      tooltip: `Debt instruments with or without collateral backing, offering different risk-return profiles.\n\n<a href="/investment-contracts/debt-instruments" target="_blank" class="text-blue-400 hover:underline">Learn more about Debt Instruments</a>`,
+    },
+    {
+      id: 'redeemable-equity',
+      label: 'Redeemable Equity Agreements',
+      tooltip: `Equity instruments that can be redeemed or repurchased by the company under specified conditions.\n\n<a href="/investment-contracts/redeemable-equity" target="_blank" class="text-blue-400 hover:underline">Learn more about Redeemable Equity</a>`,
+    },
+    {
+      id: 'sustainable-debt',
+      label: 'Sustainable, Social and Green Debt',
+      tooltip: `Debt instruments financing environmentally and socially sustainable projects with specific use of proceeds.\n\n<a href="/investment-contracts/sustainable-debt" target="_blank" class="text-blue-400 hover:underline">Learn more about Sustainable Debt</a>`,
+    },
+    {
       id: 'quasi-equity',
       label: 'Quasi-Equity',
       tooltip: `Hybrid instruments with equity-like features but structured as debt. Offers flexible returns based on performance.\n\n<a href="/investment-contracts/quasi-equity" target="_blank" class="text-blue-400 hover:underline">Learn more about Quasi-Equity</a>`,
@@ -42,6 +67,46 @@ const CONTRACT_OPTIONS = {
       id: 'profit-sharing',
       label: 'Profit Sharing',
       tooltip: `Investors share in profits without ownership or voting rights.\n\n<a href="/investment-contracts/profit-sharing" target="_blank" class="text-blue-400 hover:underline">Learn more about Profit Sharing</a>`,
+    },
+    {
+      id: 'offtake-agreements',
+      label: 'Offtake Agreements',
+      tooltip: `Contracts where a buyer agrees to purchase future production or output from a company.\n\n<a href="/investment-contracts/offtake-agreements" target="_blank" class="text-blue-400 hover:underline">Learn more about Offtake Agreements</a>`,
+    },
+    {
+      id: 'leasing-agreements',
+      label: 'Leasing Agreements',
+      tooltip: `Contracts for the use of assets where investors provide equipment or property in exchange for periodic payments.\n\n<a href="/investment-contracts/leasing-agreements" target="_blank" class="text-blue-400 hover:underline">Learn more about Leasing Agreements</a>`,
+    },
+    {
+      id: 'factoring-agreements',
+      label: 'Factoring Agreements',
+      tooltip: `Financing arrangement where businesses sell their accounts receivable to investors at a discount.\n\n<a href="/investment-contracts/factoring-agreements" target="_blank" class="text-blue-400 hover:underline">Learn more about Factoring Agreements</a>`,
+    },
+    {
+      id: 'rental-agreements',
+      label: 'Rental Agreements',
+      tooltip: `Contracts for temporary use of property or assets in exchange for regular payments.\n\n<a href="/investment-contracts/rental-agreements" target="_blank" class="text-blue-400 hover:underline">Learn more about Rental Agreements</a>`,
+    },
+    {
+      id: 'repurchase-agreements',
+      label: 'Repurchase or Buy-back Agreements',
+      tooltip: `Contracts where a company agrees to repurchase securities from investors at a future date and price.\n\n<a href="/investment-contracts/repurchase-agreements" target="_blank" class="text-blue-400 hover:underline">Learn more about Repurchase Agreements</a>`,
+    },
+    {
+      id: 'royalty-agreements',
+      label: 'Royalty Agreements',
+      tooltip: `Investors receive a percentage of revenue or profit from specific products, services, or intellectual property.\n\n<a href="/investment-contracts/royalty-agreements" target="_blank" class="text-blue-400 hover:underline">Learn more about Royalty Agreements</a>`,
+    },
+    {
+      id: 'impact-linked-investments',
+      label: 'Impact-linked Investment Agreements',
+      tooltip: `Financial returns are tied to the achievement of specific social or environmental impact metrics.\n\n<a href="/investment-contracts/impact-linked-investments" target="_blank" class="text-blue-400 hover:underline">Learn more about Impact-linked Investments</a>`,
+    },
+    {
+      id: 'blended-investments',
+      label: 'Blended Investment Agreements',
+      tooltip: `Combines different types of capital (commercial, philanthropic, public) to achieve both financial and social returns.\n\n<a href="/investment-contracts/blended-investments" target="_blank" class="text-blue-400 hover:underline">Learn more about Blended Investments</a>`,
     },
     {
       id: 'other',
