@@ -285,9 +285,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Can Invest:</span>
                       <Badge
-                        variant={
-                          user?.can_invest ? 'default' : 'secondary'
-                        }
+                        variant={user?.can_invest ? 'default' : 'secondary'}
                         className={
                           user.can_invest
                             ? 'bg-green-100 text-green-800'
@@ -301,9 +299,7 @@ const KYCStatus: React.FC<KYCStatusProps> = ({
                       <span className="text-gray-600">Can Fundraise:</span>
                       <Badge
                         variant={
-                          user.can_create_campaign
-                            ? 'default'
-                            : 'secondary'
+                          user.can_create_campaign ? 'default' : 'secondary'
                         }
                         className={
                           user.can_create_campaign
