@@ -46,7 +46,7 @@ const FundingGoals = ({
               The minimum you'd be willing to accept in this raise.
             </p>
             <div className="relative mt-2">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 {userAccountData?.currency ||
                   userAccountData?.currency_symbol ||
                   '$'}
@@ -56,7 +56,7 @@ const FundingGoals = ({
                 type="number"
                 value={minRaise}
                 onChange={(e) => setMinRaise(e.target.value)}
-                className="w-full pl-7"
+                className="w-full pl-10"
                 placeholder="50,000"
               />
             </div>
@@ -68,7 +68,7 @@ const FundingGoals = ({
               The maximum you'd be willing to accept in this raise.
             </p>
             <div className="relative mt-2">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 {userAccountData?.currency ||
                   userAccountData?.currency_symbol ||
                   '$'}
@@ -78,7 +78,7 @@ const FundingGoals = ({
                 type="number"
                 value={maxRaise}
                 onChange={(e) => setMaxRaise(e.target.value)}
-                className="w-full pl-7"
+                className="w-full pl-10"
                 placeholder="250,000"
               />
             </div>
@@ -90,7 +90,7 @@ const FundingGoals = ({
               The total valuation of your company for this funding round.
             </p>
             <div className="relative mt-2">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 {userAccountData?.currency ||
                   userAccountData?.currency_symbol ||
                   '$'}
@@ -100,7 +100,7 @@ const FundingGoals = ({
                 type="number"
                 value={valuation}
                 onChange={(e) => setValuation(e.target.value)}
-                className="w-full pl-7"
+                className="w-full pl-10"
                 placeholder="1,000,000"
               />
             </div>
@@ -112,7 +112,7 @@ const FundingGoals = ({
               The percentage of equity you're offering in this round.
             </p>
             <div className="relative mt-2">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 %
               </span>
               <Input
@@ -120,7 +120,7 @@ const FundingGoals = ({
                 type="number"
                 value={equityOffered}
                 onChange={(e) => setEquityOffered(e.target.value)}
-                className="w-full pl-7"
+                className="w-full pl-10"
                 placeholder="10"
                 min="0"
                 max="100"
