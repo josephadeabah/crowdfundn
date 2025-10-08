@@ -36,7 +36,7 @@ const FundingGoals = ({
       <CardContent className="p-4">
         <h3 className="font-semibold mb-3">Funding Goals</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Define your funding targets and equity offerings for this campaign. 
+          Define your funding targets and equity offerings for this campaign.
         </p>
 
         <div className="space-y-4">
