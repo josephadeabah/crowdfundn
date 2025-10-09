@@ -75,7 +75,7 @@ const PricingCard = ({
               proPlus ? 'text-purple-900' : 'text-gray-900',
             )}
           >
-            <span className="text-xl align-top">{plan.currency}</span>{' '}
+            <span className="text-lg align-top">{plan.currency}</span>{' '}
             {plan.price}
           </span>
           <span
