@@ -445,9 +445,9 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                   <a
                     href="/info/pricing"
                     target="_blank"
-                    className="underline text-blue-500"
+                    className="underline text-orange-700"
                   >
-                    Pricing
+                    pricing
                   </a>
                 </p>
               </div>
@@ -479,9 +479,9 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                   <a
                     href="/info/pricing"
                     target="_blank"
-                    className="underline text-blue-500"
+                    className="underline text-orange-700"
                   >
-                    Pricing
+                    pricing
                   </a>
                 </p>
               </div>
