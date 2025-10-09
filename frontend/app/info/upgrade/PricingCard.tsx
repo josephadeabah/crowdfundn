@@ -71,7 +71,7 @@ const PricingCard = ({
         <div className="mt-2">
           <span
             className={cn(
-              'text-4xl font-bold',
+              'text-2xl font-bold',
               proPlus ? 'text-purple-900' : 'text-gray-900',
             )}
           >
