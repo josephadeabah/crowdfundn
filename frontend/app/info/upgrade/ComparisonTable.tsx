@@ -42,7 +42,7 @@ const ComparisonTable = () => {
     'Influencer Marketing',
     'Campaign Strategy Review',
     'Priority Support',
-    'Legal Support', // 👈 Added Legal Support feature
+    'Legal Support',
   ];
 
   const renderCheck = (value: boolean | string) => {

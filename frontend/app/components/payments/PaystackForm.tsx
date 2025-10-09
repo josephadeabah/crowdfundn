@@ -5,12 +5,10 @@ import { Reward } from '@/app/context/account/rewards/RewardsContext';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
 import {
   InvestmentCreatePayload,
-  InvestmentCreateResponse,
 } from '@/app/types/equityCampaigns.types';
 import {
   BillingFrequency,
   DonationTransactionData,
-  ShippingData,
 } from '@/app/types/donations.types';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
