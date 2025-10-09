@@ -78,9 +78,8 @@ const PremiumUsers = () => {
         // Since the API doesn't include premium_subscriptions, we'll work with what we have
         // Show users who have premium_access or premium_plan_id
         const premiumUsers = result.users.filter(
-          (user: PremiumUser) => 
-            user.premium_access === true || 
-            user.premium_plan_id !== null
+          (user: PremiumUser) =>
+            user.premium_access === true || user.premium_plan_id !== null,
         );
 
         setUsers(premiumUsers);
@@ -120,19 +119,26 @@ const PremiumUsers = () => {
   const getSubscriptionStatus = (user: PremiumUser) => {
     // Check if user has premium access
     if (user.premium_access) {
-      if (user.premium_expires_at && new Date(user.premium_expires_at) > new Date()) {
+      if (
+        user.premium_expires_at &&
+        new Date(user.premium_expires_at) > new Date()
+      ) {
         return { status: 'active', expiresAt: user.premium_expires_at };
-      } else if (user.premium_expires_at && new Date(user.premium_expires_at) <= new Date()) {
+      } else if (
+        user.premium_expires_at &&
+        new Date(user.premium_expires_at) <= new Date()
+      ) {
         return { status: 'expired', expiresAt: user.premium_expires_at };
       } else {
         return { status: 'active', expiresAt: null }; // No expiry date = permanent access
       }
     }
-    
+
     // Check premium subscriptions if available
     if (user.premium_subscriptions && user.premium_subscriptions.length > 0) {
       const activeSubscription = user.premium_subscriptions.find(
-        (sub) => sub.status === 'active' && new Date(sub.expires_at) > new Date(),
+        (sub) =>
+          sub.status === 'active' && new Date(sub.expires_at) > new Date(),
       );
 
       if (activeSubscription) {
@@ -140,7 +146,8 @@ const PremiumUsers = () => {
       }
 
       const expiredSubscription = user.premium_subscriptions.find(
-        (sub) => sub.status === 'active' && new Date(sub.expires_at) <= new Date(),
+        (sub) =>
+          sub.status === 'active' && new Date(sub.expires_at) <= new Date(),
       );
 
       if (expiredSubscription) {
@@ -162,27 +169,50 @@ const PremiumUsers = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      active: { variant: 'default' as const, label: 'Active', className: 'bg-green-100 text-green-800' },
-      expired: { variant: 'secondary' as const, label: 'Expired', className: 'bg-yellow-100 text-yellow-800' },
-      cancelled: { variant: 'outline' as const, label: 'Cancelled', className: 'bg-gray-100 text-gray-800' },
-      none: { variant: 'outline' as const, label: 'No Active Sub', className: 'bg-gray-100 text-gray-800' },
+      active: {
+        variant: 'default' as const,
+        label: 'Active',
+        className: 'bg-green-100 text-green-800',
+      },
+      expired: {
+        variant: 'secondary' as const,
+        label: 'Expired',
+        className: 'bg-yellow-100 text-yellow-800',
+      },
+      cancelled: {
+        variant: 'outline' as const,
+        label: 'Cancelled',
+        className: 'bg-gray-100 text-gray-800',
+      },
+      none: {
+        variant: 'outline' as const,
+        label: 'No Active Sub',
+        className: 'bg-gray-100 text-gray-800',
+      },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.none;
-    return <Badge variant={config.variant} className={config.className}>{config.label}</Badge>;
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.none;
+    return (
+      <Badge variant={config.variant} className={config.className}>
+        {config.label}
+      </Badge>
+    );
   };
 
   const getPlanName = (user: PremiumUser) => {
     if (user.premium_subscriptions && user.premium_subscriptions.length > 0) {
-      const activeSub = user.premium_subscriptions.find(sub => sub.status === 'active');
+      const activeSub = user.premium_subscriptions.find(
+        (sub) => sub.status === 'active',
+      );
       return activeSub?.premium_plan?.name || 'Unknown Plan';
     }
-    
+
     // Fallback to premium_plan_id based logic
     if (user.premium_plan_id) {
       return `Plan ID: ${user.premium_plan_id}`;
     }
-    
+
     return 'No plan info';
   };
 
@@ -251,7 +281,8 @@ const PremiumUsers = () => {
         <CardHeader>
           <CardTitle>Premium Subscriptions</CardTitle>
           <CardDescription>
-            {filteredUsers.length} users with premium access (out of {totalCount} total users)
+            {filteredUsers.length} users with premium access (out of{' '}
+            {totalCount} total users)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -272,10 +303,9 @@ const PremiumUsers = () => {
                 No premium users found with the current filters.
               </div>
               <div className="text-sm text-gray-500">
-                {users.length === 0 ? 
-                  "No users have premium access in the system." : 
-                  "Try changing your search or filter criteria."
-                }
+                {users.length === 0
+                  ? 'No users have premium access in the system.'
+                  : 'Try changing your search or filter criteria.'}
               </div>
             </div>
           ) : (
@@ -325,9 +355,7 @@ const PremiumUsers = () => {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          {getPlanName(user)}
-                        </TableCell>
+                        <TableCell>{getPlanName(user)}</TableCell>
                         <TableCell>
                           {getStatusBadge(subscriptionInfo.status)}
                         </TableCell>
@@ -338,9 +366,17 @@ const PremiumUsers = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge 
-                            variant={user.status === 'active' ? 'default' : 'destructive'}
-                            className={user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+                          <Badge
+                            variant={
+                              user.status === 'active'
+                                ? 'default'
+                                : 'destructive'
+                            }
+                            className={
+                              user.status === 'active'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }
                           >
                             {user.status}
                           </Badge>
