@@ -3,9 +3,7 @@ import { useDonationsContext } from '@/app/context/account/donations/DonationsCo
 import ToastComponent from '@/app/components/toast/Toast';
 import { Reward } from '@/app/context/account/rewards/RewardsContext';
 import { useEquityCampaignContext } from '@/app/context/account/campaign/EquityCampaignContext';
-import {
-  InvestmentCreatePayload,
-} from '@/app/types/equityCampaigns.types';
+import { InvestmentCreatePayload } from '@/app/types/equityCampaigns.types';
 import {
   BillingFrequency,
   DonationTransactionData,
