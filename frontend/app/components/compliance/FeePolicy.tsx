@@ -85,7 +85,8 @@ const Pricing = () => {
       content: (
         <div className="space-y-6">
           <p className="text-foreground/90">
-            When making an investment, the following fees apply:
+            When making an investment, the following fees apply to each
+            investment:
           </p>
 
           {/* Fee breakdown */}
@@ -95,15 +96,19 @@ const Pricing = () => {
             </h4>
             <ul className="space-y-2 text-foreground/90">
               <li className="flex justify-between">
-                <span>Platform Fee:</span>
+                <span>
+                  <strong>Platform Fee:</strong>
+                </span>
                 <span>
                   <strong>3%</strong> of investment amount
                 </span>
               </li>
               <li className="flex justify-between">
-                <span>Investment Fee:</span>
                 <span>
-                  <strong>7%</strong> of investment amount
+                  <strong>Investment Fee:</strong>
+                </span>
+                <span>
+                  <strong>7%</strong> of investment amount (capped at GHS 300)
                 </span>
               </li>
               <li className="flex justify-between border-t border-border pt-2">
@@ -111,7 +116,7 @@ const Pricing = () => {
                   <strong>Total Initial Fees:</strong>
                 </span>
                 <span>
-                  <strong>10%</strong> (capped at GHS 300 + 3% platform)
+                  <strong>10%</strong> (3% platform + 7% investment)
                 </span>
               </li>
             </ul>
@@ -120,11 +125,14 @@ const Pricing = () => {
           <p className="text-foreground/90">
             The investment fee is capped at a maximum of{' '}
             <strong>GHS 300</strong>, while the platform fee remains at 3%
-            regardless of investment size. These fees are collected when the
-            payment for your investment is processed by BantuHive.
+            regardless of investment size. These fees, including the exact
+            amounts being applied to your investment, are outlined in the
+            investment process before your investment is pledged. Both fees are
+            collected when the payment for your investment is processed by
+            BantuHive.
           </p>
 
-          {/* Update the fee examples table */}
+          {/* Fee examples table */}
           <div>
             <h3 className="text-lg font-semibold mb-3 text-foreground">
               Fee Examples
@@ -198,29 +206,115 @@ const Pricing = () => {
             </div>
           </div>
 
-          {/* Rest of the content remains the same */}
           <div>
             <h3 className="text-lg font-semibold mb-3 text-foreground">
-              What the Fees Cover
+              What the Platform Fee Covers
+            </h3>
+            <ul className="space-y-2 text-foreground/90">
+              <li className="flex gap-2">
+                <span className="text-blue-700">•</span>
+                <span>
+                  Platform infrastructure, maintenance, and security to ensure
+                  reliable 24/7 access to investment opportunities across
+                  Africa.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-blue-700">•</span>
+                <span>
+                  Continuous development and optimization of the investor
+                  experience with new features and tools.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-blue-700">•</span>
+                <span>
+                  Customer support services for investors throughout their
+                  investment journey.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-blue-700">•</span>
+                <span>
+                  Platform compliance with financial regulations and data
+                  protection standards.
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-3 text-foreground">
+              What the Investment Fee Covers
             </h3>
             <ul className="space-y-2 text-foreground/90">
               <li className="flex gap-2">
                 <span className="text-green-700">•</span>
                 <span>
-                  <strong>Platform Fee (3%):</strong> Platform maintenance,
-                  security, and continuous improvement of the investment
-                  experience
+                  Comprehensive due diligence on investment opportunities to
+                  ensure pitches are 'fair, clear and not misleading' for
+                  investors.
                 </span>
               </li>
               <li className="flex gap-2">
                 <span className="text-green-700">•</span>
                 <span>
-                  <strong>Investment Fee (7%):</strong> Due diligence, legal
-                  compliance, investment processing, and ongoing investor
-                  support
+                  Legal and compliance oversight throughout the investment
+                  process.
                 </span>
               </li>
-              {/* ... rest of the list items */}
+              <li className="flex gap-2">
+                <span className="text-green-700">•</span>
+                <span>
+                  Managing the completion of investments including payment
+                  capture, anti-money laundering (AML) checks, and issuing of
+                  share certificates.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-green-700">•</span>
+                <span>
+                  Ongoing investor support and shareholder representation
+                  services.
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-muted/50 p-4 rounded-lg border border-border">
+            <h3 className="text-lg font-semibold mb-3 text-foreground">
+              Important Notes
+            </h3>
+            <ul className="space-y-2 text-foreground/90">
+              <li className="flex gap-2">
+                <span className="text-green-700">•</span>
+                <span>
+                  The <strong>GHS 5 minimum fee</strong> applies to the
+                  investment fee component for small investments.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-green-700">•</span>
+                <span>
+                  The <strong>GHS 300 cap</strong> applies only to the
+                  investment fee (7%), not the platform fee (3%).
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-green-700">•</span>
+                <span>
+                  These fees are separate from the{' '}
+                  <strong>5% success fee</strong> that applies only when you
+                  make a profit on your investment at exit.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-green-700">•</span>
+                <span>
+                  All fees are clearly displayed during the investment process
+                  before you commit any funds.
+                </span>
+              </li>
             </ul>
           </div>
         </div>
