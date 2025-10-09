@@ -550,7 +550,7 @@ const Pricing = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-border bg-card">
+      <header className="border-b border-border bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
             Fees & Pricing
