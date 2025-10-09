@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from '@/app/components/ui/select';
 import { Badge } from '@/app/components/ui/badge';
-import { Search, Filter, Mail, Phone, Calendar } from 'lucide-react';
+import { Search, Filter, Mail, Phone, Calendar, Crown } from 'lucide-react';
 import { useUserContext } from '@/app/context/users/UserContext';
 
 interface PremiumUser {
@@ -38,7 +38,7 @@ interface PremiumUser {
   premium_plan_id: number | null;
   premium_expires_at: string | null;
   created_at: string;
-  premium_subscriptions: Array<{
+  premium_subscriptions?: Array<{
     id: number;
     status: string;
     amount: number;
@@ -59,23 +59,12 @@ interface PremiumUser {
   };
 }
 
-interface PremiumUsersResponse {
-  users: PremiumUser[];
-  meta: {
-    current_page: number;
-    total_pages: number;
-    total_count: number;
-    per_page: number;
-  };
-}
-
 const PremiumUsers = () => {
   const { fetchAllUsers } = useUserContext();
   const [users, setUsers] = useState<PremiumUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [planFilter, setPlanFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -86,17 +75,17 @@ const PremiumUsers = () => {
       const result = await fetchAllUsers(page, 20, search);
 
       if (result.users && result.meta) {
-        // Filter users who have premium access or active premium subscriptions
+        // Since the API doesn't include premium_subscriptions, we'll work with what we have
+        // Show users who have premium_access or premium_plan_id
         const premiumUsers = result.users.filter(
-          (user: PremiumUser) =>
-            user.premium_access ||
-            (user.premium_subscriptions &&
-              user.premium_subscriptions.length > 0),
+          (user: PremiumUser) => 
+            user.premium_access === true || 
+            user.premium_plan_id !== null
         );
 
         setUsers(premiumUsers);
         setTotalPages(result.meta.total_pages);
-        setTotalCount(result.meta.total_count);
+        setTotalCount(premiumUsers.length); // Use filtered count for display
       }
     } catch (error) {
       console.error('Error loading premium users:', error);
@@ -129,28 +118,41 @@ const PremiumUsers = () => {
   };
 
   const getSubscriptionStatus = (user: PremiumUser) => {
-    const activeSubscription = user.premium_subscriptions?.find(
-      (sub) => sub.status === 'active' && new Date(sub.expires_at) > new Date(),
-    );
+    // Check if user has premium access
+    if (user.premium_access) {
+      if (user.premium_expires_at && new Date(user.premium_expires_at) > new Date()) {
+        return { status: 'active', expiresAt: user.premium_expires_at };
+      } else if (user.premium_expires_at && new Date(user.premium_expires_at) <= new Date()) {
+        return { status: 'expired', expiresAt: user.premium_expires_at };
+      } else {
+        return { status: 'active', expiresAt: null }; // No expiry date = permanent access
+      }
+    }
+    
+    // Check premium subscriptions if available
+    if (user.premium_subscriptions && user.premium_subscriptions.length > 0) {
+      const activeSubscription = user.premium_subscriptions.find(
+        (sub) => sub.status === 'active' && new Date(sub.expires_at) > new Date(),
+      );
 
-    if (activeSubscription) {
-      return { status: 'active', subscription: activeSubscription };
+      if (activeSubscription) {
+        return { status: 'active', expiresAt: activeSubscription.expires_at };
+      }
+
+      const expiredSubscription = user.premium_subscriptions.find(
+        (sub) => sub.status === 'active' && new Date(sub.expires_at) <= new Date(),
+      );
+
+      if (expiredSubscription) {
+        return { status: 'expired', expiresAt: expiredSubscription.expires_at };
+      }
     }
 
-    const expiredSubscription = user.premium_subscriptions?.find(
-      (sub) =>
-        sub.status === 'active' && new Date(sub.expires_at) <= new Date(),
-    );
-
-    if (expiredSubscription) {
-      return { status: 'expired', subscription: expiredSubscription };
-    }
-
-    return { status: 'none', subscription: null };
+    return { status: 'none', expiresAt: null };
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Never';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -160,15 +162,28 @@ const PremiumUsers = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      active: { variant: 'default' as const, label: 'Active' },
-      expired: { variant: 'secondary' as const, label: 'Expired' },
-      cancelled: { variant: 'outline' as const, label: 'Cancelled' },
-      none: { variant: 'outline' as const, label: 'No Active Sub' },
+      active: { variant: 'default' as const, label: 'Active', className: 'bg-green-100 text-green-800' },
+      expired: { variant: 'secondary' as const, label: 'Expired', className: 'bg-yellow-100 text-yellow-800' },
+      cancelled: { variant: 'outline' as const, label: 'Cancelled', className: 'bg-gray-100 text-gray-800' },
+      none: { variant: 'outline' as const, label: 'No Active Sub', className: 'bg-gray-100 text-gray-800' },
     };
 
-    const config =
-      statusConfig[status as keyof typeof statusConfig] || statusConfig.none;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.none;
+    return <Badge variant={config.variant} className={config.className}>{config.label}</Badge>;
+  };
+
+  const getPlanName = (user: PremiumUser) => {
+    if (user.premium_subscriptions && user.premium_subscriptions.length > 0) {
+      const activeSub = user.premium_subscriptions.find(sub => sub.status === 'active');
+      return activeSub?.premium_plan?.name || 'Unknown Plan';
+    }
+    
+    // Fallback to premium_plan_id based logic
+    if (user.premium_plan_id) {
+      return `Plan ID: ${user.premium_plan_id}`;
+    }
+    
+    return 'No plan info';
   };
 
   const filteredUsers = users.filter((user) => {
@@ -180,31 +195,17 @@ const PremiumUsers = () => {
       }
     }
 
-    if (planFilter !== 'all' && subscriptionInfo.subscription) {
-      if (planFilter !== subscriptionInfo.subscription.premium_plan?.name) {
-        return false;
-      }
-    }
-
     return true;
   });
-
-  const uniquePlans = Array.from(
-    new Set(
-      users.flatMap(
-        (user) =>
-          user.premium_subscriptions
-            ?.map((sub) => sub.premium_plan?.name)
-            .filter((name): name is string => typeof name === 'string') || [],
-      ),
-    ),
-  );
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Premium Users</h1>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+            <Crown className="h-8 w-8 text-yellow-500" />
+            Premium Users
+          </h1>
           <p className="text-muted-foreground">
             Manage and support users with premium subscriptions
           </p>
@@ -237,21 +238,7 @@ const PremiumUsers = () => {
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="expired">Expired</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={planFilter} onValueChange={setPlanFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Plan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Plans</SelectItem>
-                  {uniquePlans.map((plan) => (
-                    <SelectItem key={plan} value={plan}>
-                      {plan}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="none">No Subscription</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -264,7 +251,7 @@ const PremiumUsers = () => {
         <CardHeader>
           <CardTitle>Premium Subscriptions</CardTitle>
           <CardDescription>
-            {totalCount} users with premium access
+            {filteredUsers.length} users with premium access (out of {totalCount} total users)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -281,7 +268,15 @@ const PremiumUsers = () => {
             </div>
           ) : filteredUsers.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">No premium users found.</p>
+              <div className="text-muted-foreground mb-4">
+                No premium users found with the current filters.
+              </div>
+              <div className="text-sm text-gray-500">
+                {users.length === 0 ? 
+                  "No users have premium access in the system." : 
+                  "Try changing your search or filter criteria."
+                }
+              </div>
             </div>
           ) : (
             <>
@@ -292,24 +287,27 @@ const PremiumUsers = () => {
                     <TableHead>Contact</TableHead>
                     <TableHead>Plan</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Start Date</TableHead>
                     <TableHead>Expires At</TableHead>
-                    <TableHead>Amount</TableHead>
+                    <TableHead>User Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredUsers.map((user) => {
                     const subscriptionInfo = getSubscriptionStatus(user);
-                    const activeSubscription = subscriptionInfo.subscription;
 
                     return (
                       <TableRow key={user.id}>
                         <TableCell>
                           <div>
-                            <div className="font-medium">{user.full_name}</div>
+                            <div className="font-medium flex items-center gap-2">
+                              {user.full_name}
+                              {user.premium_access && (
+                                <Crown className="h-4 w-4 text-yellow-500" />
+                              )}
+                            </div>
                             <div className="text-sm text-muted-foreground">
-                              {user.profile?.name || 'No profile'}
+                              ID: {user.id}
                             </div>
                           </div>
                         </TableCell>
@@ -328,8 +326,7 @@ const PremiumUsers = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {activeSubscription?.premium_plan?.name ||
-                            'No active plan'}
+                          {getPlanName(user)}
                         </TableCell>
                         <TableCell>
                           {getStatusBadge(subscriptionInfo.status)}
@@ -337,23 +334,16 @@ const PremiumUsers = () => {
                         <TableCell>
                           <div className="flex items-center text-sm">
                             <Calendar className="h-3 w-3 mr-2" />
-                            {activeSubscription
-                              ? formatDate(activeSubscription.start_date)
-                              : 'N/A'}
+                            {formatDate(subscriptionInfo.expiresAt)}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center text-sm">
-                            <Calendar className="h-3 w-3 mr-2" />
-                            {activeSubscription
-                              ? formatDate(activeSubscription.expires_at)
-                              : 'N/A'}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {activeSubscription
-                            ? `${activeSubscription.currency} ${activeSubscription.amount}`
-                            : 'N/A'}
+                          <Badge 
+                            variant={user.status === 'active' ? 'default' : 'destructive'}
+                            className={user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+                          >
+                            {user.status}
+                          </Badge>
                         </TableCell>
                         <TableCell>
                           <div className="flex space-x-2">
