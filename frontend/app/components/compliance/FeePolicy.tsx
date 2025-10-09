@@ -23,10 +23,39 @@ const Pricing = () => {
             community.
           </p>
           <p className="text-foreground/90">
-            When you make an investment on the platform, BantuHive charges an
-            investment fee of <strong>7%</strong> which remains capped at a
-            maximum of <strong>GHS 300</strong>.
+            When you make an investment on the platform, BantuHive charges:
           </p>
+
+          {/* Add platform fee */}
+          <div className="bg-muted/50 p-4 rounded-lg border border-border">
+            <ul className="space-y-2 text-foreground/90">
+              <li className="flex justify-between">
+                <span>
+                  <strong>Platform Fee:</strong>
+                </span>
+                <span>
+                  <strong>3%</strong> of investment amount
+                </span>
+              </li>
+              <li className="flex justify-between">
+                <span>
+                  <strong>Investment Fee:</strong>
+                </span>
+                <span>
+                  <strong>7%</strong> (capped at GHS 300)
+                </span>
+              </li>
+              <li className="flex justify-between border-t border-border pt-2">
+                <span>
+                  <strong>Total Initial Fees:</strong>
+                </span>
+                <span>
+                  <strong>10%</strong> (7% investment + 3% platform)
+                </span>
+              </li>
+            </ul>
+          </div>
+
           <div className="bg-muted/50 p-4 rounded-lg border border-border">
             <p className="text-sm text-muted-foreground">
               Please note that this change applies to investment offers that are
@@ -35,10 +64,12 @@ const Pricing = () => {
               investing.
             </p>
           </div>
+
           <p className="text-foreground/90">
-            This is collected when the payment for your investment is processed
-            by BantuHive.
+            These fees are collected when the payment for your investment is
+            processed by BantuHive.
           </p>
+
           <p className="text-foreground/90">
             We also charge a <strong>5% success fee</strong> if you make a
             profit on your investment when the Company you invested in finally
@@ -54,55 +85,46 @@ const Pricing = () => {
       content: (
         <div className="space-y-6">
           <p className="text-foreground/90">
-            When making an investment, a fee of <strong>7%</strong> of the
-            amount invested is applied to each investment. The investment fee,
-            including the exact amount being applied to your investment, is
-            outlined in the investment process before your investment is
-            pledged. This fee is capped at a maximum of <strong>GHS 300</strong>
-            , and is collected when the payment for your investment is processed
-            by BantuHive.
+            When making an investment, the following fees apply:
           </p>
 
-          <div>
-            <h3 className="text-lg font-semibold mb-3 text-foreground">
-              What the Investment Fee Covers
-            </h3>
+          {/* Fee breakdown */}
+          <div className="bg-muted/50 p-4 rounded-lg border border-border">
+            <h4 className="font-semibold mb-3 text-foreground">
+              Fee Structure:
+            </h4>
             <ul className="space-y-2 text-foreground/90">
-              <li className="flex gap-2">
-                <span className="text-green-700">•</span>
+              <li className="flex justify-between">
+                <span>Platform Fee:</span>
                 <span>
-                  The running and optimisation of the BantuHive platform, which
-                  enables investors to access some of the most exciting and
-                  ambitious businesses from across Africa 24/7.
+                  <strong>3%</strong> of investment amount
                 </span>
               </li>
-              <li className="flex gap-2">
-                <span className="text-green-700">•</span>
+              <li className="flex justify-between">
+                <span>Investment Fee:</span>
                 <span>
-                  Our compliance and legal team, which undertakes due diligence
-                  to ensure a pitch is 'fair, clear and not misleading' for
-                  investors.
+                  <strong>7%</strong> of investment amount
                 </span>
               </li>
-              <li className="flex gap-2">
-                <span className="text-green-700">•</span>
+              <li className="flex justify-between border-t border-border pt-2">
                 <span>
-                  Managing the completion of an investment including payment
-                  capture, anti-money laundering (AML) checks and issuing of
-                  share certificates.
+                  <strong>Total Initial Fees:</strong>
                 </span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-green-700">•</span>
                 <span>
-                  Providing support to investors, both during and after a
-                  campaign. Investors can contact us down the road and we will
-                  always be available to help.
+                  <strong>10%</strong> (capped at GHS 300 + 3% platform)
                 </span>
               </li>
             </ul>
           </div>
 
+          <p className="text-foreground/90">
+            The investment fee is capped at a maximum of{' '}
+            <strong>GHS 300</strong>, while the platform fee remains at 3%
+            regardless of investment size. These fees are collected when the
+            payment for your investment is processed by BantuHive.
+          </p>
+
+          {/* Update the fee examples table */}
           <div>
             <h3 className="text-lg font-semibold mb-3 text-foreground">
               Fee Examples
@@ -115,7 +137,13 @@ const Pricing = () => {
                       Your Investment
                     </th>
                     <th className="text-left p-3 text-sm font-semibold">
-                      BantuHive's Investment Fee
+                      Platform Fee (3%)
+                    </th>
+                    <th className="text-left p-3 text-sm font-semibold">
+                      Investment Fee (7%)
+                    </th>
+                    <th className="text-left p-3 text-sm font-semibold">
+                      Total Fees
                     </th>
                     <th className="text-left p-3 text-sm font-semibold">
                       Total Amount Collected
@@ -125,39 +153,75 @@ const Pricing = () => {
                 <tbody className="text-foreground/90">
                   <tr className="border-b border-border/50">
                     <td className="p-3">GHS 10</td>
-                    <td className="p-3">
-                      GHS 5 (Minimum fee of GHS 5 applied)
-                    </td>
-                    <td className="p-3">GHS 15</td>
+                    <td className="p-3">GHS 0.30</td>
+                    <td className="p-3">GHS 5 (Minimum fee)</td>
+                    <td className="p-3">GHS 5.30</td>
+                    <td className="p-3">GHS 15.30</td>
                   </tr>
                   <tr className="border-b border-border/50">
                     <td className="p-3">GHS 250</td>
-                    <td className="p-3">GHS 17.50 (7% fee applied)</td>
-                    <td className="p-3">GHS 267.50</td>
+                    <td className="p-3">GHS 7.50</td>
+                    <td className="p-3">GHS 17.50</td>
+                    <td className="p-3">GHS 25.00</td>
+                    <td className="p-3">GHS 275.00</td>
                   </tr>
                   <tr className="border-b border-border/50">
                     <td className="p-3">GHS 2,500</td>
-                    <td className="p-3">GHS 175 (7% fee applied)</td>
-                    <td className="p-3">GHS 2,675</td>
+                    <td className="p-3">GHS 75.00</td>
+                    <td className="p-3">GHS 175.00</td>
+                    <td className="p-3">GHS 250.00</td>
+                    <td className="p-3">GHS 2,750.00</td>
                   </tr>
                   <tr className="border-b border-border/50">
                     <td className="p-3">GHS 5,000</td>
-                    <td className="p-3">GHS 300 (GHS 300 cap applied)</td>
-                    <td className="p-3">GHS 5,300</td>
+                    <td className="p-3">GHS 150.00</td>
+                    <td className="p-3">GHS 300 (cap applied)</td>
+                    <td className="p-3">GHS 450.00</td>
+                    <td className="p-3">GHS 5,450.00</td>
                   </tr>
                   <tr className="border-b border-border/50">
                     <td className="p-3">GHS 25,000</td>
-                    <td className="p-3">GHS 300 (GHS 300 cap applied)</td>
-                    <td className="p-3">GHS 25,300</td>
+                    <td className="p-3">GHS 750.00</td>
+                    <td className="p-3">GHS 300 (cap applied)</td>
+                    <td className="p-3">GHS 1,050.00</td>
+                    <td className="p-3">GHS 26,050.00</td>
                   </tr>
                   <tr>
                     <td className="p-3">GHS 250,000</td>
-                    <td className="p-3">GHS 300 (GHS 300 cap applied)</td>
-                    <td className="p-3">GHS 250,300</td>
+                    <td className="p-3">GHS 7,500.00</td>
+                    <td className="p-3">GHS 300 (cap applied)</td>
+                    <td className="p-3">GHS 7,800.00</td>
+                    <td className="p-3">GHS 257,800.00</td>
                   </tr>
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Rest of the content remains the same */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3 text-foreground">
+              What the Fees Cover
+            </h3>
+            <ul className="space-y-2 text-foreground/90">
+              <li className="flex gap-2">
+                <span className="text-green-700">•</span>
+                <span>
+                  <strong>Platform Fee (3%):</strong> Platform maintenance,
+                  security, and continuous improvement of the investment
+                  experience
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-green-700">•</span>
+                <span>
+                  <strong>Investment Fee (7%):</strong> Due diligence, legal
+                  compliance, investment processing, and ongoing investor
+                  support
+                </span>
+              </li>
+              {/* ... rest of the list items */}
+            </ul>
           </div>
         </div>
       ),
@@ -247,7 +311,17 @@ const Pricing = () => {
             your success.
           </p>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
+            <Card className="p-6 bg-gradient-to-br from-blue-700/5 to-blue-700/10 border-blue-700/20">
+              <h3 className="text-xl font-semibold mb-2 text-foreground">
+                Platform Fee
+              </h3>
+              <p className="text-3xl font-bold text-blue-700 mb-2">3%</p>
+              <p className="text-sm text-foreground/80">
+                Applied to all investments
+              </p>
+            </Card>
+
             <Card className="p-6 bg-gradient-to-br from-green-700/5 to-green-700/10 border-green-700/20">
               <h3 className="text-xl font-semibold mb-2 text-foreground">
                 Investment Fee
