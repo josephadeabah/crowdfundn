@@ -26,55 +26,58 @@ begin
     plans = [
       {
         name: 'Starter - monthly',
-        price: 2.0,
+        price: 99.0,
         currency: 'GHS',
         interval: 'monthly',
         description: 'Perfect for individual fundraisers',
-        paystack_plan_code: 'PLN_0hb067vzb4yluh0', # 👈 replace with your actual Paystack plan code
+        paystack_plan_code: 'PLN_0hb067vzb4yluh0', # 👈 You'll need to update with actual Paystack codes
         features: {
           'Communication Channels': 'Email only',
-          'Response Time': '1 day',
+          'Response Time': '24 hours',
           'Support Agents': 'General staff',
           'Marketing & Analytics Toolkit': true,
           'Influencer Marketing': false,
           'Campaign Strategy Review': false,
-          'Priority Support': false
+          'Priority Support': false,
+          'Legal Support': 'Basic compliance guidance'
         },
         active: true
       },
       {
         name: 'Growth - monthly',
-        price: 299.99,
+        price: 1299.0,
         currency: 'GHS',
         interval: 'monthly',
         description: 'Ideal for growing organizations',
-        paystack_plan_code: 'PLN_jstq26qi0b77k6y', # 👈 replace
+        paystack_plan_code: 'PLN_jstq26qi0b77k6y', # 👈 You'll need to update with actual Paystack codes
         features: {
-          'Communication Channels': 'Email & Google Hangout',
-          'Response Time': 'Within 5 hours',
+          'Communication Channels': 'Email & Video Calls',
+          'Response Time': 'Within 4 hours',
           'Support Agents': 'Technical & Marketing experts',
           'Marketing & Analytics Toolkit': true,
           'Influencer Marketing': false,
           'Campaign Strategy Review': true,
-          'Priority Support': false
+          'Priority Support': false,
+          'Legal Support': 'Regulatory compliance + Document templates'
         },
         active: true
       },
       {
         name: 'Pro+ - monthly',
-        price: 499.99,
+        price: 3499.0,
         currency: 'GHS',
         interval: 'monthly',
         description: 'Complete solution for professional fundraisers',
-        paystack_plan_code: 'PLN_eyvanheki38f25r', # 👈 replace
+        paystack_plan_code: 'PLN_eyvanheki38f25r', # 👈 You'll need to update with actual Paystack codes
         features: {
-          'Communication Channels': 'Email, Google Hangout & Customer Preferred',
-          'Response Time': 'Within 30 mins',
+          'Communication Channels': 'Email, Video Calls & Customer Preferred',
+          'Response Time': 'Within 30 minutes',
           'Support Agents': 'Dedicated professionals',
           'Marketing & Analytics Toolkit': true,
           'Influencer Marketing': true,
           'Campaign Strategy Review': true,
-          'Priority Support': true
+          'Priority Support': true,
+          'Legal Support': 'Full legal advisory + Contract review + Compliance monitoring'
         },
         active: true
       }
