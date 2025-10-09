@@ -578,7 +578,7 @@ const Pricing = () => {
                     onClick={() => setSelectedQuestion(question.id)}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
                       selectedQuestion === question.id
-                        ? 'bg-green-700 text-green-700 shadow-sm'
+                        ? 'bg-green-600 text-white shadow-sm'
                         : 'hover:bg-muted text-foreground/80 hover:text-foreground'
                     }`}
                   >
