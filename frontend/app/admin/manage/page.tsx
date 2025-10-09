@@ -45,8 +45,9 @@ import AllKYCs from './kyc/AllKYCs';
 import { useUserContext } from '@/app/context/users/UserContext';
 import { UserProfile } from '@/app/types/user_profiles.types';
 import { CookieManager } from '@/app/components/cookiemanager/CookieManager';
-import { Cookie } from 'lucide-react';
+import { Cookie, CrownIcon } from 'lucide-react';
 import PayoutsManager from './payouts/Payouts';
+import PremiumUsers from './users/PremiumUsers';
 
 // Type definitions for better type safety
 type TabGroup = {
@@ -273,6 +274,13 @@ const AdminDashboard = () => {
           component: <div>Support Center</div>,
           badgeCount: 12,
           requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
+        },
+        {
+          id: 'premiumUsers',
+          label: 'Premium Users',
+          icon: <CrownIcon className="h-5 w-5" />, // You'll need to import CrownIcon or use another icon
+          component: <PremiumUsers />,
+          requiredAdmin: true,
         },
         {
           id: 'settings',
