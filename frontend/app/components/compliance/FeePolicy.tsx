@@ -316,9 +316,9 @@ const Pricing = () => {
               <h3 className="text-xl font-semibold mb-2 text-foreground">
                 Platform Fee
               </h3>
-              <p className="text-3xl font-bold text-blue-700 mb-2">3%</p>
+              <p className="text-3xl font-bold text-blue-500 mb-2">3%</p>
               <p className="text-sm text-foreground/80">
-                Applied to all investments
+                Applied to only equity investments
               </p>
             </Card>
 
