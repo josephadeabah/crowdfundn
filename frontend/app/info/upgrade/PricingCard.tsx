@@ -68,24 +68,26 @@ const PricingCard = ({
         <h3 className={cn('text-2xl font-bold', proPlus && 'text-purple-900')}>
           {plan.name}
         </h3>
-        <div className="mt-2">
-          <span
-            className={cn(
-              'text-2xl font-bold',
-              proPlus ? 'text-purple-900' : 'text-gray-900',
-            )}
-          >
-            {plan.currency} {plan.price}
-          </span>
-          <span
-            className={cn(
-              'ml-1 text-lg',
-              proPlus ? 'text-purple-700' : 'text-gray-600',
-            )}
-          >
-            one-time
-          </span>
-        </div>
+<div className="mt-2">
+  <span
+    className={cn(
+      'text-4xl font-bold',
+      proPlus ? 'text-purple-900' : 'text-gray-900',
+    )}
+  >
+    <span className="text-xl align-top">{plan.currency}</span>{' '}
+    {plan.price}
+  </span>
+  <span
+    className={cn(
+      'ml-1 text-lg',
+      proPlus ? 'text-purple-700' : 'text-gray-600',
+    )}
+  >
+    one-time
+  </span>
+</div>
+
       </div>
 
       <p
