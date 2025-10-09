@@ -259,8 +259,9 @@ const Pricing = () => {
               <li className="flex gap-2">
                 <span className="text-green-700">•</span>
                 <span>
-                  Managing the completion of investments including issuer onboarding, payment
-                  capture and anti-money laundering (AML) checks.
+                  Managing the completion of investments including issuer
+                  onboarding, payment capture and anti-money laundering (AML)
+                  checks.
                 </span>
               </li>
               <li className="flex gap-2">
