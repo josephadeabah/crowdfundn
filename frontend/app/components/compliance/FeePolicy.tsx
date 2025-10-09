@@ -434,7 +434,7 @@ const Pricing = () => {
               </li>
               <li className="flex gap-2">
                 <span className="text-green-700">•</span>
-                <span>Campaign verification and monitoring</span>
+                <span>KYC verification and monitoring</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-green-700">•</span>
@@ -459,7 +459,7 @@ const Pricing = () => {
           <p className="text-foreground/90">
             BantuHive's fees are designed to maintain a world-class investment
             platform while ensuring transparency and fairness for all investors
-            across Africa.
+            across the Globe.
           </p>
 
           <div>
