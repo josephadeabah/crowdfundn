@@ -49,7 +49,7 @@ begin
         currency: 'GHS',
         interval: 'monthly',
         description: 'Ideal for growing organizations',
-        paystack_plan_code: 'PLN_jstq26qi0b77k6y', # 👈 You'll need to update with actual Paystack codes
+        paystack_plan_code: 'PLN_jstq26qi0b77k6y',
         features: {
           'Communication Channels': 'Email & Video Calls',
           'Response Time': 'Within 4 hours',
@@ -68,7 +68,7 @@ begin
         currency: 'GHS',
         interval: 'monthly',
         description: 'Complete solution for professional fundraisers',
-        paystack_plan_code: 'PLN_eyvanheki38f25r', # 👈 You'll need to update with actual Paystack codes
+        paystack_plan_code: 'PLN_eyvanheki38f25r',
         features: {
           'Communication Channels': 'Email, Video Calls & Customer Preferred',
           'Response Time': 'Within 30 minutes',
