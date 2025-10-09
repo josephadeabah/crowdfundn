@@ -25,7 +25,7 @@ const ComparisonTable = () => {
         <div className="animate-pulse">
           <div className="h-12 bg-gray-200 rounded mb-8"></div>
           <div className="space-y-4">
-            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div key={i} className="h-8 bg-gray-200 rounded"></div>
             ))}
           </div>
@@ -42,6 +42,7 @@ const ComparisonTable = () => {
     'Influencer Marketing',
     'Campaign Strategy Review',
     'Priority Support',
+    'Legal Support', // 👈 Added Legal Support feature
   ];
 
   const renderCheck = (value: boolean | string) => {
