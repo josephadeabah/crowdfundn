@@ -433,7 +433,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                 <p className="text-xs text-yellow-700">
                   <strong>Note:</strong> An additional 3% platform fee will be
                   deducted from your investment amount after successful payment.
-                  Paystack transaction fee of 1.95% applies to all payments.
+                  Paystack transaction fee of 1.95% applies to all payments. Learn more about our <a href="/info/pricing" target="_blank" className="underline text-blue-500">Pricing</a>
                 </p>
               </div>
             </div>
@@ -459,7 +459,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                 <p className="text-xs text-yellow-700">
                   <strong>Note:</strong> A 7% platform fee will be deducted from
                   your donation after successful payment. Paystack transaction
-                  fee of 1.95% applies to all payments.
+                  fee of 1.95% applies to all payments. Learn more about our <a href="/info/pricing" target="_blank" className="underline text-blue-500">Pricing</a>
                 </p>
               </div>
             </div>
