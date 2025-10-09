@@ -233,13 +233,6 @@ const Pricing = () => {
                   investment journey.
                 </span>
               </li>
-              <li className="flex gap-2">
-                <span className="text-blue-700">•</span>
-                <span>
-                  Platform compliance with financial regulations and data
-                  protection standards.
-                </span>
-              </li>
             </ul>
           </div>
 
@@ -266,9 +259,8 @@ const Pricing = () => {
               <li className="flex gap-2">
                 <span className="text-green-700">•</span>
                 <span>
-                  Managing the completion of investments including payment
-                  capture, anti-money laundering (AML) checks, and issuing of
-                  share certificates.
+                  Managing the completion of investments including issuer onboarding, payment
+                  capture and anti-money laundering (AML) checks.
                 </span>
               </li>
               <li className="flex gap-2">
