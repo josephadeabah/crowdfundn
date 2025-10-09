@@ -253,8 +253,8 @@ module Api
 
           @campaign = Campaign.find(params[:campaign_id])
 
-          # Check if transfers are locked for this user
-          unless @current_user.can_make_transfers?
+          # Check if transfers are locked for this user - use outgoing direction
+          unless @current_user.can_make_transfers? && @campaign.can_transfer_funds?(:outgoing)
             render json: { 
               error: 'Transfers are currently locked for your account. Please contact support.',
               code: 'TRANSFERS_LOCKED',

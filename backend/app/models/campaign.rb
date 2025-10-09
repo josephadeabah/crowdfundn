@@ -72,15 +72,22 @@ class Campaign < ApplicationRecord
   end
 
   # Add validation to prevent transfers when user is locked
-  def can_transfer_funds?
-    return false unless fundraiser.can_make_transfers?
-    return false if fundraiser.transfer_locked?
+  def can_transfer_funds?(direction = :outgoing)
+    case direction
+    when :outgoing
+      # Only block outgoing transfers (withdrawals)
+      return false unless fundraiser.can_make_transfers?
+      return false if fundraiser.transfer_locked?
+    when :incoming
+      # Always allow incoming investments
+      return true
+    end
     true
   end
 
   # Update the transfer amount method to check locks
   def update_transferred_amount(new_donated_amount)
-    unless can_transfer_funds?
+    unless can_transfer_funds?(:incoming)  # Allow incoming investments
       raise "Transfers are locked for this fundraiser"
     end
     
