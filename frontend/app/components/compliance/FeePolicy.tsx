@@ -69,7 +69,7 @@ const Pricing = () => {
             </h3>
             <ul className="space-y-2 text-foreground/90">
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   The running and optimisation of the BantuHive platform, which
                   enables investors to access some of the most exciting and
@@ -77,7 +77,7 @@ const Pricing = () => {
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   Our compliance and legal team, which undertakes due diligence
                   to ensure a pitch is 'fair, clear and not misleading' for
@@ -85,7 +85,7 @@ const Pricing = () => {
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   Managing the completion of an investment including payment
                   capture, anti-money laundering (AML) checks and issuing of
@@ -93,7 +93,7 @@ const Pricing = () => {
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   Providing support to investors, both during and after a
                   campaign. Investors can contact us down the road and we will
@@ -182,7 +182,7 @@ const Pricing = () => {
             charge.
           </p>
 
-          <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
+          <div className="bg-green-700/5 border border-green-700/20 p-4 rounded-lg">
             <h4 className="font-semibold mb-2 text-foreground">Example:</h4>
             <p className="text-foreground/90">
               If you invest <strong>GHS 10,000</strong> and receive a return of{' '}
@@ -200,7 +200,7 @@ const Pricing = () => {
             </h3>
             <ul className="space-y-2 text-foreground/90">
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   Liaising with companies to ensure you are kept up to date with
                   key business updates, and where relevant, managing investor
@@ -209,7 +209,7 @@ const Pricing = () => {
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   Managing pre-emption and follow-on rounds to ensure you can
                   maintain your stake in the company and continue to fuel its
@@ -217,7 +217,7 @@ const Pricing = () => {
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   Taking care of all the admin needed to receive a return on
                   your investment when a business you have invested in exits,
@@ -248,21 +248,21 @@ const Pricing = () => {
           </p>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+            <Card className="p-6 bg-gradient-to-br from-green-700/5 to-green-700/10 border-green-700/20">
               <h3 className="text-xl font-semibold mb-2 text-foreground">
                 Investment Fee
               </h3>
-              <p className="text-3xl font-bold text-primary mb-2">7%</p>
+              <p className="text-3xl font-bold text-green-700 mb-2">7%</p>
               <p className="text-sm text-foreground/80">
                 Capped at GHS 300 per investment
               </p>
             </Card>
 
-            <Card className="p-6 bg-gradient-to-br from-secondary/5 to-secondary/10 border-secondary/20">
+            <Card className="p-6 bg-gradient-to-br from-orange/5 to-orange/10 border-orange/20">
               <h3 className="text-xl font-semibold mb-2 text-foreground">
                 Success Fee
               </h3>
-              <p className="text-3xl font-bold text-secondary mb-2">5%</p>
+              <p className="text-3xl font-bold text-orange mb-2">5%</p>
               <p className="text-sm text-foreground/80">
                 Only on profitable exits
               </p>
@@ -275,19 +275,19 @@ const Pricing = () => {
             </h3>
             <ul className="space-y-2 text-foreground/90">
               <li className="flex gap-2">
-                <span className="text-primary">✓</span>
+                <span className="text-green-700">✓</span>
                 <span>No membership fees</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">✓</span>
+                <span className="text-green-700">✓</span>
                 <span>No annual management fees</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">✓</span>
+                <span className="text-green-700">✓</span>
                 <span>No exit fees (only success fee on profits)</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">✓</span>
+                <span className="text-green-700">✓</span>
                 <span>No fees if your investment doesn't profit</span>
               </li>
             </ul>
@@ -306,11 +306,11 @@ const Pricing = () => {
             transparent and simple fee structure.
           </p>
 
-          <div className="bg-primary/5 border border-primary/20 p-6 rounded-lg">
+          <div className="bg-green-700/5 border border-green-700/20 p-6 rounded-lg">
             <h3 className="text-xl font-semibold mb-4 text-foreground">
               Donation Platform Fee
             </h3>
-            <p className="text-3xl font-bold text-primary mb-2">7%</p>
+            <p className="text-3xl font-bold text-green-700 mb-2">7%</p>
             <p className="text-foreground/90">
               BantuHive charges a <strong>7% platform fee</strong> on all
               donations made through the platform. This fee helps us maintain
@@ -319,11 +319,11 @@ const Pricing = () => {
             </p>
           </div>
 
-          <div className="bg-secondary/5 border border-secondary/20 p-6 rounded-lg">
+          <div className="bg-orange/5 border border-orange/20 p-6 rounded-lg">
             <h3 className="text-xl font-semibold mb-4 text-foreground">
               Paystack Transaction Fee
             </h3>
-            <p className="text-3xl font-bold text-secondary mb-2">1.95%</p>
+            <p className="text-3xl font-bold text-orange mb-2">1.95%</p>
             <p className="text-foreground/90">
               In addition to the platform fee,{' '}
               <strong>Paystack charges a 1.95% transaction fee</strong> on all
@@ -341,19 +341,19 @@ const Pricing = () => {
             </p>
             <ul className="space-y-2 text-foreground/90">
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   <strong>7%</strong> - BantuHive platform fee
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   <strong>1.95%</strong> - Paystack transaction fee
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   <strong>Total: 8.95%</strong> - Combined processing fees
                 </span>
@@ -425,25 +425,25 @@ const Pricing = () => {
             </h3>
             <ul className="space-y-2 text-foreground/90">
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Platform maintenance and hosting infrastructure</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Secure payment processing and fraud protection</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Campaign verification and monitoring</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   24/7 customer support for donors and campaign organizers
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Tools and resources for campaign success</span>
               </li>
             </ul>
@@ -472,21 +472,21 @@ const Pricing = () => {
             </p>
             <ul className="space-y-2 text-foreground/90">
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Cutting-edge technology infrastructure</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   Advanced security measures to protect your investments
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Regular platform updates and new features</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Mobile and web accessibility across devices</span>
               </li>
             </ul>
@@ -498,21 +498,21 @@ const Pricing = () => {
             </h3>
             <ul className="space-y-2 text-foreground/90">
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>
                   Comprehensive due diligence on all investment opportunities
                 </span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Legal and compliance oversight</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Anti-money laundering (AML) checks</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Regulatory compliance across African markets</span>
               </li>
             </ul>
@@ -524,19 +524,19 @@ const Pricing = () => {
             </h3>
             <ul className="space-y-2 text-foreground/90">
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Dedicated investor support team</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Portfolio management tools and updates</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Regular company performance reports</span>
               </li>
               <li className="flex gap-2">
-                <span className="text-primary">•</span>
+                <span className="text-green-700">•</span>
                 <span>Exit facilitation and shareholder representation</span>
               </li>
             </ul>
@@ -578,7 +578,7 @@ const Pricing = () => {
                     onClick={() => setSelectedQuestion(question.id)}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
                       selectedQuestion === question.id
-                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        ? 'bg-green-700 text-green-700 shadow-sm'
                         : 'hover:bg-muted text-foreground/80 hover:text-foreground'
                     }`}
                   >
