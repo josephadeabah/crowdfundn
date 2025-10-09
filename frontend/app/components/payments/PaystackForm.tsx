@@ -398,10 +398,11 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
             )}
           </div>
 
+          {/* Equity Investment Fee Breakdown */}
           {isEquityCampaign && (
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <h3 className="font-semibold text-blue-800 mb-3">
-                Fee Breakdown
+                Investment Summary
               </h3>
 
               <div className="space-y-2">
@@ -416,20 +417,51 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                   <span className="text-gray-600">Processing Fee (7%):</span>
                   <span className="font-medium">
                     {processingFee.toFixed(2)} GHS
+                    {processingFee >= 300 && ' (capped)'}
                   </span>
                 </div>
 
                 <div className="border-t border-blue-200 pt-2 mt-2">
                   <div className="flex justify-between font-semibold text-blue-800">
-                    <span>Total Amount:</span>
+                    <span>Total Amount to Pay:</span>
                     <span>{totalAmount.toFixed(2)} GHS</span>
                   </div>
                 </div>
               </div>
 
-              <p className="text-xs text-blue-600 mt-3">
-                *Processing fee is capped at 300 GHS for equity investments
-              </p>
+              <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                <p className="text-xs text-yellow-700">
+                  <strong>Note:</strong> An additional 3% platform fee will be
+                  deducted from your investment amount after successful payment.
+                  Paystack transaction fee of 1.95% applies to all payments.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Donation Fee Information */}
+          {!isEquityCampaign && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h3 className="font-semibold text-blue-800 mb-3">
+                Donation Information
+              </h3>
+
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Donation Amount:</span>
+                  <span className="font-medium">
+                    {parseFloat(paymentAmount || '0').toFixed(2)} GHS
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                <p className="text-xs text-yellow-700">
+                  <strong>Note:</strong> A 7% platform fee will be deducted from
+                  your donation after successful payment. Paystack transaction
+                  fee of 1.95% applies to all payments.
+                </p>
+              </div>
             </div>
           )}
         </div>
