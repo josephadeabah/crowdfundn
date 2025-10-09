@@ -12,6 +12,7 @@ import {
   DonationTransactionData,
   ShippingData,
 } from '@/app/types/donations.types';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface PaystackFormProps {
   cardholderName: string;
@@ -63,6 +64,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
     error: donationError,
     clearError: clearDonationError,
   } = useDonationsContext();
+  const { user } = useAuth();
 
   const { createInvestment, loading: investmentLoading } =
     useEquityCampaignContext();
@@ -207,7 +209,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
             result.data.shares_available > 0
               ? (totalAmount / result.data.shares_available).toFixed(2)
               : 0;
-          errorMessage += `\nCurrent share price: ${pricePerShare}`;
+          errorMessage += `\nCurrent share price: ${pricePerShare} ${user?.currency_symbol || user?.currency || ''}`;
         }
 
         if (result.code) {
@@ -369,8 +371,8 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               className="block mb-2 text-sm font-medium text-gray-700"
             >
               {isEquityCampaign
-                ? 'Investment Amount (GHS)'
-                : 'Donation Amount (GHS)'}
+                ? `Investment Amount (${user?.currency_symbol || user?.currency || 'GHS'})`
+                : `Donation Amount (${user?.currency_symbol || user?.currency || 'GHS'})`}
             </label>
             <input
               type="number"
@@ -409,14 +411,16 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                 <div className="flex justify-between">
                   <span className="text-gray-600">Investment Amount:</span>
                   <span className="font-medium">
-                    {parseFloat(paymentAmount || '0').toFixed(2)} GHS
+                    {parseFloat(paymentAmount || '0').toFixed(2)}{' '}
+                    {user?.currency_symbol || user?.currency || 'GHS'}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className="text-gray-600">Processing Fee (7%):</span>
                   <span className="font-medium">
-                    {processingFee.toFixed(2)} GHS
+                    {processingFee.toFixed(2)}{' '}
+                    {user?.currency_symbol || user?.currency || 'GHS'}
                     {processingFee >= 300 && ' (capped)'}
                   </span>
                 </div>
@@ -424,7 +428,10 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                 <div className="border-t border-blue-200 pt-2 mt-2">
                   <div className="flex justify-between font-semibold text-blue-800">
                     <span>Total Amount to Pay:</span>
-                    <span>{totalAmount.toFixed(2)} GHS</span>
+                    <span>
+                      {totalAmount.toFixed(2)}{' '}
+                      {user?.currency_symbol || user?.currency || 'GHS'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -433,7 +440,15 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                 <p className="text-xs text-yellow-700">
                   <strong>Note:</strong> An additional 3% platform fee will be
                   deducted from your investment amount after successful payment.
-                  Paystack transaction fee of 1.95% applies to all payments. Learn more about our <a href="/info/pricing" target="_blank" className="underline text-blue-500">Pricing</a>
+                  Paystack transaction fee of 1.95% applies to all payments.
+                  Learn more about our{' '}
+                  <a
+                    href="/info/pricing"
+                    target="_blank"
+                    className="underline text-blue-500"
+                  >
+                    Pricing
+                  </a>
                 </p>
               </div>
             </div>
@@ -450,7 +465,8 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                 <div className="flex justify-between">
                   <span className="text-gray-600">Donation Amount:</span>
                   <span className="font-medium">
-                    {parseFloat(paymentAmount || '0').toFixed(2)} GHS
+                    {parseFloat(paymentAmount || '0').toFixed(2)}{' '}
+                    {user?.currency_symbol || user?.currency || 'GHS'}
                   </span>
                 </div>
               </div>
@@ -459,7 +475,14 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                 <p className="text-xs text-yellow-700">
                   <strong>Note:</strong> A 7% platform fee will be deducted from
                   your donation after successful payment. Paystack transaction
-                  fee of 1.95% applies to all payments. Learn more about our <a href="/info/pricing" target="_blank" className="underline text-blue-500">Pricing</a>
+                  fee of 1.95% applies to all payments. Learn more about our{' '}
+                  <a
+                    href="/info/pricing"
+                    target="_blank"
+                    className="underline text-blue-500"
+                  >
+                    Pricing
+                  </a>
                 </p>
               </div>
             </div>
