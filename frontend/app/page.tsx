@@ -6,11 +6,13 @@ import React, { useEffect } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
 import BrandIdentity from './molecules/BrandIdentity';
 import InvestmentContracts from './investment-contracts/page';
-import { CookieBanner } from '@/app/components/cookiemanager/CookieBanner';
-import { CookieSettings } from '@/app/components/cookiemanager/CookieSettings';
+import { usePiwikPro } from '@piwikpro/next-piwik-pro';
 
 const HomePage = () => {
+  const { PageViews } = usePiwikPro(); // ✅ Initialize PageViews
   useEffect(() => {
+    // Track page view
+    PageViews.trackPageView('Homepage');
     // Initialize intersection observer for scroll animations
     const observer = new IntersectionObserver(
       (entries) => {
@@ -58,10 +60,6 @@ const HomePage = () => {
           </div>
         </div>
       </main>
-
-      {/* Cookie Components */}
-      <CookieBanner />
-      <CookieSettings />
     </div>
   );
 };

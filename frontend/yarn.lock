@@ -796,6 +796,25 @@
   resolved "https://registry.yarnpkg.com/@paystack/inline-js/-/inline-js-2.22.1.tgz#d1f7de7dc457b9ca0a2040a7403ce50b9ef1eec5"
   integrity sha512-h9cf+3UbFY/+/GRA5XeWj769KaSHuedqIcuYDdV6voKGnwF9qcmJ3BorpIST45Y3qVXljOXsexL2tS6GZXJbmg==
 
+"@piwikpro/next-piwik-pro@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@piwikpro/next-piwik-pro/-/next-piwik-pro-3.4.0.tgz#8905d69428bccb86581e5437e42410f41ce1c0e1"
+  integrity sha512-IADzG3sWcnEDvEqimjvN3mShi+CBxOEuZ5DAESQvJ3MMMqsb44vp9wPgg8s3iY1ikmkZtlPMKl65H2LXneLlnQ==
+  dependencies:
+    "@piwikpro/react-piwik-pro" "^2.5.0"
+
+"@piwikpro/react-piwik-pro@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@piwikpro/react-piwik-pro/-/react-piwik-pro-2.5.0.tgz#dfd143ea5296027f3cbfc0e781087cadf691336e"
+  integrity sha512-g+Jep6pFq5QvhIOOicELVK5oMqsXH6g4F6xt6CXfoKymq21DFivz0ADNZdsbUsd/ZrtUQFib0Efk9DKo5Q8udA==
+  dependencies:
+    "@piwikpro/tracking-base-library" "^1.6.0"
+
+"@piwikpro/tracking-base-library@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@piwikpro/tracking-base-library/-/tracking-base-library-1.6.0.tgz#c08ac7331c514e9c2610669720cac9f99bad6a9b"
+  integrity sha512-jd88qqxGAtjSfdDLPuFzrk1hjnIQKCdSFynm3GE/fHB0drPsXZ/o1oXPY9YpAVX2dIkurrycRAzEhtC6KwSlfw==
+
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"

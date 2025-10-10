@@ -1,6 +1,7 @@
 // app/context/GlobalProvider.tsx (update)
 'use client';
 import { ReactNode } from 'react';
+import PiwikProProvider from '@piwikpro/next-piwik-pro';
 import { UserProfileProvider } from './users/UserContext';
 import { DonationsProvider } from './account/donations/DonationsContext';
 import { RewardProvider } from './account/rewards/RewardsContext';
@@ -20,7 +21,6 @@ import { DrawerProvider } from './drawer/DrawerContext';
 import { KycProvider } from './kyc/KycContext';
 import { KycReviewProvider } from './kyc/KycReviewContext';
 import { PremiumProvider } from './premium/PremiumContext';
-import { CookieConsentProvider } from './cookie/CookieConsentContext';
 
 export const GlobalContextProvider = ({
   children,
@@ -29,8 +29,12 @@ export const GlobalContextProvider = ({
 }) => {
   return (
     <DrawerProvider>
-      <AuthProvider>
-        <CookieConsentProvider>
+      <PiwikProProvider
+        containerId="c8913722-4c0b-4fbb-ac2d-d2b38fdee347"
+        containerUrl="https://bantuhive.containers.piwik.pro"
+        nonce="nonce-string"
+      >
+        <AuthProvider>
           <UserProfileProvider>
             <PremiumProvider>
               <KycProvider>
@@ -66,8 +70,8 @@ export const GlobalContextProvider = ({
               </KycProvider>
             </PremiumProvider>
           </UserProfileProvider>
-        </CookieConsentProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </PiwikProProvider>
     </DrawerProvider>
   );
 };
