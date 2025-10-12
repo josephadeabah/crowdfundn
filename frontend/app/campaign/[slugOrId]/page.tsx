@@ -30,7 +30,6 @@ const SingleCampaignPage: React.FC = () => {
     type: 'success' as 'success' | 'error' | 'warning',
   });
   const [localLoading, setLocalLoading] = useState(true);
-  const [isSticky, setIsSticky] = useState(false);
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const { slugOrId } = useParams() as { slugOrId: string };
@@ -57,17 +56,6 @@ const SingleCampaignPage: React.FC = () => {
     },
     [],
   );
-
-  // Sticky header effect
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      setIsSticky(scrollTop > 200);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     if (tabParam === 'donate') {
@@ -103,6 +91,7 @@ const SingleCampaignPage: React.FC = () => {
 
     return () => {
       isMounted = false;
+      // Reset campaign when component unmounts
       resetCurrentCampaign?.();
     };
   }, [
@@ -126,8 +115,7 @@ const SingleCampaignPage: React.FC = () => {
         description={toast.description}
         type={toast.type}
       />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 py-8">
         <Modal
           isOpen={isContactModalOpen}
           onClose={() => setIsContactModalOpen(false)}
@@ -136,25 +124,12 @@ const SingleCampaignPage: React.FC = () => {
         >
           <ContactFundraiserForm campaignId={slugOrId} />
         </Modal>
-
-        {/* Main Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-          {/* Main Content - Left Column */}
-          <div className="lg:col-span-8 space-y-8">
-            {/* Header Section */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex flex-col lg:flex-row gap-8 mb-10">
+          {/* Main Content Column */}
+          <div className="lg:w-2/3">
+            <div className="bg-white p-2 md:px-5 rounded-lg">
               <CampaignHeader campaign={currentCampaign} />
-            </div>
 
-            {/* Sticky Tabs Navigation */}
-            <div 
-              ref={tabsRef}
-              className={`bg-white rounded-lg border border-gray-200 ${
-                isSticky 
-                  ? 'sticky top-4 z-40 shadow-sm bg-white' 
-                  : ''
-              }`}
-            >
               <CampaignTabs
                 selectedTab={selectedTab}
                 setSelectedTab={setSelectedTab}
@@ -162,89 +137,47 @@ const SingleCampaignPage: React.FC = () => {
                 campaign={currentCampaign}
                 isEquityCampaign={isEquityCampaign}
               />
-            </div>
 
-            {/* Tab Content */}
-            <div className="space-y-8">
+              {/* Tab Content - Only render when not loading */}
               {!loading && selectedTab === 'details' && (
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                  <CampaignDetails
-                    campaign={currentCampaign}
-                    isEquityCampaign={isEquityCampaign}
-                    showToast={showToast}
-                    setIsContactModalOpen={setIsContactModalOpen}
-                    user={user}
-                  />
-                </div>
+                <CampaignDetails
+                  campaign={currentCampaign}
+                  isEquityCampaign={isEquityCampaign}
+                  showToast={showToast}
+                  setIsContactModalOpen={setIsContactModalOpen}
+                  user={user}
+                />
               )}
-              
               {!loading && selectedTab === 'donate' && (
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                  <CampaignDonate
-                    campaign={currentCampaign}
-                    isEquityCampaign={isEquityCampaign}
-                  />
-                </div>
+                <CampaignDonate
+                  campaign={currentCampaign}
+                  isEquityCampaign={isEquityCampaign}
+                />
               )}
-              
               {!loading && selectedTab === 'updates' && (
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                  <CampaignUpdates campaign={currentCampaign} />
-                </div>
+                <CampaignUpdates campaign={currentCampaign} />
               )}
-              
               {!loading && selectedTab === 'comments' && (
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                  <CampaignComments campaign={currentCampaign} />
-                </div>
+                <CampaignComments campaign={currentCampaign} />
               )}
-              
               {!loading && selectedTab === 'backers' && (
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                  <CampaignBackers
-                    campaign={currentCampaign}
-                    isEquityCampaign={isEquityCampaign}
-                  />
-                </div>
+                <CampaignBackers
+                  campaign={currentCampaign}
+                  isEquityCampaign={isEquityCampaign}
+                />
               )}
             </div>
           </div>
 
-          {/* Sidebar - Right Column */}
-          <div className="lg:col-span-4">
-            <div className="sticky top-8 space-y-8">
-              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                {!loading && <CampaignSidebar campaign={currentCampaign} />}
-              </div>
-              
-              {/* Additional sidebar content */}
-              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                <h3 className="font-semibold text-gray-900 mb-3">Need Help?</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Have questions about this campaign? Our support team is here to help.
-                </p>
-                <button 
-                  onClick={() => setIsContactModalOpen(true)}
-                  className="w-full bg-white text-gray-700 border border-gray-300 font-medium py-2.5 px-4 rounded-lg"
-                >
-                  Contact Fundraiser
-                </button>
-              </div>
-            </div>
+          {/* Sidebar Column */}
+          <div className="lg:w-1/3 border border-gray-200 hover:border-gray-300">
+            {!loading && <CampaignSidebar campaign={currentCampaign} />}
           </div>
         </div>
-
-        {/* Suggested Campaigns */}
         {!loading && (
-          <div className="mt-16">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900">You Might Also Like</h2>
-              <p className="text-gray-600 mt-2">Discover similar campaigns that need your support</p>
-            </div>
-            <SuggestedCampaignsComponent
-              currentCategory={currentCampaign?.category}
-            />
-          </div>
+          <SuggestedCampaignsComponent
+            currentCategory={currentCampaign?.category}
+          />
         )}
       </div>
     </div>
