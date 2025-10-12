@@ -246,7 +246,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
         </button>
       </div>
 
-      <div className="flex justify-center mt-8 gap-3">
+      <div className="flex justify-center mt-8 mb-6 gap-3">
         {Array.from({ length: totalGroups }).map((_, index) => (
           <button
             key={index}
