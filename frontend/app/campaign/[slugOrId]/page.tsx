@@ -118,7 +118,7 @@ const SingleCampaignPage: React.FC = () => {
   const isEquityCampaign = currentCampaign?.type === 'EquityCampaign';
 
   return (
-    <div key={slugOrId} className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-white">
+    <div key={slugOrId} className="min-h-screen w-full bg-white">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -142,16 +142,16 @@ const SingleCampaignPage: React.FC = () => {
           {/* Main Content - Left Column */}
           <div className="lg:col-span-8 space-y-8">
             {/* Header Section */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 p-6">
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
               <CampaignHeader campaign={currentCampaign} />
             </div>
 
             {/* Sticky Tabs Navigation */}
             <div 
               ref={tabsRef}
-              className={`bg-white rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 ${
+              className={`bg-white rounded-lg border border-gray-200 ${
                 isSticky 
-                  ? 'sticky top-4 z-40 shadow-lg border-gray-200 backdrop-blur-sm bg-white/95' 
+                  ? 'sticky top-4 z-40 shadow-sm bg-white' 
                   : ''
               }`}
             >
@@ -167,7 +167,7 @@ const SingleCampaignPage: React.FC = () => {
             {/* Tab Content */}
             <div className="space-y-8">
               {!loading && selectedTab === 'details' && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                   <CampaignDetails
                     campaign={currentCampaign}
                     isEquityCampaign={isEquityCampaign}
@@ -179,7 +179,7 @@ const SingleCampaignPage: React.FC = () => {
               )}
               
               {!loading && selectedTab === 'donate' && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                   <CampaignDonate
                     campaign={currentCampaign}
                     isEquityCampaign={isEquityCampaign}
@@ -188,19 +188,19 @@ const SingleCampaignPage: React.FC = () => {
               )}
               
               {!loading && selectedTab === 'updates' && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                   <CampaignUpdates campaign={currentCampaign} />
                 </div>
               )}
               
               {!loading && selectedTab === 'comments' && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                   <CampaignComments campaign={currentCampaign} />
                 </div>
               )}
               
               {!loading && selectedTab === 'backers' && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                   <CampaignBackers
                     campaign={currentCampaign}
                     isEquityCampaign={isEquityCampaign}
@@ -213,19 +213,19 @@ const SingleCampaignPage: React.FC = () => {
           {/* Sidebar - Right Column */}
           <div className="lg:col-span-4">
             <div className="sticky top-8 space-y-8">
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden">
+              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                 {!loading && <CampaignSidebar campaign={currentCampaign} />}
               </div>
               
-              {/* Additional sidebar content can go here */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 border border-blue-200">
+              {/* Additional sidebar content */}
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                 <h3 className="font-semibold text-gray-900 mb-3">Need Help?</h3>
                 <p className="text-sm text-gray-600 mb-4">
                   Have questions about this campaign? Our support team is here to help.
                 </p>
                 <button 
                   onClick={() => setIsContactModalOpen(true)}
-                  className="w-full bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 font-medium py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-md"
+                  className="w-full bg-white text-gray-700 border border-gray-300 font-medium py-2.5 px-4 rounded-lg"
                 >
                   Contact Fundraiser
                 </button>
@@ -247,47 +247,6 @@ const SingleCampaignPage: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Modern CSS Enhancements */}
-      <style jsx global>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out;
-        }
-        
-        /* Smooth scrolling for tab navigation */
-        html {
-          scroll-behavior: smooth;
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-          width: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-          background: #f1f5f9;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border-radius: 3px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
-        }
-      `}</style>
     </div>
   );
 };
