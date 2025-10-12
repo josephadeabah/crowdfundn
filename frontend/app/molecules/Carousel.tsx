@@ -25,7 +25,7 @@ interface MediaLoadingState {
 }
 
 const MediaSkeleton = () => (
-  <div className="w-full h-64 bg-gray-200 animate-pulse rounded-lg" />
+  <div className="w-full h-96 bg-gray-200 animate-pulse" />
 );
 
 const MediaContent: React.FC<{
@@ -37,7 +37,7 @@ const MediaContent: React.FC<{
   onVideoPlay: (index: number) => void;
 }> = ({ slide, absoluteIndex, videoRefs, isLoaded, onLoad, onVideoPlay }) => {
   return (
-    <div className="w-full h-64 overflow-hidden rounded-lg">
+    <div className="w-full h-96 overflow-hidden">
       {!isLoaded && <MediaSkeleton />}
 
       {slide.type === 'image' ? (
@@ -62,10 +62,10 @@ const MediaContent: React.FC<{
           />
           <button
             onClick={() => onVideoPlay(absoluteIndex)}
-            className="absolute bottom-3 left-3 bg-black/50 text-white p-3 rounded-full backdrop-blur-sm hover:bg-black/70 transition-all duration-200"
+            className="absolute bottom-4 left-4 bg-black/50 text-white p-3 backdrop-blur-sm hover:bg-black/70 transition-all duration-200"
             aria-label="Play video"
           >
-            <FaPlay size={14} />
+            <FaPlay size={16} />
           </button>
         </div>
       )}
@@ -156,7 +156,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
 
   return (
     <div
-      className="w-full max-w-7xl mx-auto py-8 px-4"
+      className="w-full"
       ref={containerRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -172,10 +172,10 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
           {Array.from({ length: totalGroups }).map((_, groupIndex) => (
             <div
               key={groupIndex}
-              className="w-full flex-shrink-0 p-4"
+              className="w-full flex-shrink-0"
               style={{ width: `${100 / totalGroups}%` }}
             >
-              <div className="flex gap-6">
+              <div className="flex">
                 {slides
                   .slice(
                     groupIndex * slidesPerPage,
@@ -189,7 +189,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                     return (
                       <div
                         key={absoluteIndex}
-                        className={`flex-1 min-w-0 bg-white rounded-lg overflow-hidden ${
+                        className={`flex-1 min-w-0 bg-white ${
                           slidesPerPage === 2
                             ? 'flex flex-col lg:flex-row'
                             : 'flex flex-col'
@@ -211,12 +211,12 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                         </div>
 
                         <div
-                          className={`p-6 flex flex-col justify-center ${
+                          className={`p-8 flex flex-col justify-center ${
                             slidesPerPage === 2 ? 'lg:w-1/2' : 'w-full'
                           }`}
                         >
                           <div className="flex-grow">
-                            <p className="text-gray-700 leading-relaxed text-sm lg:text-base">
+                            <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
                               {slide.description}
                             </p>
                           </div>
@@ -231,27 +231,27 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
 
         <button
           onClick={goToPrev}
-          className="absolute top-1/2 -translate-y-1/2 left-6 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-md z-10 transition-all"
+          className="absolute top-1/2 -translate-y-1/2 left-4 bg-white/80 hover:bg-white text-gray-800 p-4 shadow-md z-10 transition-all"
           aria-label="Previous slide"
         >
-          <FaArrowLeft className="w-4 h-4" />
+          <FaArrowLeft className="w-5 h-5" />
         </button>
 
         <button
           onClick={goToNext}
-          className="absolute top-1/2 -translate-y-1/2 right-6 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-md z-10 transition-all"
+          className="absolute top-1/2 -translate-y-1/2 right-4 bg-white/80 hover:bg-white text-gray-800 p-4 shadow-md z-10 transition-all"
           aria-label="Next slide"
         >
-          <FaArrowRight className="w-4 h-4" />
+          <FaArrowRight className="w-5 h-5" />
         </button>
       </div>
 
-      <div className="flex justify-center mt-6 gap-3">
+      <div className="flex justify-center mt-8 gap-3">
         {Array.from({ length: totalGroups }).map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-3 h-3 rounded-full ${
+            className={`w-3 h-3 ${
               currentIndex === index ? 'bg-gray-800' : 'bg-gray-300'
             }`}
             aria-label={`Go to slide ${index + 1}`}
