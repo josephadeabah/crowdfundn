@@ -30,6 +30,7 @@ const SingleCampaignPage: React.FC = () => {
     type: 'success' as 'success' | 'error' | 'warning',
   });
   const [localLoading, setLocalLoading] = useState(true);
+  const [isSticky, setIsSticky] = useState(false);
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const { slugOrId } = useParams() as { slugOrId: string };
@@ -56,6 +57,17 @@ const SingleCampaignPage: React.FC = () => {
     },
     [],
   );
+
+  // Sticky header effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsSticky(scrollTop > 200);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (tabParam === 'donate') {
@@ -91,7 +103,6 @@ const SingleCampaignPage: React.FC = () => {
 
     return () => {
       isMounted = false;
-      // Reset campaign when component unmounts
       resetCurrentCampaign?.();
     };
   }, [
@@ -107,7 +118,7 @@ const SingleCampaignPage: React.FC = () => {
   const isEquityCampaign = currentCampaign?.type === 'EquityCampaign';
 
   return (
-    <div key={slugOrId} className="min-h-screen w-full bg-white">
+    <div key={slugOrId} className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-white">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -115,7 +126,8 @@ const SingleCampaignPage: React.FC = () => {
         description={toast.description}
         type={toast.type}
       />
-      <div className="max-w-7xl mx-auto px-2 py-8">
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Modal
           isOpen={isContactModalOpen}
           onClose={() => setIsContactModalOpen(false)}
@@ -124,12 +136,25 @@ const SingleCampaignPage: React.FC = () => {
         >
           <ContactFundraiserForm campaignId={slugOrId} />
         </Modal>
-        <div className="flex flex-col lg:flex-row gap-8 mb-10">
-          {/* Main Content Column */}
-          <div className="lg:w-2/3">
-            <div className="bg-white p-2 md:px-5 rounded-lg">
-              <CampaignHeader campaign={currentCampaign} />
 
+        {/* Main Layout Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+          {/* Main Content - Left Column */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* Header Section */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 p-6">
+              <CampaignHeader campaign={currentCampaign} />
+            </div>
+
+            {/* Sticky Tabs Navigation */}
+            <div 
+              ref={tabsRef}
+              className={`bg-white rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 ${
+                isSticky 
+                  ? 'sticky top-4 z-40 shadow-lg border-gray-200 backdrop-blur-sm bg-white/95' 
+                  : ''
+              }`}
+            >
               <CampaignTabs
                 selectedTab={selectedTab}
                 setSelectedTab={setSelectedTab}
@@ -137,49 +162,132 @@ const SingleCampaignPage: React.FC = () => {
                 campaign={currentCampaign}
                 isEquityCampaign={isEquityCampaign}
               />
+            </div>
 
-              {/* Tab Content - Only render when not loading */}
+            {/* Tab Content */}
+            <div className="space-y-8">
               {!loading && selectedTab === 'details' && (
-                <CampaignDetails
-                  campaign={currentCampaign}
-                  isEquityCampaign={isEquityCampaign}
-                  showToast={showToast}
-                  setIsContactModalOpen={setIsContactModalOpen}
-                  user={user}
-                />
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  <CampaignDetails
+                    campaign={currentCampaign}
+                    isEquityCampaign={isEquityCampaign}
+                    showToast={showToast}
+                    setIsContactModalOpen={setIsContactModalOpen}
+                    user={user}
+                  />
+                </div>
               )}
+              
               {!loading && selectedTab === 'donate' && (
-                <CampaignDonate
-                  campaign={currentCampaign}
-                  isEquityCampaign={isEquityCampaign}
-                />
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  <CampaignDonate
+                    campaign={currentCampaign}
+                    isEquityCampaign={isEquityCampaign}
+                  />
+                </div>
               )}
+              
               {!loading && selectedTab === 'updates' && (
-                <CampaignUpdates campaign={currentCampaign} />
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  <CampaignUpdates campaign={currentCampaign} />
+                </div>
               )}
+              
               {!loading && selectedTab === 'comments' && (
-                <CampaignComments campaign={currentCampaign} />
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  <CampaignComments campaign={currentCampaign} />
+                </div>
               )}
+              
               {!loading && selectedTab === 'backers' && (
-                <CampaignBackers
-                  campaign={currentCampaign}
-                  isEquityCampaign={isEquityCampaign}
-                />
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  <CampaignBackers
+                    campaign={currentCampaign}
+                    isEquityCampaign={isEquityCampaign}
+                  />
+                </div>
               )}
             </div>
           </div>
 
-          {/* Sidebar Column */}
-          <div className="lg:w-1/3 border border-gray-200 hover:border-gray-300">
-            {!loading && <CampaignSidebar campaign={currentCampaign} />}
+          {/* Sidebar - Right Column */}
+          <div className="lg:col-span-4">
+            <div className="sticky top-8 space-y-8">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden">
+                {!loading && <CampaignSidebar campaign={currentCampaign} />}
+              </div>
+              
+              {/* Additional sidebar content can go here */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 border border-blue-200">
+                <h3 className="font-semibold text-gray-900 mb-3">Need Help?</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Have questions about this campaign? Our support team is here to help.
+                </p>
+                <button 
+                  onClick={() => setIsContactModalOpen(true)}
+                  className="w-full bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 font-medium py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-md"
+                >
+                  Contact Fundraiser
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Suggested Campaigns */}
         {!loading && (
-          <SuggestedCampaignsComponent
-            currentCategory={currentCampaign?.category}
-          />
+          <div className="mt-16">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-900">You Might Also Like</h2>
+              <p className="text-gray-600 mt-2">Discover similar campaigns that need your support</p>
+            </div>
+            <SuggestedCampaignsComponent
+              currentCategory={currentCampaign?.category}
+            />
+          </div>
         )}
       </div>
+
+      {/* Modern CSS Enhancements */}
+      <style jsx global>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fade-in-up {
+          animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Smooth scrolling for tab navigation */
+        html {
+          scroll-behavior: smooth;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: #f1f5f9;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
     </div>
   );
 };
