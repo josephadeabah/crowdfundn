@@ -161,7 +161,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="carousel-container relative overflow-hidden">
+      <div className="relative overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-in-out"
           style={{
