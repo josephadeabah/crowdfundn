@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { cn } from '@/app/lib/utils';
 import { ArrowRight, Play, Zap, Trophy } from 'lucide-react';
 import { useAuth } from '../context/auth/AuthContext';
@@ -16,6 +16,7 @@ const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const openVideo = () => {
     setIsVideoOpen(true);
@@ -34,7 +35,29 @@ const Hero = () => {
 
   useEffect(() => {
     setIsMounted(true);
-    return () => setIsMounted(false);
+    
+    // Force video autoplay on mobile
+    const forceVideoPlay = () => {
+      if (videoRef.current) {
+        videoRef.current.play().catch(error => {
+          console.log('Autoplay prevented:', error);
+          // Add fallback play on user interaction
+          document.addEventListener('click', () => {
+            if (videoRef.current) {
+              videoRef.current.play().catch(e => console.log('Fallback play failed:', e));
+            }
+          }, { once: true });
+        });
+      }
+    };
+
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(forceVideoPlay, 100);
+    
+    return () => {
+      clearTimeout(timer);
+      setIsMounted(false);
+    };
   }, []);
 
   useEffect(() => {
@@ -84,16 +107,25 @@ const Hero = () => {
     <div className="relative w-full h-screen overflow-hidden">
       {/* Video Background */}
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
         playsInline
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
+        onLoadedData={() => {
+          // Additional attempt to play when video is loaded
+          if (videoRef.current) {
+            videoRef.current.play().catch(e => console.log('Loaded data play failed:', e));
+          }
+        }}
       >
         <source
           src="/farm-plough.mp4"
           type="video/mp4"
         />
+        Your browser does not support the video tag.
       </video>
 
       {/* Overlay */}
@@ -137,12 +169,15 @@ const Hero = () => {
             sustainable economic growth.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link href={user ? '/account/dashboard/create' : '/auth'}>
-              <button className="group px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
+          {/* CTA Buttons - Fixed horizontal alignment */}
+          <div className="flex flex-row items-center gap-4 w-full max-w-md">
+            <Link 
+              href={user ? '/account/dashboard/create' : '/auth'} 
+              className="flex-1 min-w-0"
+            >
+              <button className="group w-full px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
                 Raise Capital Now
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform flex-shrink-0" />
               </button>
             </Link>
 
@@ -150,11 +185,12 @@ const Hero = () => {
               href="https://www.pnpmmedia.com"
               target="_blank"
               rel="noopener noreferrer"
+              className="flex-1 min-w-0"
             >
               <Button
                 size="lg"
                 variant="outline"
-                className="bg-white/10 backdrop-blur-md border-white/30 text-white hover:bg-white/20"
+                className="w-full bg-white/10 backdrop-blur-md border-white/30 text-white hover:bg-white/20 whitespace-nowrap"
               >
                 Read Us
               </Button>
