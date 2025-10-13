@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './popover/Popover';
 import Avatar from './avatar/Avatar';
 import { getVerifiedBadge } from '../utils/helpers/get.level.trophy';
 import { VideoPlayer } from './videoplayer/videoplayar';
+import { Button } from './ui/button';
 
 const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -80,87 +81,78 @@ const Hero = () => {
     : 0.7;
 
   return (
-    <div className="relative w-full overflow-hidden bg-white">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
-        style={{
-          backgroundImage: `url('/Heropage.png')`,
-          transform: `translateY(${backgroundY}px) scale(${1 + (isMounted ? scrollY * 0.0002 : 0)})`,
-          transformOrigin: 'bottom',
-          top: `-${isMounted ? Math.min(scrollY * 0.2, 100) : 0}px`,
-        }}
+    <div className="relative w-full h-screen overflow-hidden">
+      {/* Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
       >
-        <div
-          className="absolute inset-0 bg-white"
-          style={{ opacity: overlayOpacity }}
-        ></div>
-      </div>
+        <source
+          src="https://cdn.pixabay.com/video/2019/05/01/23232-333604632_large.mp4"
+          type="video/mp4"
+        />
+      </video>
 
-      <div
-        className="relative h-full max-w-7xl mx-auto flex items-center transition-transform duration-100 ease-out"
-        style={{
-          transform: `translateY(${contentY}px)`,
-          opacity: opacityValue,
-        }}
-      >
-        <div className="px-4 py-24 w-full">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            {/* Left content */}
-            <div className="w-full lg:w-1/2 space-y-8">
-              <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 mt-2 text-base font-semibold bg-white text-gray-800 rounded-full mb-4 animate-fade-up">
-                  <span className="relative flex h-5 w-5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-5 w-5 bg-orange-600"></span>
-                  </span>
-                  <div className="flex flex-wrap gap-4 text-xs">
-                    <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">
-                      💝 Donation|Grant-Based
-                    </div>
-                    <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold">
-                      🎁 Reward-Based
-                    </div>
-                    <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-semibold">
-                      📈 Equity Investment
-                    </div>
-                  </div>
-                </div>
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
 
-                <h1 className="text-base md:text-xl font-bold text-gray-800 mb-4 animate-fade-up animate-delay-100">
-                  <span className="text-gray-700">The</span>{' '}
-                  <span className="text-orange-500">All-in-One</span>{' '}
-                  <span className="text-green-500">Fundraiser</span>{' '}
-                  <span className="text-indigo-500">Management</span>{' '}
-                  <span className="text-emerald-700">Software</span>{' '}
-                  <span className="text-blue-500">Platform</span>
-                </h1>
+      {/* Content */}
+      <div className="relative h-full max-w-7xl mx-auto flex items-center px-4 sm:px-6 lg:px-8">
+        <div className="w-full lg:w-2/3 space-y-8 animate-fade-up">
+          {/* Badge with funding types */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full animate-fade-in">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+            </span>
+            <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
+              <span className="text-white/90 font-medium">💝 Donation</span>
+              <span className="text-white/70">|</span>
+              <span className="text-white/90 font-medium">🎁 Reward-Based</span>
+              <span className="text-white/70">|</span>
+              <span className="text-white/90 font-medium">📈 Equity Investment</span>
+            </div>
+          </div>
 
-                <p className="text-lg md:text-xl text-gray-800 mb-8 animate-fade-up delay-200">
-                  Revolutionizing Ghana's startup ecosystem through smart equity
-                  crowdfunding. Invest in tomorrow's unicorns, earn exclusive
-                  rewards, and build wealth while fueling Africa's most
-                  innovative businesses and driving economic growth.
-                </p>
+          {/* Main Heading */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
+            Powering Africa's{' '}
+            <span className="text-primary">Industrial Revolution</span>
+            <br />
+            Through{' '}
+            <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+              Smart Funding
+            </span>
+          </h1>
 
-                <div className="flex flex-row gap-4 animate-fade-up animate-delay-300">
-                  <Link href={user ? '/account/dashboard/create' : '/auth'}>
-                    <button className="group px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
-                      Raise Capital Now
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </Link>
+          {/* Subheading */}
+          <p className="text-lg sm:text-xl text-white/90 max-w-2xl leading-relaxed">
+            Invest in Africa's tomorrow, today. Our crowdfunding platform connects visionary entrepreneurs 
+            with forward-thinking investors to fuel the continent's most innovative businesses and 
+            drive sustainable economic growth.
+          </p>
 
-                  <Link
-                    href="https://www.pnpmmedia.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <button className="px-6 py-3 bg-transparent border border-gray-300 text-gray-800 rounded-md hover:bg-gray-100 transition-colors">
-                      Read Our Latest Happenings
-                    </button>
-                  </Link>
-                </div>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button 
+              size="lg"
+              className="group bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/50"
+            >
+              Raise Capital Now
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+
+            <Button 
+              size="lg"
+              variant="outline"
+              className="bg-white/10 backdrop-blur-md border-white/30 text-white hover:bg-white/20"
+            >
+              Explore Opportunities
+            </Button>
+          </div>
 
                 <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
                   <div className="flex -space-x-3">
@@ -242,95 +234,50 @@ const Hero = () => {
                     backers joined this month
                   </p>
                 </div>
+               {/* Floating Cards */}
+          <div className="hidden lg:block">
+            {/* AI Suggestion Card */}
+            <div className="absolute top-20 right-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 max-w-xs animate-fade-in shadow-xl">
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                  <Zap className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <div className="text-sm text-white/70 mb-1">Fund A Dream Today!</div>
+                  <div className="text-sm font-semibold text-white">
+                    Invest In Africa's Bright Minds w/ As Little As GHS50
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Right content with video */}
-            <div className="w-full lg:w-1/2 relative">
-              {/* AI Suggestion Card - Top Left */}
-              <div className="absolute top-8 -left-8 bg-white rounded-xl shadow-lg py-2 px-4 max-w-xs rotate-[-6deg] border-0 scale-90 origin-top-left z-10">
-                <div className="flex items-center">
-                  <div className="h-8 w-8 rounded-full bg-emerald-600 flex items-center justify-center mr-2">
-                    <Zap className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-xs text-gray-800">
-                      Fund A Dream Today!
-                    </div>
-                    <div className="text-xs font-semibold text-gray-800">
-                      Invest In Africa's Bright Minds w/ As Little As GHS50
-                    </div>
-                  </div>
+            {/* Achievement Card */}
+            <div className="absolute bottom-32 right-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 max-w-xs animate-fade-in shadow-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="bg-secondary/20 text-secondary text-xs font-medium rounded-full px-3 py-1 flex items-center gap-1">
+                  <Trophy className="h-3 w-3" /> Achievement
                 </div>
               </div>
-
-              {/* Achievement Card - Bottom Right */}
-              <div className="absolute -bottom-6 -right-6 bg-white rounded-xl shadow-lg p-4 max-w-xs border-0 scale-90 origin-bottom-right z-10">
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="bg-orange-100 text-orange-600 text-xs font-medium rounded-full px-2 py-1">
-                    <Trophy className="inline-block h-3 w-3 mr-1" /> Achievement
-                  </div>
-                  <div className="text-sm font-semibold text-gray-800">
-                    Level 3 Unlocked
-                  </div>
-                </div>
-                <h3 className="font-bold mb-1 text-gray-800">
-                  Make Good Things Happen
-                </h3>
-                <div className="flex gap-1.5 mb-1">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse delay-100"></div>
-                  <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse delay-200"></div>
-                </div>
-                <div className="text-xs text-right text-gray-800">
-                  Easy Way To Fund Africa's Future.
-                </div>
+              <h3 className="font-bold text-white mb-2">Make Good Things Happen</h3>
+              <div className="flex gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse-glow"></div>
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse-glow" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse-glow" style={{ animationDelay: '0.4s' }}></div>
               </div>
-
-              <div className="relative rounded-xl overflow-hidden shadow-2xl group">
-                {/* Thumbnail image */}
-                <img
-                  src="/vidnail.webp"
-                  alt="Video thumbnail"
-                  className="w-full aspect-video object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
-                />
-
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                  {/* Play button */}
-                  <button
-                    onClick={openVideo}
-                    className="group/button video-play-button"
-                    aria-label="Play video"
-                  >
-                    <Play fill="white" size={24} className="ml-1.5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Decorative elements */}
-              <div className="absolute -z-10 -bottom-6 -right-6 w-64 h-64 bg-gray-200/50 rounded-full blur-3xl"></div>
-              <div className="absolute -z-10 -top-6 -left-6 w-40 h-40 bg-gray-100 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-0 left-0 p-6 w-full">
-                <h3 className="text-white text-lg md:text-xl font-medium drop-shadow-md">
-                  Introducing Gift For Fundraisers
-                </h3>
+              <div className="text-xs text-white/80">
+                The Easy Way To Fund Africa's Future.
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Video Player Modal */}
-      {isVideoOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <VideoPlayer
-            videoSrc="/BHGifts.webm"
-            isOpen={isVideoOpen}
-            onClose={closeVideo}
-          />
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-2">
+          <div className="w-1 h-3 rounded-full bg-white/50"></div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
