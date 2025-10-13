@@ -100,7 +100,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
 
       {/* Content */}
-      <div className="relative h-full max-w-7xl mx-auto flex items-center px-4 sm:px-6 lg:px-8">
+      <div className="relative h-full max-w-7xl mx-auto flex items-center px-4">
         <div className="w-full lg:w-2/3 space-y-8 animate-fade-up">
           {/* Badge with funding types */}
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full animate-fade-in">
