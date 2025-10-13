@@ -113,7 +113,9 @@ const Hero = () => {
               <span className="text-white/70">|</span>
               <span className="text-white/90 font-medium">🎁 Reward-Based</span>
               <span className="text-white/70">|</span>
-              <span className="text-white/90 font-medium">📈 Equity Investment</span>
+              <span className="text-white/90 font-medium">
+                📈 Equity Investment
+              </span>
             </div>
           </div>
 
@@ -130,14 +132,15 @@ const Hero = () => {
 
           {/* Subheading */}
           <p className="text-lg sm:text-xl text-white/90 max-w-2xl leading-relaxed">
-            Invest in Africa's tomorrow, today. Our crowdfunding platform connects visionary entrepreneurs 
-            with forward-thinking investors to fuel the continent's most innovative businesses and 
-            drive sustainable economic growth.
+            Invest in Africa's tomorrow, today. Our crowdfunding platform
+            connects visionary entrepreneurs with forward-thinking investors to
+            fuel the continent's most innovative businesses and drive
+            sustainable economic growth.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button 
+            <Button
               size="lg"
               className="group bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/50"
             >
@@ -145,7 +148,7 @@ const Hero = () => {
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
 
-            <Button 
+            <Button
               size="lg"
               variant="outline"
               className="bg-white/10 backdrop-blur-md border-white/30 text-white hover:bg-white/20"
@@ -184,9 +187,7 @@ const Hero = () => {
                             <h4 className="font-semibold text-lg text-gray-800">
                               {backer.name}
                             </h4>
-                            <span>
-                              {getVerifiedBadge(backer.level, 20)}
-                            </span>
+                            <span>{getVerifiedBadge(backer.level, 20)}</span>
                           </div>
                           <p className="text-sm text-gray-800">
                             {backer.country}
@@ -205,9 +206,7 @@ const Hero = () => {
                         <p className="text-sm font-semibold text-gray-800">
                           Bio
                         </p>
-                        <p className="text-sm text-gray-800">
-                          {backer.bio}
-                        </p>
+                        <p className="text-sm text-gray-800">{backer.bio}</p>
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-gray-800">
@@ -246,7 +245,9 @@ const Hero = () => {
                 <Zap className="h-5 w-5 text-white" />
               </div>
               <div>
-                <div className="text-sm text-white/70 mb-1">Fund A Dream Today!</div>
+                <div className="text-sm text-white/70 mb-1">
+                  Fund A Dream Today!
+                </div>
                 <div className="text-sm font-semibold text-white">
                   Invest In Africa's Bright Minds w/ As Little As GHS100
                 </div>
@@ -261,23 +262,24 @@ const Hero = () => {
                 <Trophy className="h-3 w-3" /> Achievement
               </div>
             </div>
-            <h3 className="font-bold text-white mb-2">Make Good Things Happen</h3>
+            <h3 className="font-bold text-white mb-2">
+              Make Good Things Happen
+            </h3>
             <div className="flex gap-2 mb-2">
               <div className="w-2 h-2 rounded-full bg-green-600 animate-pulse-glow"></div>
-              <div className="w-2 h-2 rounded-full bg-green-600 animate-pulse-glow" style={{ animationDelay: '0.2s' }}></div>
-              <div className="w-2 h-2 rounded-full bg-green-600 animate-pulse-glow" style={{ animationDelay: '0.4s' }}></div>
+              <div
+                className="w-2 h-2 rounded-full bg-green-600 animate-pulse-glow"
+                style={{ animationDelay: '0.2s' }}
+              ></div>
+              <div
+                className="w-2 h-2 rounded-full bg-green-600 animate-pulse-glow"
+                style={{ animationDelay: '0.4s' }}
+              ></div>
             </div>
             <div className="text-xs text-white/80">
               The Easy Way To Fund Africa's Future.
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-2">
-          <div className="w-1 h-3 rounded-full bg-white/50"></div>
         </div>
       </div>
     </div>
