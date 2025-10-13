@@ -74,7 +74,7 @@ const FeaturedCampaigns = () => {
 
   return (
     <div className="py-20 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4">
         <RewardCarousel
           title="Featured Rewards"
           campaigns={rewardCampaigns}
@@ -88,7 +88,7 @@ const FeaturedCampaigns = () => {
         <InvestorPitchSection />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4">
         <EquityCampaignCarousel
           title="Invest Now"
           campaigns={equityCampaigns}
@@ -98,7 +98,7 @@ const FeaturedCampaigns = () => {
         />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 flex justify-center">
+      <div className="max-w-7xl mx-auto px-4 my-10 flex justify-center">
         <Link href="/invest" passHref>
           <Button
             variant="outline"
@@ -114,7 +114,7 @@ const FeaturedCampaigns = () => {
         <FundingTypes />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between">
           <div className="animate-fade-up">
             <span className="inline-block px-3 py-1 mt-3 text-xs font-semibold bg-orange-500/10 text-orange-500 rounded-full">
