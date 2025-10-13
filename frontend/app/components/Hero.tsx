@@ -118,7 +118,7 @@ const Hero = () => {
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
+          <h1 className="text-4xl font-bold text-white leading-tight">
             Powering Africa's{' '}
             <span className="text-green-600">Industrial Revolution</span>
             <br />
