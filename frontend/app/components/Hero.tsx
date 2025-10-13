@@ -140,21 +140,26 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button
-              size="lg"
-              className="group bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/50"
-            >
-              Raise Capital Now
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link href={user ? '/account/dashboard/create' : '/auth'}>
+              <button className="group px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2">
+                Raise Capital Now
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
 
-            <Button
-              size="lg"
-              variant="outline"
-              className="bg-white/10 backdrop-blur-md border-white/30 text-white hover:bg-white/20"
+            <Link
+              href="https://www.pnpmmedia.com"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              Explore Opportunities
-            </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-white/10 backdrop-blur-md border-white/30 text-white hover:bg-white/20"
+              >
+                Read Us
+              </Button>
+            </Link>
           </div>
 
           {/* Top Backers Section */}
