@@ -132,8 +132,7 @@ const Hero = () => {
 
           {/* Subheading */}
           <p className="text-lg sm:text-xl text-white/90 max-w-2xl leading-relaxed">
-            Invest in Africa's tomorrow, today. Our crowdfunding platform
-            connects visionary entrepreneurs with forward-thinking investors to
+            Invest in Africa's tomorrow, today. We connects visionary entrepreneurs with forward-thinking investors to
             fuel the continent's most innovative businesses and drive
             sustainable economic growth.
           </p>
