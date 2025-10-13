@@ -96,12 +96,12 @@ const Hero = () => {
   }, [isMounted]);
 
   // Only apply scroll effects after component is mounted
-  const backgroundY = isMounted ? Math.min(scrollY * 0.5, 300) : 0;
-  const contentY = isMounted ? Math.min(scrollY * 0.1, 50) : 0;
-  const opacityValue = isMounted ? Math.max(1 - scrollY * 0.002, 0) : 1;
-  const overlayOpacity = isMounted
-    ? Math.min(0.7 + scrollY * 0.0005, 0.85)
-    : 0.7;
+  // const backgroundY = isMounted ? Math.min(scrollY * 0.5, 300) : 0;
+  // const contentY = isMounted ? Math.min(scrollY * 0.1, 50) : 0;
+  // const opacityValue = isMounted ? Math.max(1 - scrollY * 0.002, 0) : 1;
+  // const overlayOpacity = isMounted
+  //   ? Math.min(0.7 + scrollY * 0.0005, 0.85)
+  //   : 0.7;
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
