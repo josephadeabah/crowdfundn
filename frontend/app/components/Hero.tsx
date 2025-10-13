@@ -91,7 +91,7 @@ const Hero = () => {
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source
-          src="https://cdn.pixabay.com/video/2019/05/01/23232-333604632_large.mp4"
+          src="/farm-plough.mp4"
           type="video/mp4"
         />
       </video>
