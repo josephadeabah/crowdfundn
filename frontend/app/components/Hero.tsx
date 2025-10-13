@@ -248,7 +248,7 @@ const Hero = () => {
               <div>
                 <div className="text-sm text-white/70 mb-1">Fund A Dream Today!</div>
                 <div className="text-sm font-semibold text-white">
-                  Invest In Africa's Bright Minds w/ As Little As GHS50
+                  Invest In Africa's Bright Minds w/ As Little As GHS100
                 </div>
               </div>
             </div>
