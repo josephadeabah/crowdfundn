@@ -122,7 +122,7 @@ const Hero = () => {
         }}
       >
         <source
-          src="/farm-plough.mp4"
+          src="/farm-plough1.mp4"
           type="video/mp4"
         />
         Your browser does not support the video tag.
