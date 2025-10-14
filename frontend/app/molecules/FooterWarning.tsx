@@ -4,7 +4,7 @@ import Link from 'next/link';
 const FooterWarning: React.FC = () => {
   return (
     <div className="bg-white">
-      <div className="max-w-7xl mx-auto px-4 mb-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-5 lg:px-6 mb-6">
         <div className="">
           <h4 className="font-bold text-sm mb-4 text-gray-900">
             Important Investment Notice
