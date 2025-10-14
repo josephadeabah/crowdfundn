@@ -437,7 +437,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => (
       <div className="flex-shrink-0 w-full sm:w-auto flex justify-center sm:justify-start">
         <Avatar name={member.name} size="xl" imageUrl={member.avatar_url} />
       </div>
-      
+
       {/* Content - positioned below avatar on mobile, beside on larger screens */}
       <div className="min-w-0 flex-1 text-center sm:text-left">
         <h3 className="text-xl font-bold text-gray-900 mb-1 truncate">
