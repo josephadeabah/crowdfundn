@@ -35,25 +35,31 @@ const Hero = () => {
 
   useEffect(() => {
     setIsMounted(true);
-    
+
     // Force video autoplay on mobile
     const forceVideoPlay = () => {
       if (videoRef.current) {
-        videoRef.current.play().catch(error => {
+        videoRef.current.play().catch((error) => {
           console.log('Autoplay prevented:', error);
           // Add fallback play on user interaction
-          document.addEventListener('click', () => {
-            if (videoRef.current) {
-              videoRef.current.play().catch(e => console.log('Fallback play failed:', e));
-            }
-          }, { once: true });
+          document.addEventListener(
+            'click',
+            () => {
+              if (videoRef.current) {
+                videoRef.current
+                  .play()
+                  .catch((e) => console.log('Fallback play failed:', e));
+              }
+            },
+            { once: true },
+          );
         });
       }
     };
 
     // Small delay to ensure DOM is ready
     const timer = setTimeout(forceVideoPlay, 100);
-    
+
     return () => {
       clearTimeout(timer);
       setIsMounted(false);
@@ -117,14 +123,13 @@ const Hero = () => {
         onLoadedData={() => {
           // Additional attempt to play when video is loaded
           if (videoRef.current) {
-            videoRef.current.play().catch(e => console.log('Loaded data play failed:', e));
+            videoRef.current
+              .play()
+              .catch((e) => console.log('Loaded data play failed:', e));
           }
         }}
       >
-        <source
-          src="/moving-train.mp4"
-          type="video/mp4"
-        />
+        <source src="/moving-train.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
@@ -164,15 +169,16 @@ const Hero = () => {
 
           {/* Subheading */}
           <p className="text-lg sm:text-xl text-white/90 max-w-2xl leading-relaxed">
-            Invest in Africa's tomorrow, today. We connects visionary entrepreneurs with forward-thinking investors to
-            fuel the continent's most innovative businesses and drive
-            sustainable economic growth.
+            Invest in Africa's tomorrow, today. We connects visionary
+            entrepreneurs with forward-thinking investors to fuel the
+            continent's most innovative businesses and drive sustainable
+            economic growth.
           </p>
 
           {/* CTA Buttons - Fixed horizontal alignment */}
           <div className="flex flex-row items-center gap-4 w-full max-w-md">
-            <Link 
-              href={user ? '/account/dashboard/create' : '/auth'} 
+            <Link
+              href={user ? '/account/dashboard/create' : '/auth'}
               className="flex-1 min-w-0"
             >
               <button className="group w-full px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
