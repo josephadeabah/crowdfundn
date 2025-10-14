@@ -104,63 +104,61 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
         )}
 
         <div className="mt-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-2">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">
             Campaign Progress
           </h3>
-          <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white text-gray-800 rounded-lg shadow mb-8 p-2 space-y-6 sm:space-y-0 sm:space-x-6">
-            <div className="text-center sm:text-left">
-              <div className="w-full flex lg:flex-col sm:justify-between gap-3 items-center text-xl py-2">
-                <div className="font-medium text-sm">
-                  <span
-                    className={`${
-                      parseFloat(
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between gap-6">
+              {/* Progress Figures */}
+              <div className="flex-1">
+                <div className="space-y-4">
+                  {/* Raised Amount */}
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900">
+                      <span className="text-gray-600 text-lg mr-1">
+                        {fundraiserCurrency}
+                      </span>
+                      {parseFloat(
                         (campaign?.transferred_amount ?? '0').toString(),
-                      ) >= parseFloat((campaign?.goal_amount ?? '0').toString())
-                        ? 'text-green-600'
-                        : 'text-orange-500'
-                    }`}
-                  >
-                    <span className="text-gray-600 mr-1">
-                      {fundraiserCurrency}
-                    </span>
-                    {parseFloat(
-                      (campaign?.transferred_amount ?? '0').toString(),
-                    ).toLocaleString()}
-                  </span>{' '}
-                </div>
-                <div className="flex justify-between gap-3 items-center text-gray-600">
-                  <div className="text-xs">
-                    <span>of</span>
-                  </div>{' '}
-                  <div className="font-medium text-sm">
-                    {fundraiserCurrency}
-                    {parseFloat(
-                      campaign?.goal_amount || '0.0',
-                    ).toLocaleString()}
+                      ).toLocaleString()}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">Raised</div>
                   </div>
-                  <div className="text-xs">
-                    <span>Goal</span>
+
+                  {/* Goal Amount */}
+                  <div className="text-center">
+                    <div className="text-xl font-semibold text-gray-700">
+                      <span className="text-gray-600 text-sm mr-1">
+                        {fundraiserCurrency}
+                      </span>
+                      {parseFloat(
+                        campaign?.goal_amount || '0.0',
+                      ).toLocaleString()}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">Goal</div>
+                  </div>
+
+                  {/* Backers/Investors */}
+                  <div className="text-center">
+                    <div className="text-xl font-semibold text-gray-900">
+                      {backersCount.toLocaleString()}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      {isEquityCampaign ? 'Investors' : 'Backers'}
+                    </div>
                   </div>
                 </div>
               </div>
-              <p className="mt-2 text-sm text-gray-600">
-                <strong>{backersCount}</strong>{' '}
-                {isEquityCampaign ? 'Investors' : 'Backers'}
-              </p>
-              <div className="mt-2 flex items-center gap-2">
-                <TinyProgressRing
-                  remainingDays={Number(campaign?.remaining_days) || 0}
-                  customColor="#22c55e"
+
+              {/* Progress Ring */}
+              <div className="flex-shrink-0">
+                <ProgressRing
+                  value={progressPercentage}
+                  size={120}
+                  strokeWidth={12}
+                  color="#22c55e"
                 />
               </div>
-            </div>
-            <div className="flex justify-center sm:justify-end w-full sm:w-auto">
-              <ProgressRing
-                value={progressPercentage}
-                size={150}
-                strokeWidth={10}
-                color="#22c55e"
-              />
             </div>
           </div>
         </div>
