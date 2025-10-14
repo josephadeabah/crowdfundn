@@ -104,9 +104,20 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
         )}
 
         <div className="mt-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">
-            Campaign Progress
-          </h3>
+          {/* Campaign Progress Header with TinyProgressRing */}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-gray-800">
+              Campaign Progress
+            </h3>
+            <div className="flex items-center gap-2">
+              <TinyProgressRing
+                remainingDays={Number(campaign?.remaining_days) || 0}
+                customColor="#22c55e"
+              />
+            </div>
+          </div>
+
+          {/* Progress Content */}
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between gap-6">
               {/* Progress Figures */}
