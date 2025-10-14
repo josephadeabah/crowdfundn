@@ -69,14 +69,14 @@ const FooterWarning: React.FC = () => {
               agree to be bound by our{' '}
               <Link
                 href="/info/terms"
-                className="text-blue-600 hover:underline"
+                className="text-green-800 hover:underline"
               >
                 Terms of Use
               </Link>{' '}
               and{' '}
               <Link
                 href="/info/privacy"
-                className="text-blue-600 hover:underline"
+                className="text-green-800 hover:underline"
               >
                 Privacy Policy
               </Link>
