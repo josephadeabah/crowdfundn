@@ -3,9 +3,9 @@ import Link from 'next/link';
 
 const FooterWarning: React.FC = () => {
   return (
-    <div className="border-t border-gray-200 pt-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg p-6">
+    <div className="bg-white border-t border-gray-200 pt-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="">
           <h4 className="font-bold text-sm mb-4 text-gray-900">
             Important Investment Notice
           </h4>
@@ -69,14 +69,14 @@ const FooterWarning: React.FC = () => {
               agree to be bound by our{' '}
               <Link
                 href="/info/terms"
-                className="text-green-800 hover:underline"
+                className="text-blue-600 hover:underline"
               >
                 Terms of Use
               </Link>{' '}
               and{' '}
               <Link
                 href="/info/privacy"
-                className="text-green-800 hover:underline"
+                className="text-blue-600 hover:underline"
               >
                 Privacy Policy
               </Link>
