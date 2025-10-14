@@ -29,7 +29,7 @@ const CampaignDonate: React.FC<CampaignDonateProps> = ({
     campaign?.fundraiser?.currency?.toUpperCase();
 
   return (
-    <div className="max-w-lg mx-auto bg-white dark:bg-gray-800 dark:text-gray-100 px-2 py-6">
+    <div className="max-w-7xl mx-auto bg-white dark:bg-gray-800 dark:text-gray-100 px-2 py-6">
       <RewardSelection
         rewards={campaign?.rewards || []}
         selectedTier={selectedTier}
