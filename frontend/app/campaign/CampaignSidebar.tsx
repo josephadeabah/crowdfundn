@@ -31,23 +31,19 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
       100,
   );
 
-  const raisedAmount = parseFloat((campaign?.transferred_amount ?? '0').toString());
-  const goalAmount = parseFloat((campaign?.goal_amount ?? '0').toString());
-  const isGoalReached = raisedAmount >= goalAmount;
-
   return (
     <div className="sticky top-8">
-      <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-6 shadow-lg">
+      <div className="bg-gradient-to-br from-white to-gray-50 p-4">
         {isEquityCampaign ? (
           <>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            <h2 className="text-xl font-semibold mb-4">
               Invest in this company
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-700 mb-4">
               <Link
                 href="/info/creator-handbook"
                 target="_blank"
-                className="text-green-600 hover:text-green-700 underline text-sm font-medium transition-colors"
+                className="text-gray-500 underline text-sm"
               >
                 Learn more about equity fundraisers
               </Link>
@@ -66,20 +62,20 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                 }}
               />
             ) : (
-              <div className="space-y-4">
-                <p className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border border-blue-100">
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">
                   You need to create an account to invest in equity campaigns.
                 </p>
                 <Link href="/auth/register">
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors">
                     Join to invest
                   </Button>
                 </Link>
-                <p className="text-xs text-gray-600 text-center">
+                <p className="text-xs text-gray-500 text-center">
                   Already have an account?{' '}
                   <Link
                     href="/auth/login"
-                    className="text-green-600 hover:text-green-700 font-semibold underline transition-colors"
+                    className="text-green-600 hover:underline"
                   >
                     Sign in
                   </Link>
@@ -89,8 +85,8 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
           </>
         ) : (
           <>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Support This Project</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-xl font-semibold mb-4">Support This Project</h2>
+            <p className="text-gray-700 mb-4">
               Help us reach our goal by contributing to this project.
             </p>
             <DonationButton
@@ -107,85 +103,64 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
           </>
         )}
 
-        {/* Campaign Progress Section - Modernized */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+        <div className="mt-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
             Campaign Progress
           </h3>
-          
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-            <div className="flex flex-col lg:flex-row items-center gap-8">
-              {/* Progress Ring - More prominent */}
-              <div className="flex-shrink-0 relative">
-                <ProgressRing
-                  value={progressPercentage}
-                  size={120}
-                  strokeWidth={12}
-                  color={isGoalReached ? "#10b981" : "#22c55e"}
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-gray-900">
-                    {progressPercentage}%
-                  </span>
-                </div>
-              </div>
-
-              {/* Stats - Better layout and visibility */}
-              <div className="flex-1 text-center lg:text-left">
-                {/* Raised Amount - More prominent */}
-                <div className="mb-4">
-                  <div className="text-3xl font-bold text-gray-900 mb-1">
-                    <span className="text-gray-600 text-lg mr-1">
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center bg-white text-gray-800 rounded-lg shadow mb-8 p-2 space-y-6 sm:space-y-0 sm:space-x-6">
+            <div className="text-center sm:text-left">
+              <div className="w-full flex lg:flex-col sm:justify-between gap-3 items-center text-xl py-2">
+                <div className="font-medium text-sm">
+                  <span
+                    className={`${
+                      parseFloat(
+                        (campaign?.transferred_amount ?? '0').toString(),
+                      ) >= parseFloat((campaign?.goal_amount ?? '0').toString())
+                        ? 'text-green-600'
+                        : 'text-orange-500'
+                    }`}
+                  >
+                    <span className="text-gray-600 mr-1">
                       {fundraiserCurrency}
                     </span>
-                    {raisedAmount.toLocaleString()}
+                    {parseFloat(
+                      (campaign?.transferred_amount ?? '0').toString(),
+                    ).toLocaleString()}
+                  </span>{' '}
+                </div>
+                <div className="flex justify-between gap-3 items-center text-gray-600">
+                  <div className="text-xs">
+                    <span>of</span>
+                  </div>{' '}
+                  <div className="font-medium text-sm">
+                    {fundraiserCurrency}
+                    {parseFloat(
+                      campaign?.goal_amount || '0.0',
+                    ).toLocaleString()}
                   </div>
-                  <div className="text-sm text-gray-600 font-medium">
-                    raised of {fundraiserCurrency}
-                    {goalAmount.toLocaleString()} goal
+                  <div className="text-xs">
+                    <span>Goal</span>
                   </div>
                 </div>
-
-                {/* Backers and Days - Side by side */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <div className="text-center sm:text-left">
-                    <div className="text-2xl font-bold text-gray-900">
-                      {backersCount.toLocaleString()}
-                    </div>
-                    <div className="text-sm text-gray-600 font-medium">
-                      {isEquityCampaign ? 'Investors' : 'Backers'}
-                    </div>
-                  </div>
-                  
-                  <div className="text-center sm:text-left">
-                    <div className="flex items-center justify-center sm:justify-start gap-2">
-                      <TinyProgressRing
-                        remainingDays={Number(campaign?.remaining_days) || 0}
-                        customColor={isGoalReached ? "#10b981" : "#22c55e"}
-                      />
-                      <span className="text-2xl font-bold text-gray-900">
-                        {campaign?.remaining_days || 0}
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-600 font-medium">
-                      days left
-                    </div>
-                  </div>
-                </div>
+              </div>
+              <p className="mt-2 text-sm text-gray-600">
+                <strong>{backersCount}</strong>{' '}
+                {isEquityCampaign ? 'Investors' : 'Backers'}
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                <TinyProgressRing
+                  remainingDays={Number(campaign?.remaining_days) || 0}
+                  customColor="#22c55e"
+                />
               </div>
             </div>
-
-            {/* Progress Bar - Additional visual indicator */}
-            <div className="mt-6">
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
-                  className={`h-3 rounded-full transition-all duration-500 ${
-                    isGoalReached ? 'bg-green-500' : 'bg-green-400'
-                  }`}
-                  style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-                ></div>
-              </div>
+            <div className="flex justify-center sm:justify-end w-full sm:w-auto">
+              <ProgressRing
+                value={progressPercentage}
+                size={150}
+                strokeWidth={10}
+                color="#22c55e"
+              />
             </div>
           </div>
         </div>
