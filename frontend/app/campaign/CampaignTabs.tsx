@@ -146,54 +146,56 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
           <div className="relative">
             {/* Mobile horizontal scroll for smaller screens */}
             <div className="lg:hidden relative mb-6">
-              <button
-                onClick={() => scrollTabs('left')}
-                className="absolute left-0 z-10 bg-white shadow-md p-2 rounded-full"
-              >
-                <FaChevronLeft />
-              </button>
-              
-              <div
-                ref={tabsRef}
-                className="flex overflow-x-auto scrollbar-hide whitespace-nowrap pl-10 pr-10 gap-2"
-              >
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    className={`flex items-center px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex-shrink-0 ${
-                      selectedTab === tab.id
-                        ? 'bg-green-600 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    } ${
-                      tab.disabled ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                    onClick={() => {
-                      if (!tab.disabled) {
-                        setSelectedTab(tab.id as any);
-                      }
-                    }}
-                    disabled={tab.disabled}
-                  >
-                    <span className="text-sm">{tab.label}</span>
-                    {tab.count > 0 && (
-                      <span className={`text-xs px-2 py-1 rounded-full ml-2 ${
-                        selectedTab === tab.id 
-                          ? 'bg-white text-green-600' 
-                          : 'bg-gray-300 text-gray-700'
-                      }`}>
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                ))}
+              <div className="flex items-center justify-center">
+                <button
+                  onClick={() => scrollTabs('left')}
+                  className="absolute left-0 z-10 bg-white shadow-md p-3 rounded-full flex items-center justify-center"
+                >
+                  <FaChevronLeft className="text-sm" />
+                </button>
+                
+                <div
+                  ref={tabsRef}
+                  className="flex overflow-x-auto scrollbar-hide whitespace-nowrap pl-12 pr-12 gap-2 w-full"
+                >
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      className={`flex items-center px-4 py-3 rounded-lg font-semibold transition-all duration-200 flex-shrink-0 ${
+                        selectedTab === tab.id
+                          ? 'bg-green-600 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      } ${
+                        tab.disabled ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      onClick={() => {
+                        if (!tab.disabled) {
+                          setSelectedTab(tab.id as any);
+                        }
+                      }}
+                      disabled={tab.disabled}
+                    >
+                      <span className="text-sm">{tab.label}</span>
+                      {tab.count > 0 && (
+                        <span className={`text-xs px-2 py-1 rounded-full ml-2 ${
+                          selectedTab === tab.id 
+                            ? 'bg-white text-green-600' 
+                            : 'bg-gray-300 text-gray-700'
+                        }`}>
+                          {tab.count}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                
+                <button
+                  onClick={() => scrollTabs('right')}
+                  className="absolute right-0 z-10 bg-white shadow-md p-3 rounded-full flex items-center justify-center"
+                >
+                  <FaChevronRight className="text-sm" />
+                </button>
               </div>
-              
-              <button
-                onClick={() => scrollTabs('right')}
-                className="absolute right-0 z-10 bg-white shadow-md p-2 rounded-full"
-              >
-                <FaChevronRight />
-              </button>
             </div>
 
             {/* Tab Content Area */}
