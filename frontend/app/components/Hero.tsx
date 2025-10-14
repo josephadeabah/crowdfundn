@@ -158,8 +158,10 @@ const Hero = () => {
 
           {/* Main Heading */}
           <h1 className="text-4xl font-bold text-white leading-tight">
-            Powering Africa's{' '}
-            <span className="text-green-600">Industrial Revolution</span>
+            Africa's FinTech powerhouse driving the future of{' '}
+            <span className="text-green-600">
+              fundraising and alternative investing
+            </span>
             <br />
             Through{' '}
             <span className="bg-gradient-to-r from-orange-500 to-green-600 bg-clip-text text-transparent">
