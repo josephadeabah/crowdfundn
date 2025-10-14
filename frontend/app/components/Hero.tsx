@@ -158,14 +158,14 @@ const Hero = () => {
 
           {/* Main Heading */}
           <h1 className="text-4xl font-bold text-white leading-tight">
-            Africa's FinTech powerhouse driving the future of{' '}
+            Africa's FinTech{' '}
             <span className="text-green-600">
-              fundraising and alternative investing
+              powerhouse driving the future
             </span>
             <br />
-            Through{' '}
+            of{' '}
             <span className="bg-gradient-to-r from-orange-500 to-green-600 bg-clip-text text-transparent">
-              Smart Funding
+              fundraising and alternative investing
             </span>
           </h1>
 
