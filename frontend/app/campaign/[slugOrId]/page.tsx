@@ -128,7 +128,7 @@ const SingleCampaignPage: React.FC = () => {
           {/* Main Content Column */}
           <div className="lg:w-2/3">
             <div className="bg-white p-2 md:px-5 rounded-lg">
-              <CampaignHeader campaign={currentCampaign} />
+              {/* <CampaignHeader campaign={currentCampaign} /> */}
 
               <CampaignTabs
                 selectedTab={selectedTab}

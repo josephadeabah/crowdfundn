@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
 
@@ -58,6 +59,54 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
     };
   });
 
+  const renderTabContent = () => {
+    if (selectedTab === 'details') {
+      return (
+        <div className="relative w-full h-full">
+          <Image
+            src={campaign?.media || '/bantuhive.svg'}
+            alt={campaign?.title as string}
+            layout="fill"
+            objectFit="cover"
+            unoptimized
+            className="rounded-2xl"
+            quality={100}
+            priority
+            onError={(e) => {
+              console.error('Image failed to load:', e);
+              e.currentTarget.src = '/bantuhive.svg';
+            }}
+          />
+        </div>
+      );
+    }
+
+    // Placeholder content for other tabs
+    return (
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 lg:p-12 border border-gray-200 h-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">
+              {selectedTab === 'donate' ? '💳' :
+               selectedTab === 'updates' ? '📰' :
+               selectedTab === 'comments' ? '💬' :
+               '👥'}
+            </span>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
+            {tabs.find(t => t.id === selectedTab)?.label} View
+          </h3>
+          <p className="text-gray-600 max-w-md mx-auto">
+            {selectedTab === 'donate' ? 'Contribution options will be displayed here' :
+             selectedTab === 'updates' ? 'Latest news and campaign progress updates' :
+             selectedTab === 'comments' ? 'Community discussions and feedback' :
+             'Campaign supporters and investors list'}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
       <div className="flex flex-col lg:flex-row">
@@ -92,7 +141,7 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
           </div>
         </div>
 
-        {/* Image/Content Area - Right Side */}
+        {/* Content Area - Right Side */}
         <div className="lg:w-2/3 xl:w-3/4 p-6 lg:p-8">
           <div className="relative">
             {/* Mobile horizontal scroll for smaller screens */}
@@ -147,23 +196,9 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
               </button>
             </div>
 
-            {/* Campaign Image/Content Placeholder */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 lg:p-12 border border-gray-200">
-              <div className="text-center">
-                <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">📊</span>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {tabs.find(t => t.id === selectedTab)?.label} View
-                </h3>
-                <p className="text-gray-600 max-w-md mx-auto">
-                  Select different tabs to explore campaign {selectedTab === 'details' ? 'information' : 
-                  selectedTab === 'donate' ? 'contribution options' : 
-                  selectedTab === 'updates' ? 'latest news and progress' :
-                  selectedTab === 'comments' ? 'community discussions' :
-                  'supporters and investors'}
-                </p>
-              </div>
+            {/* Tab Content Area */}
+            <div className="h-[400px] lg:h-[500px] rounded-2xl overflow-hidden">
+              {renderTabContent()}
             </div>
           </div>
         </div>
