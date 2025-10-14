@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const FooterWarning: React.FC = () => {
   return (
-    <div className="bg-white border-t border-gray-200 pt-8">
+    <div className="bg-white border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4">
         <div className="">
           <h4 className="font-bold text-sm mb-4 text-gray-900">
