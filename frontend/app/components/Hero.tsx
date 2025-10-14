@@ -165,7 +165,7 @@ const Hero = () => {
             <br />
             of{' '}
             <span className="bg-gradient-to-r from-orange-500 to-green-600 bg-clip-text text-transparent">
-              fundraising and alternative investing
+              fundraising and private investing
             </span>
           </h1>
 
