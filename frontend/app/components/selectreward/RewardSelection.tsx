@@ -49,7 +49,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
   return (
     <>
       <h2 className="text-2xl font-bold mb-6 text-gray-900">Select a Reward</h2>
-      
+
       {/* Rewards Grid */}
       <div className="h-full py-4">
         {rewards.length ? (
@@ -86,7 +86,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
                   <h3 className="font-bold text-lg text-gray-900 line-clamp-2">
                     {reward.title}
                   </h3>
-                  
+
                   <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">
                     {reward.description}
                   </p>
@@ -118,7 +118,9 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
             <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">🎁</span>
             </div>
-            <p className="text-gray-600 text-lg">No rewards available at this time</p>
+            <p className="text-gray-600 text-lg">
+              No rewards available at this time
+            </p>
           </div>
         )}
       </div>
@@ -137,7 +139,7 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
             className="text-gray-400 hover:text-gray-600 transition-colors"
           />
         </h4>
-        
+
         <Tooltip
           id="amount-info"
           className="max-w-xs bg-gray-800 text-white text-sm p-3 rounded-xl"
@@ -164,7 +166,8 @@ const RewardSelection: React.FC<RewardSelectionProps> = ({
             />
             {!isEquityCampaign && (
               <p className="text-sm text-gray-500 mt-2">
-                For one-time donation, enter the amount and click Support Now to proceed.
+                For one-time donation, enter the amount and click Support Now to
+                proceed.
               </p>
             )}
           </div>
