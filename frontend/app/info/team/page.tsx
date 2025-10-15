@@ -36,8 +36,13 @@ const Teams = () => {
       email: 'aikins.partu@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/aikins-partu-6abb9316/',
       level: 'board' as const,
-      description:
-        "Aikins Partu is a development finance professional with over a decade of experience in Ghana's financial sector, specializing in risk management, compliance, and internal control. Passionate about sustainable finance, he is committed to minimizing credit losses and ensuring adherence to regulatory standards across the institutions he serves.",
+      description: `Aikins Partu is a seasoned development finance professional with over a decade of experience in Ghana’s financial sector, specializing in risk management, compliance, and internal control. He is passionate about strengthening financial systems to prevent credit losses and promote sustainable investment practices.
+
+He currently serves as an Investment Officer at Wangara Green Ventures, where he supports the full investment cycle — from sourcing and analyzing opportunities to conducting due diligence, financial modeling, and portfolio management. Prior to this, Aikins held key leadership roles at GroFin, Options Microfinance Ltd, and GCB Bank PLC, where he managed credit administration, regulatory compliance, and risk oversight.
+
+Aikins holds a Master of Science in Development Finance from the University of Ghana, a Certified Data Protection Supervisor accreditation, and professional certifications from the Association of Certified Compliance Professionals in Africa (ACCPA) and the International Association of Accredited Small Business Consultants (AASBC).
+
+At BantuHive, Aikins contributes his deep expertise in finance, governance, and compliance to ensure responsible investment practices and long-term impact for African communities.`,
       expertise: [
         'Risk Management',
         'Compliance',
@@ -66,8 +71,13 @@ const Teams = () => {
       email: 'stephen.asante@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/skasante/',
       level: 'board' as const,
-      description:
-        'Stephen Kwaku Asante is an accomplished Chartered Accountant with over a decade of progressive experience in financial management, auditing, and corporate governance. He currently serves as the Head of Finance at the Council for Scientific and Industrial Research (CSIR), Ghana, where he oversees financial operations, budgeting, and compliance across multiple divisions.',
+      description: `Stephen Kwaku Asante is an accomplished Chartered Accountant with over a decade of progressive experience in financial management, auditing, and corporate governance. He currently serves as the Head of Finance at the Council for Scientific and Industrial Research (CSIR), Ghana, where he oversees financial operations, budgeting, and compliance across multiple divisions.
+
+Stephen has a proven track record in advising executive leadership on fiscal policy, managing institutional funds, and ensuring regulatory and donor compliance. His career spans roles at the Community Water and Sanitation Agency, AKAD Microfinance Ltd, and various institutes within the CSIR, where he honed his expertise in financial reporting, project finance, and internal auditing.
+
+He holds a Master of Business Administration (MBA) in Accounting and Finance from the University of Professional Studies, Accra, and a Financial Modeling & Valuation Analyst (FMVA®) certification from the Corporate Finance Institute (CFI).
+
+Stephen brings strategic financial insight and governance experience to BantuHive’s board, supporting its mission to build a transparent and sustainable crowdfunding ecosystem across Africa.`,
       expertise: [
         'Financial Management',
         'Auditing',
@@ -90,8 +100,7 @@ const Teams = () => {
       email: 'joseph.adeabah@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
       level: 'board' as const,
-      description:
-        "Visionary leader with a passion for innovation and technology. Joseph brings extensive experience in software development and strategic business planning, driving our company's mission to deliver cutting-edge solutions.",
+      description: `Visionary leader with a passion for innovation and technology. Joseph brings extensive experience in software development and strategic business planning, driving our company's mission to deliver cutting-edge solutions.`,
       expertise: [
         'Software Architecture',
         'Strategic Planning',
@@ -110,8 +119,7 @@ const Teams = () => {
       email: 'nqoba.manana@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
       level: 'board' as const,
-      description:
-        'Experienced operations leader with a track record of optimizing business processes and driving operational excellence. Nqoba specializes in scaling operations and building high-performing teams.',
+      description: `Experienced operations leader with a track record of optimizing business processes and driving operational excellence. Nqoba specializes in scaling operations and building high-performing teams.`,
       expertise: [
         'Operations Management',
         'Process Optimization',
