@@ -34,7 +34,7 @@ const Teams = () => {
       position: 'Board Member',
       image: '/aikins_partu.webp',
       email: 'aikins.partu@bantuhive.com',
-      linkedin: 'https://linkedin.com/in/aikins-partu',
+      linkedin: 'https://www.linkedin.com/in/aikins-partu-6abb9316/',
       level: 'board' as const,
       description:
         "Aikins Partu is a development finance professional with over a decade of experience in Ghana's financial sector, specializing in risk management, compliance, and internal control. Passionate about sustainable finance, he is committed to minimizing credit losses and ensuring adherence to regulatory standards across the institutions he serves.",
@@ -64,7 +64,7 @@ const Teams = () => {
       position: 'Board Member',
       image: '/stephen_kweku_asante.jpg',
       email: 'stephen.asante@bantuhive.com',
-      linkedin: 'https://linkedin.com/in/stephen-kweku-asante',
+      linkedin: 'https://www.linkedin.com/in/skasante/',
       level: 'board' as const,
       description:
         'Stephen Kwaku Asante is an accomplished Chartered Accountant with over a decade of progressive experience in financial management, auditing, and corporate governance. He currently serves as the Head of Finance at the Council for Scientific and Industrial Research (CSIR), Ghana, where he oversees financial operations, budgeting, and compliance across multiple divisions.',
