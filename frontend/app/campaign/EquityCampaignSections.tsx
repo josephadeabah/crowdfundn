@@ -68,9 +68,14 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
           <div className="p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl mr-4">
             <FaChartLine className="text-2xl text-green-600" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">
-            Investment Details
-          </h2>
+          <div className="block space-y-1">
+            <h2 className="text-3xl font-bold text-gray-900">
+              INVESTMENT DETAILS
+            </h2>
+            <h4 className="text-xl font-bold text-gray-500">
+              {campaign?.company_info?.name}
+            </h4>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
