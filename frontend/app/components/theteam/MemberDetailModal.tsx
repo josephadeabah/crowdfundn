@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Linkedin, GraduationCap, Award } from 'lucide-react';
+import { Mail, Linkedin, GraduationCap, Award, X } from 'lucide-react';
 import Modal from '../modal/Modal';
 
 interface TeamMember {
@@ -34,17 +34,25 @@ export const MemberDetailModal = ({
       size="xxlarge"
       closeOnBackdropClick={true}
     >
-      <div className="flex flex-col md:flex-row max-h-[80vh] overflow-hidden">
+      <div className="flex flex-col md:flex-row max-h-[90vh] md:max-h-[80vh] overflow-hidden">
+        {/* Close Button - Mobile Only */}
+        <button
+          onClick={onClose}
+          className="md:hidden absolute top-4 right-4 z-50 bg-white/90 rounded-full p-2 shadow-lg"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
         {/* Image Section */}
-        <div className="md:w-2/5 relative min-h-80 md:min-h-full">
+        <div className="md:w-2/5 relative min-h-64 md:min-h-full">
           <img
             src={member.image}
             alt={`${member.name} headshot`}
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
-            <h2 className="text-2xl font-bold mb-1">{member.name}</h2>
-            <p className="text-white/90 text-lg mb-1">{member.position}</p>
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 md:p-6 text-white">
+            <h2 className="text-xl md:text-2xl font-bold mb-1">{member.name}</h2>
+            <p className="text-white/90 text-base md:text-lg mb-1">{member.position}</p>
             {member.department && (
               <p className="text-white/70 text-sm">{member.department}</p>
             )}
@@ -52,11 +60,11 @@ export const MemberDetailModal = ({
         </div>
 
         {/* Content Section */}
-        <div className="md:w-3/5 p-6 overflow-y-auto">
+        <div className="md:w-3/5 p-4 md:p-6 overflow-y-auto">
           {/* Contact Buttons */}
           <div className="flex space-x-3 mb-6">
             <button
-              className="flex items-center space-x-2 border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+              className="flex items-center space-x-2 border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors flex-1 md:flex-none justify-center"
               onClick={() => (window.location.href = `mailto:${member.email}`)}
             >
               <Mail className="w-4 h-4" />
@@ -64,7 +72,7 @@ export const MemberDetailModal = ({
             </button>
             {member.linkedin && (
               <button
-                className="flex items-center space-x-2 border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+                className="flex items-center space-x-2 border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors flex-1 md:flex-none justify-center"
                 onClick={() => window.open(member.linkedin, '_blank')}
               >
                 <Linkedin className="w-4 h-4" />
@@ -79,7 +87,7 @@ export const MemberDetailModal = ({
               <h3 className="text-lg font-semibold mb-3 text-gray-900">
                 About
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed text-base md:text-sm">
                 {member.description}
               </p>
             </div>
@@ -96,7 +104,7 @@ export const MemberDetailModal = ({
                 {member.expertise.map((skill, index) => (
                   <span
                     key={index}
-                    className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"
+                    className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm break-words max-w-full"
                   >
                     {skill}
                   </span>
@@ -112,9 +120,12 @@ export const MemberDetailModal = ({
                 <GraduationCap className="w-5 h-5 mr-2" />
                 Education
               </h3>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {member.education.map((edu, index) => (
-                  <li key={index} className="text-gray-600 text-sm">
+                  <li 
+                    key={index} 
+                    className="text-gray-600 text-base md:text-sm leading-relaxed bg-gray-50 p-3 rounded-lg"
+                  >
                     {edu}
                   </li>
                 ))}
