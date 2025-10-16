@@ -205,7 +205,7 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
               campaign.equity_offering_details.max_shares && (
                 <MetricCard
                   icon={<FaChartLine className="text-teal-600" />}
-                  label="Investment Range (Shares)"
+                  label="Shares Range"
                   value={`${formatLargeNumber(campaign.equity_offering_details.min_shares)} - ${formatLargeNumber(campaign.equity_offering_details.max_shares)}`}
                   gradient="from-teal-50 to-teal-100"
                 />
