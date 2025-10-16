@@ -11,6 +11,10 @@ import {
   FaFileContract,
   FaShareAlt,
   FaExternalLinkAlt,
+  FaChartBar,
+  FaBullseye,
+  FaChessBoard,
+  FaRocket,
 } from 'react-icons/fa';
 import Avatar from '@/app/components/avatar/Avatar';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
@@ -135,6 +139,81 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
         </div>
       </div>
 
+      {/* Equity Offering Structure */}
+      {campaign?.equity_offering_details && (
+        <div className="bg-white rounded-3xl border border-gray-100 p-8">
+          <div className="flex items-center mb-8">
+            <div className="p-3 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl mr-4">
+              <FaChartBar className="text-2xl text-indigo-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900">
+              Offering Structure
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {campaign.equity_offering_details.minimum_target && (
+              <MetricCard
+                icon={<FaBullseye className="text-indigo-600" />}
+                label="Minimum Target"
+                value={formatCurrency(
+                  campaign.equity_offering_details.minimum_target,
+                )}
+                gradient="from-indigo-50 to-indigo-100"
+              />
+            )}
+
+            {campaign.equity_offering_details.price_per_share && (
+              <MetricCard
+                icon={<FaMoneyBillWave className="text-green-600" />}
+                label="Price Per Share"
+                value={`${fundraiserCurrency}${parseFloat(campaign.equity_offering_details.price_per_share.toString()).toFixed(4)}`}
+                gradient="from-green-50 to-green-100"
+              />
+            )}
+
+            {campaign.equity_offering_details.stock_type_display && (
+              <MetricCard
+                icon={<FaChessBoard className="text-purple-600" />}
+                label="Stock Type"
+                value={campaign.equity_offering_details.stock_type_display}
+                gradient="from-purple-50 to-purple-100"
+              />
+            )}
+
+            {campaign.equity_offering_details.funding_round_display && (
+              <MetricCard
+                icon={<FaRocket className="text-orange-600" />}
+                label="Funding Round"
+                value={campaign.equity_offering_details.funding_round_display}
+                gradient="from-orange-50 to-orange-100"
+              />
+            )}
+
+            {campaign.equity_offering_details.shares_offered && (
+              <MetricCard
+                icon={<FaShareAlt className="text-blue-600" />}
+                label="Shares Offered"
+                value={formatLargeNumber(
+                  campaign.equity_offering_details.shares_offered,
+                )}
+                gradient="from-blue-50 to-blue-100"
+              />
+            )}
+
+            {campaign.equity_offering_details.min_shares &&
+              campaign.equity_offering_details.max_shares && (
+                <MetricCard
+                  icon={<FaChartLine className="text-teal-600" />}
+                  label="Investment Range (Shares)"
+                  value={`${formatLargeNumber(campaign.equity_offering_details.min_shares)} - ${formatLargeNumber(campaign.equity_offering_details.max_shares)}`}
+                  gradient="from-teal-50 to-teal-100"
+                />
+              )}
+          </div>
+        </div>
+      )}
+
       {/* Company Information */}
       <div className="bg-white rounded-3xl border border-gray-100 p-8">
         <div className="flex items-center mb-8">
@@ -224,6 +303,71 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
                 />
               )),
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Offering Documents */}
+      {(campaign?.equity_offering_details?.sec_filing_url ||
+        campaign?.equity_offering_details?.offering_circular_url ||
+        campaign?.equity_offering_details?.offering_documents
+          ?.offering_memorandum?.attached) && (
+        <div className="bg-white rounded-3xl border border-gray-100 p-8">
+          <div className="flex items-center mb-8">
+            <div className="p-3 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl mr-4">
+              <FaFileContract className="text-2xl text-red-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900">
+              Offering Documents
+            </h2>
+          </div>
+
+          <div className="grid gap-4">
+            {/* SEC Filing URL */}
+            {campaign.equity_offering_details.sec_filing_url && (
+              <ExternalDocumentCard
+                name="SEC Filing"
+                url={campaign.equity_offering_details.sec_filing_url}
+                type="SEC Regulatory Filing"
+              />
+            )}
+
+            {/* Offering Circular URL */}
+            {campaign.equity_offering_details.offering_circular_url && (
+              <ExternalDocumentCard
+                name="Offering Circular"
+                url={campaign.equity_offering_details.offering_circular_url}
+                type="Investment Circular"
+              />
+            )}
+
+            {/* Offering Memorandum File */}
+            {campaign.equity_offering_details.offering_documents
+              ?.offering_memorandum?.attached && (
+              <DocumentCard
+                name="Offering Memorandum"
+                size="Document"
+                type="Investment Memorandum"
+                url={
+                  campaign.equity_offering_details.offering_documents
+                    .offering_memorandum.url || ''
+                }
+              />
+            )}
+
+            {/* Offering Memorandum Text */}
+            {campaign.equity_offering_details.offering_memorandum &&
+              !campaign.equity_offering_details.offering_documents
+                ?.offering_memorandum?.attached && (
+                <div className="bg-gray-50 rounded-2xl p-6 border">
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Offering Memorandum
+                  </h3>
+                  <p className="text-gray-700">
+                    {campaign.equity_offering_details.offering_memorandum}
+                  </p>
+                </div>
+              )}
           </div>
         </div>
       )}
@@ -423,6 +567,40 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
       target="_blank"
       rel="noopener noreferrer"
       className="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors font-medium flex items-center gap-2 group-hover:shadow-lg flex-shrink-0 ml-4"
+    >
+      View
+      <FaExternalLinkAlt className="text-xs" />
+    </a>
+  </div>
+);
+
+// Add missing ExternalDocumentCard component
+interface ExternalDocumentCardProps {
+  name: string;
+  url: string;
+  type: string;
+}
+
+const ExternalDocumentCard: React.FC<ExternalDocumentCardProps> = ({
+  name,
+  url,
+  type,
+}) => (
+  <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-300 group">
+    <div className="flex items-center gap-4 min-w-0">
+      <div className="p-3 bg-blue-50 rounded-xl group-hover:scale-110 transition-transform flex-shrink-0">
+        <FaExternalLinkAlt className="text-2xl text-blue-600" />
+      </div>
+      <div className="min-w-0">
+        <h3 className="font-semibold text-gray-900 truncate">{name}</h3>
+        <p className="text-sm text-gray-600">{type}</p>
+      </div>
+    </div>
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors font-medium flex items-center gap-2 group-hover:shadow-lg flex-shrink-0 ml-4"
     >
       View
       <FaExternalLinkAlt className="text-xs" />

@@ -257,6 +257,7 @@ export interface SingleCampaignResponseDataType {
   team_members?: CampaignTeamMember[];
   documents?: InvestorDocument[];
   type?: 'Campaign' | 'EquityCampaign';
+  equity_offering_details?: EquityOfferingDetails;
   company_info?: {
     name: string;
     description: string;
@@ -283,6 +284,37 @@ export interface SingleCampaignResponseDataType {
       url: string;
     }[];
   }[];
+}
+
+// types/campaigns.types.ts
+interface EquityOfferingDetails {
+  minimum_target?: number;
+  price_per_share?: number;
+  min_shares?: number;
+  max_shares?: number;
+  shares_offered?: number;
+  stock_type?: string;
+  stock_type_display?: string;
+  funding_round?: string;
+  funding_round_display?: string;
+  sec_filing_url?: string;
+  offering_circular_url?: string;
+  offering_memorandum?: string;
+  offering_documents: {
+    sec_filing: {
+      present: boolean;
+      url?: string;
+    };
+    offering_circular: {
+      present: boolean;
+      url?: string;
+    };
+    offering_memorandum: {
+      attached: boolean;
+      url?: string;
+      filename?: string;
+    };
+  };
 }
 
 export interface CampaignPerformance {

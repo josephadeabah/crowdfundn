@@ -41,6 +41,22 @@ const CURRENCIES = [
   { code: 'ZAR', symbol: 'R' },
 ];
 
+// Add stock types and funding rounds constants
+const STOCK_TYPES = [
+  { value: 'common', label: 'Common Stock' },
+  { value: 'preferred', label: 'Preferred Stock' },
+];
+
+const FUNDING_ROUNDS = [
+  { value: 'seed', label: 'Seed Round' },
+  { value: 'series_a', label: 'Series A' },
+  { value: 'series_b', label: 'Series B' },
+  { value: 'series_c', label: 'Series C' },
+  { value: 'series_d', label: 'Series D' },
+  { value: 'growth', label: 'Growth Round' },
+  { value: 'mezzanine', label: 'Mezzanine Financing' },
+];
+
 export interface FormErrors {
   title: string;
   content: string;
@@ -61,6 +77,15 @@ export interface FormErrors {
   pitchDocuments?: string;
   contractDocuments?: string;
   teamMembers?: string;
+  minimumTarget?: string;
+  pricePerShare?: string;
+  minShares?: string;
+  maxShares?: string;
+  sharesOffered?: string;
+  stockType?: string;
+  fundingRound?: string;
+  secFilingUrl?: string;
+  offeringCircularUrl?: string;
 }
 
 interface CompanyInfo {
@@ -90,6 +115,19 @@ interface CampaignData {
   maxRaise: string;
   valuation: string;
   equityOffered: string;
+  // New equity offering fields
+  minimumTarget: string;
+  pricePerShare: string;
+  minShares: string;
+  maxShares: string;
+  sharesOffered: string;
+  stockType: string;
+  fundingRound: string;
+  secFilingUrl: string;
+  offeringCircularUrl: string;
+  offeringMemorandum: string;
+  // Only offering_memorandum is a file
+  offeringMemorandumFile: File | null;
 }
 
 const CampaignCreator = () => {
@@ -117,6 +155,20 @@ const CampaignCreator = () => {
     maxRaise: '',
     valuation: '',
     equityOffered: '',
+    startDate: undefined,
+    endDate: undefined,
+    // New equity offering fields
+    minimumTarget: '',
+    pricePerShare: '',
+    minShares: '',
+    maxShares: '',
+    sharesOffered: '',
+    stockType: '',
+    fundingRound: '',
+    secFilingUrl: '',
+    offeringCircularUrl: '',
+    offeringMemorandum: '',
+    offeringMemorandumFile: null,
   };
 
   const [campaignData, setCampaignData] = useLocalStorage<CampaignData>(
@@ -148,6 +200,7 @@ const CampaignCreator = () => {
     }
   }, []);
 
+  // State setters
   const setTitle = (value: string) =>
     setCampaignData({ ...campaignData, title: value });
   const setContent = (value: string) =>
@@ -183,6 +236,30 @@ const CampaignCreator = () => {
     setCampaignData({ ...campaignData, valuation: value });
   const setEquityOffered = (value: string) =>
     setCampaignData({ ...campaignData, equityOffered: value });
+
+  // New equity offering field setters
+  const setMinimumTarget = (value: string) =>
+    setCampaignData({ ...campaignData, minimumTarget: value });
+  const setPricePerShare = (value: string) =>
+    setCampaignData({ ...campaignData, pricePerShare: value });
+  const setMinShares = (value: string) =>
+    setCampaignData({ ...campaignData, minShares: value });
+  const setMaxShares = (value: string) =>
+    setCampaignData({ ...campaignData, maxShares: value });
+  const setSharesOffered = (value: string) =>
+    setCampaignData({ ...campaignData, sharesOffered: value });
+  const setStockType = (value: string) =>
+    setCampaignData({ ...campaignData, stockType: value });
+  const setFundingRound = (value: string) =>
+    setCampaignData({ ...campaignData, fundingRound: value });
+  const setSecFilingUrl = (value: string) =>
+    setCampaignData({ ...campaignData, secFilingUrl: value });
+  const setOfferingCircularUrl = (value: string) =>
+    setCampaignData({ ...campaignData, offeringCircularUrl: value });
+  const setOfferingMemorandum = (value: string) =>
+    setCampaignData({ ...campaignData, offeringMemorandum: value });
+  const setOfferingMemorandumFile = (value: File | null) =>
+    setCampaignData({ ...campaignData, offeringMemorandumFile: value });
 
   useEffect(() => {
     const hasSavedData = Object.values(campaignData).some(
@@ -227,16 +304,6 @@ const CampaignCreator = () => {
       currencyCode: '',
       location: '',
       image: '',
-      valuation: '',
-      equityOffered: '',
-      companyName: '',
-      companyDescription: '',
-      minRaise: '',
-      maxRaise: '',
-      contractType: '',
-      pitchDocuments: '',
-      contractDocuments: '',
-      teamMembers: '',
     };
 
     if (!campaignData.title.trim()) formErrors.title = 'Title is required';
@@ -270,6 +337,7 @@ const CampaignCreator = () => {
       campaignData.valuation ||
       campaignData.equityOffered ||
       campaignData.contractType;
+
     if (isEquityCampaign) {
       // Company info validation
       if (!campaignData.companyInfo.name.trim()) {
@@ -293,7 +361,7 @@ const CampaignCreator = () => {
         formErrors.contractType = 'Contract type is required';
       }
 
-      // Team members validation
+      // Valuation and equity validation
       if (!campaignData.valuation || parseFloat(campaignData.valuation) <= 0) {
         formErrors.valuation = 'Valuation must be greater than 0';
       }
@@ -325,7 +393,7 @@ const CampaignCreator = () => {
     window.location.href = '/account#Campaigns';
   };
 
-  const handleSaveCampaign = async () => {
+  const handleSaveCampaign: () => Promise<void> = async () => {
     if (!validateForm()) {
       toast.error('Please fix the errors in the form');
       return;
@@ -387,6 +455,44 @@ const CampaignCreator = () => {
       formData.append(`${rootKey}[contract_term]`, campaignData.contractType);
       formData.append(`${rootKey}[minimum_investment]`, campaignData.minRaise);
       formData.append(`${rootKey}[maximum_investment]`, campaignData.maxRaise);
+
+      // New equity offering fields
+      if (campaignData.minimumTarget) {
+        formData.append(
+          `${rootKey}[minimum_target]`,
+          campaignData.minimumTarget,
+        );
+      }
+      if (campaignData.stockType) {
+        formData.append(`${rootKey}[stock_type]`, campaignData.stockType);
+      }
+      if (campaignData.fundingRound) {
+        formData.append(`${rootKey}[funding_round]`, campaignData.fundingRound);
+      }
+      if (campaignData.secFilingUrl) {
+        formData.append(
+          `${rootKey}[sec_filing_url]`,
+          campaignData.secFilingUrl,
+        );
+      }
+      if (campaignData.offeringCircularUrl) {
+        formData.append(
+          `${rootKey}[offering_circular_url]`,
+          campaignData.offeringCircularUrl,
+        );
+      }
+      if (campaignData.offeringMemorandum) {
+        formData.append(
+          `${rootKey}[offering_memorandum]`,
+          campaignData.offeringMemorandum,
+        );
+      }
+      if (campaignData.offeringMemorandumFile) {
+        formData.append(
+          `${rootKey}[offering_memorandum_file]`,
+          campaignData.offeringMemorandumFile,
+        );
+      }
     }
 
     try {
@@ -483,6 +589,34 @@ const CampaignCreator = () => {
                       setValuation={setValuation}
                       equityOffered={campaignData.equityOffered}
                       setEquityOffered={setEquityOffered}
+                      // New equity offering fields
+                      minimumTarget={campaignData.minimumTarget}
+                      setMinimumTarget={setMinimumTarget}
+                      pricePerShare={campaignData.pricePerShare}
+                      setPricePerShare={setPricePerShare}
+                      minShares={campaignData.minShares}
+                      setMinShares={setMinShares}
+                      maxShares={campaignData.maxShares}
+                      setMaxShares={setMaxShares}
+                      sharesOffered={campaignData.sharesOffered}
+                      setSharesOffered={setSharesOffered}
+                      stockType={campaignData.stockType}
+                      setStockType={setStockType}
+                      fundingRound={campaignData.fundingRound}
+                      setFundingRound={setFundingRound}
+                      secFilingUrl={campaignData.secFilingUrl}
+                      setSecFilingUrl={setSecFilingUrl}
+                      offeringCircularUrl={campaignData.offeringCircularUrl}
+                      setOfferingCircularUrl={setOfferingCircularUrl}
+                      offeringMemorandum={campaignData.offeringMemorandum}
+                      setOfferingMemorandum={setOfferingMemorandum}
+                      offeringMemorandumFile={
+                        campaignData.offeringMemorandumFile
+                      }
+                      setOfferingMemorandumFile={setOfferingMemorandumFile}
+                      stockTypes={STOCK_TYPES}
+                      fundingRounds={FUNDING_ROUNDS}
+                      showEquitySections={true}
                     />
                   </div>
 
