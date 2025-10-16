@@ -266,58 +266,66 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
         </div>
       )}
       {/* Company Information */}
-{/* Company Information */}
-<div className="bg-white rounded-3xl border border-gray-100 p-8">
-  <div className="flex items-center mb-8">
-    <div className="p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl mr-4">
-      <FaBuilding className="text-2xl text-gray-600" />
-    </div>
-    <h2 className="text-3xl font-bold text-gray-900">COMPANY INFORMATION</h2>
-  </div>
-
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <div className="space-y-6">
-      <InfoField label="COMPANY NAME" value={campaign?.company_info?.name} />
-      <InfoField
-        label="HEADQUARTERS"
-        value={campaign?.company_info?.headquarters}
-      />
-      {campaign?.company_info?.website && (
-        <InfoField
-          label="WEBSITE"
-          value={campaign.company_info.website}
-          isLink
-        />
-      )}
-    </div>
-
-    <div className="space-y-6">
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <label className="uppercase font-semibold text-gray-500">
-            CONTRACT TERM
-          </label>
-          <InfoTooltip id="contract-term-tooltip" content={CONTRACT_TERM} />
+      {/* Company Information */}
+      <div className="bg-white rounded-3xl border border-gray-100 p-8">
+        <div className="flex items-center mb-8">
+          <div className="p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl mr-4">
+            <FaBuilding className="text-2xl text-gray-600" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900">
+            COMPANY INFORMATION
+          </h2>
         </div>
-        <p className="text-gray-700 bg-white border border-gray-200 rounded-xl p-4">
-          {deslugify(
-            campaign?.company_info?.contract_term || 'Not specified',
-          )}
-        </p>
-      </div>
 
-      <div>
-        <label className="uppercase font-semibold text-gray-500 block mb-3">
-          DESCRIPTION
-        </label>
-        <p className="text-gray-700 bg-white border border-gray-200 rounded-xl p-4 leading-relaxed">
-          {campaign?.company_info?.description ||
-            'No description provided.'}
-        </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="space-y-6">
+            <InfoField
+              label="COMPANY NAME"
+              value={campaign?.company_info?.name}
+            />
+            <InfoField
+              label="HEADQUARTERS"
+              value={campaign?.company_info?.headquarters}
+            />
+            {campaign?.company_info?.website && (
+              <InfoField
+                label="WEBSITE"
+                value={campaign.company_info.website}
+                isLink
+              />
+            )}
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <label className="uppercase font-semibold text-gray-500">
+                  CONTRACT TERM
+                </label>
+                <InfoTooltip
+                  id="contract-term-tooltip"
+                  content={CONTRACT_TERM}
+                />
+              </div>
+              <p className="text-gray-700 bg-white border border-gray-200 rounded-xl p-4">
+                {deslugify(
+                  campaign?.company_info?.contract_term || 'Not specified',
+                )}
+              </p>
+            </div>
+
+            <div>
+              <label className="uppercase font-semibold text-gray-500 block mb-3">
+                DESCRIPTION
+              </label>
+              <p className="text-gray-700 bg-white border border-gray-200 rounded-xl p-4 leading-relaxed">
+                {campaign?.company_info?.description ||
+                  'No description provided.'}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
 
       {/* Contract Documents */}
       {contractDocuments.length > 0 && (
@@ -618,7 +626,6 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, value, isLink }) => (
     )}
   </div>
 );
-
 
 interface DocumentCardProps {
   name: string;
