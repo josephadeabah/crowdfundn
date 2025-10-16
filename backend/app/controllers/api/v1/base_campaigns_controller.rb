@@ -374,6 +374,37 @@ module Api
         end
 
         if campaign.is_a?(EquityCampaign)
+          # Add the new equity offering details
+          equity_offering_details = {
+            minimum_target: campaign.minimum_target,
+            price_per_share: campaign.price_per_share,
+            min_shares: campaign.min_shares,
+            max_shares: campaign.max_shares,
+            shares_offered: campaign.shares_offered,
+            stock_type: campaign.stock_type,
+            stock_type_display: campaign.stock_type_display,
+            funding_round: campaign.funding_round,
+            funding_round_display: campaign.funding_round_display,
+            sec_filing_url: campaign.sec_filing_url,
+            offering_circular_url: campaign.offering_circular_url,
+            offering_memorandum: campaign.offering_memorandum,
+            offering_documents: {
+              sec_filing: {
+                present: campaign.sec_filing_url.present?,
+                url: campaign.sec_filing_url
+              },
+              offering_circular: {
+                present: campaign.offering_circular_url.present?,
+                url: campaign.offering_circular_url
+              },
+              offering_memorandum: {
+                attached: campaign.offering_memorandum_file.attached?,
+                url: campaign.offering_memorandum_file_url,
+                filename: campaign.offering_memorandum_file.attached? ? campaign.offering_memorandum_file.filename.to_s : nil
+              }
+            }
+          }
+
           json.merge!(
             shares_available: campaign.shares_available,
             percentage_raised: campaign.percentage_raised,
@@ -387,7 +418,8 @@ module Api
             can_submit_for_approval: campaign.may_submit_for_approval?,
             can_approve: campaign.may_approve?,
             can_reject: campaign.may_reject?,
-            can_launch: campaign.may_launch?
+            can_launch: campaign.may_launch?,
+            equity_offering_details: equity_offering_details
           )
         end
         

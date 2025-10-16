@@ -18,7 +18,13 @@ module Api
             # Equity-specific fields
             :valuation, :equity_offered, :minimum_investment, :maximum_investment,
             :company_name, :company_description, :company_headquarters,
-            :company_website, :contract_term, :total_shares 
+            :company_website, :contract_term, :total_shares,
+            # New equity offering fields
+            :minimum_target, :price_per_share, :min_shares, :max_shares,
+            :shares_offered, :stock_type, :funding_round, :sec_filing_url,
+            :offering_circular_url, :offering_memorandum,
+            # Only offering_memorandum is a file attachment
+            :offering_memorandum_file
           ).tap do |whitelisted|
             # Set the type based on params key
             if action_name == 'create' || params[params_key][:type]
@@ -26,8 +32,20 @@ module Api
             end
 
             # Convert numeric fields
-            %i[valuation equity_offered minimum_investment maximum_investment total_shares].each do |field|
-              whitelisted[field] = whitelisted[field].to_f if whitelisted[field]
+            numeric_fields = %i[
+              valuation equity_offered minimum_investment maximum_investment total_shares
+              minimum_target price_per_share min_shares max_shares shares_offered
+            ]
+            
+            numeric_fields.each do |field|
+              if whitelisted[field]
+                # For integer fields, convert to integer, for decimal fields convert to float
+                if [:min_shares, :max_shares, :shares_offered].include?(field)
+                  whitelisted[field] = whitelisted[field].to_i
+                else
+                  whitelisted[field] = whitelisted[field].to_f
+                end
+              end
             end
           end
         end

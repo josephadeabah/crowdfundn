@@ -9,7 +9,29 @@ class EquityCampaign < Campaign
   before_validation :set_default_total_shares, unless: :total_shares?
   after_update :update_investments_valuation, if: -> { saved_change_to_valuation? || saved_change_to_total_shares? }
   before_validation :calculate_shares_available, if: -> { new_record? || will_save_change_to_equity_offered? || will_save_change_to_total_shares? }
+    # Add callbacks for calculations
+  before_validation :calculate_price_per_share, if: -> { valuation.present? && total_shares.present? && (valuation_changed? || total_shares_changed?) }
+  before_validation :calculate_shares_offered, if: -> { equity_offered.present? && total_shares.present? && (equity_offered_changed? || total_shares_changed?) }
+  before_validation :calculate_min_max_shares, if: -> { minimum_investment.present? && maximum_investment.present? && price_per_share.present? && (minimum_investment_changed? || maximum_investment_changed? || price_per_share_changed?) }
   after_save :update_shares_available_from_investments, if: -> { saved_change_to_shares_available? }
+
+
+    # Only offering_memorandum is a file attachment
+  has_one_attached :offering_memorandum_file
+
+  # Add validations for new fields
+  validates :stock_type, inclusion: { in: %w[common preferred], message: "must be either 'common' or 'preferred'" }
+  validates :funding_round, inclusion: { in: %w[seed series_a series_b series_c series_d growth mezzanine], allow_nil: true }
+  validates :minimum_target, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :price_per_share, numericality: { greater_than: 0 }, allow_nil: true
+  validates :min_shares, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :max_shares, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :shares_offered, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validates :sec_filing_url, url: { allow_blank: true }
+  validates :offering_circular_url, url: { allow_blank: true }
+
+  validate :max_shares_greater_than_min_shares
+  validate :validate_offering_memorandum
 
   validates :valuation, :equity_offered, :minimum_investment, :maximum_investment,
             presence: true, numericality: { greater_than: 0 }
@@ -31,6 +53,16 @@ class EquityCampaign < Campaign
   attribute :company_website, :string
   attribute :contract_term, :string
   attribute :equity_status, :integer, default: 0
+  attribute :minimum_target, :decimal, precision: 15, scale: 2
+  attribute :price_per_share, :decimal, precision: 15, scale: 4
+  attribute :min_shares, :integer
+  attribute :max_shares, :integer
+  attribute :shares_offered, :integer
+  attribute :stock_type, :string, default: 'common'
+  attribute :funding_round, :string
+  attribute :sec_filing_url, :string
+  attribute :offering_circular_url, :string
+  attribute :offering_memorandum, :string
 
   enum :equity_status, {
     draft: 0,
@@ -42,6 +74,25 @@ class EquityCampaign < Campaign
     closed: 6
   }
   
+    # New methods for offering documents
+  def offering_memorandum_file_url
+    generate_memorandum_file_url(offering_memorandum_file)
+  end
+
+  def offering_documents_present?
+    sec_filing_url.present? || offering_circular_url.present? || offering_memorandum_file.attached?
+  end
+
+  def funding_round_display
+    return nil unless funding_round.present?
+    funding_round.humanize.titleize
+  end
+
+  def stock_type_display
+    return nil unless stock_type.present?
+    "#{stock_type.humanize} Stock"
+  end
+
   def total_shares_must_be_set
     if (new_record? || will_save_change_to_total_shares?) && total_shares.to_i <= 0
       errors.add(:total_shares, "must be set and greater than 0")
@@ -316,6 +367,35 @@ class EquityCampaign < Campaign
                 end
         }
       end
+      equity_offering_details: {
+      minimum_target: minimum_target,
+      price_per_share: price_per_share,
+      min_shares: min_shares,
+      max_shares: max_shares,
+      shares_offered: shares_offered,
+      stock_type: stock_type,
+      stock_type_display: stock_type_display,
+      funding_round: funding_round,
+      funding_round_display: funding_round_display,
+      sec_filing_url: sec_filing_url,
+      offering_circular_url: offering_circular_url,
+      offering_memorandum: offering_memorandum,
+      offering_documents: {
+        sec_filing: {
+          present: sec_filing_url.present?,
+          url: sec_filing_url
+        },
+        offering_circular: {
+          present: offering_circular_url.present?,
+          url: offering_circular_url
+        },
+        offering_memorandum: {
+          attached: offering_memorandum_file.attached?,
+          url: offering_memorandum_file_url,
+          filename: offering_memorandum_file.attached? ? offering_memorandum_file.filename.to_s : nil
+        }
+      }
+    }
     )
   end
 
@@ -324,6 +404,48 @@ class EquityCampaign < Campaign
   end
 
   private
+
+    def calculate_price_per_share
+    return unless valuation.present? && total_shares.present? && total_shares > 0
+    self.price_per_share = valuation.to_f / total_shares.to_f
+  end
+
+  def calculate_shares_offered
+    return unless equity_offered.present? && total_shares.present?
+    self.shares_offered = (equity_offered.to_f / 100 * total_shares.to_f).round
+  end
+
+  def calculate_min_max_shares
+    return unless minimum_investment.present? && maximum_investment.present? && price_per_share.present? && price_per_share > 0
+    self.min_shares = (minimum_investment.to_f / price_per_share).ceil
+    self.max_shares = (maximum_investment.to_f / price_per_share).floor
+  end
+
+  def max_shares_greater_than_min_shares
+    return unless min_shares.present? && max_shares.present?
+    if max_shares <= min_shares
+      errors.add(:max_shares, 'must be greater than minimum shares')
+    end
+  end
+
+  def validate_offering_memorandum
+    if offering_memorandum.present? && offering_memorandum_file.attached?
+      errors.add(:base, 'Cannot have both offering memorandum text and file attached')
+    end
+  end
+
+  def generate_memorandum_file_url(attachment)
+    return unless attachment.attached?
+    
+    if Rails.env.production?
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{attachment.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(attachment)
+    end
+  rescue => e
+    Rails.logger.error "Failed to generate file URL: #{e.message}"
+    nil
+  end
 
   def calculate_shares_available
     self.shares_available = calculate_shares_available_value

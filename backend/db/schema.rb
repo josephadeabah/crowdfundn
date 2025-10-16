@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_06_164643) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_15_235620) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -164,6 +164,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_06_164643) do
     t.decimal "total_equity_invested", precision: 15, scale: 2, default: "0.0"
     t.integer "lock_version", default: 0
     t.decimal "shares_available", precision: 20, scale: 4, default: "0.0"
+    t.decimal "minimum_target"
+    t.decimal "price_per_share"
+    t.integer "min_shares"
+    t.integer "max_shares"
+    t.integer "shares_offered"
+    t.string "stock_type"
+    t.string "funding_round"
+    t.string "sec_filing_url"
+    t.string "offering_circular"
+    t.string "offering_memorandum"
     t.index ["category", "status"], name: "index_campaigns_on_category_and_status"
     t.index ["category"], name: "index_campaigns_on_category"
     t.index ["created_at"], name: "index_campaigns_on_created_at"
