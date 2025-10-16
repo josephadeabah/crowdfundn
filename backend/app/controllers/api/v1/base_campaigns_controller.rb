@@ -372,7 +372,6 @@ module Api
             both_kyc_verified: kyc_status[:both_verified]
           )
         end
-
         if campaign.is_a?(EquityCampaign)
           # Add the new equity offering details
           equity_offering_details = {
@@ -397,10 +396,10 @@ module Api
                 present: campaign.offering_circular_url.present?,
                 url: campaign.offering_circular_url
               },
-              offering_memorandum: {
-                attached: campaign.offering_memorandum_file.attached?,
-                url: campaign.offering_memorandum_file_url,
-                filename: campaign.offering_memorandum_file.attached? ? campaign.offering_memorandum_file.filename.to_s : nil
+              offering_memorandum_document: {  # CHANGED from 'offering_memorandum'
+                attached: campaign.offering_memorandum_document.attached?,  # CHANGED
+                url: campaign.offering_memorandum_document_url,  # CHANGED
+                filename: campaign.offering_memorandum_document.attached? ? campaign.offering_memorandum_document.filename.to_s : nil  # CHANGED
               }
             }
           }
