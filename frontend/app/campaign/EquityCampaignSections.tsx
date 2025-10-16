@@ -139,8 +139,6 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
         </div>
       </div>
       {/* Equity Offering Structure */}
-      // Update the Equity Offering Structure section to include tooltips for
-      text cards
       {campaign?.equity_offering_details && (
         <div className="bg-white rounded-3xl border border-gray-100 p-8">
           <div className="flex items-center mb-8">
