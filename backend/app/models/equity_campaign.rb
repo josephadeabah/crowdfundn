@@ -76,7 +76,7 @@ class EquityCampaign < Campaign
   
     # New methods for offering documents
   def offering_memorandum_file_url
-    generate_memorandum_file_url(offering_memorandum_file)
+    generate_file_url(offering_memorandum_file)
   end
 
   def offering_documents_present?
@@ -366,36 +366,37 @@ class EquityCampaign < Campaign
                   }
                 end
         }
-      end
+      end,
+      # THIS COMMA WAS MISSING - FIXED ↓
       equity_offering_details: {
-      minimum_target: minimum_target,
-      price_per_share: price_per_share,
-      min_shares: min_shares,
-      max_shares: max_shares,
-      shares_offered: shares_offered,
-      stock_type: stock_type,
-      stock_type_display: stock_type_display,
-      funding_round: funding_round,
-      funding_round_display: funding_round_display,
-      sec_filing_url: sec_filing_url,
-      offering_circular_url: offering_circular_url,
-      offering_memorandum: offering_memorandum,
-      offering_documents: {
-        sec_filing: {
-          present: sec_filing_url.present?,
-          url: sec_filing_url
-        },
-        offering_circular: {
-          present: offering_circular_url.present?,
-          url: offering_circular_url
-        },
-        offering_memorandum: {
-          attached: offering_memorandum_file.attached?,
-          url: offering_memorandum_file_url,
-          filename: offering_memorandum_file.attached? ? offering_memorandum_file.filename.to_s : nil
+        minimum_target: minimum_target,
+        price_per_share: price_per_share,
+        min_shares: min_shares,
+        max_shares: max_shares,
+        shares_offered: shares_offered,
+        stock_type: stock_type,
+        stock_type_display: stock_type_display,
+        funding_round: funding_round,
+        funding_round_display: funding_round_display,
+        sec_filing_url: sec_filing_url,
+        offering_circular_url: offering_circular_url,
+        offering_memorandum: offering_memorandum,
+        offering_documents: {
+          sec_filing: {
+            present: sec_filing_url.present?,
+            url: sec_filing_url
+          },
+          offering_circular: {
+            present: offering_circular_url.present?,
+            url: offering_circular_url
+          },
+          offering_memorandum: {
+            attached: offering_memorandum_file.attached?,
+            url: offering_memorandum_file_url,
+            filename: offering_memorandum_file.attached? ? offering_memorandum_file.filename.to_s : nil
+          }
         }
       }
-    }
     )
   end
 
@@ -434,7 +435,7 @@ class EquityCampaign < Campaign
     end
   end
 
-  def generate_memorandum_file_url(attachment)
+  def generate_file_url(attachment)
     return unless attachment.attached?
     
     if Rails.env.production?
