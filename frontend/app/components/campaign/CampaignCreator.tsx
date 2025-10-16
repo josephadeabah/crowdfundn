@@ -46,6 +46,8 @@ const STOCK_TYPES = [
   // Core share classes
   { value: 'common', label: 'Common Stock (Ordinary Shares)' },
   { value: 'preferred', label: 'Preferred Stock (Investor Shares)' },
+  { value: 'common_non_voting', label: 'Common Stock (Non-Voting)' },
+
   // Subtypes of common
   { value: 'founder', label: 'Founder Shares' },
   { value: 'employee_common', label: 'Employee Common Shares (ESOP Pool)' },
