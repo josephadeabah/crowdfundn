@@ -19,8 +19,8 @@ class EquityCampaign < Campaign
   after_save :update_shares_available_from_investments, if: -> { saved_change_to_shares_available? }
 
 
-    # Only offering_memorandum is a file attachment
-  has_one_attached :offering_memorandum_file
+  # Only offering_memorandum is a file attachment
+  has_one_attached :offering_memorandum_document
 
   # Add validations for new fields
   validates :funding_round, inclusion: { in: %w[seed series_a series_b series_c series_d growth mezzanine], allow_nil: true }
@@ -74,13 +74,13 @@ class EquityCampaign < Campaign
     closed: 6
   }
   
-    # New methods for offering documents
-  def offering_memorandum_file_url
-    generate_file_url(offering_memorandum_file)
+  # New methods for offering documents
+  def offering_memorandum_document_url
+    generate_file_url(offering_memorandum_document)
   end
 
   def offering_documents_present?
-    sec_filing_url.present? || offering_circular_url.present? || offering_memorandum_file.attached?
+    sec_filing_url.present? || offering_circular_url.present? || offering_memorandum_document.attached?
   end
 
   def funding_round_display
@@ -328,6 +328,13 @@ class EquityCampaign < Campaign
     valid? && live? && shares_available > 0
   end
 
+  # Update validation method name
+  def validate_offering_memorandum
+    if offering_memorandum.present? && offering_memorandum_document.attached?
+      errors.add(:base, 'Cannot have both offering memorandum text and document attached')
+    end
+  end
+
   def as_json(options = {})
     super.merge(
       type: 'EquityCampaign',
@@ -390,10 +397,10 @@ class EquityCampaign < Campaign
             present: offering_circular_url.present?,
             url: offering_circular_url
           },
-          offering_memorandum: {
-            attached: offering_memorandum_file.attached?,
-            url: offering_memorandum_file_url,
-            filename: offering_memorandum_file.attached? ? offering_memorandum_file.filename.to_s : nil
+          offering_memorandum_document: { 
+            attached: offering_memorandum_document.attached?,
+            url: offering_memorandum_document_url,
+            filename: offering_memorandum_document.attached? ? offering_memorandum_document.filename.to_s : nil
           }
         }
       }

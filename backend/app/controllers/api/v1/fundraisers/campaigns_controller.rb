@@ -23,8 +23,8 @@ module Api
             :minimum_target, :price_per_share, :min_shares, :max_shares,
             :shares_offered, :stock_type, :funding_round, :sec_filing_url,
             :offering_circular_url, :offering_memorandum,
-            # Only offering_memorandum is a file attachment
-            :offering_memorandum_file
+            # Only offering_memorandum_document is a file attachment
+            :offering_memorandum_document,
           ).tap do |whitelisted|
             # Set the type based on params key
             if action_name == 'create' || params[params_key][:type]
