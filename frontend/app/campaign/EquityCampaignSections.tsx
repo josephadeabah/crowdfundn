@@ -64,6 +64,25 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
     return `${fundraiserCurrency}${num.toLocaleString()}`;
   };
 
+  // Helper function to truncate text and add tooltip if needed
+  const renderTextWithTooltip = (text: string, maxLength: number = 50) => {
+    if (!text) return 'Not specified';
+
+    if (text.length <= maxLength) {
+      return text;
+    }
+
+    return (
+      <div className="flex items-center gap-2">
+        <span className="truncate">{text.substring(0, maxLength)}...</span>
+        <InfoTooltip
+          id={`text-tooltip-${text.substring(0, 10)}`}
+          content={text}
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-8">
       {/* Investment Details */}
@@ -177,21 +196,45 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
             )}
 
             {campaign.equity_offering_details.stock_type_display && (
-              <MetricCard
-                icon={<FaChessBoard className="text-purple-600" />}
-                label="Stock Type"
-                value={campaign.equity_offering_details.stock_type_display}
-                gradient="from-purple-50 to-purple-100"
-              />
+              <div className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
+                <div className="flex items-center mb-4">
+                  <div className="p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl mr-3 group-hover:scale-110 transition-transform flex-shrink-0">
+                    <FaChessBoard className="text-purple-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-700 text-sm lg:text-base">
+                    Stock Type
+                  </h3>
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-2xl lg:text-3xl font-bold text-gray-900 truncate min-w-0">
+                    {renderTextWithTooltip(
+                      campaign.equity_offering_details.stock_type_display,
+                      20,
+                    )}
+                  </p>
+                </div>
+              </div>
             )}
 
             {campaign.equity_offering_details.funding_round_display && (
-              <MetricCard
-                icon={<FaRocket className="text-orange-600" />}
-                label="Funding Round"
-                value={campaign.equity_offering_details.funding_round_display}
-                gradient="from-orange-50 to-orange-100"
-              />
+              <div className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
+                <div className="flex items-center mb-4">
+                  <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl mr-3 group-hover:scale-110 transition-transform flex-shrink-0">
+                    <FaRocket className="text-orange-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-700 text-sm lg:text-base">
+                    Funding Round
+                  </h3>
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-2xl lg:text-3xl font-bold text-gray-900 truncate min-w-0">
+                    {renderTextWithTooltip(
+                      campaign.equity_offering_details.funding_round_display,
+                      20,
+                    )}
+                  </p>
+                </div>
+              </div>
             )}
 
             {campaign.equity_offering_details.shares_offered && (
@@ -311,10 +354,12 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
               <label className="font-semibold text-gray-900 block mb-3">
                 Description
               </label>
-              <p className="text-gray-700 bg-gray-50 rounded-xl p-4 leading-relaxed">
-                {campaign?.company_info?.description ||
-                  'No description provided.'}
-              </p>
+              <div className="bg-gray-50 rounded-xl p-4">
+                <p className="text-gray-700 leading-relaxed">
+                  {campaign?.company_info?.description ||
+                    'No description provided.'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -403,11 +448,25 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
               !campaign.equity_offering_details.offering_documents
                 ?.offering_memorandum_document?.attached && (
                 <div className="bg-gray-50 rounded-2xl p-6 border">
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    Offering Memorandum Details
-                  </h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-gray-900">
+                      Offering Memorandum Details
+                    </h3>
+                    {campaign.equity_offering_details.offering_memorandum
+                      .length > 100 && (
+                      <InfoTooltip
+                        id="offering-memorandum-tooltip"
+                        content={
+                          campaign.equity_offering_details.offering_memorandum
+                        }
+                      />
+                    )}
+                  </div>
                   <p className="text-gray-700">
-                    {campaign.equity_offering_details.offering_memorandum}
+                    {campaign.equity_offering_details.offering_memorandum
+                      .length > 200
+                      ? `${campaign.equity_offering_details.offering_memorandum.substring(0, 200)}...`
+                      : campaign.equity_offering_details.offering_memorandum}
                   </p>
                 </div>
               )}
