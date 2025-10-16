@@ -160,6 +160,9 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
                   campaign.equity_offering_details.minimum_target,
                 )}
                 gradient="from-indigo-50 to-indigo-100"
+                fullValue={`${fundraiserCurrency}${parseFloat(
+                  campaign.equity_offering_details.minimum_target.toString(),
+                ).toLocaleString()}`}
               />
             )}
 
@@ -169,6 +172,7 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
                 label="Price Per Share"
                 value={`${fundraiserCurrency}${parseFloat(campaign.equity_offering_details.price_per_share.toString()).toFixed(4)}`}
                 gradient="from-green-50 to-green-100"
+                fullValue={`${fundraiserCurrency}${parseFloat(campaign.equity_offering_details.price_per_share.toString()).toLocaleString()}`}
               />
             )}
 
@@ -198,17 +202,58 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
                   campaign.equity_offering_details.shares_offered,
                 )}
                 gradient="from-gray-50 to-gray-100"
+                fullValue={parseFloat(
+                  campaign.equity_offering_details.shares_offered.toString(),
+                ).toLocaleString()}
               />
             )}
 
             {campaign.equity_offering_details.min_shares &&
               campaign.equity_offering_details.max_shares && (
-                <MetricCard
-                  icon={<FaChartLine className="text-teal-600" />}
-                  label="Shares Range"
-                  value={`${formatLargeNumber(campaign.equity_offering_details.min_shares)} - ${formatLargeNumber(campaign.equity_offering_details.max_shares)}`}
-                  gradient="from-teal-50 to-teal-100"
-                />
+                <div className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
+                  <div className="flex items-center mb-4">
+                    <div className="p-3 bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl mr-3 group-hover:scale-110 transition-transform flex-shrink-0">
+                      <FaChartLine className="text-teal-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-700 text-sm lg:text-base">
+                      Shares Range
+                    </h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600 text-sm lg:text-base">
+                        Min:
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-gray-900 text-lg lg:text-xl text-right">
+                          {formatLargeNumber(
+                            campaign.equity_offering_details.min_shares,
+                          )}
+                        </span>
+                        <InfoTooltip
+                          id="min-shares-tooltip"
+                          content={`Full amount: ${parseFloat(campaign.equity_offering_details.min_shares.toString()).toLocaleString()} shares`}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600 text-sm lg:text-base">
+                        Max:
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-gray-900 text-lg lg:text-xl text-right">
+                          {formatLargeNumber(
+                            campaign.equity_offering_details.max_shares,
+                          )}
+                        </span>
+                        <InfoTooltip
+                          id="max-shares-tooltip"
+                          content={`Full amount: ${parseFloat(campaign.equity_offering_details.max_shares.toString()).toLocaleString()} shares`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
           </div>
         </div>

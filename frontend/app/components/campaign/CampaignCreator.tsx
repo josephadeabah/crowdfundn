@@ -159,7 +159,6 @@ const CampaignCreator = () => {
     sharesOffered: '',
     stockType: '',
     fundingRound: '',
-    // SEC filing fields REMOVED from creation
   };
 
   const [campaignData, setCampaignData] = useLocalStorage<CampaignData>(
@@ -454,7 +453,6 @@ const CampaignCreator = () => {
       if (campaignData.fundingRound) {
         formData.append(`${rootKey}[funding_round]`, campaignData.fundingRound);
       }
-      // SEC filing fields REMOVED from creation
     }
 
     try {
