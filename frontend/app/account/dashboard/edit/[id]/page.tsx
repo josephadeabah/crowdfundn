@@ -135,31 +135,32 @@ const EditCampaign = () => {
         : 'campaign';
     const updatedData = new FormData();
 
-    // Handle different field types
-    if (
-      editMode.field === 'sec_filing_url' ||
-      editMode.field === 'offering_circular_url' ||
-      editMode.field === 'offering_memorandum'
-    ) {
-      updatedData.append(`${rootKey}[${editMode.field}]`, newValue);
-
-      // Update local state immediately for better UX
+    // Handle equity campaign fields properly
+    if (currentCampaign.type === 'EquityCampaign') {
+      // For equity campaigns, use the specific field names
       if (editMode.field === 'sec_filing_url') {
+        updatedData.append(`${rootKey}[sec_filing_url]`, newValue);
         setSecFilingUrl(newValue);
       } else if (editMode.field === 'offering_circular_url') {
+        updatedData.append(`${rootKey}[offering_circular_url]`, newValue);
         setOfferingCircularUrl(newValue);
       } else if (editMode.field === 'offering_memorandum') {
+        updatedData.append(`${rootKey}[offering_memorandum]`, newValue);
         setOfferingMemorandum(newValue);
+      } else if (
+        editMode.field === 'offering_memorandum_file' &&
+        offeringMemorandumFile
+      ) {
+        updatedData.append(
+          `${rootKey}[offering_memorandum_file]`,
+          offeringMemorandumFile,
+        );
+      } else {
+        // For other fields, use the generic approach
+        updatedData.append(`${rootKey}[${editMode.field}]`, newValue);
       }
-    } else if (
-      editMode.field === 'offering_memorandum_file' &&
-      offeringMemorandumFile
-    ) {
-      updatedData.append(
-        `${rootKey}[offering_memorandum_file]`,
-        offeringMemorandumFile,
-      );
     } else {
+      // For regular campaigns
       updatedData.append(`${rootKey}[${editMode.field}]`, newValue);
     }
 

@@ -362,9 +362,7 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
             <div className="p-3 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl mr-4">
               <FaFileContract className="text-2xl text-red-600" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900">
-              SEC Filing
-            </h2>
+            <h2 className="text-3xl font-bold text-gray-900">SEC Filing</h2>
           </div>
 
           <div className="grid gap-4">
