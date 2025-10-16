@@ -20,7 +20,7 @@ import {
 import PitchBasics from '../equity/PitchBasics';
 import TermsContract from '../equity/TermsContract';
 import FundingGoals from '../equity/FundingGoals';
-import EquityOffering from '../equity/EquityOffering'; // Import the new component
+import EquityOffering from '../equity/EquityOffering';
 
 interface CampaignDetailsProps {
   title: string;
@@ -61,29 +61,15 @@ interface CampaignDetailsProps {
   setValuation: (value: string) => void;
   equityOffered: string;
   setEquityOffered: (value: string) => void;
-  // New equity offering fields
+  // New equity offering fields (only essential ones for creation)
   minimumTarget?: string;
   setMinimumTarget?: (value: string) => void;
-  pricePerShare?: string;
-  setPricePerShare?: (value: string) => void;
-  minShares?: string;
-  setMinShares?: (value: string) => void;
-  maxShares?: string;
-  setMaxShares?: (value: string) => void;
   sharesOffered?: string;
   setSharesOffered?: (value: string) => void;
   stockType?: string;
   setStockType?: (value: string) => void;
   fundingRound?: string;
   setFundingRound?: (value: string) => void;
-  secFilingUrl?: string;
-  setSecFilingUrl?: (value: string) => void;
-  offeringCircularUrl?: string;
-  setOfferingCircularUrl?: (value: string) => void;
-  offeringMemorandum?: string;
-  setOfferingMemorandum?: (value: string) => void;
-  offeringMemorandumFile?: File | null;
-  setOfferingMemorandumFile?: (value: File | null) => void;
   stockTypes?: Array<{ value: string; label: string }>;
   fundingRounds?: Array<{ value: string; label: string }>;
   showEquitySections?: boolean;
@@ -128,7 +114,7 @@ const CampaignDetails = ({
   setValuation = () => {},
   equityOffered,
   setEquityOffered = () => {},
-  // New equity offering fields
+  // New equity offering fields (only essential ones)
   minimumTarget = '',
   setMinimumTarget = () => {},
   sharesOffered = '',
@@ -137,14 +123,6 @@ const CampaignDetails = ({
   setStockType = () => {},
   fundingRound = '',
   setFundingRound = () => {},
-  secFilingUrl = '',
-  setSecFilingUrl = () => {},
-  offeringCircularUrl = '',
-  setOfferingCircularUrl = () => {},
-  offeringMemorandum = '',
-  setOfferingMemorandum = () => {},
-  offeringMemorandumFile = null,
-  setOfferingMemorandumFile = () => {},
   stockTypes = [],
   fundingRounds = [],
   showEquitySections = false,
@@ -328,14 +306,6 @@ const CampaignDetails = ({
                       setStockType={setStockType}
                       fundingRound={fundingRound}
                       setFundingRound={setFundingRound}
-                      secFilingUrl={secFilingUrl}
-                      setSecFilingUrl={setSecFilingUrl}
-                      offeringCircularUrl={offeringCircularUrl}
-                      setOfferingCircularUrl={setOfferingCircularUrl}
-                      offeringMemorandum={offeringMemorandum}
-                      setOfferingMemorandum={setOfferingMemorandum}
-                      offeringMemorandumFile={offeringMemorandumFile}
-                      setOfferingMemorandumFile={setOfferingMemorandumFile}
                       stockTypes={stockTypes}
                       fundingRounds={fundingRounds}
                     />

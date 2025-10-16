@@ -8,11 +8,11 @@ import { Button } from '@/app/components/button/Button';
 import { useParams } from 'next/navigation';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import CampaignPermissionSetting from '@/app/account/dashboard/create/settings/PermissionSettings';
-
 import { SingleCampaignResponseDataType } from '@/app/types/campaigns.types';
 import { truncateHTML } from '@/app/utils/helpers/truncate.html';
 import RichTextEditor from '@/app/components/richtext/Richtext';
 import EditCampaignsLoader from '@/app/loaders/EditCampaignLoader';
+import FileUpload from '@/app/components/campaign/FileUpload';
 
 const EditCampaign = () => {
   const {
@@ -46,6 +46,12 @@ const EditCampaign = () => {
   // Equity campaign specific fields
   const [valuation, setValuation] = useState('');
   const [totalShares, setTotalShares] = useState('');
+  // SEC filing fields for due diligence
+  const [secFilingUrl, setSecFilingUrl] = useState('');
+  const [offeringCircularUrl, setOfferingCircularUrl] = useState('');
+  const [offeringMemorandum, setOfferingMemorandum] = useState('');
+  const [offeringMemorandumFile, setOfferingMemorandumFile] =
+    useState<File | null>(null);
 
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
@@ -72,6 +78,21 @@ const EditCampaign = () => {
             if (campaignData.type === 'EquityCampaign') {
               setValuation(campaignData.valuation?.toString() || '');
               setTotalShares(campaignData.total_shares?.toString() || '');
+
+              // Set SEC filing fields
+              if (campaignData.equity_offering_details) {
+                setSecFilingUrl(
+                  campaignData.equity_offering_details.sec_filing_url || '',
+                );
+                setOfferingCircularUrl(
+                  campaignData.equity_offering_details.offering_circular_url ||
+                    '',
+                );
+                setOfferingMemorandum(
+                  campaignData.equity_offering_details.offering_memorandum ||
+                    '',
+                );
+              }
             }
           }
         })
@@ -107,7 +128,25 @@ const EditCampaign = () => {
         ? 'equity_campaign'
         : 'campaign';
     const updatedData = new FormData();
-    updatedData.append(`${rootKey}[${editMode.field}]`, newValue);
+
+    // Handle different field types
+    if (
+      editMode.field === 'sec_filing_url' ||
+      editMode.field === 'offering_circular_url' ||
+      editMode.field === 'offering_memorandum'
+    ) {
+      updatedData.append(`${rootKey}[${editMode.field}]`, newValue);
+    } else if (
+      editMode.field === 'offering_memorandum_file' &&
+      offeringMemorandumFile
+    ) {
+      updatedData.append(
+        `${rootKey}[offering_memorandum_file]`,
+        offeringMemorandumFile,
+      );
+    } else {
+      updatedData.append(`${rootKey}[${editMode.field}]`, newValue);
+    }
 
     if (selectedImageFile && editMode.field === 'image') {
       updatedData.append(`${rootKey}[media]`, selectedImageFile);
@@ -245,6 +284,79 @@ const EditCampaign = () => {
           </div>
         )}
 
+        {/* SEC Filing Fields (only for equity campaigns) */}
+        {currentCampaign?.type === 'EquityCampaign' && (
+          <>
+            {/* SEC Filing URL */}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+              <button
+                onClick={() => openEditModal('sec_filing_url', secFilingUrl)}
+                className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              >
+                <FaEdit />
+              </button>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                SEC Filing URL
+              </h3>
+              <p className="text-gray-700 dark:text-gray-400">
+                {secFilingUrl || 'Not yet filed'}
+              </p>
+            </div>
+
+            {/* Offering Circular URL */}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+              <button
+                onClick={() =>
+                  openEditModal('offering_circular_url', offeringCircularUrl)
+                }
+                className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              >
+                <FaEdit />
+              </button>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                Offering Circular URL
+              </h3>
+              <p className="text-gray-700 dark:text-gray-400">
+                {offeringCircularUrl || 'Not yet available'}
+              </p>
+            </div>
+
+            {/* Offering Memorandum */}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+              <button
+                onClick={() =>
+                  openEditModal('offering_memorandum', offeringMemorandum)
+                }
+                className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              >
+                <FaEdit />
+              </button>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                Offering Memorandum
+              </h3>
+              <p className="text-gray-700 dark:text-gray-400">
+                {offeringMemorandum ? 'Available' : 'Not yet available'}
+              </p>
+            </div>
+
+            {/* Offering Memorandum File */}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+              <button
+                onClick={() => openEditModal('offering_memorandum_file', '')}
+                className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              >
+                <FaEdit />
+              </button>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                Offering Memorandum File
+              </h3>
+              <p className="text-gray-700 dark:text-gray-400">
+                {offeringMemorandumFile ? 'File uploaded' : 'No file uploaded'}
+              </p>
+            </div>
+          </>
+        )}
+
         {/* Dropdown for Campaign Permissions and Promotion Settings */}
         {id != null && (
           <div className="col-span-full">
@@ -376,6 +488,74 @@ const EditCampaign = () => {
                   }
                   className="w-full border border-gray-300 p-2 rounded-lg"
                 />
+              </>
+            )}
+
+            {/* SEC Filing Modal Fields */}
+            {editMode.field === 'sec_filing_url' && (
+              <>
+                <h3 className="text-lg font-semibold mb-2">
+                  Edit SEC Filing URL
+                </h3>
+                <input
+                  type="url"
+                  value={editMode.value}
+                  onChange={(e) =>
+                    setEditMode({ ...editMode, value: e.target.value })
+                  }
+                  className="w-full border border-gray-300 p-2 rounded-lg"
+                  placeholder="https://sec.gov/..."
+                />
+              </>
+            )}
+
+            {editMode.field === 'offering_circular_url' && (
+              <>
+                <h3 className="text-lg font-semibold mb-2">
+                  Edit Offering Circular URL
+                </h3>
+                <input
+                  type="url"
+                  value={editMode.value}
+                  onChange={(e) =>
+                    setEditMode({ ...editMode, value: e.target.value })
+                  }
+                  className="w-full border border-gray-300 p-2 rounded-lg"
+                  placeholder="https://example.com/offering-circular"
+                />
+              </>
+            )}
+
+            {editMode.field === 'offering_memorandum' && (
+              <>
+                <h3 className="text-lg font-semibold mb-2">
+                  Edit Offering Memorandum
+                </h3>
+                <textarea
+                  value={editMode.value}
+                  onChange={(e) =>
+                    setEditMode({ ...editMode, value: e.target.value })
+                  }
+                  rows={4}
+                  className="w-full border border-gray-300 p-2 rounded-lg"
+                  placeholder="Enter offering memorandum details..."
+                />
+              </>
+            )}
+
+            {editMode.field === 'offering_memorandum_file' && (
+              <>
+                <h3 className="text-lg font-semibold mb-2">
+                  Upload Offering Memorandum File
+                </h3>
+                <FileUpload
+                  file={offeringMemorandumFile}
+                  onFileChange={setOfferingMemorandumFile}
+                  accept=".pdf,.doc,.docx"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Upload the offering memorandum document (PDF, DOC, DOCX)
+                </p>
               </>
             )}
 

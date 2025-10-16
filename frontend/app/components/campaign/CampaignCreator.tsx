@@ -84,8 +84,6 @@ export interface FormErrors {
   sharesOffered?: string;
   stockType?: string;
   fundingRound?: string;
-  secFilingUrl?: string;
-  offeringCircularUrl?: string;
 }
 
 interface CompanyInfo {
@@ -115,7 +113,7 @@ interface CampaignData {
   maxRaise: string;
   valuation: string;
   equityOffered: string;
-  // New equity offering fields
+  // New equity offering fields (only essential ones for creation)
   minimumTarget: string;
   pricePerShare: string;
   minShares: string;
@@ -123,11 +121,7 @@ interface CampaignData {
   sharesOffered: string;
   stockType: string;
   fundingRound: string;
-  secFilingUrl: string;
-  offeringCircularUrl: string;
-  offeringMemorandum: string;
-  // Only offering_memorandum is a file
-  offeringMemorandumFile: File | null;
+  // SEC filing fields REMOVED from creation
 }
 
 const CampaignCreator = () => {
@@ -165,10 +159,7 @@ const CampaignCreator = () => {
     sharesOffered: '',
     stockType: '',
     fundingRound: '',
-    secFilingUrl: '',
-    offeringCircularUrl: '',
-    offeringMemorandum: '',
-    offeringMemorandumFile: null,
+    // SEC filing fields REMOVED from creation
   };
 
   const [campaignData, setCampaignData] = useLocalStorage<CampaignData>(
@@ -237,7 +228,7 @@ const CampaignCreator = () => {
   const setEquityOffered = (value: string) =>
     setCampaignData({ ...campaignData, equityOffered: value });
 
-  // New equity offering field setters
+  // New equity offering field setters (only essential ones)
   const setMinimumTarget = (value: string) =>
     setCampaignData({ ...campaignData, minimumTarget: value });
   const setPricePerShare = (value: string) =>
@@ -252,14 +243,8 @@ const CampaignCreator = () => {
     setCampaignData({ ...campaignData, stockType: value });
   const setFundingRound = (value: string) =>
     setCampaignData({ ...campaignData, fundingRound: value });
-  const setSecFilingUrl = (value: string) =>
-    setCampaignData({ ...campaignData, secFilingUrl: value });
-  const setOfferingCircularUrl = (value: string) =>
-    setCampaignData({ ...campaignData, offeringCircularUrl: value });
-  const setOfferingMemorandum = (value: string) =>
-    setCampaignData({ ...campaignData, offeringMemorandum: value });
-  const setOfferingMemorandumFile = (value: File | null) =>
-    setCampaignData({ ...campaignData, offeringMemorandumFile: value });
+
+  // SEC filing setters REMOVED
 
   useEffect(() => {
     const hasSavedData = Object.values(campaignData).some(
@@ -456,7 +441,7 @@ const CampaignCreator = () => {
       formData.append(`${rootKey}[minimum_investment]`, campaignData.minRaise);
       formData.append(`${rootKey}[maximum_investment]`, campaignData.maxRaise);
 
-      // New equity offering fields
+      // New equity offering fields (only essential ones)
       if (campaignData.minimumTarget) {
         formData.append(
           `${rootKey}[minimum_target]`,
@@ -469,30 +454,7 @@ const CampaignCreator = () => {
       if (campaignData.fundingRound) {
         formData.append(`${rootKey}[funding_round]`, campaignData.fundingRound);
       }
-      if (campaignData.secFilingUrl) {
-        formData.append(
-          `${rootKey}[sec_filing_url]`,
-          campaignData.secFilingUrl,
-        );
-      }
-      if (campaignData.offeringCircularUrl) {
-        formData.append(
-          `${rootKey}[offering_circular_url]`,
-          campaignData.offeringCircularUrl,
-        );
-      }
-      if (campaignData.offeringMemorandum) {
-        formData.append(
-          `${rootKey}[offering_memorandum]`,
-          campaignData.offeringMemorandum,
-        );
-      }
-      if (campaignData.offeringMemorandumFile) {
-        formData.append(
-          `${rootKey}[offering_memorandum_file]`,
-          campaignData.offeringMemorandumFile,
-        );
-      }
+      // SEC filing fields REMOVED from creation
     }
 
     try {
@@ -589,31 +551,15 @@ const CampaignCreator = () => {
                       setValuation={setValuation}
                       equityOffered={campaignData.equityOffered}
                       setEquityOffered={setEquityOffered}
-                      // New equity offering fields
+                      // New equity offering fields (only essential ones)
                       minimumTarget={campaignData.minimumTarget}
                       setMinimumTarget={setMinimumTarget}
-                      pricePerShare={campaignData.pricePerShare}
-                      setPricePerShare={setPricePerShare}
-                      minShares={campaignData.minShares}
-                      setMinShares={setMinShares}
-                      maxShares={campaignData.maxShares}
-                      setMaxShares={setMaxShares}
                       sharesOffered={campaignData.sharesOffered}
                       setSharesOffered={setSharesOffered}
                       stockType={campaignData.stockType}
                       setStockType={setStockType}
                       fundingRound={campaignData.fundingRound}
                       setFundingRound={setFundingRound}
-                      secFilingUrl={campaignData.secFilingUrl}
-                      setSecFilingUrl={setSecFilingUrl}
-                      offeringCircularUrl={campaignData.offeringCircularUrl}
-                      setOfferingCircularUrl={setOfferingCircularUrl}
-                      offeringMemorandum={campaignData.offeringMemorandum}
-                      setOfferingMemorandum={setOfferingMemorandum}
-                      offeringMemorandumFile={
-                        campaignData.offeringMemorandumFile
-                      }
-                      setOfferingMemorandumFile={setOfferingMemorandumFile}
                       stockTypes={STOCK_TYPES}
                       fundingRounds={FUNDING_ROUNDS}
                       showEquitySections={true}
