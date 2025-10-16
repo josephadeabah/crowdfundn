@@ -43,8 +43,35 @@ const CURRENCIES = [
 
 // Add stock types and funding rounds constants
 const STOCK_TYPES = [
-  { value: 'common', label: 'Common Stock' },
-  { value: 'preferred', label: 'Preferred Stock' },
+  // Core share classes
+  { value: 'common', label: 'Common Stock (Ordinary Shares)' },
+  { value: 'preferred', label: 'Preferred Stock (Investor Shares)' },
+  // Subtypes of common
+  { value: 'founder', label: 'Founder Shares' },
+  { value: 'employee_common', label: 'Employee Common Shares (ESOP Pool)' },
+  // Stock option plans
+  { value: 'iso', label: 'Incentive Stock Options (ISO)' },
+  { value: 'nso', label: 'Non-Qualified Stock Options (NSO)' },
+  { value: 'esop', label: 'Employee Stock Option Plan (ESOP)' },
+  { value: 'rsu', label: 'Restricted Stock Units (RSU)' },
+  { value: 'rsa', label: 'Restricted Stock Awards (RSA)' },
+  {
+    value: 'phantom',
+    label: 'Phantom Stock / Stock Appreciation Rights (SAR)',
+  },
+  // Preferred sub-series (for funding rounds)
+  { value: 'series_seed', label: 'Series Seed Preferred' },
+  { value: 'series_a', label: 'Series A Preferred' },
+  { value: 'series_b', label: 'Series B Preferred' },
+  { value: 'series_c', label: 'Series C Preferred' },
+  { value: 'series_d', label: 'Series D Preferred' },
+  { value: 'mezzanine', label: 'Mezzanine / Convertible Preferred' },
+  // Convertible / hybrid instruments
+  { value: 'convertible_note', label: 'Convertible Note (Debt to Equity)' },
+  { value: 'safe', label: 'SAFE (Simple Agreement for Future Equity)' },
+  // Synthetic / alternative equity
+  { value: 'profit_interest', label: 'Profit Interest Units (for LLCs)' },
+  { value: 'tracking_stock', label: 'Tracking Stock (Division-based)' },
 ];
 
 const FUNDING_ROUNDS = [
