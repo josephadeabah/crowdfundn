@@ -9,10 +9,13 @@ class EquityCampaign < Campaign
   before_validation :set_default_total_shares, unless: :total_shares?
   after_update :update_investments_valuation, if: -> { saved_change_to_valuation? || saved_change_to_total_shares? }
   before_validation :calculate_shares_available, if: -> { new_record? || will_save_change_to_equity_offered? || will_save_change_to_total_shares? }
-    # Add callbacks for calculations
-  before_validation :calculate_price_per_share, if: -> { valuation.present? && total_shares.present? && (valuation_changed? || total_shares_changed?) }
-  before_validation :calculate_shares_offered, if: -> { equity_offered.present? && total_shares.present? && (equity_offered_changed? || total_shares_changed?) }
-  before_validation :calculate_min_max_shares, if: -> { minimum_investment.present? && maximum_investment.present? && price_per_share.present? && (minimum_investment_changed? || maximum_investment_changed? || price_per_share_changed?) }
+  # Add callbacks for calculations
+  before_validation :calculate_price_per_share, if: -> { valuation.present? && total_shares.present? && (valuation_changed? || total_shares_changed? || new_record?) }
+  before_validation :calculate_shares_offered, if: -> { equity_offered.present? && total_shares.present? && (equity_offered_changed? || total_shares_changed? || new_record?) }
+  before_validation :calculate_min_max_shares, if: -> { minimum_investment.present? && maximum_investment.present? && price_per_share.present? && (minimum_investment_changed? || maximum_investment_changed? || price_per_share_changed? || new_record?) }
+  
+  # Ensure calculations run on create
+  after_initialize :run_initial_calculations, if: :new_record?
   after_save :update_shares_available_from_investments, if: -> { saved_change_to_shares_available? }
 
 
@@ -403,20 +406,45 @@ class EquityCampaign < Campaign
 
   private
 
-    def calculate_price_per_share
+  def run_initial_calculations
+    calculate_price_per_share if valuation.present? && total_shares.present?
+    calculate_shares_offered if equity_offered.present? && total_shares.present?
+    calculate_min_max_shares if minimum_investment.present? && maximum_investment.present? && price_per_share.present?
+  end
+
+  def calculate_price_per_share
     return unless valuation.present? && total_shares.present? && total_shares > 0
-    self.price_per_share = valuation.to_f / total_shares.to_f
+    calculated_price = valuation.to_f / total_shares.to_f
+    self.price_per_share = calculated_price.round(4)
   end
 
   def calculate_shares_offered
     return unless equity_offered.present? && total_shares.present?
-    self.shares_offered = (equity_offered.to_f / 100 * total_shares.to_f).round
+    calculated_shares = (equity_offered.to_f / 100 * total_shares.to_f).round
+    self.shares_offered = calculated_shares
   end
 
   def calculate_min_max_shares
-    return unless minimum_investment.present? && maximum_investment.present? && price_per_share.present? && price_per_share > 0
-    self.min_shares = (minimum_investment.to_f / price_per_share).ceil
-    self.max_shares = (maximum_investment.to_f / price_per_share).floor
+    # Add additional safety checks
+    return unless minimum_investment.present? && maximum_investment.present? 
+    return unless price_per_share.present? && price_per_share > 0
+    return unless minimum_investment.to_f > 0 && maximum_investment.to_f > 0
+    
+    min_shares_calculated = (minimum_investment.to_f / price_per_share).ceil
+    max_shares_calculated = (maximum_investment.to_f / price_per_share).floor
+    
+    # Ensure min_shares is at least 1
+    calculated_min_shares = [min_shares_calculated, 1].max
+    # Ensure max_shares is at least (min_shares + 1)
+    calculated_max_shares = [max_shares_calculated, calculated_min_shares + 1].max
+    
+    # Additional validation: max should be >= min
+    if calculated_max_shares < calculated_min_shares
+      calculated_max_shares = calculated_min_shares + 1
+    end
+    
+    self.min_shares = calculated_min_shares
+    self.max_shares = calculated_max_shares
   end
 
   def max_shares_greater_than_min_shares
