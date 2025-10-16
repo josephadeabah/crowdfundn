@@ -20,15 +20,12 @@ class EquityCampaign < Campaign
   has_one_attached :offering_memorandum_file
 
   # Add validations for new fields
-  validates :stock_type, inclusion: { in: %w[common preferred], message: "must be either 'common' or 'preferred'" }
   validates :funding_round, inclusion: { in: %w[seed series_a series_b series_c series_d growth mezzanine], allow_nil: true }
   validates :minimum_target, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :price_per_share, numericality: { greater_than: 0 }, allow_nil: true
   validates :min_shares, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :max_shares, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :shares_offered, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
-  validates :sec_filing_url, url: { allow_blank: true }
-  validates :offering_circular_url, url: { allow_blank: true }
 
   validate :max_shares_greater_than_min_shares
   validate :validate_offering_memorandum
