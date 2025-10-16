@@ -56,40 +56,43 @@ const EditCampaign = () => {
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
   // Function to update all state from current campaign data
-  const updateAllStateFromCampaign = useCallback((campaignData: SingleCampaignResponseDataType) => {
-    setTitle(campaignData.title);
-    setGoalAmount(campaignData.goal_amount.toString());
-    setDescription(campaignData.description.body);
-    setImage(campaignData.media || '');
-    setCurrentAmount(campaignData.current_amount);
-    setStartDate(campaignData.start_date);
-    setEndDate(campaignData.end_date);
-    setCategory(campaignData.category);
-    setLocation(campaignData.location);
-    setCurrency(campaignData.currency);
-    setCurrencyCode(campaignData.currency_code);
-    setCurrencySymbol(campaignData.currency_symbol);
-    setStatus(campaignData.status);
+  const updateAllStateFromCampaign = useCallback(
+    (campaignData: SingleCampaignResponseDataType) => {
+      setTitle(campaignData.title);
+      setGoalAmount(campaignData.goal_amount.toString());
+      setDescription(campaignData.description.body);
+      setImage(campaignData.media || '');
+      setCurrentAmount(campaignData.current_amount);
+      setStartDate(campaignData.start_date);
+      setEndDate(campaignData.end_date);
+      setCategory(campaignData.category);
+      setLocation(campaignData.location);
+      setCurrency(campaignData.currency);
+      setCurrencyCode(campaignData.currency_code);
+      setCurrencySymbol(campaignData.currency_symbol);
+      setStatus(campaignData.status);
 
-    // Set equity campaign specific fields
-    if (campaignData.type === 'EquityCampaign') {
-      setValuation(campaignData.valuation?.toString() || '');
-      setTotalShares(campaignData.total_shares?.toString() || '');
+      // Set equity campaign specific fields
+      if (campaignData.type === 'EquityCampaign') {
+        setValuation(campaignData.valuation?.toString() || '');
+        setTotalShares(campaignData.total_shares?.toString() || '');
 
-      // Set SEC filing fields
-      if (campaignData.equity_offering_details) {
-        setSecFilingUrl(
-          campaignData.equity_offering_details.sec_filing_url || '',
-        );
-        setOfferingCircularUrl(
-          campaignData.equity_offering_details.offering_circular_url || '',
-        );
-        setOfferingMemorandum(
-          campaignData.equity_offering_details.offering_memorandum || '',
-        );
+        // Set SEC filing fields
+        if (campaignData.equity_offering_details) {
+          setSecFilingUrl(
+            campaignData.equity_offering_details.sec_filing_url || '',
+          );
+          setOfferingCircularUrl(
+            campaignData.equity_offering_details.offering_circular_url || '',
+          );
+          setOfferingMemorandum(
+            campaignData.equity_offering_details.offering_memorandum || '',
+          );
+        }
       }
-    }
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (id && typeof id === 'string') {
@@ -139,7 +142,7 @@ const EditCampaign = () => {
       editMode.field === 'offering_memorandum'
     ) {
       updatedData.append(`${rootKey}[${editMode.field}]`, newValue);
-      
+
       // Update local state immediately for better UX
       if (editMode.field === 'sec_filing_url') {
         setSecFilingUrl(newValue);
@@ -166,13 +169,13 @@ const EditCampaign = () => {
 
     try {
       await editCampaign(id, updatedData);
-      
+
       // Force refresh the campaign data to ensure UI is in sync
       const refreshedCampaign = await fetchCampaignById(String(id));
       if (refreshedCampaign) {
         updateAllStateFromCampaign(refreshedCampaign);
       }
-      
+
       await fetchUserCampaigns();
     } catch (error) {
       console.error('Error saving campaign:', error);
@@ -182,19 +185,22 @@ const EditCampaign = () => {
   };
 
   // Helper function to get display text for SEC filing fields
-  const getSecFieldDisplay = (value: string, fieldType: 'url' | 'text' | 'file') => {
+  const getSecFieldDisplay = (
+    value: string,
+    fieldType: 'url' | 'text' | 'file',
+  ) => {
     if (!value) {
       return fieldType === 'file' ? 'No file uploaded' : 'Not yet available';
     }
-    
+
     if (fieldType === 'url' && value) {
       return value.length > 50 ? `${value.substring(0, 50)}...` : value;
     }
-    
+
     if (fieldType === 'text' && value) {
       return value.length > 100 ? `${value.substring(0, 100)}...` : value;
     }
-    
+
     return value;
   };
 
