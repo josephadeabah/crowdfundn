@@ -309,7 +309,7 @@ interface EquityOfferingDetails {
       present: boolean;
       url?: string;
     };
-    offering_memorandum: {
+    offering_memorandum_document: {
       attached: boolean;
       url?: string;
       filename?: string;

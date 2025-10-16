@@ -50,7 +50,7 @@ const EditCampaign = () => {
   const [secFilingUrl, setSecFilingUrl] = useState('');
   const [offeringCircularUrl, setOfferingCircularUrl] = useState('');
   const [offeringMemorandum, setOfferingMemorandum] = useState('');
-  const [offeringMemorandumFile, setOfferingMemorandumFile] =
+  const [offeringMemorandumDocument, setOfferingMemorandumDocument] =
     useState<File | null>(null);
 
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
@@ -148,12 +148,12 @@ const EditCampaign = () => {
         updatedData.append(`${rootKey}[offering_memorandum]`, newValue);
         setOfferingMemorandum(newValue);
       } else if (
-        editMode.field === 'offering_memorandum_file' &&
-        offeringMemorandumFile
+        editMode.field === 'offering_memorandum_document' &&
+        offeringMemorandumDocument
       ) {
         updatedData.append(
-          `${rootKey}[offering_memorandum_file]`,
-          offeringMemorandumFile,
+          `${rootKey}[offering_memorandum_document]`,
+          offeringMemorandumDocument,
         );
       } else {
         // For other fields, use the generic approach
@@ -191,7 +191,9 @@ const EditCampaign = () => {
     fieldType: 'url' | 'text' | 'file',
   ) => {
     if (!value) {
-      return fieldType === 'file' ? 'No file uploaded' : 'Not yet available';
+      return fieldType === 'file'
+        ? 'No document uploaded'
+        : 'Not yet available';
     }
 
     if (fieldType === 'url' && value) {
@@ -368,7 +370,7 @@ const EditCampaign = () => {
               </p>
             </div>
 
-            {/* Offering Memorandum */}
+            {/* Offering Memorandum Details */}
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
               <button
                 onClick={() =>
@@ -379,26 +381,30 @@ const EditCampaign = () => {
                 <FaEdit />
               </button>
               <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
-                Offering Memorandum
+                Offering Memorandum Details
               </h3>
               <p className="text-gray-700 dark:text-gray-400">
                 {getSecFieldDisplay(offeringMemorandum, 'text')}
               </p>
             </div>
 
-            {/* Offering Memorandum File */}
+            {/* Offering Memorandum Document */}
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
               <button
-                onClick={() => openEditModal('offering_memorandum_file', '')}
+                onClick={() =>
+                  openEditModal('offering_memorandum_document', '')
+                }
                 className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               >
                 <FaEdit />
               </button>
               <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
-                Offering Memorandum File
+                Offering Memorandum Document
               </h3>
               <p className="text-gray-700 dark:text-gray-400">
-                {offeringMemorandumFile ? 'File uploaded' : 'No file uploaded'}
+                {offeringMemorandumDocument
+                  ? 'Document uploaded'
+                  : 'No document uploaded'}
               </p>
             </div>
           </>
@@ -576,7 +582,7 @@ const EditCampaign = () => {
             {editMode.field === 'offering_memorandum' && (
               <>
                 <h3 className="text-lg font-semibold mb-2">
-                  Edit Offering Memorandum
+                  Edit Offering Memorandum Details
                 </h3>
                 <textarea
                   value={editMode.value}
@@ -590,14 +596,14 @@ const EditCampaign = () => {
               </>
             )}
 
-            {editMode.field === 'offering_memorandum_file' && (
+            {editMode.field === 'offering_memorandum_document' && (
               <>
                 <h3 className="text-lg font-semibold mb-2">
-                  Upload Offering Memorandum File
+                  Upload Offering Memorandum Document
                 </h3>
                 <FileUpload
-                  file={offeringMemorandumFile}
-                  onFileChange={setOfferingMemorandumFile}
+                  file={offeringMemorandumDocument}
+                  onFileChange={setOfferingMemorandumDocument}
                   accept=".pdf"
                 />
                 <p className="text-xs text-gray-500 mt-1">

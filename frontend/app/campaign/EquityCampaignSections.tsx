@@ -356,7 +356,7 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
       {(campaign?.equity_offering_details?.sec_filing_url ||
         campaign?.equity_offering_details?.offering_circular_url ||
         campaign?.equity_offering_details?.offering_documents
-          ?.offering_memorandum?.attached) && (
+          ?.offering_memorandum_document?.attached) && (
         <div className="bg-white rounded-3xl border border-gray-100 p-8">
           <div className="flex items-center mb-8">
             <div className="p-3 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl mr-4">
@@ -384,27 +384,27 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
               />
             )}
 
-            {/* Offering Memorandum File */}
+            {/* Offering Memorandum Document */}
             {campaign.equity_offering_details.offering_documents
-              ?.offering_memorandum?.attached && (
+              ?.offering_memorandum_document?.attached && (
               <DocumentCard
-                name="Offering Memorandum"
+                name="Offering Memorandum Document"
                 size="Document"
                 type="Investment Memorandum"
                 url={
                   campaign.equity_offering_details.offering_documents
-                    .offering_memorandum.url || ''
+                    .offering_memorandum_document.url || ''
                 }
               />
             )}
 
-            {/* Offering Memorandum Text */}
+            {/* Offering Memorandum Text Details */}
             {campaign.equity_offering_details.offering_memorandum &&
               !campaign.equity_offering_details.offering_documents
-                ?.offering_memorandum?.attached && (
+                ?.offering_memorandum_document?.attached && (
                 <div className="bg-gray-50 rounded-2xl p-6 border">
                   <h3 className="font-semibold text-gray-900 mb-2">
-                    Offering Memorandum
+                    Offering Memorandum Details
                   </h3>
                   <p className="text-gray-700">
                     {campaign.equity_offering_details.offering_memorandum}
