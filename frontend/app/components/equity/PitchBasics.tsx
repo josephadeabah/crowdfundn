@@ -70,18 +70,18 @@ const PitchBasics = ({
 
           <div>
             <Label htmlFor="company-description">
-              Company Tagline (max 100 chars)
+              Company Tagline (max 300 chars)
             </Label>
             <Input
               id="company-description"
               type="text"
               value={companyInfo.description}
               onChange={(e) => handleChange('description', e.target.value)}
-              maxLength={100}
+              maxLength={300}
               placeholder="Brief description of your company"
             />
             <p className="text-xs text-gray-500 mt-1">
-              {companyInfo.description.length}/100 characters
+              {companyInfo.description.length}/300 characters
             </p>
           </div>
 
