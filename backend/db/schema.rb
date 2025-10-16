@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_15_235620) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_16_065111) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -172,7 +172,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_15_235620) do
     t.string "stock_type"
     t.string "funding_round"
     t.string "sec_filing_url"
-    t.string "offering_circular"
+    t.string "offering_circular_url"
     t.string "offering_memorandum"
     t.index ["category", "status"], name: "index_campaigns_on_category_and_status"
     t.index ["category"], name: "index_campaigns_on_category"
