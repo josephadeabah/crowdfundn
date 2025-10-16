@@ -314,35 +314,33 @@ const CampaignDetails = ({
                 </AccordionItemWrapper>
 
                 {/* Part 4: Equity Offering Details */}
-                  <AccordionItemWrapper value="equity-offering">
-                    <AccordionTriggerWrapper>
-                      <span className="font-medium">
-                        Equity Offering Details
-                      </span>
-                    </AccordionTriggerWrapper>
-                    <AccordionContentWrapper>
-                      <EquityOffering
-                        minimumTarget={minimumTarget}
-                        setMinimumTarget={setMinimumTarget}
-                        sharesOffered={sharesOffered}
-                        setSharesOffered={setSharesOffered}
-                        stockType={stockType}
-                        setStockType={setStockType}
-                        fundingRound={fundingRound}
-                        setFundingRound={setFundingRound}
-                        secFilingUrl={secFilingUrl}
-                        setSecFilingUrl={setSecFilingUrl}
-                        offeringCircularUrl={offeringCircularUrl}
-                        setOfferingCircularUrl={setOfferingCircularUrl}
-                        offeringMemorandum={offeringMemorandum}
-                        setOfferingMemorandum={setOfferingMemorandum}
-                        offeringMemorandumFile={offeringMemorandumFile}
-                        setOfferingMemorandumFile={setOfferingMemorandumFile}
-                        stockTypes={stockTypes}
-                        fundingRounds={fundingRounds}
-                      />
-                    </AccordionContentWrapper>
-                  </AccordionItemWrapper>
+                <AccordionItemWrapper value="equity-offering">
+                  <AccordionTriggerWrapper>
+                    <span className="font-medium">Equity Offering Details</span>
+                  </AccordionTriggerWrapper>
+                  <AccordionContentWrapper>
+                    <EquityOffering
+                      minimumTarget={minimumTarget}
+                      setMinimumTarget={setMinimumTarget}
+                      sharesOffered={sharesOffered}
+                      setSharesOffered={setSharesOffered}
+                      stockType={stockType}
+                      setStockType={setStockType}
+                      fundingRound={fundingRound}
+                      setFundingRound={setFundingRound}
+                      secFilingUrl={secFilingUrl}
+                      setSecFilingUrl={setSecFilingUrl}
+                      offeringCircularUrl={offeringCircularUrl}
+                      setOfferingCircularUrl={setOfferingCircularUrl}
+                      offeringMemorandum={offeringMemorandum}
+                      setOfferingMemorandum={setOfferingMemorandum}
+                      offeringMemorandumFile={offeringMemorandumFile}
+                      setOfferingMemorandumFile={setOfferingMemorandumFile}
+                      stockTypes={stockTypes}
+                      fundingRounds={fundingRounds}
+                    />
+                  </AccordionContentWrapper>
+                </AccordionItemWrapper>
               </Accordion>
             </div>
           )}
