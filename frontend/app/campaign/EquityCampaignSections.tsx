@@ -363,7 +363,7 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
               <FaFileContract className="text-2xl text-red-600" />
             </div>
             <h2 className="text-3xl font-bold text-gray-900">
-              Offering Documents
+              SEC Filing
             </h2>
           </div>
 
