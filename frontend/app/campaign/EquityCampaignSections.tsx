@@ -37,7 +37,7 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
       (doc) => doc.document_type === 'contract',
     ) || [];
 
-  const CONTRACT_TERM = `The contract term for this investment opportunity will depend on the structure agreed between the company and investors.\n\nPlease note: BantuHive does not provide default legal documents. Companies should work with their legal advisors to ensure all agreements meet regulatory standards.\n\n<a href="/investment-contracts" target="_blank" class="text-blue-500 hover:underline">Learn more about investment contracts in Ghana</a>`;
+  const CONTRACT_TERM = `The contract term for this investment opportunity will depend on the structure agreed between the company and investors.\n\nPlease note: BantuHive does not provide default legal documents. Companies should work with their legal advisors to ensure all agreements meet regulatory standards.\n\n<a href="/investment-contracts" target="_blank" class="text-gray-500 hover:underline">Learn more about investment contracts in Ghana</a>`;
 
   // Format large numbers with compact notation for better readability
   const formatLargeNumber = (value: string | number): string => {
@@ -94,10 +94,10 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
           />
 
           <MetricCard
-            icon={<FaPercentage className="text-blue-600" />}
+            icon={<FaPercentage className="text-gray-600" />}
             label="Equity Offered"
             value={`${campaign?.equity_offered}%`}
-            gradient="from-blue-50 to-blue-100"
+            gradient="from-gray-50 to-gray-100"
           />
 
           <InvestmentRangeCard
@@ -192,12 +192,12 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
 
             {campaign.equity_offering_details.shares_offered && (
               <MetricCard
-                icon={<FaShareAlt className="text-blue-600" />}
+                icon={<FaShareAlt className="text-gray-600" />}
                 label="Shares Offered"
                 value={formatLargeNumber(
                   campaign.equity_offering_details.shares_offered,
                 )}
-                gradient="from-blue-50 to-blue-100"
+                gradient="from-gray-50 to-gray-100"
               />
             )}
 
@@ -217,8 +217,8 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
       {/* Company Information */}
       <div className="bg-white rounded-3xl border border-gray-100 p-8">
         <div className="flex items-center mb-8">
-          <div className="p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl mr-4">
-            <FaBuilding className="text-2xl text-blue-600" />
+          <div className="p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl mr-4">
+            <FaBuilding className="text-2xl text-gray-600" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">
             Company Information
@@ -523,7 +523,7 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, value, isLink }) => (
         href={value}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-700 transition-colors bg-gray-50 rounded-xl p-4 hover:bg-blue-100 break-all"
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-700 transition-colors bg-gray-50 rounded-xl p-4 hover:bg-gray-100 break-all"
       >
         <FaLink className="text-sm flex-shrink-0" />
         <span className="truncate">{value}</span>
@@ -586,10 +586,10 @@ const ExternalDocumentCard: React.FC<ExternalDocumentCardProps> = ({
   url,
   type,
 }) => (
-  <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:border-blue-300 transition-all duration-300 group">
+  <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 group">
     <div className="flex items-center gap-4 min-w-0">
-      <div className="p-3 bg-blue-50 rounded-xl group-hover:scale-110 transition-transform flex-shrink-0">
-        <FaExternalLinkAlt className="text-2xl text-blue-600" />
+      <div className="p-3 bg-gray-50 rounded-xl group-hover:scale-110 transition-transform flex-shrink-0">
+        <FaExternalLinkAlt className="text-2xl text-gray-600" />
       </div>
       <div className="min-w-0">
         <h3 className="font-semibold text-gray-900 truncate">{name}</h3>
@@ -600,7 +600,7 @@ const ExternalDocumentCard: React.FC<ExternalDocumentCardProps> = ({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors font-medium flex items-center gap-2 group-hover:shadow-lg flex-shrink-0 ml-4"
+      className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors font-medium flex items-center gap-2 group-hover:shadow-lg flex-shrink-0 ml-4"
     >
       View
       <FaExternalLinkAlt className="text-xs" />

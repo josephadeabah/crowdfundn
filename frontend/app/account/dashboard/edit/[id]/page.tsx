@@ -55,50 +55,53 @@ const EditCampaign = () => {
 
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
+  // Function to update all state from current campaign data
+  const updateAllStateFromCampaign = useCallback((campaignData: SingleCampaignResponseDataType) => {
+    setTitle(campaignData.title);
+    setGoalAmount(campaignData.goal_amount.toString());
+    setDescription(campaignData.description.body);
+    setImage(campaignData.media || '');
+    setCurrentAmount(campaignData.current_amount);
+    setStartDate(campaignData.start_date);
+    setEndDate(campaignData.end_date);
+    setCategory(campaignData.category);
+    setLocation(campaignData.location);
+    setCurrency(campaignData.currency);
+    setCurrencyCode(campaignData.currency_code);
+    setCurrencySymbol(campaignData.currency_symbol);
+    setStatus(campaignData.status);
+
+    // Set equity campaign specific fields
+    if (campaignData.type === 'EquityCampaign') {
+      setValuation(campaignData.valuation?.toString() || '');
+      setTotalShares(campaignData.total_shares?.toString() || '');
+
+      // Set SEC filing fields
+      if (campaignData.equity_offering_details) {
+        setSecFilingUrl(
+          campaignData.equity_offering_details.sec_filing_url || '',
+        );
+        setOfferingCircularUrl(
+          campaignData.equity_offering_details.offering_circular_url || '',
+        );
+        setOfferingMemorandum(
+          campaignData.equity_offering_details.offering_memorandum || '',
+        );
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (id && typeof id === 'string') {
       fetchCampaignById(id)
         .then((campaignData: SingleCampaignResponseDataType) => {
           if (campaignData) {
-            setTitle(campaignData.title);
-            setGoalAmount(campaignData.goal_amount.toString());
-            setDescription(campaignData.description.body);
-            setImage(campaignData.media || '');
-            setCurrentAmount(campaignData.current_amount);
-            setStartDate(campaignData.start_date);
-            setEndDate(campaignData.end_date);
-            setCategory(campaignData.category);
-            setLocation(campaignData.location);
-            setCurrency(campaignData.currency);
-            setCurrencyCode(campaignData.currency_code);
-            setCurrencySymbol(campaignData.currency_symbol);
-            setStatus(campaignData.status);
-
-            // Set equity campaign specific fields
-            if (campaignData.type === 'EquityCampaign') {
-              setValuation(campaignData.valuation?.toString() || '');
-              setTotalShares(campaignData.total_shares?.toString() || '');
-
-              // Set SEC filing fields
-              if (campaignData.equity_offering_details) {
-                setSecFilingUrl(
-                  campaignData.equity_offering_details.sec_filing_url || '',
-                );
-                setOfferingCircularUrl(
-                  campaignData.equity_offering_details.offering_circular_url ||
-                    '',
-                );
-                setOfferingMemorandum(
-                  campaignData.equity_offering_details.offering_memorandum ||
-                    '',
-                );
-              }
-            }
+            updateAllStateFromCampaign(campaignData);
           }
         })
         .catch(() => setFetchError('Error fetching campaign details.'));
     }
-  }, [id, fetchCampaignById, fetchUserCampaigns]);
+  }, [id, fetchCampaignById, fetchUserCampaigns, updateAllStateFromCampaign]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -136,6 +139,15 @@ const EditCampaign = () => {
       editMode.field === 'offering_memorandum'
     ) {
       updatedData.append(`${rootKey}[${editMode.field}]`, newValue);
+      
+      // Update local state immediately for better UX
+      if (editMode.field === 'sec_filing_url') {
+        setSecFilingUrl(newValue);
+      } else if (editMode.field === 'offering_circular_url') {
+        setOfferingCircularUrl(newValue);
+      } else if (editMode.field === 'offering_memorandum') {
+        setOfferingMemorandum(newValue);
+      }
     } else if (
       editMode.field === 'offering_memorandum_file' &&
       offeringMemorandumFile
@@ -152,10 +164,38 @@ const EditCampaign = () => {
       updatedData.append(`${rootKey}[media]`, selectedImageFile);
     }
 
-    await editCampaign(id, updatedData);
-    await fetchCampaignById(String(id));
-    await fetchUserCampaigns();
-    setIsModalOpen(false);
+    try {
+      await editCampaign(id, updatedData);
+      
+      // Force refresh the campaign data to ensure UI is in sync
+      const refreshedCampaign = await fetchCampaignById(String(id));
+      if (refreshedCampaign) {
+        updateAllStateFromCampaign(refreshedCampaign);
+      }
+      
+      await fetchUserCampaigns();
+    } catch (error) {
+      console.error('Error saving campaign:', error);
+    } finally {
+      setIsModalOpen(false);
+    }
+  };
+
+  // Helper function to get display text for SEC filing fields
+  const getSecFieldDisplay = (value: string, fieldType: 'url' | 'text' | 'file') => {
+    if (!value) {
+      return fieldType === 'file' ? 'No file uploaded' : 'Not yet available';
+    }
+    
+    if (fieldType === 'url' && value) {
+      return value.length > 50 ? `${value.substring(0, 50)}...` : value;
+    }
+    
+    if (fieldType === 'text' && value) {
+      return value.length > 100 ? `${value.substring(0, 100)}...` : value;
+    }
+    
+    return value;
   };
 
   if (loading) return <EditCampaignsLoader />;
@@ -298,8 +338,8 @@ const EditCampaign = () => {
               <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
                 SEC Filing URL
               </h3>
-              <p className="text-gray-700 dark:text-gray-400">
-                {secFilingUrl || 'Not yet filed'}
+              <p className="text-gray-700 dark:text-gray-400 break-words">
+                {getSecFieldDisplay(secFilingUrl, 'url')}
               </p>
             </div>
 
@@ -316,8 +356,8 @@ const EditCampaign = () => {
               <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">
                 Offering Circular URL
               </h3>
-              <p className="text-gray-700 dark:text-gray-400">
-                {offeringCircularUrl || 'Not yet available'}
+              <p className="text-gray-700 dark:text-gray-400 break-words">
+                {getSecFieldDisplay(offeringCircularUrl, 'url')}
               </p>
             </div>
 
@@ -335,7 +375,7 @@ const EditCampaign = () => {
                 Offering Memorandum
               </h3>
               <p className="text-gray-700 dark:text-gray-400">
-                {offeringMemorandum ? 'Available' : 'Not yet available'}
+                {getSecFieldDisplay(offeringMemorandum, 'text')}
               </p>
             </div>
 
@@ -551,10 +591,10 @@ const EditCampaign = () => {
                 <FileUpload
                   file={offeringMemorandumFile}
                   onFileChange={setOfferingMemorandumFile}
-                  accept=".pdf,.doc,.docx"
+                  accept=".pdf"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Upload the offering memorandum document (PDF, DOC, DOCX)
+                  Upload the offering memorandum document (PDF)
                 </p>
               </>
             )}
