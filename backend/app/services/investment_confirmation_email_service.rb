@@ -8,7 +8,7 @@ class InvestmentConfirmationEmailService
     percentage = investment.percentage.round(4)
     amount = investment.amount.round(2)
     currency_symbol = campaign.currency_symbol
-    campaign_url = metadata[:redirect_url] || Rails.application.routes.url_helpers.campaign_url(campaign, host: 'bantuhive.com')
+    campaign_url = metadata[:redirect_url] || Rails.application.routes.url_helpers.campaign_url(campaign.slug, host: 'bantuhive.com')
 
     subject = "Your investment in #{campaign.company_name} is confirmed!"
     
