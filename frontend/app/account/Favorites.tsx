@@ -99,14 +99,14 @@ const Favorites = () => {
   return (
     <div className="px-2 py-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
           <div className="p-2 bg-green-500 rounded-lg">
-            <FaBookmark className="w-6 h-6 text-white" />
+            <FaBookmark className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Watchlist Feed</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-2xl font-bold text-gray-900">Watchlist Feed</h1>
+            <p className="text-sm text-gray-600 mt-1">
               {favoritedCampaigns.length > 0 
                 ? `Tracking ${favoritedCampaigns.length} campaign${favoritedCampaigns.length > 1 ? 's' : ''} you're interested in`
                 : 'Discover trending campaigns to add to your watchlist'
@@ -117,20 +117,20 @@ const Favorites = () => {
       </div>
 
       {/* Campaigns List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {displayCampaigns.length === 0 ? (
-          <div className="text-center p-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-            <div className="text-gray-400 mb-4">
-              <FaBookmark className="w-20 h-20 mx-auto opacity-40" />
+          <div className="text-center p-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+            <div className="text-gray-400 mb-3">
+              <FaBookmark className="w-16 h-16 mx-auto opacity-40" />
             </div>
-            <h3 className="text-2xl font-semibold text-gray-600 mb-3">
+            <h3 className="text-lg font-semibold text-gray-600 mb-2">
               Your Watchlist is Empty
             </h3>
-            <p className="text-gray-500 max-w-md mx-auto text-lg mb-6">
+            <p className="text-sm text-gray-500 max-w-md mx-auto mb-4">
               Start exploring campaigns and click the heart icon to add them to your watchlist for easy tracking.
             </p>
             <Link href="/invest">
-              <Button className="bg-green-500 text-white px-8 py-3 rounded-xl">
+              <Button className="bg-green-500 text-white px-6 py-2 rounded-lg text-sm">
                 Explore Campaigns
               </Button>
             </Link>
@@ -148,14 +148,14 @@ const Favorites = () => {
             return (
               <div
                 key={`watchlist-${campaign.id}`}
-                className="relative bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+                className="relative bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden"
               >
-                <div className="flex flex-col lg:flex-row">
-                  {/* Image Section */}
-                  <div className="relative lg:w-64 lg:flex-shrink-0">
+                <div className="flex">
+                  {/* Image Section - Smaller */}
+                  <div className="relative w-32 flex-shrink-0">
                     <Link
                       href={`/campaign/${campaign.slug || campaign.id}?${generateRandomString()}`}
-                      className="block relative w-full h-48 lg:h-full"
+                      className="block relative w-full h-32"
                     >
                       <Image
                         src={campaign.media || '/bantuhive.svg'}
@@ -169,9 +169,9 @@ const Favorites = () => {
                       />
                       
                       {/* Campaign Type Badge */}
-                      <div className="absolute top-3 left-3">
+                      <div className="absolute top-2 left-2">
                         <span
-                          className={`px-3 py-1.5 rounded-full text-xs font-semibold ${
+                          className={`px-2 py-1 rounded-full text-xs font-semibold ${
                             isEquityCampaign
                               ? 'bg-green-100 text-green-700 border border-green-200'
                               : 'bg-orange-100 text-orange-700 border border-orange-200'
@@ -184,28 +184,28 @@ const Favorites = () => {
                   </div>
 
                   {/* Content Section */}
-                  <div className="flex-1 p-6">
+                  <div className="flex-1 p-4">
                     <div className="flex flex-col h-full">
                       {/* Header Row */}
-                      <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <Link
                             href={`/campaign/${campaign.slug || campaign.id}?${generateRandomString()}`}
                             className="block"
                           >
-                            <h3 className="text-xl font-bold text-gray-900 line-clamp-2 mb-2">
+                            <h3 className="text-sm font-bold text-gray-900 line-clamp-1 mb-1">
                               {campaign.title}
                             </h3>
                           </Link>
                           
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <FaBuilding className="w-4 h-4 text-gray-400" />
-                            <span>{companyName}</span>
+                          <div className="flex items-center gap-1 text-xs text-gray-600">
+                            <FaBuilding className="w-3 h-3 text-gray-400" />
+                            <span className="line-clamp-1">{companyName}</span>
                             {isEquityCampaign && campaign.valuation && (
                               <>
                                 <span className="text-gray-300">•</span>
                                 <span className="font-medium text-green-600">
-                                  Valued at {formatCurrency(Number(campaign.valuation), campaign.currency)}
+                                  {formatCurrency(Number(campaign.valuation), campaign.currency)}
                                 </span>
                               </>
                             )}
@@ -216,78 +216,77 @@ const Favorites = () => {
                         <button
                           onClick={() => handleFavoriteClick(campaign.id.toString(), isFavorited)}
                           disabled={isFavoriting === campaign.id.toString() || !user}
-                          className="ml-4 p-3 bg-gray-50 rounded-xl disabled:opacity-50"
+                          className="ml-3 p-2 bg-gray-50 rounded-lg disabled:opacity-50"
                           aria-label={isFavorited ? "Remove from watchlist" : "Add to watchlist"}
                         >
                           {isFavoriting === campaign.id.toString() ? (
-                            <div className="w-5 h-5 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+                            <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
                           ) : isFavorited ? (
-                            <FaHeart className="w-5 h-5 text-green-500" />
+                            <FaHeart className="w-4 h-4 text-green-500" />
                           ) : (
-                            <FaRegHeart className="w-5 h-5 text-gray-400" />
+                            <FaRegHeart className="w-4 h-4 text-gray-400" />
                           )}
                         </button>
                       </div>
 
-                      {/* Stats Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center justify-center gap-2 mb-1">
-                            <FaDollarSign className="w-4 h-4 text-gray-600" />
-                            <span className="text-sm font-medium text-gray-700">Raised</span>
+                      {/* Stats Grid - Compact */}
+                      <div className="grid grid-cols-4 gap-2 mb-3">
+                        <div className="text-center p-2 bg-gray-50 rounded">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <FaDollarSign className="w-3 h-3 text-gray-600" />
+                            <span className="text-xs font-medium text-gray-700">Raised</span>
                           </div>
-                          <p className="text-lg font-bold text-gray-900">
+                          <p className="text-sm font-bold text-gray-900">
                             {formatCurrency(Number(campaign.transferred_amount || 0), campaign.currency)}
                           </p>
                         </div>
 
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center justify-center gap-2 mb-1">
-                            <FiTarget className="w-4 h-4 text-gray-600" />
-                            <span className="text-sm font-medium text-gray-700">Goal</span>
+                        <div className="text-center p-2 bg-gray-50 rounded">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <FiTarget className="w-3 h-3 text-gray-600" />
+                            <span className="text-xs font-medium text-gray-700">Goal</span>
                           </div>
-                          <p className="text-lg font-bold text-gray-900">
+                          <p className="text-sm font-bold text-gray-900">
                             {formatCurrency(Number(campaign.goal_amount || 0), campaign.currency)}
                           </p>
                         </div>
 
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center justify-center gap-2 mb-1">
-                            <FaUsers className="w-4 h-4 text-gray-600" />
-                            <span className="text-sm font-medium text-gray-700">
+                        <div className="text-center p-2 bg-gray-50 rounded">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <FaUsers className="w-3 h-3 text-gray-600" />
+                            <span className="text-xs font-medium text-gray-700">
                               {isEquityCampaign ? 'Investors' : 'Supporters'}
                             </span>
                           </div>
-                          <p className="text-lg font-bold text-gray-900">
+                          <p className="text-sm font-bold text-gray-900">
                             {campaign.total_investors || campaign.total_donors || 0}
                           </p>
                         </div>
 
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center justify-center gap-2 mb-1">
-                            <FaClock className="w-4 h-4 text-gray-600" />
-                            <span className="text-sm font-medium text-gray-700">Time Left</span>
+                        <div className="text-center p-2 bg-gray-50 rounded">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <FaClock className="w-3 h-3 text-gray-600" />
+                            <span className="text-xs font-medium text-gray-700">Days Left</span>
                           </div>
-                          <p className="text-lg font-bold text-gray-900">
-                            {campaign.remaining_days || 0} days
+                          <p className="text-sm font-bold text-gray-900">
+                            {campaign.remaining_days || 0}
                           </p>
                         </div>
                       </div>
 
                       {/* Progress Bar */}
-                      <div className="mb-4">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium text-gray-700">
-                            Progress: {progressPercentage.toFixed(1)}%
+                      <div className="mb-3">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-medium text-gray-700">
+                            {progressPercentage.toFixed(1)}%
                           </span>
-                          <span className="text-sm text-gray-500">
-                            {formatCurrency(Number(campaign.transferred_amount || 0), campaign.currency)} of{' '}
-                            {formatCurrency(Number(campaign.goal_amount || 0), campaign.currency)}
+                          <span className="text-xs text-gray-500">
+                            {formatCurrency(Number(campaign.transferred_amount || 0), campaign.currency)} / {formatCurrency(Number(campaign.goal_amount || 0), campaign.currency)}
                           </span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-green-500 h-3 rounded-full"
+                            className="bg-green-500 h-2 rounded-full"
                             style={{
                               width: `${progressPercentage}%`,
                             }}
@@ -296,25 +295,24 @@ const Favorites = () => {
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                        <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div className="flex items-center gap-2">
                           <Avatar
                             name={campaign.fundraiser?.profile?.name}
-                            size="sm"
+                            size="xs"
                             imageUrl={campaign.fundraiser?.profile?.avatar}
                           />
                           <div>
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-xs font-medium text-gray-900">
                               {campaign.fundraiser?.profile?.name || 'Anonymous'}
                             </p>
-                            <p className="text-xs text-gray-500">Campaign Creator</p>
                           </div>
                         </div>
                         
                         <Link
                           href={`/campaign/${campaign.slug || campaign.id}?tab=${isEquityCampaign ? 'invest' : 'donate'}&${generateRandomString()}`}
                         >
-                          <Button className="bg-green-500 text-white">
+                          <Button className="bg-green-500 text-white text-xs px-3 py-1 h-auto">
                             {isEquityCampaign ? 'Invest Now' : 'Donate Now'}
                           </Button>
                         </Link>
@@ -330,13 +328,13 @@ const Favorites = () => {
 
       {/* Empty State when showing all campaigns */}
       {favoritedCampaigns.length === 0 && displayCampaigns.length > 0 && (
-        <div className="text-center mt-8 p-6 bg-gray-50 rounded-2xl border border-gray-200">
-          <FaRegHeart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">
+        <div className="text-center mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <FaRegHeart className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+          <h3 className="text-sm font-semibold text-gray-700 mb-1">
             No campaigns in your watchlist yet
           </h3>
-          <p className="text-gray-600 mb-4">
-            Click the heart icon on any campaign to add it to your watchlist and track its progress here.
+          <p className="text-xs text-gray-600 mb-3">
+            Click the heart icon on any campaign to add it to your watchlist.
           </p>
         </div>
       )}
