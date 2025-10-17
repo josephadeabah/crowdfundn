@@ -541,8 +541,8 @@ const ProfileTabs = () => {
             {/* Header */}
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
-                  <GroupIcon className="w-5 h-5 text-white" />
+                <div className="w-6 h-6 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <Landmark className="w-5 h-5 text-gray-400" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h2 className="font-semibold text-gray-900 truncate">
