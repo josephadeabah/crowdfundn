@@ -425,7 +425,7 @@ const EquityInvestments = () => {
                 value={cancellationReason}
                 onChange={(e) => setCancellationReason(e.target.value)}
                 placeholder="Please provide a reason for cancelling this investment..."
-                className="mt-1 focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-gray-300"
+                className="mt-1"
               />
             </div>
             {selectedInvestment && (
