@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogClose,
 } from '@/app/components/ui/dialog';
 import { cn } from '@/app/lib/utils';
-import { X } from 'lucide-react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -31,18 +29,6 @@ const Modal: React.FC<ModalProps> = ({
   closeOnBackdropClick = true,
   customStyles = {},
 }) => {
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
-
   const sizeClasses = {
     small: 'max-w-sm',
     medium: 'max-w-md',
@@ -73,13 +59,7 @@ const Modal: React.FC<ModalProps> = ({
         onPointerDownOutside={closeOnBackdropClick ? undefined : (e) => e.preventDefault()}
         onInteractOutside={closeOnBackdropClick ? undefined : (e) => e.preventDefault()}
       >
-        {/* Custom close button */}
-        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-3 w-3" />
-          <span className="sr-only">Close</span>
-        </DialogClose>
-        
-        <div className="mt-4">{children}</div>
+        {children}
       </DialogContent>
     </Dialog>
   );
