@@ -501,7 +501,7 @@ const EquityInvestments = () => {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-teal-800 mb-1">
-                    🕒 48-Hour Review Period
+                    48-Hour Review Period
                   </p>
                   <p className="text-xs text-teal-700">
                     Your committed investments can be cancelled within the next 48 hours.
@@ -513,14 +513,14 @@ const EquityInvestments = () => {
           )}
 
           {/* Professional Disclaimer Banner */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="bg-blue-50 rounded-lg p-4 mb-6">
             <div className="flex items-start gap-3">
               <FaInfoCircle className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm text-blue-800 font-medium mb-1">
+                <p className="text-sm text-blue-600 font-medium mb-1">
                   Investment Information Notice
                 </p>
-                <p className="text-xs text-blue-700">
+                <p className="text-xs text-blue-500">
                   The figures shown, returns and current values are based on
                   careful projections and may change. While some results may
                   align with these estimates, the final terms will always be set
