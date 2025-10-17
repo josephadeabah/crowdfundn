@@ -49,7 +49,7 @@ const EquityInvestments = () => {
     downloadCertificate,
     checkCertificateStatus,
     certificateError,
-    cancelInvestment, // ADD THIS
+    cancelInvestment,
   } = useEquityCampaignContext();
   const { user } = useAuth();
   const router = useRouter();
@@ -74,6 +74,19 @@ const EquityInvestments = () => {
   useEffect(() => {
     fetchPortfolio(currentPage, itemsPerPage);
   }, [fetchPortfolio, currentPage, itemsPerPage]);
+
+  // Temporary debug - remove after fixing
+  useEffect(() => {
+    if (portfolio?.investments) {
+      console.log('All investments:', portfolio.investments);
+      console.log('Investment statuses:', portfolio.investments.map(inv => ({
+        id: inv.id,
+        status: inv.status,
+        committed: inv.status === 'committed',
+        canBeCancelled: inv.can_be_cancelled
+      })));
+    }
+  }, [portfolio]);
 
   const parseNumber = (
     value: string | number | undefined,
@@ -135,9 +148,21 @@ const EquityInvestments = () => {
     setCancellationReason('');
   };
 
-  // Helper function to check if investment can be cancelled
+  // Enhanced function to check if investment can be cancelled
   const canBeCancelled = (investment: EquityInvestment): boolean => {
-    return investment.status === 'committed' && investment.can_be_cancelled;
+    if (investment.status !== 'committed') return false;
+    
+    // Check if we have cancellation window data
+    if (investment.can_be_cancelled !== undefined) {
+      return investment.can_be_cancelled;
+    }
+    
+    // Fallback: check if cancel window exists and is in future
+    if (investment.cancel_window_expires_at) {
+      return new Date(investment.cancel_window_expires_at) > new Date();
+    }
+    
+    return false;
   };
 
   // Helper function to get time remaining for cancellation
@@ -156,15 +181,25 @@ const EquityInvestments = () => {
     return `${diffHours}h ${diffMinutes}m`;
   };
 
-  // Filter out non-successful investments for display purposes only
-  const filterSuccessfulInvestments = (investments: EquityInvestment[]) => {
+  // FIXED: Filter to include committed investments for display
+  const filterDisplayInvestments = (investments: EquityInvestment[]) => {
     return investments.filter(
-      (investment) => investment.status === 'successful',
+      (investment) => 
+        investment.status === 'successful' || 
+        investment.status === 'committed' ||
+        investment.status === 'pending' ||
+        investment.status === 'processing'
     );
   };
 
-  const successfulInvestments = filterSuccessfulInvestments(
+  // FIXED: Use display investments instead of only successful
+  const displayInvestments = filterDisplayInvestments(
     portfolio?.investments || [],
+  );
+
+  // FIXED: For charts, only use successful investments
+  const successfulInvestmentsForCharts = displayInvestments.filter(
+    inv => inv.status === 'successful'
   );
 
   const handleDownloadCertificate = async (investmentId: string) => {
@@ -226,15 +261,14 @@ const EquityInvestments = () => {
   // Calculate pagination data - Use the backend-provided portfolio data
   const totalItems =
     portfolio?.portfolio?.total_invested_count ||
-    portfolio?.investments?.length ||
+    displayInvestments.length ||
     0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  // Get current items - Use the investments array from the portfolio response
+  // FIXED: Use display investments for pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentInvestments =
-    portfolio?.investments?.slice(indexOfFirstItem, indexOfLastItem) || [];
+  const currentInvestments = displayInvestments.slice(indexOfFirstItem, indexOfLastItem);
 
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -244,39 +278,39 @@ const EquityInvestments = () => {
     router.push(`/campaign/${identifier}?${generateRandomString()}`);
   };
 
-  // Helper function to get status badge styling
+  // Enhanced helper function to get status badge styling
   const getStatusBadgeStyle = (status: string) => {
     switch (status) {
       case 'successful':
-        return 'bg-green-100 text-green-800';
-      case 'committed': // ADD THIS
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-green-100 text-green-800 border border-green-300';
+      case 'committed':
+        return 'bg-blue-100 text-blue-800 border border-blue-300 font-semibold';
       case 'pending':
       case 'processing':
       case 'ongoing':
       case 'queued':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 border border-yellow-300';
       case 'failed':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 border border-red-300';
       case 'abandoned':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 border border-gray-300';
       case 'reversed':
       case 'refunded':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-purple-100 text-purple-800 border border-purple-300';
       case 'canceled':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-orange-100 text-orange-800 border border-orange-300';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 border border-gray-300';
     }
   };
 
-  // Helper function to get status display text
+  // Enhanced helper function to get status display text
   const getStatusDisplayText = (status: string) => {
     switch (status) {
       case 'successful':
         return 'Successful';
-      case 'committed': // ADD THIS
-        return 'Committed';
+      case 'committed':
+        return 'Committed • Cancel Available';
       case 'pending':
         return 'Pending';
       case 'processing':
@@ -296,7 +330,7 @@ const EquityInvestments = () => {
       case 'canceled':
         return 'Canceled';
       default:
-        return status;
+        return status.charAt(0).toUpperCase() + status.slice(1);
     }
   };
 
@@ -325,7 +359,7 @@ const EquityInvestments = () => {
     switch (status) {
       case 'successful':
         return `You invested ${formattedAmount} in ${campaignName}`;
-      case 'committed': // ADD THIS
+      case 'committed':
         return `You committed ${formattedAmount} to ${campaignName} (48-hour cancellation window)`;
       case 'pending':
       case 'processing':
@@ -455,7 +489,7 @@ const EquityInvestments = () => {
 
       {/* Performance Charts Section - Use successful investments only */}
       <PerformanceCharts
-        investments={successfulInvestments}
+        investments={successfulInvestmentsForCharts}
         currency={user?.currency}
         currencySymbol={user?.currency_symbol}
       />
@@ -500,7 +534,7 @@ const EquityInvestments = () => {
             </div>
           </div>
 
-          {portfolio.investments?.length === 0 ? (
+          {displayInvestments.length === 0 ? (
             <div className="p-6 text-center">
               <p className="text-gray-600">
                 You haven't made any investments yet
@@ -838,8 +872,8 @@ const EquityInvestments = () => {
         </h3>
 
         <div className="space-y-6">
-          {portfolio.investments
-            ?.slice(0, 3)
+          {displayInvestments
+            .slice(0, 3)
             .map((investment: EquityInvestment) => {
               const amount = formatCurrency(
                 parseNumber(investment.amount),

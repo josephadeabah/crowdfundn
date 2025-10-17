@@ -121,7 +121,10 @@ export interface EquityInvestment extends Investment {
     | 'failed'
     | 'cancelled'
     | 'refunded'
-    | 'committed';
+    | 'committed'
+    | 'processing'
+    | 'completed'
+    | 'failed';
   payment_method?: string;
   transaction_id?: string;
   investor_details?: {
@@ -218,7 +221,7 @@ export interface InvestmentCreateResponse {
 export interface InvestmentUpdatePayload {
   amount?: number;
   shares?: number;
-  status?: 'pending' | 'completed' | 'cancelled' | 'refunded' | 'committed';
+  status?: 'pending' | 'completed' | 'cancelled' | 'refunded' | 'committed' | 'successful' | 'failed' | 'processing';
   metadata?: any;
 }
 
