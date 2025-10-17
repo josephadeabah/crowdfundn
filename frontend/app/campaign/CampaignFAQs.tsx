@@ -11,7 +11,6 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
   campaign,
   isEquityCampaign,
 }) => {
-  // Only show FAQs for equity campaigns
   if (!isEquityCampaign) {
     return (
       <div className="bg-white rounded-2xl p-8 text-center">
@@ -22,7 +21,7 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
           Investment Information
         </h3>
         <p className="text-gray-600">
-          Investment FAQs are available for equity investment campaigns only.
+          Investment FAQs apply only to licensed equity crowdfunding campaigns in Ghana.
         </p>
       </div>
     );
@@ -32,52 +31,57 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
     {
       question: 'Who can invest in this equity campaign?',
       answer:
-        'Both accredited and non-accredited investors in Ghana can participate. There are no specific income or net worth requirements for equity crowdfunding in Ghana under current regulations.',
+        'Any individual or institutional investor above 18 years of age can invest, subject to identity verification (KYC) and anti-money laundering checks. Both Ghanaian and approved foreign investors may participate in line with SEC Ghana crowdfunding rules.',
     },
     {
       question: 'What is the minimum investment amount?',
       answer:
-        'The minimum investment for this campaign is GHS 0.50. This makes equity investment accessible to a wide range of investors across Ghana.',
+        'Each campaign sets its own minimum investment, but it must not be lower than the platform’s approved minimum threshold. This ensures fairness and compliance with SEC Ghana’s crowdfunding guidelines.',
     },
     {
-      question: 'How does the 48-hour cancellation window work?',
+      question: 'How does the 48-hour cooling-off period work?',
       answer:
-        'After making an investment, you have 48 hours to cancel it. This gives you time to reconsider your decision. After 48 hours, your investment becomes final and cannot be cancelled.',
+        'After confirming your investment, you have up to 48 hours to cancel and receive a full refund — no questions asked. Once this period expires, your commitment becomes final unless the campaign fails to reach its minimum target.',
     },
     {
       question: 'What happens after I invest?',
       answer:
-        "Once the campaign closes successfully, you will receive a digital investment certificate and become a shareholder in the company. You'll own a percentage of the business based on your investment amount.",
+        "Your funds are held securely in an escrow or trust account with a licensed financial institution until the campaign closes. If the campaign meets its minimum goal, the funds are released to the issuer and you will receive a digital investment certificate confirming your equity ownership.",
     },
     {
       question: 'Can I sell my shares later?',
       answer:
-        'Currently, there is no established secondary market for these shares in Ghana. However, the company may provide liquidity options in the future, or you may be able to sell your shares through private arrangements, subject to applicable securities regulations.',
+        'Currently, Ghana has no public secondary market for privately issued shares through crowdfunding. You may, however, transfer or sell your shares privately in compliance with Ghana’s Companies Act and SEC regulations.',
     },
     {
-      question: 'What are the risks of equity investment?',
+      question: 'What are the risks of investing?',
       answer:
-        "Like all investments, equity crowdfunding carries risks including potential loss of capital. Startups and growing businesses may fail, and there's no guarantee of returns. Only invest money you can afford to lose.",
+        'All investments carry risk, including potential loss of capital. Early-stage businesses can fail or take longer to become profitable. Returns are not guaranteed, and investors should invest only what they can afford to lose.',
     },
     {
-      question: 'How are my funds protected?',
+      question: 'How are my funds protected before the campaign closes?',
       answer:
-        'Your investment funds are held securely through our payment partners. Bantuhive follows strict financial protocols to ensure the safety of investor funds throughout the campaign process.',
+        'Investor funds are kept in a segregated escrow or trust account managed by a licensed bank or trustee. The platform cannot access these funds until the campaign’s minimum target is met and verified by the intermediary.',
     },
     {
       question: 'What information will I receive as an investor?',
       answer:
-        "You will receive regular updates about the company's progress, financial performance, and major developments. The frequency and detail of these updates depend on the company's communication policy.",
+        "Investors will receive updates on the company's progress, financial performance, and major milestones. Platforms are required under SEC rules to ensure issuers provide timely updates to investors at least quarterly.",
     },
     {
-      question: 'Can international investors participate?',
+      question: 'Can foreign investors participate?',
       answer:
-        'Currently, this offering is primarily focused on Ghana-based investors. International investors should consult with legal advisors regarding cross-border investment regulations in their jurisdiction.',
+        'Yes, foreign investors are permitted, provided they comply with Ghana’s foreign exchange and investment regulations. All international investors must complete KYC verification and agree to SEC Ghana’s investor protection terms.',
     },
     {
-      question: "What happens if the campaign doesn't reach its funding goal?",
+      question: "What happens if the campaign doesn't reach its minimum funding goal?",
       answer:
-        "If the campaign doesn't reach its minimum funding target, all investments will be refunded to investors in full. You will not be charged any fees if the campaign is unsuccessful.",
+        "If the campaign fails to meet its minimum funding target, all investor funds are refunded in full from the escrow account. No fees or deductions are applied to refunds under SEC Ghana’s crowdfunding guidelines.",
+    },
+    {
+      question: 'Are my returns guaranteed?',
+      answer:
+        'No. Equity investments depend on the future performance of the company. Dividends or capital gains are not guaranteed and may depend on profitability or future exit events.',
     },
   ];
 
@@ -91,9 +95,8 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
           Investment FAQs
         </h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Important information about investing in{' '}
-          {campaign?.company_info?.name || 'this company'}. Please read
-          carefully before making your investment decision.
+          Key information for investors participating in{' '}
+          {campaign?.company_info?.name || 'this company'}’s equity crowdfunding campaign.
         </p>
       </div>
 
@@ -115,20 +118,36 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
         ))}
       </div>
 
-      {/* Important Disclaimer */}
-      <div className="mt-8 p-6 bg-yellow-50 border border-yellow-200 rounded-xl">
+      {/* SEC Ghana Compliance Notice */}
+      <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-xl">
+        <div className="flex items-start">
+          <span className="text-green-600 text-lg mr-3 mt-0.5">✅</span>
+          <div>
+            <h4 className="font-semibold text-green-800 mb-2">
+              SEC Ghana Crowdfunding Compliance Notice
+            </h4>
+            <p className="text-green-700 text-sm leading-relaxed">
+              This campaign is operated in compliance with the Securities and Exchange Commission (SEC) 
+              of Ghana’s Crowdfunding Guidelines (2024). All investor funds are managed in accordance 
+              with SEC investor protection, anti-money laundering (AML), and escrow requirements.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Important Legal Disclaimer */}
+      <div className="mt-6 p-6 bg-yellow-50 border border-yellow-200 rounded-xl">
         <div className="flex items-start">
           <span className="text-yellow-600 text-lg mr-3 mt-0.5">⚠️</span>
           <div>
             <h4 className="font-semibold text-yellow-800 mb-2">
-              Important Notice
+              Important Legal Notice
             </h4>
             <p className="text-yellow-700 text-sm leading-relaxed">
-              Equity investment involves risk, including potential loss of
-              capital. This information is for educational purposes only and
-              does not constitute investment advice. You should consult with a
-              qualified financial advisor before making any investment
-              decisions. Past performance is not indicative of future results.
+              Investments on this platform are made under Ghana’s Securities and Exchange Commission (SEC)
+              Crowdfunding Guidelines (2024). Equity crowdfunding involves risk, including the potential loss 
+              of capital. This content is for educational purposes only and does not constitute investment advice. 
+              Please consult a licensed advisor before making investment decisions.
             </p>
           </div>
         </div>
