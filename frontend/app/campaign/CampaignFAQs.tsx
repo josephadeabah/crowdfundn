@@ -42,7 +42,7 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
     {
       question: 'How does the 48-hour cooling-off period work?',
       answer:
-        'After confirming your investment, you have up to 48 hours to cancel and receive a full refund — no questions asked. Once this period expires, your commitment becomes final unless the campaign fails to reach its minimum target.',
+        'After committing your investment, you have up to 48 hours to cancel and receive a full refund — no questions asked. Once this period expires, your commitment becomes final unless the campaign fails to reach its minimum target.',
     },
     {
       question: 'What happens after I invest?',
