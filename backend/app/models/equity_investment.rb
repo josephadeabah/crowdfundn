@@ -45,6 +45,12 @@ class EquityInvestment < ApplicationRecord
   validates :status, inclusion: { in: VALID_STATUSES }
 
   scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
+  scope :committed, -> { where(status: STATUS_COMMITTED) }
+  # Add scope for cancellable investments
+  scope :cancellable, -> { 
+    where(status: STATUS_COMMITTED)
+    .where('cancel_window_expires_at > ?', Time.current)
+  }
 
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
@@ -54,12 +60,6 @@ class EquityInvestment < ApplicationRecord
   before_save :update_current_value, if: -> { campaign_id_changed? || percentage_changed? || will_save_change_to_percentage? }
   # Add callback to set commitment timestamp
   before_save :set_commitment_timestamps, if: -> { will_save_change_to_status?(to: STATUS_COMMITTED) }
-
-  # Add scope for cancellable investments
-  scope :cancellable, -> { 
-    where(status: STATUS_COMMITTED)
-    .where('cancel_window_expires_at > ?', Time.current)
-  }
 
   # Status query methods
   def pending?
