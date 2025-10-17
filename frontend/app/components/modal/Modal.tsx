@@ -4,8 +4,8 @@ import {
   DialogContent,
   DialogClose,
 } from '@/app/components/ui/dialog';
-import { FaTimes } from 'react-icons/fa';
 import { cn } from '@/app/lib/utils';
+import { X } from 'lucide-react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -75,7 +75,7 @@ const Modal: React.FC<ModalProps> = ({
       >
         {/* Custom close button */}
         <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <FaTimes className="h-6 w-6" />
+          <X className="h-3 w-3" />
           <span className="sr-only">Close</span>
         </DialogClose>
         
