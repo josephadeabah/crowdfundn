@@ -386,6 +386,8 @@ module Api
             investor_name: investment.full_name,
             investor_email: investment.email,
             phone: investment.phone,
+            finalized: false,
+            cancellation_window_ended: false,
             metadata: investment.metadata
           }
 
