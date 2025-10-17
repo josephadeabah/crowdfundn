@@ -135,6 +135,13 @@ const EquityInvestments = () => {
     setCancellationReason('');
   };
 
+  // Add this function near your other helper functions, after canBeCancelled
+  const hasCancellableInvestments = (
+    investments: EquityInvestment[],
+  ): boolean => {
+    return investments.some((investment) => canBeCancelled(investment));
+  };
+
   // Enhanced function to check if investment can be cancelled
   const canBeCancelled = (investment: EquityInvestment): boolean => {
     if (investment.status !== 'committed') return false;
@@ -486,21 +493,23 @@ const EquityInvestments = () => {
           <h2 className="text-xl font-semibold mb-4">Your Investments</h2>
 
           {/* Cancellation Notice Banner */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <FaClock className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm text-blue-800 font-medium mb-1">
-                  48-Hour Cancellation Window
-                </p>
-                <p className="text-xs text-blue-700">
-                  You can cancel committed investments within 48 hours. After
-                  this period, investments will be finalized and cannot be
-                  cancelled.
-                </p>
+          {hasCancellableInvestments(displayInvestments) && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <FaClock className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm text-blue-800 font-medium mb-1">
+                    48-Hour Cancellation Window
+                  </p>
+                  <p className="text-xs text-blue-700">
+                    You can cancel committed investments within 48 hours. After
+                    this period, investments will be finalized and cannot be
+                    cancelled.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Professional Disclaimer Banner */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
