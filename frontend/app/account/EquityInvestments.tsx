@@ -26,18 +26,10 @@ import {
 } from '@/app/components/ui/accordion';
 import Avatar from '../components/avatar/Avatar';
 import { FaInfoCircle, FaTimes, FaClock } from 'react-icons/fa';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/app/components/ui/dialog';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { Textarea } from '@/app/components/ui/textarea';
+import Modal from '../components/modal/Modal';
 
 const EquityInvestments = () => {
   const {
@@ -404,17 +396,25 @@ const EquityInvestments = () => {
 
   return (
     <div className="px-2 py-4">
-      {/* Cancellation Dialog */}
-      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Cancel Investment</DialogTitle>
-            <DialogDescription>
+      {/* Cancellation Modal - Replaced Dialog with Modal */}
+      <Modal
+        isOpen={showCancelDialog}
+        onClose={closeCancelDialog}
+        size="medium"
+        closeOnBackdropClick={true}
+      >
+        <div className="space-y-4">
+          <div className="text-center sm:text-left">
+            <h2 className="text-lg font-semibold leading-none tracking-tight">
+              Cancel Investment
+            </h2>
+            <p className="text-sm text-muted-foreground mt-2">
               Are you sure you want to cancel your investment in{' '}
               {selectedInvestment?.campaign?.company_name}? This action cannot
               be undone.
-            </DialogDescription>
-          </DialogHeader>
+            </p>
+          </div>
+
           <div className="space-y-4">
             <div>
               <Label htmlFor="cancellation-reason">
@@ -439,11 +439,13 @@ const EquityInvestments = () => {
               </div>
             )}
           </div>
-          <DialogFooter>
+
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2">
             <Button
               variant="outline"
               onClick={closeCancelDialog}
               disabled={cancellingInvestment !== null}
+              className="sm:mt-0"
             >
               Keep Investment
             </Button>
@@ -456,9 +458,9 @@ const EquityInvestments = () => {
             >
               {cancellingInvestment ? 'Cancelling...' : 'Cancel Investment'}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        </div>
+      </Modal>
 
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-gray-800">Equity Investments</h1>
