@@ -276,25 +276,25 @@ const EquityInvestments = () => {
   const getStatusBadgeStyle = (status: string) => {
     switch (status) {
       case 'successful':
-        return 'bg-green-100 text-green-800 border border-green-300';
+        return 'bg-green-100 text-green-800';
       case 'committed':
-        return 'bg-blue-100 text-blue-800 border border-blue-300 font-semibold';
+        return 'bg-blue-100 text-blue-800';
       case 'pending':
       case 'processing':
       case 'ongoing':
       case 'queued':
-        return 'bg-yellow-100 text-yellow-800 border border-yellow-300';
+        return 'bg-yellow-100 text-yellow-800';
       case 'failed':
-        return 'bg-red-100 text-red-800 border border-red-300';
+        return 'bg-red-100 text-red-800';
       case 'abandoned':
-        return 'bg-gray-100 text-gray-800 border border-gray-300';
+        return 'bg-gray-100 text-gray-800';
       case 'reversed':
       case 'refunded':
-        return 'bg-purple-100 text-purple-800 border border-purple-300';
+        return 'bg-purple-100 text-purple-800';
       case 'canceled':
-        return 'bg-orange-100 text-orange-800 border border-orange-300';
+        return 'bg-orange-100 text-orange-800';
       default:
-        return 'bg-gray-100 text-gray-800 border border-gray-300';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
