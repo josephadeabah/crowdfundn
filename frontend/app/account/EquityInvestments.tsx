@@ -75,15 +75,16 @@ const EquityInvestments = () => {
     fetchPortfolio(currentPage, itemsPerPage);
   }, [fetchPortfolio, currentPage, itemsPerPage]);
 
-  // Temporary debug - remove after fixing
+  // Debug logging to see what investments we're getting
   useEffect(() => {
     if (portfolio?.investments) {
-      console.log('All investments:', portfolio.investments);
-      console.log('Investment statuses:', portfolio.investments.map(inv => ({
+      console.log('🔍 ALL INVESTMENTS:', portfolio.investments);
+      console.log('🔍 INVESTMENT STATUSES:', portfolio.investments.map(inv => ({
         id: inv.id,
         status: inv.status,
         committed: inv.status === 'committed',
-        canBeCancelled: inv.can_be_cancelled
+        can_be_cancelled: inv.can_be_cancelled,
+        cancel_window_expires_at: inv.cancel_window_expires_at
       })));
     }
   }, [portfolio]);
@@ -150,24 +151,31 @@ const EquityInvestments = () => {
 
   // Enhanced function to check if investment can be cancelled
   const canBeCancelled = (investment: EquityInvestment): boolean => {
-    if (investment.status !== 'committed') return false;
+    if (investment.status !== 'committed') {
+      console.log(`❌ Investment ${investment.id} not cancellable: status is ${investment.status}`);
+      return false;
+    }
     
-    // Check if we have cancellation window data
+    // Check if we have explicit can_be_cancelled flag
     if (investment.can_be_cancelled !== undefined) {
+      console.log(`✅ Investment ${investment.id} cancellable: can_be_cancelled = ${investment.can_be_cancelled}`);
       return investment.can_be_cancelled;
     }
     
     // Fallback: check if cancel window exists and is in future
     if (investment.cancel_window_expires_at) {
-      return new Date(investment.cancel_window_expires_at) > new Date();
+      const canCancel = new Date(investment.cancel_window_expires_at) > new Date();
+      console.log(`⏰ Investment ${investment.id} cancellable check: ${canCancel} (expires: ${investment.cancel_window_expires_at})`);
+      return canCancel;
     }
     
+    console.log(`❌ Investment ${investment.id} not cancellable: no cancellation window data`);
     return false;
   };
 
   // Helper function to get time remaining for cancellation
   const getTimeRemaining = (investment: EquityInvestment): string => {
-    if (!investment.cancel_window_expires_at) return '';
+    if (!investment.cancel_window_expires_at) return 'No cancellation window';
 
     const expiresAt = new Date(investment.cancel_window_expires_at);
     const now = new Date();
@@ -181,23 +189,25 @@ const EquityInvestments = () => {
     return `${diffHours}h ${diffMinutes}m`;
   };
 
-  // FIXED: Filter to include committed investments for display
+  // FIXED: Include committed investments in display
   const filterDisplayInvestments = (investments: EquityInvestment[]) => {
-    return investments.filter(
+    const filtered = investments.filter(
       (investment) => 
         investment.status === 'successful' || 
         investment.status === 'committed' ||
         investment.status === 'pending' ||
         investment.status === 'processing'
     );
+    console.log(`📊 Displaying ${filtered.length} investments:`, filtered.map(inv => ({ id: inv.id, status: inv.status })));
+    return filtered;
   };
 
-  // FIXED: Use display investments instead of only successful
+  // FIXED: Use the correct filtered investments
   const displayInvestments = filterDisplayInvestments(
     portfolio?.investments || [],
   );
 
-  // FIXED: For charts, only use successful investments
+  // For charts, only use successful investments
   const successfulInvestmentsForCharts = displayInvestments.filter(
     inv => inv.status === 'successful'
   );
@@ -258,11 +268,8 @@ const EquityInvestments = () => {
     }
   };
 
-  // Calculate pagination data - Use the backend-provided portfolio data
-  const totalItems =
-    portfolio?.portfolio?.total_invested_count ||
-    displayInvestments.length ||
-    0;
+  // Calculate pagination data - Use the display investments
+  const totalItems = displayInvestments.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // FIXED: Use display investments for pagination
@@ -595,6 +602,13 @@ const EquityInvestments = () => {
                       );
                       const isCancellable = canBeCancelled(investment);
                       const timeRemaining = getTimeRemaining(investment);
+
+                      console.log(`🎯 Investment ${investment.id}:`, {
+                        status: investment.status,
+                        isCancellable,
+                        can_be_cancelled: investment.can_be_cancelled,
+                        cancel_window_expires_at: investment.cancel_window_expires_at
+                      });
 
                       return (
                         <>
