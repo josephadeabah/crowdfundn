@@ -692,8 +692,12 @@ const Campaigns: React.FC = () => {
       <Modal
         isOpen={isTeamDocumentsModalOpen}
         onClose={() => setIsTeamDocumentsModalOpen(false)}
-        size="full"
+        size="xxxlarge"
         closeOnBackdropClick={true}
+        customStyles={{
+          width: '95vw',
+          maxWidth: '1200px',
+        }}
       >
         <div className="p-4">
           <h2 className="text-xl font-semibold mb-4">
