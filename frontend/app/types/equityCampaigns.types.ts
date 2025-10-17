@@ -221,7 +221,15 @@ export interface InvestmentCreateResponse {
 export interface InvestmentUpdatePayload {
   amount?: number;
   shares?: number;
-  status?: 'pending' | 'completed' | 'cancelled' | 'refunded' | 'committed' | 'successful' | 'failed' | 'processing';
+  status?:
+    | 'pending'
+    | 'completed'
+    | 'cancelled'
+    | 'refunded'
+    | 'committed'
+    | 'successful'
+    | 'failed'
+    | 'processing';
   metadata?: any;
 }
 

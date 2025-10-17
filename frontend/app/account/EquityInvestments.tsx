@@ -75,20 +75,6 @@ const EquityInvestments = () => {
     fetchPortfolio(currentPage, itemsPerPage);
   }, [fetchPortfolio, currentPage, itemsPerPage]);
 
-  // Debug logging to see what investments we're getting
-  useEffect(() => {
-    if (portfolio?.investments) {
-      console.log('🔍 ALL INVESTMENTS:', portfolio.investments);
-      console.log('🔍 INVESTMENT STATUSES:', portfolio.investments.map(inv => ({
-        id: inv.id,
-        status: inv.status,
-        committed: inv.status === 'committed',
-        can_be_cancelled: inv.can_be_cancelled,
-        cancel_window_expires_at: inv.cancel_window_expires_at
-      })));
-    }
-  }, [portfolio]);
-
   const parseNumber = (
     value: string | number | undefined,
     fallback = 0,
@@ -151,25 +137,18 @@ const EquityInvestments = () => {
 
   // Enhanced function to check if investment can be cancelled
   const canBeCancelled = (investment: EquityInvestment): boolean => {
-    if (investment.status !== 'committed') {
-      console.log(`❌ Investment ${investment.id} not cancellable: status is ${investment.status}`);
-      return false;
-    }
-    
+    if (investment.status !== 'committed') return false;
+
     // Check if we have explicit can_be_cancelled flag
     if (investment.can_be_cancelled !== undefined) {
-      console.log(`✅ Investment ${investment.id} cancellable: can_be_cancelled = ${investment.can_be_cancelled}`);
       return investment.can_be_cancelled;
     }
-    
+
     // Fallback: check if cancel window exists and is in future
     if (investment.cancel_window_expires_at) {
-      const canCancel = new Date(investment.cancel_window_expires_at) > new Date();
-      console.log(`⏰ Investment ${investment.id} cancellable check: ${canCancel} (expires: ${investment.cancel_window_expires_at})`);
-      return canCancel;
+      return new Date(investment.cancel_window_expires_at) > new Date();
     }
-    
-    console.log(`❌ Investment ${investment.id} not cancellable: no cancellation window data`);
+
     return false;
   };
 
@@ -189,27 +168,25 @@ const EquityInvestments = () => {
     return `${diffHours}h ${diffMinutes}m`;
   };
 
-  // FIXED: Include committed investments in display
+  // Include committed investments in display
   const filterDisplayInvestments = (investments: EquityInvestment[]) => {
-    const filtered = investments.filter(
-      (investment) => 
-        investment.status === 'successful' || 
+    return investments.filter(
+      (investment) =>
+        investment.status === 'successful' ||
         investment.status === 'committed' ||
         investment.status === 'pending' ||
-        investment.status === 'processing'
+        investment.status === 'processing',
     );
-    console.log(`📊 Displaying ${filtered.length} investments:`, filtered.map(inv => ({ id: inv.id, status: inv.status })));
-    return filtered;
   };
 
-  // FIXED: Use the correct filtered investments
+  // Use the correct filtered investments
   const displayInvestments = filterDisplayInvestments(
     portfolio?.investments || [],
   );
 
   // For charts, only use successful investments
   const successfulInvestmentsForCharts = displayInvestments.filter(
-    inv => inv.status === 'successful'
+    (inv) => inv.status === 'successful',
   );
 
   const handleDownloadCertificate = async (investmentId: string) => {
@@ -272,10 +249,13 @@ const EquityInvestments = () => {
   const totalItems = displayInvestments.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  // FIXED: Use display investments for pagination
+  // Use display investments for pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentInvestments = displayInvestments.slice(indexOfFirstItem, indexOfLastItem);
+  const currentInvestments = displayInvestments.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
 
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -602,13 +582,6 @@ const EquityInvestments = () => {
                       );
                       const isCancellable = canBeCancelled(investment);
                       const timeRemaining = getTimeRemaining(investment);
-
-                      console.log(`🎯 Investment ${investment.id}:`, {
-                        status: investment.status,
-                        isCancellable,
-                        can_be_cancelled: investment.can_be_cancelled,
-                        cancel_window_expires_at: investment.cancel_window_expires_at
-                      });
 
                       return (
                         <>
