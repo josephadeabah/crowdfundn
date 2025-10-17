@@ -35,9 +35,10 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
         'Any individual or institutional investor aged 18 or older can invest, subject to identity verification (KYC) and anti-money laundering checks. Both Ghanaian and approved foreign investors may participate in line with SEC Ghana crowdfunding rules.',
     },
     {
-      question: 'What is the minimum investment amount?',
+      question:
+        'What is the minimum investment amount, and who is eligible to invest?',
       answer:
-        'Each campaign sets its own minimum investment, but it must not be lower than the platform’s approved minimum threshold. This ensures fairness and compliance with SEC Ghana’s crowdfunding guidelines.',
+        'Under SEC Ghana’s crowdfunding rules, any individual or institution with a verifiable source of income may invest, provided they meet KYC and AML requirements. Each campaign sets its own minimum investment, but it cannot be lower than the platform’s approved threshold (usually ₵100–₵1,000). High-net-worth individuals and institutional investors may invest larger amounts, subject to applicable regulatory limits.',
     },
     {
       question: 'How does the 48-hour cooling-off period work?',
