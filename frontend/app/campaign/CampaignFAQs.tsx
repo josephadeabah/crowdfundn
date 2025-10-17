@@ -32,7 +32,7 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
     {
       question: 'Who can invest in this equity campaign?',
       answer:
-        'Any individual or institutional investor above 18 years of age can invest, subject to identity verification (KYC) and anti-money laundering checks. Both Ghanaian and approved foreign investors may participate in line with SEC Ghana crowdfunding rules.',
+        'Any individual or institutional investor aged 18 or older can invest, subject to identity verification (KYC) and anti-money laundering checks. Both Ghanaian and approved foreign investors may participate in line with SEC Ghana crowdfunding rules.',
     },
     {
       question: 'What is the minimum investment amount?',
@@ -42,7 +42,7 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
     {
       question: 'How does the 48-hour cooling-off period work?',
       answer:
-        'After committing your investment, you have up to 48 hours to cancel and receive a full refund — no questions asked. Once this period expires, your commitment becomes final unless the campaign fails to reach its minimum target.',
+        'After committing your investment, you have up to 48 hours to cancel and receive a full refund — no questions asked. Once this period expires, your commitment becomes final unless the campaign fails to reach its minimum funding target.',
     },
     {
       question: 'What happens after I invest?',
@@ -52,22 +52,22 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
     {
       question: 'Can I sell my shares later?',
       answer:
-        'Currently, Ghana has no public secondary market for privately issued shares through crowdfunding. You may, however, transfer or sell your shares privately in compliance with Ghana’s Companies Act and SEC regulations.',
+        'Currently, Ghana has no public secondary market for privately issued shares through crowdfunding. However, you may transfer or sell your shares privately in compliance with Ghana’s Companies Act and SEC regulations.',
     },
     {
       question: 'What are the risks of investing?',
       answer:
-        'All investments carry risk, including potential loss of capital. Early-stage businesses can fail or take longer to become profitable. Returns are not guaranteed, and investors should invest only what they can afford to lose.',
+        'All investments carry risk, including potential loss of capital. Early-stage businesses can fail or take longer to become profitable. Returns are not guaranteed, and investors should only invest money they can afford to lose.',
     },
     {
       question: 'How are my funds protected before the campaign closes?',
       answer:
-        'Investor funds are kept in a segregated escrow or trust account managed by a licensed bank or trustee. The platform cannot access these funds until the campaign’s minimum target is met and verified by the intermediary.',
+        'Investor funds are kept in a segregated escrow or trust account managed by a licensed bank or trustee. BantuHive cannot access these funds until the campaign’s minimum target is met and verified by the intermediary.',
     },
     {
       question: 'What information will I receive as an investor?',
       answer:
-        "Investors will receive updates on the company's progress, financial performance, and major milestones. Platforms are required under SEC rules to ensure issuers provide timely updates to investors at least quarterly.",
+        "Investors will receive updates on the company's progress, financial performance, and major milestones. BantuHive ensures that issuers provide timely updates to investors at least quarterly.",
     },
     {
       question: 'Can foreign investors participate?',
@@ -78,12 +78,12 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
       question:
         "What happens if the campaign doesn't reach its minimum funding goal?",
       answer:
-        'If the campaign fails to meet its minimum funding target, all investor funds are refunded in full from the escrow account. No fees or deductions are applied to refunds under SEC Ghana’s crowdfunding guidelines.',
+        'If the campaign fails to meet its minimum funding target, all investor funds are refunded in full from the escrow account. Please note that standard payment processing fees may be deducted as per the platform’s refund policy.',
     },
     {
       question: 'Are my returns guaranteed?',
       answer:
-        'No. Equity investments depend on the future performance of the company. Dividends or capital gains are not guaranteed and may depend on profitability or future exit events.',
+        'No. Equity investments depend on the future performance of the company. Dividends or capital gains are not guaranteed and may depend on profitability or future exit events. However, if the issuer is an established company, it may have a track record of financial performance to consider. Please review all offering documents carefully before investing.',
     },
   ];
 

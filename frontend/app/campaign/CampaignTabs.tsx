@@ -105,7 +105,8 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
                     ? '💬'
                     : selectedTab === 'backers'
                       ? '👥'
-                      : '💡'} {/* FAQs icon */}
+                      : '💡'}{' '}
+              {/* FAQs icon */}
             </span>
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -120,7 +121,8 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
                   ? 'Community discussions and feedback'
                   : selectedTab === 'backers'
                     ? 'Campaign supporters and investors list'
-                    : 'Investment frequently asked questions'} {/* FAQs description */}
+                    : 'Investment frequently asked questions'}{' '}
+            {/* FAQs description */}
           </p>
         </div>
       </div>
