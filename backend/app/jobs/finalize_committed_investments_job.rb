@@ -21,13 +21,14 @@ class FinalizeCommittedInvestmentsJob < ApplicationJob
 
         campaign.update_transferred_amount(investment.net_amount)
         
+        campaign_identifier = campaign.slug || campaign.id
         # Send final confirmation using existing service
         InvestmentConfirmationEmailService.send_confirmation_email(
           investment: investment,
           recipient_email: investment.email,
           recipient_name: investment.user&.full_name || investment.full_name || 'Investor',
           metadata: {
-            redirect_url: Rails.application.routes.url_helpers.campaign_url(campaign, host: 'bantuhive.com'),
+            redirect_url: Rails.application.routes.url_helpers.campaign_url(campaign_identifier, host: 'bantuhive.com'),
             finalized: true, # Add flag to indicate this is after cancellation window
             cancellation_window_ended: true
           }
