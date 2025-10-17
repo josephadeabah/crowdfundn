@@ -25,7 +25,19 @@ import {
   AccordionTrigger,
 } from '@/app/components/ui/accordion';
 import Avatar from '../components/avatar/Avatar';
-import { FaInfoCircle } from 'react-icons/fa';
+import { FaInfoCircle, FaTimes, FaClock } from 'react-icons/fa';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/app/components/ui/dialog';
+import { Input } from '@/app/components/ui/input';
+import { Label } from '@/app/components/ui/label';
+import { Textarea } from '@/app/components/ui/textarea';
 
 const EquityInvestments = () => {
   const {
@@ -37,6 +49,7 @@ const EquityInvestments = () => {
     downloadCertificate,
     checkCertificateStatus,
     certificateError,
+    cancelInvestment, // ADD THIS
   } = useEquityCampaignContext();
   const { user } = useAuth();
   const router = useRouter();
@@ -47,6 +60,13 @@ const EquityInvestments = () => {
   const [certificateOperations, setCertificateOperations] = useState<{
     [key: string]: boolean;
   }>({});
+  const [cancellingInvestment, setCancellingInvestment] = useState<
+    string | null
+  >(null);
+  const [cancellationReason, setCancellationReason] = useState('');
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [selectedInvestment, setSelectedInvestment] =
+    useState<EquityInvestment | null>(null);
   const [expandedInvestments, setExpandedInvestments] = useState<Set<number>>(
     new Set(),
   );
@@ -72,6 +92,68 @@ const EquityInvestments = () => {
       newExpanded.add(investmentId);
     }
     setExpandedInvestments(newExpanded);
+  };
+
+  // Enhanced cancellation handler
+  const handleCancelInvestment = async () => {
+    if (!selectedInvestment || !cancellationReason.trim()) return;
+
+    setCancellingInvestment(selectedInvestment.id.toString());
+
+    try {
+      const result = await cancelInvestment(
+        selectedInvestment.id.toString(),
+        cancellationReason.trim(),
+      );
+
+      if (result.success) {
+        // Refresh portfolio data
+        await fetchPortfolio(currentPage, itemsPerPage);
+        setShowCancelDialog(false);
+        setCancellationReason('');
+        setSelectedInvestment(null);
+      } else {
+        console.error('Failed to cancel investment:', result.error);
+        // You might want to show a toast notification here
+      }
+    } catch (error) {
+      console.error('Error cancelling investment:', error);
+    } finally {
+      setCancellingInvestment(null);
+    }
+  };
+
+  const openCancelDialog = (investment: EquityInvestment) => {
+    setSelectedInvestment(investment);
+    setCancellationReason('');
+    setShowCancelDialog(true);
+  };
+
+  const closeCancelDialog = () => {
+    setShowCancelDialog(false);
+    setSelectedInvestment(null);
+    setCancellationReason('');
+  };
+
+  // Helper function to check if investment can be cancelled
+  const canBeCancelled = (investment: EquityInvestment): boolean => {
+    return investment.status === 'committed' && investment.can_be_cancelled;
+  };
+
+  // Helper function to get time remaining for cancellation
+  const getTimeRemaining = (investment: EquityInvestment): string => {
+    if (!investment.cancel_window_expires_at) return '';
+
+    const expiresAt = new Date(investment.cancel_window_expires_at);
+    const now = new Date();
+    const diffMs = expiresAt.getTime() - now.getTime();
+
+    if (diffMs <= 0) return 'Expired';
+
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${diffHours}h ${diffMinutes}m`;
   };
 
   // Filter out non-successful investments for display purposes only
@@ -167,6 +249,8 @@ const EquityInvestments = () => {
     switch (status) {
       case 'successful':
         return 'bg-green-100 text-green-800';
+      case 'committed': // ADD THIS
+        return 'bg-blue-100 text-blue-800';
       case 'pending':
       case 'processing':
       case 'ongoing':
@@ -191,6 +275,8 @@ const EquityInvestments = () => {
     switch (status) {
       case 'successful':
         return 'Successful';
+      case 'committed': // ADD THIS
+        return 'Committed';
       case 'pending':
         return 'Pending';
       case 'processing':
@@ -239,6 +325,8 @@ const EquityInvestments = () => {
     switch (status) {
       case 'successful':
         return `You invested ${formattedAmount} in ${campaignName}`;
+      case 'committed': // ADD THIS
+        return `You committed ${formattedAmount} to ${campaignName} (48-hour cancellation window)`;
       case 'pending':
       case 'processing':
       case 'ongoing':
@@ -288,6 +376,62 @@ const EquityInvestments = () => {
 
   return (
     <div className="px-2 py-4">
+      {/* Cancellation Dialog */}
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Investment</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel your investment in{' '}
+              {selectedInvestment?.campaign?.company_name}? This action cannot
+              be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="cancellation-reason">
+                Reason for cancellation
+              </Label>
+              <Textarea
+                id="cancellation-reason"
+                value={cancellationReason}
+                onChange={(e) => setCancellationReason(e.target.value)}
+                placeholder="Please provide a reason for cancelling this investment..."
+                className="mt-1"
+              />
+            </div>
+            {selectedInvestment && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <div className="flex items-center gap-2 text-yellow-800">
+                  <FaClock className="flex-shrink-0" />
+                  <span className="text-sm font-medium">
+                    Time remaining: {getTimeRemaining(selectedInvestment)}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={closeCancelDialog}
+              disabled={cancellingInvestment !== null}
+            >
+              Keep Investment
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleCancelInvestment}
+              disabled={
+                !cancellationReason.trim() || cancellingInvestment !== null
+              }
+            >
+              {cancellingInvestment ? 'Cancelling...' : 'Cancel Investment'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-gray-800">Equity Investments</h1>
         <div className="flex space-x-4">
@@ -319,6 +463,24 @@ const EquityInvestments = () => {
       <div className="bg-white rounded-lg shadow overflow-hidden mb-8 mt-8">
         <div className="px-2 py-4">
           <h2 className="text-xl font-semibold mb-4">Your Investments</h2>
+
+          {/* Cancellation Notice Banner */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <FaClock className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm text-blue-800 font-medium mb-1">
+                  48-Hour Cancellation Window
+                </p>
+                <p className="text-xs text-blue-700">
+                  You can cancel committed investments within 48 hours. After
+                  this period, investments will be finalized and cannot be
+                  cancelled.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Professional Disclaimer Banner */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-start gap-3">
@@ -397,6 +559,8 @@ const EquityInvestments = () => {
                       const canDownloadCertificate = canHaveCertificate(
                         investment.status,
                       );
+                      const isCancellable = canBeCancelled(investment);
+                      const timeRemaining = getTimeRemaining(investment);
 
                       return (
                         <>
@@ -421,6 +585,12 @@ const EquityInvestments = () => {
                                     `Campaign ${investment.campaign_id}`}
                                 </div>
                               </div>
+                              {isCancellable && (
+                                <div className="flex items-center gap-1 mt-1 text-xs text-blue-600">
+                                  <FaClock className="flex-shrink-0" />
+                                  <span>Cancel within: {timeRemaining}</span>
+                                </div>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               {formatCurrency(
@@ -490,35 +660,56 @@ const EquityInvestments = () => {
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <Button
-                                className="text-orange-600 hover:text-orange-900 mr-4"
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  handleViewCampaignDetails(investment)
-                                }
-                              >
-                                View
-                              </Button>
-                              {canDownloadCertificate && (
+                              <div className="flex items-center justify-end gap-2">
                                 <Button
+                                  className="text-orange-600 hover:text-orange-900"
                                   variant="outline"
                                   size="sm"
                                   onClick={() =>
-                                    handleDownloadCertificate(
-                                      investment.id.toString(),
-                                    )
+                                    handleViewCampaignDetails(investment)
                                   }
-                                  disabled={isCertificateLoading}
-                                  className="text-blue-600 hover:text-blue-900"
                                 >
-                                  {isCertificateLoading
-                                    ? 'Loading...'
-                                    : hasCertificate
-                                      ? 'Certificate'
-                                      : 'Generate Certificate'}
+                                  View
                                 </Button>
-                              )}
+
+                                {/* Cancel Button for Committed Investments */}
+                                {isCancellable && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => openCancelDialog(investment)}
+                                    disabled={
+                                      cancellingInvestment ===
+                                      investment.id.toString()
+                                    }
+                                    className="text-red-600 hover:text-red-900 border-red-200"
+                                  >
+                                    <FaTimes className="mr-1" />
+                                    Cancel
+                                  </Button>
+                                )}
+
+                                {/* Certificate Button for Successful Investments */}
+                                {canDownloadCertificate && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      handleDownloadCertificate(
+                                        investment.id.toString(),
+                                      )
+                                    }
+                                    disabled={isCertificateLoading}
+                                    className="text-blue-600 hover:text-blue-900"
+                                  >
+                                    {isCertificateLoading
+                                      ? 'Loading...'
+                                      : hasCertificate
+                                        ? 'Certificate'
+                                        : 'Generate Certificate'}
+                                  </Button>
+                                )}
+                              </div>
                             </td>
                           </tr>
                           {isExpanded && (
@@ -639,6 +830,8 @@ const EquityInvestments = () => {
           )}
         </div>
       </div>
+
+      {/* Recent Activity Section */}
       <div className="bg-white p-6 rounded-xl shadow-sm mt-8">
         <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
           <span className="text-pink-500">💫</span> Recent Activity
@@ -720,7 +913,9 @@ const EquityInvestments = () => {
                     ⏰{' '}
                     {investment.status === 'successful'
                       ? 'Invested'
-                      : 'Attempted'}{' '}
+                      : investment.status === 'committed'
+                        ? 'Committed'
+                        : 'Attempted'}{' '}
                     on {date}
                   </p>
                 </div>

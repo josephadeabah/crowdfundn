@@ -74,6 +74,13 @@ export interface PaginationData {
   total_count: number;
 }
 
+export type CancellationResponse = {
+  success: boolean;
+  message?: string;
+  investment?: EquityInvestment;
+  error?: string;
+};
+
 export interface Investment {
   investor_name: string;
   amount: number;
@@ -108,7 +115,13 @@ export interface EquityInvestment extends Investment {
     number: string;
   };
 
-  status: 'pending' | 'successful' | 'failed' | 'cancelled' | 'refunded';
+  status:
+    | 'pending'
+    | 'successful'
+    | 'failed'
+    | 'cancelled'
+    | 'refunded'
+    | 'committed';
   payment_method?: string;
   transaction_id?: string;
   investor_details?: {
@@ -137,6 +150,8 @@ export interface EquityInvestment extends Investment {
     currency?: string; // Add this
     currency_symbol?: string; // Add this
   };
+  cancel_window_expires_at?: string; // New field for cancellation window
+  can_be_cancelled: boolean; // New field to indicate if the investment can be cancelled
   // Add company and team information
   company_info?: CompanyInfo;
   team_members?: CampaignTeamMember[];
@@ -203,7 +218,7 @@ export interface InvestmentCreateResponse {
 export interface InvestmentUpdatePayload {
   amount?: number;
   shares?: number;
-  status?: 'pending' | 'completed' | 'cancelled' | 'refunded';
+  status?: 'pending' | 'completed' | 'cancelled' | 'refunded' | 'committed';
   metadata?: any;
 }
 
@@ -274,6 +289,10 @@ export interface EquityCampaignState extends Omit<CampaignState, 'pagination'> {
     campaignId: string,
     investment: InvestmentCreatePayload,
   ) => Promise<InvestmentCreateResponse>;
+  cancelInvestment: (
+    investmentId: string,
+    reason: string,
+  ) => Promise<CancellationResponse>;
   fetchInvestmentDetails: (
     investmentId: string,
   ) => Promise<EquityInvestment | null>;

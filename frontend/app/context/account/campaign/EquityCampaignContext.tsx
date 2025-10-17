@@ -21,6 +21,7 @@ import {
   InvestmentUpdatePayload,
   Investment,
   PaginationData,
+  CancellationResponse,
 } from '@/app/types/equityCampaigns.types';
 import { getDetailedErrorMessage } from '@/app/types/campaign.error.messages.types';
 import { parseNumber } from '@/app/utils/helpers/generate.random-string';
@@ -838,6 +839,80 @@ export const EquityCampaignProvider = ({
     [token],
   );
 
+  // Add to EquityCampaignContext.tsx
+  const cancelInvestment = useCallback(
+    async (
+      investmentId: string,
+      reason: string,
+    ): Promise<CancellationResponse> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/equity_investments/${investmentId}/cancel`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ cancellation: { reason } }),
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          return {
+            success: false,
+            error: data.error || 'Cancellation failed',
+          };
+        }
+
+        // Update local state to reflect cancellation
+        setInvestments((prev) =>
+          prev.map((inv) =>
+            inv.id === Number(investmentId)
+              ? { ...inv, status: 'canceled', ...data.investment }
+              : inv,
+          ),
+        );
+
+        // Also update portfolio if it exists
+        if (portfolio) {
+          setPortfolio((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              investments: prev?.investments?.map((inv) =>
+                inv.id === Number(investmentId)
+                  ? { ...inv, status: 'canceled', ...data.investment }
+                  : inv,
+              ),
+            };
+          });
+        }
+
+        return {
+          success: true,
+          message: data.message || 'Investment cancelled successfully',
+          investment: data.investment,
+        };
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Cancellation failed';
+        setError(errorMessage);
+        return {
+          success: false,
+          error: errorMessage,
+        };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token, portfolio],
+  );
+
   const fetchInvestmentDetails = useCallback(
     async (investmentId: string): Promise<any> => {
       setLoading(true);
@@ -1252,6 +1327,7 @@ export const EquityCampaignProvider = ({
       fetchPortfolio,
       updateInvestment,
       deleteInvestment,
+      cancelInvestment,
 
       // Document actions
       fetchDocuments,
@@ -1296,6 +1372,7 @@ export const EquityCampaignProvider = ({
       fetchPortfolio,
       updateInvestment,
       deleteInvestment,
+      cancelInvestment,
       fetchDocuments,
       getDocument,
       createDocument,
