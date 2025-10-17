@@ -336,7 +336,7 @@ const ProfileTabs = () => {
           {/* Header */}
           <div className="p-4 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                 <Landmark className="w-5 h-5 text-gray-400" />
               </div>
               <div className="min-w-0 flex-1">
@@ -496,7 +496,7 @@ const ProfileTabs = () => {
               <DropdownMenuIcon className="w-5 h-5" />
             </button>
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                 <Landmark className="w-5 h-5 text-gray-400" />
               </div>
               <div className="min-w-0 flex-1">
@@ -541,7 +541,7 @@ const ProfileTabs = () => {
             {/* Header */}
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center space-x-3">
-                <div className="w-6 h-6 bg-gray-50 rounded-lg flex items-center justify-center">
+                <div className="w-6 h-6 bg-white rounded-lg flex items-center justify-center">
                   <Landmark className="w-5 h-5 text-gray-400" />
                 </div>
                 <div className="min-w-0 flex-1">
