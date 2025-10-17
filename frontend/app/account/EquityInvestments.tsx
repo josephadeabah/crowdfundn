@@ -25,17 +25,7 @@ import {
   AccordionTrigger,
 } from '@/app/components/ui/accordion';
 import Avatar from '../components/avatar/Avatar';
-import { 
-  FaInfoCircle, 
-  FaTimes, 
-  FaClock, 
-  FaDownload, 
-  FaEye,
-  FaRocket,
-  FaChartLine,
-  FaHistory,
-  FaGlobeAmericas
-} from 'react-icons/fa';
+import { FaInfoCircle, FaTimes, FaClock } from 'react-icons/fa';
 import {
   Dialog,
   DialogContent,
@@ -282,29 +272,29 @@ const EquityInvestments = () => {
     router.push(`/campaign/${identifier}?${generateRandomString()}`);
   };
 
-  // Modern status badge styling
+  // Enhanced helper function to get status badge styling
   const getStatusBadgeStyle = (status: string) => {
     switch (status) {
       case 'successful':
-        return 'bg-emerald-500/10 text-emerald-700 border border-emerald-200';
+        return 'bg-green-100 text-green-800 border border-green-300';
       case 'committed':
-        return 'bg-blue-500/10 text-blue-700 border border-blue-200 font-semibold';
+        return 'bg-blue-100 text-blue-800 border border-blue-300 font-semibold';
       case 'pending':
       case 'processing':
       case 'ongoing':
       case 'queued':
-        return 'bg-amber-500/10 text-amber-700 border border-amber-200';
+        return 'bg-yellow-100 text-yellow-800 border border-yellow-300';
       case 'failed':
-        return 'bg-red-500/10 text-red-700 border border-red-200';
+        return 'bg-red-100 text-red-800 border border-red-300';
       case 'abandoned':
-        return 'bg-gray-500/10 text-gray-700 border border-gray-200';
+        return 'bg-gray-100 text-gray-800 border border-gray-300';
       case 'reversed':
       case 'refunded':
-        return 'bg-purple-500/10 text-purple-700 border border-purple-200';
+        return 'bg-purple-100 text-purple-800 border border-purple-300';
       case 'canceled':
-        return 'bg-orange-500/10 text-orange-700 border border-orange-200';
+        return 'bg-orange-100 text-orange-800 border border-orange-300';
       default:
-        return 'bg-gray-500/10 text-gray-700 border border-gray-200';
+        return 'bg-gray-100 text-gray-800 border border-gray-300';
     }
   };
 
@@ -312,13 +302,13 @@ const EquityInvestments = () => {
   const getStatusDisplayText = (status: string) => {
     switch (status) {
       case 'successful':
-        return 'Active';
+        return 'Successful';
       case 'committed':
-        return 'Pending • Cancel Available';
+        return 'Committed • Cancel Available';
       case 'pending':
-        return 'Processing';
+        return 'Pending';
       case 'processing':
-        return 'Verifying';
+        return 'Processing';
       case 'ongoing':
         return 'In Progress';
       case 'queued':
@@ -348,23 +338,55 @@ const EquityInvestments = () => {
     return status === 'successful';
   };
 
+  // Helper function to get investment action text based on status
+  const getInvestmentActionText = (
+    status: string,
+    amount: string,
+    campaignName: string,
+  ) => {
+    const formattedAmount = formatCurrency(
+      parseNumber(amount),
+      user?.currency || 'GHS',
+      user?.currency_symbol || '₵',
+    );
+
+    switch (status) {
+      case 'successful':
+        return `You invested ${formattedAmount} in ${campaignName}`;
+      case 'committed':
+        return `You committed ${formattedAmount} to ${campaignName} (48-hour cancellation window)`;
+      case 'pending':
+      case 'processing':
+      case 'ongoing':
+      case 'queued':
+        return `You attempted to invest ${formattedAmount} in ${campaignName}`;
+      case 'failed':
+        return `Your investment of ${formattedAmount} in ${campaignName} failed`;
+      case 'abandoned':
+        return `You abandoned your ${formattedAmount} investment in ${campaignName}`;
+      case 'reversed':
+      case 'refunded':
+        return `Your ${formattedAmount} investment in ${campaignName} was refunded`;
+      case 'canceled':
+        return `You canceled your ${formattedAmount} investment in ${campaignName}`;
+      default:
+        return `Investment activity with ${campaignName}`;
+    }
+  };
+
   if (loading) {
     return <EquityInvestmentsLoader />;
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 p-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-sm border border-red-200 p-6">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl text-red-600">⚠️</span>
-              </div>
-              <h3 className="text-lg font-semibold text-red-800 mb-2">Error Loading Portfolio</h3>
-              <p className="text-red-600">{error}</p>
-            </div>
-          </div>
+      <div className="px-2 py-4">
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{error}</span>
         </div>
       </div>
     );
@@ -372,40 +394,30 @@ const EquityInvestments = () => {
 
   if (!portfolio) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 p-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
-            <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <FaChartLine className="text-2xl text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Portfolio Data</h3>
-            <p className="text-gray-600 mb-6">Start building your investment portfolio today.</p>
-            <Link href="/invest">
-              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl px-8 py-3 shadow-lg">
-                Explore Investment Opportunities
-              </Button>
-            </Link>
-          </div>
+      <div className="px-2 py-4">
+        <div className="bg-white rounded-lg shadow p-6">
+          <p className="text-gray-600">No portfolio data available</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 p-4">
+    <div className="px-2 py-4">
       {/* Cancellation Dialog */}
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <DialogContent className="bg-white rounded-2xl border-0 shadow-xl">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-gray-900">Cancel Investment</DialogTitle>
-            <DialogDescription className="text-gray-600">
+            <DialogTitle>Cancel Investment</DialogTitle>
+            <DialogDescription>
               Are you sure you want to cancel your investment in{' '}
-              {selectedInvestment?.campaign?.company_name}? This action cannot be undone.
+              {selectedInvestment?.campaign?.company_name}? This action cannot
+              be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="cancellation-reason" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="cancellation-reason">
                 Reason for cancellation
               </Label>
               <Textarea
@@ -413,12 +425,12 @@ const EquityInvestments = () => {
                 value={cancellationReason}
                 onChange={(e) => setCancellationReason(e.target.value)}
                 placeholder="Please provide a reason for cancelling this investment..."
-                className="mt-1 rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1"
               />
             </div>
             {selectedInvestment && (
-              <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-                <div className="flex items-center gap-2 text-amber-800">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <div className="flex items-center gap-2 text-yellow-800">
                   <FaClock className="flex-shrink-0" />
                   <span className="text-sm font-medium">
                     Time remaining: {getTimeRemaining(selectedInvestment)}
@@ -432,7 +444,6 @@ const EquityInvestments = () => {
               variant="outline"
               onClick={closeCancelDialog}
               disabled={cancellingInvestment !== null}
-              className="rounded-xl border-gray-300 hover:bg-gray-50"
             >
               Keep Investment
             </Button>
@@ -442,445 +453,506 @@ const EquityInvestments = () => {
               disabled={
                 !cancellationReason.trim() || cancellingInvestment !== null
               }
-              className="rounded-xl bg-red-600 hover:bg-red-700"
             >
-              {cancellingInvestment ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Cancelling...
-                </div>
-              ) : (
-                'Cancel Investment'
-              )}
+              {cancellingInvestment ? 'Cancelling...' : 'Cancel Investment'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
-          <div>
-            <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent mb-2">
-              Investment Portfolio
-            </h1>
-            <p className="text-gray-600 text-lg">Track and manage your equity investments</p>
-          </div>
-          <div className="flex gap-3 mt-4 lg:mt-0">
-            <Link href="/invest">
-              <Button className="bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-xl px-6 py-3 shadow-sm flex items-center gap-2">
-                <FaRocket className="text-blue-600" />
-                Browse Startups
-              </Button>
-            </Link>
-          </div>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold text-gray-800">Equity Investments</h1>
+        <div className="flex space-x-4">
+          <Link href="/invest">
+            <Button
+              variant="outline"
+              className="text-gray-700 rounded-full shadow-sm"
+            >
+              Browse Founders
+            </Button>
+          </Link>
         </div>
+      </div>
 
-        {/* Portfolio Summary */}
-        <PortfolioSummary
-          portfolio={portfolio?.portfolio}
-          currency={user?.currency}
-          currencySymbol={user?.currency_symbol}
-        />
+      {/* Use the backend-calculated portfolio summary */}
+      <PortfolioSummary
+        portfolio={portfolio?.portfolio}
+        currency={user?.currency}
+        currencySymbol={user?.currency_symbol}
+      />
 
-        {/* Performance Charts */}
-        <PerformanceCharts
-          investments={successfulInvestmentsForCharts}
-          currency={user?.currency}
-          currencySymbol={user?.currency_symbol}
-        />
+      {/* Performance Charts Section - Use successful investments only */}
+      <PerformanceCharts
+        investments={successfulInvestmentsForCharts}
+        currency={user?.currency}
+        currencySymbol={user?.currency_symbol}
+      />
 
-        {/* Investments Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8">
-          <div className="p-6 lg:p-8">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
+      <div className="bg-white rounded-lg shadow overflow-hidden mb-8 mt-8">
+        <div className="px-2 py-4">
+          <h2 className="text-xl font-semibold mb-4">Your Investments</h2>
+
+          {/* Cancellation Notice Banner */}
+          {hasCancellableInvestments(displayInvestments) && (
+            <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-300 rounded-lg p-4 mb-6 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="bg-orange-500 p-2 rounded-full flex-shrink-0 mt-0.5">
+                  <FaClock className="text-white text-sm" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-orange-800 mb-1">
+                    ⚡ 48-Hour Cancellation Window
+                  </p>
+                  <p className="text-xs text-orange-700">
+                    You can cancel committed investments within 48 hours. After
+                    this period, investments will be finalized and cannot be
+                    cancelled.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Professional Disclaimer Banner */}
+          <div className="bg-blue-50 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <FaInfoCircle className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Investments</h2>
-                <p className="text-gray-600">Active and pending equity positions</p>
-              </div>
-              <div className="flex items-center gap-2 mt-4 lg:mt-0">
-                <span className="text-sm text-gray-500">
-                  {displayInvestments.length} investment{displayInvestments.length !== 1 ? 's' : ''}
-                </span>
-              </div>
-            </div>
-
-            {/* Dynamic Banners */}
-            <div className="space-y-4 mb-6">
-              {/* Cancellation Notice Banner */}
-              {hasCancellableInvestments(displayInvestments) && (
-                <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-200 shadow-sm">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-orange-500 p-2 rounded-lg flex-shrink-0 mt-0.5">
-                      <FaClock className="text-white text-sm" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-orange-800 mb-1">
-                        ⚡ Pending Investments - 48-Hour Review Period
-                      </p>
-                      <p className="text-xs text-orange-700">
-                        You have investments that can be cancelled within the next 48 hours. 
-                        Review your commitments before they are finalized.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Professional Disclaimer Banner */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200 shadow-sm">
-                <div className="flex items-start gap-3">
-                  <div className="bg-blue-500 p-2 rounded-lg flex-shrink-0 mt-0.5">
-                    <FaInfoCircle className="text-white text-sm" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-blue-800 mb-1">
-                      Investment Information
-                    </p>
-                    <p className="text-xs text-blue-700">
-                      Values shown are based on current company valuations and may fluctuate. 
-                      Past performance is not indicative of future results.
-                    </p>
-                  </div>
-                </div>
+                <p className="text-sm text-blue-600 font-medium mb-1">
+                  Investment Information Notice
+                </p>
+                <p className="text-xs text-blue-500">
+                  The figures shown, returns and current values are based on
+                  careful projections and may change. While some results may
+                  align with these estimates, the final terms will always be set
+                  out in the investment instrument and agreement between you and
+                  the company.
+                </p>
               </div>
             </div>
+          </div>
 
-            {displayInvestments.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <FaChartLine className="text-2xl text-gray-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Investments Yet</h3>
-                <p className="text-gray-600 mb-6">Start building your portfolio by investing in promising startups.</p>
-                <Link href="/invest">
-                  <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl px-8 py-3 shadow-lg">
-                    Explore Investment Opportunities
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <>
-                {/* Modern Table */}
-                <div className="overflow-hidden rounded-xl border border-gray-200">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                          Company
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                          Investment
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                          Ownership
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                          Current Value
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                          Performance
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {currentInvestments.map((investment: EquityInvestment) => {
-                        const investmentAmount = parseNumber(investment.amount);
-                        const currentValue = hasValueData(investment.status)
-                          ? parseNumber(investment.current_value, investmentAmount)
-                          : investmentAmount;
-                        const investmentReturn = currentValue - investmentAmount;
-                        const returnPct = investmentAmount > 0 ? (investmentReturn / investmentAmount) * 100 : 0;
+          {displayInvestments.length === 0 ? (
+            <div className="p-6 text-center">
+              <p className="text-gray-600">
+                You haven't made any investments yet
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Company
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Invested
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Shares
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Current Value
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Return
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {currentInvestments.map((investment: EquityInvestment) => {
+                      const investmentAmount = parseNumber(investment.amount);
+                      const currentValue = hasValueData(investment.status)
+                        ? parseNumber(
+                            investment.current_value,
+                            investmentAmount,
+                          )
+                        : investmentAmount;
+                      const investmentReturn = currentValue - investmentAmount;
+                      const returnPct =
+                        investmentAmount > 0
+                          ? (investmentReturn / investmentAmount) * 100
+                          : 0;
 
-                        const isCertificateLoading = certificateOperations[investment.id];
-                        const hasCertificate = investment.certificate_exists || investment.certificate?.exists;
-                        const isExpanded = expandedInvestments.has(investment.id);
-                        const canDownloadCertificate = canHaveCertificate(investment.status);
-                        const isCancellable = canBeCancelled(investment);
-                        const timeRemaining = getTimeRemaining(investment);
+                      const isCertificateLoading =
+                        certificateOperations[investment.id];
+                      const hasCertificate =
+                        investment.certificate_exists ||
+                        investment.certificate?.exists;
+                      const isExpanded = expandedInvestments.has(investment.id);
+                      const canDownloadCertificate = canHaveCertificate(
+                        investment.status,
+                      );
+                      const isCancellable = canBeCancelled(investment);
+                      const timeRemaining = getTimeRemaining(investment);
 
-                        return (
-                          <>
-                            <tr key={investment.id} className="hover:bg-gray-50/50 transition-colors group">
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => toggleInvestmentDetails(investment.id)}
-                                    className="mr-3 rounded-lg hover:bg-gray-200"
+                      return (
+                        <>
+                          <tr
+                            key={investment.id}
+                            className="hover:bg-gray-50 transition-colors"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    toggleInvestmentDetails(investment.id)
+                                  }
+                                  className="mr-2"
+                                >
+                                  {isExpanded ? '−' : '+'}
+                                </Button>
+                                <div className="font-medium text-gray-900">
+                                  {investment.campaign?.company_name ||
+                                    `Campaign ${investment.campaign_id}`}
+                                </div>
+                              </div>
+                              {isCancellable && (
+                                <div className="flex items-center gap-1 mt-1 text-xs text-orange-600">
+                                  <FaClock className="flex-shrink-0 text-xs" />
+                                  <span>Cancel within: {timeRemaining}</span>
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {formatCurrency(
+                                investmentAmount,
+                                investment.currency || user?.currency,
+                                investment.currency_symbol ||
+                                  user?.currency_symbol,
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {parseNumber(investment.shares).toLocaleString()}{' '}
+                              ({parseNumber(investment.percentage).toFixed(2)}%)
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {hasValueData(investment.status) ? (
+                                formatCurrency(
+                                  currentValue,
+                                  investment.currency || user?.currency,
+                                  investment.currency_symbol ||
+                                    user?.currency_symbol,
+                                )
+                              ) : (
+                                <span className="text-gray-400">N/A</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {hasValueData(investment.status) ? (
+                                <div className="flex flex-col">
+                                  <span
+                                    className={`font-medium ${
+                                      investmentReturn >= 0
+                                        ? 'text-green-600'
+                                        : 'text-red-600'
+                                    }`}
                                   >
-                                    {isExpanded ? '−' : '+'}
-                                  </Button>
-                                  <div>
-                                    <div className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                      {investment.campaign?.company_name || `Campaign ${investment.campaign_id}`}
-                                    </div>
-                                    {isCancellable && (
-                                      <div className="flex items-center gap-1 mt-1 text-xs text-orange-600">
-                                        <FaClock className="flex-shrink-0 text-xs" />
-                                        <span>Cancel within: {timeRemaining}</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm font-medium text-gray-900">
-                                  {formatCurrency(
-                                    investmentAmount,
-                                    investment.currency || user?.currency,
-                                    investment.currency_symbol || user?.currency_symbol,
-                                  )}
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">
-                                  {parseNumber(investment.shares).toLocaleString()} shares
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                  {parseNumber(investment.percentage).toFixed(4)}% equity
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                {hasValueData(investment.status) ? (
-                                  <div className="text-sm font-medium text-gray-900">
                                     {formatCurrency(
-                                      currentValue,
+                                      investmentReturn,
                                       investment.currency || user?.currency,
-                                      investment.currency_symbol || user?.currency_symbol,
+                                      investment.currency_symbol ||
+                                        user?.currency_symbol,
+                                    )}
+                                  </span>
+                                  <Badge
+                                    variant="secondary"
+                                    className={`w-fit mt-1 border ${
+                                      investmentReturn >= 0
+                                        ? 'bg-green-100 text-green-700 border-green-300'
+                                        : 'bg-red-100 text-red-700 border-red-300'
+                                    }`}
+                                  >
+                                    {investmentReturn >= 0 ? '+' : ''}
+                                    {returnPct.toFixed(2)}%
+                                  </Badge>
+                                </div>
+                              ) : (
+                                <span className="text-gray-400">N/A</span>
+                              )}
+                            </td>
+
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span
+                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeStyle(
+                                  investment.status,
+                                )}`}
+                              >
+                                {getStatusDisplayText(investment.status)}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <div className="flex items-center justify-end gap-2">
+                                <Button
+                                  className="text-orange-600 hover:text-orange-900"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleViewCampaignDetails(investment)
+                                  }
+                                >
+                                  View
+                                </Button>
+
+                                {/* Cancel Button for Committed Investments */}
+                                {isCancellable && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => openCancelDialog(investment)}
+                                    disabled={
+                                      cancellingInvestment ===
+                                      investment.id.toString()
+                                    }
+                                    className="text-red-600 hover:text-red-900 border-red-200"
+                                  >
+                                    <FaTimes className="mr-1" />
+                                    Cancel
+                                  </Button>
+                                )}
+
+                                {/* Certificate Button for Successful Investments */}
+                                {canDownloadCertificate && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      handleDownloadCertificate(
+                                        investment.id.toString(),
+                                      )
+                                    }
+                                    disabled={isCertificateLoading}
+                                    className="text-blue-600 hover:text-blue-900"
+                                  >
+                                    {isCertificateLoading
+                                      ? 'Loading...'
+                                      : hasCertificate
+                                        ? 'Certificate'
+                                        : 'Generate Certificate'}
+                                  </Button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                          {isExpanded && (
+                            <tr>
+                              <td colSpan={7} className="px-6 py-4 bg-gray-50">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                  {/* Company Information */}
+                                  <div>
+                                    <h4 className="font-semibold text-lg mb-3">
+                                      Company Information
+                                    </h4>
+                                    {investment.company_info ? (
+                                      <div className="space-y-2">
+                                        <p>
+                                          <strong>Name:</strong>{' '}
+                                          {investment.company_info.name}
+                                        </p>
+                                        <p>
+                                          <strong>Description:</strong>{' '}
+                                          {investment.company_info.description}
+                                        </p>
+                                        <p>
+                                          <strong>Headquarters:</strong>{' '}
+                                          {investment.company_info
+                                            .headquarters || 'N/A'}
+                                        </p>
+                                        <p>
+                                          <strong>Website:</strong>
+                                          <a
+                                            href={
+                                              investment.company_info.website ||
+                                              '#'
+                                            }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-purple-500 hover:underline ml-1"
+                                          >
+                                            {investment.company_info.website ||
+                                              'N/A'}
+                                          </a>
+                                        </p>
+                                        <p>
+                                          <strong>Contract Term:</strong>{' '}
+                                          {investment.company_info
+                                            .contract_term || 'N/A'}
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <p className="text-gray-500">
+                                        No company information available
+                                      </p>
                                     )}
                                   </div>
-                                ) : (
-                                  <span className="text-sm text-gray-400">—</span>
-                                )}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                {hasValueData(investment.status) ? (
-                                  <div className="flex items-center gap-2">
-                                    <span className={`text-sm font-medium ${
-                                      investmentReturn >= 0 ? 'text-emerald-600' : 'text-red-600'
-                                    }`}>
-                                      {formatCurrency(
-                                        investmentReturn,
-                                        investment.currency || user?.currency,
-                                        investment.currency_symbol || user?.currency_symbol,
-                                      )}
-                                    </span>
-                                    <Badge variant="secondary" className={`${
-                                      investmentReturn >= 0 
-                                        ? 'bg-emerald-500/10 text-emerald-700 border-emerald-200' 
-                                        : 'bg-red-500/10 text-red-700 border-red-200'
-                                    }`}>
-                                      {investmentReturn >= 0 ? '+' : ''}{returnPct.toFixed(1)}%
-                                    </Badge>
-                                  </div>
-                                ) : (
-                                  <span className="text-sm text-gray-400">—</span>
-                                )}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeStyle(investment.status)}`}>
-                                  {getStatusDisplayText(investment.status)}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <div className="flex items-center justify-end gap-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleViewCampaignDetails(investment)}
-                                    className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                                  >
-                                    <FaEye className="w-4 h-4" />
-                                  </Button>
 
-                                  {isCancellable && (
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => openCancelDialog(investment)}
-                                      disabled={cancellingInvestment === investment.id.toString()}
-                                      className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg"
-                                    >
-                                      <FaTimes className="w-4 h-4" />
-                                    </Button>
-                                  )}
-
-                                  {canDownloadCertificate && (
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleDownloadCertificate(investment.id.toString())}
-                                      disabled={isCertificateLoading}
-                                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg"
-                                    >
-                                      {isCertificateLoading ? (
-                                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                                      ) : (
-                                        <FaDownload className="w-4 h-4" />
-                                      )}
-                                    </Button>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                            {isExpanded && (
-                              <tr>
-                                <td colSpan={7} className="px-6 py-4 bg-gray-50/50">
-                                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    {/* Company Information */}
-                                    <div>
-                                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                        <FaGlobeAmericas className="text-blue-600" />
-                                        Company Details
-                                      </h4>
-                                      {investment.company_info ? (
-                                        <div className="space-y-3 text-sm">
-                                          <div>
-                                            <span className="font-medium text-gray-700">Description:</span>
-                                            <p className="text-gray-600 mt-1">{investment.company_info.description}</p>
-                                          </div>
-                                          <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                              <span className="font-medium text-gray-700">Headquarters:</span>
-                                              <p className="text-gray-600">{investment.company_info.headquarters || 'N/A'}</p>
-                                            </div>
-                                            <div>
-                                              <span className="font-medium text-gray-700">Contract:</span>
-                                              <p className="text-gray-600">{investment.company_info.contract_term || 'N/A'}</p>
-                                            </div>
-                                          </div>
-                                          {investment.company_info.website && (
-                                            <div>
-                                              <span className="font-medium text-gray-700">Website:</span>
-                                              <a
-                                                href={investment.company_info.website}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-600 hover:text-blue-700 block mt-1"
-                                              >
-                                                {investment.company_info.website}
-                                              </a>
-                                            </div>
-                                          )}
-                                        </div>
-                                      ) : (
-                                        <p className="text-gray-500 text-sm">No company information available</p>
-                                      )}
-                                    </div>
-
-                                    {/* Team Members */}
-                                    <div>
-                                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                        <FaRocket className="text-green-600" />
-                                        Team Members
-                                      </h4>
-                                      {investment.team_members && investment.team_members.length > 0 ? (
-                                        <div className="space-y-3">
-                                          {investment.team_members.slice(0, 3).map((member) => (
-                                            <div key={member.id} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
-                                              <Avatar name={member.name} size="lg" imageUrl={member.avatar_url} />
-                                              <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-gray-900 truncate">{member.name}</p>
-                                                <p className="text-sm text-gray-600 truncate">{member.title}</p>
-                                                <p className="text-xs text-gray-500 capitalize">{member.role}</p>
-                                                {member.equity_percentage > 0 && (
-                                                  <p className="text-xs text-emerald-600 font-medium">
-                                                    Equity: {member.equity_percentage}%
+                                  {/* Team Members */}
+                                  <div>
+                                    <h4 className="font-semibold text-lg mb-3">
+                                      Team Members
+                                    </h4>
+                                    {investment.team_members &&
+                                    investment.team_members.length > 0 ? (
+                                      <div className="space-y-3">
+                                        {investment.team_members.map(
+                                          (member) => (
+                                            <div
+                                              key={member.id}
+                                              className="flex items-center space-x-3 p-2 bg-white rounded-lg"
+                                            >
+                                              <Avatar
+                                                name={member.name}
+                                                size="xl"
+                                                imageUrl={member.avatar_url}
+                                              />
+                                              <div>
+                                                <p className="font-medium">
+                                                  {member.name}
+                                                </p>
+                                                <p className="text-sm text-gray-600">
+                                                  {member.title}
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                  {member.role}
+                                                </p>
+                                                {member.equity_percentage >
+                                                  0 && (
+                                                  <p className="text-xs text-green-600">
+                                                    Equity:{' '}
+                                                    {member.equity_percentage}%
                                                   </p>
                                                 )}
                                               </div>
                                             </div>
-                                          ))}
-                                        </div>
-                                      ) : (
-                                        <p className="text-gray-500 text-sm">No team information available</p>
-                                      )}
-                                    </div>
+                                          ),
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <p className="text-gray-500">
+                                        No team information available
+                                      </p>
+                                    )}
                                   </div>
-                                </td>
-                              </tr>
-                            )}
-                          </>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="mt-6">
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={paginate}
-                    />
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={paginate}
+              />
+            </>
+          )}
         </div>
+      </div>
 
-        {/* Recent Activity Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-              <FaHistory className="text-white text-lg" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-gray-900">Recent Activity</h3>
-              <p className="text-gray-600 text-sm">Your latest investment movements</p>
-            </div>
-          </div>
+      {/* Recent Activity Section */}
+      <div className="bg-white p-6 rounded-xl shadow-sm mt-8">
+        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+          <span className="text-pink-500">💫</span> Recent Activity
+        </h3>
 
-          <div className="grid gap-4">
-            {displayInvestments.slice(0, 3).map((investment: EquityInvestment) => {
+        <div className="space-y-6">
+          {displayInvestments
+            .slice(0, 3)
+            .map((investment: EquityInvestment) => {
               const amount = formatCurrency(
                 parseNumber(investment.amount),
                 investment.currency || user?.currency,
                 investment.currency_symbol || user?.currency_symbol,
               );
 
-              const campaignName = investment.campaign?.title || `Campaign #${investment.campaign_id}`;
-              const date = format(new Date(investment.created_at), 'MMM dd, yyyy');
+              const campaignName =
+                investment.campaign?.title ||
+                `Campaign #${investment.campaign_id}`;
+              const date = format(
+                new Date(investment.created_at),
+                'MMM dd, yyyy',
+              );
+
+              // Get the appropriate action text based on status
+              const actionText = getInvestmentActionText(
+                investment.status,
+                investment.amount.toString(),
+                campaignName,
+              );
+
+              // Only show detailed information for successful investments
+              const isSuccessful = investment.status === 'successful';
+              const investment_id = investment.id;
+              const shares = parseNumber(investment.shares)?.toLocaleString();
+              const percentage = parseNumber(investment.percentage)?.toFixed(2);
+              const certificate = investment.certificate?.number;
 
               return (
-                <div key={investment.id} className="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:border-blue-200 hover:bg-blue-50/30 transition-colors group">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                      investment.status === 'successful' ? 'bg-emerald-100 text-emerald-600' :
-                      investment.status === 'committed' ? 'bg-blue-100 text-blue-600' :
-                      'bg-gray-100 text-gray-600'
-                    }`}>
-                      {investment.status === 'successful' ? '✓' : investment.status === 'committed' ? '⏳' : '⋯'}
+                <div
+                  key={investment.id}
+                  className="p-4 rounded-xl border border-gray-200 bg-gray-50 shadow-sm hover:shadow-md transition"
+                >
+                  <p className="text-sm text-gray-700 mb-3">{actionText}</p>
+
+                  {/* Only show detailed information for successful investments */}
+                  {isSuccessful ? (
+                    <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        🆔 <span className="font-medium">ID:</span>{' '}
+                        {investment_id}
+                      </div>
+                      {shares && (
+                        <div className="flex items-center gap-1">
+                          📈 <span className="font-medium">Shares:</span>{' '}
+                          {shares}
+                        </div>
+                      )}
+                      {percentage && (
+                        <div className="flex items-center gap-1">
+                          🎯 <span className="font-medium">Equity:</span>{' '}
+                          {percentage}%
+                        </div>
+                      )}
+                      {certificate && (
+                        <div className="flex items-center gap-1">
+                          🎖️ <span className="font-medium">Cert:</span>{' '}
+                          {certificate}
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-                        {investment.status === 'successful' ? 'Invested' : 
-                         investment.status === 'committed' ? 'Committed' : 'Attempted'} {amount}
-                      </p>
-                      <p className="text-sm text-gray-600">{campaignName}</p>
+                  ) : (
+                    <div className="text-sm text-gray-500 italic">
+                      Investment details will be available upon successful
+                      completion
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500">{date}</p>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeStyle(investment.status)}`}>
-                      {getStatusDisplayText(investment.status)}
-                    </span>
-                  </div>
+                  )}
+
+                  <p className="text-xs text-gray-500 mt-3 flex items-center gap-1">
+                    ⏰{' '}
+                    {investment.status === 'successful'
+                      ? 'Invested'
+                      : investment.status === 'committed'
+                        ? 'Committed'
+                        : 'Attempted'}{' '}
+                    on {date}
+                  </p>
                 </div>
               );
             })}
-          </div>
         </div>
       </div>
     </div>
