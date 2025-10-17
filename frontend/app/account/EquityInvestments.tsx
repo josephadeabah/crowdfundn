@@ -494,17 +494,18 @@ const EquityInvestments = () => {
 
           {/* Cancellation Notice Banner */}
           {hasCancellableInvestments(displayInvestments) && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="bg-gradient-to-r from-teal-50 to-cyan-50 border border-teal-200 rounded-lg p-4 mb-6 shadow-sm">
               <div className="flex items-start gap-3">
-                <FaClock className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
+                <div className="bg-teal-500 p-2 rounded-full flex-shrink-0 mt-0.5">
+                  <FaClock className="text-white text-sm" />
+                </div>
                 <div>
-                  <p className="text-sm text-blue-800 font-medium mb-1">
-                    48-Hour Cancellation Window
+                  <p className="text-sm font-semibold text-teal-800 mb-1">
+                    🕒 48-Hour Review Period
                   </p>
-                  <p className="text-xs text-blue-700">
-                    You can cancel committed investments within 48 hours. After
-                    this period, investments will be finalized and cannot be
-                    cancelled.
+                  <p className="text-xs text-teal-700">
+                    Your committed investments can be cancelled within the next 48 hours.
+                    After this period, they will be permanently finalized.
                   </p>
                 </div>
               </div>
