@@ -17,10 +17,11 @@ import CampaignBackers from '../CampaignBackers';
 import CampaignSidebar from '../CampaignSidebar';
 import CampaignTabs from '../CampaignTabs';
 import CampaignHeader from '../CampaignHeader';
+import CampaignFAQs from '../CampaignFAQs';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
-    'details' | 'donate' | 'updates' | 'comments' | 'backers'
+    'details' | 'donate' | 'updates' | 'comments' | 'backers' | 'faqs'
   >('details');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [toast, setToast] = useState({
@@ -60,6 +61,8 @@ const SingleCampaignPage: React.FC = () => {
   useEffect(() => {
     if (tabParam === 'donate') {
       setSelectedTab('donate');
+    } else if (tabParam === 'faqs') {
+      setSelectedTab('faqs');
     }
   }, [tabParam]);
 
@@ -160,6 +163,12 @@ const SingleCampaignPage: React.FC = () => {
               )}
               {!loading && selectedTab === 'backers' && (
                 <CampaignBackers
+                  campaign={currentCampaign}
+                  isEquityCampaign={isEquityCampaign}
+                />
+              )}
+              {!loading && selectedTab === 'faqs' && (
+                <CampaignFAQs
                   campaign={currentCampaign}
                   isEquityCampaign={isEquityCampaign}
                 />

@@ -6,7 +6,7 @@ import { SingleCampaignResponseDataType } from '../types/campaigns.types';
 interface CampaignTabsProps {
   selectedTab: string;
   setSelectedTab: (
-    tab: 'details' | 'donate' | 'updates' | 'comments' | 'backers',
+    tab: 'details' | 'donate' | 'updates' | 'comments' | 'backers' | 'faqs',
   ) => void;
   tabsRef: React.RefObject<HTMLDivElement>;
   campaign: SingleCampaignResponseDataType | null;
@@ -29,37 +29,44 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
     }
   };
 
-  const tabs = ['details', 'donate', 'updates', 'comments', 'backers'].map(
-    (tab) => {
-      let count = 0;
-      if (tab === 'updates') {
-        count = campaign?.updates?.length || 0;
-      } else if (tab === 'comments') {
-        count = campaign?.comments?.length || 0;
-      } else if (tab === 'backers') {
-        count = isEquityCampaign
-          ? campaign?.total_investors || 0
-          : campaign?.total_donors || 0;
-      }
+  const tabs = [
+    'details',
+    'donate',
+    'updates',
+    'comments',
+    'backers',
+    ...(isEquityCampaign ? ['faqs'] : []),
+  ].map((tab) => {
+    let count = 0;
+    if (tab === 'updates') {
+      count = campaign?.updates?.length || 0;
+    } else if (tab === 'comments') {
+      count = campaign?.comments?.length || 0;
+    } else if (tab === 'backers') {
+      count = isEquityCampaign
+        ? campaign?.total_investors || 0
+        : campaign?.total_donors || 0;
+    }
 
-      const isDonateTabDisabled =
-        tab === 'donate' && !campaign?.permissions?.accept_donations;
+    const isDonateTabDisabled =
+      tab === 'donate' && !campaign?.permissions?.accept_donations;
 
-      const tabLabel =
-        tab === 'donate' && isEquityCampaign
-          ? 'Invest'
-          : tab === 'backers' && isEquityCampaign
-            ? 'Investors'
+    const tabLabel =
+      tab === 'donate' && isEquityCampaign
+        ? 'Invest'
+        : tab === 'backers' && isEquityCampaign
+          ? 'Investors'
+          : tab === 'faqs'
+            ? 'FAQs'
             : tab.charAt(0).toUpperCase() + tab.slice(1);
 
-      return {
-        id: tab,
-        label: tabLabel,
-        count,
-        disabled: isDonateTabDisabled,
-      };
-    },
-  );
+    return {
+      id: tab,
+      label: tabLabel,
+      count,
+      disabled: isDonateTabDisabled,
+    };
+  });
 
   const renderTabContent = () => {
     if (selectedTab === 'details') {
@@ -84,35 +91,39 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
     }
 
     // Placeholder content for other tabs
-    return (
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 lg:p-12 border border-gray-200 h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">
+    if (selectedTab !== 'faqs') {
+      return (
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 lg:p-12 border border-gray-200 h-full flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">
+                {selectedTab === 'donate'
+                  ? '💳'
+                  : selectedTab === 'updates'
+                    ? '📰'
+                    : selectedTab === 'comments'
+                      ? '💬'
+                      : '👥'}
+              </span>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              {tabs.find((t) => t.id === selectedTab)?.label} View
+            </h3>
+            <p className="text-gray-600 max-w-md mx-auto">
               {selectedTab === 'donate'
-                ? '💳'
+                ? 'Contribution options will be displayed here'
                 : selectedTab === 'updates'
-                  ? '📰'
+                  ? 'Latest news and campaign progress updates'
                   : selectedTab === 'comments'
-                    ? '💬'
-                    : '👥'}
-            </span>
+                    ? 'Community discussions and feedback'
+                    : 'Campaign supporters and investors list'}
+            </p>
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
-            {tabs.find((t) => t.id === selectedTab)?.label} View
-          </h3>
-          <p className="text-gray-600 max-w-md mx-auto">
-            {selectedTab === 'donate'
-              ? 'Contribution options will be displayed here'
-              : selectedTab === 'updates'
-                ? 'Latest news and campaign progress updates'
-                : selectedTab === 'comments'
-                  ? 'Community discussions and feedback'
-                  : 'Campaign supporters and investors list'}
-          </p>
         </div>
-      </div>
-    );
+      );
+    }
+
+    return null; // FAQs tab content will be handled by CampaignFAQs component
   };
 
   return (
