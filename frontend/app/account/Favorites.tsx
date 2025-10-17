@@ -7,13 +7,12 @@ import {
   FaBookmark, 
   FaUsers, 
   FaClock, 
-  FaDollarSign, 
-  FaChartLine,
+  FaDollarSign,
   FaBuilding,
   FaHeart,
   FaRegHeart
 } from 'react-icons/fa';
-import { FiTrendingUp, FiTarget } from 'react-icons/fi';
+import { FiTarget } from 'react-icons/fi';
 import CampaignCardSkeleton from '../loaders/CampaignCardSkeleton';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { Button } from '../components/button/Button';
@@ -102,7 +101,7 @@ const Favorites = () => {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+          <div className="p-2 bg-gradient-to-r from-green-500 to-orange-500 rounded-lg">
             <FaBookmark className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -120,7 +119,7 @@ const Favorites = () => {
       {/* Campaigns List */}
       <div className="space-y-4">
         {displayCampaigns.length === 0 ? (
-          <div className="text-center p-12 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-200">
+          <div className="text-center p-12 bg-gradient-to-br from-gray-50 to-green-50 rounded-2xl border-2 border-dashed border-gray-200">
             <div className="text-gray-400 mb-4">
               <FaBookmark className="w-20 h-20 mx-auto opacity-40" />
             </div>
@@ -131,7 +130,7 @@ const Favorites = () => {
               Start exploring campaigns and click the heart icon to add them to your watchlist for easy tracking.
             </p>
             <Link href="/invest">
-              <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl">
+              <Button className="bg-gradient-to-r from-green-500 to-orange-500 text-white px-8 py-3 rounded-xl">
                 Explore Campaigns
               </Button>
             </Link>
@@ -144,12 +143,12 @@ const Favorites = () => {
             );
             const isFavorited = favoritedCampaigns.some(fav => fav.id === campaign.id);
             const isEquityCampaign = campaign.type === 'EquityCampaign';
-            const companyName = campaign.company_info.name || campaign.fundraiser?.profile?.name || 'Unknown Company';
+            const companyName = campaign.company_info?.name || campaign.fundraiser?.profile?.name || 'Unknown Company';
 
             return (
               <div
                 key={`watchlist-${campaign.id}`}
-                className="group relative bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200 overflow-hidden"
+                className="relative bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
               >
                 <div className="flex flex-col lg:flex-row">
                   {/* Image Section */}
@@ -164,20 +163,18 @@ const Favorites = () => {
                         fill
                         style={{ objectFit: 'cover' }}
                         unoptimized
-                        className="group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = '/bantuhive.svg';
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       
                       {/* Campaign Type Badge */}
                       <div className="absolute top-3 left-3">
                         <span
                           className={`px-3 py-1.5 rounded-full text-xs font-semibold ${
                             isEquityCampaign
-                              ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                              : 'bg-purple-100 text-purple-700 border border-purple-200'
+                              ? 'bg-green-100 text-green-700 border border-green-200'
+                              : 'bg-orange-100 text-orange-700 border border-orange-200'
                           }`}
                         >
                           {isEquityCampaign ? 'Equity' : 'Donation'}
@@ -196,7 +193,7 @@ const Favorites = () => {
                             href={`/campaign/${campaign.slug || campaign.id}?${generateRandomString()}`}
                             className="block"
                           >
-                            <h3 className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200 mb-2">
+                            <h3 className="text-xl font-bold text-gray-900 line-clamp-2 mb-2">
                               {campaign.title}
                             </h3>
                           </Link>
@@ -219,45 +216,45 @@ const Favorites = () => {
                         <button
                           onClick={() => handleFavoriteClick(campaign.id.toString(), isFavorited)}
                           disabled={isFavoriting === campaign.id.toString() || !user}
-                          className="ml-4 p-3 bg-gray-50 hover:bg-red-50 rounded-xl transition-all duration-200 disabled:opacity-50"
+                          className="ml-4 p-3 bg-gray-50 rounded-xl disabled:opacity-50"
                           aria-label={isFavorited ? "Remove from watchlist" : "Add to watchlist"}
                         >
                           {isFavoriting === campaign.id.toString() ? (
-                            <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                            <div className="w-5 h-5 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
                           ) : isFavorited ? (
-                            <FaHeart className="w-5 h-5 text-red-500" />
+                            <FaHeart className="w-5 h-5 text-green-500" />
                           ) : (
-                            <FaRegHeart className="w-5 h-5 text-gray-400 hover:text-red-500" />
+                            <FaRegHeart className="w-5 h-5 text-gray-400" />
                           )}
                         </button>
                       </div>
 
                       {/* Stats Grid */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="text-center p-3 bg-green-50 rounded-lg">
                           <div className="flex items-center justify-center gap-2 mb-1">
-                            <FaDollarSign className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm font-medium text-blue-700">Raised</span>
+                            <FaDollarSign className="w-4 h-4 text-green-600" />
+                            <span className="text-sm font-medium text-green-700">Raised</span>
                           </div>
                           <p className="text-lg font-bold text-gray-900">
                             {formatCurrency(Number(campaign.transferred_amount || 0), campaign.currency)}
                           </p>
                         </div>
 
-                        <div className="text-center p-3 bg-green-50 rounded-lg">
+                        <div className="text-center p-3 bg-orange-50 rounded-lg">
                           <div className="flex items-center justify-center gap-2 mb-1">
-                            <FiTarget className="w-4 h-4 text-green-600" />
-                            <span className="text-sm font-medium text-green-700">Goal</span>
+                            <FiTarget className="w-4 h-4 text-orange-600" />
+                            <span className="text-sm font-medium text-orange-700">Goal</span>
                           </div>
                           <p className="text-lg font-bold text-gray-900">
                             {formatCurrency(Number(campaign.goal_amount || 0), campaign.currency)}
                           </p>
                         </div>
 
-                        <div className="text-center p-3 bg-purple-50 rounded-lg">
+                        <div className="text-center p-3 bg-green-50 rounded-lg">
                           <div className="flex items-center justify-center gap-2 mb-1">
-                            <FaUsers className="w-4 h-4 text-purple-600" />
-                            <span className="text-sm font-medium text-purple-700">
+                            <FaUsers className="w-4 h-4 text-green-600" />
+                            <span className="text-sm font-medium text-green-700">
                               {isEquityCampaign ? 'Investors' : 'Supporters'}
                             </span>
                           </div>
@@ -290,7 +287,7 @@ const Favorites = () => {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-3">
                           <div
-                            className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-1000 ease-out"
+                            className="bg-gradient-to-r from-green-500 to-orange-500 h-3 rounded-full"
                             style={{
                               width: `${progressPercentage}%`,
                             }}
@@ -314,25 +311,13 @@ const Favorites = () => {
                           </div>
                         </div>
                         
-                        <div className="flex gap-2">
-                          <Link
-                            href={`/campaign/${campaign.slug || campaign.id}?${generateRandomString()}`}
-                          >
-                            <Button
-                              variant="outline"
-                              className="border-gray-300 hover:border-blue-500 text-gray-700 hover:text-blue-600"
-                            >
-                              View Details
-                            </Button>
-                          </Link>
-                          <Link
-                            href={`/campaign/${campaign.slug || campaign.id}?tab=${isEquityCampaign ? 'invest' : 'donate'}&${generateRandomString()}`}
-                          >
-                            <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white">
-                              {isEquityCampaign ? 'Invest Now' : 'Donate Now'}
-                            </Button>
-                          </Link>
-                        </div>
+                        <Link
+                          href={`/campaign/${campaign.slug || campaign.id}?tab=${isEquityCampaign ? 'invest' : 'donate'}&${generateRandomString()}`}
+                        >
+                          <Button className="bg-gradient-to-r from-green-500 to-orange-500 text-white">
+                            {isEquityCampaign ? 'Invest Now' : 'Donate Now'}
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -345,8 +330,8 @@ const Favorites = () => {
 
       {/* Empty State when showing all campaigns */}
       {favoritedCampaigns.length === 0 && displayCampaigns.length > 0 && (
-        <div className="text-center mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-200">
-          <FaRegHeart className="w-12 h-12 text-blue-400 mx-auto mb-4" />
+        <div className="text-center mt-8 p-6 bg-gradient-to-r from-green-50 to-orange-50 rounded-2xl border border-green-200">
+          <FaRegHeart className="w-12 h-12 text-green-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-700 mb-2">
             No campaigns in your watchlist yet
           </h3>
