@@ -21,7 +21,8 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
           Investment Information
         </h3>
         <p className="text-gray-600">
-          Investment FAQs apply only to licensed equity crowdfunding campaigns in Ghana.
+          Investment FAQs apply only to licensed equity crowdfunding campaigns
+          in Ghana.
         </p>
       </div>
     );
@@ -46,7 +47,7 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
     {
       question: 'What happens after I invest?',
       answer:
-        "Your funds are held securely in an escrow or trust account with a licensed financial institution until the campaign closes. If the campaign meets its minimum goal, the funds are released to the issuer and you will receive a digital investment certificate confirming your equity ownership.",
+        'Your funds are held securely in an escrow or trust account with a licensed financial institution until the campaign closes. If the campaign meets its minimum goal, the funds are released to the issuer and you will receive a digital investment certificate confirming your equity ownership.',
     },
     {
       question: 'Can I sell my shares later?',
@@ -74,9 +75,10 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
         'Yes, foreign investors are permitted, provided they comply with Ghana’s foreign exchange and investment regulations. All international investors must complete KYC verification and agree to SEC Ghana’s investor protection terms.',
     },
     {
-      question: "What happens if the campaign doesn't reach its minimum funding goal?",
+      question:
+        "What happens if the campaign doesn't reach its minimum funding goal?",
       answer:
-        "If the campaign fails to meet its minimum funding target, all investor funds are refunded in full from the escrow account. No fees or deductions are applied to refunds under SEC Ghana’s crowdfunding guidelines.",
+        'If the campaign fails to meet its minimum funding target, all investor funds are refunded in full from the escrow account. No fees or deductions are applied to refunds under SEC Ghana’s crowdfunding guidelines.',
     },
     {
       question: 'Are my returns guaranteed?',
@@ -96,7 +98,8 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
         </h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
           Key information for investors participating in{' '}
-          {campaign?.company_info?.name || 'this company'}’s equity crowdfunding campaign.
+          {campaign?.company_info?.name || 'this company'}’s equity crowdfunding
+          campaign.
         </p>
       </div>
 
@@ -127,9 +130,11 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
               SEC Ghana Crowdfunding Compliance Notice
             </h4>
             <p className="text-green-700 text-sm leading-relaxed">
-              This campaign is operated in compliance with the Securities and Exchange Commission (SEC) 
-              of Ghana’s Crowdfunding Guidelines (2024). All investor funds are managed in accordance 
-              with SEC investor protection, anti-money laundering (AML), and escrow requirements.
+              This campaign is operated in compliance with the Securities and
+              Exchange Commission (SEC) of Ghana’s Crowdfunding Guidelines
+              (2024). All investor funds are managed in accordance with SEC
+              investor protection, anti-money laundering (AML), and escrow
+              requirements.
             </p>
           </div>
         </div>
@@ -144,10 +149,12 @@ const CampaignFAQs: React.FC<CampaignFAQsProps> = ({
               Important Legal Notice
             </h4>
             <p className="text-yellow-700 text-sm leading-relaxed">
-              Investments on this platform are made under Ghana’s Securities and Exchange Commission (SEC)
-              Crowdfunding Guidelines (2024). Equity crowdfunding involves risk, including the potential loss 
-              of capital. This content is for educational purposes only and does not constitute investment advice. 
-              Please consult a licensed advisor before making investment decisions.
+              Investments on this platform are made under Ghana’s Securities and
+              Exchange Commission (SEC) Crowdfunding Guidelines (2024). Equity
+              crowdfunding involves risk, including the potential loss of
+              capital. This content is for educational purposes only and does
+              not constitute investment advice. Please consult a licensed
+              advisor before making investment decisions.
             </p>
           </div>
         </div>

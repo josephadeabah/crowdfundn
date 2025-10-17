@@ -68,6 +68,7 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
     };
   });
 
+  // Update the renderTabContent function in CampaignTabs component
   const renderTabContent = () => {
     if (selectedTab === 'details') {
       return (
@@ -90,40 +91,40 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
       );
     }
 
-    // Placeholder content for other tabs
-    if (selectedTab !== 'faqs') {
-      return (
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 lg:p-12 border border-gray-200 h-full flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">
-                {selectedTab === 'donate'
-                  ? '💳'
-                  : selectedTab === 'updates'
-                    ? '📰'
-                    : selectedTab === 'comments'
-                      ? '💬'
-                      : '👥'}
-              </span>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              {tabs.find((t) => t.id === selectedTab)?.label} View
-            </h3>
-            <p className="text-gray-600 max-w-md mx-auto">
+    // Placeholder content for all tabs except details
+    return (
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 lg:p-12 border border-gray-200 h-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">
               {selectedTab === 'donate'
-                ? 'Contribution options will be displayed here'
+                ? '💳'
                 : selectedTab === 'updates'
-                  ? 'Latest news and campaign progress updates'
+                  ? '📰'
                   : selectedTab === 'comments'
-                    ? 'Community discussions and feedback'
-                    : 'Campaign supporters and investors list'}
-            </p>
+                    ? '💬'
+                    : selectedTab === 'backers'
+                      ? '👥'
+                      : '💡'} {/* FAQs icon */}
+            </span>
           </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
+            {tabs.find((t) => t.id === selectedTab)?.label} View
+          </h3>
+          <p className="text-gray-600 max-w-md mx-auto">
+            {selectedTab === 'donate'
+              ? 'Contribution options will be displayed here'
+              : selectedTab === 'updates'
+                ? 'Latest news and campaign progress updates'
+                : selectedTab === 'comments'
+                  ? 'Community discussions and feedback'
+                  : selectedTab === 'backers'
+                    ? 'Campaign supporters and investors list'
+                    : 'Investment frequently asked questions'} {/* FAQs description */}
+          </p>
         </div>
-      );
-    }
-
-    return null; // FAQs tab content will be handled by CampaignFAQs component
+      </div>
+    );
   };
 
   return (
