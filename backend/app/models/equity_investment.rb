@@ -106,6 +106,10 @@ class EquityInvestment < ApplicationRecord
     status == STATUS_ONGOING
   end
 
+  def committed?
+    status == STATUS_COMMITTED
+  end
+
   # Add method to check if investment can be cancelled
   def can_be_cancelled?
     committed? && cancel_window_expires_at > Time.current
@@ -125,10 +129,6 @@ class EquityInvestment < ApplicationRecord
     void_payment_authorization if transaction_reference.present?
     
     true
-  end
-
-  def committed?
-    status == STATUS_COMMITTED
   end
 
   # FIXED: Simple reader method without recursion
