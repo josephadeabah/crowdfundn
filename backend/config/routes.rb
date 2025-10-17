@@ -163,6 +163,7 @@ Rails.application.routes.draw do
             
             member do
               put :update
+              post :cancel, to: 'investment_cancellations#create'
               delete :destroy
             end
           end

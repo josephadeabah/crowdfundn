@@ -19,6 +19,7 @@ class EquityInvestment < ApplicationRecord
   STATUS_QUEUED = 'queued'
   STATUS_PROCESSING = 'processing'
   STATUS_ONGOING = 'ongoing'
+  STATUS_COMMITTED = 'committed'
 
   VALID_STATUSES = [
     STATUS_PENDING,
@@ -31,7 +32,8 @@ class EquityInvestment < ApplicationRecord
     STATUS_REVERSED,
     STATUS_QUEUED,
     STATUS_PROCESSING,
-    STATUS_ONGOING
+    STATUS_ONGOING,
+    STATUS_COMMITTED
   ].freeze
 
   validates :amount, :shares, :percentage, presence: true, numericality: { greater_than: 0 }
@@ -50,6 +52,14 @@ class EquityInvestment < ApplicationRecord
   after_commit :update_campaign_leaderboard, if: :saved_change_to_status?
   after_save :update_campaign_shares, if: -> { saved_change_to_status? && successful? }
   before_save :update_current_value, if: -> { campaign_id_changed? || percentage_changed? || will_save_change_to_percentage? }
+  # Add callback to set commitment timestamp
+  before_save :set_commitment_timestamps, if: -> { will_save_change_to_status?(to: STATUS_COMMITTED) }
+
+  # Add scope for cancellable investments
+  scope :cancellable, -> { 
+    where(status: STATUS_COMMITTED)
+    .where('cancel_window_expires_at > ?', Time.current)
+  }
 
   # Status query methods
   def pending?
@@ -94,6 +104,31 @@ class EquityInvestment < ApplicationRecord
 
   def ongoing?
     status == STATUS_ONGOING
+  end
+
+  # Add method to check if investment can be cancelled
+  def can_be_cancelled?
+    committed? && cancel_window_expires_at > Time.current
+  end
+
+  # Add method to cancel investment
+  def cancel!(reason = nil)
+    return false unless can_be_cancelled?
+    
+    update!(
+      status: STATUS_CANCELED,
+      cancellation_reason: reason,
+      cancelled_at: Time.current
+    )
+    
+    # Void payment authorization if needed
+    void_payment_authorization if transaction_reference.present?
+    
+    true
+  end
+
+  def committed?
+    status == STATUS_COMMITTED
   end
 
   # FIXED: Simple reader method without recursion
@@ -252,7 +287,109 @@ class EquityInvestment < ApplicationRecord
     }
   end
 
+  def void_payment_authorization
+    return unless transaction_reference.present?
+    
+    paystack_service = PaystackService.new
+    
+    # First verify the transaction status
+    verification_response = paystack_service.verify_transaction(transaction_reference)
+    
+    unless verification_response[:status]
+      Rails.logger.error "Cannot verify transaction #{transaction_reference} for cancellation"
+      mark_for_manual_refund("Transaction verification failed")
+      return false
+    end
+    
+    transaction_status = verification_response.dig(:data, :status)
+    
+    case transaction_status
+    when 'success'
+      # Transaction was successful - process refund
+      process_refund_for_successful_transaction
+    when 'abandoned', 'failed'
+      # Transaction never completed - no refund needed
+      Rails.logger.info "Transaction #{transaction_reference} was #{transaction_status}, no refund needed"
+      update_refund_status('not_required', "Transaction was #{transaction_status}")
+      true
+    when 'pending', 'processing', 'ongoing'
+      # Transaction is still pending - may need different handling
+      process_pending_transaction_cancellation
+    else
+      Rails.logger.warn "Unknown transaction status: #{transaction_status} for #{transaction_reference}"
+      mark_for_manual_refund("Unknown transaction status: #{transaction_status}")
+      false
+    end
+  rescue => e
+    Rails.logger.error "Error voiding payment authorization for investment #{id}: #{e.message}"
+    mark_for_manual_refund("Exception: #{e.message}")
+    false
+  end
+
   private
+
+  def process_refund_for_successful_transaction
+    paystack_service = PaystackService.new
+    
+    refund_response = paystack_service.cancel_authorized_payment(
+      transaction_reference,
+      amount,
+      campaign.currency,
+      "48-hour cancellation window - Investment ID: #{id}"
+    )
+    
+    handle_refund_response(refund_response)
+  end
+
+  def process_pending_transaction_cancellation
+    # For pending transactions, we might not need to refund
+    # since the payment hasn't been captured yet
+    Rails.logger.info "Transaction #{transaction_reference} is pending - marking as cancelled without refund"
+    
+    update_refund_status('not_required', 'Pending transaction cancelled without refund')
+    true
+  end
+
+  def handle_refund_response(refund_response)
+    if refund_response[:status]
+      update_refund_status(
+        'initiated',
+        'Refund initiated successfully',
+        {
+          'refund_reference' => refund_response.dig(:data, :reference),
+          'refund_id' => refund_response.dig(:data, :id),
+          'refund_status' => refund_response.dig(:data, :status)
+        }
+      )
+      true
+    else
+      Rails.logger.error "Refund failed: #{refund_response[:message]}"
+      mark_for_manual_refund(refund_response[:message])
+      false
+    end
+  end
+
+  def update_refund_status(status, message, additional_metadata = {})
+    update!(
+      metadata: metadata.merge(
+        'refund_status' => status,
+        'refund_message' => message,
+        'refund_initiated_at' => Time.current.iso8601
+      ).merge(additional_metadata)
+    )
+  end
+
+  def mark_for_manual_refund(reason)
+    update_refund_status('manual_intervention_required', reason)
+    
+    # Notify admin about failed refund (you can implement this later)
+    # AdminMailer.refund_failed_notification(self, reason).deliver_later
+  end
+
+  def set_commitment_timestamps
+    self.committed_at ||= Time.current
+    self.cancel_window_expires_at ||= 48.hours.from_now
+  end
 
   # NEW: Calculate and update current value
   def calculate_current_value

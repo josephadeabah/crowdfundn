@@ -185,6 +185,17 @@ class PaystackService
     parse_response(response)
   end
 
+  def cancel_authorized_payment(transaction_reference, amount = nil, currency = nil, reason = "Investment cancelled")
+    # For Paystack, we use refunds to cancel authorized payments
+    initiate_refund(
+      transaction: transaction_reference,
+      amount: amount,
+      currency: currency,
+      customer_note: "Investment cancelled - #{reason}",
+      merchant_note: "Automatic cancellation for equity investment"
+    )
+  end
+
   def create_subscription_plan(name:, interval:, amount:, currency:)
     valid_intervals = %w[daily weekly monthly quarterly biannually annually]
 

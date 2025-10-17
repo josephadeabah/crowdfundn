@@ -38,25 +38,15 @@ module Clockwork
     end
   end
 
-  # Update investment values daily at 4 AM UTC
-  # every(1.day, 'update_investment_values', at: '04:00') do
-  #   Rails.logger.info "Updating investment values at #{Time.current}"
-  #   EquityCampaign.live.find_each do |campaign|
-  #     UpdateCampaignInvestmentsService.update_for_campaign(campaign.id)
-  #   end
-  # end
-
-  # Retry failed certificate generations every 6 hours
-  # every(6.hours, 'retry_failed_certificates') do
-  #   Rails.logger.info "Retrying failed certificate generations at #{Time.current}"
-  #   EquityInvestment.successful
-  #     .where.not(certificate_number: nil)
-  #     .left_outer_joins(:certificate_attachment)
-  #     .where(active_storage_attachments: { id: nil })
-  #     .find_each(batch_size: 100) do |investment|
-  #       CertificateGenerationService.generate_for_investment(investment.id)
-  #     end
-  # end
+  # Finalize committed investments every hour (check for expired cancellation windows)
+  every(1.hour, 'finalize_committed_investments') do
+    Rails.logger.info "Triggering 'finalize_committed_investments' job at #{Time.current}"
+    begin
+      FinalizeCommittedInvestmentsJob.perform_later
+    rescue => e
+      Rails.logger.error "Failed to finalize committed investments: #{e.message}"
+    end
+  end
 
   # Error handler
   error_handler do |error|

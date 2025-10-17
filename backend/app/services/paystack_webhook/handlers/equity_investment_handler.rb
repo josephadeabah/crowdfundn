@@ -68,17 +68,25 @@ module PaystackWebhook::Handlers
       if investment && (investment.pending? || investment.initialized?)
         ActiveRecord::Base.transaction do
           update_investment(investment, response, metadata, gross_amount, net_amount, platform_fee, processing_fee)
-          update_campaign(investment, net_amount)  # ✅ only net, no processing_fee
+          
+          # Set as COMMITTED instead of SUCCESSFUL to allow cancellation
+          investment.update!(status: EquityInvestment::STATUS_COMMITTED)
+          
+          # Don't update campaign totals yet - wait until cancellation window expires
+          # update_campaign(investment, net_amount)  # REMOVE THIS LINE
+          
           create_pledges_from_rewards(investment, metadata)
-
+          
           if equity_limits_exceeded?(investment)
             result = handle_oversubscription(investment, response, metadata)
             return result
           end
 
-          investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
           send_confirmation_email(investment, response, metadata)
         end
+      elsif investment && investment.committed?
+        # Handle case where investment is already committed (duplicate webhook)
+        Rails.logger.info "Investment #{investment.id} is already committed, skipping processing"
       else
         log_invalid_investment(metadata)
       end
