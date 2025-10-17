@@ -3,14 +3,14 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import Image from 'next/image';
 import Link from 'next/link';
 import { generateRandomString } from '@/app/utils/helpers/generate.random-string';
-import { 
-  FaBookmark, 
-  FaUsers, 
-  FaClock, 
+import {
+  FaBookmark,
+  FaUsers,
+  FaClock,
   FaDollarSign,
   FaBuilding,
   FaHeart,
-  FaRegHeart
+  FaRegHeart,
 } from 'react-icons/fa';
 import { FiTarget } from 'react-icons/fi';
 import CampaignCardSkeleton from '../loaders/CampaignCardSkeleton';
@@ -51,9 +51,12 @@ const Favorites = () => {
     }
   }, [favoritedCampaigns, campaigns]);
 
-  const handleFavoriteClick = async (campaignId: string, isCurrentlyFavorited: boolean) => {
+  const handleFavoriteClick = async (
+    campaignId: string,
+    isCurrentlyFavorited: boolean,
+  ) => {
     if (!user) return;
-    
+
     setIsFavoriting(campaignId);
     try {
       if (isCurrentlyFavorited) {
@@ -107,10 +110,9 @@ const Favorites = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Watchlist Feed</h1>
             <p className="text-sm text-gray-600 mt-1">
-              {favoritedCampaigns.length > 0 
+              {favoritedCampaigns.length > 0
                 ? `Tracking ${favoritedCampaigns.length} campaign${favoritedCampaigns.length > 1 ? 's' : ''} you're interested in`
-                : 'Discover trending campaigns to add to your watchlist'
-              }
+                : 'Discover trending campaigns to add to your watchlist'}
             </p>
           </div>
         </div>
@@ -127,7 +129,8 @@ const Favorites = () => {
               Your Watchlist is Empty
             </h3>
             <p className="text-sm text-gray-500 max-w-md mx-auto mb-4">
-              Start exploring campaigns and click the heart icon to add them to your watchlist for easy tracking.
+              Start exploring campaigns and click the heart icon to add them to
+              your watchlist for easy tracking.
             </p>
             <Link href="/invest">
               <Button className="bg-green-500 text-white px-6 py-2 rounded-lg text-sm">
@@ -139,11 +142,16 @@ const Favorites = () => {
           displayCampaigns.map((campaign) => {
             const progressPercentage = getProgressPercentage(
               Number(campaign.transferred_amount || 0),
-              Number(campaign.goal_amount || 1)
+              Number(campaign.goal_amount || 1),
             );
-            const isFavorited = favoritedCampaigns.some(fav => fav.id === campaign.id);
+            const isFavorited = favoritedCampaigns.some(
+              (fav) => fav.id === campaign.id,
+            );
             const isEquityCampaign = campaign.type === 'EquityCampaign';
-            const companyName = campaign.company_info?.name || campaign.fundraiser?.profile?.name || 'Unknown Company';
+            const companyName =
+              campaign.company_info?.name ||
+              campaign.fundraiser?.profile?.name ||
+              'Unknown Company';
 
             return (
               <div
@@ -167,7 +175,7 @@ const Favorites = () => {
                           (e.target as HTMLImageElement).src = '/bantuhive.svg';
                         }}
                       />
-                      
+
                       {/* Campaign Type Badge */}
                       <div className="absolute top-2 left-2">
                         <span
@@ -197,7 +205,7 @@ const Favorites = () => {
                               {campaign.title}
                             </h3>
                           </Link>
-                          
+
                           <div className="flex items-center gap-1 text-xs text-gray-600">
                             <FaBuilding className="w-3 h-3 text-gray-400" />
                             <span className="line-clamp-1">{companyName}</span>
@@ -205,7 +213,10 @@ const Favorites = () => {
                               <>
                                 <span className="text-gray-300">•</span>
                                 <span className="font-medium text-green-600">
-                                  {formatCurrency(Number(campaign.valuation), campaign.currency)}
+                                  {formatCurrency(
+                                    Number(campaign.valuation),
+                                    campaign.currency,
+                                  )}
                                 </span>
                               </>
                             )}
@@ -214,10 +225,21 @@ const Favorites = () => {
 
                         {/* Favorite Button */}
                         <button
-                          onClick={() => handleFavoriteClick(campaign.id.toString(), isFavorited)}
-                          disabled={isFavoriting === campaign.id.toString() || !user}
+                          onClick={() =>
+                            handleFavoriteClick(
+                              campaign.id.toString(),
+                              isFavorited,
+                            )
+                          }
+                          disabled={
+                            isFavoriting === campaign.id.toString() || !user
+                          }
                           className="ml-3 p-2 bg-gray-50 rounded-lg disabled:opacity-50"
-                          aria-label={isFavorited ? "Remove from watchlist" : "Add to watchlist"}
+                          aria-label={
+                            isFavorited
+                              ? 'Remove from watchlist'
+                              : 'Add to watchlist'
+                          }
                         >
                           {isFavoriting === campaign.id.toString() ? (
                             <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
@@ -234,20 +256,30 @@ const Favorites = () => {
                         <div className="text-center p-2 bg-gray-50 rounded">
                           <div className="flex items-center justify-center gap-1 mb-1">
                             <FaDollarSign className="w-3 h-3 text-gray-600" />
-                            <span className="text-xs font-medium text-gray-700">Raised</span>
+                            <span className="text-xs font-medium text-gray-700">
+                              Raised
+                            </span>
                           </div>
                           <p className="text-sm font-bold text-gray-900">
-                            {formatCurrency(Number(campaign.transferred_amount || 0), campaign.currency)}
+                            {formatCurrency(
+                              Number(campaign.transferred_amount || 0),
+                              campaign.currency,
+                            )}
                           </p>
                         </div>
 
                         <div className="text-center p-2 bg-gray-50 rounded">
                           <div className="flex items-center justify-center gap-1 mb-1">
                             <FiTarget className="w-3 h-3 text-gray-600" />
-                            <span className="text-xs font-medium text-gray-700">Goal</span>
+                            <span className="text-xs font-medium text-gray-700">
+                              Goal
+                            </span>
                           </div>
                           <p className="text-sm font-bold text-gray-900">
-                            {formatCurrency(Number(campaign.goal_amount || 0), campaign.currency)}
+                            {formatCurrency(
+                              Number(campaign.goal_amount || 0),
+                              campaign.currency,
+                            )}
                           </p>
                         </div>
 
@@ -259,14 +291,18 @@ const Favorites = () => {
                             </span>
                           </div>
                           <p className="text-sm font-bold text-gray-900">
-                            {campaign.total_investors || campaign.total_donors || 0}
+                            {campaign.total_investors ||
+                              campaign.total_donors ||
+                              0}
                           </p>
                         </div>
 
                         <div className="text-center p-2 bg-gray-50 rounded">
                           <div className="flex items-center justify-center gap-1 mb-1">
                             <FaClock className="w-3 h-3 text-gray-600" />
-                            <span className="text-xs font-medium text-gray-700">Days Left</span>
+                            <span className="text-xs font-medium text-gray-700">
+                              Days Left
+                            </span>
                           </div>
                           <p className="text-sm font-bold text-gray-900">
                             {campaign.remaining_days || 0}
@@ -281,7 +317,15 @@ const Favorites = () => {
                             {progressPercentage.toFixed(1)}%
                           </span>
                           <span className="text-xs text-gray-500">
-                            {formatCurrency(Number(campaign.transferred_amount || 0), campaign.currency)} / {formatCurrency(Number(campaign.goal_amount || 0), campaign.currency)}
+                            {formatCurrency(
+                              Number(campaign.transferred_amount || 0),
+                              campaign.currency,
+                            )}{' '}
+                            /{' '}
+                            {formatCurrency(
+                              Number(campaign.goal_amount || 0),
+                              campaign.currency,
+                            )}
                           </span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -304,11 +348,12 @@ const Favorites = () => {
                           />
                           <div>
                             <p className="text-xs font-medium text-gray-900">
-                              {campaign.fundraiser?.profile?.name || 'Anonymous'}
+                              {campaign.fundraiser?.profile?.name ||
+                                'Anonymous'}
                             </p>
                           </div>
                         </div>
-                        
+
                         <Link
                           href={`/campaign/${campaign.slug || campaign.id}?tab=${isEquityCampaign ? 'invest' : 'donate'}&${generateRandomString()}`}
                         >
