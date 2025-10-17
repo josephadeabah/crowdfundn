@@ -299,7 +299,7 @@ const Favorites = () => {
                         <div className="flex items-center gap-2">
                           <Avatar
                             name={campaign.fundraiser?.profile?.name}
-                            size="xs"
+                            size="sm"
                             imageUrl={campaign.fundraiser?.profile?.avatar}
                           />
                           <div>
