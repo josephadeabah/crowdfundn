@@ -373,7 +373,7 @@ module PaystackWebhook::Handlers
       ).call
 
       send_oversubscription_notification(investment, metadata)
-      rollback_campaign_updates(investment, (response.dig(:data, :amount).to_f / 100.0) * 0.93)
+      rollback_campaign_updates(investment, (response.dig(:data, :amount).to_f / 100.0) * 0.03)
 
       # DON'T raise an exception - this is a successfully handled business case
       Rails.logger.info "Oversubscription handled successfully for investment #{investment.id}"

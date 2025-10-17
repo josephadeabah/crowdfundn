@@ -334,7 +334,7 @@ class EquityInvestment < ApplicationRecord
     refund_response = paystack_service.cancel_authorized_payment(
       transaction_reference,
       amount,
-      campaign.currency,
+      campaign.currency.upcase,
       "48-hour cancellation window - Investment ID: #{id}"
     )
     
