@@ -309,3 +309,9 @@ img[src*='#markdown-transferspage'] {
 .react-tooltip {
   pointer-events: auto !important;
 }
+
+#cancellation-reason:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+}
