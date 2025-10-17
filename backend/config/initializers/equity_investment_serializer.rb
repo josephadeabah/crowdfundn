@@ -16,6 +16,10 @@ class EquityInvestmentSerializer
       # Add currency information to the investment
       currency: @investment.campaign.currency,
       currency_symbol: @investment.campaign.currency_symbol,
+      # ADD CANCELLATION WINDOW FIELDS:
+      can_be_cancelled: @investment.can_be_cancelled?,
+      cancel_window_expires_at: @investment.cancel_window_expires_at,
+      committed_at: @investment.committed_at,
       campaign: {
         id: @investment.campaign.id,
         title: @investment.campaign.title,
@@ -50,7 +54,16 @@ class EquityInvestmentSerializer
         id: @investment.user&.id,
         name: @investment.user&.full_name || @investment.full_name,
         email: @investment.user&.email || @investment.email
-      }
+      },
+      # ADD COMPANY INFO AND TEAM MEMBERS FOR EXPANDED VIEW:
+      company_info: {
+        name: @investment.campaign.company_name,
+        description: @investment.campaign.company_description,
+        headquarters: @investment.campaign.company_headquarters,
+        website: @investment.campaign.company_website,
+        contract_term: @investment.campaign.contract_term
+      },
+      team_members: team_members_data
     }
   end
 
@@ -65,5 +78,24 @@ class EquityInvestmentSerializer
     issuer = @investment.campaign.fundraiser
     return nil unless issuer
     issuer.latest_kyc&.issuer_signature_url || issuer.latest_kyc&.signature_image_url
+  end
+
+  def team_members_data
+    @investment.campaign.campaign_team_members.map do |team_member|
+      {
+        id: team_member.id,
+        name: team_member.name,
+        email: team_member.email,
+        role: team_member.role,
+        title: team_member.title,
+        equity_percentage: team_member.equity_percentage,
+        description: team_member.description,
+        avatar_url: team_member.avatar_url,
+        user: team_member.user ? {
+          id: team_member.user.id,
+          name: team_member.user.full_name
+        } : nil
+      }
+    end
   end
 end
