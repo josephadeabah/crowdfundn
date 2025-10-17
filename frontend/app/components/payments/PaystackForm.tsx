@@ -367,8 +367,8 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
               className="block mb-2 text-sm font-medium text-gray-700"
             >
               {isEquityCampaign
-                ? `Investment Amount (${user?.currency_symbol || user?.currency || 'GHS'})`
-                : `Donation Amount (${user?.currency_symbol || user?.currency || 'GHS'})`}
+                ? `Investment Amount (${user?.currency_symbol || user?.currency.toUpperCase() || 'GHS'})`
+                : `Donation Amount (${user?.currency_symbol || user?.currency.toUpperCase() || 'GHS'})`}
             </label>
             <input
               type="number"
@@ -408,7 +408,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                   <span className="text-gray-600">Investment Amount:</span>
                   <span className="font-medium">
                     {parseFloat(paymentAmount || '0').toFixed(2)}{' '}
-                    {user?.currency_symbol || user?.currency || 'GHS'}
+                    {user?.currency_symbol || user?.currency.toUpperCase() || 'GHS'}
                   </span>
                 </div>
 
@@ -416,7 +416,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                   <span className="text-gray-600">Processing Fee (7%):</span>
                   <span className="font-medium">
                     {processingFee.toFixed(2)}{' '}
-                    {user?.currency_symbol || user?.currency || 'GHS'}
+                    {user?.currency_symbol || user?.currency.toUpperCase() || 'GHS'}
                     {processingFee >= 300 && ' (capped)'}
                   </span>
                 </div>
@@ -426,7 +426,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                     <span>Total Amount to Pay:</span>
                     <span>
                       {totalAmount.toFixed(2)}{' '}
-                      {user?.currency_symbol || user?.currency || 'GHS'}
+                      {user?.currency_symbol || user?.currency.toUpperCase() || 'GHS'}
                     </span>
                   </div>
                 </div>
@@ -462,7 +462,7 @@ const PaystackForm: React.FC<PaystackFormProps> = ({
                   <span className="text-gray-600">Donation Amount:</span>
                   <span className="font-medium">
                     {parseFloat(paymentAmount || '0').toFixed(2)}{' '}
-                    {user?.currency_symbol || user?.currency || 'GHS'}
+                    {user?.currency_symbol || user?.currency.toUpperCase() || 'GHS'}
                   </span>
                 </div>
               </div>
