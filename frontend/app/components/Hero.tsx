@@ -129,7 +129,7 @@ const Hero = () => {
           }
         }}
       >
-        <source src="/moving-train.mp4" type="video/mp4" />
+        <source src="/office_setting.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
