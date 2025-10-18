@@ -144,7 +144,7 @@ const DonationButton: React.FC<DonationButtonProps> = ({
         )}
         aria-label="Fund Now"
       >
-        {isEquityCampaign ? 'Invest' : 'Support Now'}
+        {isEquityCampaign ? 'Invest Now' : 'Support Now'}
       </button>
 
       <Modal
