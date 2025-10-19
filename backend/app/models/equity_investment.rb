@@ -1,13 +1,14 @@
 # app/models/equity_investment.rb
 class EquityInvestment < ApplicationRecord
+  # Associations
   belongs_to :user
   belongs_to :campaign, class_name: 'EquityCampaign'
   belongs_to :reward, optional: true
   has_many :pledges, dependent: :destroy
   has_many :points, dependent: :nullify
-
   has_one_attached :certificate
 
+  # Constants
   STATUS_PENDING = 'pending'
   STATUS_INITIALIZED = 'initialized'
   STATUS_SUCCESSFUL = 'successful'
@@ -36,6 +37,7 @@ class EquityInvestment < ApplicationRecord
     STATUS_COMMITTED
   ].freeze
 
+  # Validations
   validates :amount, :shares, :percentage, presence: true, numericality: { greater_than: 0 }
   validate :certificate_only_for_successful_investments
   validates :certificate_number, uniqueness: true, allow_nil: true
@@ -44,24 +46,24 @@ class EquityInvestment < ApplicationRecord
   validates :phone, presence: false
   validates :status, inclusion: { in: VALID_STATUSES }
 
+  # Scopes
   scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
   scope :committed, -> { where(status: STATUS_COMMITTED) }
-  # Add scope for cancellable investments
   scope :cancellable, -> { 
     where(status: STATUS_COMMITTED)
     .where('cancel_window_expires_at > ?', Time.current)
   }
 
+  # Callbacks
   before_validation :calculate_shares_and_percentage, on: :create
   before_create :generate_certificate_number
   before_create :set_investment_date
   after_commit :update_campaign_leaderboard, if: :saved_change_to_status?
   after_save :update_campaign_shares, if: -> { saved_change_to_status? && successful? }
   before_save :update_current_value, if: -> { campaign_id_changed? || percentage_changed? || will_save_change_to_percentage? }
-  # Add callback to set commitment timestamp
   before_save :set_commitment_timestamps, if: -> { will_save_change_to_status?(to: STATUS_COMMITTED) }
 
-  # Status query methods
+  # ========== STATUS QUERY METHODS ==========
   def pending?
     status == STATUS_PENDING
   end
@@ -110,12 +112,11 @@ class EquityInvestment < ApplicationRecord
     status == STATUS_COMMITTED
   end
 
-  # Add method to check if investment can be cancelled
+  # ========== CANCELLATION METHODS ==========
   def can_be_cancelled?
     committed? && cancel_window_expires_at > Time.current
   end
 
-  # Add method to cancel investment
   def cancel!(reason = nil)
     return false unless can_be_cancelled?
     
@@ -131,7 +132,46 @@ class EquityInvestment < ApplicationRecord
     true
   end
 
-  # FIXED: Simple reader method without recursion
+  def void_payment_authorization
+    return unless transaction_reference.present?
+    
+    paystack_service = PaystackService.new
+    
+    # First verify the transaction status
+    verification_response = paystack_service.verify_transaction(transaction_reference)
+    
+    unless verification_response[:status]
+      Rails.logger.error "Cannot verify transaction #{transaction_reference} for cancellation"
+      mark_for_manual_refund("Transaction verification failed")
+      return false
+    end
+    
+    transaction_status = verification_response.dig(:data, :status)
+    
+    case transaction_status
+    when 'success'
+      # Transaction was successful - process refund
+      process_refund_for_successful_transaction
+    when 'abandoned', 'failed'
+      # Transaction never completed - no refund needed
+      Rails.logger.info "Transaction #{transaction_reference} was #{transaction_status}, no refund needed"
+      update_refund_status('not_required', "Transaction was #{transaction_status}")
+      true
+    when 'pending', 'processing', 'ongoing'
+      # Transaction is still pending - may need different handling
+      process_pending_transaction_cancellation
+    else
+      Rails.logger.warn "Unknown transaction status: #{transaction_status} for #{transaction_reference}"
+      mark_for_manual_refund("Unknown transaction status: #{transaction_status}")
+      false
+    end
+  rescue => e
+    Rails.logger.error "Error voiding payment authorization for investment #{id}: #{e.message}"
+    mark_for_manual_refund("Exception: #{e.message}")
+    false
+  end
+
+  # ========== FINANCIAL CALCULATION METHODS ==========
   def current_value
     # Return stored value if present, otherwise calculate it
     self[:current_value] || calculate_current_value
@@ -146,41 +186,15 @@ class EquityInvestment < ApplicationRecord
     ((total_returns / amount) * 100).round(2)
   end
 
-  def self.total_invested(campaign_id)
-    where(campaign_id: campaign_id, status: STATUS_SUCCESSFUL).sum(:amount)
+  def gross_amount
+    self[:gross_amount] || amount
   end
 
-  def self.portfolio_for(user)
-    investments = user.equity_investments.includes(campaign: [:campaign_team_members])
-    
-    # Filter out pending investments for portfolio calculations
-    successful_investments = investments.successful
-    
-    # Calculate unique campaigns from successful investments only
-    successful_campaign_ids = successful_investments.pluck(:campaign_id).uniq
-    
-    {
-      total_invested: successful_investments.sum(:amount),
-      total_value: successful_investments.sum { |i| i.current_value },
-      total_return: successful_investments.sum { |i| i.total_returns },
-      investments: investments,
-      successful_count: successful_investments.count,
-      campaigns_invested: successful_campaign_ids.count
-    }
+  def net_amount
+    self[:net_amount] || amount
   end
 
-  def self.total_investment_value(user_id = nil)
-    scope = successful
-    scope = scope.where(user_id: user_id) if user_id
-    scope.sum(:amount)
-  end
-
-  def self.total_portfolio_value(user_id = nil)
-    scope = successful.includes(:campaign)
-    scope = scope.where(user_id: user_id) if user_id
-    scope.sum { |investment| investment.current_value }
-  end
-
+  # ========== CERTIFICATE METHODS ==========
   def certificate_url
     return unless certificate.attached?
     
@@ -198,14 +212,7 @@ class EquityInvestment < ApplicationRecord
     certificate.attached? && certificate.blob.present?
   end
 
-  def gross_amount
-    self[:gross_amount] || amount
-  end
-
-  def net_amount
-    self[:net_amount] || amount
-  end
-
+  # ========== SHARE CALCULATION METHODS ==========
   def calculate_shares_and_percentage
     unless campaign && amount.present? && amount.positive?
       errors.add(:amount, "must be positive")
@@ -234,6 +241,7 @@ class EquityInvestment < ApplicationRecord
     self.percentage = (shares / campaign.total_shares.to_f) * 100
   end
 
+  # ========== SIGNATURE METHODS ==========
   def investor_signature_url
     return nil unless user
     user.latest_kyc&.signature_image_url
@@ -245,6 +253,7 @@ class EquityInvestment < ApplicationRecord
     issuer.latest_kyc&.signature_image_url
   end
 
+  # ========== SERIALIZATION METHODS ==========
   def to_frontend_format
     {
       id: id,
@@ -287,47 +296,46 @@ class EquityInvestment < ApplicationRecord
     }
   end
 
-  def void_payment_authorization
-    return unless transaction_reference.present?
-    
-    paystack_service = PaystackService.new
-    
-    # First verify the transaction status
-    verification_response = paystack_service.verify_transaction(transaction_reference)
-    
-    unless verification_response[:status]
-      Rails.logger.error "Cannot verify transaction #{transaction_reference} for cancellation"
-      mark_for_manual_refund("Transaction verification failed")
-      return false
-    end
-    
-    transaction_status = verification_response.dig(:data, :status)
-    
-    case transaction_status
-    when 'success'
-      # Transaction was successful - process refund
-      process_refund_for_successful_transaction
-    when 'abandoned', 'failed'
-      # Transaction never completed - no refund needed
-      Rails.logger.info "Transaction #{transaction_reference} was #{transaction_status}, no refund needed"
-      update_refund_status('not_required', "Transaction was #{transaction_status}")
-      true
-    when 'pending', 'processing', 'ongoing'
-      # Transaction is still pending - may need different handling
-      process_pending_transaction_cancellation
-    else
-      Rails.logger.warn "Unknown transaction status: #{transaction_status} for #{transaction_reference}"
-      mark_for_manual_refund("Unknown transaction status: #{transaction_status}")
-      false
-    end
-  rescue => e
-    Rails.logger.error "Error voiding payment authorization for investment #{id}: #{e.message}"
-    mark_for_manual_refund("Exception: #{e.message}")
-    false
+  # ========== CLASS METHODS ==========
+  def self.total_invested(campaign_id)
+    where(campaign_id: campaign_id, status: STATUS_SUCCESSFUL).sum(:amount)
   end
 
+  def self.portfolio_for(user)
+    investments = user.equity_investments.includes(campaign: [:campaign_team_members])
+    
+    # Filter out pending investments for portfolio calculations
+    successful_investments = investments.successful
+    
+    # Calculate unique campaigns from successful investments only
+    successful_campaign_ids = successful_investments.pluck(:campaign_id).uniq
+    
+    {
+      total_invested: successful_investments.sum(:amount),
+      total_value: successful_investments.sum { |i| i.current_value },
+      total_return: successful_investments.sum { |i| i.total_returns },
+      investments: investments,
+      successful_count: successful_investments.count,
+      campaigns_invested: successful_campaign_ids.count
+    }
+  end
+
+  def self.total_investment_value(user_id = nil)
+    scope = successful
+    scope = scope.where(user_id: user_id) if user_id
+    scope.sum(:amount)
+  end
+
+  def self.total_portfolio_value(user_id = nil)
+    scope = successful.includes(:campaign)
+    scope = scope.where(user_id: user_id) if user_id
+    scope.sum { |investment| investment.current_value }
+  end
+
+  # ========== PRIVATE METHODS ==========
   private
 
+  # Refund Processing Methods
   def process_refund_for_successful_transaction
     paystack_service = PaystackService.new
     
@@ -386,12 +394,17 @@ class EquityInvestment < ApplicationRecord
     # AdminMailer.refund_failed_notification(self, reason).deliver_later
   end
 
+  # Timestamp Methods
   def set_commitment_timestamps
     self.committed_at ||= Time.current
     self.cancel_window_expires_at ||= 48.hours.from_now
   end
 
-  # NEW: Calculate and update current value
+  def set_investment_date
+    self.investment_date ||= Date.current
+  end
+
+  # Value Calculation Methods
   def calculate_current_value
     return amount unless campaign && campaign.valuation && percentage
     
@@ -399,11 +412,11 @@ class EquityInvestment < ApplicationRecord
     new_value
   end
 
-  # NEW: Update current_value before saving
   def update_current_value
     self.current_value = calculate_current_value
   end
 
+  # Certificate Methods
   def generate_certificate_number
     self.certificate_number ||= "BHV-#{SecureRandom.alphanumeric(10).upcase}"
   end
@@ -414,10 +427,7 @@ class EquityInvestment < ApplicationRecord
     end
   end
 
-  def set_investment_date
-    self.investment_date ||= Date.current
-  end
-
+  # Campaign Update Methods
   def update_campaign_leaderboard
     campaign.update_fundraiser_leaderboard if successful?
   end
