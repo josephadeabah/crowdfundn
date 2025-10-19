@@ -163,7 +163,6 @@ Rails.application.routes.draw do
             
             member do
               put :update
-              post :cancel, to: 'investment_cancellations#create'
               delete :destroy
             end
           end
@@ -173,6 +172,9 @@ Rails.application.routes.draw do
           collection do
             get :portfolio
             get :my_investments
+          end
+          member do
+            post :cancel, to: 'investment_cancellations#create'
           end
         end
       end
