@@ -43,7 +43,7 @@ module Api
         private
 
         def set_investment
-          @investment = @current_user.equity_investments.find(params[:investment_id])
+          @investment = @current_user.equity_investments.find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: { 
             success: false,
