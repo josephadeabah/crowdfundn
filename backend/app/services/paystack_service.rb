@@ -186,15 +186,10 @@ class PaystackService
   end
 
   def cancel_authorized_payment(transaction_reference, amount = nil, currency = nil, reason = "Investment cancelled")
-    # Convert amount to smallest unit if provided
-    converted_amount = if amount && currency
-      convert_to_smallest_unit(amount: amount, currency: currency)
-    end
-    
     # For Paystack, we use refunds to cancel authorized payments
     initiate_refund(
       transaction: transaction_reference,
-      amount: converted_amount,  # Use converted amount
+      amount: amount,
       currency: currency,
       customer_note: "Investment cancelled - #{reason}",
       merchant_note: "Automatic cancellation for equity investment"
