@@ -173,11 +173,10 @@ Rails.application.routes.draw do
             get :portfolio
             get :my_investments
           end
-          member do
-            post :cancel, to: 'investment_cancellations#create'
-          end
         end
       end
+      # OR add this explicit route:
+      post 'equity_investments/:investment_id/cancel', to: 'investment_cancellations#create'
 
       # Leaderboard routes
       namespace :leaderboard do
