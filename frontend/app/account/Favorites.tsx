@@ -100,7 +100,7 @@ const Favorites = () => {
   }
 
   return (
-    <div className="px-4 py-6 max-w-md mx-auto">
+    <div className="px-4 py-6 max-w-lg mx-auto">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
