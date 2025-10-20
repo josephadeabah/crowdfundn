@@ -99,7 +99,8 @@ const Favorites = () => {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Watchlist</h1>
               <p className="text-sm text-gray-600 mt-1">
-                Track campaigns you're interested in and discover new opportunities
+                Track campaigns you're interested in and discover new
+                opportunities
               </p>
             </div>
           </div>
@@ -166,7 +167,8 @@ const Favorites = () => {
                             style={{ objectFit: 'cover' }}
                             unoptimized
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/bantuhive.svg';
+                              (e.target as HTMLImageElement).src =
+                                '/bantuhive.svg';
                             }}
                           />
 
@@ -314,7 +316,9 @@ const Favorites = () => {
                               </span>
                             </div>
                             <p className="text-base font-bold text-gray-900">
-                              {campaign.total_investors || campaign.total_donors || 0}
+                              {campaign.total_investors ||
+                                campaign.total_donors ||
+                                0}
                             </p>
                           </div>
 
@@ -341,9 +345,12 @@ const Favorites = () => {
                             />
                             <div>
                               <p className="text-sm font-semibold text-gray-900">
-                                {campaign.fundraiser?.profile?.name || 'Anonymous'}
+                                {campaign.fundraiser?.profile?.name ||
+                                  'Anonymous'}
                               </p>
-                              <p className="text-xs text-gray-500">Campaign Owner</p>
+                              <p className="text-xs text-gray-500">
+                                Campaign Owner
+                              </p>
                             </div>
                           </div>
 
@@ -367,15 +374,16 @@ const Favorites = () => {
           {/* Right Column - Favorites Sidebar */}
           <div className="lg:w-80 flex-shrink-0">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-6">
-              {/* Sidebar Header */}
-              <div className="p-4 border-b border-gray-200">
+              {/* Sidebar Header - Fixed */}
+              <div className="p-4 border-b border-gray-200 bg-white rounded-t-xl">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">
                       Your Watchlist
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      {favoritedCampaigns.length} campaign{favoritedCampaigns.length !== 1 ? 's' : ''} tracked
+                      {favoritedCampaigns.length} campaign
+                      {favoritedCampaigns.length !== 1 ? 's' : ''} tracked
                     </p>
                   </div>
                   <div className="p-2 bg-green-100 rounded-lg">
@@ -384,99 +392,111 @@ const Favorites = () => {
                 </div>
               </div>
 
-              {/* Favorites List */}
-              <div className="p-4">
-                {favoritedCampaigns.length === 0 ? (
-                  <div className="text-center py-8">
-                    <FaRegHeart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-sm text-gray-500 mb-2">
-                      No campaigns in watchlist
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      Click the heart icon to add campaigns
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {favoritedCampaigns.map((campaign) => {
-                      const isEquityCampaign = campaign.type === 'EquityCampaign';
-                      const companyName =
-                        campaign.company_info?.name ||
-                        campaign.fundraiser?.profile?.name ||
-                        'Unknown Company';
+              {/* Scrollable Favorites List */}
+              <div
+                className="overflow-y-auto"
+                style={{
+                  maxHeight: 'calc(100vh - 200px)',
+                  minHeight: '200px',
+                }}
+              >
+                <div className="p-4">
+                  {favoritedCampaigns.length === 0 ? (
+                    <div className="text-center py-8">
+                      <FaRegHeart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-sm text-gray-500 mb-2">
+                        No campaigns in watchlist
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        Click the heart icon to add campaigns
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {favoritedCampaigns.map((campaign) => {
+                        const isEquityCampaign =
+                          campaign.type === 'EquityCampaign';
+                        const companyName =
+                          campaign.company_info?.name ||
+                          campaign.fundraiser?.profile?.name ||
+                          'Unknown Company';
 
-                      return (
-                        <div
-                          key={`favorite-${campaign.id}`}
-                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
-                        >
-                          {/* Avatar */}
-                          <Link
-                            href={`/campaign/${campaign.slug || campaign.id}?${generateRandomString()}`}
-                            className="flex-shrink-0"
+                        return (
+                          <div
+                            key={`favorite-${campaign.id}`}
+                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
                           >
-                            <Avatar
-                              name={companyName}
-                              size="sm"
-                              imageUrl={campaign.fundraiser?.profile?.avatar}
-                            />
-                          </Link>
-
-                          {/* Campaign Info */}
-                          <div className="flex-1 min-w-0">
+                            {/* Avatar */}
                             <Link
                               href={`/campaign/${campaign.slug || campaign.id}?${generateRandomString()}`}
-                              className="block"
+                              className="flex-shrink-0"
                             >
-                              <p className="text-sm font-medium text-gray-900 truncate">
-                                {campaign.title}
-                              </p>
-                              <p className="text-xs text-gray-500 truncate">
-                                {companyName}
-                              </p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span
-                                  className={`text-xs px-2 py-0.5 rounded-full ${
-                                    isEquityCampaign
-                                      ? 'bg-green-100 text-green-700'
-                                      : 'bg-orange-100 text-orange-700'
-                                  }`}
-                                >
-                                  {isEquityCampaign ? 'Equity' : 'Donation'}
-                                </span>
-                                <span className="text-xs text-gray-400">
-                                  {formatCurrency(
-                                    Number(campaign.transferred_amount || 0),
-                                    campaign.currency,
-                                  )}
-                                </span>
-                              </div>
+                              <Avatar
+                                name={companyName}
+                                size="sm"
+                                imageUrl={campaign.fundraiser?.profile?.avatar}
+                              />
                             </Link>
-                          </div>
 
-                          {/* Remove Button */}
-                          <button
-                            onClick={() =>
-                              handleFavoriteClick(campaign.id.toString(), true)
-                            }
-                            disabled={isFavoriting === campaign.id.toString()}
-                            className="flex-shrink-0 p-1.5 text-gray-400 hover:text-red-500 disabled:opacity-50 transition-colors group-hover:bg-white rounded"
-                            aria-label="Remove from watchlist"
-                          >
-                            {isFavoriting === campaign.id.toString() ? (
-                              <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                            ) : (
-                              <FaTimes className="w-4 h-4" />
-                            )}
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                            {/* Campaign Info */}
+                            <div className="flex-1 min-w-0">
+                              <Link
+                                href={`/campaign/${campaign.slug || campaign.id}?${generateRandomString()}`}
+                                className="block"
+                              >
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {campaign.title}
+                                </p>
+                                <p className="text-xs text-gray-500 truncate">
+                                  {companyName}
+                                </p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <span
+                                    className={`text-xs px-2 py-0.5 rounded-full ${
+                                      isEquityCampaign
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-orange-100 text-orange-700'
+                                    }`}
+                                  >
+                                    {isEquityCampaign ? 'Equity' : 'Donation'}
+                                  </span>
+                                  <span className="text-xs text-gray-400">
+                                    {formatCurrency(
+                                      Number(campaign.transferred_amount || 0),
+                                      campaign.currency,
+                                    )}
+                                  </span>
+                                </div>
+                              </Link>
+                            </div>
+
+                            {/* Remove Button */}
+                            <button
+                              onClick={() =>
+                                handleFavoriteClick(
+                                  campaign.id.toString(),
+                                  true,
+                                )
+                              }
+                              disabled={isFavoriting === campaign.id.toString()}
+                              className="flex-shrink-0 p-1.5 text-gray-400 hover:text-red-500 disabled:opacity-50 transition-colors group-hover:bg-white rounded"
+                              aria-label="Remove from watchlist"
+                            >
+                              {isFavoriting === campaign.id.toString() ? (
+                                <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                              ) : (
+                                <FaTimes className="w-4 h-4" />
+                              )}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Sidebar Footer */}
+              {/* Sidebar Footer - Fixed */}
               {favoritedCampaigns.length > 0 && (
                 <div className="p-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
                   <p className="text-xs text-gray-500 text-center">
