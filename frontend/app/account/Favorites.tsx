@@ -319,9 +319,7 @@ const Favorites = () => {
                         </span>
                       </div>
                       <p className="text-base font-bold text-gray-900">
-                        {campaign.total_investors ||
-                          campaign.total_donors ||
-                          0}
+                        {campaign.total_investors || campaign.total_donors || 0}
                       </p>
                     </div>
 
@@ -380,7 +378,8 @@ const Favorites = () => {
             No campaigns in your watchlist yet
           </h3>
           <p className="text-sm text-gray-600 mb-4 max-w-sm mx-auto">
-            Click the heart icon on any campaign to add it to your watchlist and track its progress.
+            Click the heart icon on any campaign to add it to your watchlist and
+            track its progress.
           </p>
           <div className="text-xs text-gray-500">
             Showing trending campaigns for you to explore
