@@ -86,3 +86,6 @@ production:
   database: <%= ENV['DB_NAME'] %>
   password: <%= ENV['DB_PASSWORD'] %>
   sslmode: require
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 10 } %>
+  timeout: 5000
+
