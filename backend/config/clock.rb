@@ -3,6 +3,8 @@ require 'clockwork'
 require './config/boot'
 require './config/environment'
 
+Rails.application.config.active_job.queue_adapter = :inline
+
 module Clockwork
   # ---------------------------------------
   # Configuration
