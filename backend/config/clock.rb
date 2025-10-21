@@ -3,7 +3,11 @@ require 'clockwork'
 require './config/boot'
 require './config/environment'
 
-Rails.application.config.active_job.queue_adapter = :inline
+# ✅ Use ActiveJob adapter dynamically (so you can switch easily later)
+Rails.application.config.active_job.queue_adapter =
+  ENV.fetch('ACTIVE_JOB_ADAPTER', 'async').to_sym
+  # For now: async (lightweight, built-in)
+  # Later in production: set ACTIVE_JOB_ADAPTER=sidekiq
 
 module Clockwork
   # ---------------------------------------
@@ -11,10 +15,10 @@ module Clockwork
   # ---------------------------------------
   configure do |config|
     config[:logger] = Rails.logger
-    config[:sleep_timeout] = 5  # seconds between checks
-    config[:tz] = 'UTC'         # Change if your app needs a specific zone
-    config[:thread] = 1
-    config[:max_threads] = 1
+    config[:sleep_timeout] = 5  # how often Clockwork checks for due jobs
+    config[:tz] = 'UTC'
+    config[:max_threads] = 5    # ✅ allow multiple jobs concurrently
+    config[:thread] = true      # ✅ enable threading (not 1)
   end
 
   # ---------------------------------------
@@ -22,8 +26,7 @@ module Clockwork
   # ---------------------------------------
   error_handler do |error|
     Rails.logger.error "[Clockwork Error] #{error.class}: #{error.message}"
-    Rails.logger.error error.backtrace.join("\n")
-    # Optional: Notify error tracking services here (e.g., Sentry, Bugsnag)
+    Rails.logger.error error.backtrace.join("\n") if error.backtrace
   end
 
   # ---------------------------------------
