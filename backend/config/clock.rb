@@ -11,6 +11,8 @@ module Clockwork
     config[:logger] = Rails.logger
     config[:sleep_timeout] = 5  # seconds between checks
     config[:tz] = 'UTC'         # Change if your app needs a specific zone
+    config[:thread] = 1
+    config[:max_threads] = 1
   end
 
   # ---------------------------------------
