@@ -4,53 +4,59 @@ require './config/boot'
 require './config/environment'
 
 module Clockwork
-  # Configure the logger
+  # ---------------------------------------
+  # Configuration
+  # ---------------------------------------
   configure do |config|
     config[:logger] = Rails.logger
     config[:sleep_timeout] = 5  # seconds between checks
-    config[:tz] = 'UTC'         # set your timezone if different
+    config[:tz] = 'UTC'         # Change if your app needs a specific zone
   end
 
-  # Job handler
-  handler do |job|
-    Rails.logger.info "[Clockwork] Starting job: #{job}"
-  end
-
-  every(8.hours, 'send_webhook', at: '**:00') do
-    Rails.logger.info "Triggering 'send_webhook' job at #{Time.current}"
-    
-    Campaign.active.find_each do |campaign|
-      begin
-        Rails.logger.info "Sending webhook for Campaign ID: #{campaign.id}"
-        campaign.send_status_update_webhook
-      rescue => e
-        Rails.logger.info "Failed to send webhook for Campaign #{campaign.id}: #{e.message}"
-      end
-    end
-  end
-
-  every(1.day, 'transfer_platform_fees', at: '12:00') do
-    Rails.logger.info "Triggering 'transfer_platform_fees' job at #{Time.current}"
-    begin
-      PlatformFeeService.transfer_platform_fees
-    rescue => e
-      Rails.logger.info "Failed to transfer platform fees: #{e.message}"
-    end
-  end
-
-  # Finalize committed investments every hour (check for expired cancellation windows)
-  every(1.hour, 'finalize_committed_investments') do
-    Rails.logger.info "Triggering 'finalize_committed_investments' job at #{Time.current}"
-    begin
-      FinalizeCommittedInvestmentsJob.perform_later
-    rescue => e
-      Rails.logger.error "Failed to finalize committed investments: #{e.message}"
-    end
-  end
-
-  # Error handler
+  # ---------------------------------------
+  # Error Handling
+  # ---------------------------------------
   error_handler do |error|
-    Rails.logger.info "[Clockwork Error] #{error.class.name}: #{error.message}"
+    Rails.logger.error "[Clockwork Error] #{error.class}: #{error.message}"
     Rails.logger.error error.backtrace.join("\n")
+    # Optional: Notify error tracking services here (e.g., Sentry, Bugsnag)
+  end
+
+  # ---------------------------------------
+  # Job Handler (for debugging)
+  # ---------------------------------------
+  handler do |job|
+    Rails.logger.info "[Clockwork] Triggered job: #{job} at #{Time.current}"
+  end
+
+  # ---------------------------------------
+  # Scheduled Jobs
+  # ---------------------------------------
+
+  # 1️⃣ Send campaign webhooks every 8 hours
+  every(8.hours, 'send_webhook') do
+    Rails.logger.info "[Clockwork] Enqueuing SendWebhookJob batch at #{Time.current}"
+
+    Campaign.active.find_each(batch_size: 100) do |campaign|
+      SendWebhookJob.perform_later(campaign.id)
+    rescue => e
+      Rails.logger.error "[Clockwork] Failed enqueue for Campaign #{campaign.id}: #{e.message}"
+    end
+  end
+
+  # 2️⃣ Transfer platform fees daily at noon UTC
+  every(1.day, 'transfer_platform_fees', at: '12:00') do
+    Rails.logger.info "[Clockwork] Enqueuing TransferPlatformFeesJob at #{Time.current}"
+    TransferPlatformFeesJob.perform_later
+  rescue => e
+    Rails.logger.error "[Clockwork] Failed to enqueue TransferPlatformFeesJob: #{e.message}"
+  end
+
+  # 3️⃣ Finalize committed investments every hour
+  every(1.hour, 'finalize_committed_investments') do
+    Rails.logger.info "[Clockwork] Enqueuing FinalizeCommittedInvestmentsJob at #{Time.current}"
+    FinalizeCommittedInvestmentsJob.perform_later
+  rescue => e
+    Rails.logger.error "[Clockwork] Failed to enqueue FinalizeCommittedInvestmentsJob: #{e.message}"
   end
 end

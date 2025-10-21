@@ -1,6 +1,6 @@
 # app/jobs/finalize_committed_investments_job.rb
 class FinalizeCommittedInvestmentsJob < ApplicationJob
-  queue_as :default
+  queue_as :investments
 
   def perform
     expired_investments = EquityInvestment.committed
