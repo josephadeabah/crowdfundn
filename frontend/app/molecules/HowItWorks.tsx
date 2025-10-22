@@ -33,7 +33,7 @@ const HowItWorks = () => {
               <Link href="/">
                 <Button
                   size="lg"
-                  className="shadow-medium hover:shadow-large transition-all"
+                  className="bg-fundify-primary shadow-medium hover:shadow-large transition-all"
                 >
                   Start a Campaign
                   <ArrowRight className="ml-2 h-5 w-5" />
