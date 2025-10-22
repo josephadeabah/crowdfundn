@@ -346,7 +346,7 @@ const HowItWorks = () => {
           <p className="text-xl text-white/90 mb-10 leading-relaxed">
             Join thousands using BantuHive to bring ideas to life
           </p>
-          <Link href="/">
+          <Link href="/auth/register">
             <Button
               size="lg"
               variant="secondary"
