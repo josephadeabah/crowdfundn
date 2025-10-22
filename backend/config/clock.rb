@@ -36,8 +36,6 @@ module Clockwork
 
   # 1️⃣ Send campaign webhooks every 8 hours
   every(8.hours, 'send_webhook') do
-    Rails.logger.info "[Clockwork] Enqueuing SendWebhookJob batch at #{Time.current}"
-
     Campaign.active.find_each(batch_size: 100) do |campaign|
       SendWebhookJob.perform_later(campaign.id)
     rescue => e
@@ -47,7 +45,6 @@ module Clockwork
 
   # 2️⃣ Transfer platform fees daily at noon UTC
   every(1.day, 'transfer_platform_fees', at: '12:00') do
-    Rails.logger.info "[Clockwork] Enqueuing TransferPlatformFeesJob at #{Time.current}"
     TransferPlatformFeesJob.perform_later
   rescue => e
     Rails.logger.error "[Clockwork] Failed to enqueue TransferPlatformFeesJob: #{e.message}"
@@ -55,7 +52,6 @@ module Clockwork
 
   # 3️⃣ Finalize committed investments every hour
   every(1.hour, 'finalize_committed_investments') do
-    Rails.logger.info "[Clockwork] Enqueuing FinalizeCommittedInvestmentsJob at #{Time.current}"
     FinalizeCommittedInvestmentsJob.perform_later
   rescue => e
     Rails.logger.error "[Clockwork] Failed to enqueue FinalizeCommittedInvestmentsJob: #{e.message}"
