@@ -152,20 +152,25 @@ const EquityInvestments = () => {
   };
 
   // Helper function to get time remaining for cancellation
-  const getTimeRemaining = (investment: EquityInvestment): string => {
-    if (!investment.cancel_window_expires_at) return 'No cancellation window';
+// Helper function to get time remaining for cancellation
+const getTimeRemaining = (investment: EquityInvestment): string => {
+  if (!investment.cancel_window_expires_at) return 'No cancellation window';
 
-    const expiresAt = new Date(investment.cancel_window_expires_at);
-    const now = new Date();
-    const diffMs = expiresAt.getTime() - now.getTime();
+  const expiresAt = new Date(investment.cancel_window_expires_at);
+  const now = new Date();
+  const diffMs = expiresAt.getTime() - now.getTime();
 
-    if (diffMs <= 0) return 'Expired';
+  if (diffMs <= 0) return 'Expired';
 
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  // For 3-minute window, show seconds when under 1 minute
+  if (diffMs < 60000) {
+    const diffSeconds = Math.floor(diffMs / 1000);
+    return `${diffSeconds}s`;
+  }
 
-    return `${diffHours}h ${diffMinutes}m`;
-  };
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  return `${diffMinutes}m`;
+};
 
   // Include committed investments in display
   const filterDisplayInvestments = (investments: EquityInvestment[]) => {
