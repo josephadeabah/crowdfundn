@@ -414,7 +414,7 @@ module PaystackWebhook::Handlers
         phone: metadata[:phone] || response.dig(:data, :customer, :phone),
         metadata: build_metadata(metadata, response),
         committed_at: Time.current,                 
-        cancel_window_expires_at: 48.hours.from_now 
+        cancel_window_expires_at: 3.minutes.from_now
       }
 
       investment.update!(update_attributes)
