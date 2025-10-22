@@ -22,7 +22,7 @@ const HowItWorks = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-fundify-primary/5 via-gray-50 to-accent/5"></div>
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           <div className="text-center animate-fade-in">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-fundify-primary to-accent">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent text-fundify-primary">
               How BantuHive Works
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
