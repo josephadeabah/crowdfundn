@@ -412,9 +412,7 @@ module PaystackWebhook::Handlers
         email: response.dig(:data, :customer, :email) || metadata[:investor_email],
         full_name: metadata[:investor_name],
         phone: metadata[:phone] || response.dig(:data, :customer, :phone),
-        metadata: build_metadata(metadata, response),
-        committed_at: Time.current,
-        cancel_window_expires_at: 48.hours.from_now
+        metadata: build_metadata(metadata, response)
       }
 
       investment.update!(update_attributes)
