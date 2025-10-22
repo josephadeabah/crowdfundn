@@ -30,10 +30,10 @@ const HowItWorks = () => {
               positive impact
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/">
+              <Link href="/auth/login">
                 <Button
                   size="lg"
-                  className="bg-fundify-primary shadow-medium hover:shadow-large transition-all"
+                  className="bg-fundify-primary hover:bg-green-700 shadow-medium hover:shadow-large transition-all"
                 >
                   Start a Campaign
                   <ArrowRight className="ml-2 h-5 w-5" />
