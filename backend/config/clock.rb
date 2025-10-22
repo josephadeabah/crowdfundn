@@ -3,12 +3,6 @@ require 'clockwork'
 require './config/boot'
 require './config/environment'
 
-# ✅ Use ActiveJob adapter dynamically (so you can switch easily later)
-Rails.application.config.active_job.queue_adapter =
-  ENV.fetch('ACTIVE_JOB_ADAPTER', 'async').to_sym
-  # For now: async (lightweight, built-in)
-  # Later in production: set ACTIVE_JOB_ADAPTER=sidekiq
-
 module Clockwork
   # ---------------------------------------
   # Configuration

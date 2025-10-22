@@ -12,7 +12,7 @@ module Backend
     config.load_defaults 7.1
 
     config.api_only = true
-    config.active_job.queue_adapter = :async
+    config.active_job.queue_adapter = ENV.fetch("ACTIVE_JOB_ADAPTER", "async").to_sym
 
     config.active_record.migration_error = :page_load
 

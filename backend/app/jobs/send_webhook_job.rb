@@ -1,6 +1,6 @@
 # app/jobs/send_webhook_job.rb
 class SendWebhookJob < ApplicationJob
-  queue_as :default
+  queue_as :campaign_status_webhooks
 
   def perform(campaign_id)
     campaign = Campaign.find_by(id: campaign_id)
