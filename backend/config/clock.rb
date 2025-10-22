@@ -51,7 +51,7 @@ module Clockwork
   end
 
   # 3️⃣ Finalize committed investments every hour
-  every(1.hour, 'finalize_committed_investments') do
+  every(1.minute, 'finalize_committed_investments') do
     FinalizeCommittedInvestmentsJob.perform_later
   rescue => e
     Rails.logger.error "[Clockwork] Failed to enqueue FinalizeCommittedInvestmentsJob: #{e.message}"
