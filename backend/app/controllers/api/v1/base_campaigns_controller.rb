@@ -331,12 +331,13 @@ module Api
       protected
 
       def campaign_scope
-        campaign_class.includes(
+        # Use Campaign as the base class but include all STI types
+        Campaign.includes(
           :rewards,
           :updates,
           :comments,
           :investor_documents,
-          :archived_campaigns, # Add archived_campaigns association
+          :archived_campaigns,
           fundraiser: [:profile, :latest_kyc, :archived_campaigns]
         )
       end
