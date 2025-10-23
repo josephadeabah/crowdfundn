@@ -2,11 +2,14 @@ module Api
   module V1
     class BaseCampaignsController < ApplicationController
       before_action :authenticate_request,
-                    only: %i[create update destroy my_campaigns statistics favorite unfavorite favorites archived_campaigns]
+                    only: %i[create update destroy my_campaigns statistics favorite unfavorite favorites archived_campaigns archive unarchive archive_status]
+      
       before_action :set_campaign,
                     only: %i[show update destroy webhook_status_update favorite unfavorite cancel_campaign
                              contact_fundraiser archive unarchive archive_status]
-      before_action :authorize_campaign_owner_or_admin!, only: %i[update destroy archive unarchive]
+      
+      before_action :authorize_campaign_owner_or_admin!, 
+                    only: %i[update destroy archive unarchive]
 
       def archived_campaigns
         archived_campaigns = @current_user.archived_campaigns_with_details
