@@ -18,6 +18,9 @@ class User < ApplicationRecord
   has_many :invested_campaigns, through: :equity_investments, source: :campaign
   has_many :investor_documents, dependent: :destroy
   has_many :premium_subscriptions
+  # Add archive association
+  has_many :archived_campaigns, dependent: :destroy
+  has_many :archived_campaigns_list, through: :archived_campaigns, source: :campaign
   belongs_to :premium_plan, optional: true
   # Update KYC associations to use full namespace
   has_many :kycs, class_name: '::Kyc', dependent: :destroy
@@ -54,6 +57,12 @@ class User < ApplicationRecord
   scope :active, -> { where(status: 'active') }
   scope :blocked, -> { where(status: 'blocked') }
 
+
+  def archived_campaigns_with_details
+    archived_campaigns.includes(campaign: [:fundraiser, :rewards, :updates])
+                      .order(archived_at: :desc)
+  end
+  
   def generate_confirmation_token
     self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
     self.confirmation_sent_at = Time.current

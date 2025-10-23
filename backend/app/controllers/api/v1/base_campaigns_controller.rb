@@ -2,11 +2,32 @@ module Api
   module V1
     class BaseCampaignsController < ApplicationController
       before_action :authenticate_request,
-                    only: %i[create update destroy my_campaigns statistics favorite unfavorite favorites]
+                    only: %i[create update destroy my_campaigns statistics favorite unfavorite favorites archived_campaigns]
       before_action :set_campaign,
                     only: %i[show update destroy webhook_status_update favorite unfavorite cancel_campaign
-                             contact_fundraiser]
-      before_action :authorize_campaign_owner_or_admin!, only: %i[update destroy]
+                             contact_fundraiser archive unarchive archive_status]
+      before_action :authorize_campaign_owner_or_admin!, only: %i[update destroy archive unarchive]
+
+      def archived_campaigns
+        archived_campaigns = @current_user.archived_campaigns_with_details
+                                        .page(params[:page])
+                                        .per(params[:pageSize] || 20)
+        
+        render json: {
+          archived_campaigns: archived_campaigns.map do |archive|
+            campaign_json = archive.campaign.as_json(user: @current_user)
+            campaign_json.merge(
+              archive_details: {
+                archived_at: archive.archived_at,
+                reason: archive.reason
+              }
+            )
+          end,
+          current_page: archived_campaigns.current_page,
+          total_pages: archived_campaigns.total_pages,
+          total_count: archived_campaigns.total_count
+        }, status: :ok
+      end
 
       def index
         page = params[:page] || 1
@@ -61,7 +82,7 @@ module Api
 
       def my_campaigns
         @campaigns = @current_user.campaigns
-                                  .includes(fundraiser: [:profile, :latest_kyc])  # Add KYC association
+                                  .includes(fundraiser: [:profile, :latest_kyc, :archived_campaigns])
                                   .order(created_at: :desc)
                                   .page(params[:page])
                                   .per(params[:pageSize] || 12)
@@ -160,6 +181,47 @@ module Api
         end
       rescue ActiveRecord::RecordNotDestroyed => e
         render json: { error: "Failed to delete campaign: #{e.message}" }, status: :unprocessable_entity
+      end
+
+            # Archive functionality
+      def archive
+        reason = params[:reason]
+
+        if @campaign.archive!(@current_user, reason)
+          render json: {
+            message: 'Campaign archived successfully',
+            campaign: campaign_json(@campaign)
+          }, status: :ok
+        else
+          render json: {
+            error: 'Failed to archive campaign'
+          }, status: :unprocessable_entity
+        end
+      end
+
+      def unarchive
+        if @campaign.unarchive!(@current_user)
+          render json: {
+            message: 'Campaign unarchived successfully',
+            campaign: campaign_json(@campaign)
+          }, status: :ok
+        else
+          render json: {
+            error: 'Failed to unarchive campaign'
+          }, status: :unprocessable_entity
+        end
+      end
+
+      def archive_status
+        archive_info = @campaign.archive_info_for_user(@current_user)
+        
+        render json: {
+          archived: @campaign.archived_by_user?(@current_user),
+          archive_info: archive_info ? {
+            archived_at: archive_info.archived_at,
+            reason: archive_info.reason
+          } : nil
+        }, status: :ok
       end
 
       def statistics
@@ -271,7 +333,8 @@ module Api
           :updates,
           :comments,
           :investor_documents,
-          fundraiser: [:profile, :latest_kyc]  # Add latest_kyc here
+          :archived_campaigns, # Add archived_campaigns association
+          fundraiser: [:profile, :latest_kyc]
         )
       end
 
@@ -315,9 +378,9 @@ module Api
             id title slug goal_amount current_amount transferred_amount start_date end_date
             category location currency currency_code currency_symbol status
             fundraiser_id created_at updated_at valuation equity_offered minimum_investment maximum_investment 
-            total_shares 
+            total_shares is_public appear_in_search_results
           ],
-          methods: %i[media_url media_filename total_days remaining_days],
+          methods: %i[media_url media_filename total_days remaining_days archived?],
           include: {
             rewards: {},
             updates: {},
@@ -349,7 +412,13 @@ module Api
           fundraiser_kyc_verified: kyc_status[:verified],
           fundraiser_kyc_status: kyc_status[:status],
           fundraiser_kyc_type: kyc_status[:kyc_type],
-          fundraiser_kyc_expired: kyc_status[:is_expired]
+          fundraiser_kyc_expired: kyc_status[:is_expired],
+          # Add archive information for current user
+          archived_by_current_user: @current_user ? campaign.archived_by_user?(@current_user) : false,
+          archive_info: @current_user ? (archive_info = campaign.archive_info_for_user(@current_user)) && {
+            archived_at: archive_info.archived_at,
+            reason: archive_info.reason
+          } : nil
         )
         
         # Filter to only include contract documents
@@ -372,6 +441,7 @@ module Api
             both_kyc_verified: kyc_status[:both_verified]
           )
         end
+
         if campaign.is_a?(EquityCampaign)
           # Add the new equity offering details
           equity_offering_details = {
@@ -442,7 +512,7 @@ module Api
       private
 
       def set_campaign
-        campaign_id = params[:id] || JSON.parse(request.body.read)['campaign_id']
+        campaign_id = params[:id] || params[:campaign_id] || JSON.parse(request.body.read)['campaign_id']
         @campaign = if campaign_id.to_s.match?(/\A\d+\z/) # Convert to string before matching
                       campaign_scope.find(campaign_id)
                     else

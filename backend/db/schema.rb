@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_16_233607) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_23_075501) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -67,6 +67,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_16_233607) do
     t.index ["campaign_id"], name: "index_admin_actions_on_campaign_id"
     t.index ["created_at"], name: "index_admin_actions_on_created_at"
     t.index ["target_user_id"], name: "index_admin_actions_on_target_user_id"
+  end
+
+  create_table "archived_campaigns", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "campaign_id", null: false
+    t.datetime "archived_at"
+    t.text "reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["archived_at"], name: "index_archived_campaigns_on_archived_at"
+    t.index ["campaign_id"], name: "index_archived_campaigns_on_campaign_id"
+    t.index ["user_id", "campaign_id"], name: "index_archived_campaigns_on_user_id_and_campaign_id", unique: true
+    t.index ["user_id"], name: "index_archived_campaigns_on_user_id"
   end
 
   create_table "articles", force: :cascade do |t|
@@ -674,6 +687,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_16_233607) do
   add_foreign_key "admin_actions", "campaigns"
   add_foreign_key "admin_actions", "users", column: "admin_user_id"
   add_foreign_key "admin_actions", "users", column: "target_user_id"
+  add_foreign_key "archived_campaigns", "campaigns"
+  add_foreign_key "archived_campaigns", "users"
   add_foreign_key "backer_rewards", "users"
   add_foreign_key "campaign_shares", "campaigns"
   add_foreign_key "campaign_shares", "users"

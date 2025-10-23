@@ -126,6 +126,7 @@ Rails.application.routes.draw do
           resources :campaign_shares, only: [:create]
           collection do
             get :favorites
+            get :archived_campaigns
           end
           member do
             patch 'cancel', to: 'campaigns#cancel_campaign'
@@ -133,6 +134,9 @@ Rails.application.routes.draw do
             delete :unfavorite
             post 'contact', to: 'campaigns#contact_fundraiser'
             get 'public_donations', to: 'donations#public_donations'
+            post :archive
+            delete :archive, to: 'campaigns#unarchive' # This points to BaseCampaignsController#unarchive
+            get :archive_status
           end
           post 'webhook_status_update', on: :collection  # Defines a route for webhook status update
           get 'my_campaigns', on: :collection
