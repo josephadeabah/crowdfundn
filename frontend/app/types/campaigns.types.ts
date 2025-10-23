@@ -143,7 +143,7 @@ export interface ExtendedCampaignState {
   };
   loading: boolean;
   error: string | null;
-  addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType | void>;
+  addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType>;
   cancelCampaign(id: string): Promise<void>;
   fetchUserCampaigns: () => Promise<void>;
   fetchAllCampaigns: (
@@ -160,7 +160,7 @@ export interface ExtendedCampaignState {
   editCampaign: (
     id: string | string[] | undefined,
     campaign: FormData,
-  ) => Promise<SingleCampaignResponseDataType | void>;
+  ) => Promise<SingleCampaignResponseDataType>;
   fetchCampaignById: (
     slug: string,
   ) => Promise<SingleCampaignResponseDataType | null>;
@@ -168,7 +168,7 @@ export interface ExtendedCampaignState {
   updateCampaignSettings: (
     campaignId: string,
     settings: Record<string, any>,
-  ) => Promise<SingleCampaignResponseDataType | void>;
+  ) => Promise<SingleCampaignResponseDataType>;
   favoriteCampaign: (campaignId: string) => Promise<void>;
   unfavoriteCampaign: (campaignId: string) => Promise<void>;
   fetchFavoritedCampaigns: () => Promise<void>;
