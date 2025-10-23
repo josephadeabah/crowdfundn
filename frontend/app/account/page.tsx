@@ -166,7 +166,7 @@ const ProfileTabs = () => {
           description: 'Create and manage your fundraising campaigns.',
         },
         {
-          label: 'Archived Campaigns',
+          label: 'Archives',
           icon: <FiArchive className="w-4 h-4" />,
           component: <ArchivedCampaigns />,
           description: 'View and manage your archived campaigns.',
