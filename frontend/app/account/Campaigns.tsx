@@ -39,6 +39,7 @@ import { getDetailedErrorMessage } from '../types/campaign.error.messages.types'
 const Campaigns: React.FC = () => {
   const {
     userCampaigns,
+    archivedCampaigns,
     loading,
     error,
     fetchUserCampaigns,
@@ -46,7 +47,6 @@ const Campaigns: React.FC = () => {
     cancelCampaign,
     archiveCampaign,
     unarchiveCampaign,
-    archivedCampaigns,
     fetchArchivedCampaigns,
   } = useCampaignContext();
 

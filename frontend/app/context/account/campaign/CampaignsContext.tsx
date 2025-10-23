@@ -1,6 +1,6 @@
 import {
   CampaignResponseDataType,
-  ExtendedCampaignState,
+  CampaignState,
   SingleCampaignResponseDataType,
   CampaignStatisticsDataType,
   CampaignShareType,
@@ -15,7 +15,7 @@ import React, {
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 
-const CampaignContext = createContext<ExtendedCampaignState | undefined>(
+const CampaignContext = createContext<CampaignState | undefined>(
   undefined,
 );
 

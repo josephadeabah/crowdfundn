@@ -11,6 +11,11 @@ export interface Reward {
   image: string;
 }
 
+export interface ArchiveInfoType {
+  archived_at: string;
+  reason?: string;
+}
+
 export interface Update {
   id: number;
   created_at: string;
@@ -23,12 +28,6 @@ export interface Comment {
   content: string;
 }
 
-export interface ArchiveInfoType {
-  archived_at: string;
-  reason?: string;
-}
-
-// Make archive_info optional and allow null
 export interface CampaignResponseDataType {
   id: number;
   title: string;
@@ -115,7 +114,7 @@ export interface CampaignResponseDataType {
       url: string;
     }[];
   }[];
-  // Archive fields - make them optional and allow null
+    // Archive fields - make them optional and allow null
   archived_by_current_user?: boolean;
   archive_info?: ArchiveInfoType | null;
   archived?: boolean;
@@ -129,7 +128,7 @@ export interface CampaignShareType {
   user_points: number;
 }
 
-export interface ExtendedCampaignState {
+export interface CampaignState {
   campaigns: CampaignResponseDataType[];
   favoritedCampaigns: CampaignResponseDataType[];
   userCampaigns: CampaignResponseDataType[] | null;
@@ -161,14 +160,12 @@ export interface ExtendedCampaignState {
     id: string | string[] | undefined,
     campaign: FormData,
   ) => Promise<SingleCampaignResponseDataType>;
-  fetchCampaignById: (
-    slug: string,
-  ) => Promise<SingleCampaignResponseDataType | null>;
+  fetchCampaignById: (slug: string) => Promise<SingleCampaignResponseDataType>;
   fetchCampaignStatistics: (month?: number, year?: number) => Promise<void>;
   updateCampaignSettings: (
     campaignId: string,
     settings: Record<string, any>,
-  ) => Promise<SingleCampaignResponseDataType>;
+  ) => Promise<void>;
   favoriteCampaign: (campaignId: string) => Promise<void>;
   unfavoriteCampaign: (campaignId: string) => Promise<void>;
   fetchFavoritedCampaigns: () => Promise<void>;
@@ -303,12 +300,6 @@ export interface SingleCampaignResponseDataType {
       url: string;
     }[];
   }[];
-  // Archive fields - make them optional and allow null
-  archived_by_current_user?: boolean;
-  archive_info?: ArchiveInfoType | null;
-  archived?: boolean;
-  is_public?: boolean;
-  appear_in_search_results?: boolean;
 }
 
 // types/campaigns.types.ts
