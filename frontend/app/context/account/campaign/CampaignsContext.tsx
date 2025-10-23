@@ -205,7 +205,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
   }, [token]);
 
   // Archive a campaign
-  // Archive a campaign
   const archiveCampaign = useCallback(
     async (campaignId: string, reason?: string): Promise<void> => {
       setLoading(true);
