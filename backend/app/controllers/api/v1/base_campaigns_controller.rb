@@ -84,11 +84,21 @@ module Api
       end
 
       def my_campaigns
-        @campaigns = campaign_scope
-                      .where(fundraiser: @current_user)
-                      .order(created_at: :desc)
-                      .page(params[:page])
-                      .per(params[:pageSize] || 12)
+        # Get campaigns using the base Campaign class to avoid STI association issues
+        @campaigns = Campaign.where(fundraiser: @current_user, type: [nil, 'Campaign', 'EquityCampaign'])
+                            .order(created_at: :desc)
+                            .page(params[:page])
+                            .per(params[:pageSize] || 12)
+
+        # Preload associations manually to avoid STI issues
+        Campaign.preload_associations(@campaigns, [
+          :rewards,
+          :updates,
+          :comments, 
+          :investor_documents,
+          :archived_campaigns,
+          { fundraiser: [:profile, :latest_kyc, :archived_campaigns] }
+        ])
 
         render json: {
           campaigns: @campaigns.map { |c| campaign_json(c) },
@@ -331,10 +341,10 @@ module Api
       protected
 
       def campaign_scope
-        # Use Campaign as the base class but include all STI types
+        # Use Campaign as base but handle associations more carefully
         Campaign.includes(
           :rewards,
-          :updates,
+          :updates, 
           :comments,
           :investor_documents,
           :archived_campaigns,
