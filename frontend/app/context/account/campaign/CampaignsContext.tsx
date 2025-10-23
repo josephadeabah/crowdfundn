@@ -1,9 +1,9 @@
 import {
   CampaignResponseDataType,
-  CampaignState,
+  ExtendedCampaignState,
   SingleCampaignResponseDataType,
   CampaignStatisticsDataType,
-  CampaignShareType, // Add the type for statistics data
+  CampaignShareType,
 } from '@/app/types/campaigns.types';
 import React, {
   createContext,
@@ -15,7 +15,9 @@ import React, {
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 
-const CampaignContext = createContext<CampaignState | undefined>(undefined);
+const CampaignContext = createContext<ExtendedCampaignState | undefined>(
+  undefined,
+);
 
 // Custom wrapper for Next.js fetch
 const nextFetch = async (
@@ -31,13 +33,13 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     CampaignResponseDataType[] | null
   >(null);
   const [campaignShares, setCampaignShares] =
-    useState<CampaignShareType | null>(null); // Or a more complex structure if needed
+    useState<CampaignShareType | null>(null);
   const [currentCampaign, setCurrentCampaign] =
     useState<SingleCampaignResponseDataType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [statistics, setStatistics] =
-    useState<CampaignStatisticsDataType | null>(null); // Add state for statistics
+    useState<CampaignStatisticsDataType | null>(null);
   const { token, user } = useAuth();
   const [pagination, setPagination] = useState<{
     currentPage: number;
@@ -47,6 +49,9 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     totalPages: 1,
   });
   const [favoritedCampaigns, setFavoritedCampaigns] = useState<
+    CampaignResponseDataType[]
+  >([]);
+  const [archivedCampaigns, setArchivedCampaigns] = useState<
     CampaignResponseDataType[]
   >([]);
 
@@ -67,12 +72,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         const response = await nextFetch(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${id}/cancel`,
           {
-            method: 'PATCH', // Assuming the cancel endpoint requires a POST request
+            method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-            cache: 'no-store', // No caching for cancel action
+            cache: 'no-store',
           },
         );
 
@@ -81,7 +86,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
 
-        // Optional: Update the state to reflect the campaign cancellation
         setCampaigns((prevCampaigns) =>
           prevCampaigns.filter((campaign) => campaign.id !== Number(id)),
         );
@@ -139,7 +143,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Fetch campaigns for the logged-in user [new]
+  // Fetch campaigns for the logged-in user
   const fetchUserCampaigns = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
@@ -169,12 +173,182 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
+  // Fetch archived campaigns for the logged-in user
+  const fetchArchivedCampaigns = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/archived_campaigns`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) throw new Error("Couldn't fetch archived campaigns");
+
+      const data = await response.json();
+      setArchivedCampaigns(data.archived_campaigns || []);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Error fetching archived campaigns',
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  // Archive a campaign
+  // Archive a campaign
+  const archiveCampaign = useCallback(
+    async (campaignId: string, reason?: string): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/archive`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ reason }),
+          },
+        );
+
+        if (!response.ok) throw new Error('Failed to archive campaign');
+
+        const data = await response.json();
+
+        // Update campaigns list - properly type the return value
+        setCampaigns(
+          (prevCampaigns) =>
+            prevCampaigns.map((campaign) =>
+              campaign.id === Number(campaignId)
+                ? {
+                    ...campaign,
+                    archived_by_current_user: true,
+                    archive_info: data.campaign.archive_info,
+                    is_public: false,
+                    appear_in_search_results: false,
+                  }
+                : campaign,
+            ) as CampaignResponseDataType[],
+        );
+
+        // Update current campaign if it's the one being archived
+        setCurrentCampaign((current) => {
+          if (current && current.id === Number(campaignId)) {
+            return {
+              ...current,
+              archived_by_current_user: true,
+              archive_info: data.campaign.archive_info,
+              is_public: false,
+              appear_in_search_results: false,
+            } as SingleCampaignResponseDataType;
+          }
+          return current;
+        });
+
+        // Remove from user campaigns
+        setUserCampaigns(
+          (prev) => prev?.filter((c) => c.id !== Number(campaignId)) || null,
+        );
+
+        // Refresh archived campaigns list
+        await fetchArchivedCampaigns();
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error archiving campaign',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token, fetchArchivedCampaigns],
+  );
+
+  // Unarchive a campaign
+  const unarchiveCampaign = useCallback(
+    async (campaignId: string): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}/archive`,
+          {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok) throw new Error('Failed to unarchive campaign');
+
+        const data = await response.json();
+
+        // Update campaigns list - properly type the return value
+        setCampaigns(
+          (prevCampaigns) =>
+            prevCampaigns.map((campaign) =>
+              campaign.id === Number(campaignId)
+                ? {
+                    ...campaign,
+                    archived_by_current_user: false,
+                    archive_info: null,
+                    is_public: true,
+                    appear_in_search_results: true,
+                  }
+                : campaign,
+            ) as CampaignResponseDataType[],
+        );
+
+        // Update current campaign if it's the one being unarchived
+        setCurrentCampaign((current) => {
+          if (current && current.id === Number(campaignId)) {
+            return {
+              ...current,
+              archived_by_current_user: false,
+              archive_info: null,
+              is_public: true,
+              appear_in_search_results: true,
+            } as SingleCampaignResponseDataType;
+          }
+          return current;
+        });
+
+        // Remove from archived campaigns list
+        setArchivedCampaigns((prev) =>
+          prev.filter((campaign) => campaign.id !== Number(campaignId)),
+        );
+
+        // Refresh user campaigns
+        await fetchUserCampaigns();
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error unarchiving campaign',
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token, fetchUserCampaigns],
+  );
+
   const fetchCampaignStatistics = useCallback(
     async (month?: number, year?: number): Promise<void> => {
       setLoading(true);
       setError(null);
       try {
-        // Construct the URL with optional month and year query parameters
         let url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/statistics`;
         if (month !== undefined && year !== undefined) {
           url += `?month=${month}&year=${year}`;
@@ -194,7 +368,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const stats = await response.json();
-        setStatistics(stats); // Store statistics in state
+        setStatistics(stats);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Error fetching statistics',
@@ -320,7 +494,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-            cache: 'no-store', // No caching for DELETE
+            cache: 'no-store',
           },
         );
 
@@ -360,7 +534,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
               Authorization: `Bearer ${token}`,
             },
             body: updatedCampaignData,
-            cache: 'no-store', // No caching for PUT
+            cache: 'no-store',
           },
         );
 
@@ -387,7 +561,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     [token],
   );
 
-  // Add the updateCampaignSettings method
   const updateCampaignSettings = useCallback(
     async (campaignId: string, settings: Record<string, any>) => {
       setLoading(true);
@@ -414,14 +587,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
         const updatedCampaign = await response.json();
 
-        // Update the current campaign in state
         setCurrentCampaign((current) =>
           current && current.id === Number(campaignId)
             ? updatedCampaign
             : current,
         );
 
-        // Update the campaigns list if needed
         setCampaigns((prevCampaigns) =>
           prevCampaigns.map((campaign) =>
             campaign.id === Number(campaignId) ? updatedCampaign : campaign,
@@ -441,7 +612,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     },
     [token],
   );
-  // Fetch favorited campaigns
+
   const fetchFavoritedCampaigns = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
@@ -462,7 +633,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const data = await response.json();
-      // Mark all returned campaigns as favorited
       const campaignsWithFavoriteFlag =
         data?.campaigns?.map((campaign: CampaignResponseDataType) => ({
           ...campaign,
@@ -481,8 +651,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
-  // Update favorite/unfavorite functions to handle the favoritedCampaigns state
-  // context/account/campaign/CampaignsContext.tsx
   const favoriteCampaign = useCallback(
     async (campaignId: string) => {
       setLoading(true);
@@ -501,7 +669,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) throw new Error('Failed to favorite campaign');
 
-        // Update the campaigns list
         setCampaigns((prevCampaigns) =>
           prevCampaigns.map((campaign) =>
             campaign.id === Number(campaignId)
@@ -510,14 +677,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           ),
         );
 
-        // Update current campaign if it's the one being favorited
         setCurrentCampaign((current) =>
           current && current.id === Number(campaignId)
             ? { ...current, favorited: true }
             : current,
         );
 
-        // Update favorited campaigns list
         setFavoritedCampaigns((prev) => {
           const campaignToAdd = campaigns.find(
             (c) => c.id === Number(campaignId),
@@ -555,7 +720,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response.ok) throw new Error('Failed to unfavorite campaign');
 
-        // Update the campaigns list
         setCampaigns((prevCampaigns) =>
           prevCampaigns.map((campaign) =>
             campaign.id === Number(campaignId)
@@ -564,14 +728,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           ),
         );
 
-        // Update current campaign if it's the one being unfavorited
         setCurrentCampaign((current) =>
           current && current.id === Number(campaignId)
             ? { ...current, favorited: false }
             : current,
         );
 
-        // Update favorited campaigns list
         setFavoritedCampaigns((prev) =>
           prev.filter((c) => c.id !== Number(campaignId)),
         );
@@ -594,7 +756,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
         const headers: HeadersInit = {
           'Content-Type': 'application/json',
         };
-        // Include the token in the headers only if it is available
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
@@ -613,7 +774,6 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
           );
           return;
         }
-        // Update the campaign share count or state if needed
         const updatedShares = await response.json();
         setCampaignShares(updatedShares);
       } catch (err) {
@@ -636,6 +796,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       pagination,
       campaignShares,
       favoritedCampaigns,
+      archivedCampaigns,
       addCampaign,
       fetchUserCampaigns,
       fetchCampaignStatistics,
@@ -646,9 +807,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       cancelCampaign,
       shareCampaign,
       updateCampaignSettings,
-      favoriteCampaign, // Add favoriteCampaign to context
-      unfavoriteCampaign, // Add unfavoriteCampaign to context
-      fetchFavoritedCampaigns, // Add fetchFavoritedCampaigns to context
+      favoriteCampaign,
+      unfavoriteCampaign,
+      fetchFavoritedCampaigns,
+      fetchArchivedCampaigns,
+      archiveCampaign,
+      unarchiveCampaign,
       resetCurrentCampaign,
     }),
     [
@@ -656,6 +820,7 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       userCampaigns,
       currentCampaign,
       favoritedCampaigns,
+      archivedCampaigns,
       loading,
       error,
       statistics,
@@ -671,9 +836,12 @@ export const CampaignProvider = ({ children }: { children: ReactNode }) => {
       cancelCampaign,
       shareCampaign,
       updateCampaignSettings,
-      favoriteCampaign, // Include favoriteCampaign in memoization
-      unfavoriteCampaign, // Include unfavoriteCampaign in memoization
-      fetchFavoritedCampaigns, // Include fetchFavoritedCampaigns in memoization
+      favoriteCampaign,
+      unfavoriteCampaign,
+      fetchFavoritedCampaigns,
+      fetchArchivedCampaigns,
+      archiveCampaign,
+      unarchiveCampaign,
       resetCurrentCampaign,
     ],
   );

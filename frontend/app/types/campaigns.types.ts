@@ -23,6 +23,12 @@ export interface Comment {
   content: string;
 }
 
+export interface ArchiveInfoType {
+  archived_at: string;
+  reason?: string;
+}
+
+// Make archive_info optional and allow null
 export interface CampaignResponseDataType {
   id: number;
   title: string;
@@ -109,6 +115,12 @@ export interface CampaignResponseDataType {
       url: string;
     }[];
   }[];
+  // Archive fields - make them optional and allow null
+  archived_by_current_user?: boolean;
+  archive_info?: ArchiveInfoType | null;
+  archived?: boolean;
+  is_public?: boolean;
+  appear_in_search_results?: boolean;
 }
 
 export interface CampaignShareType {
@@ -117,20 +129,21 @@ export interface CampaignShareType {
   user_points: number;
 }
 
-export interface CampaignState {
+export interface ExtendedCampaignState {
   campaigns: CampaignResponseDataType[];
   favoritedCampaigns: CampaignResponseDataType[];
   userCampaigns: CampaignResponseDataType[] | null;
   currentCampaign: SingleCampaignResponseDataType | null;
   campaignShares: CampaignShareType | null;
   statistics: CampaignStatisticsDataType | null;
+  archivedCampaigns: CampaignResponseDataType[];
   pagination: {
     currentPage: number;
     totalPages: number;
   };
   loading: boolean;
   error: string | null;
-  addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType>;
+  addCampaign: (campaign: FormData) => Promise<CampaignResponseDataType | void>;
   cancelCampaign(id: string): Promise<void>;
   fetchUserCampaigns: () => Promise<void>;
   fetchAllCampaigns: (
@@ -147,18 +160,24 @@ export interface CampaignState {
   editCampaign: (
     id: string | string[] | undefined,
     campaign: FormData,
-  ) => Promise<SingleCampaignResponseDataType>;
-  fetchCampaignById: (slug: string) => Promise<SingleCampaignResponseDataType>;
+  ) => Promise<SingleCampaignResponseDataType | void>;
+  fetchCampaignById: (
+    slug: string,
+  ) => Promise<SingleCampaignResponseDataType | null>;
   fetchCampaignStatistics: (month?: number, year?: number) => Promise<void>;
   updateCampaignSettings: (
     campaignId: string,
     settings: Record<string, any>,
-  ) => Promise<void>;
+  ) => Promise<SingleCampaignResponseDataType | void>;
   favoriteCampaign: (campaignId: string) => Promise<void>;
   unfavoriteCampaign: (campaignId: string) => Promise<void>;
   fetchFavoritedCampaigns: () => Promise<void>;
   shareCampaign: (campaignId?: string) => Promise<void>;
   resetCurrentCampaign: () => void;
+  // Archive functionality
+  fetchArchivedCampaigns: () => Promise<void>;
+  archiveCampaign: (campaignId: string, reason?: string) => Promise<void>;
+  unarchiveCampaign: (campaignId: string) => Promise<void>;
 }
 
 export interface CampaignDescription {
@@ -284,6 +303,12 @@ export interface SingleCampaignResponseDataType {
       url: string;
     }[];
   }[];
+  // Archive fields - make them optional and allow null
+  archived_by_current_user?: boolean;
+  archive_info?: ArchiveInfoType | null;
+  archived?: boolean;
+  is_public?: boolean;
+  appear_in_search_results?: boolean;
 }
 
 // types/campaigns.types.ts

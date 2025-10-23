@@ -126,8 +126,8 @@ const HowItWorks = () => {
                     Get Verified
                   </h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    Complete our due diligence to
-                    verify credibility and potential impact.
+                    Complete our due diligence to verify credibility and
+                    potential impact.
                   </p>
                   <div className="inline-flex items-center justify-center w-14 h-14 bg-secondary rounded-full">
                     <Shield className="h-7 w-7 text-fundify-primary" />
