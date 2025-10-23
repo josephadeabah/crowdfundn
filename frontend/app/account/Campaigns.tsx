@@ -92,6 +92,11 @@ const Campaigns: React.FC = () => {
     fetchUserCampaigns();
   }, [fetchUserCampaigns]);
 
+  // Filter out archived campaigns
+  const activeCampaigns =
+    userCampaigns?.filter((campaign) => !campaign.archived_by_current_user) ||
+    [];
+
   const handleEditCampaign = (campaign: CampaignResponseDataType) => {
     const identifier = campaign.slug || campaign.id;
     router.push(
@@ -264,18 +269,16 @@ const Campaigns: React.FC = () => {
     const actions = [];
 
     // Archive option for active campaigns
-    if (!campaign.archived_by_current_user) {
-      actions.push(
-        <li key="archive">
-          <button
-            className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md"
-            onClick={() => handleAction(campaign, 'archive')}
-          >
-            Archive Campaign
-          </button>
-        </li>,
-      );
-    }
+    actions.push(
+      <li key="archive">
+        <button
+          className="w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md"
+          onClick={() => handleAction(campaign, 'archive')}
+        >
+          Archive Campaign
+        </button>
+      </li>,
+    );
 
     if (campaign.type !== 'EquityCampaign') {
       actions.push(
@@ -358,7 +361,8 @@ const Campaigns: React.FC = () => {
         <div>
           <h2 className="text-2xl font-semibold text-gray-800">My Campaigns</h2>
           <p className="text-gray-500">
-            Manage your active and past campaigns.
+            Manage your active campaigns. Archived campaigns are moved to the
+            Archived Campaigns tab.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -381,13 +385,13 @@ const Campaigns: React.FC = () => {
         </div>
       </div>
 
-      {!userCampaigns || userCampaigns.length === 0 ? (
+      {activeCampaigns.length === 0 ? (
         <div className="text-center p-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mt-6">
           <div className="text-gray-400 mb-4">
             <FiFolder className="w-16 h-16 mx-auto opacity-50" />
           </div>
           <h3 className="text-xl font-semibold text-gray-600 mb-2">
-            No campaigns yet
+            No active campaigns
           </h3>
           <p className="text-gray-500 max-w-md mx-auto mb-6">
             Start your fundraising journey by creating your first campaign.
@@ -397,7 +401,7 @@ const Campaigns: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          {userCampaigns.map((campaign) => {
+          {activeCampaigns.map((campaign) => {
             const status = getStatusDisplay(campaign);
             return (
               <div
@@ -642,7 +646,7 @@ const Campaigns: React.FC = () => {
                   ? 'Launch this campaign to start receiving investments?'
                   : actionType === 'close'
                     ? 'Close this campaign to prevent further investments?'
-                    : 'Are you sure you want to archive this campaign? It will be hidden from public view but preserved in your records.'
+                    : 'Are you sure you want to archive this campaign? It will be hidden from public view and moved to the Archived Campaigns tab.'
         }
         isOpen={alertPopupOpen}
         setIsOpen={setAlertPopupOpen}
@@ -717,7 +721,7 @@ const Campaigns: React.FC = () => {
           <h2 className="text-xl font-semibold mb-4">
             Manage Team & Documents
           </h2>
-          {userCampaigns && userCampaigns.length > 0 ? (
+          {activeCampaigns && activeCampaigns.length > 0 ? (
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Select Campaign
@@ -725,7 +729,7 @@ const Campaigns: React.FC = () => {
               <Select
                 onValueChange={(value) =>
                   setSelectedCampaign(
-                    userCampaigns.find((c) => c.id === Number(value)) || null,
+                    activeCampaigns.find((c) => c.id === Number(value)) || null,
                   )
                 }
               >
@@ -733,7 +737,7 @@ const Campaigns: React.FC = () => {
                   <SelectValue placeholder="Select an equity campaign" />
                 </SelectTrigger>
                 <SelectContent>
-                  {userCampaigns.map((campaign) => (
+                  {activeCampaigns.map((campaign) => (
                     <SelectItem
                       key={campaign.id}
                       value={String(campaign.id)}
@@ -767,7 +771,7 @@ const Campaigns: React.FC = () => {
           {selectedCampaign && selectedCampaign.type === 'EquityCampaign' && (
             <CampaignTeamDocuments
               campaignId={String(selectedCampaign.id)}
-              userCampaigns={userCampaigns}
+              userCampaigns={activeCampaigns}
             />
           )}
         </div>
