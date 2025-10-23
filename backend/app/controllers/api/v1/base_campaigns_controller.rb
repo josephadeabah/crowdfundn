@@ -84,21 +84,11 @@ module Api
       end
 
       def my_campaigns
-        # Get campaigns using the base Campaign class to avoid STI association issues
-        @campaigns = Campaign.where(fundraiser: @current_user, type: [nil, 'Campaign', 'EquityCampaign'])
-                            .order(created_at: :desc)
-                            .page(params[:page])
-                            .per(params[:pageSize] || 12)
-
-        # Preload associations manually to avoid STI issues
-        Campaign.preload_associations(@campaigns, [
-          :rewards,
-          :updates,
-          :comments, 
-          :investor_documents,
-          :archived_campaigns,
-          { fundraiser: [:profile, :latest_kyc, :archived_campaigns] }
-        ])
+        @campaigns = @current_user.campaigns
+                                  .includes(fundraiser: [:profile, :latest_kyc, :archived_campaigns])
+                                  .order(created_at: :desc)
+                                  .page(params[:page])
+                                  .per(params[:pageSize] || 12)
 
         render json: {
           campaigns: @campaigns.map { |c| campaign_json(c) },
@@ -341,14 +331,13 @@ module Api
       protected
 
       def campaign_scope
-        # Use Campaign as base but handle associations more carefully
-        Campaign.includes(
+        campaign_class.includes(
           :rewards,
-          :updates, 
+          :updates,
           :comments,
           :investor_documents,
-          :archived_campaigns,
-          fundraiser: [:profile, :latest_kyc, :archived_campaigns]
+          :archived_campaigns, # Add archived_campaigns association
+          fundraiser: [:profile, :latest_kyc]
         )
       end
 
@@ -361,190 +350,153 @@ module Api
       end
 
       # app/controllers/api/v1/base_campaigns_controller.rb
-def campaign_json(campaign)
-  # Get KYC status for the fundraiser
-  kyc_status = if campaign.fundraiser.latest_kyc
-                {
-                  verified: campaign.fundraiser.latest_kyc.verified?,
-                  status: campaign.fundraiser.latest_kyc.status,
-                  kyc_type: campaign.fundraiser.latest_kyc.kyc_type,
-                  verified_at: campaign.fundraiser.latest_kyc.verified_at,
-                  is_expired: campaign.fundraiser.latest_kyc.expired?,
-                  investor_verified: campaign.fundraiser.investor_kyc_verified?,
-                  issuer_verified: campaign.fundraiser.issuer_kyc_verified?,
-                  both_verified: campaign.fundraiser.verified_both?
+      def campaign_json(campaign)
+        # Get KYC status for the fundraiser
+        kyc_status = if campaign.fundraiser.latest_kyc
+                      {
+                        verified: campaign.fundraiser.latest_kyc.verified?,
+                        status: campaign.fundraiser.latest_kyc.status,
+                        kyc_type: campaign.fundraiser.latest_kyc.kyc_type,
+                        verified_at: campaign.fundraiser.latest_kyc.verified_at,
+                        is_expired: campaign.fundraiser.latest_kyc.expired?,
+                        investor_verified: campaign.fundraiser.investor_kyc_verified?,
+                        issuer_verified: campaign.fundraiser.issuer_kyc_verified?,
+                        both_verified: campaign.fundraiser.verified_both?
+                      }
+                    else
+                      {
+                        verified: false,
+                        status: 'none',
+                        kyc_type: nil,
+                        verified_at: nil,
+                        is_expired: false,
+                        investor_verified: false,
+                        issuer_verified: false,
+                        both_verified: false
+                      }
+                    end
+
+        json = campaign.as_json(
+          only: %i[
+            id title slug goal_amount current_amount transferred_amount start_date end_date
+            category location currency currency_code currency_symbol status
+            fundraiser_id created_at updated_at valuation equity_offered minimum_investment maximum_investment 
+            total_shares is_public appear_in_search_results
+          ],
+          methods: %i[media_url media_filename total_days remaining_days archived?],
+          include: {
+            rewards: {},
+            updates: {},
+            comments: {},
+            fundraiser: { include: :profile },
+            investor_documents: {
+              only: [:id, :document_type, :display_name, :created_at, :updated_at],
+              include: {
+                files_attachments: {
+                  only: [:filename, :content_type, :byte_size, :created_at],
+                  methods: [:url]
                 }
-              else
-                {
-                  verified: false,
-                  status: 'none',
-                  kyc_type: nil,
-                  verified_at: nil,
-                  is_expired: false,
-                  investor_verified: false,
-                  issuer_verified: false,
-                  both_verified: false
-                }
-              end
-
-  # Build base JSON safely without using as_json with associations
-  json = {
-    id: campaign.id,
-    title: campaign.title,
-    slug: campaign.slug,
-    goal_amount: campaign.goal_amount,
-    current_amount: campaign.current_amount,
-    transferred_amount: campaign.transferred_amount,
-    start_date: campaign.start_date,
-    end_date: campaign.end_date,
-    category: campaign.category,
-    location: campaign.location,
-    currency: campaign.currency,
-    currency_code: campaign.currency_code,
-    currency_symbol: campaign.currency_symbol,
-    status: campaign.status,
-    fundraiser_id: campaign.fundraiser_id,
-    created_at: campaign.created_at,
-    updated_at: campaign.updated_at,
-    valuation: campaign.valuation,
-    equity_offered: campaign.equity_offered,
-    minimum_investment: campaign.minimum_investment,
-    maximum_investment: campaign.maximum_investment,
-    total_shares: campaign.total_shares,
-    is_public: campaign.is_public,
-    appear_in_search_results: campaign.appear_in_search_results,
-    type: campaign.class.name,
-    media: campaign.media_url,
-    media_url: campaign.media_url,
-    media_filename: campaign.media_filename,
-    total_days: campaign.total_days,
-    remaining_days: campaign.remaining_days,
-    archived: campaign.respond_to?(:archived?) ? campaign.archived? : false,
-    total_donors: campaign.total_donors,
-    company_info: {
-      name: campaign.company_name,
-      description: campaign.company_description,
-      headquarters: campaign.company_headquarters,
-      website: campaign.company_website,
-      contract_term: campaign.contract_term
-    },
-    favorited: @current_user ? @current_user.favorited_campaigns.include?(campaign) : false,
-    # Add KYC verification status
-    fundraiser_kyc_verified: kyc_status[:verified],
-    fundraiser_kyc_status: kyc_status[:status],
-    fundraiser_kyc_type: kyc_status[:kyc_type],
-    fundraiser_kyc_expired: kyc_status[:is_expired],
-    # Add archive information for current user
-    archived_by_current_user: @current_user ? campaign.archived_by_user?(@current_user) : false,
-    archive_info: @current_user ? (archive_info = campaign.archive_info_for_user(@current_user)) && {
-      archived_at: archive_info.archived_at,
-      reason: archive_info.reason
-    } : nil
-  }
-
-  # Safely add associations that exist on the campaign
-  json[:rewards] = campaign.rewards.map(&:as_json) if campaign.respond_to?(:rewards)
-  json[:updates] = campaign.updates.map(&:as_json) if campaign.respond_to?(:updates)
-  json[:comments] = campaign.comments.map(&:as_json) if campaign.respond_to?(:comments)
-  
-  # Add fundraiser info
-  if campaign.respond_to?(:fundraiser) && campaign.fundraiser
-    json[:fundraiser] = {
-      id: campaign.fundraiser.id,
-      name: campaign.fundraiser.full_name,
-      currency: campaign.fundraiser.currency,
-      currency_symbol: campaign.fundraiser.currency_symbol,
-      profile: campaign.fundraiser.profile&.as_json,
-      kyc_verified: kyc_status[:verified],
-      kyc_status: kyc_status[:status],
-      kyc_type: kyc_status[:kyc_type],
-      kyc_verified_at: kyc_status[:verified_at],
-      kyc_expired: kyc_status[:is_expired],
-      investor_kyc_verified: kyc_status[:investor_verified],
-      issuer_kyc_verified: kyc_status[:issuer_verified],
-      both_kyc_verified: kyc_status[:both_verified]
-    }
-  end
-
-  # Add investor documents if they exist
-  if campaign.respond_to?(:investor_documents)
-    investor_docs = campaign.investor_documents.map do |doc|
-      {
-        id: doc.id,
-        document_type: doc.document_type,
-        display_name: doc.display_name,
-        created_at: doc.created_at,
-        updated_at: doc.updated_at,
-        files: doc.files_attachments.map do |attachment|
-          {
-            filename: attachment.filename,
-            content_type: attachment.content_type,
-            byte_size: attachment.byte_size,
-            created_at: attachment.created_at,
-            url: attachment.url
+              }
+            }
           }
+        ).merge(
+          type: campaign.class.name,
+          media: campaign.media_url,
+          total_donors: campaign.total_donors,
+          company_info: {
+            name: campaign.company_name,
+            description: campaign.company_description,
+            headquarters: campaign.company_headquarters,
+            website: campaign.company_website,
+            contract_term: campaign.contract_term
+          },
+          favorited: @current_user ? @current_user.favorited_campaigns.include?(campaign) : false,
+          # Add KYC verification status
+          fundraiser_kyc_verified: kyc_status[:verified],
+          fundraiser_kyc_status: kyc_status[:status],
+          fundraiser_kyc_type: kyc_status[:kyc_type],
+          fundraiser_kyc_expired: kyc_status[:is_expired],
+          # Add archive information for current user
+          archived_by_current_user: @current_user ? campaign.archived_by_user?(@current_user) : false,
+          archive_info: @current_user ? (archive_info = campaign.archive_info_for_user(@current_user)) && {
+            archived_at: archive_info.archived_at,
+            reason: archive_info.reason
+          } : nil
+        )
+        
+        # Filter to only include contract documents
+        if json[:investor_documents]
+          json[:investor_documents] = json[:investor_documents].select do |doc|
+            doc[:document_type] == 'contract'
+          end
         end
-      }
-    end
-    
-    # Filter to only include contract documents
-    json[:investor_documents] = investor_docs.select do |doc|
-      doc[:document_type] == 'contract'
-    end
-  end
 
-  if campaign.is_a?(EquityCampaign)
-    # Add the new equity offering details
-    equity_offering_details = {
-      minimum_target: campaign.minimum_target,
-      price_per_share: campaign.price_per_share,
-      min_shares: campaign.min_shares,
-      max_shares: campaign.max_shares,
-      shares_offered: campaign.shares_offered,
-      stock_type: campaign.stock_type,
-      stock_type_display: campaign.stock_type_display,
-      funding_round: campaign.funding_round,
-      funding_round_display: campaign.funding_round_display,
-      sec_filing_url: campaign.sec_filing_url,
-      offering_circular_url: campaign.offering_circular_url,
-      offering_memorandum: campaign.offering_memorandum,
-      offering_documents: {
-        sec_filing: {
-          present: campaign.sec_filing_url.present?,
-          url: campaign.sec_filing_url
-        },
-        offering_circular: {
-          present: campaign.offering_circular_url.present?,
-          url: campaign.offering_circular_url
-        },
-        offering_memorandum_document: { 
-          attached: campaign.offering_memorandum_document.attached?,
-          url: campaign.offering_memorandum_document_url, 
-          filename: campaign.offering_memorandum_document.attached? ? campaign.offering_memorandum_document.filename.to_s : nil 
-        }
-      }
-    }
+        # Update fundraiser info to include KYC status
+        if json[:fundraiser]
+          json[:fundraiser].merge!(
+            kyc_verified: kyc_status[:verified],
+            kyc_status: kyc_status[:status],
+            kyc_type: kyc_status[:kyc_type],
+            kyc_verified_at: kyc_status[:verified_at],
+            kyc_expired: kyc_status[:is_expired],
+            investor_kyc_verified: kyc_status[:investor_verified],
+            issuer_kyc_verified: kyc_status[:issuer_verified],
+            both_kyc_verified: kyc_status[:both_verified]
+          )
+        end
 
-    json.merge!(
-      shares_available: campaign.shares_available,
-      percentage_raised: campaign.percentage_raised,
-      total_investors: campaign.total_investors,
-      total_equity_shares: campaign.total_shares,
-      equity_status: campaign.equity_status,
-      investment_range: {
-        minimum: campaign.minimum_investment,
-        maximum: campaign.maximum_investment
-      },
-      can_submit_for_approval: campaign.may_submit_for_approval?,
-      can_approve: campaign.may_approve?,
-      can_reject: campaign.may_reject?,
-      can_launch: campaign.may_launch?,
-      equity_offering_details: equity_offering_details
-    )
-  end
-  
-  json
-end
+        if campaign.is_a?(EquityCampaign)
+          # Add the new equity offering details
+          equity_offering_details = {
+            minimum_target: campaign.minimum_target,
+            price_per_share: campaign.price_per_share,
+            min_shares: campaign.min_shares,
+            max_shares: campaign.max_shares,
+            shares_offered: campaign.shares_offered,
+            stock_type: campaign.stock_type,
+            stock_type_display: campaign.stock_type_display,
+            funding_round: campaign.funding_round,
+            funding_round_display: campaign.funding_round_display,
+            sec_filing_url: campaign.sec_filing_url,
+            offering_circular_url: campaign.offering_circular_url,
+            offering_memorandum: campaign.offering_memorandum,
+            offering_documents: {
+              sec_filing: {
+                present: campaign.sec_filing_url.present?,
+                url: campaign.sec_filing_url
+              },
+              offering_circular: {
+                present: campaign.offering_circular_url.present?,
+                url: campaign.offering_circular_url
+              },
+              offering_memorandum_document: { 
+                attached: campaign.offering_memorandum_document.attached?,
+                url: campaign.offering_memorandum_document_url, 
+                filename: campaign.offering_memorandum_document.attached? ? campaign.offering_memorandum_document.filename.to_s : nil 
+              }
+            }
+          }
+
+          json.merge!(
+            shares_available: campaign.shares_available,
+            percentage_raised: campaign.percentage_raised,
+            total_investors: campaign.total_investors,
+            total_equity_shares: campaign.total_shares,
+            equity_status: campaign.equity_status,
+            investment_range: {
+              minimum: campaign.minimum_investment,
+              maximum: campaign.maximum_investment
+            },
+            can_submit_for_approval: campaign.may_submit_for_approval?,
+            can_approve: campaign.may_approve?,
+            can_reject: campaign.may_reject?,
+            can_launch: campaign.may_launch?,
+            equity_offering_details: equity_offering_details
+          )
+        end
+        
+        json
+      end
 
       def calculate_date_range(range)
         case range
