@@ -84,11 +84,11 @@ module Api
       end
 
       def my_campaigns
-        @campaigns = @current_user.campaigns
-                                  .includes(fundraiser: [:profile, :latest_kyc, :archived_campaigns])
-                                  .order(created_at: :desc)
-                                  .page(params[:page])
-                                  .per(params[:pageSize] || 12)
+        @campaigns = campaign_scope
+                      .where(fundraiser: @current_user)
+                      .order(created_at: :desc)
+                      .page(params[:page])
+                      .per(params[:pageSize] || 12)
 
         render json: {
           campaigns: @campaigns.map { |c| campaign_json(c) },
@@ -337,7 +337,7 @@ module Api
           :comments,
           :investor_documents,
           :archived_campaigns, # Add archived_campaigns association
-          fundraiser: [:profile, :latest_kyc]
+          fundraiser: [:profile, :latest_kyc, :archived_campaigns]
         )
       end
 
