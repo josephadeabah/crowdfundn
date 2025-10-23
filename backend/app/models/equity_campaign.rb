@@ -1,7 +1,6 @@
 # app/models/equity_campaign.rb
 class EquityCampaign < Campaign
   # Associations
-  belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id', inverse_of: :equity_campaigns
   has_many :equity_investments, foreign_key: 'campaign_id', dependent: :destroy
   has_many :investors, through: :equity_investments, source: :user
   has_many :campaign_team_members, foreign_key: 'campaign_id', dependent: :destroy
