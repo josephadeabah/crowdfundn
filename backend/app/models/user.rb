@@ -38,10 +38,7 @@ class User < ApplicationRecord
                     allow_blank: true, 
                     if: -> { investor? && tax_id.present? }
   has_one :profile, dependent: :destroy
-  has_many :campaigns, foreign_key: 'fundraiser_id'
-  
-  # add this ↓
-  has_many :equity_campaigns, class_name: 'EquityCampaign', foreign_key: 'fundraiser_id', inverse_of: :fundraiser
+  has_many :campaigns, foreign_key: 'fundraiser_id', dependent: :destroy
   has_many :donations
   has_many :transfers, dependent: :destroy
   has_many :archived_campaigns
@@ -65,7 +62,7 @@ class User < ApplicationRecord
     archived_campaigns.includes(campaign: [:fundraiser, :rewards, :updates])
                       .order(archived_at: :desc)
   end
-
+  
   def generate_confirmation_token
     self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
     self.confirmation_sent_at = Time.current

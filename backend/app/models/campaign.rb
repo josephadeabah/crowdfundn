@@ -1,61 +1,32 @@
 class Campaign < ApplicationRecord
-  # ==============================
-  # CONFIGURATION
-  # ==============================
+  # Add optimistic locking
   self.locking_column = :lock_version
   
-  # STI Configuration
-  def self.inheritance_column
-    'type'
-  end
-
-  def self.descendants
-    [EquityCampaign] # Add other subclasses as needed
-  end
-
-  # ==============================
-  # ASSOCIATIONS
-  # ==============================
   belongs_to :fundraiser, class_name: 'User', foreign_key: 'fundraiser_id'
-  
-  # Core campaign associations
   has_many :rewards, dependent: :destroy
   has_many :updates, dependent: :destroy
   has_many :comments, dependent: :destroy
+  has_one :subaccount, dependent: :destroy 
+  has_many :backers, through: :donations # assuming a Backer model related to donations
   has_many :donations, dependent: :destroy
-  has_many :pledges, dependent: :destroy
   has_many :transfers, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
+  has_many :subscribers, through: :subscriptions, source: :user
   has_many :favorites, dependent: :destroy
+  has_many :favorited_by_users, through: :favorites, source: :user
   has_many :campaign_shares, dependent: :destroy
+  has_many :pledges, dependent: :destroy
   has_many :investor_documents, dependent: :destroy
   has_many :campaign_team_members, foreign_key: 'campaign_id', dependent: :destroy
-  
-  # Through associations
-  has_many :backers, through: :donations
-  has_many :subscribers, through: :subscriptions, source: :user
-  has_many :favorited_by_users, through: :favorites, source: :user
-  
-  # Singular associations
-  has_one :subaccount, dependent: :destroy
-  has_rich_text :description
-  has_one_attached :media # Use `has_many_attached` if there are multiple files
 
-  # ==============================
-  # VALIDATIONS
-  # ==============================
+  has_rich_text :description
+
   validates :title, :description, :goal_amount, :start_date, :end_date, :currency, presence: true
   validates :goal_amount, numericality: { greater_than: 0 }
   validates :slug, uniqueness: true, presence: true
 
-  # ==============================
-  # ENUMS
-  # ==============================
   enum :status, { active: 0, completed: 1, canceled: 2 }
 
-  # ==============================
-  # ATTRIBUTES (SETTINGS)
-  # ==============================
   # Permissions settings
   attribute :accept_donations, :boolean, default: true
   attribute :leave_words_of_support, :boolean, default: true
@@ -70,38 +41,37 @@ class Campaign < ApplicationRecord
   attribute :schedule_promotion, :boolean, default: false
   attribute :promotion_frequency, :string, default: 'daily'
   attribute :promotion_duration, :integer, default: 1
-  
-  # Equity settings
+  # Add shares_available to the database schema
   attribute :shares_available, :decimal, precision: 20, scale: 4, default: 0.0
+  # Attachments for images or videos
+  has_one_attached :media # Use `has_many_attached` if there are multiple files
 
-  # ==============================
-  # CALLBACKS
-  # ==============================
+  before_destroy :safe_purge_media
   after_initialize :set_default_status, if: :new_record?
   before_validation :generate_slug, if: -> { slug.blank? && title.present? }
   after_update :send_status_update_webhook, if: :status_changed?
+  # Automatically call `update_status_based_on_date` after update
   after_update :update_status_based_on_date, if: -> { remaining_days.zero? && active? }
-  before_destroy :safe_purge_media
 
-  # ==============================
-  # PUBLIC INSTANCE METHODS
-  # ==============================
   def to_param
     slug
   end
 
-  # Status Management
+  # STI Configuration (replace the line 45 declaration with this)
+  def self.inheritance_column
+    'type'
+  end
+
+  def self.descendants
+    [EquityCampaign] # Add other subclasses as needed
+  end
+
+  # New cancel method
   def cancel
     update!(status: :canceled)
   end
 
-  def update_status_based_on_date
-    return if canceled? # Skip if already canceled
-
-    update!(status: :completed)
-  end
-
-  # Transfer & Financial Methods
+  # Add validation to prevent transfers when user is locked
   def can_transfer_funds?(direction = :outgoing)
     case direction
     when :outgoing
@@ -115,6 +85,7 @@ class Campaign < ApplicationRecord
     true
   end
 
+  # Update the transfer amount method to check locks
   def update_transferred_amount(new_donated_amount)
     unless can_transfer_funds?(:incoming)  # Allow incoming investments
       raise "Transfers are locked for this fundraiser"
@@ -128,6 +99,7 @@ class Campaign < ApplicationRecord
       fundraiser.total_transferred_amount + new_donated_amount)
   end
 
+  # app/models/campaign.rb
   def reset_transferred_amount!(admin_user = nil)
     transaction do
       # Store the amount being reset for logging
@@ -159,7 +131,6 @@ class Campaign < ApplicationRecord
     end
   end
 
-  # Media Attachment Methods
   def media_attached?
     return false unless media.attached?
     
@@ -220,101 +191,13 @@ class Campaign < ApplicationRecord
     media.attached? ? media.filename.to_s : nil
   end
 
-  # Analytics & Reporting Methods
-  def total_donors
-    authenticated_donors = donations.where(status: 'successful').where.not(user_id: nil).distinct.count(:user_id)
-    anonymous_donors = donations.where(status: 'successful', user_id: nil).count
-    authenticated_donors + anonymous_donors
-  end
-
-  def performance_percentage
-    return 0 if goal_amount.zero?
-
-    (transferred_amount / goal_amount.to_f * 100).round(2)
-  end
-
-  def total_social_media_shares
-    campaign_shares.count
-  end
-
-  def donations_over_time
-    # Define the start and end of the current month
-    start_of_month = Time.zone.now.beginning_of_month
-    end_of_month = Time.zone.now.end_of_month
-
-    # Fetch successful donations within the current month and group them by day
-    donations = self.donations
-                    .where(status: 'successful', created_at: start_of_month..end_of_month)
-                    .group_by_day(:created_at, format: '%Y-%m-%d')
-                    .sum(:amount)
-
-    # Ensure all days in the current month are included, even if there are no donations
-    (start_of_month.to_date..end_of_month.to_date).each do |date|
-      formatted_date = date.strftime('%Y-%m-%d')
-      donations[formatted_date] ||= 0
-    end
-
-    donations.sort.to_h
-  end
-
-  # Equity-specific Methods
+  # Add method to handle equity-specific calculations
   def total_equity_invested
     # Use the stored value if available, otherwise calculate it
     self[:total_equity_invested] || (is_a?(EquityCampaign) ? equity_investments.successful.sum(:amount) : 0)
   end
 
-  # Date & Time Methods
-  def total_days
-    return 0 unless start_date && end_date
-
-    (end_date.to_date - start_date.to_date).to_i.clamp(0, Float::INFINITY)
-  end
-
-  def remaining_days
-    return 0 if canceled?
-    return 0 unless end_date
-
-    (end_date.to_date - Date.current).to_i.clamp(0, Float::INFINITY)
-  end
-
-  # Document Methods
-  def required_documents
-    investor_documents.required
-  end
-
-  # Webhook & Integration Methods
-  def send_status_update_webhook
-    CampaignWebhookService.new(self).send_status_update
-  end
-
-  def update_fundraiser_leaderboard
-    total_raised = donations.successful.sum(:amount) # Adjust the field name as needed
-    FundraiserLeaderboardEntry.update_leaderboard(fundraiser, total_raised)
-  end
-
-  # Cleanup Methods
-  def cleanup_associations
-    # Handle points for donations
-    donations.find_each { |d| d.points.update_all(donation_id: nil) }
-    
-    # Handle points for equity investments if this is an equity campaign
-    if is_a?(EquityCampaign)
-      equity_investments.find_each { |i| i.points.update_all(equity_investment_id: nil) }
-    end
-    
-    # Clean up rich text associations
-    description.body.attachments.each(&:purge) if description.present?
-    
-    # Purge any other attachments
-    media.purge_later if media.attached?
-    
-    # Clean up ActiveStorage blobs for other attachments
-    investor_documents.each do |doc|
-      doc.files.each { |file| file.purge_later }
-    end
-  end
-
-  # JSON Serialization
+  # app/models/campaign.rb
   def as_json(options = {})
     json = super({
       only: %i[
@@ -442,9 +325,96 @@ class Campaign < ApplicationRecord
     )
   end
 
-  # ==============================
-  # PRIVATE METHODS
-  # ==============================
+  def total_days
+    return 0 unless start_date && end_date
+
+    (end_date.to_date - start_date.to_date).to_i.clamp(0, Float::INFINITY)
+  end
+
+  def remaining_days
+    return 0 if canceled?
+    return 0 unless end_date
+
+    (end_date.to_date - Date.current).to_i.clamp(0, Float::INFINITY)
+  end
+
+  def update_status_based_on_date
+    return if canceled? # Skip if already canceled
+
+    update!(status: :completed)
+  end
+
+  # Calculate the total number of unique donors (authenticated + anonymous)
+  def total_donors
+    authenticated_donors = donations.where(status: 'successful').where.not(user_id: nil).distinct.count(:user_id)
+    anonymous_donors = donations.where(status: 'successful', user_id: nil).count
+    authenticated_donors + anonymous_donors
+  end
+
+  def performance_percentage
+    return 0 if goal_amount.zero?
+
+    (transferred_amount / goal_amount.to_f * 100).round(2)
+  end
+
+  def send_status_update_webhook
+    CampaignWebhookService.new(self).send_status_update
+  end
+
+  def update_fundraiser_leaderboard
+    total_raised = donations.successful.sum(:amount) # Adjust the field name as needed
+    FundraiserLeaderboardEntry.update_leaderboard(fundraiser, total_raised)
+  end
+
+  def total_social_media_shares
+    campaign_shares.count
+  end
+
+  def donations_over_time
+    # Define the start and end of the current month
+    start_of_month = Time.zone.now.beginning_of_month
+    end_of_month = Time.zone.now.end_of_month
+
+    # Fetch successful donations within the current month and group them by day
+    donations = self.donations
+                    .where(status: 'successful', created_at: start_of_month..end_of_month)
+                    .group_by_day(:created_at, format: '%Y-%m-%d')
+                    .sum(:amount)
+
+    # Ensure all days in the current month are included, even if there are no donations
+    (start_of_month.to_date..end_of_month.to_date).each do |date|
+      formatted_date = date.strftime('%Y-%m-%d')
+      donations[formatted_date] ||= 0
+    end
+
+    donations.sort.to_h
+  end
+
+  def required_documents
+    investor_documents.required
+  end
+
+  def cleanup_associations
+    # Handle points for donations
+    donations.find_each { |d| d.points.update_all(donation_id: nil) }
+    
+    # Handle points for equity investments if this is an equity campaign
+    if is_a?(EquityCampaign)
+      equity_investments.find_each { |i| i.points.update_all(equity_investment_id: nil) }
+    end
+    
+    # Clean up rich text associations
+    description.body.attachments.each(&:purge) if description.present?
+    
+    # Purge any other attachments
+    media.purge_later if media.attached?
+    
+    # Clean up ActiveStorage blobs for other attachments
+    investor_documents.each do |doc|
+      doc.files.each { |file| file.purge_later }
+    end
+  end
+
   private
 
   def enqueue_media_cleanup
