@@ -85,7 +85,7 @@ module Api
 
       def my_campaigns
         @campaigns = @current_user.campaigns
-                                  .includes(fundraiser: [:profile, :latest_kyc])
+                                  .includes(fundraiser: [:profile, :latest_kyc, :archived_campaigns])
                                   .order(created_at: :desc)
                                   .page(params[:page])
                                   .per(params[:pageSize] || 12)
