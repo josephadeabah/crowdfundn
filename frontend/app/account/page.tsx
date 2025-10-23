@@ -40,6 +40,8 @@ import EquityInvestments from './EquityInvestments';
 import { usePremium } from '@/app/context/premium/PremiumContext';
 import { useAuth } from '../context/auth/AuthContext';
 import { Landmark } from 'lucide-react';
+import { FiArchive } from 'react-icons/fi';
+import ArchivedCampaigns from './ArchivedCampaigns';
 
 // Define proper TypeScript interfaces
 interface Tab {
@@ -162,6 +164,12 @@ const ProfileTabs = () => {
           icon: <RocketIcon className="w-4 h-4" />,
           component: <Campaigns />,
           description: 'Create and manage your fundraising campaigns.',
+        },
+        {
+          label: 'Archived Campaigns',
+          icon: <FiArchive className="w-4 h-4" />,
+          component: <ArchivedCampaigns />,
+          description: 'View and manage your archived campaigns.',
         },
         {
           label: 'Backers',

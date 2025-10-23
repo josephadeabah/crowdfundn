@@ -39,15 +39,12 @@ import { getDetailedErrorMessage } from '../types/campaign.error.messages.types'
 const Campaigns: React.FC = () => {
   const {
     userCampaigns,
-    archivedCampaigns,
     loading,
     error,
     fetchUserCampaigns,
     deleteCampaign,
     cancelCampaign,
     archiveCampaign,
-    unarchiveCampaign,
-    fetchArchivedCampaigns,
   } = useCampaignContext();
 
   const {
@@ -66,16 +63,8 @@ const Campaigns: React.FC = () => {
   const [campaignToActOn, setCampaignToActOn] =
     useState<CampaignResponseDataType | null>(null);
   const [actionType, setActionType] = useState<
-    | 'delete'
-    | 'cancel'
-    | 'submit'
-    | 'launch'
-    | 'close'
-    | 'archive'
-    | 'unarchive'
-    | null
+    'delete' | 'cancel' | 'submit' | 'launch' | 'close' | 'archive' | null
   >(null);
-  const [showArchived, setShowArchived] = useState(false);
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -101,8 +90,7 @@ const Campaigns: React.FC = () => {
 
   useEffect(() => {
     fetchUserCampaigns();
-    fetchArchivedCampaigns();
-  }, [fetchUserCampaigns, fetchArchivedCampaigns]);
+  }, [fetchUserCampaigns]);
 
   const handleEditCampaign = (campaign: CampaignResponseDataType) => {
     const identifier = campaign.slug || campaign.id;
@@ -128,14 +116,7 @@ const Campaigns: React.FC = () => {
 
   const handleAction = (
     campaign: CampaignResponseDataType,
-    type:
-      | 'delete'
-      | 'cancel'
-      | 'submit'
-      | 'launch'
-      | 'close'
-      | 'archive'
-      | 'unarchive',
+    type: 'delete' | 'cancel' | 'submit' | 'launch' | 'close' | 'archive',
   ) => {
     setCampaignToActOn(campaign);
     setActionType(type);
@@ -177,15 +158,11 @@ const Campaigns: React.FC = () => {
       } else if (actionType === 'archive') {
         await archiveCampaign(String(campaignToActOn.id));
         successMessage = 'Campaign archived successfully';
-      } else if (actionType === 'unarchive') {
-        await unarchiveCampaign(String(campaignToActOn.id));
-        successMessage = 'Campaign unarchived successfully';
       }
 
       if (!result || result.success) {
         showToast('Success', successMessage, 'success');
         await fetchUserCampaigns();
-        await fetchArchivedCampaigns();
       } else {
         const errorMessages: string[] = [];
 
@@ -286,19 +263,8 @@ const Campaigns: React.FC = () => {
   const getActionButtons = (campaign: CampaignResponseDataType) => {
     const actions = [];
 
-    // Archive/Unarchive option
-    if (campaign.archived_by_current_user) {
-      actions.push(
-        <li key="unarchive">
-          <button
-            className="w-full text-left text-sm text-green-600 hover:bg-green-50 p-2 rounded-md"
-            onClick={() => handleAction(campaign, 'unarchive')}
-          >
-            Unarchive Campaign
-          </button>
-        </li>,
-      );
-    } else {
+    // Archive option for active campaigns
+    if (!campaign.archived_by_current_user) {
       actions.push(
         <li key="archive">
           <button
@@ -372,11 +338,6 @@ const Campaigns: React.FC = () => {
     return actions;
   };
 
-  // Determine which campaigns to display
-  const displayCampaigns = showArchived
-    ? archivedCampaigns
-    : userCampaigns || [];
-
   if (loading) return <CampaignsLoader />;
 
   if (error) {
@@ -395,13 +356,9 @@ const Campaigns: React.FC = () => {
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-800">
-            {showArchived ? 'Archived Campaigns' : 'My Campaigns'}
-          </h2>
+          <h2 className="text-2xl font-semibold text-gray-800">My Campaigns</h2>
           <p className="text-gray-500">
-            {showArchived
-              ? 'View and manage your archived campaigns.'
-              : 'Manage your active and past campaigns.'}
+            Manage your active and past campaigns.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -414,25 +371,6 @@ const Campaigns: React.FC = () => {
             <span className="whitespace-nowrap">Manage Team & Documents</span>
           </Button>
           <Button
-            onClick={() => setShowArchived(!showArchived)}
-            className="flex items-center justify-center px-3 py-2 text-gray-700 rounded-lg w-full sm:w-auto"
-            variant="outline"
-          >
-            {showArchived ? (
-              <>
-                <FiRefreshCw className="mr-2" />
-                <span className="whitespace-nowrap">View Active Campaigns</span>
-              </>
-            ) : (
-              <>
-                <FiArchive className="mr-2" />
-                <span className="whitespace-nowrap">
-                  View Archived Campaigns
-                </span>
-              </>
-            )}
-          </Button>
-          <Button
             onClick={() => router.push('/account/dashboard/create')}
             className="flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-lg w-full sm:w-auto"
             variant="ghost"
@@ -443,43 +381,29 @@ const Campaigns: React.FC = () => {
         </div>
       </div>
 
-      {displayCampaigns.length === 0 ? (
+      {!userCampaigns || userCampaigns.length === 0 ? (
         <div className="text-center p-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mt-6">
           <div className="text-gray-400 mb-4">
             <FiFolder className="w-16 h-16 mx-auto opacity-50" />
           </div>
           <h3 className="text-xl font-semibold text-gray-600 mb-2">
-            {showArchived ? 'No archived campaigns' : 'No campaigns yet'}
+            No campaigns yet
           </h3>
           <p className="text-gray-500 max-w-md mx-auto mb-6">
-            {showArchived
-              ? "You haven't archived any campaigns yet. Archive campaigns to hide them from public view while keeping them for your records."
-              : 'Start your fundraising journey by creating your first campaign. Share your story, set your goals, and connect with supporters who believe in your vision.'}
+            Start your fundraising journey by creating your first campaign.
+            Share your story, set your goals, and connect with supporters who
+            believe in your vision.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          {displayCampaigns.map((campaign) => {
+          {userCampaigns.map((campaign) => {
             const status = getStatusDisplay(campaign);
             return (
               <div
                 key={campaign.id}
-                className={`relative p-4 rounded-lg shadow flex flex-col justify-between ${
-                  campaign.archived_by_current_user
-                    ? 'bg-gray-100 border border-gray-300'
-                    : 'bg-white hover:bg-gray-50'
-                }`}
+                className="relative p-4 rounded-lg shadow flex flex-col justify-between bg-white hover:bg-gray-50"
               >
-                {/* Archive badge */}
-                {campaign.archived_by_current_user && (
-                  <div className="absolute top-2 right-2">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
-                      <FiArchive className="w-3 h-3 mr-1" />
-                      Archived
-                    </span>
-                  </div>
-                )}
-
                 <div className="flex justify-between items-start gap-2">
                   <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 break-words">
                     {campaign.title}
@@ -500,14 +424,7 @@ const Campaigns: React.FC = () => {
                             Edit Campaign
                           </button>
                         </li>
-                        <li>
-                          <button
-                            className="w-full text-left text-sm text-red-600 hover:bg-red-50 p-2 rounded-md"
-                            onClick={() => handleAction(campaign, 'delete')}
-                          >
-                            Delete Campaign
-                          </button>
-                        </li>
+                        {/* Delete button removed from active campaigns */}
                         {getActionButtons(campaign)}
                       </ul>
                     </PopoverContent>
@@ -712,9 +629,7 @@ const Campaigns: React.FC = () => {
                   ? 'Launch Campaign'
                   : actionType === 'close'
                     ? 'Close Campaign'
-                    : actionType === 'archive'
-                      ? 'Archive Campaign'
-                      : 'Unarchive Campaign'
+                    : 'Archive Campaign'
         }
         message={
           actionType === 'delete'
@@ -727,9 +642,7 @@ const Campaigns: React.FC = () => {
                   ? 'Launch this campaign to start receiving investments?'
                   : actionType === 'close'
                     ? 'Close this campaign to prevent further investments?'
-                    : actionType === 'archive'
-                      ? 'Are you sure you want to archive this campaign? It will be hidden from public view but preserved in your records.'
-                      : 'Are you sure you want to unarchive this campaign? It will become visible to the public again.'
+                    : 'Are you sure you want to archive this campaign? It will be hidden from public view but preserved in your records.'
         }
         isOpen={alertPopupOpen}
         setIsOpen={setAlertPopupOpen}
@@ -744,9 +657,7 @@ const Campaigns: React.FC = () => {
                 ? 'Close'
                 : actionType === 'archive'
                   ? 'Archive'
-                  : actionType === 'unarchive'
-                    ? 'Unarchive'
-                    : 'Confirm'
+                  : 'Confirm'
         }
         loading={equityActionLoading}
       />

@@ -15,9 +15,7 @@ import React, {
 } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 
-const CampaignContext = createContext<CampaignState | undefined>(
-  undefined,
-);
+const CampaignContext = createContext<CampaignState | undefined>(undefined);
 
 // Custom wrapper for Next.js fetch
 const nextFetch = async (

@@ -114,7 +114,7 @@ export interface CampaignResponseDataType {
       url: string;
     }[];
   }[];
-    // Archive fields - make them optional and allow null
+  // Archive fields - make them optional and allow null
   archived_by_current_user?: boolean;
   archive_info?: ArchiveInfoType | null;
   archived?: boolean;
