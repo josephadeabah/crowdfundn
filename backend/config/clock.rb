@@ -34,8 +34,8 @@ module Clockwork
   # Scheduled Jobs
   # ---------------------------------------
 
-  # 1️⃣ Send campaign webhooks every 8 hours
-  every(8.hours, 'send_webhook') do
+  # 1️⃣ Send campaign webhooks every 1 hour
+  every(1.hour, 'send_webhook') do
     Campaign.active.find_each(batch_size: 100) do |campaign|
       SendWebhookJob.perform_later(campaign.id)
     rescue => e
