@@ -18,6 +18,7 @@ import CampaignCardSkeleton from '../loaders/CampaignCardSkeleton';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { Button } from '../components/button/Button';
 import Avatar from '../components/avatar/Avatar';
+import WatchlistSkeletonLoader from '../loaders/WatchlistSkeletonLoader ';
 
 const Favorites = () => {
   const {
@@ -76,7 +77,7 @@ const Favorites = () => {
   if (loading && campaigns.length === 0) {
     return (
       <div className="py-8">
-        <CampaignCardSkeleton />
+        <WatchlistSkeletonLoader />
       </div>
     );
   }
