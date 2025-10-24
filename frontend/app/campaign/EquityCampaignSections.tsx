@@ -358,28 +358,31 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
           </div>
         </div>
       )}
-{/* Offering Documents */}
-{(campaign?.equity_offering_details?.sec_filing_url ||
-  campaign?.equity_offering_details?.offering_circular_url ||
-  campaign?.equity_offering_details?.offering_documents
-    ?.offering_memorandum_document?.attached) && (
-  <div className="bg-white rounded-3xl border border-gray-100 p-6 sm:p-8 overflow-hidden"> {/* Added overflow-hidden here */}
-    <div className="flex items-center mb-6 sm:mb-8">
-      <div className="p-3 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl mr-4">
-        <FaFileContract className="text-2xl text-red-600" />
-      </div>
-      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">SEC Filing</h2>
-    </div>
-
-    <div className="grid gap-4 w-full">
-      {/* SEC Filing URL */}
-      {campaign.equity_offering_details.sec_filing_url && (
-        <ExternalDocumentCard
-          name="SEC Filing"
-          url={campaign.equity_offering_details.sec_filing_url}
-          type="SEC Regulatory Filing"
-        />
-      )}
+      {/* Offering Documents */}
+      {(campaign?.equity_offering_details?.sec_filing_url ||
+        campaign?.equity_offering_details?.offering_circular_url ||
+        campaign?.equity_offering_details?.offering_documents
+          ?.offering_memorandum_document?.attached) && (
+        <div className="bg-white rounded-3xl border border-gray-100 p-6 sm:p-8 overflow-hidden">
+          {' '}
+          {/* Added overflow-hidden here */}
+          <div className="flex items-center mb-6 sm:mb-8">
+            <div className="p-3 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl mr-4">
+              <FaFileContract className="text-2xl text-red-600" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              SEC Filing
+            </h2>
+          </div>
+          <div className="grid gap-4 w-full">
+            {/* SEC Filing URL */}
+            {campaign.equity_offering_details.sec_filing_url && (
+              <ExternalDocumentCard
+                name="SEC Filing"
+                url={campaign.equity_offering_details.sec_filing_url}
+                type="SEC Regulatory Filing"
+              />
+            )}
 
             {/* Offering Circular URL */}
             {campaign.equity_offering_details.offering_circular_url && (
@@ -682,7 +685,9 @@ const ExternalDocumentCard: React.FC<ExternalDocumentCardProps> = ({
         <FaExternalLinkAlt className="text-xl sm:text-2xl text-gray-600" />
       </div>
       <div className="min-w-0 flex-1">
-        <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{name}</h3>
+        <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+          {name}
+        </h3>
         <p className="text-xs sm:text-sm text-gray-600 truncate">{type}</p>
       </div>
     </div>
