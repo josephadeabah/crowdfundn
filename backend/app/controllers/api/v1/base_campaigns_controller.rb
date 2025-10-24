@@ -186,7 +186,7 @@ module Api
         render json: { error: "Failed to delete campaign: #{e.message}" }, status: :unprocessable_entity
       end
 
-            # Archive functionality
+      # Archive functionality
       def archive
         reason = params[:reason]
 
@@ -336,7 +336,7 @@ module Api
           :updates,
           :comments,
           :investor_documents,
-          :archived_campaigns, # Add archived_campaigns association
+          :archived_campaigns, # This should now work
           fundraiser: [:profile, :latest_kyc]
         )
       end

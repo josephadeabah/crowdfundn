@@ -18,6 +18,8 @@ class Campaign < ApplicationRecord
   has_many :pledges, dependent: :destroy
   has_many :investor_documents, dependent: :destroy
   has_many :campaign_team_members, foreign_key: 'campaign_id', dependent: :destroy
+  has_many :archived_campaigns, dependent: :destroy
+  has_many :archived_by_users, through: :archived_campaigns, source: :user
 
   has_rich_text :description
 
@@ -66,6 +68,29 @@ class Campaign < ApplicationRecord
     [EquityCampaign] # Add other subclasses as needed
   end
 
+
+    # Add archive-related methods
+  def archived_by_user?(user)
+    archived_campaigns.where(user: user).exists?
+  end
+
+  def archive_info_for_user(user)
+    archived_campaigns.find_by(user: user)
+  end
+
+  def archive!(user, reason = nil)
+    archived_campaigns.create!(user: user, reason: reason)
+  end
+
+  def unarchive!(user)
+    archived_campaigns.where(user: user).destroy_all
+  end
+
+  def archived?
+    archived_campaigns.any?
+  end
+
+  
   # New cancel method
   def cancel
     update!(status: :canceled)

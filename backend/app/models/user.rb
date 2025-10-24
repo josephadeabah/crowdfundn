@@ -62,6 +62,15 @@ class User < ApplicationRecord
     archived_campaigns.includes(campaign: [:fundraiser, :rewards, :updates])
                       .order(archived_at: :desc)
   end
+
+  # Add this method if it doesn't exist
+  def archive_campaign(campaign, reason = nil)
+    archived_campaigns.create!(campaign: campaign, reason: reason)
+  end
+
+  def unarchive_campaign(campaign)
+    archived_campaigns.where(campaign: campaign).destroy_all
+  end
   
   def generate_confirmation_token
     self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
