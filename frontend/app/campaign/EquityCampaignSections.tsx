@@ -676,8 +676,8 @@ const ExternalDocumentCard: React.FC<ExternalDocumentCardProps> = ({
   url,
   type,
 }) => (
-  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 group gap-4 sm:gap-6">
-    <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
+  <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 group overflow-hidden">
+    <div className="flex items-center gap-4 min-w-0 flex-1">
       <div className="p-3 bg-gray-50 rounded-xl group-hover:scale-110 transition-transform flex-shrink-0">
         <FaExternalLinkAlt className="text-2xl text-gray-600" />
       </div>
@@ -690,7 +690,7 @@ const ExternalDocumentCard: React.FC<ExternalDocumentCardProps> = ({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors font-medium flex items-center justify-center gap-2 group-hover:shadow-lg flex-shrink-0 w-full sm:w-auto text-center"
+      className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors font-medium flex items-center gap-2 group-hover:shadow-lg flex-shrink-0 ml-4"
     >
       View
       <FaExternalLinkAlt className="text-xs" />
