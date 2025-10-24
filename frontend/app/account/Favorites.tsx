@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+'use client';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -38,6 +39,32 @@ const Favorites = () => {
     fetchFavoritedCampaigns();
     fetchAllCampaigns('created_at', 'desc', 1, 20);
   }, [fetchFavoritedCampaigns, fetchAllCampaigns]);
+
+  // Filter campaigns using the same conditions as FeaturedCampaigns
+  const filteredCampaigns = useMemo(() => {
+    if (!campaigns) return [];
+    return campaigns.filter((campaign) => {
+      return (
+        campaign.status !== 'completed' &&
+        campaign.equity_status !== 'draft' &&
+        campaign.equity_status !== 'pending_approval' &&
+        campaign.permissions.is_public
+      );
+    });
+  }, [campaigns]);
+
+  // Filter favorited campaigns using the same conditions
+  const filteredFavoritedCampaigns = useMemo(() => {
+    if (!favoritedCampaigns) return [];
+    return favoritedCampaigns.filter((campaign) => {
+      return (
+        campaign.status !== 'completed' &&
+        campaign.equity_status !== 'draft' &&
+        campaign.equity_status !== 'pending_approval' &&
+        campaign.permissions.is_public
+      );
+    });
+  }, [favoritedCampaigns]);
 
   const handleFavoriteClick = async (
     campaignId: string,
@@ -122,7 +149,7 @@ const Favorites = () => {
             </div>
 
             <div className="space-y-6">
-              {campaigns.length === 0 ? (
+              {filteredCampaigns.length === 0 ? (
                 <div className="text-center p-8 bg-white rounded-xl border border-dashed border-gray-200">
                   <div className="text-gray-400 mb-3">
                     <FaBookmark className="w-16 h-16 mx-auto opacity-40" />
@@ -135,12 +162,12 @@ const Favorites = () => {
                   </p>
                 </div>
               ) : (
-                campaigns.map((campaign) => {
+                filteredCampaigns.map((campaign) => {
                   const progressPercentage = getProgressPercentage(
                     Number(campaign.transferred_amount || 0),
                     Number(campaign.goal_amount || 1),
                   );
-                  const isFavorited = favoritedCampaigns.some(
+                  const isFavorited = filteredFavoritedCampaigns.some(
                     (fav) => fav.id === campaign.id,
                   );
                   const isEquityCampaign = campaign.type === 'EquityCampaign';
@@ -382,8 +409,9 @@ const Favorites = () => {
                       Your Watchlist
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      {favoritedCampaigns.length} campaign
-                      {favoritedCampaigns.length !== 1 ? 's' : ''} tracked
+                      {filteredFavoritedCampaigns.length} campaign
+                      {filteredFavoritedCampaigns.length !== 1 ? 's' : ''}{' '}
+                      tracked
                     </p>
                   </div>
                   <div className="p-2 bg-green-100 rounded-lg">
@@ -401,7 +429,7 @@ const Favorites = () => {
                 }}
               >
                 <div className="p-4">
-                  {favoritedCampaigns.length === 0 ? (
+                  {filteredFavoritedCampaigns.length === 0 ? (
                     <div className="text-center py-8">
                       <FaRegHeart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                       <p className="text-sm text-gray-500 mb-2">
@@ -413,7 +441,7 @@ const Favorites = () => {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {favoritedCampaigns.map((campaign) => {
+                      {filteredFavoritedCampaigns.map((campaign) => {
                         const isEquityCampaign =
                           campaign.type === 'EquityCampaign';
                         const companyName =
@@ -497,7 +525,7 @@ const Favorites = () => {
               </div>
 
               {/* Sidebar Footer - Fixed */}
-              {favoritedCampaigns.length > 0 && (
+              {filteredFavoritedCampaigns.length > 0 && (
                 <div className="p-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
                   <p className="text-xs text-gray-500 text-center">
                     Click the X to remove from watchlist
