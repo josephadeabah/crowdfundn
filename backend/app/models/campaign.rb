@@ -55,6 +55,13 @@ class Campaign < ApplicationRecord
   # Automatically call `update_status_based_on_date` after update
   after_update :update_status_based_on_date, if: -> { remaining_days.zero? && active? }
 
+  # Scope for archived campaigns for a specific user
+  scope :archived_by, ->(user) { 
+    joins(:archived_campaigns).where(archived_campaigns: { user: user }) 
+  }
+  # Scope for non-archived campaigns (visible in search/lists)
+  scope :not_archived, -> { where(is_public: true, appear_in_search_results: true) }
+
   def to_param
     slug
   end
@@ -69,27 +76,62 @@ class Campaign < ApplicationRecord
   end
 
 
-    # Add archive-related methods
+  # Add archive-related methods
+  def archive!(user, reason = nil)
+    return false if archived_by_user?(user)
+    
+    ActiveRecord::Base.transaction do
+      archived_campaigns.create!(
+        user: user,
+        archived_at: Time.current,
+        reason: reason
+      )
+      
+      # Update campaign permissions to hide from public
+      update!(
+        appear_in_search_results: false,
+        suggested_fundraiser_lists: false,
+        is_public: false
+      )
+    end
+    true
+  rescue => e
+    Rails.logger.error "Failed to archive campaign #{id}: #{e.message}"
+    false
+  end
+
+  def unarchive!(user)
+    archived_campaign = archived_campaigns.find_by(user: user)
+    return false unless archived_campaign
+    
+    ActiveRecord::Base.transaction do
+      archived_campaign.destroy!
+      
+      # Restore campaign permissions
+      update!(
+        appear_in_search_results: true,
+        suggested_fundraiser_lists: true,
+        is_public: true
+      )
+    end
+    true
+  rescue => e
+    Rails.logger.error "Failed to unarchive campaign #{id}: #{e.message}"
+    false
+  end
+
   def archived_by_user?(user)
-    archived_campaigns.where(user: user).exists?
+    archived_campaigns.exists?(user: user)
+  end
+
+  def archived?
+    # A campaign is considered archived if it's not public and has archive records
+    !is_public && archived_campaigns.any?
   end
 
   def archive_info_for_user(user)
     archived_campaigns.find_by(user: user)
   end
-
-  def archive!(user, reason = nil)
-    archived_campaigns.create!(user: user, reason: reason)
-  end
-
-  def unarchive!(user)
-    archived_campaigns.where(user: user).destroy_all
-  end
-
-  def archived?
-    archived_campaigns.any?
-  end
-
   
   # New cancel method
   def cancel
@@ -229,10 +271,22 @@ class Campaign < ApplicationRecord
         id title goal_amount current_amount transferred_amount start_date end_date
         category location currency currency_code currency_symbol status
         fundraiser_id created_at updated_at valuation equity_offered minimum_investment 
-        total_shares
+        total_shares is_public appear_in_search_results
       ],
-      methods: %i[media_url media_filename total_days remaining_days]
+      methods: %i[media_url media_filename total_days remaining_days archived?]
     }.merge(options))
+
+        # Add archive information if user context is provided
+    if options[:user]
+      user_archive_info = archive_info_for_user(options[:user])
+      json.merge!(
+        archived_by_current_user: archived_by_user?(options[:user]),
+        archive_info: user_archive_info ? {
+          archived_at: user_archive_info.archived_at,
+          reason: user_archive_info.reason
+        } : nil
+      )
+    end
 
     # Only include equity fields for EquityCampaign instances
     if is_a?(EquityCampaign)
