@@ -38,7 +38,7 @@ const WatchlistSkeletonLoader = () => {
                   {/* Image Section Skeleton */}
                   <div className="relative w-full h-48">
                     <Skeleton height={192} className="rounded-none" />
-                    
+
                     {/* Campaign Type Badge Skeleton */}
                     <div className="absolute top-3 left-3">
                       <Skeleton width={80} height={28} borderRadius={16} />
@@ -73,12 +73,19 @@ const WatchlistSkeletonLoader = () => {
                     {/* Stats Grid Skeleton */}
                     <div className="grid grid-cols-2 gap-3 mb-4">
                       {Array.from({ length: 4 }).map((_, statIndex) => (
-                        <div key={statIndex} className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div
+                          key={statIndex}
+                          className="text-center p-3 bg-gray-50 rounded-lg"
+                        >
                           <div className="flex items-center justify-center gap-2 mb-2">
                             <Skeleton circle width={16} height={16} />
                             <Skeleton width={50} height={16} />
                           </div>
-                          <Skeleton width={60} height={20} className="mx-auto" />
+                          <Skeleton
+                            width={60}
+                            height={20}
+                            className="mx-auto"
+                          />
                         </div>
                       ))}
                     </div>
@@ -137,7 +144,11 @@ const WatchlistSkeletonLoader = () => {
                           <Skeleton width="90%" height={16} className="mb-1" />
                           <Skeleton width="70%" height={14} className="mb-1" />
                           <div className="flex items-center gap-2">
-                            <Skeleton width={60} height={20} borderRadius={10} />
+                            <Skeleton
+                              width={60}
+                              height={20}
+                              borderRadius={10}
+                            />
                             <Skeleton width={50} height={14} />
                           </div>
                         </div>

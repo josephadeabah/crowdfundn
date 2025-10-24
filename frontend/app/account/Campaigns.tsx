@@ -360,9 +360,7 @@ const Campaigns: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-semibold text-gray-800">My Campaigns</h2>
-          <p className="text-gray-500">
-            Manage your active campaigns.
-          </p>
+          <p className="text-gray-500">Manage your active campaigns.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button
