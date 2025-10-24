@@ -645,7 +645,7 @@ const Campaigns: React.FC = () => {
                   ? 'Launch this campaign to start receiving investments?'
                   : actionType === 'close'
                     ? 'Close this campaign to prevent further investments?'
-                    : 'Are you sure you want to archive this campaign? It will be hidden from public view and moved to the Archived Campaigns tab.'
+                    : 'Are you sure you want to archive this campaign? It will be hidden from public view and moved to the Archived Campaigns directory.'
         }
         isOpen={alertPopupOpen}
         setIsOpen={setAlertPopupOpen}
