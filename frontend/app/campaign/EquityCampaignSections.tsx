@@ -676,24 +676,24 @@ const ExternalDocumentCard: React.FC<ExternalDocumentCardProps> = ({
   url,
   type,
 }) => (
-  <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 group">
-    <div className="flex items-center gap-4 min-w-0">
-      <div className="p-3 bg-gray-50 rounded-xl group-hover:scale-110 transition-transform flex-shrink-0">
-        <FaExternalLinkAlt className="text-2xl text-gray-600" />
+  <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-white rounded-2xl p-4 sm:p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 group gap-2 sm:gap-4">
+    <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+      <div className="p-2 sm:p-3 bg-gray-50 rounded-xl group-hover:scale-110 transition-transform flex-shrink-0">
+        <FaExternalLinkAlt  className="w-4 h-4 sm:w-6 sm:h-6 text-gray-600" />
       </div>
-      <div className="min-w-0">
-        <h3 className="font-semibold text-gray-900 truncate">{name}</h3>
-        <p className="text-sm text-gray-600">{type}</p>
+      <div className="min-w-0 flex-1">
+        <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">{name}</h3>
+        <p className="text-xs sm:text-sm text-gray-600 truncate">{type}</p>
       </div>
     </div>
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors font-medium flex items-center gap-2 group-hover:shadow-lg flex-shrink-0 ml-4"
+      className="px-3 py-2 sm:px-6 sm:py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors font-medium flex items-center gap-1 sm:gap-2 group-hover:shadow-lg flex-shrink-0 text-sm sm:text-base"
     >
-      View
-      <FaExternalLinkAlt className="text-xs" />
+      <span className="hidden sm:inline">View</span>
+      <FaExternalLinkAlt className="w-3 h-3" />
     </a>
   </div>
 );
