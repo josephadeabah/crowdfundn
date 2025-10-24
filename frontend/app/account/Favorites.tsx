@@ -14,7 +14,6 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { FiTarget } from 'react-icons/fi';
-import CampaignCardSkeleton from '../loaders/CampaignCardSkeleton';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { Button } from '../components/button/Button';
 import Avatar from '../components/avatar/Avatar';
