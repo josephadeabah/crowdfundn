@@ -702,7 +702,6 @@ const ExternalDocumentCard: React.FC<ExternalDocumentCardProps> = ({
   </div>
 );
 
-
 interface TeamMemberCardProps {
   member: any;
 }
