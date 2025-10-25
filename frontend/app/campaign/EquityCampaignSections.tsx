@@ -371,7 +371,7 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
             <h2 className="text-3xl font-bold text-gray-900">SEC Filing</h2>
           </div>
 
-          <div className="grid gap-4">
+          <div className="flex flex-col gap-2 w-full">
             {/* SEC Filing URL */}
             {campaign.equity_offering_details.sec_filing_url && (
               <ExternalDocumentCard
