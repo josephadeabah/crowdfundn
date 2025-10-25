@@ -18,7 +18,7 @@ import { FiTarget } from 'react-icons/fi';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { Button } from '../components/button/Button';
 import Avatar from '../components/avatar/Avatar';
-import WatchlistSkeletonLoader from '../loaders/WatchlistSkeletonLoader ';
+import WatchlistSkeletonLoader from '../loaders/WatchlistSkeletonLoader';
 
 const Favorites = () => {
   const {
