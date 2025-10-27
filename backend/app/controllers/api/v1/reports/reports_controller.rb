@@ -192,8 +192,8 @@ module Api
         end
 
         def authorize_admin
-          unless @current_user&.admin?
-            render json: { error: 'Unauthorized' }, status: :unauthorized
+          unless @current_user&.has_role?('Admin') || @current_user&.admin?
+            render json: { error: 'Unauthorized. Admin access required.' }, status: :unauthorized
           end
         end
       end
