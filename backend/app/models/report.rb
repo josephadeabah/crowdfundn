@@ -64,7 +64,7 @@ class Report < ApplicationRecord
   end
 
   def notify_reporter_if_resolved
-    ReportMailer.report_resolved(self).deliver_later
+    ReportMailerService.send_report_resolved_email(self)
   end
 
   def assign_to_admin(admin_user)
