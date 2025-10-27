@@ -145,13 +145,6 @@ const ReportsManager = () => {
     }
   };
 
-  // Helper function to get current admin ID (you'll need to implement this based on your auth system)
-  const getCurrentAdminId = () => {
-    // This should return the current user's ID if they're an admin
-    // You might need to decode the JWT token or get it from your auth context
-    return 1; // Replace with actual implementation
-  };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
