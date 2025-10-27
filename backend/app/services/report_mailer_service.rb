@@ -136,7 +136,7 @@ class ReportMailerService
 
               <!-- Footer -->
               <div class="footer">
-                <p>You are receiving this email because you submitted a report on Bantu Hive.</p>
+                <p>You are receiving this email because you submitted a report on BantuHive.</p>
                 <p>Sent from Bantuhive's Headquarters:</p>
                 <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
 
