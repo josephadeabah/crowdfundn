@@ -40,7 +40,7 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = ({
 
     // Navigate to report page with campaign ID
     if (campaign?.id) {
-      window.location.href = `/report-fundraiser?campaignId=${campaign.id}`;
+      window.location.href = `/report-fundraiser?campaignId=${campaign.slug}`;
     }
   };
 
@@ -91,7 +91,7 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = ({
           className="flex items-center px-4 py-2 text-gray-600 bg-white rounded-lg hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300 ease-in-out border border-gray-300"
         >
           <FaFlag className="mr-2" />
-          Report a Fundraiser
+          Report {user ? user.full_name : 'this fundraiser'}
         </button>
       </div>
     </div>
