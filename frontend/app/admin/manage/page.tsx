@@ -217,6 +217,7 @@ const AdminDashboard = () => {
           component: <ReportsManager />,
           badgeCount: 5, // You can dynamically calculate this
           requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
+          requiredAdmin: true,
         },
         {
           id: 'promotions',
@@ -276,7 +277,6 @@ const AdminDashboard = () => {
           component: <div>Support Center</div>,
           badgeCount: 12,
           requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
-          requiredAdmin: true,
         },
         {
           id: 'premiumUsers',
