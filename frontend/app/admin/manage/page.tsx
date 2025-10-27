@@ -276,6 +276,7 @@ const AdminDashboard = () => {
           component: <div>Support Center</div>,
           badgeCount: 12,
           requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
+          requiredAdmin: true,
         },
         {
           id: 'premiumUsers',
