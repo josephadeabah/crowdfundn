@@ -9,11 +9,14 @@ import {
   FaInfoCircle,
 } from 'react-icons/fa';
 import { ReportFormData } from '../types/reports.types';
+import { useAuth } from '@/app/context/auth/AuthContext'; // Import useAuth
 
 // Move the main content to a separate component that uses useSearchParams
 function ReportFundraiserContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user, token } = useAuth(); // Get user and token from auth context
+  
   const campaignId = searchParams.get('campaignId');
   const userId = searchParams.get('userId');
 
@@ -79,13 +82,25 @@ function ReportFundraiserContent() {
     },
   ];
 
+  // Check if user is authenticated on component mount
+  useEffect(() => {
+    if (!user || !token) {
+      setErrors({ submit: 'Please sign in to submit a report' });
+    }
+  }, [user, token]);
+
   // Fetch campaign info if we have a campaignId
   useEffect(() => {
     const fetchCampaignInfo = async () => {
-      if (campaignId) {
+      if (campaignId && token) {
         try {
           const response = await fetch(
             `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            }
           );
           if (response.ok) {
             const data = await response.json();
@@ -98,7 +113,7 @@ function ReportFundraiserContent() {
     };
 
     fetchCampaignInfo();
-  }, [campaignId]);
+  }, [campaignId, token]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -145,6 +160,13 @@ function ReportFundraiserContent() {
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
+
+    // Check authentication first
+    if (!user || !token) {
+      newErrors.submit = 'Please sign in to submit a report';
+      setErrors(newErrors);
+      return false;
+    }
 
     if (!formData.report_type) {
       newErrors.report_type = 'Please select a report type';
@@ -195,14 +217,14 @@ function ReportFundraiserContent() {
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('token');
+      // Use the token from useAuth hook instead of localStorage
       if (!token) {
         setErrors({ submit: 'Please sign in to submit a report' });
         setIsSubmitting(false);
         return;
       }
 
-      // CORRECTED ENDPOINT: Added /api/v1 prefix
+      // CORRECTED ENDPOINT: Use the full API path
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/reports/reports`,
         {
@@ -240,6 +262,41 @@ function ReportFundraiserContent() {
       setIsSubmitting(false);
     }
   };
+
+  // Show authentication required message if user is not logged in
+  if (!user || !token) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md mx-auto">
+          <div className="bg-white rounded-lg shadow-md p-6 text-center">
+            <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FaExclamationTriangle className="w-8 h-8 text-yellow-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Sign In Required
+            </h2>
+            <p className="text-gray-600 mb-4">
+              You need to be signed in to submit a report.
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={() => router.push('/auth/login')}
+                className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => router.push('/')}
+                className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
+              >
+                Go Home
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isSubmitted) {
     return (
