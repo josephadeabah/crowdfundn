@@ -12,7 +12,7 @@ import {
 import { ReportType } from '@/app/types/reports.types';
 
 const ReportsManager = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [reports, setReports] = useState<ReportType[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,7 +78,7 @@ const ReportsManager = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            admin_id: getCurrentAdminId(), // You'll need to implement this function
+            admin_id: user?.id, // You'll need to implement this function
           }),
         },
       );
