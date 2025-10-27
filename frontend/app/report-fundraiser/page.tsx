@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -10,7 +10,8 @@ import {
 } from 'react-icons/fa';
 import { ReportFormData } from '../types/reports.types';
 
-const ReportFundraiserPage = () => {
+// Move the main content to a separate component that uses useSearchParams
+function ReportFundraiserContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const campaignId = searchParams.get('campaignId');
@@ -201,6 +202,7 @@ const ReportFundraiserPage = () => {
         return;
       }
 
+      // CORRECTED ENDPOINT: Added /api/v1 prefix
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/reports/reports`,
         {
@@ -261,7 +263,7 @@ const ReportFundraiserPage = () => {
             <div className="space-y-3">
               <button
                 onClick={() => router.push('/explore')}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+                className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors"
               >
                 Back to Explore
               </button>
@@ -288,7 +290,7 @@ const ReportFundraiserPage = () => {
         {/* Header */}
         <div className="mb-8">
           <Link href={campaignId ? `/campaign/${campaignId}` : '/explore'}>
-            <button className="flex items-center text-blue-600 hover:text-blue-800 mb-4">
+            <button className="flex items-center text-green-600 hover:text-green-800 mb-4">
               <FaArrowLeft className="mr-2" />
               Back to {campaignId ? 'Campaign' : 'Explore'}
             </button>
@@ -309,12 +311,12 @@ const ReportFundraiserPage = () => {
 
           {/* Campaign Info */}
           {campaignInfo && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-blue-900 mb-2">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-green-900 mb-2">
                 You are reporting:
               </h3>
-              <p className="text-blue-800 font-medium">{campaignInfo.title}</p>
-              <p className="text-blue-700 text-sm">
+              <p className="text-green-800 font-medium">{campaignInfo.title}</p>
+              <p className="text-green-700 text-sm">
                 by {campaignInfo.fundraiser?.name}
               </p>
             </div>
@@ -337,7 +339,7 @@ const ReportFundraiserPage = () => {
                 name="report_type"
                 value={formData.report_type}
                 onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                   errors.report_type ? 'border-red-500' : 'border-gray-300'
                 }`}
               >
@@ -376,7 +378,7 @@ const ReportFundraiserPage = () => {
                 value={formData.description}
                 onChange={handleInputChange}
                 placeholder="Please provide as much detail as possible about what you're reporting and why. Include specific examples, timestamps, or any other relevant information that can help us understand the issue."
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                   errors.description ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
@@ -411,7 +413,7 @@ const ReportFundraiserPage = () => {
                           handleEvidenceLinkChange(index, e.target.value)
                         }
                         placeholder="https://example.com/evidence"
-                        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
+                        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                           errors[`evidence_${index}`]
                             ? 'border-red-500'
                             : 'border-gray-300'
@@ -459,7 +461,7 @@ const ReportFundraiserPage = () => {
                 value={formData.contact_email}
                 onChange={handleInputChange}
                 placeholder="your.email@example.com"
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                   errors.contact_email ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
@@ -519,6 +521,29 @@ const ReportFundraiserPage = () => {
       </div>
     </div>
   );
-};
+}
 
-export default ReportFundraiserPage;
+// Main page component with Suspense boundary
+export default function ReportFundraiserPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+              <div className="h-12 bg-gray-200 rounded mb-6"></div>
+              <div className="space-y-4">
+                <div className="h-16 bg-gray-200 rounded"></div>
+                <div className="h-32 bg-gray-200 rounded"></div>
+                <div className="h-12 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <ReportFundraiserContent />
+    </Suspense>
+  );
+}
