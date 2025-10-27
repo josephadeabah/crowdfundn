@@ -192,8 +192,14 @@ module Api
         end
 
         def authorize_admin
-          unless @current_user
-            render json: { error: 'Unauthorized. access required.' }, status: :unauthorized
+            Rails.logger.info "=== ADMIN AUTHORIZATION CHECK ==="
+            Rails.logger.info "Current user ID: #{@current_user&.id}"
+            Rails.logger.info "Current user email: #{@current_user&.email}"
+            Rails.logger.info "User roles: #{@current_user&.roles&.pluck(:name)}"
+            Rails.logger.info "User admin flag: #{@current_user&.admin?}"
+            Rails.logger.info "Has Admin role: #{@current_user&.has_role?('Admin')}"
+          unless @current_user&.has_role?('Admin') || @current_user&.admin?
+            render json: { error: 'Unauthorized. Admin access required.' }, status: :unauthorized
           end
         end
       end
