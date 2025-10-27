@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_23_075501) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_27_195603) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -520,6 +520,34 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_23_075501) do
     t.index ["user_id"], name: "index_profiles_on_user_id"
   end
 
+  create_table "reports", force: :cascade do |t|
+    t.integer "report_type", null: false
+    t.text "description", null: false
+    t.integer "status", default: 0
+    t.integer "priority", default: 0
+    t.bigint "campaign_id"
+    t.bigint "reported_user_id"
+    t.bigint "reporter_id", null: false
+    t.bigint "assigned_admin_id"
+    t.text "action_taken"
+    t.text "resolution_notes"
+    t.datetime "resolved_at"
+    t.json "evidence_links"
+    t.string "contact_email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assigned_admin_id"], name: "index_reports_on_assigned_admin_id"
+    t.index ["campaign_id", "status"], name: "index_reports_on_campaign_id_and_status"
+    t.index ["campaign_id"], name: "index_reports_on_campaign_id"
+    t.index ["created_at"], name: "index_reports_on_created_at"
+    t.index ["priority"], name: "index_reports_on_priority"
+    t.index ["report_type"], name: "index_reports_on_report_type"
+    t.index ["reported_user_id", "status"], name: "index_reports_on_reported_user_id_and_status"
+    t.index ["reported_user_id"], name: "index_reports_on_reported_user_id"
+    t.index ["reporter_id"], name: "index_reports_on_reporter_id"
+    t.index ["status"], name: "index_reports_on_status"
+  end
+
   create_table "rewards", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -720,6 +748,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_23_075501) do
   add_foreign_key "premium_subscriptions", "premium_plans"
   add_foreign_key "premium_subscriptions", "users"
   add_foreign_key "profiles", "users"
+  add_foreign_key "reports", "campaigns"
+  add_foreign_key "reports", "users", column: "assigned_admin_id"
+  add_foreign_key "reports", "users", column: "reported_user_id"
+  add_foreign_key "reports", "users", column: "reporter_id"
   add_foreign_key "subaccounts", "campaigns"
   add_foreign_key "subaccounts", "users"
   add_foreign_key "subscriptions", "campaigns"

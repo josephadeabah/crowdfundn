@@ -255,6 +255,21 @@ Rails.application.routes.draw do
           end
         end
       end
+
+      # Dedicated reports namespace (not nested under members or admin)
+      namespace :reports do
+        resources :reports, only: [:index, :show, :create, :update] do
+          collection do
+            get 'my_reports'  # GET /api/v1/reports/reports/my_reports
+            get 'stats'       # GET /api/v1/reports/reports/stats
+          end
+          member do
+            patch :assign     # PATCH /api/v1/reports/reports/:id/assign
+            patch :resolve    # PATCH /api/v1/reports/reports/:id/resolve
+            patch :dismiss    # PATCH /api/v1/reports/reports/:id/dismiss
+          end
+        end
+      end
     end
   end
 

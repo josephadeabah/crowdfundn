@@ -13,6 +13,9 @@ class User < ApplicationRecord
   has_many :backer_rewards, dependent: :destroy
   has_many :campaign_shares, dependent: :destroy
   has_many :pledges, dependent: :destroy
+  # Add this association to the existing ones
+  has_many :reported_reports, class_name: 'Report', foreign_key: 'reporter_id', dependent: :destroy
+  has_many :reports_against, class_name: 'Report', foreign_key: 'reported_user_id', dependent: :destroy
   # Add these associations for equity investment
   has_many :equity_investments, dependent: :destroy
   has_many :invested_campaigns, through: :equity_investments, source: :campaign
@@ -57,6 +60,14 @@ class User < ApplicationRecord
   scope :active, -> { where(status: 'active') }
   scope :blocked, -> { where(status: 'blocked') }
 
+  # Add this method to check if user has pending reports
+  def has_pending_reports?
+    reports_against.pending.exists?
+  end
+
+  def recent_reports_against(limit = 5)
+    reports_against.order(created_at: :desc).limit(limit)
+  end
 
   def archived_campaigns_with_details
     archived_campaigns.includes(campaign: [:fundraiser, :rewards, :updates])

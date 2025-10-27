@@ -20,6 +20,7 @@ class Campaign < ApplicationRecord
   has_many :campaign_team_members, foreign_key: 'campaign_id', dependent: :destroy
   has_many :archived_campaigns, dependent: :destroy
   has_many :archived_by_users, through: :archived_campaigns, source: :user
+  has_many :reports, dependent: :destroy
 
   has_rich_text :description
 
@@ -61,6 +62,15 @@ class Campaign < ApplicationRecord
   }
   # Scope for non-archived campaigns (visible in search/lists)
   scope :not_archived, -> { where(is_public: true, appear_in_search_results: true) }
+
+  # Add this method to check if campaign has pending reports
+  def has_pending_reports?
+    reports.pending.exists?
+  end
+
+  def recent_reports(limit = 5)
+    reports.order(created_at: :desc).limit(limit)
+  end
 
   def to_param
     slug

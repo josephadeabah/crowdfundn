@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  report_type: 1
+  description: MyText
+  status: 1
+  priority: 1
+  campaign: one
+  reported_user: one
+  reporter: one
+  assigned_admin: one
+  action_taken: MyText
+  resolution_notes: MyText
+  resolved_at: 2025-10-27 19:56:04
+  evidence_links: 
+  contact_email: MyString
+
+two:
+  report_type: 1
+  description: MyText
+  status: 1
+  priority: 1
+  campaign: two
+  reported_user: two
+  reporter: two
+  assigned_admin: two
+  action_taken: MyText
+  resolution_notes: MyText
+  resolved_at: 2025-10-27 19:56:04
+  evidence_links: 
+  contact_email: MyString
