@@ -18,13 +18,12 @@ function ReportFundraiserContent() {
   const { user, token } = useAuth(); // Get user and token from auth context
 
   const campaignId = searchParams.get('campaignId');
-  const slug = searchParams.get('slug');
   const userId = searchParams.get('userId');
 
   const [formData, setFormData] = useState<ReportFormData>({
     report_type: '',
     description: '',
-    campaign_id: slug || campaignId || '',
+    campaign_id: campaignId || '',
     reported_user_id: userId || '',
     contact_email: '',
     evidence_links: [''],
