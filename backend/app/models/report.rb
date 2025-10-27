@@ -60,11 +60,11 @@ class Report < ApplicationRecord
   end
 
   def notify_admins
-    AdminNotificationService.new_report_created(self)
+    # AdminNotificationService.new_report_created(self)
   end
 
   def notify_reporter_if_resolved
-    ReportMailerService.send_report_resolved_email(self)
+    # ReportMailerService.send_report_resolved_email(self)
   end
 
   def assign_to_admin(admin_user)
