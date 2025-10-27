@@ -2,7 +2,8 @@ module Api
   module V1
     module Reports
       class ReportsController < ApplicationController
-        before_action :authenticate_request, only: [:create, :my_reports]
+        # Authenticate for ALL admin actions + create/my_reports
+        before_action :authenticate_request, only: [:create, :my_reports, :index, :update, :assign, :resolve, :dismiss, :stats]
         before_action :set_report, only: [:show, :update, :assign, :resolve, :dismiss]
         before_action :authorize_admin, only: [:index, :update, :assign, :resolve, :dismiss, :stats]
 
