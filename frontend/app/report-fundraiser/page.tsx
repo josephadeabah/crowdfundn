@@ -16,7 +16,7 @@ function ReportFundraiserContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, token } = useAuth(); // Get user and token from auth context
-  
+
   const campaignId = searchParams.get('campaignId');
   const slug = searchParams.get('slug');
   const userId = searchParams.get('userId');
@@ -99,9 +99,9 @@ function ReportFundraiserContent() {
             `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${campaignId}`,
             {
               headers: {
-                'Authorization': `Bearer ${token}`
-              }
-            }
+                Authorization: `Bearer ${token}`,
+              },
+            },
           );
           if (response.ok) {
             const data = await response.json();
