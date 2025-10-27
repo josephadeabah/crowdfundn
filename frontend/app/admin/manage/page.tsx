@@ -47,6 +47,8 @@ import { UserProfile } from '@/app/types/user_profiles.types';
 import { CrownIcon } from 'lucide-react';
 import PayoutsManager from './payouts/Payouts';
 import PremiumUsers from './users/PremiumUsers';
+import { FaExclamationTriangle } from 'react-icons/fa';
+import ReportsManager from './reports/ReportsManager';
 
 // Type definitions for better type safety
 type TabGroup = {
@@ -206,6 +208,14 @@ const AdminDashboard = () => {
           label: 'Content Manager',
           icon: <Cog6ToothIcon className="h-5 w-5" />,
           component: <ContentManagerAdminPage />,
+          requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
+        },
+        {
+          id: 'reports',
+          label: 'Reports',
+          icon: <FaExclamationTriangle className="h-5 w-5" />,
+          component: <ReportsManager />,
+          badgeCount: 5, // You can dynamically calculate this
           requiredRole: [ROLES.MODERATOR, ROLES.MANAGER, ROLES.ADMIN],
         },
         {
