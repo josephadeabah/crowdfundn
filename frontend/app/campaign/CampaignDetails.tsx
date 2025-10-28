@@ -40,7 +40,7 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = ({
 
     // Navigate to report page with campaign ID
     if (campaign?.id) {
-      window.location.href = `/report-fundraiser?campaignId=${campaign.slug}`;
+      window.location.href = `/report-fundraiser?campaignId=${campaign.id}`;
     }
   };
 
