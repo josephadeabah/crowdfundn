@@ -1,3 +1,4 @@
+// app/types/reports.types.ts
 export interface ReportType {
   id: number;
   report_type: string;
@@ -33,6 +34,9 @@ export interface ReportType {
   resolved_at?: string;
   evidence_links: string[];
   contact_email?: string;
+  // Add these missing properties
+  report_target_type: string; // 'campaign' or 'user'
+  report_target_name: string; // The name of the campaign or user
 }
 
 export interface ReportFormData {
