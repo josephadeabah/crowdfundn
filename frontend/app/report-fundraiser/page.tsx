@@ -319,7 +319,7 @@ function ReportFundraiserContent() {
             </p>
             <div className="space-y-3">
               <button
-                onClick={() => router.push('/explore')}
+                onClick={() => router.push('/explore/advance')}
                 className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors"
               >
                 Back to Explore
