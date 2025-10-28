@@ -32,7 +32,8 @@ const HowItWorks = () => {
               How BantuHive Works
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
-              Simplified fundraising to bring your ideas to life and create positive impact
+              Simplified fundraising to bring your ideas to life to create
+              positive impact
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link href="/auth/login">
@@ -58,7 +59,9 @@ const HowItWorks = () => {
       <div className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Raise Capital in 5 Simple Steps</h2>
+            <h2 className="text-4xl font-bold mb-4">
+              Raise Capital in 5 Simple Steps
+            </h2>
             <p className="text-xl text-muted-foreground">
               Complete process from application to funding disbursement
             </p>
@@ -76,9 +79,10 @@ const HowItWorks = () => {
                     Issuer Onboarding
                   </h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    Will assist you to complete all required forms to ensure that you are ready for due diligence.
+                    Our support team will assist you to complete all required
+                    forms to ensure that you are ready for due diligence.
                   </p>
-                  
+
                   <div className="bg-blue-50 rounded-lg p-4 mb-6">
                     <h4 className="font-semibold text-blue-900 mb-3 flex items-center">
                       <ClipboardList className="w-5 h-5 mr-2" />
@@ -121,9 +125,9 @@ const HowItWorks = () => {
                   </div>
 
                   <p className="text-sm text-muted-foreground mb-4">
-                    Start the application process to raise funds at no cost.
+                    Start the application process to raise funds with priority support (optional).
                   </p>
-                  
+
                   <div className="inline-flex items-center justify-center w-14 h-14 bg-secondary rounded-full">
                     <FileText className="h-7 w-7 text-fundify-primary" />
                   </div>
@@ -160,21 +164,30 @@ const HowItWorks = () => {
                     Onsite Due Diligence
                   </h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    Will visit your project site to ensure that the information you have submitted matches what is on the ground.
+                    Will visit your project site to ensure that the information
+                    you have submitted matches what is on the ground.
                   </p>
 
                   <div className="space-y-4">
                     <div className="bg-orange-50 rounded-lg p-4">
-                      <h4 className="font-semibold text-orange-900 mb-2">Site Visit Purpose</h4>
+                      <h4 className="font-semibold text-orange-900 mb-2">
+                        Site Visit Purpose
+                      </h4>
                       <p className="text-sm text-orange-800">
-                        The physical visit ensures investors are putting their money into a real business, and not a fake one that only exists on paper.
+                        The physical visit ensures investors are putting their
+                        money into a real business, and not a fake one that only
+                        exists on paper.
                       </p>
                     </div>
 
                     <div className="bg-green-50 rounded-lg p-4">
-                      <h4 className="font-semibold text-green-900 mb-2">Additional Support</h4>
+                      <h4 className="font-semibold text-green-900 mb-2">
+                        Additional Support
+                      </h4>
                       <p className="text-sm text-green-800">
-                        Our investment advisory partners will be available to help you build a stronger business case to raise funds through BantuHive if the need arises.
+                        Our investment advisory partners will be available to
+                        help you build a stronger business case to raise funds
+                        through BantuHive if the need arises.
                       </p>
                     </div>
                   </div>
@@ -197,11 +210,15 @@ const HowItWorks = () => {
                     Prospectus Approval
                   </h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    Will ensure your application is duly submitted to the Security and Exchange Commission, Ghana for approval and filing.
+                    Will ensure your application is duly submitted to the
+                    Security and Exchange Commission, Ghana for approval and
+                    filing.
                   </p>
 
                   <div className="bg-purple-50 rounded-lg p-4 mb-6">
-                    <h4 className="font-semibold text-purple-900 mb-3">Complete Prospectus Submission</h4>
+                    <h4 className="font-semibold text-purple-900 mb-3">
+                      Complete Prospectus Submission
+                    </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                       <div className="flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-purple-600" />
@@ -279,16 +296,26 @@ const HowItWorks = () => {
 
                   <div className="space-y-4">
                     <div className="bg-blue-50 rounded-lg p-4">
-                      <h4 className="font-semibold text-blue-900 mb-2">Expert Guidance</h4>
+                      <h4 className="font-semibold text-blue-900 mb-2">
+                        Expert Guidance
+                      </h4>
                       <p className="text-sm text-blue-800">
-                        You will receive expert guidance and support throughout your investment crowdfunding journey on BantuHive. Our team will assist you in every step of the setup process.
+                        You will receive expert guidance and support throughout
+                        your investment crowdfunding journey on BantuHive. Our
+                        team will assist you in every step of the setup process.
                       </p>
                     </div>
 
                     <div className="bg-indigo-50 rounded-lg p-4">
-                      <h4 className="font-semibold text-indigo-900 mb-2">Investor Relations</h4>
+                      <h4 className="font-semibold text-indigo-900 mb-2">
+                        Investor Relations
+                      </h4>
                       <p className="text-sm text-indigo-800">
-                        Our fundraising consultants will help explain your capital raise to retail investors. They will answer questions about your business, the investment returns, duration and why they should consider investing in your business.
+                        Our fundraising consultants will help explain your
+                        capital raise to retail investors. They will answer
+                        questions about your business, the investment returns,
+                        duration and why they should consider investing in your
+                        business.
                       </p>
                     </div>
                   </div>
@@ -315,17 +342,24 @@ const HowItWorks = () => {
                   </p>
 
                   <div className="bg-green-50 rounded-lg p-4 mb-6">
-                    <h4 className="font-semibold text-green-900 mb-2">Funding Success</h4>
+                    <h4 className="font-semibold text-green-900 mb-2">
+                      Funding Success
+                    </h4>
                     <p className="text-sm text-green-800">
-                      After successfully raising the capital required, you will receive your funding directly into your bank account.
+                      After successfully raising the capital required, you will
+                      receive your funding directly into your bank account.
                     </p>
                   </div>
 
                   <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg">
                     <Banknote className="h-8 w-8 text-green-600" />
                     <div>
-                      <p className="font-semibold text-green-900">Direct Bank Transfer</p>
-                      <p className="text-sm text-green-700">Fast and secure fund disbursement</p>
+                      <p className="font-semibold text-green-900">
+                        Direct Bank Transfer
+                      </p>
+                      <p className="text-sm text-green-700">
+                        Fast and secure fund disbursement
+                      </p>
                     </div>
                   </div>
 
