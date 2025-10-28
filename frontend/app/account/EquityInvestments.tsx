@@ -521,7 +521,7 @@ const EquityInvestments = () => {
               <FaInfoCircle className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm text-blue-600 font-medium mb-1">
-                  Investment Information Notice
+                  Important Notice
                 </p>
                 <p className="text-xs text-blue-500">
                   These calculations assume the company's current valuation
