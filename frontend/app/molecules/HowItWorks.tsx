@@ -125,7 +125,8 @@ const HowItWorks = () => {
                   </div>
 
                   <p className="text-sm text-muted-foreground mb-4">
-                    Start the application process to raise funds with priority support (optional).
+                    Start the application process to raise funds with priority
+                    support (optional).
                   </p>
 
                   <div className="inline-flex items-center justify-center w-14 h-14 bg-secondary rounded-full">

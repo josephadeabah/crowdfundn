@@ -524,11 +524,10 @@ const EquityInvestments = () => {
                   Investment Information Notice
                 </p>
                 <p className="text-xs text-blue-500">
-                  The figures shown, returns and current values are based on
-                  careful projections and may change. While some results may
-                  align with these estimates, the final terms will always be set
-                  out in the investment instrument and agreement between you and
-                  the company.
+                  These calculations assume the company's current valuation
+                  accurately reflects what investors would pay for shares today.
+                  In reality, this is an estimate until there's an actual exit
+                  event (acquisition, IPO, or secondary sale)
                 </p>
               </div>
             </div>
