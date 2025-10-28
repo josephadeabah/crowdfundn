@@ -275,7 +275,7 @@ module Api
           raise 'You do not have a account number added.' unless subaccount
           raise 'Recipient code not found for this fundraiser' unless recipient_code.present?
 
-          total_donations = @campaign.transferred_amount
+          total_donations = @campaign.current_amount
           raise 'You have no funds available for payout.' if total_donations <= 0.0
 
           balance_response = @paystack_service.check_balance
