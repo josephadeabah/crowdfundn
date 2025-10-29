@@ -113,7 +113,7 @@ const Hero = () => {
     <div className="min-h-screen w-full relative overflow-hidden">
       {/* Two-layer background: White top, Orange bottom */}
       <div className="absolute inset-0 bg-white"></div>
-      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-orange-100"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-orange-300"></div>
       
       {/* Decorative Graphics */}
       {/* <img 
@@ -136,7 +136,7 @@ const Hero = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange opacity-75"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
               </span>
               <span className="text-sm font-medium text-gray-700">
