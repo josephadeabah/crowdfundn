@@ -101,153 +101,155 @@ const Hero = () => {
     };
   }, [isMounted]);
 
-  // Only apply scroll effects after component is mounted
-  // const backgroundY = isMounted ? Math.min(scrollY * 0.5, 300) : 0;
-  // const contentY = isMounted ? Math.min(scrollY * 0.1, 50) : 0;
-  // const opacityValue = isMounted ? Math.max(1 - scrollY * 0.002, 0) : 1;
-  // const overlayOpacity = isMounted
-  //   ? Math.min(0.7 + scrollY * 0.0005, 0.85)
-  //   : 0.7;
-
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
       {/* Two-layer background: White top, Orange bottom */}
       <div className="absolute inset-0 bg-white"></div>
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-yellow-500"></div>
       
-      {/* Main Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 py-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
-          <div className="space-y-8 animate-fade-in">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
-              </span>
-              <span className="text-sm font-medium text-gray-700">
-                🚀 Powering Africa&apos;s Financial Future
-              </span>
-            </div>
+      {/* Main Hero Section - Constrained with max-w-7xl */}
+      <div className="w-full mx-auto px-4 py-4 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="space-y-8 animate-fade-in">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
+                </span>
+                <span className="text-sm font-medium text-gray-700">
+                  🚀 Powering Africa&apos;s Financial Future
+                </span>
+              </div>
 
-            {/* Main Heading */}
-            <div className="space-y-4">
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
-                Invest in Africa&apos;s
-                <span className="block text-yellow-600">Bright Future</span>
-              </h1>
-              <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
-                Connect visionary entrepreneurs with forward-thinking investors. 
-                Drive sustainable economic growth across the continent.
-              </p>
-            </div>
+              {/* Main Heading */}
+              <div className="space-y-4">
+                <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
+                  Invest in Africa&apos;s
+                  <span className="block text-yellow-600">Bright Future</span>
+                </h1>
+                <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
+                  Connect visionary entrepreneurs with forward-thinking investors. 
+                  Drive sustainable economic growth across the continent.
+                </p>
+              </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-row gap-4">
-              <Button variant="success" size="lg" className="group bg-green-700 flex-1 sm:flex-initial">
-                Start Investing
-                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button variant="outline" size="lg" className="flex-1 sm:flex-initial">
-                Raise Capital
-              </Button>
-            </div>
+              {/* CTA Buttons */}
+              <div className="flex flex-row gap-4">
+                <Button variant="success" size="lg" className="group bg-green-700 flex-1 sm:flex-initial">
+                  Start Investing
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                </Button>
+                <Button variant="outline" size="lg" className="flex-1 sm:flex-initial">
+                  Raise Capital
+                </Button>
+              </div>
 
-          {/* Top Backers Section */}
-          <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
-            <div className="flex -space-x-3">
-              {topBackers?.map((backer, index) => (
-                <Popover key={index}>
-                  <PopoverTrigger asChild>
-                    <div
-                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-                      style={{ zIndex: topBackers.length - index }}
-                    >
-                      <Avatar
-                        name={backer.name}
-                        size="sm"
-                        imageUrl={backer.profile_picture}
-                      />
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-96">
-                    <div className="space-y-4 p-4">
-                      <div className="flex items-center space-x-4">
-                        <Avatar
-                          name={backer.name}
-                          size="xl"
-                          imageUrl={backer.profile_picture}
-                        />
-                        <div>
-                          <div className="flex items-center gap-1">
-                            <h4 className="font-semibold text-lg text-gray-800">
-                              {backer.name}
-                            </h4>
-                            <span>{getVerifiedBadge(backer.level, 20)}</span>
-                          </div>
-                          <p className="text-sm text-gray-800">
-                            {backer.country}
-                          </p>
+              {/* Top Backers Section */}
+              <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
+                <div className="flex -space-x-3">
+                  {topBackers?.map((backer, index) => (
+                    <Popover key={index}>
+                      <PopoverTrigger asChild>
+                        <div
+                          className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                          style={{ zIndex: topBackers.length - index }}
+                        >
+                          <Avatar
+                            name={backer.name}
+                            size="sm"
+                            imageUrl={backer.profile_picture}
+                          />
                         </div>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">
-                          Category Interest
-                        </p>
-                        <p className="text-sm text-gray-800">
-                          {deslugify(backer.category_interest)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">
-                          Bio
-                        </p>
-                        <p className="text-sm text-gray-800">{backer.bio}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">
-                          Total Donated
-                        </p>
-                        <p className="text-sm text-gray-800">
-                          {backer?.currency}
-                          {backer.amount}
-                        </p>
-                      </div>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-96">
+                        <div className="space-y-4 p-4">
+                          <div className="flex items-center space-x-4">
+                            <Avatar
+                              name={backer.name}
+                              size="xl"
+                              imageUrl={backer.profile_picture}
+                            />
+                            <div>
+                              <div className="flex items-center gap-1">
+                                <h4 className="font-semibold text-lg text-gray-800">
+                                  {backer.name}
+                                </h4>
+                                <span>{getVerifiedBadge(backer.level, 20)}</span>
+                              </div>
+                              <p className="text-sm text-gray-800">
+                                {backer.country}
+                              </p>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-800">
+                              Category Interest
+                            </p>
+                            <p className="text-sm text-gray-800">
+                              {deslugify(backer.category_interest)}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-800">
+                              Bio
+                            </p>
+                            <p className="text-sm text-gray-800">{backer.bio}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-800">
+                              Total Donated
+                            </p>
+                            <p className="text-sm text-gray-800">
+                              {backer?.currency}
+                              {backer.amount}
+                            </p>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  ))}
+                  {topBackers?.length > 5 && (
+                    <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-sm font-semibold text-gray-800">
+                      +{topBackers?.length - 5}
                     </div>
-                  </PopoverContent>
-                </Popover>
-              ))}
-              {topBackers?.length > 5 && (
-                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-sm font-semibold text-gray-800">
-                  +{topBackers?.length - 5}
+                  )}
                 </div>
-              )}
+                <p className="text-sm text-gray-800">
+                  <span className="font-semibold text-gray-700">
+                    {topBackers?.length || 0}+
+                  </span>{' '}
+                  backers joined this month
+                </p>
+              </div>
             </div>
-            <p className="text-sm text-gray-800">
-              <span className="font-semibold text-gray-700">
-                {topBackers?.length || 0}+
-              </span>{' '}
-              backers joined this month
-            </p>
-          </div>
-          </div>
 
-          {/* Right Content - Image with decorative elements */}
-          <div className="relative animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <div className="relative w-full -inset-4 bg-white rounded-l-3xl"></div>
-            <img 
-              src='/hero-graphic.jpg'
-              alt="Financial growth and investment visualization" 
-              className="relative w-full h-auto rounded-2xl shadow-sm border border-border/50"
-            />
-            {/* Small decorative badge */}
-            <img 
-              src='/badge-graphic.png' 
-              alt="" 
-              className="relative -bottom-8 -right-8 w-32 h-32 opacity-40 animate-bounce"
-              style={{ animationDuration: '3s' }}
-            />
+            {/* Right Content - Image with decorative elements (positioned absolutely) */}
+            <div className="relative">
+              {/* Container for image content that stays within max-w-7xl on mobile */}
+              <div className="lg:absolute lg:inset-y-0 lg:left-0 lg:right-0">
+                <div className="relative max-w-7xl mx-auto px-4">
+                  <div className="relative animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                    <div className="absolute -inset-4 bg-white rounded-l-3xl"></div>
+                    <img 
+                      src='/hero-graphic.jpg'
+                      alt="Financial growth and investment visualization" 
+                      className="relative w-full h-auto rounded-2xl shadow-sm border border-border/50"
+                    />
+                  </div>
+                </div>
+                
+                {/* Small decorative badge - positioned absolutely relative to viewport */}
+                <img 
+                  src='/badge-graphic.png' 
+                  alt="" 
+                  className="absolute -bottom-8 -right-8 w-24 h-24 lg:w-32 lg:h-32 opacity-40 animate-bounce hidden lg:block"
+                  style={{ animationDuration: '3s' }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
