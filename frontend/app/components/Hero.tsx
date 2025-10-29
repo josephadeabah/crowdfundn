@@ -115,29 +115,16 @@ const Hero = () => {
       <div className="absolute inset-0 bg-white"></div>
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-yellow-500"></div>
       
-      {/* Decorative Graphics */}
-      {/* <img 
-        src='/floating-elements.png' 
-        alt="" 
-        className="absolute top-20 right-10 w-64 h-64 opacity-10 animate-pulse pointer-events-none"
-      /> */}
-      {/* <img 
-        src='/badge-graphic.png'
-        alt="" 
-        className="absolute bottom-20 left-10 w-48 h-48 opacity-20 animate-spin-slow pointer-events-none"
-        style={{ animationDuration: '20s' }}
-      /> */}
-      
       {/* Main Hero Section */}
-      <div className="w-full mx-auto px-4 pt-20 pb-16 relative z-10">
+      <div className="w-full mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8 animate-fade-in">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
               </span>
               <span className="text-sm font-medium text-gray-700">
                 🚀 Powering Africa&apos;s Financial Future
@@ -148,7 +135,7 @@ const Hero = () => {
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
                 Invest in Africa&apos;s
-                <span className="block text-orange-600">Bright Future</span>
+                <span className="block text-yellow-600">Bright Future</span>
               </h1>
               <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
                 Connect visionary entrepreneurs with forward-thinking investors. 
