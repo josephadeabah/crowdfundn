@@ -167,29 +167,83 @@ const Hero = () => {
               </Button>
             </div>
 
-            {/* Investor Avatars */}
-            <div className="flex items-center gap-3 pt-4">
-              <div className="flex -space-x-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 border-2 border-background flex items-center justify-center text-xs font-semibold text-primary-foreground">
-                  JD
+          {/* Top Backers Section */}
+          <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
+            <div className="flex -space-x-3">
+              {topBackers?.map((backer, index) => (
+                <Popover key={index}>
+                  <PopoverTrigger asChild>
+                    <div
+                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
+                      style={{ zIndex: topBackers.length - index }}
+                    >
+                      <Avatar
+                        name={backer.name}
+                        size="sm"
+                        imageUrl={backer.profile_picture}
+                      />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-96">
+                    <div className="space-y-4 p-4">
+                      <div className="flex items-center space-x-4">
+                        <Avatar
+                          name={backer.name}
+                          size="xl"
+                          imageUrl={backer.profile_picture}
+                        />
+                        <div>
+                          <div className="flex items-center gap-1">
+                            <h4 className="font-semibold text-lg text-gray-800">
+                              {backer.name}
+                            </h4>
+                            <span>{getVerifiedBadge(backer.level, 20)}</span>
+                          </div>
+                          <p className="text-sm text-gray-800">
+                            {backer.country}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">
+                          Category Interest
+                        </p>
+                        <p className="text-sm text-gray-800">
+                          {deslugify(backer.category_interest)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">
+                          Bio
+                        </p>
+                        <p className="text-sm text-gray-800">{backer.bio}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">
+                          Total Donated
+                        </p>
+                        <p className="text-sm text-gray-800">
+                          {backer?.currency}
+                          {backer.amount}
+                        </p>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              ))}
+              {topBackers?.length > 5 && (
+                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-sm font-semibold text-gray-800">
+                  +{topBackers?.length - 5}
                 </div>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 border-2 border-background flex items-center justify-center text-xs font-semibold text-accent-foreground">
-                  MK
-                </div>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 border-2 border-background flex items-center justify-center text-xs font-semibold text-primary-foreground">
-                  SA
-                </div>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 border-2 border-background flex items-center justify-center text-xs font-semibold text-accent-foreground">
-                  LT
-                </div>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 border-2 border-background flex items-center justify-center text-xs font-semibold text-primary-foreground">
-                  +50
-                </div>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">1,000+</span> active investors
-              </div>
+              )}
             </div>
+            <p className="text-sm text-white/80">
+              <span className="font-semibold text-white">
+                {topBackers?.length || 0}+
+              </span>{' '}
+              backers joined this month
+            </p>
+          </div>
           </div>
 
           {/* Right Content - Image with decorative elements */}
