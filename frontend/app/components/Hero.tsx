@@ -103,6 +103,12 @@ const Hero = () => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(/heropage.png)' }}
+      ></div>
+      
       {/* Two-layer background: White top, Orange bottom */}
       <div className="absolute inset-0 bg-white"></div>
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700"></div>
