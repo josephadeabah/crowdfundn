@@ -126,8 +126,8 @@ const Hero = () => {
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-primary/20">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
                 </span>
                 <span className="text-sm font-medium text-gray-700">
                   🚀 Powering Africa&apos;s Financial Future
@@ -138,7 +138,7 @@ const Hero = () => {
               <div className="space-y-4">
                 <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight drop-shadow-lg">
                   Invest in Africa&apos;s
-                  <span className="block text-orange-300 drop-shadow-lg">Bright Future</span>
+                  <span className="block text-orange-200 drop-shadow-lg">Bright Future</span>
                 </h1>
                 <p className="text-xl text-white/90 leading-relaxed max-w-xl drop-shadow-lg">
                   Connecting visionary entrepreneurs with forward-thinking
