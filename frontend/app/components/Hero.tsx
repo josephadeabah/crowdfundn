@@ -266,7 +266,7 @@ const Hero = () => {
                   >
                     <div className="absolute -inset-4 bg-white rounded-l-3xl"></div>
                     <img
-                      src="/hero-graphic.png"
+                      src="/Google_AI_Studio_2025-10-29T12_13_52.832Z.png"
                       alt="Financial growth and investment visualization"
                       className="relative w-full h-auto rounded-2xl shadow-sm border border-border/50"
                     />
