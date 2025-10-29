@@ -93,7 +93,7 @@ const Hero = () => {
       <div className="max-w-7xl mx-auto px-4 py-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
-          <div className="space-y-8 animate-fade-in">
+          <div className="space-y-3 animate-fade-in">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
               <span className="relative flex h-2 w-2">
@@ -106,7 +106,7 @@ const Hero = () => {
             </div>
 
             {/* Main Heading */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
                 Invest in Africa&apos;s
                 <span className="block text-orange-500">Bright Future</span>
