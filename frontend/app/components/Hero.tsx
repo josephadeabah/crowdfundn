@@ -105,7 +105,7 @@ const Hero = () => {
     <div className="min-h-screen w-full relative overflow-hidden">
       {/* Two-layer background: White top, Orange bottom */}
       <div className="absolute inset-0 bg-white"></div>
-      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-yellow-500"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700"></div>
       
       {/* Main Hero Section - Constrained with max-w-7xl */}
       <div className="w-full mx-auto px-4 py-4 relative z-10">
@@ -138,7 +138,7 @@ const Hero = () => {
 
               {/* CTA Buttons */}
               <div className="flex flex-row gap-4">
-                <Button variant="success" size="lg" className="group bg-green-700 flex-1 sm:flex-initial">
+                <Button variant="outline" size="lg" className="group flex-1 sm:flex-initial">
                   Start Investing
                   <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </Button>
