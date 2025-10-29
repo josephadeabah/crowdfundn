@@ -105,7 +105,7 @@ const Hero = () => {
     <div className="min-h-screen w-full relative overflow-hidden">
       {/* Two-layer background: White top, Orange bottom */}
       <div className="absolute inset-0 bg-white"></div>
-      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-orange-600"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-orange-500"></div>
       
       {/* Main Hero Section */}
       <div className="max-w-7xl mx-auto px-4 py-4 relative z-10">
@@ -115,8 +115,8 @@ const Hero = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
               </span>
               <span className="text-sm font-medium text-gray-700">
                 🚀 Powering Africa&apos;s Financial Future
@@ -127,7 +127,7 @@ const Hero = () => {
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
                 Invest in Africa&apos;s
-                <span className="block text-orange-600">Bright Future</span>
+                <span className="block text-orange-500">Bright Future</span>
               </h1>
               <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
                 Connect visionary entrepreneurs with forward-thinking investors. 
@@ -225,14 +225,14 @@ const Hero = () => {
           </div>
           </div>
 
-          {/* Right Content - Responsive Image with decorative elements */}
-          <div className="relative animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <div className="absolute -inset-4 bg-white rounded-l-3xl"></div>
+          {/* Right Content - Extended beyond container */}
+          <div className="relative lg:absolute lg:right-0 lg:top-1/2 lg:transform lg:-translate-y-1/2 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="absolute -inset-4 bg-white rounded-l-3xl lg:rounded-l-[2rem]"></div>
             <img 
               src='/hero-graphic.jpg'
               alt="Financial growth and investment visualization" 
-              className="relative w-full max-w-2xl h-auto rounded-2xl shadow-sm border border-border/50 
-                         mobile-responsive-image"
+              className="relative w-full lg:w-auto max-w-2xl h-auto rounded-2xl lg:rounded-l-[2rem] shadow-sm border border-border/50 
+                         mobile-responsive-image lg:max-w-none"
             />
             {/* Small decorative badge */}
             <img 
@@ -252,6 +252,14 @@ const Hero = () => {
           width: 100%;
           height: auto;
           object-fit: cover;
+        }
+
+        @media (max-width: 1024px) {
+          .mobile-responsive-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+          }
         }
 
         @media (max-width: 768px) {
