@@ -101,11 +101,19 @@ const Hero = () => {
     };
   }, [isMounted]);
 
+  // Only apply scroll effects after component is mounted
+  // const backgroundY = isMounted ? Math.min(scrollY * 0.5, 300) : 0;
+  // const contentY = isMounted ? Math.min(scrollY * 0.1, 50) : 0;
+  // const opacityValue = isMounted ? Math.max(1 - scrollY * 0.002, 0) : 1;
+  // const overlayOpacity = isMounted
+  //   ? Math.min(0.7 + scrollY * 0.0005, 0.85)
+  //   : 0.7;
+
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
       {/* Two-layer background: White top, Orange bottom */}
       <div className="absolute inset-0 bg-white"></div>
-      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-orange-600"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-yellow-500"></div>
       
       {/* Main Hero Section */}
       <div className="max-w-7xl mx-auto px-4 py-4 relative z-10">
@@ -115,8 +123,8 @@ const Hero = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-600 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
               </span>
               <span className="text-sm font-medium text-gray-700">
                 🚀 Powering Africa&apos;s Financial Future
@@ -127,7 +135,7 @@ const Hero = () => {
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
                 Invest in Africa&apos;s
-                <span className="block text-orange-600">Bright Future</span>
+                <span className="block text-yellow-600">Bright Future</span>
               </h1>
               <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
                 Connect visionary entrepreneurs with forward-thinking investors. 
@@ -225,52 +233,24 @@ const Hero = () => {
           </div>
           </div>
 
-          {/* Right Content - Responsive Image with decorative elements */}
+          {/* Right Content - Image with decorative elements */}
           <div className="relative animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <div className="absolute -inset-4 bg-white rounded-l-3xl"></div>
             <img 
               src='/hero-graphic.jpg'
               alt="Financial growth and investment visualization" 
-              className="relative w-full max-w-2xl h-auto rounded-2xl shadow-sm border border-border/50 
-                         mobile-responsive-image"
+              className="relative max-w-2xl h-auto rounded-2xl shadow-sm border border-border/50"
             />
             {/* Small decorative badge */}
             <img 
               src='/badge-graphic.png' 
               alt="" 
-              className="absolute -bottom-8 -right-8 w-32 h-32 opacity-40 animate-bounce hidden lg:block"
+              className="absolute -bottom-8 -right-8 w-32 h-32 opacity-40 animate-bounce"
               style={{ animationDuration: '3s' }}
             />
           </div>
         </div>
       </div>
-
-      {/* Add mobile-specific responsive styles */}
-      <style jsx>{`
-        .mobile-responsive-image {
-          /* Default styles for desktop */
-          width: 100%;
-          height: auto;
-          object-fit: cover;
-        }
-
-        @media (max-width: 768px) {
-          .mobile-responsive-image {
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            max-height: 400px;
-            object-fit: cover;
-            object-position: center;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .mobile-responsive-image {
-            max-height: 300px;
-          }
-        }
-      `}</style>
     </div>
   );
 };
