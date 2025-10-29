@@ -106,7 +106,7 @@ const Hero = () => {
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(/heropage.png)' }}
+        style={{ backgroundImage: 'url(/Heropage.png)' }}
       ></div>
       
       {/* Two-layer background: White top, Orange bottom */}
