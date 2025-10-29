@@ -106,7 +106,7 @@ const Hero = () => {
       {/* Two-layer background: White top, Orange bottom */}
       <div className="absolute inset-0 bg-white"></div>
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700"></div>
-      
+
       {/* Main Hero Section - Constrained with max-w-7xl */}
       <div className="w-full mx-auto px-4 py-4 relative z-10">
         <div className="max-w-7xl mx-auto">
@@ -131,17 +131,37 @@ const Hero = () => {
                   <span className="block text-orange-600">Bright Future</span>
                 </h1>
                 <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
-                  Connecting visionary entrepreneurs with forward-thinking investors, driving sustainable economic growth across the continent.
+                  Connecting visionary entrepreneurs with forward-thinking
+                  investors to drive sustainable economic growth across the
+                  continent.
                 </p>
               </div>
 
               {/* CTA Buttons */}
               <div className="flex flex-row gap-4">
-                <Button variant="outline" size="lg" className="group flex-1 sm:flex-initial" onClick={() => window.location.href = user ? '/account#Favorites' : '/auth/register'}>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="group flex-1 sm:flex-initial"
+                  onClick={() =>
+                    (window.location.href = user
+                      ? '/account#Favorites'
+                      : '/auth/register')
+                  }
+                >
                   Start Investing
                   <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </Button>
-                <Button variant="outline" size="lg" className="flex-1 sm:flex-initial" onClick={() => window.location.href = user ? '/account#Campaigns' : '/auth/register'}>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="flex-1 sm:flex-initial"
+                  onClick={() =>
+                    (window.location.href = user
+                      ? '/account#Campaigns'
+                      : '/auth/register')
+                  }
+                >
                   Raise Capital
                 </Button>
               </div>
@@ -176,7 +196,9 @@ const Hero = () => {
                                 <h4 className="font-semibold text-lg text-gray-800">
                                   {backer.name}
                                 </h4>
-                                <span>{getVerifiedBadge(backer.level, 20)}</span>
+                                <span>
+                                  {getVerifiedBadge(backer.level, 20)}
+                                </span>
                               </div>
                               <p className="text-sm text-gray-800">
                                 {backer.country}
@@ -195,7 +217,9 @@ const Hero = () => {
                             <p className="text-sm font-semibold text-gray-800">
                               Bio
                             </p>
-                            <p className="text-sm text-gray-800">{backer.bio}</p>
+                            <p className="text-sm text-gray-800">
+                              {backer.bio}
+                            </p>
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-gray-800">
@@ -230,20 +254,23 @@ const Hero = () => {
               {/* Container for image content that stays within max-w-7xl on mobile */}
               <div className="lg:absolute lg:inset-y-0 lg:left-0 lg:right-0">
                 <div className="relative max-w-7xl mx-auto px-4">
-                  <div className="relative animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                  <div
+                    className="relative animate-fade-in"
+                    style={{ animationDelay: '0.2s' }}
+                  >
                     <div className="absolute -inset-4 bg-white rounded-l-3xl"></div>
-                    <img 
-                      src='/hero-graphic.jpg'
-                      alt="Financial growth and investment visualization" 
+                    <img
+                      src="/hero-graphic.jpg"
+                      alt="Financial growth and investment visualization"
                       className="relative w-full h-auto rounded-2xl shadow-sm border border-border/50"
                     />
                   </div>
                 </div>
-                
+
                 {/* Small decorative badge - positioned absolutely relative to viewport */}
-                <img 
-                  src='/badge-graphic.png' 
-                  alt="" 
+                <img
+                  src="/badge-graphic.png"
+                  alt=""
                   className="absolute -bottom-8 -right-8 w-24 h-24 lg:w-32 lg:h-32 opacity-40 animate-bounce hidden lg:block"
                   style={{ animationDuration: '3s' }}
                 />
