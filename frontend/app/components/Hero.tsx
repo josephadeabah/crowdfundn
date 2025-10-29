@@ -225,14 +225,14 @@ const Hero = () => {
           </div>
           </div>
 
-          {/* Right Content - Extended beyond container */}
-          <div className="relative lg:absolute lg:right-0 lg:top-1/2 lg:transform lg:-translate-y-1/2 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <div className="absolute -inset-4 bg-white rounded-l-3xl lg:rounded-l-[2rem]"></div>
+          {/* Right Content - Extended to right edge */}
+          <div className="relative lg:absolute lg:right-0 lg:top-1/2 lg:-translate-y-1/2 lg:pr-0 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="absolute -inset-4 bg-white rounded-l-3xl lg:rounded-l-[2rem] lg:-left-4 lg:-right-0"></div>
             <img 
               src='/hero-graphic.jpg'
               alt="Financial growth and investment visualization" 
-              className="relative w-full lg:w-auto max-w-2xl h-auto rounded-2xl lg:rounded-l-[2rem] shadow-sm border border-border/50 
-                         mobile-responsive-image lg:max-w-none"
+              className="relative w-full lg:w-auto lg:max-w-2xl xl:max-w-3xl h-auto rounded-2xl lg:rounded-l-[2rem] shadow-sm border border-border/50 
+                         mobile-responsive-image lg:ml-auto"
             />
             {/* Small decorative badge */}
             <img 
