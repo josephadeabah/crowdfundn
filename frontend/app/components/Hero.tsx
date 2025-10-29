@@ -103,15 +103,21 @@ const Hero = () => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image - FIXED VERSION */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(/Heropage.png)' }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
+        style={{ 
+          backgroundImage: 'url(/Heropage.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed'
+        }}
       ></div>
       
-      {/* Two-layer background: White top, Orange bottom */}
-      <div className="absolute inset-0 bg-white"></div>
-      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700"></div>
+      {/* Remove or comment out these white/green backgrounds that are covering the image */}
+      {/* <div className="absolute inset-0 bg-white"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700"></div> */}
 
       {/* Main Hero Section - Constrained with max-w-7xl */}
       <div className="w-full mx-auto px-4 py-4 relative z-10">
@@ -132,9 +138,9 @@ const Hero = () => {
 
               {/* Main Heading */}
               <div className="space-y-4">
-                <h1 className="text-3xl font-bold text-gray-700 leading-tight">
+                <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
                   Invest in Africa&apos;s
-                  <span className="block text-orange-500">Tomorrow Today</span>
+                  <span className="block text-orange-500">Bright Future</span>
                 </h1>
                 <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
                   Connecting visionary entrepreneurs with forward-thinking
