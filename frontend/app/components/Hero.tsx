@@ -128,21 +128,20 @@ const Hero = () => {
               <div className="space-y-4">
                 <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
                   Invest in Africa&apos;s
-                  <span className="block text-yellow-600">Bright Future</span>
+                  <span className="block text-orange-600">Bright Future</span>
                 </h1>
                 <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
-                  Connect visionary entrepreneurs with forward-thinking investors. 
-                  Drive sustainable economic growth across the continent.
+                  Connecting visionary entrepreneurs with forward-thinking investors, driving sustainable economic growth across the continent.
                 </p>
               </div>
 
               {/* CTA Buttons */}
               <div className="flex flex-row gap-4">
-                <Button variant="outline" size="lg" className="group flex-1 sm:flex-initial">
+                <Button variant="outline" size="lg" className="group flex-1 sm:flex-initial" onClick={() => window.location.href = user ? '/account#Favorites' : '/auth/register'}>
                   Start Investing
                   <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </Button>
-                <Button variant="outline" size="lg" className="flex-1 sm:flex-initial">
+                <Button variant="outline" size="lg" className="flex-1 sm:flex-initial" onClick={() => window.location.href = user ? '/account#Campaigns' : '/auth/register'}>
                   Raise Capital
                 </Button>
               </div>
@@ -217,8 +216,8 @@ const Hero = () => {
                     </div>
                   )}
                 </div>
-                <p className="text-sm text-gray-800">
-                  <span className="font-semibold text-gray-700">
+                <p className="text-sm text-white">
+                  <span className="font-semibold">
                     {topBackers?.length || 0}+
                   </span>{' '}
                   backers joined this month
