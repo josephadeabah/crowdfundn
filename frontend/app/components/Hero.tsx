@@ -121,12 +121,12 @@ const Hero = () => {
         alt="" 
         className="absolute top-20 right-10 w-64 h-64 opacity-10 animate-pulse pointer-events-none"
       /> */}
-      <img 
+      {/* <img 
         src='/badge-graphic.png'
         alt="" 
         className="absolute bottom-20 left-10 w-48 h-48 opacity-20 animate-spin-slow pointer-events-none"
         style={{ animationDuration: '20s' }}
-      />
+      /> */}
       
       {/* Main Hero Section */}
       <div className="container mx-auto px-4 pt-20 pb-16 relative z-10">
@@ -148,7 +148,7 @@ const Hero = () => {
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
                 Invest in Africa&apos;s
-                <span className="block text-primary">Bright Future</span>
+                <span className="block text-orange-600">Bright Future</span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
                 Connect visionary entrepreneurs with forward-thinking investors. 
