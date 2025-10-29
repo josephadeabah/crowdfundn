@@ -113,7 +113,7 @@ const Hero = () => {
     <div className="min-h-screen w-full relative overflow-hidden">
       {/* Two-layer background: White top, Orange bottom */}
       <div className="absolute inset-0 bg-white"></div>
-      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-orange-300"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-yellow-500"></div>
       
       {/* Decorative Graphics */}
       {/* <img 
