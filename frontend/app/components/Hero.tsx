@@ -116,7 +116,7 @@ const Hero = () => {
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-yellow-500"></div>
       
       {/* Main Hero Section */}
-      <div className="w-full mx-auto px-4 relative z-10">
+      <div className="w-full mx-auto px-4 py-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8 animate-fade-in">
