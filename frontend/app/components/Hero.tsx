@@ -235,17 +235,17 @@ const Hero = () => {
 
           {/* Right Content - Image with decorative elements */}
           <div className="relative animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <div className="absolute -inset-4 bg-white rounded-l-3xl"></div>
+            <div className="relative w-full -inset-4 bg-white rounded-l-3xl"></div>
             <img 
               src='/hero-graphic.jpg'
               alt="Financial growth and investment visualization" 
-              className="relative max-w-2xl h-auto rounded-2xl shadow-sm border border-border/50"
+              className="relative w-full h-auto rounded-2xl shadow-sm border border-border/50"
             />
             {/* Small decorative badge */}
             <img 
               src='/badge-graphic.png' 
               alt="" 
-              className="absolute -bottom-8 -right-8 w-32 h-32 opacity-40 animate-bounce"
+              className="relative -bottom-8 -right-8 w-32 h-32 opacity-40 animate-bounce"
               style={{ animationDuration: '3s' }}
             />
           </div>
