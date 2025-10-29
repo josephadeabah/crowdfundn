@@ -129,7 +129,7 @@ const Hero = () => {
       /> */}
       
       {/* Main Hero Section */}
-      <div className="container mx-auto px-4 pt-20 pb-16 relative z-10">
+      <div className="w-full mx-auto px-4 pt-20 pb-16 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8 animate-fade-in">
@@ -150,7 +150,7 @@ const Hero = () => {
                 Invest in Africa&apos;s
                 <span className="block text-orange-600">Bright Future</span>
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
+              <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
                 Connect visionary entrepreneurs with forward-thinking investors. 
                 Drive sustainable economic growth across the continent.
               </p>
@@ -237,7 +237,7 @@ const Hero = () => {
                 </div>
               )}
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-800">
               <span className="font-semibold text-gray-700">
                 {topBackers?.length || 0}+
               </span>{' '}
