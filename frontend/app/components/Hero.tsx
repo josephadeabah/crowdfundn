@@ -132,7 +132,7 @@ const Hero = () => {
 
               {/* Main Heading */}
               <div className="space-y-4">
-                <h1 className="text-3xl font-bold text-gray-700 leading-tight">
+                <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
                   Invest in Africa&apos;s
                   <span className="block text-orange-500">Tomorrow Today</span>
                 </h1>
