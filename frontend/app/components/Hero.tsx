@@ -134,10 +134,10 @@ const Hero = () => {
           {/* Left Content */}
           <div className="space-y-8 animate-fade-in">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange"></span>
               </span>
               <span className="text-sm font-medium text-foreground">
                 🚀 Powering Africa&apos;s Financial Future
