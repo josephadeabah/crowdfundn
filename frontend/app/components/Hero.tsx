@@ -103,31 +103,21 @@ const Hero = () => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
-      {/* Full Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: 'url(/heropage.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      ></div>
-
-      {/* Optional Overlay for Better Text Readability */}
-      <div className="absolute inset-0 bg-black/10"></div>
+      {/* Two-layer background: White top, Orange bottom */}
+      <div className="absolute inset-0 bg-white"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700"></div>
 
       {/* Main Hero Section - Constrained with max-w-7xl */}
       <div className="w-full mx-auto px-4 py-4 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="space-y-8 animate-fade-in">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-primary/20">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
                 </span>
                 <span className="text-sm font-medium text-gray-700">
                   🚀 Powering Africa&apos;s Financial Future
@@ -136,11 +126,11 @@ const Hero = () => {
 
               {/* Main Heading */}
               <div className="space-y-4">
-                <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight drop-shadow-lg">
+                <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
                   Invest in Africa&apos;s
-                  <span className="block text-orange-200 drop-shadow-lg">Bright Future</span>
+                  <span className="block text-orange-500">Bright Future</span>
                 </h1>
-                <p className="text-xl text-white/90 leading-relaxed max-w-xl drop-shadow-lg">
+                <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
                   Connecting visionary entrepreneurs with forward-thinking
                   investors to drive sustainable economic growth across the
                   continent.
@@ -150,8 +140,9 @@ const Hero = () => {
               {/* CTA Buttons */}
               <div className="flex flex-row gap-4">
                 <Button
+                  variant="outline"
                   size="lg"
-                  className="group flex-1 sm:flex-initial bg-white text-gray-900 hover:bg-gray-100 border border-white/20 backdrop-blur-sm"
+                  className="group flex-1 sm:flex-initial"
                   onClick={() =>
                     (window.location.href = user
                       ? '/account#Favorites'
@@ -164,7 +155,7 @@ const Hero = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="flex-1 sm:flex-initial bg-transparent text-white border-white hover:bg-white/10 backdrop-blur-sm"
+                  className="flex-1 sm:flex-initial"
                   onClick={() =>
                     (window.location.href = user
                       ? '/account#Campaigns'
@@ -244,12 +235,12 @@ const Hero = () => {
                     </Popover>
                   ))}
                   {topBackers?.length > 5 && (
-                    <div className="relative flex items-center justify-center w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full text-sm font-semibold text-gray-800">
+                    <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-sm font-semibold text-gray-800">
                       +{topBackers?.length - 5}
                     </div>
                   )}
                 </div>
-                <p className="text-sm text-white drop-shadow-lg">
+                <p className="text-sm text-white">
                   <span className="font-semibold">
                     {topBackers?.length || 0}+
                   </span>{' '}
