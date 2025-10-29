@@ -103,21 +103,15 @@ const Hero = () => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
-      {/* Background Image - FIXED VERSION */}
+      {/* Background Image - ADDED THIS LINE */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
-        style={{ 
-          backgroundImage: 'url(/Heropage.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed'
-        }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+        style={{ backgroundImage: 'url(/heropage.png)' }}
       ></div>
       
-      {/* Remove or comment out these white/green backgrounds that are covering the image */}
-      {/* <div className="absolute inset-0 bg-white"></div>
-      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700"></div> */}
+      {/* Two-layer background: White top, Orange bottom - KEPT YOUR ORIGINAL */}
+      <div className="absolute inset-0 bg-white z-1"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700 z-1"></div>
 
       {/* Main Hero Section - Constrained with max-w-7xl */}
       <div className="w-full mx-auto px-4 py-4 relative z-10">
