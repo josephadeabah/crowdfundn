@@ -235,7 +235,7 @@ const Hero = () => {
 
           {/* Right Content - Image with decorative elements */}
           <div className="relative animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <div className="absolute -inset-4 bg-yellow-600 rounded-3xl"></div>
+            <div className="absolute -inset-4 bg-white rounded-3xl"></div>
             <img 
               src='/hero-graphic.jpg'
               alt="Financial growth and investment visualization" 
