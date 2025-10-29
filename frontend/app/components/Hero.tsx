@@ -116,7 +116,7 @@ const Hero = () => {
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-yellow-500"></div>
       
       {/* Main Hero Section */}
-      <div className="w-full mx-auto px-4 py-4 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 py-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8 animate-fade-in">
@@ -145,7 +145,7 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-row gap-4">
-              <Button variant="success" size="lg" className="group flex-1 sm:flex-initial">
+              <Button variant="success" size="lg" className="group bg-green-700 flex-1 sm:flex-initial">
                 Start Investing
                 <ArrowRight className="group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -235,7 +235,7 @@ const Hero = () => {
 
           {/* Right Content - Image with decorative elements */}
           <div className="relative animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <div className="absolute -inset-4 bg-white rounded-3xl"></div>
+            <div className="absolute -inset-4 bg-white rounded-l-3xl"></div>
             <img 
               src='/hero-graphic.jpg'
               alt="Financial growth and investment visualization" 
