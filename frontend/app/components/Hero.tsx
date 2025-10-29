@@ -249,33 +249,33 @@ const Hero = () => {
               </div>
             </div>
 
-          {/* Right Content - Image with decorative elements */}
-<div className="relative">
-  {/* Container for image content that stays within max-w-7xl on mobile */}
-  <div className="lg:absolute lg:inset-y-0 lg:left-0 lg:right-0">
-    <div className="relative max-w-7xl mx-auto px-4">
-      <div
-        className="relative animate-fade-in -mt-8 lg:-mt-12" // Added negative margin here
-        style={{ animationDelay: '0.2s' }}
-      >
-        <div className="absolute -inset-4 bg-white rounded-l-3xl"></div>
-        <img
-          src="/hero-graphic.jpg"
-          alt="Financial growth and investment visualization"
-          className="relative w-full h-auto rounded-2xl shadow-sm border border-border/50"
-        />
-      </div>
-    </div>
+            {/* Right Content - Image with decorative elements */}
+            <div className="relative">
+              {/* Container for image content that stays within max-w-7xl on mobile */}
+              <div className="lg:absolute lg:inset-y-0 lg:left-0 lg:right-0">
+                <div className="relative max-w-7xl mx-auto px-4">
+                  <div
+                    className="relative animate-fade-in -mt-8 lg:-mt-12" // Added negative margin here
+                    style={{ animationDelay: '0.2s' }}
+                  >
+                    <div className="absolute -inset-4 bg-white rounded-l-3xl"></div>
+                    <img
+                      src="/hero-graphic.jpg"
+                      alt="Financial growth and investment visualization"
+                      className="relative w-full h-auto rounded-2xl shadow-sm border border-border/50"
+                    />
+                  </div>
+                </div>
 
-    {/* Small decorative badge - positioned absolutely relative to viewport */}
-    <img
-      src="/badge-graphic.png"
-      alt=""
-      className="absolute -bottom-8 -right-8 w-24 h-24 lg:w-32 lg:h-32 opacity-40 animate-bounce hidden lg:block"
-      style={{ animationDuration: '3s' }}
-    />
-  </div>
-</div>
+                {/* Small decorative badge - positioned absolutely relative to viewport */}
+                <img
+                  src="/badge-graphic.png"
+                  alt=""
+                  className="absolute -bottom-8 -right-8 w-24 h-24 lg:w-32 lg:h-32 opacity-40 animate-bounce hidden lg:block"
+                  style={{ animationDuration: '3s' }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
