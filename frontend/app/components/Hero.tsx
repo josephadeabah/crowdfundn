@@ -110,223 +110,103 @@ const Hero = () => {
   //   : 0.7;
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
-      {/* Video Background */}
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
-        onLoadedData={() => {
-          // Additional attempt to play when video is loaded
-          if (videoRef.current) {
-            videoRef.current
-              .play()
-              .catch((e) => console.log('Loaded data play failed:', e));
-          }
-        }}
-      >
-        <source src="/office_setting.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
-
-      {/* Content */}
-      <div className="relative h-full max-w-7xl mx-auto flex items-center px-4">
-        <div className="w-full lg:w-2/3 space-y-8 animate-fade-up">
-          {/* Badge with funding types */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full animate-fade-in">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-600 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-600"></span>
-            </span>
-            <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
-              <span className="text-white/90 font-medium">💝 Donation</span>
-              <span className="text-white/70">|</span>
-              <span className="text-white/90 font-medium">🎁 Reward-Based</span>
-              <span className="text-white/70">|</span>
-              <span className="text-white/90 font-medium">
-                📈 Equity Investment
+    <div className="min-h-screen w-full relative overflow-hidden">
+      {/* Two-layer background: White top, Orange bottom */}
+      <div className="absolute inset-0 bg-white"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-orange-100"></div>
+      
+      {/* Decorative Graphics */}
+      <img 
+        src='/floating-elements.png' 
+        alt="" 
+        className="absolute top-20 right-10 w-64 h-64 opacity-10 animate-pulse pointer-events-none"
+      />
+      <img 
+        src='/badge-graphic.png'
+        alt="" 
+        className="absolute bottom-20 left-10 w-48 h-48 opacity-20 animate-spin-slow pointer-events-none"
+        style={{ animationDuration: '20s' }}
+      />
+      
+      {/* Main Hero Section */}
+      <div className="container mx-auto px-4 pt-20 pb-16 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left Content */}
+          <div className="space-y-8 animate-fade-in">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
+              <span className="text-sm font-medium text-foreground">
+                🚀 Powering Africa&apos;s Financial Future
               </span>
             </div>
-          </div>
 
-          {/* Main Heading */}
-          <h1 className="text-4xl font-bold text-white leading-tight">
-            Africa's FinTech{' '}
-            <span className="text-green-600">
-              powerhouse driving the future
-            </span>
-            <br />
-            of{' '}
-            <span className="bg-gradient-to-r from-orange-500 to-green-600 bg-clip-text text-transparent">
-              fundraising and private investing
-            </span>
-          </h1>
+            {/* Main Heading */}
+            <div className="space-y-4">
+              <h1 className="text-5xl lg:text-6xl font-bold text-foreground leading-tight">
+                Invest in Africa&apos;s
+                <span className="block text-primary">Bright Future</span>
+              </h1>
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
+                Connect visionary entrepreneurs with forward-thinking investors. 
+                Drive sustainable economic growth across the continent.
+              </p>
+            </div>
 
-          {/* Subheading */}
-          <p className="text-lg sm:text-xl text-white/90 max-w-2xl leading-relaxed">
-            Invest in Africa's tomorrow, today. We connects visionary
-            entrepreneurs with forward-thinking investors to fuel the
-            continent's most innovative businesses and drive sustainable
-            economic growth.
-          </p>
-
-          {/* CTA Buttons - Fixed horizontal alignment */}
-          <div className="flex flex-row items-center gap-4 w-full max-w-md">
-            <Link
-              href={user ? '/account/dashboard/create' : '/auth'}
-              className="flex-1 min-w-0"
-            >
-              <button className="group w-full px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-400 transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
-                Raise Capital Now
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform flex-shrink-0" />
-              </button>
-            </Link>
-
-            <Link
-              href="https://www.pnpmmedia.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 min-w-0"
-            >
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full bg-white/10 backdrop-blur-md border-white/30 text-white hover:bg-white/20 whitespace-nowrap"
-              >
-                Read Us
+            {/* CTA Buttons */}
+            <div className="flex flex-row gap-4">
+              <Button variant="success" size="lg" className="group flex-1 sm:flex-initial">
+                Start Investing
+                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
               </Button>
-            </Link>
-          </div>
-
-          {/* Top Backers Section */}
-          <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
-            <div className="flex -space-x-3">
-              {topBackers?.map((backer, index) => (
-                <Popover key={index}>
-                  <PopoverTrigger asChild>
-                    <div
-                      className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-                      style={{ zIndex: topBackers.length - index }}
-                    >
-                      <Avatar
-                        name={backer.name}
-                        size="sm"
-                        imageUrl={backer.profile_picture}
-                      />
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-96">
-                    <div className="space-y-4 p-4">
-                      <div className="flex items-center space-x-4">
-                        <Avatar
-                          name={backer.name}
-                          size="xl"
-                          imageUrl={backer.profile_picture}
-                        />
-                        <div>
-                          <div className="flex items-center gap-1">
-                            <h4 className="font-semibold text-lg text-gray-800">
-                              {backer.name}
-                            </h4>
-                            <span>{getVerifiedBadge(backer.level, 20)}</span>
-                          </div>
-                          <p className="text-sm text-gray-800">
-                            {backer.country}
-                          </p>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">
-                          Category Interest
-                        </p>
-                        <p className="text-sm text-gray-800">
-                          {deslugify(backer.category_interest)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">
-                          Bio
-                        </p>
-                        <p className="text-sm text-gray-800">{backer.bio}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">
-                          Total Donated
-                        </p>
-                        <p className="text-sm text-gray-800">
-                          {backer?.currency}
-                          {backer.amount}
-                        </p>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              ))}
-              {topBackers?.length > 5 && (
-                <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-sm font-semibold text-gray-800">
-                  +{topBackers?.length - 5}
-                </div>
-              )}
+              <Button variant="outline" size="lg" className="flex-1 sm:flex-initial">
+                Raise Capital
+              </Button>
             </div>
-            <p className="text-sm text-white/80">
-              <span className="font-semibold text-white">
-                {topBackers?.length || 0}+
-              </span>{' '}
-              backers joined this month
-            </p>
-          </div>
-        </div>
 
-        {/* Floating Cards - Positioned on the right side */}
-        <div className="hidden lg:block absolute right-8 top-1/2 transform -translate-y-1/2 space-y-6">
-          {/* AI Suggestion Card */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 max-w-xs animate-fade-in shadow-xl ml-auto">
-            <div className="flex items-start gap-3">
-              <div className="h-10 w-10 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
-                <Zap className="h-5 w-5 text-white" />
+            {/* Investor Avatars */}
+            <div className="flex items-center gap-3 pt-4">
+              <div className="flex -space-x-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 border-2 border-background flex items-center justify-center text-xs font-semibold text-primary-foreground">
+                  JD
+                </div>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 border-2 border-background flex items-center justify-center text-xs font-semibold text-accent-foreground">
+                  MK
+                </div>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 border-2 border-background flex items-center justify-center text-xs font-semibold text-primary-foreground">
+                  SA
+                </div>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 border-2 border-background flex items-center justify-center text-xs font-semibold text-accent-foreground">
+                  LT
+                </div>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 border-2 border-background flex items-center justify-center text-xs font-semibold text-primary-foreground">
+                  +50
+                </div>
               </div>
-              <div>
-                <div className="text-sm text-white/70 mb-1">
-                  Fund A Dream Today!
-                </div>
-                <div className="text-sm font-semibold text-white">
-                  Invest In Africa's Bright Minds w/ As Little As GHS100
-                </div>
+              <div className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">1,000+</span> active investors
               </div>
             </div>
           </div>
 
-          {/* Achievement Card */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 max-w-xs animate-fade-in shadow-xl ml-auto">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="bg-green-600/20 text-green-600 text-xs font-medium rounded-full px-3 py-1 flex items-center gap-1">
-                <Trophy className="h-3 w-3" /> Achievement
-              </div>
-            </div>
-            <h3 className="font-bold text-white mb-2">
-              Make Good Things Happen
-            </h3>
-            <div className="flex gap-2 mb-2">
-              <div className="w-2 h-2 rounded-full bg-green-600 animate-pulse-glow"></div>
-              <div
-                className="w-2 h-2 rounded-full bg-green-600 animate-pulse-glow"
-                style={{ animationDelay: '0.2s' }}
-              ></div>
-              <div
-                className="w-2 h-2 rounded-full bg-green-600 animate-pulse-glow"
-                style={{ animationDelay: '0.4s' }}
-              ></div>
-            </div>
-            <div className="text-xs text-white/80">
-              The Easy Way To Fund Africa's Future.
-            </div>
+          {/* Right Content - Image with decorative elements */}
+          <div className="relative animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-2xl opacity-30"></div>
+            <img 
+              src='/hero-graphic.jpg'
+              alt="Financial growth and investment visualization" 
+              className="relative max-w-2xl h-auto rounded-2xl shadow-lg border border-border/50"
+            />
+            {/* Small decorative badge */}
+            <img 
+              src='/badge-graphic.png' 
+              alt="" 
+              className="absolute -bottom-8 -right-8 w-32 h-32 opacity-40 animate-bounce"
+              style={{ animationDuration: '3s' }}
+            />
           </div>
         </div>
       </div>
