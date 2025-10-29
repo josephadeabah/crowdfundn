@@ -137,16 +137,16 @@ const Hero = () => {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
               </span>
-              <span className="text-sm font-medium text-foreground">
+              <span className="text-sm font-medium text-gray-700">
                 🚀 Powering Africa&apos;s Financial Future
               </span>
             </div>
 
             {/* Main Heading */}
             <div className="space-y-4">
-              <h1 className="text-5xl lg:text-6xl font-bold text-foreground leading-tight">
+              <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
                 Invest in Africa&apos;s
                 <span className="block text-primary">Bright Future</span>
               </h1>
