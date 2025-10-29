@@ -237,8 +237,8 @@ const Hero = () => {
                 </div>
               )}
             </div>
-            <p className="text-sm text-white/80">
-              <span className="font-semibold text-white">
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold text-gray-700">
                 {topBackers?.length || 0}+
               </span>{' '}
               backers joined this month
