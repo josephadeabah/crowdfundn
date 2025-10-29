@@ -104,15 +104,15 @@ const Hero = () => {
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
       {/* Background Image - ADDED THIS LINE */}
-  <div 
-    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-    style={{ backgroundImage: 'url(/heropage.png)' }}
-  ></div>
-  
-  {/* Two-layer background: Make white container transparent */}
-  <div className="absolute inset-0 bg-white/0"></div> {/* Changed to transparent */}
-  <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700/50"></div> {/* Added transparency to green too */}
-
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(/Heropage.png)' }}
+      ></div>
+      {/* Two-layer background: Make white container transparent */}
+      <div className="absolute inset-0 bg-white/0"></div>{' '}
+      {/* Changed to transparent */}
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700/50"></div>{' '}
+      {/* Added transparency to green too */}
       {/* Main Hero Section - Constrained with max-w-7xl */}
       <div className="w-full mx-auto px-4 py-4 relative z-10">
         <div className="max-w-7xl mx-auto">
