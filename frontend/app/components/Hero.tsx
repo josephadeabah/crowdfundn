@@ -116,11 +116,11 @@ const Hero = () => {
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-orange-100"></div>
       
       {/* Decorative Graphics */}
-      <img 
+      {/* <img 
         src='/floating-elements.png' 
         alt="" 
         className="absolute top-20 right-10 w-64 h-64 opacity-10 animate-pulse pointer-events-none"
-      />
+      /> */}
       <img 
         src='/badge-graphic.png'
         alt="" 
