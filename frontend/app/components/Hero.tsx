@@ -252,7 +252,7 @@ const Hero = () => {
             <img 
               src='/hero-graphic.jpg'
               alt="Financial growth and investment visualization" 
-              className="relative max-w-2xl h-auto rounded-2xl shadow-lg border border-border/50"
+              className="relative max-w-2xl h-auto rounded-2xl shadow-sm border border-border/50"
             />
             {/* Small decorative badge */}
             <img 
