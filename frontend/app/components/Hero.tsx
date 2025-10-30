@@ -268,7 +268,7 @@ const Hero = () => {
                     <img
                       src="/raise.png"
                       alt="Financial growth and investment visualization"
-                      className="relative w-full h-auto border-t-4 border-t-green-700/50"
+                      className="relative w-full h-auto border-t-4 border-t-gray-200"
                     />
                   </div>
                 </div>
