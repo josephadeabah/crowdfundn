@@ -109,7 +109,7 @@ const Hero = () => {
         style={{ backgroundImage: 'url(/Heropage.png)' }}
       ></div>
       {/* Two-layer background: Make white container transparent */}
-      <div className="absolute inset-0 bg-white/0"></div>{' '}
+      <div className="absolute inset-0 bg-green-100/50"></div>{' '}
       {/* Changed to transparent */}
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700/50"></div>{' '}
       {/* Added transparency to green too */}
