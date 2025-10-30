@@ -261,14 +261,14 @@ const Hero = () => {
               <div className="lg:absolute lg:inset-y-0 lg:left-0 lg:right-0">
                 <div className="relative max-w-7xl mx-auto px-4">
                   <div
-                    className="relative animate-fade-in -mt-8 lg:-mt-12" // Added negative margin here
+                    className="relative animate-fade-in -mt-8 lg:-mt-12 rounded-2xl shadow-sm overflow-hidden" // Added negative margin here
                     style={{ animationDelay: '0.2s' }}
                   >
                     <div className="absolute -inset-4  rounded-l-3xl"></div>
                     <img
                       src="/raise.png"
                       alt="Financial growth and investment visualization"
-                      className="relative w-full h-auto rounded-2xl shadow-sm border-t-4 border-t-green-700/50"
+                      className="relative w-full h-auto border-t-4 border-t-green-700/50"
                     />
                   </div>
                 </div>
