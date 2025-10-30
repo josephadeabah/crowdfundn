@@ -264,7 +264,7 @@ const Hero = () => {
                     className="relative animate-fade-in -mt-8 lg:-mt-12" // Added negative margin here
                     style={{ animationDelay: '0.2s' }}
                   >
-                    <div className="absolute -inset-4 bg-white rounded-l-3xl"></div>
+                    <div className="absolute -inset-4  rounded-l-3xl"></div>
                     <img
                       src="/raise.png"
                       alt="Financial growth and investment visualization"
