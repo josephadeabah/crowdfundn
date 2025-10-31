@@ -134,7 +134,7 @@ Stephen brings strategic financial insight and governance experience to BantuHiv
     {
       id: '5',
       name: 'Joseph Adeabah',
-      position: 'Chief Executive Officer',
+      position: 'Co-Founder & CEO',
       image: ceoHeadshot,
       email: 'joseph.adeabah@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/joseph-835977a5/',
@@ -154,7 +154,7 @@ Stephen brings strategic financial insight and governance experience to BantuHiv
     {
       id: '6',
       name: 'Nqoba Manana',
-      position: 'Chief Operating Officer',
+      position: 'Co-Founder & President',
       image: nqobaMananaHeadshot,
       email: 'nqoba.manana@bantuhive.com',
       linkedin: 'https://www.linkedin.com/in/nqoba-g-manana/',
