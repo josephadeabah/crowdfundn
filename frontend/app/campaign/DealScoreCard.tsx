@@ -172,7 +172,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
           <button 
             onClick={runAnalysis}
             disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
           >
             {loading ? 'Analyzing...' : 'Run Initial Analysis'}
           </button>
@@ -233,7 +233,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
               <button 
                 onClick={runAnalysis}
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
               >
                 {loading ? 'Re-analyzing...' : 'Re-analyze'}
               </button>

@@ -85,7 +85,7 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           {loading ? (
             <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600"></div>
             </div>
           ) : error ? (
             <div className="text-center py-8 text-red-600">{error}</div>
@@ -129,7 +129,7 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
                       
                       <button 
                         onClick={() => handleViewCampaign(deal.id)}
-                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                        className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors"
                       >
                         View
                       </button>
