@@ -38,7 +38,7 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
     try {
       setLoading(true);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai/deal_scoring/similar_deals?campaign_id=${campaignId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/similar_deals?campaign_id=${campaignId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,

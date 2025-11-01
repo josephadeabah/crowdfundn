@@ -56,7 +56,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     try {
       setLoading(true);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai/deal_scoring/analysis_history?campaign_id=${campaignId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/analysis_history?campaign_id=${campaignId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -83,7 +83,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
       setError(null);
       
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai/deal_scoring/analyze`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/analyze`,
         {
           method: 'POST',
           headers: {
