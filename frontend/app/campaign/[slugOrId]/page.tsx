@@ -18,6 +18,7 @@ import CampaignSidebar from '../CampaignSidebar';
 import CampaignTabs from '../CampaignTabs';
 import CampaignHeader from '../CampaignHeader';
 import CampaignFAQs from '../CampaignFAQs';
+import { DealScoreCard } from '../DealScoreCard';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -141,13 +142,19 @@ const SingleCampaignPage: React.FC = () => {
 
               {/* Tab Content - Only render when not loading */}
               {!loading && selectedTab === 'details' && (
-                <CampaignDetails
-                  campaign={currentCampaign}
-                  isEquityCampaign={isEquityCampaign}
-                  showToast={showToast}
-                  setIsContactModalOpen={setIsContactModalOpen}
-                  user={user}
-                />
+                <>
+                  <DealScoreCard 
+                    campaignId={slugOrId}
+                    currentUser={user}
+                  />
+                  <CampaignDetails
+                    campaign={currentCampaign}
+                    isEquityCampaign={isEquityCampaign}
+                    showToast={showToast}
+                    setIsContactModalOpen={setIsContactModalOpen}
+                    user={user}
+                  />
+                </>
               )}
               {!loading && selectedTab === 'donate' && (
                 <CampaignDonate

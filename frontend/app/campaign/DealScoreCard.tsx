@@ -1,0 +1,342 @@
+// app/components/campaign/DealScoreCard.tsx
+'use client';
+import React, { useState, useEffect } from 'react';
+import { AnalysisHistoryModal } from './AnalysisHistoryModal';
+import { SimilarDealsModal } from './SimilarDealsModal';
+import { DealScoreChart } from './DealScoreChart';
+
+interface DealScoreCardProps {
+  campaignId: string;
+  currentUser?: any;
+}
+
+interface AnalysisData {
+  current_scores: {
+    deal_score: number;
+    risk_score: number;
+    risk_category: string;
+    updated_at: string;
+  };
+  analysis_history: Array<{
+    id: string;
+    analysis_type: string;
+    deal_score: number;
+    risk_score: number;
+    risk_category: string;
+    analyzed_at: string;
+    key_risks: string[];
+    strengths: string[];
+  }>;
+  campaign_performance?: number;
+  latest_analysis?: {
+    key_risks: string[];
+    strengths: string[];
+  };
+}
+
+export const DealScoreCard: React.FC<DealScoreCardProps> = ({ 
+  campaignId, 
+  currentUser 
+}) => {
+  const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showSimilarDeals, setShowSimilarDeals] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+
+  useEffect(() => {
+    if (campaignId) {
+      loadAnalysis();
+    }
+  }, [campaignId]);
+
+  const loadAnalysis = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/ai/deal_scoring/analysis_history?campaign_id=${campaignId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${getAuthToken()}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAnalysis(data);
+      }
+    } catch (err) {
+      setError('Failed to load analysis');
+      console.error('Error loading analysis:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const runAnalysis = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/ai/deal_scoring/analyze`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${getAuthToken()}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ campaign_id: campaignId })
+        }
+      );
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        await loadAnalysis(); // Reload to get updated data
+      } else {
+        setError(result.error || 'Analysis failed');
+      }
+    } catch (err) {
+      setError('Failed to run analysis');
+      console.error('Error running analysis:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getAuthToken = (): string => {
+    // Adjust based on your auth system
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('auth_token') || '';
+    }
+    return '';
+  };
+
+  const formatTimeAgo = (dateString: string): string => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
+  if (loading && !analysis) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+          <div className="flex space-x-4">
+            <div className="flex-1 space-y-2">
+              <div className="h-4 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const currentScores = analysis?.current_scores;
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-gray-900">AI Deal Analysis</h3>
+        {currentScores?.updated_at && (
+          <span className="text-sm text-gray-500">
+            Updated {formatTimeAgo(currentScores.updated_at)}
+          </span>
+        )}
+      </div>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-700 text-sm">{error}</p>
+        </div>
+      )}
+
+      {!currentScores ? (
+        // No analysis state
+        <div className="text-center py-8">
+          <div className="text-gray-400 mb-3">
+            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <p className="text-gray-500 mb-4">No AI analysis available yet</p>
+          <button 
+            onClick={runAnalysis}
+            disabled={loading}
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Analyzing...' : 'Run Initial Analysis'}
+          </button>
+        </div>
+      ) : (
+        // Analysis present state
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Deal Score Chart */}
+            <div className="flex flex-col items-center">
+              <div className="relative w-32 h-32">
+                <DealScoreChart score={currentScores.deal_score} />
+              </div>
+              <div className="mt-2 text-center">
+                <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getScoreBadgeClass(currentScores.deal_score)}`}>
+                  {getDealGrade(currentScores.deal_score)} Grade
+                </span>
+              </div>
+            </div>
+
+            {/* Risk Assessment & Metrics */}
+            <div className="flex flex-col justify-center">
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-gray-500 mb-1">Risk Assessment</h4>
+                <div className="flex items-center">
+                  <div className="w-24 bg-gray-200 rounded-full h-2 mr-3">
+                    <div 
+                      className="h-2 rounded-full" 
+                      style={{ 
+                        width: `${currentScores.risk_score}%`, 
+                        backgroundColor: getRiskColor(currentScores.risk_score) 
+                      }}
+                    ></div>
+                  </div>
+                  <span 
+                    className="text-sm font-medium" 
+                    style={{ color: getRiskColor(currentScores.risk_score) }}
+                  >
+                    {currentScores.risk_score}%
+                  </span>
+                </div>
+                <span className="text-xs text-gray-500 mt-1">
+                  {getRiskLevel(currentScores.risk_score)} Risk
+                </span>
+              </div>
+
+              {/* Quick Metrics */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Analysis Count:</span>
+                  <span className="font-medium">{analysis.analysis_history?.length || 0}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col justify-center space-y-3">
+              <button 
+                onClick={runAnalysis}
+                disabled={loading}
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {loading ? 'Re-analyzing...' : 'Re-analyze'}
+              </button>
+              <button 
+                onClick={() => setShowSimilarDeals(true)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Similar Deals
+              </button>
+              <button 
+                onClick={() => setShowHistory(true)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                View History
+              </button>
+            </div>
+          </div>
+
+          {/* Key Insights */}
+          {analysis.latest_analysis && (
+            <div className="mt-6 pt-6 border-t">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">Key Risks</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    {analysis.latest_analysis.key_risks?.map((risk, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-red-500 mr-2">•</span>
+                        {risk}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">Strengths</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    {analysis.latest_analysis.strengths?.map((strength, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-green-500 mr-2">•</span>
+                        {strength}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Modals */}
+      {showSimilarDeals && (
+        <SimilarDealsModal 
+          campaignId={campaignId}
+          onClose={() => setShowSimilarDeals(false)}
+        />
+      )}
+
+      {showHistory && (
+        <AnalysisHistoryModal 
+          history={analysis?.analysis_history || []}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+// Helper functions
+const getDealGrade = (score: number): string => {
+  if (score >= 90) return 'A+';
+  if (score >= 80) return 'A';
+  if (score >= 70) return 'B';
+  if (score >= 60) return 'C';
+  if (score >= 50) return 'D';
+  return 'F';
+};
+
+const getScoreBadgeClass = (score: number): string => {
+  if (score >= 80) return 'bg-green-100 text-green-800';
+  if (score >= 60) return 'bg-yellow-100 text-yellow-800';
+  if (score >= 40) return 'bg-orange-100 text-orange-800';
+  return 'bg-red-100 text-red-800';
+};
+
+const getRiskColor = (score: number): string => {
+  if (score <= 20) return '#10B981';
+  if (score <= 40) return '#34D399';
+  if (score <= 60) return '#FBBF24';
+  if (score <= 80) return '#F59E0B';
+  return '#EF4444';
+};
+
+const getRiskLevel = (score: number): string => {
+  if (score <= 20) return 'Very Low';
+  if (score <= 40) return 'Low';
+  if (score <= 60) return 'Medium';
+  if (score <= 80) return 'High';
+  return 'Very High';
+};
