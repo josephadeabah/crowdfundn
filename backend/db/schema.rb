@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_01_010445) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_01_221617) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -192,10 +192,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_01_010445) do
     t.string "ai_risk_category"
     t.datetime "ai_analysis_updated_at"
     t.jsonb "ai_embedding"
+    t.string "ai_sentiment"
+    t.string "ai_team_assessment"
+    t.string "ai_market_opportunity"
     t.index ["ai_deal_score"], name: "index_campaigns_on_ai_deal_score"
     t.index ["ai_embedding"], name: "index_campaigns_on_ai_embedding", using: :gin
+    t.index ["ai_market_opportunity"], name: "index_campaigns_on_ai_market_opportunity"
     t.index ["ai_risk_category"], name: "index_campaigns_on_ai_risk_category"
     t.index ["ai_risk_score"], name: "index_campaigns_on_ai_risk_score"
+    t.index ["ai_sentiment"], name: "index_campaigns_on_ai_sentiment"
+    t.index ["ai_team_assessment"], name: "index_campaigns_on_ai_team_assessment"
     t.index ["category", "status"], name: "index_campaigns_on_category_and_status"
     t.index ["category"], name: "index_campaigns_on_category"
     t.index ["created_at"], name: "index_campaigns_on_created_at"
@@ -234,9 +240,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_01_010445) do
     t.datetime "analyzed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "metadata", default: {}
     t.index ["campaign_id", "analyzed_at"], name: "index_deal_score_logs_on_campaign_id_and_analyzed_at"
     t.index ["campaign_id"], name: "index_deal_score_logs_on_campaign_id"
     t.index ["deal_score"], name: "index_deal_score_logs_on_deal_score"
+    t.index ["metadata"], name: "index_deal_score_logs_on_metadata", using: :gin
     t.index ["risk_score"], name: "index_deal_score_logs_on_risk_score"
   end
 
