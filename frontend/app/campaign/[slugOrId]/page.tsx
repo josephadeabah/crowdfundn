@@ -142,7 +142,7 @@ const SingleCampaignPage: React.FC = () => {
 
               {/* Tab Content - Only render when not loading */}
               {!loading && selectedTab === 'details' && (
-                <>
+                <div className="flex flex-col gap-3 mt-3">
                   {currentCampaign && (
                     <DealScoreCard 
                       campaignId={currentCampaign.id.toString()}
@@ -156,7 +156,7 @@ const SingleCampaignPage: React.FC = () => {
                     setIsContactModalOpen={setIsContactModalOpen}
                     user={user}
                   />
-                </>
+                </div>
               )}
               {!loading && selectedTab === 'donate' && (
                 <CampaignDonate
