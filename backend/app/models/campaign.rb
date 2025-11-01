@@ -56,6 +56,17 @@ class Campaign < ApplicationRecord
   # Automatically call `update_status_based_on_date` after update
   after_update :update_status_based_on_date, if: -> { remaining_days.zero? && active? }
 
+  # AI Analysis associations and methods
+  has_many :deal_score_logs, dependent: :destroy
+  scope :with_ai_analysis, -> { where.not(ai_deal_score: nil) }
+  scope :high_quality_deals, -> { where("ai_deal_score >= ?", 80) }
+  scope :low_risk_deals, -> { where("ai_risk_score <= ?", 30) }
+
+  # Add neighbor configuration conditionally - ONLY if ai_embedding column exists
+  if column_names.include?('ai_embedding')
+    has_neighbors :ai_embedding
+  end
+
   # Scope for archived campaigns for a specific user
   scope :archived_by, ->(user) { 
     joins(:archived_campaigns).where(archived_campaigns: { user: user }) 
@@ -84,7 +95,6 @@ class Campaign < ApplicationRecord
   def self.descendants
     [EquityCampaign] # Add other subclasses as needed
   end
-
 
   # Add archive-related methods
   def archive!(user, reason = nil)
@@ -504,6 +514,48 @@ class Campaign < ApplicationRecord
     end
   end
 
+  # AI Analysis Methods
+  def ai_analysis_present?
+    ai_deal_score.present? && ai_risk_score.present?
+  end
+
+  def latest_ai_analysis
+    deal_score_logs.recent.first
+  end
+
+  def embedding_available?
+    respond_to?(:ai_embedding) && ai_embedding.present?
+  end
+  
+  def update_ai_embedding
+    AI::DealScoringService.generate_embeddings(self) if embedding_available?
+  end
+
+  def risk_assessment
+    return nil unless ai_analysis_present?
+    
+    {
+      score: ai_risk_score,
+      category: ai_risk_category,
+      level: risk_level,
+      color: risk_color
+    }
+  end
+
+  def deal_quality
+    return nil unless ai_analysis_present?
+    
+    {
+      score: ai_deal_score,
+      grade: deal_grade,
+      color: deal_color
+    }
+  end
+
+  def similar_deals(limit: 5)
+    AI::SimilarDealsService.new(self).find_similar(limit: limit)
+  end
+
   private
 
   def enqueue_media_cleanup
@@ -524,5 +576,45 @@ class Campaign < ApplicationRecord
 
   def set_default_status
     self.status ||= :active
+  end
+
+  def risk_level
+    case ai_risk_score
+    when 0..20 then 'Very Low'
+    when 21..40 then 'Low'
+    when 41..60 then 'Medium'
+    when 61..80 then 'High'
+    else 'Very High'
+    end
+  end
+
+  def risk_color
+    case ai_risk_score
+    when 0..20 then '#10B981' # green
+    when 21..40 then '#34D399' # light green
+    when 41..60 then '#FBBF24' # yellow
+    when 61..80 then '#F59E0B' # orange
+    else '#EF4444' # red
+    end
+  end
+
+  def deal_grade
+    case ai_deal_score
+    when 90..100 then 'A+'
+    when 80..89 then 'A'
+    when 70..79 then 'B'
+    when 60..69 then 'C'
+    when 50..59 then 'D'
+    else 'F'
+    end
+  end
+
+  def deal_color
+    case ai_deal_score
+    when 80..100 then '#10B981' # green
+    when 60..79 then '#FBBF24' # yellow
+    when 40..59 then '#F59E0B' # orange
+    else '#EF4444' # red
+    end
   end
 end

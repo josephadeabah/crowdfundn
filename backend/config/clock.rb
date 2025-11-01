@@ -56,4 +56,25 @@ module Clockwork
   rescue => e
     Rails.logger.error "[Clockwork] Failed to enqueue FinalizeCommittedInvestmentsJob: #{e.message}"
   end
+
+    # 4️⃣ Weekly AI re-analysis every Monday at 2 AM UTC
+  every(1.week, 'weekly_ai_analysis', at: 'Monday 02:00') do
+    Rails.logger.info "[Clockwork] Starting weekly AI analysis for active campaigns"
+    
+    Campaign.active.find_each(batch_size: 50) do |campaign|
+      begin
+        AI::DealScoringService.analyze_campaign(campaign, analysis_type: 'weekly')
+        Rails.logger.info "[Clockwork] AI analysis completed for campaign #{campaign.id}"
+      rescue => e
+        Rails.logger.error "[Clockwork] AI analysis failed for campaign #{campaign.id}: #{e.message}"
+      end
+    end
+  end
+
+  # 5️⃣ Update embeddings for all campaigns monthly
+  every(1.month, 'update_campaign_embeddings', at: '01 03:00') do
+    Rails.logger.info "[Clockwork] Starting monthly campaign embeddings update"
+    AI::SimilarDealsService.update_all_embeddings
+  end
+  
 end

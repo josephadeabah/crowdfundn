@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_27_195603) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_01_010445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -187,6 +187,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_27_195603) do
     t.string "sec_filing_url"
     t.string "offering_circular_url"
     t.string "offering_memorandum"
+    t.decimal "ai_deal_score", precision: 5, scale: 2
+    t.decimal "ai_risk_score", precision: 5, scale: 2
+    t.string "ai_risk_category"
+    t.datetime "ai_analysis_updated_at"
+    t.jsonb "ai_embedding"
+    t.index ["ai_deal_score"], name: "index_campaigns_on_ai_deal_score"
+    t.index ["ai_embedding"], name: "index_campaigns_on_ai_embedding", using: :gin
+    t.index ["ai_risk_category"], name: "index_campaigns_on_ai_risk_category"
+    t.index ["ai_risk_score"], name: "index_campaigns_on_ai_risk_score"
     t.index ["category", "status"], name: "index_campaigns_on_category_and_status"
     t.index ["category"], name: "index_campaigns_on_category"
     t.index ["created_at"], name: "index_campaigns_on_created_at"
@@ -208,6 +217,27 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_27_195603) do
     t.string "email"
     t.index ["campaign_id"], name: "index_comments_on_campaign_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "deal_score_logs", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.text "prompt", null: false
+    t.text "response", null: false
+    t.jsonb "analysis_data"
+    t.decimal "risk_score", precision: 5, scale: 2
+    t.decimal "deal_score", precision: 5, scale: 2
+    t.string "risk_category"
+    t.text "key_risks", default: [], array: true
+    t.text "strengths", default: [], array: true
+    t.text "recommendations", default: [], array: true
+    t.string "analysis_type"
+    t.datetime "analyzed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id", "analyzed_at"], name: "index_deal_score_logs_on_campaign_id_and_analyzed_at"
+    t.index ["campaign_id"], name: "index_deal_score_logs_on_campaign_id"
+    t.index ["deal_score"], name: "index_deal_score_logs_on_deal_score"
+    t.index ["risk_score"], name: "index_deal_score_logs_on_risk_score"
   end
 
   create_table "donations", force: :cascade do |t|
@@ -725,6 +755,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_27_195603) do
   add_foreign_key "campaigns", "users", column: "fundraiser_id"
   add_foreign_key "comments", "campaigns"
   add_foreign_key "comments", "users"
+  add_foreign_key "deal_score_logs", "campaigns"
   add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
   add_foreign_key "equity_investments", "campaigns"

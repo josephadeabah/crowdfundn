@@ -233,6 +233,8 @@ GEM
     minitest (5.25.4)
     msgpack (1.7.2)
     mutex_m (0.3.0)
+    neighbor (0.6.0)
+      activerecord (>= 7.1)
     net-imap (0.4.16)
       date
       net-protocol
@@ -249,6 +251,8 @@ GEM
     nokogiri (1.16.7-x86_64-linux)
       racc (~> 1.4)
     observer (0.1.2)
+    openai (0.34.1)
+      connection_pool
     ostruct (0.6.1)
     parallel (1.26.3)
     parser (3.3.7.1)
@@ -257,6 +261,7 @@ GEM
     pdf-core (0.10.0)
     pg (1.5.8)
     pg (1.5.8-x64-mingw-ucrt)
+    pgvector (0.3.2)
     prawn (2.5.0)
       matrix (~> 0.4)
       pdf-core (~> 0.10.0)
@@ -468,7 +473,10 @@ DEPENDENCIES
   kaminari
   mail
   mini_magick
+  neighbor
+  openai
   pg (~> 1.1)
+  pgvector
   prawn
   prawn-table
   puma (>= 5.0)
