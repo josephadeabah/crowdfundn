@@ -7,14 +7,29 @@ module AI
     def initialize(campaign, analysis_type: 'manual')
       @campaign = campaign
       @analysis_type = analysis_type
-      # Fix the OpenAI client initialization
-      @client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
+      
+      # Make sure API key is present
+      api_key = ENV['OPENAI_API_KEY']
+      if api_key.blank?
+        raise "OpenAI API key is missing. Please set OPENAI_API_KEY environment variable."
+      end
+      
+      # Initialize client with proper configuration
+      @client = OpenAI::Client.new(
+        access_token: api_key,
+        log_errors: true
+      )
     end
-
+    
     def analyze
       start_time = Time.current
       
       begin
+        # Check API key first
+        if ENV['OPENAI_API_KEY'].blank?
+          return { success: false, error: "OpenAI API key not configured" }
+        end
+        
         prompt = build_prompt
         response = call_openai_api(prompt)
         analysis_data = parse_response(response)
@@ -22,10 +37,10 @@ module AI
         deal_score_log = create_deal_score_log(prompt, response, analysis_data, start_time)
         deal_score_log.update_campaign_scores
         
-        # Generate embedding if available
-        generate_embedding if embedding_column_exists?
-        
         { success: true, analysis: analysis_data, log: deal_score_log }
+      rescue OpenAI::Error => e
+        Rails.logger.error "OpenAI API Error for campaign #{@campaign.id}: #{e.message}"
+        { success: false, error: "OpenAI API error: #{e.message}" }
       rescue => e
         Rails.logger.error "AI Deal Scoring failed for campaign #{@campaign.id}: #{e.message}"
         { success: false, error: e.message }
@@ -177,18 +192,29 @@ module AI
     end
 
     def call_openai_api(prompt)
-      @client.chat(
-        parameters: {
-          model: "gpt-4",
-          messages: [
-            { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON." },
-            { role: "user", content: prompt }
-          ],
-          temperature: 0.3,
-          max_tokens: 2000
-        }
-      )
+      Rails.logger.info "Calling OpenAI API with prompt length: #{prompt.length}"
+      
+      begin
+        response = @client.chat(
+          parameters: {
+            model: "gpt-3.5-turbo",  # or "gpt-3.5-turbo" for testing
+            messages: [
+              { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON." },
+              { role: "user", content: prompt }
+            ],
+            temperature: 0.3,
+            max_tokens: 2000
+          }
+        )
+        
+        Rails.logger.info "OpenAI API response received successfully"
+        response
+      rescue => e
+        Rails.logger.error "OpenAI API call failed: #{e.message}"
+        raise e
+      end
     end
+
 
     def parse_response(response)
       content = response.dig("choices", 0, "message", "content").to_s.strip
