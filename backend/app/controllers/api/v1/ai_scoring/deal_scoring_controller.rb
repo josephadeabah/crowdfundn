@@ -7,13 +7,15 @@ module Api
         # Add these require statements
         require Rails.root.join('app/services/ai/deal_scoring_service')
         require Rails.root.join('app/services/ai/similar_deals_service')
+        require Rails.root.join('app/services/ai/mock_deal_scoring_service')
 
         before_action :authenticate_request
         before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals]
 
         # POST /api/v1/ai_scoring/deal_scoring/analyze
         def analyze
-          result = ::AI::DealScoringService.analyze_campaign(@campaign)
+          # result = ::AI::DealScoringService.analyze_campaign(@campaign)
+          result = ::AI::MockDealScoringService.analyze_campaign(@campaign)
           
           if result[:success]
             render json: {
