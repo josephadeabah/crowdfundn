@@ -143,7 +143,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   const currentScores = analysis?.current_scores;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border p-6">
+    <div className="bg-white rounded-3xl shadow-sm border p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-gray-900">AI Deal Analysis</h3>
