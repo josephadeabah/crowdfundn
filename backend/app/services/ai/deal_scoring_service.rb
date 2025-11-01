@@ -3,10 +3,12 @@ module AI
   class DealScoringService
     include Rails.application.routes.url_helpers
 
+
     def initialize(campaign, analysis_type: 'manual')
       @campaign = campaign
       @analysis_type = analysis_type
-      @client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
+      # Fix the OpenAI client initialization
+      @client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])
     end
 
     def analyze

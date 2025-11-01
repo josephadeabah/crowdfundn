@@ -86,11 +86,13 @@ module AI
       end
     end
 
+
     def find_similar_basic
       similar_campaigns = Campaign
         .where.not(id: @campaign.id)
         .where(category: @campaign.category)
-        .order("ABS(goal_amount - #{@campaign.goal_amount}) ASC")
+        # Fix the dangerous query - use Arel.sql for raw SQL
+        .order(Arel.sql("ABS(goal_amount - #{@campaign.goal_amount.to_f}) ASC"))
         .limit(@limit)
 
       similar_campaigns.map do |campaign|
