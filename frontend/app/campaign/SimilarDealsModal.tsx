@@ -1,6 +1,7 @@
 // app/components/campaign/SimilarDealsModal.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/auth/AuthContext';
 
 interface SimilarDealsModalProps {
   campaignId: string;
@@ -27,6 +28,7 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
   const [similarDeals, setSimilarDeals] = useState<SimilarDeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { token } = useAuth();
 
   useEffect(() => {
     loadSimilarDeals();
@@ -39,7 +41,7 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
         `${process.env.NEXT_PUBLIC_API_URL}/ai/deal_scoring/similar_deals?campaign_id=${campaignId}`,
         {
           headers: {
-            'Authorization': `Bearer ${getAuthToken()}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }
@@ -57,13 +59,6 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
     } finally {
       setLoading(false);
     }
-  };
-
-  const getAuthToken = (): string => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('auth_token') || '';
-    }
-    return '';
   };
 
   const handleViewCampaign = (campaignId: string) => {

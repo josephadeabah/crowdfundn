@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { AnalysisHistoryModal } from './AnalysisHistoryModal';
 import { SimilarDealsModal } from './SimilarDealsModal';
 import { DealScoreChart } from './DealScoreChart';
+import { useAuth } from '../context/auth/AuthContext';
 
 interface DealScoreCardProps {
   campaignId: string;
@@ -43,6 +44,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [showSimilarDeals, setShowSimilarDeals] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const { token } = useAuth();
 
   useEffect(() => {
     if (campaignId) {
@@ -57,7 +59,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
         `${process.env.NEXT_PUBLIC_API_URL}/ai/deal_scoring/analysis_history?campaign_id=${campaignId}`,
         {
           headers: {
-            'Authorization': `Bearer ${getAuthToken()}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }
@@ -85,7 +87,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${getAuthToken()}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ campaign_id: campaignId })
@@ -105,14 +107,6 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     } finally {
       setLoading(false);
     }
-  };
-
-  const getAuthToken = (): string => {
-    // Adjust based on your auth system
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('auth_token') || '';
-    }
-    return '';
   };
 
   const formatTimeAgo = (dateString: string): string => {
