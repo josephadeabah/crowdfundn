@@ -8,8 +8,6 @@ module Api
 
         # POST /api/v1/ai_scoring/deal_scoring/analyze
         def analyze
-          authorize! :read, @campaign
-
           result = ::AI::DealScoringService.analyze_campaign(@campaign)
           
           if result[:success]
@@ -28,8 +26,6 @@ module Api
 
         # GET /api/v1/ai_scoring/deal_scoring/analysis_history
         def analysis_history
-          authorize! :read, @campaign
-
           logs = @campaign.deal_score_logs.recent.limit(10)
           
           render json: {
@@ -57,8 +53,6 @@ module Api
 
         # GET /api/v1/ai_scoring/deal_scoring/similar_deals
         def similar_deals
-          authorize! :read, @campaign
-
           similar_deals = ::AI::SimilarDealsService.new(@campaign).find_similar
           
           render json: {
@@ -83,8 +77,6 @@ module Api
 
         # GET /api/v1/ai_scoring/deal_scoring/dashboard_metrics
         def dashboard_metrics
-          authorize! :read, :ai_dashboard
-
           campaigns = Campaign.where.not(ai_deal_score: nil)
           
           metrics = {
