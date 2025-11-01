@@ -144,7 +144,7 @@ const SingleCampaignPage: React.FC = () => {
               {!loading && selectedTab === 'details' && (
                 <>
                   <DealScoreCard 
-                    campaignId={slugOrId}
+                    campaignId={String(currentCampaign?.id)}
                     currentUser={user}
                   />
                   <CampaignDetails
