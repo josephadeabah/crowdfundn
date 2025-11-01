@@ -1,4 +1,4 @@
-# lib/tasks/setup_vector.rake
+# lib/tasks/vector_setup.rake
 namespace :db do
   namespace :vector do
     desc "Enable vector extension and convert JSON to vector (for production)"
@@ -33,10 +33,15 @@ namespace :db do
               WHERE ai_embedding IS NOT NULL
             SQL
             
-            # Drop the old column and rename the new one
+            # Drop the old column
             ActiveRecord::Base.connection.execute(<<~SQL)
               ALTER TABLE campaigns 
-              DROP COLUMN ai_embedding,
+              DROP COLUMN ai_embedding
+            SQL
+            
+            # Rename the new column
+            ActiveRecord::Base.connection.execute(<<~SQL)
+              ALTER TABLE campaigns 
               RENAME COLUMN ai_embedding_temp TO ai_embedding
             SQL
             
@@ -55,6 +60,7 @@ namespace :db do
           
         rescue => e
           puts "❌ Error setting up vector: #{e.message}"
+          puts "Backtrace: #{e.backtrace.first(5).join("\n")}" # First 5 lines of backtrace
           puts "Continuing with JSON storage..."
         end
         
@@ -92,6 +98,79 @@ namespace :db do
         
       rescue => e
         puts "❌ Error checking vector status: #{e.message}"
+      end
+    end
+
+    desc "Rollback vector conversion (convert back to JSONB)"
+    task rollback: :environment do
+      if ActiveRecord::Base.connection.table_exists?('campaigns') && 
+         Campaign.column_names.include?('ai_embedding')
+        
+        puts "Rolling back vector conversion..."
+        
+        begin
+          # Check current column type
+          column_info = ActiveRecord::Base.connection.columns('campaigns')
+                                            .find { |c| c.name == 'ai_embedding' }
+          
+          if column_info.sql_type == 'USER-DEFINED' # This indicates vector type
+            puts "Converting vector column back to JSONB..."
+            
+            # Add a temporary JSONB column
+            ActiveRecord::Base.connection.execute(<<~SQL)
+              ALTER TABLE campaigns 
+              ADD COLUMN ai_embedding_temp JSONB
+            SQL
+            
+            # Copy data from vector to JSONB
+            ActiveRecord::Base.connection.execute(<<~SQL)
+              UPDATE campaigns 
+              SET ai_embedding_temp = ai_embedding::text::jsonb 
+              WHERE ai_embedding IS NOT NULL
+            SQL
+            
+            # Drop vector index if exists
+            ActiveRecord::Base.connection.execute(<<~SQL)
+              DROP INDEX IF EXISTS index_campaigns_on_ai_embedding_vector
+            SQL
+            
+            # Drop the old column
+            ActiveRecord::Base.connection.execute(<<~SQL)
+              ALTER TABLE campaigns 
+              DROP COLUMN ai_embedding
+            SQL
+            
+            # Rename the new column
+            ActiveRecord::Base.connection.execute(<<~SQL)
+              ALTER TABLE campaigns 
+              RENAME COLUMN ai_embedding_temp TO ai_embedding
+            SQL
+            
+            puts "✅ Vector column converted back to JSONB"
+          else
+            puts "✅ Column is already JSONB type"
+          end
+          
+        rescue => e
+          puts "❌ Error rolling back vector conversion: #{e.message}"
+          puts "Backtrace: #{e.backtrace.first(5).join("\n")}"
+        end
+        
+      else
+        puts "❌ Campaigns table or ai_embedding column not found"
+      end
+    end
+
+    desc "Reset vector setup (disable extension and convert back to JSONB)"
+    task reset: :environment do
+      Rake::Task['db:vector:rollback'].invoke
+      
+      begin
+        # Disable vector extension
+        ActiveRecord::Base.connection.execute("DROP EXTENSION IF EXISTS vector")
+        puts "✅ Vector extension disabled"
+      rescue => e
+        puts "❌ Error disabling vector extension: #{e.message}"
       end
     end
   end
