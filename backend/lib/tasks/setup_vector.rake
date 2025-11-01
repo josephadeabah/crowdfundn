@@ -173,11 +173,12 @@ namespace :db do
             
             # Add vector index if vector extension is enabled
             begin
-              vector_enabled = ActiveRecord::Base.connection.execute(<<~SQL)
+              vector_result = ActiveRecord::Base.connection.execute(<<~SQL)
                 SELECT EXISTS(
                   SELECT 1 FROM pg_extension WHERE extname = 'vector'
                 ) as vector_enabled
-              SQL[0]['vector_enabled']
+              SQL
+              vector_enabled = vector_result[0]['vector_enabled']
               
               if vector_enabled
                 ActiveRecord::Base.connection.execute(<<~SQL)
@@ -260,6 +261,19 @@ namespace :db do
         
       else
         puts "❌ Campaigns table or ai_embedding column not found"
+      end
+    end
+
+    desc "Reset vector setup (disable extension and convert back to JSONB)"
+    task reset: :environment do
+      Rake::Task['db:vector:rollback'].invoke
+      
+      begin
+        # Disable vector extension
+        ActiveRecord::Base.connection.execute("DROP EXTENSION IF EXISTS vector")
+        puts "✅ Vector extension disabled"
+      rescue => e
+        puts "❌ Error disabling vector extension: #{e.message}"
       end
     end
   end
