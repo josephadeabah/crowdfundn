@@ -20,7 +20,12 @@ export const DealScoreChart: React.FC<DealScoreChartProps> = ({ score }) => {
   };
 
   return (
-    <svg width="100%" height="100%" viewBox="0 0 120 120" className="transform -rotate-90">
+    <svg
+      width="100%"
+      height="100%"
+      viewBox="0 0 120 120"
+      className="transform -rotate-90"
+    >
       {/* Background circle */}
       <circle
         cx="60"
@@ -30,7 +35,7 @@ export const DealScoreChart: React.FC<DealScoreChartProps> = ({ score }) => {
         strokeWidth="8"
         fill="none"
       />
-      
+
       {/* Progress circle */}
       <circle
         cx="60"
@@ -44,7 +49,7 @@ export const DealScoreChart: React.FC<DealScoreChartProps> = ({ score }) => {
         strokeDashoffset={strokeDashoffset}
         className="transition-all duration-1000 ease-out"
       />
-      
+
       {/* Score text */}
       <text
         x="60"

@@ -21,9 +21,9 @@ interface SimilarDeal {
   common_features: string[];
 }
 
-export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({ 
-  campaignId, 
-  onClose 
+export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
+  campaignId,
+  onClose,
 }) => {
   const [similarDeals, setSimilarDeals] = useState<SimilarDeal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,12 +41,12 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/similar_deals?campaign_id=${campaignId}`,
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
       );
-      
+
       if (response.ok) {
         const data = await response.json();
         setSimilarDeals(data.similar_deals || []);
@@ -70,13 +70,25 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Similar Investment Opportunities</h2>
-          <button 
+          <h2 className="text-xl font-semibold text-gray-900">
+            Similar Investment Opportunities
+          </h2>
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -96,17 +108,23 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
           ) : (
             <div className="grid gap-4">
               {similarDeals.map((deal, index) => (
-                <div key={deal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div
+                  key={deal.id}
+                  className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">{deal.title}</h3>
+                      <h3 className="font-semibold text-gray-900">
+                        {deal.title}
+                      </h3>
                       <p className="text-sm text-gray-600 mt-1">
                         {deal.type?.replace('Campaign', '') || 'Campaign'}
                       </p>
-                      
+
                       <div className="flex items-center space-x-4 mt-2">
                         <span className="text-sm text-gray-500">
-                          Goal: {deal.currency} {deal.goal_amount?.toLocaleString()}
+                          Goal: {deal.currency}{' '}
+                          {deal.goal_amount?.toLocaleString()}
                         </span>
                         <span className="text-sm text-gray-500">
                           Performance: {deal.performance_percentage}%
@@ -116,18 +134,22 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4">
                       <div className="text-right">
-                        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getScoreBadgeClass(deal.deal_score)}`}>
+                        <div
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getScoreBadgeClass(deal.deal_score)}`}
+                        >
                           Score: {deal.deal_score || 'N/A'}
                         </div>
-                        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 ${getRiskBadgeClass(deal.risk_score)}`}>
+                        <div
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 ${getRiskBadgeClass(deal.risk_score)}`}
+                        >
                           Risk: {deal.risk_score || 'N/A'}
                         </div>
                       </div>
-                      
-                      <button 
+
+                      <button
                         onClick={() => handleViewCampaign(deal.id)}
                         className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors"
                       >
@@ -135,12 +157,17 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
                       </button>
                     </div>
                   </div>
-                  
+
                   {deal.common_features && deal.common_features.length > 0 && (
                     <div className="mt-2">
-                      <span className="text-xs text-gray-500">Common features: </span>
+                      <span className="text-xs text-gray-500">
+                        Common features:{' '}
+                      </span>
                       {deal.common_features.map((feature, idx) => (
-                        <span key={idx} className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded mr-1">
+                        <span
+                          key={idx}
+                          className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded mr-1"
+                        >
                           {feature.replace(/_/g, ' ')}
                         </span>
                       ))}

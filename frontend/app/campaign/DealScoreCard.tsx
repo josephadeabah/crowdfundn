@@ -16,6 +16,9 @@ interface AnalysisData {
     deal_score: number;
     risk_score: number;
     risk_category: string;
+    sentiment_analysis: string;
+    team_assessment: string;
+    market_opportunity: string;
     updated_at: string;
   };
   analysis_history: Array<{
@@ -25,19 +28,36 @@ interface AnalysisData {
     risk_score: number;
     risk_category: string;
     analyzed_at: string;
-    key_risks: string[];
+    downside_risks: string[];
+    upside_potential: string[];
     strengths: string[];
+    sentiment_analysis: string;
+    team_assessment: string;
+    market_opportunity: string;
+    investment_thesis: string;
   }>;
   campaign_performance?: number;
   latest_analysis?: {
-    key_risks: string[];
+    downside_risks: string[];
+    upside_potential: string[];
     strengths: string[];
+    sentiment_analysis: string;
+    team_assessment: string;
+    market_opportunity: string;
+    investment_thesis: string;
+  };
+  comprehensive_analysis?: {
+    risk_assessment: any;
+    deal_assessment: any;
+    sentiment_analysis: any;
+    team_analysis: any;
+    market_analysis: any;
   };
 }
 
-export const DealScoreCard: React.FC<DealScoreCardProps> = ({ 
-  campaignId, 
-  currentUser 
+export const DealScoreCard: React.FC<DealScoreCardProps> = ({
+  campaignId,
+  currentUser,
 }) => {
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -59,12 +79,12 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/analysis_history?campaign_id=${campaignId}`,
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
       );
-      
+
       if (response.ok) {
         const data = await response.json();
         setAnalysis(data);
@@ -81,21 +101,21 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/analyze`,
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ campaign_id: campaignId })
-        }
+          body: JSON.stringify({ campaign_id: campaignId }),
+        },
       );
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         await loadAnalysis(); // Reload to get updated data
       } else {
@@ -146,7 +166,9 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     <div className="bg-white rounded-3xl shadow-sm border p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">AI Risk Analyzer</h3>
+        <h3 className="text-lg font-semibold text-gray-900">
+          AI Investment Analyzer
+        </h3>
         {currentScores?.updated_at && (
           <span className="text-sm text-gray-500">
             Updated {formatTimeAgo(currentScores.updated_at)}
@@ -164,17 +186,27 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
         // No analysis state
         <div className="text-center py-8">
           <div className="text-gray-400 mb-3">
-            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            <svg
+              className="w-12 h-12 mx-auto"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
           </div>
           <p className="text-gray-500 mb-4">No AI analysis available yet</p>
-          <button 
+          <button
             onClick={runAnalysis}
             disabled={loading}
             className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
           >
-            {loading ? 'Analyzing...' : 'Run Initial Analysis'}
+            {loading ? 'Analyzing...' : 'Run Comprehensive Analysis'}
           </button>
         </div>
       ) : (
@@ -187,28 +219,32 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                 <DealScoreChart score={currentScores.deal_score} />
               </div>
               <div className="mt-2 text-center">
-                <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getScoreBadgeClass(currentScores.deal_score)}`}>
+                <span
+                  className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getScoreBadgeClass(currentScores.deal_score)}`}
+                >
                   {getDealGrade(currentScores.deal_score)} Grade
                 </span>
               </div>
             </div>
 
             {/* Risk Assessment & Metrics */}
-            <div className="flex flex-col justify-center">
-              <div className="mb-4">
-                <h4 className="text-sm font-medium text-gray-500 mb-1">Risk Assessment</h4>
+            <div className="flex flex-col justify-center space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-gray-500 mb-1">
+                  Risk Assessment
+                </h4>
                 <div className="flex items-center">
                   <div className="w-24 bg-gray-200 rounded-full h-2 mr-3">
-                    <div 
-                      className="h-2 rounded-full" 
-                      style={{ 
-                        width: `${currentScores.risk_score}%`, 
-                        backgroundColor: getRiskColor(currentScores.risk_score) 
+                    <div
+                      className="h-2 rounded-full"
+                      style={{
+                        width: `${currentScores.risk_score}%`,
+                        backgroundColor: getRiskColor(currentScores.risk_score),
                       }}
                     ></div>
                   </div>
-                  <span 
-                    className="text-sm font-medium" 
+                  <span
+                    className="text-sm font-medium"
                     style={{ color: getRiskColor(currentScores.risk_score) }}
                   >
                     {currentScores.risk_score}%
@@ -219,31 +255,51 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                 </span>
               </div>
 
-              {/* Quick Metrics */}
+              {/* Additional Metrics */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Analysis Count:</span>
-                  <span className="font-medium">{analysis.analysis_history?.length || 0}</span>
+                  <span className="text-gray-500">Sentiment:</span>
+                  <span
+                    className={`font-medium ${getSentimentColorClass(currentScores.sentiment_analysis)}`}
+                  >
+                    {currentScores.sentiment_analysis || 'N/A'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Team:</span>
+                  <span
+                    className={`font-medium ${getTeamAssessmentColorClass(currentScores.team_assessment)}`}
+                  >
+                    {currentScores.team_assessment || 'N/A'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Market:</span>
+                  <span
+                    className={`font-medium ${getMarketOpportunityColorClass(currentScores.market_opportunity)}`}
+                  >
+                    {currentScores.market_opportunity || 'N/A'}
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col justify-center space-y-3">
-              <button 
+              <button
                 onClick={runAnalysis}
                 disabled={loading}
                 className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
               >
                 {loading ? 'Re-analyzing...' : 'Re-analyze'}
               </button>
-              <button 
+              <button
                 onClick={() => setShowSimilarDeals(true)}
                 className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Similar Deals
               </button>
-              <button 
+              <button
                 onClick={() => setShowHistory(true)}
                 className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
               >
@@ -252,33 +308,53 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             </div>
           </div>
 
-          {/* Key Insights */}
+          {/* Comprehensive Insights */}
           {analysis.latest_analysis && (
             <div className="mt-6 pt-6 border-t">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500 mb-2">Key Risks</h4>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">
+                    Upside Potential
+                  </h4>
                   <ul className="text-sm text-gray-700 space-y-1">
-                    {analysis.latest_analysis.key_risks?.map((risk, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="text-red-500 mr-2">•</span>
-                        {risk}
-                      </li>
-                    ))}
+                    {analysis.latest_analysis.upside_potential?.map(
+                      (potential, index) => (
+                        <li key={index} className="flex items-start">
+                          <span className="text-green-500 mr-2">↑</span>
+                          {potential}
+                        </li>
+                      ),
+                    )}
                   </ul>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500 mb-2">Strengths</h4>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">
+                    Downside Risks
+                  </h4>
                   <ul className="text-sm text-gray-700 space-y-1">
-                    {analysis.latest_analysis.strengths?.map((strength, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="text-green-500 mr-2">•</span>
-                        {strength}
-                      </li>
-                    ))}
+                    {analysis.latest_analysis.downside_risks?.map(
+                      (risk, index) => (
+                        <li key={index} className="flex items-start">
+                          <span className="text-red-500 mr-2">↓</span>
+                          {risk}
+                        </li>
+                      ),
+                    )}
                   </ul>
                 </div>
               </div>
+
+              {/* Investment Thesis */}
+              {analysis.latest_analysis.investment_thesis && (
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">
+                    Investment Thesis
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    {analysis.latest_analysis.investment_thesis}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </>
@@ -286,14 +362,14 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
 
       {/* Modals */}
       {showSimilarDeals && (
-        <SimilarDealsModal 
+        <SimilarDealsModal
           campaignId={campaignId}
           onClose={() => setShowSimilarDeals(false)}
         />
       )}
 
       {showHistory && (
-        <AnalysisHistoryModal 
+        <AnalysisHistoryModal
           history={analysis?.analysis_history || []}
           onClose={() => setShowHistory(false)}
         />
@@ -302,7 +378,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   );
 };
 
-// Helper functions
+// Enhanced helper functions
 const getDealGrade = (score: number): string => {
   if (score >= 90) return 'A+';
   if (score >= 80) return 'A';
@@ -333,4 +409,43 @@ const getRiskLevel = (score: number): string => {
   if (score <= 60) return 'Medium';
   if (score <= 80) return 'High';
   return 'Very High';
+};
+
+const getSentimentColorClass = (sentiment: string): string => {
+  switch (sentiment) {
+    case 'positive':
+      return 'text-green-600';
+    case 'neutral':
+      return 'text-yellow-600';
+    case 'negative':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getTeamAssessmentColorClass = (assessment: string): string => {
+  switch (assessment) {
+    case 'strong':
+      return 'text-green-600';
+    case 'adequate':
+      return 'text-yellow-600';
+    case 'weak':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getMarketOpportunityColorClass = (opportunity: string): string => {
+  switch (opportunity) {
+    case 'large':
+      return 'text-green-600';
+    case 'medium':
+      return 'text-yellow-600';
+    case 'small':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
 };

@@ -9,8 +9,13 @@ interface AnalysisHistory {
   risk_score: number;
   risk_category: string;
   analyzed_at: string;
-  key_risks: string[];
+  downside_risks: string[];
+  upside_potential: string[];
   strengths: string[];
+  sentiment_analysis: string;
+  team_assessment: string;
+  market_opportunity: string;
+  investment_thesis: string;
 }
 
 interface AnalysisHistoryModalProps {
@@ -18,27 +23,55 @@ interface AnalysisHistoryModalProps {
   onClose: () => void;
 }
 
-export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({ 
-  history, 
-  onClose 
+export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
+  history,
+  onClose,
 }) => {
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   };
 
+  const getAnalysisTypeLabel = (type: string): string => {
+    const labels = {
+      initial: 'Initial Analysis',
+      weekly: 'Weekly Update',
+      monthly: 'Monthly Review',
+      manual: 'Manual Analysis',
+    };
+    return labels[type as keyof typeof labels] || type;
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Analysis History</h2>
-          <button 
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Comprehensive Analysis History
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Detailed timeline of all AI analyses with upside/downside
+              assessment
+            </p>
+          </div>
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -50,57 +83,157 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
               No analysis history available. Run an analysis first.
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {history.map((analysis) => (
-                <div key={analysis.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getAnalysisTypeClass(analysis.analysis_type)}`}>
-                        {analysis.analysis_type.replace('_', ' ')}
+                <div
+                  key={analysis.id}
+                  className="border rounded-lg p-6 bg-white shadow-sm"
+                >
+                  {/* Analysis Header */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center space-x-3">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getAnalysisTypeClass(analysis.analysis_type)}`}
+                      >
+                        {getAnalysisTypeLabel(analysis.analysis_type)}
                       </span>
-                      <span className="text-sm text-gray-500 ml-2">
+                      <span className="text-sm text-gray-500">
                         {formatDate(analysis.analyzed_at)}
                       </span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getScoreBadgeClass(analysis.deal_score)}`}>
-                        Deal: {analysis.deal_score}
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getScoreBadgeClass(analysis.deal_score)}`}
+                      >
+                        Deal Score: {analysis.deal_score}
                       </div>
-                      <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRiskBadgeClass(analysis.risk_score)}`}>
-                        Risk: {analysis.risk_score}
+                      <div
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getRiskBadgeClass(analysis.risk_score)}`}
+                      >
+                        Risk Score: {analysis.risk_score}
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+
+                  {/* Quick Metrics */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="text-center p-3 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">Sentiment</div>
+                      <div
+                        className={`text-lg font-semibold ${getSentimentColorClass(analysis.sentiment_analysis)}`}
+                      >
+                        {analysis.sentiment_analysis || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="text-center p-3 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">
+                        Team Assessment
+                      </div>
+                      <div
+                        className={`text-lg font-semibold ${getTeamAssessmentColorClass(analysis.team_assessment)}`}
+                      >
+                        {analysis.team_assessment || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="text-center p-3 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">
+                        Market Opportunity
+                      </div>
+                      <div
+                        className={`text-lg font-semibold ${getMarketOpportunityColorClass(analysis.market_opportunity)}`}
+                      >
+                        {analysis.market_opportunity || 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Comprehensive Analysis Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Upside Potential */}
                     <div>
-                      <h4 className="font-medium text-gray-700 mb-1">Key Risks</h4>
-                      <ul className="text-gray-600 space-y-1">
-                        {analysis.key_risks?.map((risk, index) => (
-                          <li key={index} className="flex items-start">
+                      <h4 className="font-medium text-gray-700 mb-2 flex items-center">
+                        <span className="text-green-500 mr-2">↑</span>
+                        Upside Potential
+                      </h4>
+                      <ul className="text-sm text-gray-600 space-y-2">
+                        {analysis.upside_potential?.map((potential, index) => (
+                          <li
+                            key={index}
+                            className="flex items-start p-2 bg-green-50 rounded"
+                          >
+                            <span className="text-green-500 mr-2">•</span>
+                            {potential}
+                          </li>
+                        ))}
+                        {(!analysis.upside_potential ||
+                          analysis.upside_potential.length === 0) && (
+                          <li className="text-gray-400 p-2">
+                            No upside factors identified
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+
+                    {/* Downside Risks */}
+                    <div>
+                      <h4 className="font-medium text-gray-700 mb-2 flex items-center">
+                        <span className="text-red-500 mr-2">↓</span>
+                        Downside Risks
+                      </h4>
+                      <ul className="text-sm text-gray-600 space-y-2">
+                        {analysis.downside_risks?.map((risk, index) => (
+                          <li
+                            key={index}
+                            className="flex items-start p-2 bg-red-50 rounded"
+                          >
                             <span className="text-red-500 mr-2">•</span>
                             {risk}
                           </li>
                         ))}
-                        {(!analysis.key_risks || analysis.key_risks.length === 0) && (
-                          <li className="text-gray-400">No risks identified</li>
+                        {(!analysis.downside_risks ||
+                          analysis.downside_risks.length === 0) && (
+                          <li className="text-gray-400 p-2">
+                            No risks identified
+                          </li>
                         )}
                       </ul>
                     </div>
+
+                    {/* Strengths */}
                     <div>
-                      <h4 className="font-medium text-gray-700 mb-1">Strengths</h4>
-                      <ul className="text-gray-600 space-y-1">
+                      <h4 className="font-medium text-gray-700 mb-2">
+                        Strengths
+                      </h4>
+                      <ul className="text-sm text-gray-600 space-y-2">
                         {analysis.strengths?.map((strength, index) => (
-                          <li key={index} className="flex items-start">
-                            <span className="text-green-500 mr-2">•</span>
+                          <li
+                            key={index}
+                            className="flex items-start p-2 bg-blue-50 rounded"
+                          >
+                            <span className="text-blue-500 mr-2">•</span>
                             {strength}
                           </li>
                         ))}
-                        {(!analysis.strengths || analysis.strengths.length === 0) && (
-                          <li className="text-gray-400">No strengths identified</li>
+                        {(!analysis.strengths ||
+                          analysis.strengths.length === 0) && (
+                          <li className="text-gray-400 p-2">
+                            No strengths identified
+                          </li>
                         )}
                       </ul>
                     </div>
+
+                    {/* Investment Thesis */}
+                    {analysis.investment_thesis && (
+                      <div className="lg:col-span-2">
+                        <h4 className="font-medium text-gray-700 mb-2">
+                          Investment Thesis
+                        </h4>
+                        <div className="p-3 bg-purple-50 rounded text-sm text-gray-600">
+                          {analysis.investment_thesis}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -114,10 +247,16 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
 
 const getAnalysisTypeClass = (type: string): string => {
   switch (type) {
-    case 'initial': return 'bg-blue-100 text-blue-800';
-    case 'weekly': return 'bg-purple-100 text-purple-800';
-    case 'manual': return 'bg-orange-100 text-orange-800';
-    default: return 'bg-gray-100 text-gray-800';
+    case 'initial':
+      return 'bg-blue-100 text-blue-800';
+    case 'weekly':
+      return 'bg-purple-100 text-purple-800';
+    case 'monthly':
+      return 'bg-green-100 text-green-800';
+    case 'manual':
+      return 'bg-orange-100 text-orange-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
   }
 };
 
@@ -131,4 +270,43 @@ const getRiskBadgeClass = (score: number): string => {
   if (score <= 30) return 'bg-green-100 text-green-800';
   if (score <= 60) return 'bg-yellow-100 text-yellow-800';
   return 'bg-red-100 text-red-800';
+};
+
+const getSentimentColorClass = (sentiment: string): string => {
+  switch (sentiment) {
+    case 'positive':
+      return 'text-green-600';
+    case 'neutral':
+      return 'text-yellow-600';
+    case 'negative':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getTeamAssessmentColorClass = (assessment: string): string => {
+  switch (assessment) {
+    case 'strong':
+      return 'text-green-600';
+    case 'adequate':
+      return 'text-yellow-600';
+    case 'weak':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getMarketOpportunityColorClass = (opportunity: string): string => {
+  switch (opportunity) {
+    case 'large':
+      return 'text-green-600';
+    case 'medium':
+      return 'text-yellow-600';
+    case 'small':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
 };
