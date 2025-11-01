@@ -159,6 +159,19 @@ module AI
       }
     end
 
+    def extract_fundraiser_experience
+      fundraiser = @campaign.fundraiser
+      {
+        total_campaigns: fundraiser.campaigns.count,
+        successful_campaigns: fundraiser.campaigns.where(status: 'completed').count,
+        total_raised: fundraiser.campaigns.sum(:transferred_amount),
+        member_since: fundraiser.created_at,
+        kyc_verified: fundraiser.kyc_verified?,
+        investor_verified: fundraiser.investor_kyc_verified?,
+        issuer_verified: fundraiser.issuer_kyc_verified?
+      }
+    end
+
     def extract_comprehensive_equity_data
       return {} unless @campaign.is_a?(EquityCampaign)
       

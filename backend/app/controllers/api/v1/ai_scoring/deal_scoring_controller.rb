@@ -39,6 +39,9 @@ module Api
               deal_score: @campaign.ai_deal_score,
               risk_score: @campaign.ai_risk_score,
               risk_category: @campaign.ai_risk_category,
+              sentiment_analysis: @campaign.ai_sentiment,
+              team_assessment: @campaign.ai_team_assessment,
+              market_opportunity: @campaign.ai_market_opportunity,
               updated_at: @campaign.ai_analysis_updated_at
             },
             analysis_history: logs.map do |log|
@@ -49,8 +52,13 @@ module Api
                 risk_score: log.risk_score,
                 risk_category: log.risk_category,
                 analyzed_at: log.analyzed_at,
-                key_risks: log.key_risks,
-                strengths: log.strengths
+                downside_risks: log.downside_risks || log.key_risks, # Backward compatible
+                upside_potential: log.upside_potential,
+                strengths: log.strengths,
+                sentiment_analysis: log.sentiment_analysis,
+                team_assessment: log.team_assessment,
+                market_opportunity: log.market_opportunity,
+                investment_thesis: log.investment_thesis
               }
             end
           }
