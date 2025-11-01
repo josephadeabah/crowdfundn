@@ -20,7 +20,7 @@ module AI
         log_errors: true
       )
     end
-    
+
     def analyze
       start_time = Time.current
       
@@ -197,7 +197,7 @@ module AI
       begin
         response = @client.chat(
           parameters: {
-            model: "gpt-3.5-turbo",  # or "gpt-3.5-turbo" for testing
+            model: "gpt-5-nano",  # or "gpt-3.5-turbo" for testing
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON." },
               { role: "user", content: prompt }
