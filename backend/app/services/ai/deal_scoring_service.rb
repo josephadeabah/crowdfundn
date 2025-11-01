@@ -202,8 +202,6 @@ module AI
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON." },
               { role: "user", content: prompt }
             ],
-            temperature: 0.3,
-            max_tokens: 2000
           }
         )
         
