@@ -3,7 +3,7 @@ module Api
   module V1
     module AiScoring
       class DealScoringController < ApplicationController
-        before_action :authenticate_user!
+        before_action :authenticate_request
         before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals]
 
         # POST /api/v1/ai_scoring/deal_scoring/analyze
