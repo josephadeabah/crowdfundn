@@ -172,6 +172,64 @@ module AI
       }
     end
 
+    def extract_fundraiser_track_record
+      fundraiser = @campaign.fundraiser
+      previous_campaigns = fundraiser.campaigns.where.not(id: @campaign.id)
+      
+      {
+        total_previous_campaigns: previous_campaigns.count,
+        successful_campaigns: previous_campaigns.where(status: 'completed').count,
+        total_historical_raise: previous_campaigns.sum(:transferred_amount),
+        average_campaign_performance: calculate_average_performance(previous_campaigns),
+        campaign_success_rate: calculate_success_rate(previous_campaigns)
+      }
+    end
+
+    def extract_competitive_analysis
+      similar_campaigns = Campaign.where(category: @campaign.category)
+                              .where.not(id: @campaign.id)
+                              .where('created_at >= ?', 6.months.ago)
+      
+      # Calculate performance percentages in Ruby since it's not a database column
+      campaigns_with_performance = similar_campaigns.map do |campaign|
+        {
+          campaign: campaign,
+          performance_percentage: campaign.performance_percentage
+        }
+      end
+      
+      successful_campaigns = campaigns_with_performance.select { |c| c[:performance_percentage] >= 100 }
+      
+      {
+        total_similar_campaigns: similar_campaigns.count,
+        average_goal: similar_campaigns.average(:goal_amount).to_f.round(2),
+        average_performance: calculate_average_performance_from_array(campaigns_with_performance),
+        success_rate: similar_campaigns.any? ? (successful_campaigns.count.to_f / similar_campaigns.count * 100).round(2) : 0
+      }
+    end
+
+    def calculate_average_performance(campaigns)
+      return 0 if campaigns.empty?
+      
+      # Calculate average performance in Ruby since it's a method, not a column
+      total_performance = campaigns.sum { |campaign| campaign.performance_percentage }
+      (total_performance.to_f / campaigns.count).round(2)
+    end
+
+    def calculate_success_rate(campaigns)
+      return 0 if campaigns.empty?
+      
+      successful_count = campaigns.count { |campaign| campaign.performance_percentage >= 100 }
+      (successful_count.to_f / campaigns.count * 100).round(2)
+    end
+
+    def calculate_average_performance_from_array(campaigns_with_performance)
+      return 0 if campaigns_with_performance.empty?
+      
+      total_performance = campaigns_with_performance.sum { |c| c[:performance_percentage] }
+      (total_performance.to_f / campaigns_with_performance.count).round(2)
+    end
+
     def extract_comprehensive_equity_data
       return {} unless @campaign.is_a?(EquityCampaign)
       
@@ -416,48 +474,12 @@ module AI
       (repeat_backers.to_f / @campaign.total_donors * 100).round(2)
     end
 
-    def extract_fundraiser_track_record
-      fundraiser = @campaign.fundraiser
-      previous_campaigns = fundraiser.campaigns.where.not(id: @campaign.id)
-      
-      {
-        total_previous_campaigns: previous_campaigns.count,
-        successful_campaigns: previous_campaigns.where(status: 'completed').count,
-        total_historical_raise: previous_campaigns.sum(:transferred_amount),
-        average_campaign_performance: calculate_average_performance(previous_campaigns),
-        campaign_success_rate: calculate_success_rate(previous_campaigns)
-      }
-    end
-
     def extract_market_context
       {
         category_growth: assess_category_growth(@campaign.category),
         competitive_intensity: assess_competitive_intensity(@campaign.category),
         market_timing: assess_market_timing
       }
-    end
-
-    def extract_competitive_analysis
-      similar_campaigns = Campaign.where(category: @campaign.category)
-                                  .where.not(id: @campaign.id)
-                                  .where('created_at >= ?', 6.months.ago)
-      
-      {
-        total_similar_campaigns: similar_campaigns.count,
-        average_goal: similar_campaigns.average(:goal_amount).to_f.round(2),
-        average_performance: similar_campaigns.average(:performance_percentage).to_f.round(2),
-        success_rate: (similar_campaigns.where('performance_percentage >= 100').count.to_f / similar_campaigns.count * 100).round(2)
-      }
-    end
-
-    def calculate_average_performance(campaigns)
-      return 0 if campaigns.empty?
-      campaigns.average(:performance_percentage).to_f.round(2)
-    end
-
-    def calculate_success_rate(campaigns)
-      return 0 if campaigns.empty?
-      (campaigns.where('performance_percentage >= 100').count.to_f / campaigns.count * 100).round(2)
     end
 
     def assess_category_growth(category)
