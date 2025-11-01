@@ -108,7 +108,17 @@ module Api
         private
 
         def set_campaign
-          @campaign = Campaign.find(params[:campaign_id])
+          # Try to find by ID first, then by slug
+          @campaign = Campaign.find_by(id: params[:campaign_id]) || 
+                      Campaign.find_by(slug: params[:campaign_id])
+          
+          unless @campaign
+            render json: { 
+              success: false, 
+              error: "Campaign not found: #{params[:campaign_id]}" 
+            }, status: :not_found
+            return false
+          end
         end
       end
     end
