@@ -280,6 +280,7 @@ Rails.application.routes.draw do
             get :similar_deals
             get :dashboard_metrics
           end
+        end
       end
 
     end
