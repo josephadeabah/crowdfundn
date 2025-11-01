@@ -1,7 +1,7 @@
 # app/controllers/api/v1/ai/deal_scoring_controller.rb
 module Api
   module V1
-    module AI
+    module Ai  # lowercase 'ai' to match directory
       class DealScoringController < ApplicationController
         before_action :authenticate_user!
         before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals]
@@ -10,7 +10,7 @@ module Api
         def analyze
           authorize! :read, @campaign
 
-          result = AI::DealScoringService.analyze_campaign(@campaign)
+          result = ::AI::DealScoringService.analyze_campaign(@campaign)  # Use ::AI to reference the top-level AI module
           
           if result[:success]
             render json: {
@@ -18,11 +18,11 @@ module Api
               analysis: result[:analysis],
               deal_score: result[:analysis]['deal_score'],
               risk_score: result[:analysis]['risk_score'],
-              risk_category: result[:analysis]['risk_category'], # ✅ FIXED: removed extra single quote
+              risk_category: result[:analysis]['risk_category'],
               log_id: result[:log]&.id
             }
           else
-            render json: { success: false, error: result[:error] }, status: :unprocessable_entity
+            render json: { success: false, error: result[:error] }, status: :unprocessable_containty
           end
         end
 
@@ -59,7 +59,7 @@ module Api
         def similar_deals
           authorize! :read, @campaign
 
-          similar_deals = AI::SimilarDealsService.new(@campaign).find_similar
+          similar_deals = ::AI::SimilarDealsService.new(@campaign).find_similar  # Use ::AI
           
           render json: {
             campaign_id: @campaign.id,
