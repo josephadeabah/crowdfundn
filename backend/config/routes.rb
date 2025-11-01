@@ -272,7 +272,7 @@ Rails.application.routes.draw do
       end
 
       # Add AI routes
-      namespace :ai do
+      namespace :ai_scoring do
         namespace :deal_scoring do
           post 'analyze', to: 'deal_scoring#analyze'
           get 'analysis_history', to: 'deal_scoring#analysis_history'

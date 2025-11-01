@@ -1,16 +1,16 @@
-# app/controllers/api/v1/ai/deal_scoring_controller.rb
+# app/controllers/api/v1/ai_scoring/deal_scoring_controller.rb
 module Api
   module V1
-    module Ai  # lowercase 'ai' to match directory
+    module AiScoring
       class DealScoringController < ApplicationController
         before_action :authenticate_user!
         before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals]
 
-        # POST /api/v1/ai/deal_scoring/analyze
+        # POST /api/v1/ai_scoring/deal_scoring/analyze
         def analyze
           authorize! :read, @campaign
 
-          result = ::AI::DealScoringService.analyze_campaign(@campaign)  # Use ::AI to reference the top-level AI module
+          result = ::AI::DealScoringService.analyze_campaign(@campaign)
           
           if result[:success]
             render json: {
@@ -22,11 +22,11 @@ module Api
               log_id: result[:log]&.id
             }
           else
-            render json: { success: false, error: result[:error] }, status: :unprocessable_containty
+            render json: { success: false, error: result[:error] }, status: :unprocessable_entity
           end
         end
 
-        # GET /api/v1/ai/deal_scoring/analysis_history
+        # GET /api/v1/ai_scoring/deal_scoring/analysis_history
         def analysis_history
           authorize! :read, @campaign
 
@@ -55,11 +55,11 @@ module Api
           }
         end
 
-        # GET /api/v1/ai/deal_scoring/similar_deals
+        # GET /api/v1/ai_scoring/deal_scoring/similar_deals
         def similar_deals
           authorize! :read, @campaign
 
-          similar_deals = ::AI::SimilarDealsService.new(@campaign).find_similar  # Use ::AI
+          similar_deals = ::AI::SimilarDealsService.new(@campaign).find_similar
           
           render json: {
             campaign_id: @campaign.id,
@@ -81,7 +81,7 @@ module Api
           }
         end
 
-        # GET /api/v1/ai/deal_scoring/dashboard_metrics
+        # GET /api/v1/ai_scoring/deal_scoring/dashboard_metrics
         def dashboard_metrics
           authorize! :read, :ai_dashboard
 
