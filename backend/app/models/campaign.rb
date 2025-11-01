@@ -515,6 +515,73 @@ class Campaign < ApplicationRecord
   end
 
   # AI Analysis Methods
+  def comprehensive_ai_analysis_present?
+    ai_deal_score.present? && ai_risk_score.present? && ai_sentiment.present?
+  end
+
+  def latest_comprehensive_analysis
+    deal_score_logs.recent.first
+  end
+
+  def ai_sentiment_analysis
+    return nil unless ai_sentiment.present?
+    
+    {
+      sentiment: ai_sentiment,
+      color: sentiment_color,
+      icon: sentiment_icon
+    }
+  end
+
+  def ai_team_assessment_data
+    return nil unless ai_team_assessment.present?
+    
+    {
+      assessment: ai_team_assessment,
+      color: team_assessment_color,
+      description: team_assessment_description
+    }
+  end
+
+  def ai_market_analysis
+    return nil unless ai_market_opportunity.present?
+    
+    {
+      opportunity: ai_market_opportunity,
+      color: market_opportunity_color,
+      potential: market_opportunity_potential
+    }
+  end
+
+  def investment_thesis
+    latest_analysis = latest_comprehensive_analysis
+    return nil unless latest_analysis
+    
+    latest_analysis.investment_thesis
+  end
+
+  def upside_downside_analysis
+    latest_analysis = latest_comprehensive_analysis
+    return nil unless latest_analysis
+    
+    {
+      upside: latest_analysis.upside_potential || [],
+      downside: latest_analysis.downside_risks || [],
+      balance_score: calculate_risk_reward_balance
+    }
+  end
+
+  def similar_deals_with_analysis(limit: 5)
+    AI::SimilarDealsService.new(self).find_similar(limit: limit).map do |similar|
+      {
+        campaign: similar[:campaign],
+        similarity_score: similar[:similarity_score],
+        common_features: similar[:common_features],
+        analysis_comparison: compare_with_similar_deal(similar[:campaign])
+      }
+    end
+  end
+
   def ai_analysis_present?
     ai_deal_score.present? && ai_risk_score.present?
   end
@@ -616,5 +683,76 @@ class Campaign < ApplicationRecord
     when 40..59 then '#F59E0B' # orange
     else '#EF4444' # red
     end
+  end
+
+  def sentiment_color
+    case ai_sentiment
+    when 'positive' then '#10B981'
+    when 'neutral' then '#6B7280'
+    when 'negative' then '#EF4444'
+    else '#6B7280'
+    end
+  end
+
+  def sentiment_icon
+    case ai_sentiment
+    when 'positive' then '👍'
+    when 'neutral' then '😐'
+    when 'negative' then '👎'
+    else '❓'
+    end
+  end
+
+  def team_assessment_color
+    case ai_team_assessment
+    when 'strong' then '#10B981'
+    when 'adequate' then '#F59E0B'
+    when 'weak' then '#EF4444'
+    else '#6B7280'
+    end
+  end
+
+  def team_assessment_description
+    case ai_team_assessment
+    when 'strong' then 'Experienced team with relevant background'
+    when 'adequate' then 'Competent team with some relevant experience'
+    when 'weak' then 'Team may lack necessary experience'
+    else 'Team assessment not available'
+    end
+  end
+
+  def market_opportunity_color
+    case ai_market_opportunity
+    when 'large' then '#10B981'
+    when 'medium' then '#F59E0B'
+    when 'small' then '#EF4444'
+    else '#6B7280'
+    end
+  end
+
+  def market_opportunity_potential
+    case ai_market_opportunity
+    when 'large' then 'Significant market potential'
+    when 'medium' then 'Moderate market opportunity'
+    when 'small' then 'Limited market size'
+    else 'Market assessment not available'
+    end
+  end
+
+  def calculate_risk_reward_balance
+    return 0 unless ai_deal_score && ai_risk_score
+    
+    # Simple risk-reward balance calculation
+    reward_factor = ai_deal_score / 100.0
+    risk_factor = (100 - ai_risk_score) / 100.0
+    (reward_factor * risk_factor * 100).round(2)
+  end
+
+  def compare_with_similar_deal(other_campaign)
+    {
+      deal_score_difference: (ai_deal_score || 0) - (other_campaign.ai_deal_score || 0),
+      risk_score_difference: (ai_risk_score || 0) - (other_campaign.ai_risk_score || 0),
+      performance_comparison: performance_percentage - (other_campaign.performance_percentage || 0)
+    }
   end
 end
