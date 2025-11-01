@@ -191,10 +191,13 @@ module AI
     end
 
     def parse_response(response)
-      content = response.dig("choices", 0, "message", "content")
-      
+      content = response.dig("choices", 0, "message", "content").to_s.strip
+
+      # Try to extract valid JSON portion between braces
+      json_text = content[/\{.*\}/m] || content
+
       begin
-        JSON.parse(content)
+        JSON.parse(json_text)
       rescue JSON::ParserError
         fallback_analysis(content)
       end
