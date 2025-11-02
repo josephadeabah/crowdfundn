@@ -149,7 +149,7 @@ export const AIDashboardMetrics: React.FC<AIDashboardMetricsProps> = ({
   );
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm border p-6">
+    <div className="bg-white rounded-3xl shadow-sm border p-6 mt-6">
       <div className="flex items-center gap-2 mb-4">
         <h3 className="text-lg font-semibold text-gray-900">
           AI Market Comparison

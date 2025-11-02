@@ -145,7 +145,7 @@ const SingleCampaignPage: React.FC = () => {
               {!loading && selectedTab === 'details' && (
                 <div className="mt-6">
                   {currentCampaign && isEquityCampaign && (
-                    <div className="mt-6 mb-4">
+                    <>
                       <DealScoreCard
                         campaignId={currentCampaign.id.toString()}
                         currentUser={user}
@@ -153,7 +153,7 @@ const SingleCampaignPage: React.FC = () => {
                       <AIDashboardMetrics
                         campaignId={currentCampaign.id.toString()}
                       />
-                    </div>
+                    </>
                   )}
                   <CampaignDetails
                     campaign={currentCampaign}
