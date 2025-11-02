@@ -1,3 +1,4 @@
+# app/services/ai/deal_scoring_service.rb
 module AI
   class DealScoringService
     include Rails.application.routes.url_helpers
@@ -158,161 +159,6 @@ module AI
       }
     end
 
-    def extract_community_sentiment
-      # Use the safe sentiment analysis method that handles missing services gracefully
-      sentiment_result = safe_sentiment_analysis
-
-      comments = @campaign.comments.includes(:user).last(50)
-      updates = @campaign.updates.last(10)
-      
-      {
-        comment_analysis: {
-          total_comments: comments.size,
-          recent_comment_count: comments.size,
-          sentiment_score: sentiment_result[:score],
-          sentiment: sentiment_result[:label],
-          confidence: sentiment_result[:confidence],
-          key_themes: extract_comment_themes(comments),
-          analysis_method: sentiment_result[:method]
-        },
-        update_analysis: {
-          total_updates: updates.size,
-          update_frequency: calculate_update_frequency(updates),
-          sentiment_score: sentiment_result[:score],
-          sentiment: sentiment_result[:label]
-        },
-        overall_sentiment: sentiment_result[:label],
-        detailed_sentiment: sentiment_result
-      }
-    end
-
-    def safe_sentiment_analysis
-      # First, check if the SentimentAnalysisService class is defined and available
-      if sentiment_service_available?
-        begin
-          Rails.logger.info "Using AI::SentimentAnalysisService for campaign #{@campaign.id}"
-          sentiment_service = ::AI::SentimentAnalysisService.new(@campaign)
-          result = sentiment_service.analyze
-          
-          # Validate the result structure
-          if result.is_a?(Hash) && result[:score] && result[:label]
-            Rails.logger.info "Sentiment analysis successful: #{result[:label]} with score #{result[:score]}"
-            return result
-          else
-            Rails.logger.warn "SentimentAnalysisService returned invalid result: #{result}"
-            # Fall through to basic analysis
-          end
-        rescue NameError => e
-          Rails.logger.error "SentimentAnalysisService not found: #{e.message}"
-          # Fall through to basic analysis
-        rescue => e
-          Rails.logger.error "SentimentAnalysisService failed: #{e.message}"
-          # Fall through to basic analysis
-        end
-      else
-        Rails.logger.warn "AI::SentimentAnalysisService not available, using basic sentiment analysis"
-      end
-      
-      # Fallback to basic sentiment analysis
-      perform_basic_sentiment_analysis
-    end
-
-    def sentiment_service_available?
-      # Check if the SentimentAnalysisService class is defined
-      defined?(::AI::SentimentAnalysisService) && ::AI::SentimentAnalysisService.is_a?(Class)
-    end
-
-    def perform_basic_sentiment_analysis
-      Rails.logger.info "Performing basic sentiment analysis for campaign #{@campaign.id}"
-      
-      # Extract recent comments and updates
-      comments = @campaign.comments.last(20).map(&:content)
-      updates = @campaign.updates.last(5).map(&:content)
-      all_texts = (comments + updates).reject { |text| text.blank? || text.length < 10 }
-      
-      return { score: 0.5, label: 'neutral', confidence: 0.1, method: 'no_content' } if all_texts.empty?
-      
-      all_text = all_texts.join(' ').downcase
-      
-      # Comprehensive keyword lists with weights
-      positive_indicators = {
-        'excellent' => 2.0, 'amazing' => 2.0, 'great' => 1.5, 'love' => 2.0, 'excited' => 1.5,
-        'impressive' => 1.5, 'outstanding' => 2.0, 'brilliant' => 1.5, 'innovative' => 1.0,
-        'promising' => 1.0, 'success' => 1.0, 'progress' => 0.5, 'achievement' => 0.5,
-        'milestone' => 0.5, 'breakthrough' => 1.5, 'revolutionary' => 1.5, 'support' => 0.5,
-        'congratulations' => 1.0, 'awesome' => 1.5, 'fantastic' => 1.5, 'wonderful' => 1.0,
-        'happy' => 1.0, 'perfect' => 1.5, 'superb' => 1.5, 'remarkable' => 1.0,
-        'exceptional' => 1.5, 'phenomenal' => 1.5, 'stellar' => 1.5, 'magnificent' => 1.5
-      }
-      
-      negative_indicators = {
-        'concern' => 1.5, 'worry' => 1.5, 'risk' => 1.0, 'problem' => 1.5, 'issue' => 1.0,
-        'disappointing' => 2.0, 'poor' => 1.5, 'bad' => 1.0, 'failure' => 2.0, 'delay' => 1.0,
-        'expensive' => 0.5, 'overpriced' => 1.0, 'skeptical' => 1.0, 'doubt' => 1.0,
-        'concerned' => 1.5, 'worried' => 1.5, 'risky' => 1.0, 'problematic' => 1.5,
-        'terrible' => 2.0, 'awful' => 2.0, 'horrible' => 2.0, 'disaster' => 2.0,
-        'frustrating' => 1.5, 'annoying' => 1.0, 'useless' => 1.5, 'worthless' => 1.5
-      }
-
-      # Calculate weighted scores
-      positive_score = calculate_weighted_sentiment_score(all_text, positive_indicators)
-      negative_score = calculate_weighted_sentiment_score(all_text, negative_indicators)
-      
-      total_score = positive_score + negative_score
-      
-      if total_score.zero?
-        # No sentiment indicators found
-        sentiment_score = 0.5
-        confidence = 0.1
-      else
-        sentiment_score = positive_score / total_score
-        # Calculate confidence based on the strength of sentiment signals
-        confidence = [total_score / 20.0, 0.8].min
-      end
-      
-      # Determine sentiment label
-      label = if sentiment_score >= 0.7
-                'positive'
-              elsif sentiment_score <= 0.3
-                'negative'
-              else
-                'neutral'
-              end
-      
-      {
-        score: sentiment_score.round(2),
-        label: label,
-        confidence: confidence.round(2),
-        method: 'basic_keyword_analysis',
-        analysis_details: {
-          positive_score: positive_score,
-          negative_score: negative_score,
-          total_indicators: total_score,
-          text_samples_analyzed: all_texts.size
-        }
-      }
-    end
-
-    def calculate_weighted_sentiment_score(text, keyword_weights)
-      keyword_weights.sum do |word, weight|
-        # Count occurrences of the word (case insensitive, whole word matching)
-        count = text.scan(/\b#{Regexp.escape(word)}\b/i).count
-        count * weight
-      end
-    end
-
-    # The rest of your existing methods remain exactly the same...
-    # [Include all the other methods from your original DealScoringService here]
-    # extract_fundraiser_experience, extract_fundraiser_track_record, extract_competitive_analysis,
-    # calculate_average_performance, calculate_success_rate, calculate_average_performance_from_array,
-    # extract_comprehensive_equity_data, extract_comprehensive_team_data, extract_comprehensive_engagement_data,
-    # extract_updates_timeline, extract_member_background, assess_team_strength, extract_comment_themes,
-    # calculate_update_frequency, assess_progress_reporting, calculate_funding_velocity,
-    # calculate_engagement_velocity, calculate_backer_retention, extract_market_context,
-    # assess_category_growth, assess_competitive_intensity, assess_market_timing,
-    # extract_qualifications, format_campaign_data, call_openai_api, parse_response,
-    # fallback_analysis, create_deal_score_log, generate_embedding, generate_embedding_text
-
     def extract_fundraiser_experience
       fundraiser = @campaign.fundraiser
       {
@@ -453,6 +299,32 @@ module AI
       }
     end
 
+    def extract_community_sentiment
+      comments = @campaign.comments.includes(:user).last(50) # Analyze recent comments
+      updates = @campaign.updates.last(10)
+      
+      comment_sentiment = analyze_text_sentiment(comments.map(&:content))
+      update_sentiment = analyze_text_sentiment(updates.map(&:content))
+      
+      {
+        comment_analysis: {
+          total_comments: comments.size,
+          recent_comment_count: comments.size,
+          sentiment_score: comment_sentiment[:score],
+          sentiment: comment_sentiment[:label],
+          key_themes: extract_comment_themes(comments)
+        },
+        update_analysis: {
+          total_updates: updates.size,
+          update_frequency: calculate_update_frequency(updates),
+          sentiment_score: update_sentiment[:score],
+          sentiment: update_sentiment[:label],
+          progress_reporting: assess_progress_reporting(updates)
+        },
+        overall_sentiment: calculate_overall_sentiment(comment_sentiment, update_sentiment)
+      }
+    end
+
     def extract_updates_timeline
       updates = @campaign.updates.order(created_at: :desc).limit(20)
       
@@ -493,6 +365,29 @@ module AI
       when 60..79 then 'adequate'
       else 'weak'
       end
+    end
+
+    def analyze_text_sentiment(texts)
+      return { score: 0.5, label: 'neutral' } if texts.empty?
+      
+      # Simple sentiment analysis based on keyword matching
+      # In production, you might want to use a proper sentiment analysis service
+      positive_words = %w[great amazing excellent awesome love excited happy progress success milestone achievement]
+      negative_words = %w[bad terrible awful concern risk warning delay problem issue challenge]
+      
+      all_text = texts.join(' ').downcase
+      positive_count = positive_words.count { |word| all_text.include?(word) }
+      negative_count = negative_words.count { |word| all_text.include?(word) }
+      total_words = positive_count + negative_count
+      
+      return { score: 0.5, label: 'neutral' } if total_words.zero?
+      
+      sentiment_score = positive_count.to_f / total_words
+      
+      {
+        score: sentiment_score,
+        label: sentiment_score > 0.6 ? 'positive' : (sentiment_score < 0.4 ? 'negative' : 'neutral')
+      }
     end
 
     def extract_comment_themes(comments)
@@ -539,6 +434,18 @@ module AI
       when 0.6..0.79 then 'good'
       when 0.4..0.59 then 'moderate'
       else 'poor'
+      end
+    end
+
+    def calculate_overall_sentiment(comment_sentiment, update_sentiment)
+      avg_score = (comment_sentiment[:score] + update_sentiment[:score]) / 2.0
+      
+      if avg_score > 0.6
+        'positive'
+      elsif avg_score < 0.4
+        'negative'
+      else
+        'neutral'
       end
     end
 
