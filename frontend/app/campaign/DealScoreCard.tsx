@@ -327,14 +327,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
 
             {/* Action Buttons */}
             <div className="flex flex-col justify-center space-y-3">
-                <button
-                onClick={runAnalysis}
-                disabled={loading}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50bg-gray-600 text-white hover:bg-gray-700`}
-              >
-                {loading ? 'Re-analyzing...' : 'Re-analyze'}
-              </button>
-              {/* <button
+              <button
                 onClick={runAnalysis}
                 disabled={loading || !hasPremium}
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 ${
@@ -349,7 +342,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                     Premium feature
                   </div>
                 )}
-              </button> */}
+              </button>
               <button
                 onClick={() => setShowSimilarDeals(true)}
                 className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
