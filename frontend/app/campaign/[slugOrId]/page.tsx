@@ -1,3 +1,4 @@
+// app/components/campaign/SingleCampaignPage.tsx
 'use client';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
@@ -150,9 +151,11 @@ const SingleCampaignPage: React.FC = () => {
                         campaignId={currentCampaign.id.toString()}
                         currentUser={user}
                       />
-                      <AIDashboardMetrics
-                        campaignId={currentCampaign.id.toString()}
-                      />
+                      {user && (
+                        <AIDashboardMetrics
+                          campaignId={currentCampaign.id.toString()}
+                        />
+                      )}
                     </>
                   )}
                   <CampaignDetails

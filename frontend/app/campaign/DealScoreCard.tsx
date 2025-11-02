@@ -5,6 +5,7 @@ import { AnalysisHistoryModal } from './AnalysisHistoryModal';
 import { SimilarDealsModal } from './SimilarDealsModal';
 import { DealScoreChart } from './DealScoreChart';
 import { useAuth } from '../context/auth/AuthContext';
+import { usePremium } from '../context/premium/PremiumContext';
 
 interface DealScoreCardProps {
   campaignId: string;
@@ -64,13 +65,16 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [showSimilarDeals, setShowSimilarDeals] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const { token } = useAuth();
+  const { subscription, fetchSubscription } = usePremium();
+  const hasPremium = subscription?.has_premium;
+  const { token, user } = useAuth();
 
   useEffect(() => {
     if (campaignId) {
       loadAnalysis();
+      fetchSubscription();
     }
-  }, [campaignId]);
+  }, [campaignId, fetchSubscription]);
 
   const loadAnalysis = async () => {
     try {
@@ -143,6 +147,43 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
   };
+
+  // Show login prompt if user is not authenticated
+  if (!user) {
+    return (
+      <div className="bg-white rounded-3xl shadow-sm border p-6">
+        <div className="text-center py-8">
+          <div className="text-gray-400 mb-3">
+            <svg
+              className="w-12 h-12 mx-auto"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Sign In Required
+          </h3>
+          <p className="text-gray-500 mb-4">
+            Please sign in to view AI analysis and market insights
+          </p>
+          <button
+            onClick={() => (window.location.href = '/auth/signin')}
+            className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading && !analysis) {
     return (
@@ -288,10 +329,19 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             <div className="flex flex-col justify-center space-y-3">
               <button
                 onClick={runAnalysis}
-                disabled={loading}
-                className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+                disabled={loading || !hasPremium}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 ${
+                  hasPremium
+                    ? 'bg-gray-600 text-white hover:bg-gray-700'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
               >
                 {loading ? 'Re-analyzing...' : 'Re-analyze'}
+                {!hasPremium && (
+                  <div className="text-xs mt-1 text-gray-500">
+                    Premium feature
+                  </div>
+                )}
               </button>
               <button
                 onClick={() => setShowSimilarDeals(true)}
