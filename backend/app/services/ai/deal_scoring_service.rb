@@ -16,8 +16,7 @@ module AI
       # Initialize client with proper configuration
       @client = OpenAI::Client.new(
         access_token: api_key,
-        log_errors: true,
-        request_timeout: 60
+        log_errors: true
       )
     end
 
@@ -537,43 +536,24 @@ module AI
       Rails.logger.info "Calling OpenAI API with prompt length: #{prompt.length}"
       
       begin
-        # Minimal parameters for GPT-5 Nano - only what's absolutely required
         response = @client.chat(
           parameters: {
-            model: "gpt-5-nano",
+            model: "gpt-4",  # Using GPT-4 for more comprehensive analysis
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
               { role: "user", content: prompt }
             ],
-            max_completion_tokens: 2500,
-            response_format: { type: "json_object" }
+            temperature: 0.3, # Lower temperature for more consistent analysis
+            max_tokens: 2000   # Allow longer responses for comprehensive analysis
           }
         )
         
-        Rails.logger.info "GPT-5 Nano API response received successfully"
+        Rails.logger.info "OpenAI API response received successfully"
         response
       rescue => e
-        Rails.logger.error "GPT-5 Nano API call failed: #{e.message}"
-        
-        # Fall back to GPT-4 with full parameter support
-        Rails.logger.info "Falling back to GPT-4"
-        call_openai_api_fallback(prompt)
+        Rails.logger.error "OpenAI API call failed: #{e.message}"
+        raise e
       end
-    end
-
-    def call_openai_api_fallback(prompt)
-      @client.chat(
-        parameters: {
-          model: "gpt-4",
-          messages: [
-            { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
-            { role: "user", content: prompt }
-          ],
-          temperature: 0.3,
-          max_tokens: 2000,
-          response_format: { type: "json_object" }
-        }
-      )
     end
 
     def parse_response(response)
@@ -635,10 +615,9 @@ module AI
       
       text = generate_embedding_text
       
-      # Use the latest embedding model that works with GPT-5 Nano
       response = @client.embeddings(
         parameters: {
-          model: "text-embedding-3-large", # Latest embedding model
+          model: "text-embedding-ada-002",
           input: text
         }
       )
