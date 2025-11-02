@@ -537,28 +537,55 @@ module AI
       Rails.logger.info "Calling OpenAI API with prompt length: #{prompt.length}"
       
       begin
-        response = @client.chat(
-          parameters: {
-            model: "gpt-5-nano",  # Using GPT-5 Nano as requested
-            messages: [
-              { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
-              { role: "user", content: prompt }
-            ],
-            temperature: 0.2,  # Slightly lower temperature for more consistent analysis
-            max_tokens: 2500,  # Adjust based on GPT-5 Nano's capabilities
-            top_p: 0.9,
-            frequency_penalty: 0.1,
-            presence_penalty: 0.1,
-            response_format: { type: "json_object" }
-          }
-        )
+        # GPT-5 Nano uses different parameters than previous models
+        parameters = {
+          model: "gpt-5-nano",
+          messages: [
+            { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.2,
+          top_p: 0.9,
+          frequency_penalty: 0.1,
+          presence_penalty: 0.1,
+          response_format: { type: "json_object" }
+        }
+        
+        # GPT-5 Nano uses max_completion_tokens instead of max_tokens
+        parameters[:max_completion_tokens] = 2500
+        
+        response = @client.chat(parameters: parameters)
         
         Rails.logger.info "OpenAI API response received successfully"
         response
       rescue => e
         Rails.logger.error "OpenAI API call failed: #{e.message}"
-        raise e
+        
+        # If GPT-5 Nano fails, fall back to GPT-4 with correct parameters
+        if e.message.include?("Unsupported parameter") || e.message.include?("model not found")
+          Rails.logger.info "Falling back to GPT-4 due to parameter compatibility"
+          call_openai_api_fallback(prompt)
+        else
+          raise e
+        end
       end
+    end
+
+    def call_openai_api_fallback(prompt)
+      Rails.logger.info "Using GPT-4 fallback model"
+      
+      @client.chat(
+        parameters: {
+          model: "gpt-4",
+          messages: [
+            { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.3,
+          max_tokens: 2000,  # GPT-4 still uses max_tokens
+          response_format: { type: "json_object" }
+        }
+      )
     end
 
     def parse_response(response)
