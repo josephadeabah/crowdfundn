@@ -175,7 +175,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             Please sign in to view AI analysis and market insights
           </p>
           <button
-            onClick={() => (window.location.href = '/auth/signin')}
+            onClick={() => (window.location.href = '/auth/login')}
             className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
           >
             Sign In
