@@ -40,7 +40,7 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -55,8 +55,9 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
   };
 
   // Sort history by date (newest first)
-  const sortedHistory = [...history].sort((a, b) => 
-    new Date(b.analyzed_at).getTime() - new Date(a.analyzed_at).getTime()
+  const sortedHistory = [...history].sort(
+    (a, b) =>
+      new Date(b.analyzed_at).getTime() - new Date(a.analyzed_at).getTime(),
   );
 
   return (
@@ -173,15 +174,17 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                           Upside Potential
                         </h4>
                         <ul className="text-sm text-gray-600 space-y-2">
-                          {analysis.upside_potential?.map((potential, index) => (
-                            <li
-                              key={index}
-                              className="flex items-start p-2 bg-green-50 rounded"
-                            >
-                              <span className="text-green-500 mr-2">•</span>
-                              {potential}
-                            </li>
-                          ))}
+                          {analysis.upside_potential?.map(
+                            (potential, index) => (
+                              <li
+                                key={index}
+                                className="flex items-start p-2 bg-green-50 rounded"
+                              >
+                                <span className="text-green-500 mr-2">•</span>
+                                {potential}
+                              </li>
+                            ),
+                          )}
                           {(!analysis.upside_potential ||
                             analysis.upside_potential.length === 0) && (
                             <li className="text-gray-400 p-2">
@@ -247,13 +250,16 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                         </h4>
                         <div className="text-sm text-gray-600 space-y-2">
                           <div className="p-2 bg-yellow-50 rounded">
-                            <strong>Sentiment:</strong> {analysis.sentiment_analysis || 'Not analyzed'}
+                            <strong>Sentiment:</strong>{' '}
+                            {analysis.sentiment_analysis || 'Not analyzed'}
                           </div>
                           <div className="p-2 bg-yellow-50 rounded">
-                            <strong>Team:</strong> {analysis.team_assessment || 'Not assessed'}
+                            <strong>Team:</strong>{' '}
+                            {analysis.team_assessment || 'Not assessed'}
                           </div>
                           <div className="p-2 bg-yellow-50 rounded">
-                            <strong>Market:</strong> {analysis.market_opportunity || 'Not assessed'}
+                            <strong>Market:</strong>{' '}
+                            {analysis.market_opportunity || 'Not assessed'}
                           </div>
                         </div>
                       </div>
@@ -281,7 +287,8 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
         <div className="border-t px-6 py-4 bg-gray-50">
           <div className="flex justify-between items-center">
             <div className="text-sm text-gray-500">
-              {sortedHistory.length} analysis record{sortedHistory.length !== 1 ? 's' : ''}
+              {sortedHistory.length} analysis record
+              {sortedHistory.length !== 1 ? 's' : ''}
             </div>
             <button
               onClick={onClose}
