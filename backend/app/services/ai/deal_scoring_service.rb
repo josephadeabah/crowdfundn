@@ -16,7 +16,8 @@ module AI
       # Initialize client with proper configuration
       @client = OpenAI::Client.new(
         access_token: api_key,
-        log_errors: true
+        log_errors: true,
+        request_timeout: 60
       )
     end
 
@@ -538,13 +539,17 @@ module AI
       begin
         response = @client.chat(
           parameters: {
-            model: "gpt-4",  # Using GPT-4 for more comprehensive analysis
+            model: "gpt-5-nano",  # Using GPT-5 Nano as requested
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
               { role: "user", content: prompt }
             ],
-            temperature: 0.3, # Lower temperature for more consistent analysis
-            max_tokens: 2000   # Allow longer responses for comprehensive analysis
+            temperature: 0.2,  # Slightly lower temperature for more consistent analysis
+            max_tokens: 2500,  # Adjust based on GPT-5 Nano's capabilities
+            top_p: 0.9,
+            frequency_penalty: 0.1,
+            presence_penalty: 0.1,
+            response_format: { type: "json_object" }
           }
         )
         
@@ -615,9 +620,10 @@ module AI
       
       text = generate_embedding_text
       
+      # Use the latest embedding model that works with GPT-5 Nano
       response = @client.embeddings(
         parameters: {
-          model: "text-embedding-ada-002",
+          model: "text-embedding-3-large", # Latest embedding model
           input: text
         }
       )
