@@ -1,4 +1,4 @@
-# app/services/ai/sentiment_analysis_service.rb
+# This file should define AI::SentimentAnalysisService, not ::SentimentAnalysisService
 module AI
   class SentimentAnalysisService
     STRATEGIES = [:openai_enhanced, :keyword_based].freeze

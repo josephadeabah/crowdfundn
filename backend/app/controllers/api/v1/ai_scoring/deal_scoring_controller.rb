@@ -2,17 +2,21 @@ module Api
   module V1
     module AiScoring
       class DealScoringController < ApplicationController
-        # Remove the problematic require statements that were causing loading issues
-        # Rails autoloading should handle service classes automatically
+        # Add explicit requires since we're not using Zeitwerk
+        require Rails.root.join('app/services/ai/deal_scoring_service')
+        require Rails.root.join('app/services/ai/sentiment_analysis_service')
+        
+        # Only require if the file exists
+        similar_deals_service_path = Rails.root.join('app/services/ai/similar_deals_service.rb')
+        require similar_deals_service_path if File.exist?(similar_deals_service_path)
 
         before_action :authenticate_request
         before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals]
 
         # POST /api/v1/ai_scoring/deal_scoring/analyze
         def analyze
-          # Use the namespaced service class directly
-          # Rails autoloading will handle the class loading
-          result = ::AI::DealScoringService.analyze_campaign(@campaign)
+          # Use the service class directly
+          result = AI::DealScoringService.analyze_campaign(@campaign)
           
           if result[:success]
             render json: {
@@ -65,8 +69,13 @@ module Api
 
         # GET /api/v1/ai_scoring/deal_scoring/similar_deals
         def similar_deals
-          # Use the namespaced service class directly
-          similar_deals = ::AI::SimilarDealsService.new(@campaign).find_similar
+          # Check if SimilarDealsService is available
+          if defined?(AI::SimilarDealsService)
+            similar_deals = AI::SimilarDealsService.new(@campaign).find_similar
+          else
+            similar_deals = []
+            Rails.logger.warn "AI::SimilarDealsService not available"
+          end
           
           render json: {
             campaign_id: @campaign.id,
