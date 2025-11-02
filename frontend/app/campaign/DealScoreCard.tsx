@@ -167,7 +167,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-gray-900">
-          AI Investment Analyzer
+          The Hive Mind (AI Analyzer)
         </h3>
         {currentScores?.updated_at && (
           <span className="text-sm text-gray-500">

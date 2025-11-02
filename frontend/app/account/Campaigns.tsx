@@ -35,6 +35,7 @@ import Avatar from '../components/avatar/Avatar';
 import ToastComponent from '@/app/components/toast/Toast';
 import InfoTooltip from '../components/tooltip/tooltip';
 import { getDetailedErrorMessage } from '../types/campaign.error.messages.types';
+import { AIDashboardMetrics } from './AIDashboardMetrics';
 
 const Campaigns: React.FC = () => {
   const {
@@ -55,6 +56,8 @@ const Campaigns: React.FC = () => {
   } = useEquityCampaignContext();
 
   const [selectedCampaign, setSelectedCampaign] =
+    useState<CampaignResponseDataType | null>(null);
+  const [selectedCampaignForMetrics, setSelectedCampaignForMetrics] =
     useState<CampaignResponseDataType | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isTeamDocumentsModalOpen, setIsTeamDocumentsModalOpen] =
@@ -96,6 +99,13 @@ const Campaigns: React.FC = () => {
   const activeCampaigns =
     userCampaigns?.filter((campaign) => !campaign.archived_by_current_user) ||
     [];
+
+  // Set the first campaign as default for metrics when campaigns are loaded
+  useEffect(() => {
+    if (activeCampaigns.length > 0 && !selectedCampaignForMetrics) {
+      setSelectedCampaignForMetrics(activeCampaigns[0]);
+    }
+  }, [activeCampaigns, selectedCampaignForMetrics]);
 
   const handleEditCampaign = (campaign: CampaignResponseDataType) => {
     const identifier = campaign.slug || campaign.id;
@@ -381,6 +391,78 @@ const Campaigns: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {/* AI Dashboard Metrics Section with Campaign Selector */}
+      {activeCampaigns.length > 0 && (
+        <div className="mt-6">
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Campaign Performance Analytics
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Compare your campaign performance against market benchmarks
+                </p>
+              </div>
+
+              <div className="w-full sm:w-64">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Campaign
+                </label>
+                <Select
+                  value={
+                    selectedCampaignForMetrics
+                      ? String(selectedCampaignForMetrics.id)
+                      : ''
+                  }
+                  onValueChange={(value) => {
+                    const campaign = activeCampaigns.find(
+                      (c) => String(c.id) === value,
+                    );
+                    setSelectedCampaignForMetrics(campaign || null);
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Choose a campaign" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activeCampaigns.map((campaign) => (
+                      <SelectItem key={campaign.id} value={String(campaign.id)}>
+                        <div className="flex items-center justify-between">
+                          <span className="truncate max-w-[200px]">
+                            {campaign.title}
+                          </span>
+                          <span
+                            className={`text-xs ml-2 px-2 py-1 rounded-full ${
+                              getStatusDisplay(campaign)
+                                .color.replace('text-', 'bg-')
+                                .replace('-500', '-100') +
+                              ' ' +
+                              getStatusDisplay(campaign).color
+                            }`}
+                          >
+                            {getStatusDisplay(campaign).text}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {selectedCampaignForMetrics && (
+              <AIDashboardMetrics
+                campaignId={String(selectedCampaignForMetrics.id)}
+                // You can optionally pass current deal/risk scores if available in your campaign data
+                // currentDealScore={selectedCampaignForMetrics.deal_score}
+                // currentRiskScore={selectedCampaignForMetrics.risk_score}
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       {activeCampaigns.length === 0 ? (
         <div className="text-center p-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mt-6">
