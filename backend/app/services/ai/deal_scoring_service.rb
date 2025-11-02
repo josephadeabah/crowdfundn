@@ -1,4 +1,3 @@
-# This file should define AI::DealScoringService, not ::DealScoringService
 module AI
   class DealScoringService
     include Rails.application.routes.url_helpers
@@ -301,6 +300,18 @@ module AI
         count * weight
       end
     end
+
+    # The rest of your existing methods remain exactly the same...
+    # [Include all the other methods from your original DealScoringService here]
+    # extract_fundraiser_experience, extract_fundraiser_track_record, extract_competitive_analysis,
+    # calculate_average_performance, calculate_success_rate, calculate_average_performance_from_array,
+    # extract_comprehensive_equity_data, extract_comprehensive_team_data, extract_comprehensive_engagement_data,
+    # extract_updates_timeline, extract_member_background, assess_team_strength, extract_comment_themes,
+    # calculate_update_frequency, assess_progress_reporting, calculate_funding_velocity,
+    # calculate_engagement_velocity, calculate_backer_retention, extract_market_context,
+    # assess_category_growth, assess_competitive_intensity, assess_market_timing,
+    # extract_qualifications, format_campaign_data, call_openai_api, parse_response,
+    # fallback_analysis, create_deal_score_log, generate_embedding, generate_embedding_text
 
     def extract_fundraiser_experience
       fundraiser = @campaign.fundraiser

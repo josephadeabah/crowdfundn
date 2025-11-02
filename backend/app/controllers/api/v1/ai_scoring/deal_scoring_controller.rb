@@ -1,22 +1,19 @@
+# app/controllers/api/v1/ai_scoring/deal_scoring_controller.rb
 module Api
   module V1
     module AiScoring
       class DealScoringController < ApplicationController
-        # Add explicit requires since we're not using Zeitwerk
+
+        # Add these require statements
         require Rails.root.join('app/services/ai/deal_scoring_service')
-        require Rails.root.join('app/services/ai/sentiment_analysis_service')
-        
-        # Only require if the file exists
-        similar_deals_service_path = Rails.root.join('app/services/ai/similar_deals_service.rb')
-        require similar_deals_service_path if File.exist?(similar_deals_service_path)
+        require Rails.root.join('app/services/ai/similar_deals_service')
 
         before_action :authenticate_request
         before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals]
 
         # POST /api/v1/ai_scoring/deal_scoring/analyze
         def analyze
-          # Use the service class directly
-          result = AI::DealScoringService.analyze_campaign(@campaign)
+          result = ::AI::DealScoringService.analyze_campaign(@campaign)
           
           if result[:success]
             render json: {
@@ -69,13 +66,7 @@ module Api
 
         # GET /api/v1/ai_scoring/deal_scoring/similar_deals
         def similar_deals
-          # Check if SimilarDealsService is available
-          if defined?(AI::SimilarDealsService)
-            similar_deals = AI::SimilarDealsService.new(@campaign).find_similar
-          else
-            similar_deals = []
-            Rails.logger.warn "AI::SimilarDealsService not available"
-          end
+          similar_deals = ::AI::SimilarDealsService.new(@campaign).find_similar
           
           render json: {
             campaign_id: @campaign.id,
