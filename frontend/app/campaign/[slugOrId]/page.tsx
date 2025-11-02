@@ -145,7 +145,7 @@ const SingleCampaignPage: React.FC = () => {
               {/* Tab Content - Only render when not loading */}
               {!loading && selectedTab === 'details' && (
                 <div className="mt-6">
-                  {currentCampaign && isEquityCampaign && (
+                  {currentCampaign && (
                     <>
                       <DealScoreCard
                         campaignId={currentCampaign.id.toString()}
