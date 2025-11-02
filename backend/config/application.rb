@@ -27,8 +27,6 @@ module Backend
     # For production environments, ensure services are eager loaded
     config.eager_load_paths += Dir["#{config.root}/app/services/**/"]
     
-    # If using Zeitwerk loader, ensure it can handle the AI namespace
-    config.autoloader = :zeitwerk
 
     # Autoload lib settings
     config.autoload_lib(ignore: %w[assets tasks])
