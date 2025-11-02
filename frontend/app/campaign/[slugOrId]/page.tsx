@@ -19,6 +19,7 @@ import CampaignTabs from '../CampaignTabs';
 import CampaignHeader from '../CampaignHeader';
 import CampaignFAQs from '../CampaignFAQs';
 import { DealScoreCard } from '../DealScoreCard';
+import { AIDashboardMetrics } from '../AIDashboardMetrics';
 
 const SingleCampaignPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<
@@ -144,10 +145,15 @@ const SingleCampaignPage: React.FC = () => {
               {!loading && selectedTab === 'details' && (
                 <div className="mt-6">
                   {currentCampaign && isEquityCampaign && (
-                    <DealScoreCard
-                      campaignId={currentCampaign.id.toString()}
-                      currentUser={user}
-                    />
+                    <>
+                      <DealScoreCard
+                        campaignId={currentCampaign.id.toString()}
+                        currentUser={user}
+                      />
+                      <AIDashboardMetrics
+                        campaignId={currentCampaign.id.toString()}
+                      />
+                    </>
                   )}
                   <CampaignDetails
                     campaign={currentCampaign}
