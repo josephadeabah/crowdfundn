@@ -62,7 +62,7 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
   };
 
   const handleViewCampaign = (campaignId: string) => {
-    window.open(`/campaigns/${campaignId}`, '_blank');
+    window.open(`/campaign/${campaignId}`, '_blank');
   };
 
   return (
