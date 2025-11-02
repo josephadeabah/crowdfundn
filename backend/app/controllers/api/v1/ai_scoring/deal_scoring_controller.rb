@@ -1,18 +1,17 @@
-# app/controllers/api/v1/ai_scoring/deal_scoring_controller.rb
 module Api
   module V1
     module AiScoring
       class DealScoringController < ApplicationController
-
-        # Add these require statements
-        require Rails.root.join('app/services/ai/deal_scoring_service')
-        require Rails.root.join('app/services/ai/similar_deals_service')
+        # Remove the problematic require statements that were causing loading issues
+        # Rails autoloading should handle service classes automatically
 
         before_action :authenticate_request
         before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals]
 
         # POST /api/v1/ai_scoring/deal_scoring/analyze
         def analyze
+          # Use the namespaced service class directly
+          # Rails autoloading will handle the class loading
           result = ::AI::DealScoringService.analyze_campaign(@campaign)
           
           if result[:success]
@@ -66,6 +65,7 @@ module Api
 
         # GET /api/v1/ai_scoring/deal_scoring/similar_deals
         def similar_deals
+          # Use the namespaced service class directly
           similar_deals = ::AI::SimilarDealsService.new(@campaign).find_similar
           
           render json: {

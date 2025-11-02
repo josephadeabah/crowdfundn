@@ -21,6 +21,15 @@ module Backend
     # Add services directory to autoload paths
     config.autoload_paths << Rails.root.join('app/services')
 
+        # Ensure all services directories are autoloaded
+    config.autoload_paths += Dir["#{config.root}/app/services/**/"]
+    
+    # For production environments, ensure services are eager loaded
+    config.eager_load_paths += Dir["#{config.root}/app/services/**/"]
+    
+    # If using Zeitwerk loader, ensure it can handle the AI namespace
+    config.autoloader = :zeitwerk
+
     # Autoload lib settings
     config.autoload_lib(ignore: %w[assets tasks])
 
