@@ -104,8 +104,9 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
               {sortedHistory.map((analysis, index) => (
                 <AccordionItemWrapper key={analysis.id} value={analysis.id}>
                   <AccordionTriggerWrapper>
-                    <div className="flex flex-col items-start text-left space-y-2">
-                      <div className="flex items-center space-x-3">
+                    <div className="flex flex-1 items-center justify-between gap-4">
+                      {/* Desktop Layout */}
+                      <div className="hidden md:flex items-center gap-4 flex-1">
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getAnalysisTypeClass(analysis.analysis_type)}`}
                         >
@@ -114,21 +115,30 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                         <span className="text-sm text-gray-500">
                           {formatDate(analysis.analyzed_at)}
                         </span>
+                        <div className="flex items-center gap-2 ml-auto">
+                          <div
+                            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getScoreBadgeClass(analysis.deal_score)}`}
+                          >
+                            Deal: {analysis.deal_score}
+                          </div>
+                          <div
+                            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getRiskBadgeClass(analysis.risk_score)}`}
+                          >
+                            Risk: {analysis.risk_score}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getScoreBadgeClass(analysis.deal_score)}`}
+
+                      {/* Mobile Layout */}
+                      <div className="flex md:hidden items-center gap-3 flex-1">
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getAnalysisTypeClass(analysis.analysis_type)}`}
                         >
-                          Deal: {analysis.deal_score}
-                        </div>
-                        <div
-                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getRiskBadgeClass(analysis.risk_score)}`}
-                        >
-                          Risk: {analysis.risk_score}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Risk Category: {analysis.risk_category}
-                        </div>
+                          {getAnalysisTypeLabel(analysis.analysis_type)}
+                        </span>
+                        <span className="text-xs text-gray-500 flex-1 truncate">
+                          {formatDate(analysis.analyzed_at)}
+                        </span>
                       </div>
                     </div>
                   </AccordionTriggerWrapper>
@@ -243,12 +253,15 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                         </ul>
                       </div>
 
-                      {/* Recommendations */}
+                      {/* Key Insights */}
                       <div>
                         <h4 className="font-medium text-gray-700 mb-2">
                           Key Insights
                         </h4>
                         <div className="text-sm text-gray-600 space-y-2">
+                          <div className="p-2 bg-yellow-50 rounded">
+                            <strong>Risk Category:</strong> {analysis.risk_category}
+                          </div>
                           <div className="p-2 bg-yellow-50 rounded">
                             <strong>Sentiment:</strong>{' '}
                             {analysis.sentiment_analysis || 'Not analyzed'}
@@ -290,12 +303,10 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
               {sortedHistory.length} analysis record
               {sortedHistory.length !== 1 ? 's' : ''}
             </div>
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+            <div
+              className="px-4 py-2 bg-white text-white"
             >
-              Close
-            </button>
+            </div>
           </div>
         </div>
       </div>
