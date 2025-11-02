@@ -300,28 +300,30 @@ module AI
     end
 
     def extract_community_sentiment
-      comments = @campaign.comments.includes(:user).last(50) # Analyze recent comments
+      sentiment_service = AI::SentimentAnalysisService.new(@campaign)
+      sentiment_result = sentiment_service.analyze
+
+      comments = @campaign.comments.includes(:user).last(50)
       updates = @campaign.updates.last(10)
-      
-      comment_sentiment = analyze_text_sentiment(comments.map(&:content))
-      update_sentiment = analyze_text_sentiment(updates.map(&:content))
       
       {
         comment_analysis: {
           total_comments: comments.size,
           recent_comment_count: comments.size,
-          sentiment_score: comment_sentiment[:score],
-          sentiment: comment_sentiment[:label],
-          key_themes: extract_comment_themes(comments)
+          sentiment_score: sentiment_result[:score],
+          sentiment: sentiment_result[:label],
+          confidence: sentiment_result[:confidence],
+          key_themes: extract_comment_themes(comments),
+          analysis_method: sentiment_result[:method]
         },
         update_analysis: {
           total_updates: updates.size,
           update_frequency: calculate_update_frequency(updates),
-          sentiment_score: update_sentiment[:score],
-          sentiment: update_sentiment[:label],
-          progress_reporting: assess_progress_reporting(updates)
+          sentiment_score: sentiment_result[:score],
+          sentiment: sentiment_result[:label]
         },
-        overall_sentiment: calculate_overall_sentiment(comment_sentiment, update_sentiment)
+        overall_sentiment: sentiment_result[:label],
+        detailed_sentiment: sentiment_result
       }
     end
 
@@ -365,29 +367,6 @@ module AI
       when 60..79 then 'adequate'
       else 'weak'
       end
-    end
-
-    def analyze_text_sentiment(texts)
-      return { score: 0.5, label: 'neutral' } if texts.empty?
-      
-      # Simple sentiment analysis based on keyword matching
-      # In production, you might want to use a proper sentiment analysis service
-      positive_words = %w[great amazing excellent awesome love excited happy progress success milestone achievement]
-      negative_words = %w[bad terrible awful concern risk warning delay problem issue challenge]
-      
-      all_text = texts.join(' ').downcase
-      positive_count = positive_words.count { |word| all_text.include?(word) }
-      negative_count = negative_words.count { |word| all_text.include?(word) }
-      total_words = positive_count + negative_count
-      
-      return { score: 0.5, label: 'neutral' } if total_words.zero?
-      
-      sentiment_score = positive_count.to_f / total_words
-      
-      {
-        score: sentiment_score,
-        label: sentiment_score > 0.6 ? 'positive' : (sentiment_score < 0.4 ? 'negative' : 'neutral')
-      }
     end
 
     def extract_comment_themes(comments)
@@ -434,18 +413,6 @@ module AI
       when 0.6..0.79 then 'good'
       when 0.4..0.59 then 'moderate'
       else 'poor'
-      end
-    end
-
-    def calculate_overall_sentiment(comment_sentiment, update_sentiment)
-      avg_score = (comment_sentiment[:score] + update_sentiment[:score]) / 2.0
-      
-      if avg_score > 0.6
-        'positive'
-      elsif avg_score < 0.4
-        'negative'
-      else
-        'neutral'
       end
     end
 
