@@ -260,7 +260,8 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                         </h4>
                         <div className="text-sm text-gray-600 space-y-2">
                           <div className="p-2 bg-yellow-50 rounded">
-                            <strong>Risk Category:</strong> {analysis.risk_category}
+                            <strong>Risk Category:</strong>{' '}
+                            {analysis.risk_category}
                           </div>
                           <div className="p-2 bg-yellow-50 rounded">
                             <strong>Sentiment:</strong>{' '}
@@ -303,10 +304,7 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
               {sortedHistory.length} analysis record
               {sortedHistory.length !== 1 ? 's' : ''}
             </div>
-            <div
-              className="px-4 py-2 bg-white text-white"
-            >
-            </div>
+            <div className="px-4 py-2 bg-gray-50 text-gray-50"></div>
           </div>
         </div>
       </div>
