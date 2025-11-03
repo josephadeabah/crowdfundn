@@ -173,7 +173,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
           </h3>
           <p className="text-gray-500 mb-4">
             Please sign in to view AI-powered insights and market analysis —
-            whether you’re exploring this campaign as an investor, supporter or
+            whether you're exploring this campaign as an investor, supporter or
             managing it as a fundraiser. Understand the deal score, risk score,
             performance trends, and key opportunities to invest, support or
             improve.
@@ -191,7 +191,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
 
   if (loading && !analysis) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border p-6 mb-3">
+      <div className="bg-white rounded-3xl shadow-sm border p-6">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="flex space-x-4">
@@ -338,22 +338,6 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
               >
                 {loading ? 'Re-analyzing...' : 'Re-analyze'}
               </button>
-              {/* <button
-                onClick={runAnalysis}
-                disabled={loading || !hasPremium}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 ${
-                  hasPremium
-                    ? 'bg-gray-600 text-white hover:bg-gray-700'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                {loading ? 'Re-analyzing...' : 'Re-analyze'}
-                {!hasPremium && (
-                  <div className="text-xs mt-1 text-gray-500">
-                    Premium feature
-                  </div>
-                )}
-              </button> */}
               <button
                 onClick={() => setShowSimilarDeals(true)}
                 className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
