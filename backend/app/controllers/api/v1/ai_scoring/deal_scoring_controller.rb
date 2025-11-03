@@ -22,6 +22,14 @@ module Api
               deal_score: result[:analysis]['deal_score'],
               risk_score: result[:analysis]['risk_score'],
               risk_category: result[:analysis]['risk_category'],
+              # Include new metrics in response
+              sentiment_analysis: result[:analysis]['sentiment_analysis'],
+              team_assessment: result[:analysis]['team_assessment'],
+              market_opportunity: result[:analysis]['market_opportunity'],
+              funding_potential: result[:analysis]['funding_potential'],
+              timing_assessment: result[:analysis]['timing_assessment'],
+              competitive_advantage: result[:analysis]['competitive_advantage'],
+              exit_potential: result[:analysis]['exit_potential'],
               log_id: result[:log]&.id
             }
           else
@@ -58,9 +66,23 @@ module Api
                 sentiment_analysis: log.sentiment_analysis,
                 team_assessment: log.team_assessment,
                 market_opportunity: log.market_opportunity,
-                investment_thesis: log.investment_thesis
+                investment_thesis: log.investment_thesis,
+                # New comprehensive metrics
+                funding_potential: log.funding_potential,
+                timing_assessment: log.timing_assessment,
+                competitive_advantage: log.competitive_advantage,
+                exit_potential: log.exit_potential,
+                scalability_assessment: log.scalability_assessment,
+                product_market_fit: log.product_market_fit,
+                technology_assessment: log.technology_assessment,
+                regulatory_risks: log.regulatory_risks,
+                market_trends: log.market_trends,
+                investor_alignment: log.investor_alignment,
+                social_impact: log.social_impact,
+                sustainability_score: log.sustainability_score
               }
-            end
+            end,
+            latest_analysis: extract_latest_analysis(logs.first)
           }
         end
 
@@ -97,12 +119,27 @@ module Api
             average_deal_score: campaigns.average(:ai_deal_score)&.round(2),
             average_risk_score: campaigns.average(:ai_risk_score)&.round(2),
             risk_distribution: campaigns.group(:ai_risk_category).count,
+            sentiment_distribution: campaigns.group(:ai_sentiment).count,
+            team_assessment_distribution: campaigns.group(:ai_team_assessment).count,
+            market_opportunity_distribution: campaigns.group(:ai_market_opportunity).count,
             top_deals: campaigns.order(ai_deal_score: :desc).limit(5).map do |campaign|
               {
                 id: campaign.id,
                 title: campaign.title,
                 deal_score: campaign.ai_deal_score,
-                risk_score: campaign.ai_risk_score
+                risk_score: campaign.ai_risk_score,
+                sentiment_analysis: campaign.ai_sentiment,
+                team_assessment: campaign.ai_team_assessment,
+                market_opportunity: campaign.ai_market_opportunity
+              }
+            end,
+            high_potential_deals: campaigns.where(ai_deal_score: 80..100).limit(5).map do |campaign|
+              {
+                id: campaign.id,
+                title: campaign.title,
+                deal_score: campaign.ai_deal_score,
+                risk_score: campaign.ai_risk_score,
+                sentiment_analysis: campaign.ai_sentiment
               }
             end
           }
@@ -124,6 +161,33 @@ module Api
             }, status: :not_found
             return false
           end
+        end
+
+        def extract_latest_analysis(latest_log)
+          return nil unless latest_log
+          
+          {
+            downside_risks: latest_log.downside_risks || latest_log.key_risks,
+            upside_potential: latest_log.upside_potential,
+            strengths: latest_log.strengths,
+            sentiment_analysis: latest_log.sentiment_analysis,
+            team_assessment: latest_log.team_assessment,
+            market_opportunity: latest_log.market_opportunity,
+            investment_thesis: latest_log.investment_thesis,
+            # New comprehensive metrics
+            funding_potential: latest_log.funding_potential,
+            timing_assessment: latest_log.timing_assessment,
+            competitive_advantage: latest_log.competitive_advantage,
+            exit_potential: latest_log.exit_potential,
+            scalability_assessment: latest_log.scalability_assessment,
+            product_market_fit: latest_log.product_market_fit,
+            technology_assessment: latest_log.technology_assessment,
+            regulatory_risks: latest_log.regulatory_risks,
+            market_trends: latest_log.market_trends,
+            investor_alignment: latest_log.investor_alignment,
+            social_impact: latest_log.social_impact,
+            sustainability_score: latest_log.sustainability_score
+          }
         end
       end
     end
