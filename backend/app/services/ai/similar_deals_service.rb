@@ -58,7 +58,9 @@ module AI
           campaign: campaign,
           similarity_score: similarity.round(2),
           common_features: extract_common_features(campaign),
-          method: 'vector_similarity'
+          method: 'vector_similarity',
+          # Include additional AI metrics for better comparison
+          ai_metrics: extract_ai_metrics(campaign)
         }
       end
     end
@@ -81,11 +83,12 @@ module AI
           campaign: campaign,
           similarity_score: similarity.round(2),
           common_features: extract_common_features(campaign),
-          method: 'json_similarity'
+          method: 'json_similarity',
+          # Include additional AI metrics for better comparison
+          ai_metrics: extract_ai_metrics(campaign)
         }
       end
     end
-
 
     def find_similar_basic
       similar_campaigns = Campaign
@@ -100,7 +103,9 @@ module AI
           campaign: campaign,
           similarity_score: calculate_basic_similarity_score(campaign),
           common_features: extract_common_features(campaign),
-          method: 'basic_matching'
+          method: 'basic_matching',
+          # Include additional AI metrics for better comparison
+          ai_metrics: extract_ai_metrics(campaign)
         }
       end
     end
@@ -123,14 +128,21 @@ module AI
 
     def calculate_basic_similarity_score(other_campaign)
       score = 0
-      score += 40 if @campaign.category == other_campaign.category
+      score += 25 if @campaign.category == other_campaign.category
       
       if @campaign.goal_amount > 0 && other_campaign.goal_amount > 0
         goal_ratio = @campaign.goal_amount / other_campaign.goal_amount.to_f
-        score += 30 if goal_ratio.between?(0.5, 2.0)
+        score += 20 if goal_ratio.between?(0.5, 2.0)
       end
       
-      score += 30 if @campaign.class == other_campaign.class
+      score += 15 if @campaign.class == other_campaign.class
+      
+      # Enhanced with AI metrics similarity
+      score += 10 if ai_scores_similar?(other_campaign)
+      score += 10 if sentiment_similar?(other_campaign)
+      score += 10 if market_opportunity_similar?(other_campaign)
+      score += 10 if team_assessment_similar?(other_campaign)
+      
       score
     end
 
@@ -140,7 +152,20 @@ module AI
       features << "similar_goal" if goal_similar?(other_campaign)
       features << "same_campaign_type" if @campaign.class == other_campaign.class
       features << "similar_performance" if performance_similar?(other_campaign)
+      features << "similar_deal_score" if deal_score_similar?(other_campaign)
+      features << "similar_risk_profile" if risk_score_similar?(other_campaign)
+      features << "similar_sentiment" if sentiment_similar?(other_campaign)
+      features << "similar_market_opportunity" if market_opportunity_similar?(other_campaign)
       features
+    end
+
+    def extract_ai_metrics(other_campaign)
+      {
+        sentiment_analysis: other_campaign.ai_sentiment,
+        team_assessment: other_campaign.ai_team_assessment,
+        market_opportunity: other_campaign.ai_market_opportunity,
+        risk_category: other_campaign.ai_risk_category
+      }.compact
     end
 
     def goal_similar?(other_campaign)
@@ -153,6 +178,38 @@ module AI
       this_performance = @campaign.performance_percentage
       other_performance = other_campaign.performance_percentage
       (this_performance - other_performance).abs <= 20
+    end
+
+    def deal_score_similar?(other_campaign)
+      return false unless @campaign.ai_deal_score && other_campaign.ai_deal_score
+      (@campaign.ai_deal_score - other_campaign.ai_deal_score).abs <= 15
+    end
+
+    def risk_score_similar?(other_campaign)
+      return false unless @campaign.ai_risk_score && other_campaign.ai_risk_score
+      (@campaign.ai_risk_score - other_campaign.ai_risk_score).abs <= 20
+    end
+
+    def ai_scores_similar?(other_campaign)
+      deal_score_similar?(other_campaign) && risk_score_similar?(other_campaign)
+    end
+
+    def sentiment_similar?(other_campaign)
+      @campaign.ai_sentiment.present? && 
+      other_campaign.ai_sentiment.present? && 
+      @campaign.ai_sentiment == other_campaign.ai_sentiment
+    end
+
+    def market_opportunity_similar?(other_campaign)
+      @campaign.ai_market_opportunity.present? && 
+      other_campaign.ai_market_opportunity.present? && 
+      @campaign.ai_market_opportunity == other_campaign.ai_market_opportunity
+    end
+
+    def team_assessment_similar?(other_campaign)
+      @campaign.ai_team_assessment.present? && 
+      other_campaign.ai_team_assessment.present? && 
+      @campaign.ai_team_assessment == other_campaign.ai_team_assessment
     end
   end
 end

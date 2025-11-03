@@ -104,7 +104,9 @@ module Api
                 deal_score: campaign.ai_deal_score,
                 risk_score: campaign.ai_risk_score,
                 similarity_score: similar[:similarity_score],
-                common_features: similar[:common_features]
+                common_features: similar[:common_features],
+                # Include AI metrics for enhanced frontend display
+                ai_metrics: similar[:ai_metrics]
               }
             end
           }
