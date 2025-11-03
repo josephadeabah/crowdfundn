@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
 import { cn } from '@/app/lib/utils';
-import { ArrowRight, Play, Zap, Trophy, Brain, Sparkles, Rocket, Target } from 'lucide-react';
+import { ArrowRight, Play, Zap, Trophy } from 'lucide-react';
 import { useAuth } from '../context/auth/AuthContext';
 import Link from 'next/link';
 import { useLeaderboardContext } from '../context/leaderboard/LeaderboardContext';
@@ -16,7 +16,6 @@ const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [currentAISting, setCurrentAISting] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const openVideo = () => {
@@ -30,41 +29,12 @@ const Hero = () => {
   const { user } = useAuth();
   const { topBackers, fetchLeaderboardData } = useLeaderboardContext();
 
-  // AI Marketing Stings
-  const aiStings = [
-    {
-      icon: Brain,
-      text: "AI-Powered Deal Analysis",
-      description: "Get instant insights with our Hive Mind AI analyzer"
-    },
-    {
-      icon: Target,
-      text: "Smart Investment Matching",
-      description: "Find perfect opportunities with AI-driven recommendations"
-    },
-    {
-      icon: Trophy,
-      text: "Gamified Experience",
-      description: "Earn points, level up, and compete on leaderboards"
-    },
-    {
-      icon: Sparkles,
-      text: "Predictive Analytics",
-      description: "AI forecasts campaign success and investment potential"
-    }
-  ];
-
   useEffect(() => {
     fetchLeaderboardData();
   }, [fetchLeaderboardData]);
 
   useEffect(() => {
     setIsMounted(true);
-
-    // Rotate AI stings every 3 seconds
-    const stingInterval = setInterval(() => {
-      setCurrentAISting((prev) => (prev + 1) % aiStings.length);
-    }, 3000);
 
     // Force video autoplay on mobile
     const forceVideoPlay = () => {
@@ -92,7 +62,6 @@ const Hero = () => {
 
     return () => {
       clearTimeout(timer);
-      clearInterval(stingInterval);
       setIsMounted(false);
     };
   }, []);
@@ -132,83 +101,33 @@ const Hero = () => {
     };
   }, [isMounted]);
 
-  const CurrentStingIcon = aiStings[currentAISting].icon;
-
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image - ADDED THIS LINE */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: 'url(/Heropage.png)' }}
       ></div>
       {/* Two-layer background: Make white container transparent */}
-      <div className="absolute inset-0 bg-green-100/50"></div>
-      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700/50"></div>
-      
-      {/* AI Particles Background Effect */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-blue-400/30 rounded-full animate-float"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${15 + Math.random() * 10}s`
-            }}
-          />
-        ))}
-      </div>
-
+      <div className="absolute inset-0 bg-green-100/50"></div>{' '}
+      {/* Changed to transparent */}
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700/50"></div>{' '}
+      {/* Added transparency to green too */}
       {/* Main Hero Section - Constrained with max-w-7xl */}
       <div className="w-full mx-auto px-4 py-4 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="space-y-8 animate-fade-in">
-              {/* AI Marketing Sting - Rotating Badge */}
-              <div className="flex flex-col gap-4">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
-                  </span>
-                  <span className="text-sm font-medium text-gray-700">
-                    🚀 Powering Africa&apos;s Financial Future
-                  </span>
-                </div>
-
-                {/* AI Feature Highlight */}
-                <div className="relative">
-                  <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/50 rounded-xl backdrop-blur-sm">
-                    <div className="flex-shrink-0">
-                      <div className="p-2 bg-blue-500/20 rounded-lg">
-                        <CurrentStingIcon className="w-5 h-5 text-blue-600" />
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 truncate">
-                        {aiStings[currentAISting].text}
-                      </p>
-                      <p className="text-xs text-gray-600 truncate">
-                        {aiStings[currentAISting].description}
-                      </p>
-                    </div>
-                    <div className="flex space-x-1">
-                      {aiStings.map((_, index) => (
-                        <div
-                          key={index}
-                          className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                            index === currentAISting
-                              ? 'bg-blue-600'
-                              : 'bg-gray-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
+                </span>
+                <span className="text-sm font-medium text-gray-700">
+                  🚀 Powering Africa&apos;s Financial Future
+                </span>
               </div>
 
               {/* Main Heading */}
@@ -221,91 +140,40 @@ const Hero = () => {
                   Connecting visionary entrepreneurs with forward-thinking
                   investors to drive sustainable economic growth across the
                   continent.
-                  <span className="block mt-2 text-lg font-semibold text-blue-600">
-                    Powered by AI & Gamification
-                  </span>
                 </p>
               </div>
 
-              {/* Feature Highlights */}
-              <div className="grid grid-cols-2 gap-4 max-w-md">
-                <div className="flex items-center gap-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-gray-200/50">
-                  <Brain className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium text-gray-700">AI Analysis</span>
-                </div>
-                <div className="flex items-center gap-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-gray-200/50">
-                  <Trophy className="w-4 h-4 text-yellow-600" />
-                  <span className="text-sm font-medium text-gray-700">Gamified Rewards</span>
-                </div>
-                <div className="flex items-center gap-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-gray-200/50">
-                  <Zap className="w-4 h-4 text-green-600" />
-                  <span className="text-sm font-medium text-gray-700">Smart Matching</span>
-                </div>
-                <div className="flex items-center gap-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-gray-200/50">
-                  <Sparkles className="w-4 h-4 text-purple-600" />
-                  <span className="text-sm font-medium text-gray-700">Predictive Insights</span>
-                </div>
-              </div>
-
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-row gap-4">
                 <Button
+                  variant="outline"
                   size="lg"
-                  className="group flex-1 sm:flex-initial bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="group flex-1 sm:flex-initial"
                   onClick={() =>
                     (window.location.href = user
                       ? '/account#Favorites'
                       : '/auth/register')
                   }
                 >
-                  <Rocket className="w-4 h-4 mr-2" />
                   Start Investing
-                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="flex-1 sm:flex-initial border-blue-600 text-blue-600 hover:bg-blue-50"
+                  className="flex-1 sm:flex-initial"
                   onClick={() =>
                     (window.location.href = user
                       ? '/account#Campaigns'
                       : '/auth/register')
                   }
                 >
-                  <Target className="w-4 h-4 mr-2" />
                   Raise Capital
                 </Button>
               </div>
 
-              {/* AI Demo Callout */}
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
-                <div className="flex items-center gap-3">
-                  <div className="flex-shrink-0">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <Brain className="w-5 h-5 text-blue-600" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-800">
-                      Experience AI-Powered Investing
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      Try our Hive Mind analyzer for instant deal insights and risk assessment
-                    </p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                    onClick={() => window.location.href = '/campaigns?ai_demo=true'}
-                  >
-                    Try Demo
-                  </Button>
-                </div>
-              </div>
-
               {/* Top Backers Section */}
-              <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
+              <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
                 <div className="flex -space-x-3">
                   {topBackers?.map((backer, index) => (
                     <Popover key={index}>
@@ -378,15 +246,12 @@ const Hero = () => {
                     </div>
                   )}
                 </div>
-                <div className="text-sm text-white">
+                <p className="text-sm text-white">
                   <span className="font-semibold">
                     {topBackers?.length || 0}+
                   </span>{' '}
                   backers joined this month
-                  <span className="block text-xs text-blue-200">
-                    Compete on our gamified leaderboard!
-                  </span>
-                </div>
+                </p>
               </div>
             </div>
 
@@ -396,53 +261,19 @@ const Hero = () => {
               <div className="lg:absolute lg:inset-y-0 lg:left-0 lg:right-0">
                 <div className="relative max-w-7xl mx-auto px-4">
                   <div
-                    className="relative animate-fade-in -mt-8 lg:-mt-12 rounded-2xl shadow-sm overflow-hidden border-2 border-blue-200/50"
+                    className="relative animate-fade-in -mt-8 lg:-mt-12 rounded-2xl shadow-sm overflow-hidden" // Added negative margin here
                     style={{ animationDelay: '0.2s' }}
                   >
-                    <div className="absolute -inset-4 rounded-l-3xl"></div>
+                    <div className="absolute -inset-4  rounded-l-3xl"></div>
                     <img
                       src="/raise.png"
-                      alt="Financial growth and investment visualization with AI insights"
-                      className="relative w-full h-auto border-t-4 border-t-blue-300"
+                      alt="Financial growth and investment visualization"
+                      className="relative w-full h-auto border-t-4 border-t-gray-200"
                     />
-                    {/* AI Badge Overlay */}
-                    <div className="absolute top-4 right-4">
-                      <div className="flex items-center gap-2 px-3 py-2 bg-black/70 backdrop-blur-sm rounded-full">
-                        <Sparkles className="w-4 h-4 text-yellow-400" />
-                        <span className="text-xs font-semibold text-white">
-                          AI-POWERED
-                        </span>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
-                {/* AI Feature Callouts */}
-                <div className="absolute -left-4 top-1/4 hidden lg:block">
-                  <div className="bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-blue-200 max-w-xs">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Brain className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm font-semibold text-gray-800">Hive Mind AI</span>
-                    </div>
-                    <p className="text-xs text-gray-600">
-                      Real-time deal scoring and risk analysis powered by advanced AI
-                    </p>
-                  </div>
-                </div>
-
-                <div className="absolute -right-4 bottom-1/4 hidden lg:block">
-                  <div className="bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-yellow-200 max-w-xs">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Trophy className="w-4 h-4 text-yellow-600" />
-                      <span className="text-sm font-semibold text-gray-800">Gamified Rewards</span>
-                    </div>
-                    <p className="text-xs text-gray-600">
-                      Earn points, badges, and climb leaderboards as you invest
-                    </p>
-                  </div>
-                </div>
-
-                {/* Small decorative badge */}
+                {/* Small decorative badge - positioned absolutely relative to viewport */}
                 <img
                   src="/badge-graphic.png"
                   alt=""
@@ -454,17 +285,6 @@ const Hero = () => {
           </div>
         </div>
       </div>
-
-      {/* Add CSS for floating animation */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        .animate-float {
-          animation: float linear infinite;
-        }
-      `}</style>
     </div>
   );
 };
