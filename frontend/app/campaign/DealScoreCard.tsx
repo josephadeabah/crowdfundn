@@ -172,7 +172,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             Sign In Required
           </h3>
           <p className="text-gray-500 mb-4">
-            Please sign in to view AI analysis and market insights
+            Please sign in to view AI insights and market trends that can help you see if this campaign is the right cause or investment for you.
           </p>
           <button
             onClick={() => (window.location.href = '/auth/login')}
@@ -187,12 +187,12 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
 
   if (loading && !analysis) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm border p-6 mb-3">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="flex space-x-4">
-            <div className="flex-1 gap-2 space-y-2">
-              <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="flex-1 space-y-2">
+              <div className="h-4 bg-gray-200 rounded mb-2"></div>
               <div className="h-4 bg-gray-200 rounded w-5/6"></div>
             </div>
           </div>
