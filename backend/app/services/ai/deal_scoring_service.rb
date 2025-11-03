@@ -13,10 +13,11 @@ module AI
         raise "OpenAI API key is missing. Please set OPENAI_API_KEY environment variable."
       end
       
-      # Initialize client with proper configuration
+      # Initialize client with proper configuration and timeout settings
       @client = OpenAI::Client.new(
         access_token: api_key,
-        log_errors: true
+        log_errors: true,
+        request_timeout: 60 # Increase timeout to 60 seconds
       )
     end
 
@@ -31,6 +32,12 @@ module AI
         
         prompt = build_comprehensive_prompt
         response = call_openai_api(prompt)
+        
+        # Handle API response errors
+        if response.nil? || response == true
+          return { success: false, error: "OpenAI API returned an invalid response" }
+        end
+        
         analysis_data = parse_response(response)
         
         deal_score_log = create_deal_score_log(prompt, response, analysis_data, start_time)
@@ -567,59 +574,64 @@ module AI
       Rails.logger.info "Calling OpenAI API with prompt length: #{prompt.length}"
       
       begin
-        # Minimal parameters for GPT-5 Nano - only what's absolutely required
+        # Use a more reliable model and add better error handling
         response = @client.chat(
           parameters: {
-            model: "gpt-5-mini",
+            model: "gpt-3.5-turbo", # Use a more stable model
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
               { role: "user", content: prompt }
             ],
-            max_completion_tokens: 2500,
+            max_tokens: 2000,
+            temperature: 0.3,
             response_format: { type: "json_object" }
           }
         )
         
-        Rails.logger.info "GPT-5 Nano API response received successfully"
+        Rails.logger.info "OpenAI API response received successfully"
+        Rails.logger.info "API Response: #{response.inspect}" # Debug logging
+        
+        # Validate response structure
+        if response.nil? || !response.is_a?(Hash) || response["choices"].nil?
+          Rails.logger.error "Invalid API response structure: #{response.inspect}"
+          return nil
+        end
+        
         response
       rescue => e
-        Rails.logger.error "GPT-5 Nano API call failed: #{e.message}"
-        
-        # Fall back to GPT-4 with full parameter support
-        # Rails.logger.info "Falling back to GPT-4"
-        # call_openai_api_fallback(prompt)
+        Rails.logger.error "OpenAI API call failed: #{e.message}"
+        Rails.logger.error "Backtrace: #{e.backtrace.join("\n")}"
+        nil
       end
     end
 
-    # def call_openai_api_fallback(prompt)
-    #   @client.chat(
-    #     parameters: {
-    #       model: "gpt-4",
-    #       messages: [
-    #         { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
-    #         { role: "user", content: prompt }
-    #       ],
-    #       temperature: 0.3,
-    #       max_tokens: 2000,
-    #       response_format: { type: "json_object" }
-    #     }
-    #   )
-    # end
-
     def parse_response(response)
-      content = response.dig("choices", 0, "message", "content").to_s.strip
+      return fallback_analysis("No response from API") if response.nil?
+      
+      # Safely extract content with proper error handling
+      content = if response["choices"] && response["choices"][0] && response["choices"][0]["message"]
+                  response["choices"][0]["message"]["content"].to_s.strip
+                else
+                  Rails.logger.error "Invalid response structure: #{response.inspect}"
+                  ""
+                end
 
       # Try to extract valid JSON portion between braces
       json_text = content[/\{.*\}/m] || content
 
       begin
-        JSON.parse(json_text)
-      rescue JSON::ParserError
+        parsed_data = JSON.parse(json_text)
+        Rails.logger.info "Successfully parsed analysis data"
+        parsed_data
+      rescue JSON::ParserError => e
+        Rails.logger.error "Failed to parse JSON response: #{e.message}"
+        Rails.logger.error "Response content: #{content}"
         fallback_analysis(content)
       end
     end
 
     def fallback_analysis(content)
+      Rails.logger.warn "Using fallback analysis due to parsing failure"
       {
         "deal_score" => 50,
         "risk_score" => 50,
@@ -696,7 +708,7 @@ module AI
         }
       )
       
-      embedding = response.dig("data", 0, "embedding")
+      embedding = response.dig("data", 0, "embedding") if response.is_a?(Hash)
       if embedding
         @campaign.update(ai_embedding: embedding)
         return embedding
