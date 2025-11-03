@@ -159,8 +159,8 @@ const Hero = () => {
                     {/* Animated Bubble - KEPT THIS */}
                     <div className="flex-shrink-0">
                       <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-600 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
                       </span>
                     </div>
                     
