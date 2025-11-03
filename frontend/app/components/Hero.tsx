@@ -308,10 +308,10 @@ const Hero = () => {
                   {/* AI Feature Carousel - Orange Theme - FIXED POSITIONING */}
                   <div className="mt-6 w-full max-w-md mx-auto lg:absolute lg:bottom-4 lg:left-1/2 lg:transform lg:-translate-x-1/2 z-20">
                     <div className="relative">
-                      <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-200 rounded-xl backdrop-blur-sm shadow-lg">
+                      <div className="flex items-center gap-3 px-4 py-3 bg-green-700/50 border-green-700/50 rounded-xl backdrop-blur-sm shadow-lg">
                         <div className="flex-shrink-0">
                           <div className="p-2 bg-orange-500/20 rounded-lg">
-                            <CurrentStingIcon className="w-5 h-5 text-orange-600" />
+                            <CurrentStingIcon className="w-5 h-5 text-white" />
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
