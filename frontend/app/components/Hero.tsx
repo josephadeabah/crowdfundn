@@ -1,7 +1,16 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
 import { cn } from '@/app/lib/utils';
-import { ArrowRight, Play, Zap, Trophy, Brain, Target, Sparkles, Rocket } from 'lucide-react';
+import {
+  ArrowRight,
+  Play,
+  Zap,
+  Trophy,
+  Brain,
+  Target,
+  Sparkles,
+  Rocket,
+} from 'lucide-react';
 import { useAuth } from '../context/auth/AuthContext';
 import Link from 'next/link';
 import { useLeaderboardContext } from '../context/leaderboard/LeaderboardContext';
@@ -34,24 +43,24 @@ const Hero = () => {
   const aiStings = [
     {
       icon: Brain,
-      text: "AI-Powered Deal Analysis",
-      description: "Get instant insights with our Hive Mind AI"
+      text: 'AI-Powered Deal Analysis',
+      description: 'Get instant insights with our Hive Mind AI',
     },
     {
       icon: Target,
-      text: "Smart Investment Matching",
-      description: "Find perfect opportunities with AI-driven recommendations"
+      text: 'Smart Investment Matching',
+      description: 'Find perfect opportunities with AI-driven recommendations',
     },
     {
       icon: Trophy,
-      text: "Gamified Experience",
-      description: "Earn points, level up, and compete on leaderboards"
+      text: 'Gamified Experience',
+      description: 'Earn points, level up, and compete on leaderboards',
     },
     {
       icon: Sparkles,
-      text: "Predictive Analytics",
-      description: "AI forecasts campaign success and investment potential"
-    }
+      text: 'Predictive Analytics',
+      description: 'AI forecasts campaign success and investment potential',
+    },
   ];
 
   useEffect(() => {
@@ -163,7 +172,7 @@ const Hero = () => {
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
                       </span>
                     </div>
-                    
+
                     {/* Icon */}
                     <div className="flex-shrink-0">
                       <div className="p-1.5 rounded-xl">

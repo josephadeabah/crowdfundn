@@ -72,7 +72,7 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
   };
 
   const formatFeature = (feature: string): string => {
-    return feature.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return feature.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   const getAIMetricColor = (metric: string, value: string): string => {
@@ -80,24 +80,24 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
       sentiment_analysis: {
         positive: 'text-green-600 bg-green-50',
         neutral: 'text-yellow-600 bg-yellow-50',
-        negative: 'text-red-600 bg-red-50'
+        negative: 'text-red-600 bg-red-50',
       },
       team_assessment: {
         strong: 'text-green-600 bg-green-50',
         adequate: 'text-yellow-600 bg-yellow-50',
-        weak: 'text-red-600 bg-red-50'
+        weak: 'text-red-600 bg-red-50',
       },
       market_opportunity: {
         large: 'text-green-600 bg-green-50',
         medium: 'text-yellow-600 bg-yellow-50',
-        small: 'text-red-600 bg-red-50'
+        small: 'text-red-600 bg-red-50',
       },
       risk_category: {
         low: 'text-green-600 bg-green-50',
         medium: 'text-yellow-600 bg-yellow-50',
         high: 'text-red-600 bg-red-50',
-        very_high: 'text-red-700 bg-red-100'
-      }
+        very_high: 'text-red-700 bg-red-100',
+      },
     };
 
     return colorMap[metric]?.[value] || 'text-gray-600 bg-gray-50';
@@ -170,7 +170,9 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
                 </svg>
               </div>
               <p>No similar deals found.</p>
-              <p className="text-sm mt-1">Try running AI analysis first to enable smart matching.</p>
+              <p className="text-sm mt-1">
+                Try running AI analysis first to enable smart matching.
+              </p>
             </div>
           ) : (
             <div className="grid gap-6">
@@ -187,14 +189,17 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
                             {deal.title}
                           </h3>
                           <p className="text-sm text-gray-600 mt-1">
-                            {deal.type?.replace('Campaign', '') || 'Campaign'} • {deal.currency} {deal.goal_amount?.toLocaleString()}
+                            {deal.type?.replace('Campaign', '') || 'Campaign'} •{' '}
+                            {deal.currency} {deal.goal_amount?.toLocaleString()}
                           </p>
                         </div>
-                        
+
                         {/* Similarity Score */}
                         <div className="text-right">
                           <div className="flex items-center space-x-2">
-                            <span className="text-xs font-medium text-gray-500">MATCH</span>
+                            <span className="text-xs font-medium text-gray-500">
+                              MATCH
+                            </span>
                             <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
                               {deal.similarity_score}%
                             </div>
@@ -210,67 +215,77 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
                           </div>
                           <div className="text-xs text-gray-500">Funded</div>
                         </div>
-                        
+
                         <div className="text-center">
-                          <div className={`text-2xl font-bold ${getScoreColor(deal.deal_score)}`}>
+                          <div
+                            className={`text-2xl font-bold ${getScoreColor(deal.deal_score)}`}
+                          >
                             {deal.deal_score || 'N/A'}
                           </div>
-                          <div className="text-xs text-gray-500">Deal Score</div>
+                          <div className="text-xs text-gray-500">
+                            Deal Score
+                          </div>
                         </div>
-                        
+
                         <div className="text-center">
-                          <div className={`text-2xl font-bold ${getRiskColor(deal.risk_score)}`}>
+                          <div
+                            className={`text-2xl font-bold ${getRiskColor(deal.risk_score)}`}
+                          >
                             {deal.risk_score || 'N/A'}
                           </div>
-                          <div className="text-xs text-gray-500">Risk Score</div>
+                          <div className="text-xs text-gray-500">
+                            Risk Score
+                          </div>
                         </div>
                       </div>
 
                       {/* AI Metrics */}
                       {deal.ai_metrics && (
                         <div className="mt-4 flex flex-wrap gap-2">
-                          {Object.entries(deal.ai_metrics).map(([key, value]) => (
-                            value && (
-                              <span
-                                key={key}
-                                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getAIMetricColor(key, value)}`}
-                              >
-                                {formatFeature(key)}: {formatFeature(value)}
-                              </span>
-                            )
-                          ))}
+                          {Object.entries(deal.ai_metrics).map(
+                            ([key, value]) =>
+                              value && (
+                                <span
+                                  key={key}
+                                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getAIMetricColor(key, value)}`}
+                                >
+                                  {formatFeature(key)}: {formatFeature(value)}
+                                </span>
+                              ),
+                          )}
                         </div>
                       )}
 
                       {/* Common Features */}
-                      {deal.common_features && deal.common_features.length > 0 && (
-                        <div className="mt-4">
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">
-                            Why it's similar:
-                          </h4>
-                          <div className="flex flex-wrap gap-2">
-                            {deal.common_features.map((feature, idx) => (
-                              <span
-                                key={idx}
-                                className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium"
-                              >
-                                <svg
-                                  className="w-3 h-3 mr-1 text-green-500"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
+                      {deal.common_features &&
+                        deal.common_features.length > 0 && (
+                          <div className="mt-4">
+                            <h4 className="text-sm font-medium text-gray-700 mb-2">
+                              Why it's similar:
+                            </h4>
+                            <div className="flex flex-wrap gap-2">
+                              {deal.common_features.map((feature, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium"
                                 >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                                {formatFeature(feature)}
-                              </span>
-                            ))}
+                                  <svg
+                                    className="w-3 h-3 mr-1 text-green-500"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  {formatFeature(feature)}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
 
                     {/* Action Button */}
@@ -306,12 +321,10 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
         <div className="border-t px-6 py-4 bg-gray-50">
           <div className="flex justify-between items-center">
             <div className="text-sm text-gray-500">
-              Found {similarDeals.length} similar deal{similarDeals.length !== 1 ? 's' : ''}
+              Found {similarDeals.length} similar deal
+              {similarDeals.length !== 1 ? 's' : ''}
             </div>
-            <div
-              className="px-4 py-2 bg-gray-50 text-white text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
-            >
-            </div>
+            <div className="px-4 py-2 bg-gray-50 text-white text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"></div>
           </div>
         </div>
       </div>
