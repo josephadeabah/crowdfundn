@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
 import { cn } from '@/app/lib/utils';
-import { ArrowRight, Play, Zap, Trophy } from 'lucide-react';
+import { ArrowRight, Play, Zap, Trophy, Brain, Target, Sparkles, Rocket } from 'lucide-react';
 import { useAuth } from '../context/auth/AuthContext';
 import Link from 'next/link';
 import { useLeaderboardContext } from '../context/leaderboard/LeaderboardContext';
@@ -16,6 +16,7 @@ const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [currentAISting, setCurrentAISting] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const openVideo = () => {
@@ -29,12 +30,41 @@ const Hero = () => {
   const { user } = useAuth();
   const { topBackers, fetchLeaderboardData } = useLeaderboardContext();
 
+  // AI Marketing Stings
+  const aiStings = [
+    {
+      icon: Brain,
+      text: "AI-Powered Deal Analysis",
+      description: "Get instant insights with our Hive Mind AI analyzer"
+    },
+    {
+      icon: Target,
+      text: "Smart Investment Matching",
+      description: "Find perfect opportunities with AI-driven recommendations"
+    },
+    {
+      icon: Trophy,
+      text: "Gamified Experience",
+      description: "Earn points, level up, and compete on leaderboards"
+    },
+    {
+      icon: Sparkles,
+      text: "Predictive Analytics",
+      description: "AI forecasts campaign success and investment potential"
+    }
+  ];
+
   useEffect(() => {
     fetchLeaderboardData();
   }, [fetchLeaderboardData]);
 
   useEffect(() => {
     setIsMounted(true);
+
+    // Rotate AI stings every 3 seconds
+    const stingInterval = setInterval(() => {
+      setCurrentAISting((prev) => (prev + 1) % aiStings.length);
+    }, 3000);
 
     // Force video autoplay on mobile
     const forceVideoPlay = () => {
@@ -62,6 +92,7 @@ const Hero = () => {
 
     return () => {
       clearTimeout(timer);
+      clearInterval(stingInterval);
       setIsMounted(false);
     };
   }, []);
@@ -100,6 +131,8 @@ const Hero = () => {
       animatedElements.forEach((el) => observer.unobserve(el));
     };
   }, [isMounted]);
+
+  const CurrentStingIcon = aiStings[currentAISting].icon;
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
@@ -270,6 +303,39 @@ const Hero = () => {
                       alt="Financial growth and investment visualization"
                       className="relative w-full h-auto border-t-4 border-t-gray-200"
                     />
+                  </div>
+
+                  {/* AI Feature Carousel - Orange Theme */}
+                  <div className="mt-6 lg:absolute lg:-bottom-6 lg:left-1/2 lg:transform lg:-translate-x-1/2 lg:w-80">
+                    <div className="relative">
+                      <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-200 rounded-xl backdrop-blur-sm shadow-lg">
+                        <div className="flex-shrink-0">
+                          <div className="p-2 bg-orange-500/20 rounded-lg">
+                            <CurrentStingIcon className="w-5 h-5 text-orange-600" />
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-800 truncate">
+                            {aiStings[currentAISting].text}
+                          </p>
+                          <p className="text-xs text-gray-600 truncate">
+                            {aiStings[currentAISting].description}
+                          </p>
+                        </div>
+                        <div className="flex space-x-1">
+                          {aiStings.map((_, index) => (
+                            <div
+                              key={index}
+                              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                                index === currentAISting
+                                  ? 'bg-orange-600'
+                                  : 'bg-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
