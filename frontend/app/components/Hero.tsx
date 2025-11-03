@@ -199,7 +199,7 @@ const Hero = () => {
                   Invest in Africa&apos;s
                   <span className="block text-orange-500">Tomorrow Today</span>
                 </h1>
-                <p className="text-lg text-gray-800 leading-relaxed max-w-xl">
+                <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
                   Connecting visionary entrepreneurs with forward-thinking
                   investors to drive sustainable economic growth across the
                   continent.
