@@ -153,7 +153,7 @@ const Hero = () => {
             {/* Left Content */}
             <div className="space-y-8 animate-fade-in">
               {/* AI Feature Carousel - REPLACED the badge */}
-              <div className="w-full max-w-md">
+              <div className="w-full max-w-lg">
                 <div className="relative">
                   <div className="flex items-center gap-3 px-4 py-3 rounded-full backdrop-blur-sm">
                     {/* Animated Bubble - KEPT THIS */}
