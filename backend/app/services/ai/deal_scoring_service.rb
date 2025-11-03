@@ -82,7 +82,7 @@ module AI
         CAMPAIGN DATA:
         #{format_campaign_data(campaign_data)}
 
-        ANALYSIS FRAMEWORK:
+        COMPREHENSIVE ANALYSIS FRAMEWORK:
         1. Deal Score (0-100): Overall investment attractiveness considering both upside and downside
         2. Risk Score (0-100): Overall risk level (higher = more risky)
         3. Risk Category: low/medium/high/very_high
@@ -91,16 +91,34 @@ module AI
         6. Strengths: List 3-5 key strengths and competitive advantages
         7. Recommendations: List 2-3 actionable recommendations for investors
         8. Sentiment Analysis: Overall sentiment from community engagement (positive/neutral/negative)
-        9. Team Assessment: Evaluation of team strength and experience
-        10. Market Opportunity: Assessment of market size and competitive positioning
+        9. Team Assessment: Evaluation of team strength and experience (strong/adequate/weak)
+        10. Market Opportunity: Assessment of market size and competitive positioning (large/medium/small)
+        
+        ADDITIONAL KEY METRICS FOR INVESTORS:
+        11. Funding Potential: Assessment of likelihood to reach funding goal (high/medium/low)
+        12. Timing Assessment: Evaluation of market timing and campaign timing (excellent/good/average/poor)
+        13. Competitive Advantage: Strength of competitive moat (strong/moderate/weak)
+        14. Exit Potential: Likelihood of successful exit for investors (high/medium/low)
+        15. Scalability Assessment: Potential for business model scalability (high/medium/low)
+        16. Product-Market Fit: Evidence of product-market fit (strong/moderate/weak)
+        17. Technology Assessment: Brief assessment of technology innovation and defensibility
+        18. Regulatory Risks: List 2-3 key regulatory considerations and risks
+        19. Market Trends: List 2-3 relevant market trends supporting or challenging the opportunity
+        20. Investor Alignment: How well this fits different investor profiles (e.g., "Suitable for risk-tolerant investors seeking growth opportunities")
+        21. Social Impact: Brief social and environmental impact assessment
+        22. Sustainability Score: Environmental sustainability rating (0-100)
 
-        IMPORTANT CONSIDERATIONS:
+        IMPORTANT CONSIDERATIONS FOR INVESTORS:
         - For equity campaigns, focus on valuation, equity structure, and investor terms
         - Analyze community sentiment from comments and updates
         - Evaluate team composition and founder experience
         - Assess market timing and competitive landscape
         - Consider regulatory and execution risks
         - Factor in social proof and traction metrics
+        - Evaluate scalability and growth potential
+        - Consider exit opportunities and timelines
+        - Assess technology defensibility and IP
+        - Evaluate ESG factors and social impact
 
         RESPONSE FORMAT (JSON only):
         {
@@ -114,11 +132,24 @@ module AI
           "sentiment_analysis": "positive/neutral/negative",
           "team_assessment": "strong/adequate/weak",
           "market_opportunity": "large/medium/small",
+          "funding_potential": "high/medium/low",
+          "timing_assessment": "excellent/good/average/poor",
+          "competitive_advantage": "strong/moderate/weak",
+          "exit_potential": "high/medium/low",
+          "scalability_assessment": "high/medium/low",
+          "product_market_fit": "strong/moderate/weak",
+          "technology_assessment": "Brief assessment of technology innovation",
+          "regulatory_risks": ["risk1", "risk2"],
+          "market_trends": ["trend1", "trend2"],
+          "investor_alignment": "Suitable for [investor types]",
+          "social_impact": "Brief social impact assessment",
+          "sustainability_score": number,
           "analysis_summary": "Comprehensive summary of investment thesis",
           "investment_thesis": "Detailed investment thesis covering both upside and downside"
         }
 
         Be objective, data-driven, and focus on investor protection. Balance upside potential against downside risks.
+        Provide actionable insights for both supporters and investors.
       PROMPT
     end
 
@@ -600,6 +631,18 @@ module AI
         "sentiment_analysis" => "neutral",
         "team_assessment" => "adequate",
         "market_opportunity" => "medium",
+        "funding_potential" => "medium",
+        "timing_assessment" => "average",
+        "competitive_advantage" => "moderate",
+        "exit_potential" => "medium",
+        "scalability_assessment" => "medium",
+        "product_market_fit" => "moderate",
+        "technology_assessment" => "Standard technology implementation",
+        "regulatory_risks" => ["Standard industry regulations", "Compliance requirements"],
+        "market_trends" => ["Growing market demand", "Increased competition"],
+        "investor_alignment" => "Suitable for moderate risk investors",
+        "social_impact" => "Standard social impact for industry",
+        "sustainability_score" => 50,
         "analysis_summary" => "Standard analysis due to parsing limitations",
         "investment_thesis" => "Balanced opportunity with moderate risk-reward profile"
       }
@@ -614,7 +657,7 @@ module AI
         deal_score: analysis_data["deal_score"],
         risk_score: analysis_data["risk_score"],
         risk_category: analysis_data["risk_category"],
-        key_risks: analysis_data["downside_risks"], # Using downside_risks as key_risks for backward compatibility
+        key_risks: analysis_data["downside_risks"],
         strengths: analysis_data["strengths"],
         recommendations: analysis_data["recommendations"],
         analysis_type: @analysis_type,
@@ -624,7 +667,19 @@ module AI
           sentiment_analysis: analysis_data["sentiment_analysis"],
           team_assessment: analysis_data["team_assessment"],
           market_opportunity: analysis_data["market_opportunity"],
-          investment_thesis: analysis_data["investment_thesis"]
+          investment_thesis: analysis_data["investment_thesis"],
+          funding_potential: analysis_data["funding_potential"],
+          timing_assessment: analysis_data["timing_assessment"],
+          competitive_advantage: analysis_data["competitive_advantage"],
+          exit_potential: analysis_data["exit_potential"],
+          scalability_assessment: analysis_data["scalability_assessment"],
+          product_market_fit: analysis_data["product_market_fit"],
+          technology_assessment: analysis_data["technology_assessment"],
+          regulatory_risks: analysis_data["regulatory_risks"],
+          market_trends: analysis_data["market_trends"],
+          investor_alignment: analysis_data["investor_alignment"],
+          social_impact: analysis_data["social_impact"],
+          sustainability_score: analysis_data["sustainability_score"]
         }
       )
     end
