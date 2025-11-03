@@ -152,43 +152,45 @@ const Hero = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="space-y-8 animate-fade-in">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange/10 border border-primary/20">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
-                </span>
-                    <div className="mt-6 w-full max-w-md mx-auto lg:absolute lg:bottom-4 lg:left-1/2 lg:transform lg:-translate-x-1/2 z-20">
-                    <div className="relative">
-                      <div className="flex items-center gap-3 px-4 py-3 bg-green-700/50 border-green-700/50 rounded-xl backdrop-blur-sm shadow-lg">
-                        <div className="flex-shrink-0">
-                          <div className="p-2 bg-orange-500/20 rounded-lg">
-                            <CurrentStingIcon className="w-5 h-5 text-white" />
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-gray-800 truncate">
-                            {aiStings[currentAISting].text}
-                          </p>
-                          <p className="text-xs text-gray-600 truncate">
-                            {aiStings[currentAISting].description}
-                          </p>
-                        </div>
-                        <div className="flex space-x-1">
-                          {aiStings.map((_, index) => (
-                            <div
-                              key={index}
-                              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                                index === currentAISting
-                                  ? 'bg-orange-600'
-                                  : 'bg-gray-300'
-                              }`}
-                            />
-                          ))}
-                        </div>
+              {/* AI Feature Carousel - REPLACED the badge */}
+              <div className="w-full max-w-md">
+                <div className="relative">
+                  <div className="flex items-center gap-3 px-4 py-3 bg-green-700/50 border border-green-700/50 rounded-xl backdrop-blur-sm shadow-lg">
+                    {/* Animated Bubble - KEPT THIS */}
+                    <div className="flex-shrink-0">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
+                      </span>
+                    </div>
+                    
+                    <div className="flex-shrink-0">
+                      <div className="p-2 bg-orange-500/20 rounded-lg">
+                        <CurrentStingIcon className="w-5 h-5 text-white" />
                       </div>
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-800 truncate">
+                        {aiStings[currentAISting].text}
+                      </p>
+                      <p className="text-xs text-gray-600 truncate">
+                        {aiStings[currentAISting].description}
+                      </p>
+                    </div>
+                    <div className="flex space-x-1">
+                      {aiStings.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                            index === currentAISting
+                              ? 'bg-orange-600'
+                              : 'bg-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
+                </div>
               </div>
 
               {/* Main Heading */}
@@ -333,7 +335,7 @@ const Hero = () => {
                     />
                   </div>
 
-                  {/* AI Feature Carousel - FIXED POSITIONING */}
+                  {/* You can remove the duplicate AI carousel from here if you want */}
                 </div>
 
                 {/* Small decorative badge - positioned absolutely relative to viewport */}
