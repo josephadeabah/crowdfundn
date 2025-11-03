@@ -38,6 +38,34 @@ const UserManagement = () => {
   // Use ref for timeout to avoid dependency issues
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Format date function
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  // Calculate how long ago the user joined
+  const getTimeSinceJoined = (dateString: string) => {
+    const joinedDate = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - joinedDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) return '1 day ago';
+    if (diffDays < 30) return `${diffDays} days ago`;
+
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths === 1) return '1 month ago';
+    if (diffMonths < 12) return `${diffMonths} months ago`;
+
+    const diffYears = Math.floor(diffMonths / 12);
+    return diffYears === 1 ? '1 year ago' : `${diffYears} years ago`;
+  };
+
   // Main useEffect that handles both pagination and search
   useEffect(() => {
     const fetchUsers = async () => {
@@ -170,13 +198,19 @@ const UserManagement = () => {
 
   // Client-side sorting for the current page results
   const sortedUsers = [...users].sort((a, b) => {
+    if (sortCriteria === 'joined') {
+      // Sort by creation date
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    }
     if (a[sortCriteria] < b[sortCriteria]) return -1;
     if (a[sortCriteria] > b[sortCriteria]) return 1;
     return 0;
   });
 
   // Combined loading state
-  const isLoading = loading || isSearching;
+  const isLoading: boolean = Boolean(loading) || isSearching;
 
   if (isLoading && users.length === 0) {
     return (
@@ -234,6 +268,7 @@ const UserManagement = () => {
         >
           <option value="name">Sort by Name</option>
           <option value="role">Sort by Role</option>
+          <option value="joined">Sort by Join Date</option>
         </select>
       </div>
 
@@ -249,6 +284,7 @@ const UserManagement = () => {
               <th className="p-2 text-left">Name</th>
               <th className="p-2 text-left">Email</th>
               <th className="p-2 text-left">Country</th>
+              <th className="p-2 text-left">Joined</th>
               <th className="p-2 text-left">Role</th>
               <th className="p-2 text-left">Access Level</th>
               <th className="p-2 text-left">Status</th>
@@ -261,6 +297,16 @@ const UserManagement = () => {
                 <td className="p-2 truncate">{user.full_name}</td>
                 <td className="p-2 truncate">{user.email}</td>
                 <td className="p-2 truncate">{user.country}</td>
+                <td className="p-2 truncate">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">
+                      {formatDate(user.created_at)}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {getTimeSinceJoined(user.created_at)}
+                    </span>
+                  </div>
+                </td>
                 <td className="p-2 truncate">
                   <select
                     value={user.role}
