@@ -459,12 +459,14 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                             Key Strengths
                           </h5>
                           <ul className="text-sm text-gray-700 space-y-1">
-                            {latestAnalysis.strengths?.map((strength, index) => (
-                              <li key={index} className="flex items-start">
-                                <span className="text-blue-500 mr-2">•</span>
-                                {strength}
-                              </li>
-                            ))}
+                            {latestAnalysis.strengths?.map(
+                              (strength, index) => (
+                                <li key={index} className="flex items-start">
+                                  <span className="text-blue-500 mr-2">•</span>
+                                  {strength}
+                                </li>
+                              ),
+                            )}
                           </ul>
                         </div>
                         <div>
@@ -472,12 +474,14 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                             Growth Opportunities
                           </h5>
                           <ul className="text-sm text-gray-700 space-y-1">
-                            {latestAnalysis.upside_potential?.map((potential, index) => (
-                              <li key={index} className="flex items-start">
-                                <span className="text-green-500 mr-2">•</span>
-                                {potential}
-                              </li>
-                            ))}
+                            {latestAnalysis.upside_potential?.map(
+                              (potential, index) => (
+                                <li key={index} className="flex items-start">
+                                  <span className="text-green-500 mr-2">•</span>
+                                  {potential}
+                                </li>
+                              ),
+                            )}
                           </ul>
                         </div>
                       </div>
@@ -519,12 +523,14 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                             Major Risks
                           </h5>
                           <ul className="text-sm text-gray-700 space-y-1">
-                            {latestAnalysis.downside_risks?.map((risk, index) => (
-                              <li key={index} className="flex items-start">
-                                <span className="text-red-500 mr-2">•</span>
-                                {risk}
-                              </li>
-                            ))}
+                            {latestAnalysis.downside_risks?.map(
+                              (risk, index) => (
+                                <li key={index} className="flex items-start">
+                                  <span className="text-red-500 mr-2">•</span>
+                                  {risk}
+                                </li>
+                              ),
+                            )}
                           </ul>
                         </div>
                         <div>
@@ -532,12 +538,16 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                             Regulatory & Market Risks
                           </h5>
                           <ul className="text-sm text-gray-700 space-y-1">
-                            {latestAnalysis.regulatory_risks?.map((risk, index) => (
-                              <li key={index} className="flex items-start">
-                                <span className="text-orange-500 mr-2">•</span>
-                                {risk}
-                              </li>
-                            ))}
+                            {latestAnalysis.regulatory_risks?.map(
+                              (risk, index) => (
+                                <li key={index} className="flex items-start">
+                                  <span className="text-orange-500 mr-2">
+                                    •
+                                  </span>
+                                  {risk}
+                                </li>
+                              ),
+                            )}
                           </ul>
                         </div>
                       </div>
@@ -578,12 +588,16 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                             Market Trends
                           </h5>
                           <ul className="text-sm text-gray-700 space-y-1">
-                            {latestAnalysis.market_trends?.map((trend, index) => (
-                              <li key={index} className="flex items-start">
-                                <span className="text-purple-500 mr-2">•</span>
-                                {trend}
-                              </li>
-                            ))}
+                            {latestAnalysis.market_trends?.map(
+                              (trend, index) => (
+                                <li key={index} className="flex items-start">
+                                  <span className="text-purple-500 mr-2">
+                                    •
+                                  </span>
+                                  {trend}
+                                </li>
+                              ),
+                            )}
                           </ul>
                           {latestAnalysis.technology_assessment && (
                             <>
