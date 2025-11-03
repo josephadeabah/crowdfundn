@@ -165,7 +165,7 @@ const Hero = () => {
                     </div>
                     
                     <div className="flex-shrink-0">
-                      <div className="p-2 bg-orange-500/20 rounded-lg">
+                      <div className="p-1 rounded-full">
                         <CurrentStingIcon className="w-5 h-5 text-white" />
                       </div>
                     </div>
@@ -195,11 +195,11 @@ const Hero = () => {
 
               {/* Main Heading */}
               <div className="space-y-4">
-                <h1 className="text-5xl lg:text-6xl font-bold text-gray-700 leading-tight">
+                <h1 className="text-3xl lg:text-4xl font-bold text-gray-700 leading-tight">
                   Invest in Africa&apos;s
                   <span className="block text-orange-500">Tomorrow Today</span>
                 </h1>
-                <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
+                <p className="text-lg text-gray-800 leading-relaxed max-w-xl">
                   Connecting visionary entrepreneurs with forward-thinking
                   investors to drive sustainable economic growth across the
                   continent.
