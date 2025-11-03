@@ -22,6 +22,18 @@ interface AnalysisHistory {
   team_assessment: string;
   market_opportunity: string;
   investment_thesis: string;
+  funding_potential: string;
+  timing_assessment: string;
+  competitive_advantage: string;
+  exit_potential: string;
+  scalability_assessment: string;
+  product_market_fit: string;
+  technology_assessment: string;
+  regulatory_risks: string[];
+  market_trends: string[];
+  investor_alignment: string;
+  social_impact: string;
+  sustainability_score: number;
 }
 
 interface AnalysisHistoryModalProps {
@@ -62,7 +74,7 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
           <div>
@@ -70,7 +82,7 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
               Analysis History Timeline
             </h2>
             <p className="text-sm text-gray-500 mt-1">
-              Click on each analysis to view detailed insights
+              Comprehensive analysis history with detailed investor insights
             </p>
           </div>
           <button
@@ -126,6 +138,11 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                           >
                             Risk: {analysis.risk_score}
                           </div>
+                          <div
+                            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getFundingPotentialBadgeClass(analysis.funding_potential)}`}
+                          >
+                            Funding: {analysis.funding_potential}
+                          </div>
                         </div>
                       </div>
 
@@ -143,8 +160,8 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                     </div>
                   </AccordionTriggerWrapper>
                   <AccordionContentWrapper>
-                    {/* Quick Metrics */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {/* Comprehensive Metrics Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                       <div className="text-center p-3 bg-gray-50 rounded-lg">
                         <div className="text-sm text-gray-500">Sentiment</div>
                         <div
@@ -171,6 +188,56 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                           className={`text-lg font-semibold ${getMarketOpportunityColorClass(analysis.market_opportunity)}`}
                         >
                           {analysis.market_opportunity || 'N/A'}
+                        </div>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-sm text-gray-500">
+                          Exit Potential
+                        </div>
+                        <div
+                          className={`text-lg font-semibold ${getExitPotentialColorClass(analysis.exit_potential)}`}
+                        >
+                          {analysis.exit_potential || 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Metrics */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-sm text-gray-500">Timing</div>
+                        <div
+                          className={`text-lg font-semibold ${getTimingAssessmentColorClass(analysis.timing_assessment)}`}
+                        >
+                          {analysis.timing_assessment || 'N/A'}
+                        </div>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-sm text-gray-500">
+                          Competitive Edge
+                        </div>
+                        <div
+                          className={`text-lg font-semibold ${getCompetitiveAdvantageColorClass(analysis.competitive_advantage)}`}
+                        >
+                          {analysis.competitive_advantage || 'N/A'}
+                        </div>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-sm text-gray-500">
+                          Product-Market Fit
+                        </div>
+                        <div
+                          className={`text-lg font-semibold ${getProductMarketFitColorClass(analysis.product_market_fit)}`}
+                        >
+                          {analysis.product_market_fit || 'N/A'}
+                        </div>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-sm text-gray-500">
+                          Sustainability
+                        </div>
+                        <div className="text-lg font-semibold text-gray-700">
+                          {analysis.sustainability_score || 'N/A'}
                         </div>
                       </div>
                     </div>
@@ -253,40 +320,74 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                         </ul>
                       </div>
 
-                      {/* Key Insights */}
+                      {/* Market & Technology Insights */}
                       <div>
                         <h4 className="font-medium text-gray-700 mb-2">
-                          Key Insights
+                          Market & Technology
                         </h4>
                         <div className="text-sm text-gray-600 space-y-2">
-                          <div className="p-2 bg-yellow-50 rounded">
-                            <strong>Risk Category:</strong>{' '}
-                            {analysis.risk_category}
-                          </div>
-                          <div className="p-2 bg-yellow-50 rounded">
-                            <strong>Sentiment:</strong>{' '}
-                            {analysis.sentiment_analysis || 'Not analyzed'}
-                          </div>
-                          <div className="p-2 bg-yellow-50 rounded">
-                            <strong>Team:</strong>{' '}
-                            {analysis.team_assessment || 'Not assessed'}
-                          </div>
-                          <div className="p-2 bg-yellow-50 rounded">
-                            <strong>Market:</strong>{' '}
-                            {analysis.market_opportunity || 'Not assessed'}
-                          </div>
+                          {analysis.market_trends &&
+                            analysis.market_trends.length > 0 && (
+                              <div className="p-2 bg-purple-50 rounded">
+                                <strong>Market Trends:</strong>{' '}
+                                {analysis.market_trends.join(', ')}
+                              </div>
+                            )}
+                          {analysis.technology_assessment && (
+                            <div className="p-2 bg-indigo-50 rounded">
+                              <strong>Technology:</strong>{' '}
+                              {analysis.technology_assessment}
+                            </div>
+                          )}
+                          {analysis.regulatory_risks &&
+                            analysis.regulatory_risks.length > 0 && (
+                              <div className="p-2 bg-orange-50 rounded">
+                                <strong>Regulatory Risks:</strong>{' '}
+                                {analysis.regulatory_risks.join(', ')}
+                              </div>
+                            )}
+                          {analysis.scalability_assessment && (
+                            <div className="p-2 bg-teal-50 rounded">
+                              <strong>Scalability:</strong>{' '}
+                              {analysis.scalability_assessment}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Investment Thesis */}
-                    {analysis.investment_thesis && (
+                    {/* Investment Thesis & Alignment */}
+                    <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {analysis.investment_thesis && (
+                        <div>
+                          <h4 className="font-medium text-gray-700 mb-2">
+                            Investment Thesis
+                          </h4>
+                          <div className="p-4 bg-purple-50 rounded text-sm text-gray-600 border-l-4 border-purple-500">
+                            {analysis.investment_thesis}
+                          </div>
+                        </div>
+                      )}
+                      {analysis.investor_alignment && (
+                        <div>
+                          <h4 className="font-medium text-gray-700 mb-2">
+                            Investor Alignment
+                          </h4>
+                          <div className="p-4 bg-blue-50 rounded text-sm text-gray-600 border-l-4 border-blue-500">
+                            {analysis.investor_alignment}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Social Impact */}
+                    {analysis.social_impact && (
                       <div className="mt-6">
                         <h4 className="font-medium text-gray-700 mb-2">
-                          Investment Thesis
+                          Social Impact
                         </h4>
-                        <div className="p-4 bg-purple-50 rounded text-sm text-gray-600 border-l-4 border-purple-500">
-                          {analysis.investment_thesis}
+                        <div className="p-4 bg-green-50 rounded text-sm text-gray-600 border-l-4 border-green-500">
+                          {analysis.social_impact}
                         </div>
                       </div>
                     )}
@@ -304,7 +405,12 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
               {sortedHistory.length} analysis record
               {sortedHistory.length !== 1 ? 's' : ''}
             </div>
-            <div className="px-4 py-2 bg-gray-50 text-gray-50"></div>
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>
@@ -337,6 +443,19 @@ const getRiskBadgeClass = (score: number): string => {
   if (score <= 30) return 'bg-green-100 text-green-800';
   if (score <= 60) return 'bg-yellow-100 text-yellow-800';
   return 'bg-red-100 text-red-800';
+};
+
+const getFundingPotentialBadgeClass = (potential: string): string => {
+  switch (potential) {
+    case 'high':
+      return 'bg-green-100 text-green-800';
+    case 'medium':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'low':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
 };
 
 const getSentimentColorClass = (sentiment: string): string => {
@@ -372,6 +491,60 @@ const getMarketOpportunityColorClass = (opportunity: string): string => {
     case 'medium':
       return 'text-yellow-600';
     case 'small':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getExitPotentialColorClass = (potential: string): string => {
+  switch (potential) {
+    case 'high':
+      return 'text-green-600';
+    case 'medium':
+      return 'text-yellow-600';
+    case 'low':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getTimingAssessmentColorClass = (timing: string): string => {
+  switch (timing) {
+    case 'excellent':
+      return 'text-green-600';
+    case 'good':
+      return 'text-yellow-600';
+    case 'average':
+      return 'text-orange-600';
+    case 'poor':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getCompetitiveAdvantageColorClass = (advantage: string): string => {
+  switch (advantage) {
+    case 'strong':
+      return 'text-green-600';
+    case 'moderate':
+      return 'text-yellow-600';
+    case 'weak':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getProductMarketFitColorClass = (fit: string): string => {
+  switch (fit) {
+    case 'strong':
+      return 'text-green-600';
+    case 'moderate':
+      return 'text-yellow-600';
+    case 'weak':
       return 'text-red-600';
     default:
       return 'text-gray-600';

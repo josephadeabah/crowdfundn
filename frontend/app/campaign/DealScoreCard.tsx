@@ -20,6 +20,10 @@ interface AnalysisData {
     sentiment_analysis: string;
     team_assessment: string;
     market_opportunity: string;
+    funding_potential: string;
+    timing_assessment: string;
+    competitive_advantage: string;
+    exit_potential: string;
     updated_at: string;
   };
   analysis_history: Array<{
@@ -36,8 +40,19 @@ interface AnalysisData {
     team_assessment: string;
     market_opportunity: string;
     investment_thesis: string;
+    funding_potential: string;
+    timing_assessment: string;
+    competitive_advantage: string;
+    exit_potential: string;
+    scalability_assessment: string;
+    product_market_fit: string;
+    technology_assessment: string;
+    regulatory_risks: string[];
+    market_trends: string[];
+    investor_alignment: string;
+    social_impact: string;
+    sustainability_score: number;
   }>;
-  campaign_performance?: number;
   latest_analysis?: {
     downside_risks: string[];
     upside_potential: string[];
@@ -46,13 +61,18 @@ interface AnalysisData {
     team_assessment: string;
     market_opportunity: string;
     investment_thesis: string;
-  };
-  comprehensive_analysis?: {
-    risk_assessment: any;
-    deal_assessment: any;
-    sentiment_analysis: any;
-    team_analysis: any;
-    market_analysis: any;
+    funding_potential: string;
+    timing_assessment: string;
+    competitive_advantage: string;
+    exit_potential: string;
+    scalability_assessment: string;
+    product_market_fit: string;
+    technology_assessment: string;
+    regulatory_risks: string[];
+    market_trends: string[];
+    investor_alignment: string;
+    social_impact: string;
+    sustainability_score: number;
   };
 }
 
@@ -65,6 +85,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [showSimilarDeals, setShowSimilarDeals] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const { subscription, fetchSubscription } = usePremium();
   const hasPremium = subscription?.has_premium;
   const { token, user } = useAuth();
@@ -148,6 +169,10 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     return date.toLocaleDateString();
   };
 
+  const toggleSection = (section: string) => {
+    setExpandedSection(expandedSection === section ? null : section);
+  };
+
   // Show login prompt if user is not authenticated
   if (!user) {
     return (
@@ -206,6 +231,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   }
 
   const currentScores = analysis?.current_scores;
+  const latestAnalysis = analysis?.latest_analysis;
 
   return (
     <div className="bg-white rounded-3xl shadow-sm border p-6">
@@ -272,7 +298,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
               </div>
             </div>
 
-            {/* Risk Assessment & Metrics */}
+            {/* Risk Assessment & Core Metrics */}
             <div className="flex flex-col justify-center space-y-4">
               <div>
                 <h4 className="text-sm font-medium text-gray-500 mb-1">
@@ -300,7 +326,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                 </span>
               </div>
 
-              {/* Additional Metrics */}
+              {/* Core Metrics */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Sentiment:</span>
@@ -326,6 +352,14 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                     {currentScores.market_opportunity || 'N/A'}
                   </span>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Funding Potential:</span>
+                  <span
+                    className={`font-medium ${getFundingPotentialColorClass(currentScores.funding_potential)}`}
+                  >
+                    {currentScores.funding_potential || 'N/A'}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -338,22 +372,6 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
               >
                 {loading ? 'Re-analyzing...' : 'Re-analyze'}
               </button>
-              {/* <button
-                onClick={runAnalysis}
-                disabled={loading || !hasPremium}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 ${
-                  hasPremium
-                    ? 'bg-gray-600 text-white hover:bg-gray-700'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                {loading ? 'Re-analyzing...' : 'Re-analyze'}
-                {!hasPremium && (
-                  <div className="text-xs mt-1 text-gray-500">
-                    Premium feature
-                  </div>
-                )}
-              </button> */}
               <button
                 onClick={() => setShowSimilarDeals(true)}
                 className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
@@ -369,50 +387,247 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             </div>
           </div>
 
-          {/* Comprehensive Insights */}
-          {analysis.latest_analysis && (
+          {/* Additional Investment Metrics */}
+          {latestAnalysis && (
             <div className="mt-6 pt-6 border-t">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 mb-2">
-                    Upside Potential
-                  </h4>
-                  <ul className="text-sm text-gray-700 space-y-1">
-                    {analysis.latest_analysis.upside_potential?.map(
-                      (potential, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="text-green-500 mr-2">↑</span>
-                          {potential}
-                        </li>
-                      ),
-                    )}
-                  </ul>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-gray-500">Timing</div>
+                  <div
+                    className={`text-lg font-semibold ${getTimingAssessmentColorClass(latestAnalysis.timing_assessment)}`}
+                  >
+                    {latestAnalysis.timing_assessment || 'N/A'}
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 mb-2">
-                    Downside Risks
-                  </h4>
-                  <ul className="text-sm text-gray-700 space-y-1">
-                    {analysis.latest_analysis.downside_risks?.map(
-                      (risk, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="text-red-500 mr-2">↓</span>
-                          {risk}
-                        </li>
-                      ),
-                    )}
-                  </ul>
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-gray-500">Competitive Edge</div>
+                  <div
+                    className={`text-lg font-semibold ${getCompetitiveAdvantageColorClass(latestAnalysis.competitive_advantage)}`}
+                  >
+                    {latestAnalysis.competitive_advantage || 'N/A'}
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-gray-500">Exit Potential</div>
+                  <div
+                    className={`text-lg font-semibold ${getExitPotentialColorClass(latestAnalysis.exit_potential)}`}
+                  >
+                    {latestAnalysis.exit_potential || 'N/A'}
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-gray-500">Sustainability</div>
+                  <div className="text-lg font-semibold text-gray-700">
+                    {latestAnalysis.sustainability_score || 'N/A'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Expandable Sections */}
+              <div className="space-y-4">
+                {/* Upside Potential */}
+                <div className="border rounded-lg">
+                  <button
+                    onClick={() => toggleSection('upside')}
+                    className="w-full px-4 py-3 text-left flex justify-between items-center hover:bg-gray-50"
+                  >
+                    <h4 className="font-medium text-gray-700 flex items-center">
+                      <span className="text-green-500 mr-2">↑</span>
+                      Upside Potential & Strengths
+                    </h4>
+                    <svg
+                      className={`w-5 h-5 transform transition-transform ${
+                        expandedSection === 'upside' ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  {expandedSection === 'upside' && (
+                    <div className="px-4 pb-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h5 className="text-sm font-medium text-gray-600 mb-2">
+                            Key Strengths
+                          </h5>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            {latestAnalysis.strengths?.map((strength, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="text-blue-500 mr-2">•</span>
+                                {strength}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h5 className="text-sm font-medium text-gray-600 mb-2">
+                            Growth Opportunities
+                          </h5>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            {latestAnalysis.upside_potential?.map((potential, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="text-green-500 mr-2">•</span>
+                                {potential}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Downside Risks */}
+                <div className="border rounded-lg">
+                  <button
+                    onClick={() => toggleSection('risks')}
+                    className="w-full px-4 py-3 text-left flex justify-between items-center hover:bg-gray-50"
+                  >
+                    <h4 className="font-medium text-gray-700 flex items-center">
+                      <span className="text-red-500 mr-2">↓</span>
+                      Downside Risks & Challenges
+                    </h4>
+                    <svg
+                      className={`w-5 h-5 transform transition-transform ${
+                        expandedSection === 'risks' ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  {expandedSection === 'risks' && (
+                    <div className="px-4 pb-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h5 className="text-sm font-medium text-gray-600 mb-2">
+                            Major Risks
+                          </h5>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            {latestAnalysis.downside_risks?.map((risk, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="text-red-500 mr-2">•</span>
+                                {risk}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h5 className="text-sm font-medium text-gray-600 mb-2">
+                            Regulatory & Market Risks
+                          </h5>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            {latestAnalysis.regulatory_risks?.map((risk, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="text-orange-500 mr-2">•</span>
+                                {risk}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Market & Technology Insights */}
+                <div className="border rounded-lg">
+                  <button
+                    onClick={() => toggleSection('insights')}
+                    className="w-full px-4 py-3 text-left flex justify-between items-center hover:bg-gray-50"
+                  >
+                    <h4 className="font-medium text-gray-700">
+                      Market & Technology Insights
+                    </h4>
+                    <svg
+                      className={`w-5 h-5 transform transition-transform ${
+                        expandedSection === 'insights' ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  {expandedSection === 'insights' && (
+                    <div className="px-4 pb-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h5 className="text-sm font-medium text-gray-600 mb-2">
+                            Market Trends
+                          </h5>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            {latestAnalysis.market_trends?.map((trend, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="text-purple-500 mr-2">•</span>
+                                {trend}
+                              </li>
+                            ))}
+                          </ul>
+                          {latestAnalysis.technology_assessment && (
+                            <>
+                              <h5 className="text-sm font-medium text-gray-600 mt-3 mb-2">
+                                Technology Assessment
+                              </h5>
+                              <p className="text-sm text-gray-700">
+                                {latestAnalysis.technology_assessment}
+                              </p>
+                            </>
+                          )}
+                        </div>
+                        <div>
+                          <h5 className="text-sm font-medium text-gray-600 mb-2">
+                            Investor Alignment
+                          </h5>
+                          <p className="text-sm text-gray-700 mb-3">
+                            {latestAnalysis.investor_alignment}
+                          </p>
+                          {latestAnalysis.social_impact && (
+                            <>
+                              <h5 className="text-sm font-medium text-gray-600 mb-2">
+                                Social Impact
+                              </h5>
+                              <p className="text-sm text-gray-700">
+                                {latestAnalysis.social_impact}
+                              </p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Investment Thesis */}
-              {analysis.latest_analysis.investment_thesis && (
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+              {latestAnalysis.investment_thesis && (
+                <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <h4 className="text-sm font-medium text-gray-700 mb-2">
                     Investment Thesis
                   </h4>
-                  <p className="text-sm text-gray-600">
-                    {analysis.latest_analysis.investment_thesis}
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {latestAnalysis.investment_thesis}
                   </p>
                 </div>
               )}
@@ -505,6 +720,60 @@ const getMarketOpportunityColorClass = (opportunity: string): string => {
     case 'medium':
       return 'text-yellow-600';
     case 'small':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getFundingPotentialColorClass = (potential: string): string => {
+  switch (potential) {
+    case 'high':
+      return 'text-green-600';
+    case 'medium':
+      return 'text-yellow-600';
+    case 'low':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getTimingAssessmentColorClass = (timing: string): string => {
+  switch (timing) {
+    case 'excellent':
+      return 'text-green-600';
+    case 'good':
+      return 'text-yellow-600';
+    case 'average':
+      return 'text-orange-600';
+    case 'poor':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getCompetitiveAdvantageColorClass = (advantage: string): string => {
+  switch (advantage) {
+    case 'strong':
+      return 'text-green-600';
+    case 'moderate':
+      return 'text-yellow-600';
+    case 'weak':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getExitPotentialColorClass = (potential: string): string => {
+  switch (potential) {
+    case 'high':
+      return 'text-green-600';
+    case 'medium':
+      return 'text-yellow-600';
+    case 'low':
       return 'text-red-600';
     default:
       return 'text-gray-600';
