@@ -158,9 +158,37 @@ const Hero = () => {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-600 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-600"></span>
                 </span>
-                <span className="text-sm font-medium text-gray-700">
-                  🚀 Powering Africa&apos;s Financial Future
-                </span>
+                    <div className="mt-6 w-full max-w-md mx-auto lg:absolute lg:bottom-4 lg:left-1/2 lg:transform lg:-translate-x-1/2 z-20">
+                    <div className="relative">
+                      <div className="flex items-center gap-3 px-4 py-3 bg-green-700/50 border-green-700/50 rounded-xl backdrop-blur-sm shadow-lg">
+                        <div className="flex-shrink-0">
+                          <div className="p-2 bg-orange-500/20 rounded-lg">
+                            <CurrentStingIcon className="w-5 h-5 text-white" />
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-800 truncate">
+                            {aiStings[currentAISting].text}
+                          </p>
+                          <p className="text-xs text-gray-600 truncate">
+                            {aiStings[currentAISting].description}
+                          </p>
+                        </div>
+                        <div className="flex space-x-1">
+                          {aiStings.map((_, index) => (
+                            <div
+                              key={index}
+                              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                                index === currentAISting
+                                  ? 'bg-orange-600'
+                                  : 'bg-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
               </div>
 
               {/* Main Heading */}
@@ -306,37 +334,6 @@ const Hero = () => {
                   </div>
 
                   {/* AI Feature Carousel - FIXED POSITIONING */}
-                  <div className="mt-6 w-full max-w-md mx-auto lg:absolute lg:bottom-4 lg:left-1/2 lg:transform lg:-translate-x-1/2 z-20">
-                    <div className="relative">
-                      <div className="flex items-center gap-3 px-4 py-3 bg-green-700/50 border-green-700/50 rounded-xl backdrop-blur-sm shadow-lg">
-                        <div className="flex-shrink-0">
-                          <div className="p-2 bg-orange-500/20 rounded-lg">
-                            <CurrentStingIcon className="w-5 h-5 text-white" />
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-gray-800 truncate">
-                            {aiStings[currentAISting].text}
-                          </p>
-                          <p className="text-xs text-gray-600 truncate">
-                            {aiStings[currentAISting].description}
-                          </p>
-                        </div>
-                        <div className="flex space-x-1">
-                          {aiStings.map((_, index) => (
-                            <div
-                              key={index}
-                              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                                index === currentAISting
-                                  ? 'bg-orange-600'
-                                  : 'bg-gray-300'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Small decorative badge - positioned absolutely relative to viewport */}
