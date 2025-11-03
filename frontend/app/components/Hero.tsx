@@ -155,7 +155,7 @@ const Hero = () => {
               {/* AI Feature Carousel - REPLACED the badge */}
               <div className="w-full max-w-md">
                 <div className="relative">
-                  <div className="flex items-center gap-3 px-4 py-3 bg-green-700/50 border border-green-700/50 rounded-xl backdrop-blur-sm shadow-lg">
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-full backdrop-blur-sm">
                     {/* Animated Bubble - KEPT THIS */}
                     <div className="flex-shrink-0">
                       <span className="relative flex h-2 w-2">
@@ -165,7 +165,7 @@ const Hero = () => {
                     </div>
                     
                     <div className="flex-shrink-0">
-                      <div className="p-1 rounded-full">
+                      <div className="p-1 rounded-3xl">
                         <CurrentStingIcon className="w-5 h-5 text-white" />
                       </div>
                     </div>
