@@ -136,27 +136,26 @@ const Hero = () => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
-      {/* Background Image - ADDED THIS LINE */}
+      {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: 'url(/Heropage.png)' }}
       ></div>
       {/* Two-layer background: Make white container transparent */}
-      <div className="absolute inset-0 bg-green-100/50"></div>{' '}
-      {/* Changed to transparent */}
-      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700/50"></div>{' '}
-      {/* Added transparency to green too */}
-      {/* Main Hero Section - Constrained with max-w-7xl */}
+      <div className="absolute inset-0 bg-green-100/50"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-green-700/50"></div>
+      
+      {/* Main Hero Section */}
       <div className="w-full mx-auto px-4 py-4 relative z-10">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
-            <div className="space-y-8 animate-fade-in">
-              {/* AI Feature Carousel - REPLACED the badge */}
-              <div className="w-full max-w-lg">
+            <div className="space-y-6 lg:space-y-8 animate-fade-in">
+              {/* AI Feature Carousel - FIXED RESPONSIVENESS */}
+              <div className="w-full">
                 <div className="relative">
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-full backdrop-blur-sm">
-                    {/* Animated Bubble - KEPT THIS */}
+                  <div className="flex items-center gap-3 p-3 sm:px-4 sm:py-3 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-sm min-h-[72px]">
+                    {/* Animated Bubble */}
                     <div className="flex-shrink-0">
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-600 opacity-75"></span>
@@ -164,20 +163,25 @@ const Hero = () => {
                       </span>
                     </div>
                     
+                    {/* Icon */}
                     <div className="flex-shrink-0">
-                      <div className="p-1 rounded-3xl">
-                        <CurrentStingIcon className="w-5 h-5 text-green-700/50" />
+                      <div className="p-1.5 bg-green-50 rounded-xl border border-green-100">
+                        <CurrentStingIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-700" />
                       </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 truncate">
+
+                    {/* Text Content - Fixed for mobile */}
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <p className="text-sm font-semibold text-gray-800 leading-tight line-clamp-1">
                         {aiStings[currentAISting].text}
                       </p>
-                      <p className="text-xs text-gray-600 truncate">
+                      <p className="text-xs text-gray-600 leading-tight line-clamp-1">
                         {aiStings[currentAISting].description}
                       </p>
                     </div>
-                    <div className="flex space-x-1">
+
+                    {/* Dots Indicator */}
+                    <div className="flex-shrink-0 flex space-x-1 ml-2">
                       {aiStings.map((_, index) => (
                         <div
                           key={index}
@@ -195,11 +199,11 @@ const Hero = () => {
 
               {/* Main Heading */}
               <div className="space-y-4">
-                <h1 className="text-3xl lg:text-4xl font-bold text-gray-700 leading-tight">
+                <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-700 leading-tight">
                   Invest in Africa&apos;s
                   <span className="block text-orange-500">Tomorrow Today</span>
                 </h1>
-                <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
+                <p className="text-lg sm:text-xl text-gray-800 leading-relaxed max-w-xl">
                   Connecting visionary entrepreneurs with forward-thinking
                   investors to drive sustainable economic growth across the
                   continent.
@@ -207,7 +211,7 @@ const Hero = () => {
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button
                   variant="outline"
                   size="lg"
@@ -219,7 +223,7 @@ const Hero = () => {
                   }
                 >
                   Start Investing
-                  <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button
                   variant="outline"
@@ -236,14 +240,14 @@ const Hero = () => {
               </div>
 
               {/* Top Backers Section */}
-              <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
+              <div className="mt-8 lg:mt-12 flex flex-col sm:flex-row items-center gap-4 animate-fade-up animate-delay-400">
                 <div className="flex -space-x-3">
-                  {topBackers?.map((backer, index) => (
+                  {topBackers?.slice(0, 5).map((backer, index) => (
                     <Popover key={index}>
                       <PopoverTrigger asChild>
                         <div
                           className="relative hover:z-10 transform hover:scale-110 transition-transform duration-200 ease-in-out"
-                          style={{ zIndex: topBackers.length - index }}
+                          style={{ zIndex: 5 - index }}
                         >
                           <Avatar
                             name={backer.name}
@@ -252,7 +256,7 @@ const Hero = () => {
                           />
                         </div>
                       </PopoverTrigger>
-                      <PopoverContent className="w-96">
+                      <PopoverContent className="w-80 sm:w-96">
                         <div className="space-y-4 p-4">
                           <div className="flex items-center space-x-4">
                             <Avatar
@@ -303,13 +307,13 @@ const Hero = () => {
                       </PopoverContent>
                     </Popover>
                   ))}
-                  {topBackers?.length > 5 && (
-                    <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-sm font-semibold text-gray-800">
-                      +{topBackers?.length - 5}
+                  {topBackers && topBackers.length > 5 && (
+                    <div className="relative flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-xs font-semibold text-gray-800 border-2 border-white">
+                      +{topBackers.length - 5}
                     </div>
                   )}
                 </div>
-                <p className="text-sm text-white">
+                <p className="text-sm text-white text-center sm:text-left">
                   <span className="font-semibold">
                     {topBackers?.length || 0}+
                   </span>{' '}
@@ -318,31 +322,27 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Right Content - Image with decorative elements */}
-            <div className="relative">
-              {/* Container for image content that stays within max-w-7xl on mobile */}
+            {/* Right Content - Image */}
+            <div className="relative mt-8 lg:mt-0">
               <div className="lg:absolute lg:inset-y-0 lg:left-0 lg:right-0">
                 <div className="relative max-w-7xl mx-auto px-4">
                   <div
-                    className="relative animate-fade-in -mt-8 lg:-mt-12 rounded-2xl shadow-sm overflow-hidden" // Added negative margin here
+                    className="relative animate-fade-in rounded-2xl shadow-lg overflow-hidden bg-white"
                     style={{ animationDelay: '0.2s' }}
                   >
-                    <div className="absolute -inset-4  rounded-l-3xl"></div>
                     <img
                       src="/raise.png"
                       alt="Financial growth and investment visualization"
-                      className="relative w-full h-auto border-t-4 border-t-gray-200"
+                      className="relative w-full h-auto object-cover"
                     />
                   </div>
-
-                  {/* You can remove the duplicate AI carousel from here if you want */}
                 </div>
 
-                {/* Small decorative badge - positioned absolutely relative to viewport */}
+                {/* Decorative badge */}
                 <img
                   src="/badge-graphic.png"
                   alt=""
-                  className="absolute -bottom-8 -right-8 w-24 h-24 lg:w-32 lg:h-32 opacity-40 animate-bounce hidden lg:block"
+                  className="absolute -bottom-4 -right-4 w-16 h-16 lg:w-24 lg:h-24 xl:w-32 xl:h-32 opacity-40 animate-bounce hidden lg:block"
                   style={{ animationDuration: '3s' }}
                 />
               </div>
