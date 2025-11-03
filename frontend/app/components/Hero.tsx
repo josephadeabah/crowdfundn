@@ -305,8 +305,8 @@ const Hero = () => {
                     />
                   </div>
 
-                  {/* AI Feature Carousel - Orange Theme */}
-                  <div className="mt-6 lg:absolute lg:-bottom-6 lg:left-1/2 lg:transform lg:-translate-x-1/2 lg:w-80">
+                  {/* AI Feature Carousel - Orange Theme - FIXED POSITIONING */}
+                  <div className="mt-6 w-full max-w-md mx-auto lg:absolute lg:bottom-4 lg:left-1/2 lg:transform lg:-translate-x-1/2 z-20">
                     <div className="relative">
                       <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-200 rounded-xl backdrop-blur-sm shadow-lg">
                         <div className="flex-shrink-0">
