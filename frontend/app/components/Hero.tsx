@@ -166,7 +166,7 @@ const Hero = () => {
                     
                     {/* Icon */}
                     <div className="flex-shrink-0">
-                      <div className="p-1.5 bg-green-50 rounded-xl border border-green-100">
+                      <div className="p-1.5 rounded-xl">
                         <CurrentStingIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-700" />
                       </div>
                     </div>
