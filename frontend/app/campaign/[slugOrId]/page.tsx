@@ -17,7 +17,6 @@ import CampaignComments from '../CampaignComments';
 import CampaignBackers from '../CampaignBackers';
 import CampaignSidebar from '../CampaignSidebar';
 import CampaignTabs from '../CampaignTabs';
-import CampaignHeader from '../CampaignHeader';
 import CampaignFAQs from '../CampaignFAQs';
 import { DealScoreCard } from '../DealScoreCard';
 import { AIDashboardMetrics } from '../AIDashboardMetrics';
@@ -134,21 +133,6 @@ const SingleCampaignPage: React.FC = () => {
           {/* Main Content Column */}
           <div className="lg:w-2/3">
             <div className="bg-white p-2 md:px-5 rounded-lg">
-              {/* AI Insights Section - Moved to top for better visibility */}
-              {!loading && currentCampaign && (
-                <div className="mb-6 space-y-6">
-                  <DealScoreCard
-                    campaignId={currentCampaign.id.toString()}
-                    currentUser={user}
-                  />
-                  {user && (
-                    <AIDashboardMetrics
-                      campaignId={currentCampaign.id.toString()}
-                    />
-                  )}
-                </div>
-              )}
-
               <CampaignTabs
                 selectedTab={selectedTab}
                 setSelectedTab={setSelectedTab}
@@ -160,6 +144,19 @@ const SingleCampaignPage: React.FC = () => {
               {/* Tab Content - Only render when not loading */}
               {!loading && selectedTab === 'details' && (
                 <div className="mt-6">
+                  {currentCampaign && (
+                    <>
+                      <DealScoreCard
+                        campaignId={currentCampaign.id.toString()}
+                        currentUser={user}
+                      />
+                      {user && (
+                        <AIDashboardMetrics
+                          campaignId={currentCampaign.id.toString()}
+                        />
+                      )}
+                    </>
+                  )}
                   <CampaignDetails
                     campaign={currentCampaign}
                     isEquityCampaign={isEquityCampaign}

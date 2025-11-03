@@ -68,28 +68,30 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
     };
   });
 
-  // Updated renderTabContent function - removed image placeholder for details tab
+  // Update the renderTabContent function in CampaignTabs component
   const renderTabContent = () => {
     if (selectedTab === 'details') {
-      // For details tab, we now show campaign description/content
       return (
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 lg:p-12 border border-gray-200 h-full flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">📋</span>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              Campaign Details
-            </h3>
-            <p className="text-gray-600 max-w-md mx-auto">
-              Detailed information about this campaign including story, goals, and impact
-            </p>
-          </div>
+        <div className="relative w-full h-full">
+          <Image
+            src={campaign?.media || '/bantuhive.svg'}
+            alt={campaign?.title as string}
+            layout="fill"
+            objectFit="cover"
+            unoptimized
+            className="rounded-2xl"
+            quality={100}
+            priority
+            onError={(e) => {
+              console.error('Image failed to load:', e);
+              e.currentTarget.src = '/bantuhive.svg';
+            }}
+          />
         </div>
       );
     }
 
-    // Placeholder content for all other tabs
+    // Placeholder content for all tabs except details
     return (
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 lg:p-12 border border-gray-200 h-full flex items-center justify-center">
         <div className="text-center">
@@ -131,7 +133,7 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
       <div className="flex flex-col lg:flex-row">
         {/* Vertical Tabs - Left Side (Hidden on mobile) */}
-        <div className="hidden lg:block lg:w-1-3 xl:w-1-4 bg-gray-50 p-6 lg:p-8">
+        <div className="hidden lg:block lg:w-1/3 xl:w-1/4 bg-gray-50 p-6 lg:p-8">
           <div className="flex flex-col gap-2">
             {tabs.map((tab) => (
               <button
@@ -160,7 +162,7 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
         </div>
 
         {/* Content Area - Right Side */}
-        <div className="lg:w-2-3 xl:w-3-4 p-6 lg:p-8">
+        <div className="lg:w-2/3 xl:w-3/4 p-6 lg:p-8">
           <div className="relative">
             {/* Mobile horizontal scroll for smaller screens */}
             <div className="lg:hidden relative mb-6">
