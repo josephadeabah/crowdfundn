@@ -308,12 +308,10 @@ export const SimilarDealsModal: React.FC<SimilarDealsModalProps> = ({
             <div className="text-sm text-gray-500">
               Found {similarDeals.length} similar deal{similarDeals.length !== 1 ? 's' : ''}
             </div>
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+            <div
+              className="px-4 py-2 bg-gray-50 text-white text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
             >
-              Close
-            </button>
+            </div>
           </div>
         </div>
       </div>
