@@ -35,7 +35,7 @@ const Hero = () => {
     {
       icon: Brain,
       text: "AI-Powered Deal Analysis",
-      description: "Get instant insights with our Hive Mind AI analyzer"
+      description: "Get instant insights with our Hive Mind AI"
     },
     {
       icon: Target,
