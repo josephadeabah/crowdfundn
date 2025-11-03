@@ -155,7 +155,7 @@ const Hero = () => {
               {/* AI Feature Carousel - REPLACED the badge */}
               <div className="w-full">
                 <div className="relative">
-                  <div className="flex items-center gap-3 p-3 sm:px-4 sm:py-3 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-sm min-h-[72px]">
+                  <div className="flex items-center gap-3 p-3 sm:px-4 sm:py-3 rounded-2xl  backdrop-blur-sm min-h-[72px]">
                     {/* Animated Bubble */}
                     <div className="flex-shrink-0">
                       <span className="relative flex h-2 w-2">
