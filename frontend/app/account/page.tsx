@@ -334,7 +334,7 @@ const ProfileTabs = () => {
     >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50"
+        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
         onClick={() => setIsMobileMenuOpen(false)}
       />
 
@@ -358,7 +358,7 @@ const ProfileTabs = () => {
             </div>
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2 rounded-lg hover:bg-gray-100"
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
             >
               <Cross1Icon className="w-5 h-5" />
             </button>
@@ -408,7 +408,11 @@ const ProfileTabs = () => {
                       </svg>
                     </button>
 
-                    {isExpanded && (
+                    <div 
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                      }`}
+                    >
                       <div className="ml-4 space-y-1 border-l-2 border-gray-100 pl-3">
                         {group.tabs.map((tab) => {
                           const isActive = activeTab === tab.label;
@@ -453,7 +457,7 @@ const ProfileTabs = () => {
                           );
                         })}
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}
@@ -499,7 +503,7 @@ const ProfileTabs = () => {
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 rounded-lg hover:bg-gray-100"
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
             >
               <DropdownMenuIcon className="w-5 h-5" />
             </button>
@@ -607,7 +611,11 @@ const ProfileTabs = () => {
                         </svg>
                       </button>
 
-                      {isExpanded && (
+                      <div 
+                        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                          isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                        }`}
+                      >
                         <div className="ml-4 space-y-1 border-l-2 border-gray-100 pl-3">
                           {group.tabs.map((tab) => {
                             const isActive = activeTab === tab.label;
@@ -652,7 +660,7 @@ const ProfileTabs = () => {
                             );
                           })}
                         </div>
-                      )}
+                      </div>
                     </div>
                   );
                 })}
