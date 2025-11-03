@@ -34,8 +34,13 @@ module AI
         response = call_openai_api(prompt)
         
         # Handle API response errors
-        if response.nil? || response == true
-          return { success: false, error: "OpenAI API returned an invalid response" }
+        if response.nil?
+          return { success: false, error: "OpenAI API returned no response" }
+        end
+        
+        # Handle cases where API returns true (success but no content)
+        if response == true
+          return { success: false, error: "OpenAI API returned success but no content" }
         end
         
         analysis_data = parse_response(response)
@@ -574,32 +579,42 @@ module AI
       Rails.logger.info "Calling OpenAI API with prompt length: #{prompt.length}"
       
       begin
-        # Use a more reliable model and add better error handling
         response = @client.chat(
           parameters: {
-            model: "gpt-3.5-turbo", # Use a more stable model
+            model: "gpt-5-mini",
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
               { role: "user", content: prompt }
             ],
-            max_tokens: 2000,
-            temperature: 0.3,
+            max_completion_tokens: 2500,
             response_format: { type: "json_object" }
           }
         )
         
-        Rails.logger.info "OpenAI API response received successfully"
-        Rails.logger.info "API Response: #{response.inspect}" # Debug logging
+        Rails.logger.info "GPT-5 Mini API response received successfully"
+        Rails.logger.info "API Response type: #{response.class}" # Debug logging
         
         # Validate response structure
-        if response.nil? || !response.is_a?(Hash) || response["choices"].nil?
-          Rails.logger.error "Invalid API response structure: #{response.inspect}"
+        if response.nil?
+          Rails.logger.error "API returned nil response"
+          return nil
+        end
+        
+        # Handle case where API returns simple true/false
+        if response == true || response == false
+          Rails.logger.error "API returned boolean instead of hash: #{response}"
+          return nil
+        end
+        
+        # Ensure response is a hash
+        unless response.is_a?(Hash)
+          Rails.logger.error "API returned non-hash response: #{response.class} - #{response.inspect}"
           return nil
         end
         
         response
       rescue => e
-        Rails.logger.error "OpenAI API call failed: #{e.message}"
+        Rails.logger.error "GPT-5 Mini API call failed: #{e.message}"
         Rails.logger.error "Backtrace: #{e.backtrace.join("\n")}"
         nil
       end
@@ -609,7 +624,7 @@ module AI
       return fallback_analysis("No response from API") if response.nil?
       
       # Safely extract content with proper error handling
-      content = if response["choices"] && response["choices"][0] && response["choices"][0]["message"]
+      content = if response.is_a?(Hash) && response["choices"] && response["choices"][0] && response["choices"][0]["message"]
                   response["choices"][0]["message"]["content"].to_s.strip
                 else
                   Rails.logger.error "Invalid response structure: #{response.inspect}"
