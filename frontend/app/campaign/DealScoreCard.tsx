@@ -173,9 +173,10 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
           </h3>
           <p className="text-gray-500 mb-4">
             Please sign in to view AI-powered insights and market analysis —
-            whether you’re exploring this campaign as an investor or managing it
-            as a fundraiser. Understand the deal score, risk score, performance
-            trends, and key opportunities to invest, support or improve.
+            whether you’re exploring this campaign as an investor, supporter or
+            managing it as a fundraiser. Understand the deal score, risk score,
+            performance trends, and key opportunities to invest, support or
+            improve.
           </p>
           <button
             onClick={() => (window.location.href = '/auth/login')}
