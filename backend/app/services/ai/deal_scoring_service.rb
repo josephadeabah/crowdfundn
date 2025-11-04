@@ -17,7 +17,7 @@ module AI
       @client = OpenAI::Client.new(
         access_token: api_key,
         log_errors: true,
-        request_timeout: 60 # Increase timeout to 60 seconds
+        request_timeout: 120 # Increase timeout for streaming
       )
     end
 
@@ -58,8 +58,133 @@ module AI
       end
     end
 
+    # New streaming method
+    def analyze_with_streaming(&block)
+      start_time = Time.current
+      
+      begin
+        # Check API key first
+        if ENV['OPENAI_API_KEY'].blank?
+          yield("Error: OpenAI API key not configured", "error") if block_given?
+          return { success: false, error: "OpenAI API key not configured" }
+        end
+        
+        prompt = build_comprehensive_prompt
+        
+        # Use streaming API
+        stream_response = ""
+        full_response = ""
+        
+        Rails.logger.info "Starting streaming analysis for campaign #{@campaign.id}"
+        
+        stream = @client.chat(
+          parameters: {
+            model: "gpt-5-mini",
+            messages: [
+              { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
+              { role: "user", content: prompt }
+            ],
+            max_completion_tokens: 2500,
+            response_format: { type: "json_object" },
+            stream: true  # Enable streaming
+          },
+          stream: true
+        )
+        
+        # Process streaming response
+        stream.each do |chunk|
+          content = chunk.dig("choices", 0, "delta", "content")
+          if content
+            stream_response += content
+            full_response += content
+            # Yield each chunk to the caller
+            yield(content, "streaming") if block_given?
+          end
+        end
+        
+        Rails.logger.info "Streaming analysis completed for campaign #{@campaign.id}"
+        
+        # Parse the complete response
+        analysis_data = parse_response({ "choices" => [{ "message" => { "content" => full_response } }] })
+        
+        deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
+        deal_score_log.update_campaign_scores
+        
+        yield("Analysis completed successfully!", "complete") if block_given?
+        { success: true, analysis: analysis_data, log: deal_score_log, streamed_response: full_response }
+        
+      rescue OpenAI::Error => e
+        error_message = "OpenAI API Error for campaign #{@campaign.id}: #{e.message}"
+        Rails.logger.error error_message
+        yield("Error: #{e.message}", "error") if block_given?
+        { success: false, error: "OpenAI API error: #{e.message}" }
+      rescue => e
+        error_message = "AI Deal Scoring failed for campaign #{@campaign.id}: #{e.message}"
+        Rails.logger.error error_message
+        yield("Error: #{e.message}", "error") if block_given?
+        { success: false, error: e.message }
+      end
+    end
+
+    # Method for ActionController streaming
+    def analyze_with_rails_streaming
+      start_time = Time.current
+      
+      begin
+        prompt = build_comprehensive_prompt
+        
+        stream = @client.chat(
+          parameters: {
+            model: "gpt-5-mini",
+            messages: [
+              { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
+              { role: "user", content: prompt }
+            ],
+            max_completion_tokens: 2500,
+            response_format: { type: "json_object" },
+            stream: true
+          },
+          stream: true
+        )
+        
+        full_response = ""
+        
+        # Return an enumerator for Rails streaming
+        Enumerator.new do |yielder|
+          stream.each do |chunk|
+            content = chunk.dig("choices", 0, "delta", "content")
+            if content
+              full_response += content
+              yielder << { type: 'chunk', content: content }.to_json
+            end
+          end
+          
+          # After streaming completes, parse and save
+          begin
+            analysis_data = parse_response({ "choices" => [{ "message" => { "content" => full_response } }] })
+            deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
+            deal_score_log.update_campaign_scores
+            
+            # Send completion signal
+            yielder << { type: 'complete', data: analysis_data }.to_json
+          rescue => e
+            yielder << { type: 'error', message: e.message }.to_json
+          end
+        end
+        
+      rescue => e
+        Enumerator.new do |yielder|
+          yielder << { type: 'error', message: e.message }.to_json
+        end
+      end
+    end
+
     def self.analyze_campaign(campaign, analysis_type: 'manual')
       new(campaign, analysis_type: analysis_type).analyze
+    end
+
+    def self.analyze_campaign_with_streaming(campaign, analysis_type: 'manual', &block)
+      new(campaign, analysis_type: analysis_type).analyze_with_streaming(&block)
     end
 
     def self.batch_analyze_campaigns(campaign_ids, analysis_type: 'weekly')

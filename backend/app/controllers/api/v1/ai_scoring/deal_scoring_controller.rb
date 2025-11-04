@@ -3,13 +3,14 @@ module Api
   module V1
     module AiScoring
       class DealScoringController < ApplicationController
+        include ActionController::Live
 
         # Add these require statements
         require Rails.root.join('app/services/ai/deal_scoring_service')
         require Rails.root.join('app/services/ai/similar_deals_service')
 
         before_action :authenticate_request
-        before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals]
+        before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals, :streaming_analyze]
 
         # POST /api/v1/ai_scoring/deal_scoring/analyze
         def analyze
@@ -34,6 +35,29 @@ module Api
             }
           else
             render json: { success: false, error: result[:error] }, status: :unprocessable_entity
+          end
+        end
+
+        # NEW: Streaming analysis endpoint
+        # GET /api/v1/ai_scoring/deal_scoring/streaming_analyze
+        def streaming_analyze
+          response.headers['Content-Type'] = 'text/event-stream'
+          response.headers['Cache-Control'] = 'no-cache'
+          response.headers['X-Accel-Buffering'] = 'no' # Disable buffering for nginx
+          response.headers['Access-Control-Allow-Origin'] = '*'
+          response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+
+          service = ::AI::DealScoringService.new(@campaign)
+          
+          begin
+            service.analyze_with_rails_streaming.each do |chunk_data|
+              response.stream.write("data: #{chunk_data}\n\n")
+            end
+          rescue => e
+            Rails.logger.error "Streaming analysis error: #{e.message}"
+            response.stream.write("data: #{ { type: 'error', message: e.message }.to_json }\n\n")
+          ensure
+            response.stream.close
           end
         end
 
