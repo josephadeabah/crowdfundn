@@ -132,47 +132,61 @@ module AI
         
         Rails.logger.info "Starting streaming analysis for campaign #{@campaign.id}"
         
-        # Use the responses.stream method as per the documentation
-        stream = @client.responses.stream(
-          input: prompt,
-          model: "gpt-4o-mini",
-          system_prompt: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks."
-        )
-        
-        full_response = ""
-        
-        # Return an enumerator for Rails streaming
-        Enumerator.new do |yielder|
-          begin
-            stream.each do |event|
-              case event.type
-              when :content_part
-                content = event.text
-                if content
-                  full_response += content
-                  yielder << { type: 'chunk', content: content }.to_json
-                end
-              when :response_completed
-                Rails.logger.info "Streaming analysis completed for campaign #{@campaign.id}"
-                
-                # After streaming completes, parse and save
-                begin
-                  analysis_data = parse_streaming_response(full_response)
-                  deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
-                  deal_score_log.update_campaign_scores
-                  
-                  # Send completion signal with the parsed data
-                  yielder << { type: 'complete', data: analysis_data }.to_json
-                rescue => e
-                  Rails.logger.error "Error parsing streaming response: #{e.message}"
-                  yielder << { type: 'error', message: "Failed to parse analysis: #{e.message}" }.to_json
-                end
-                
-              when :error
-                Rails.logger.error "Stream error: #{event.data}"
-                yielder << { type: 'error', message: "Stream error: #{event.data}" }.to_json
+        # Use the correct chat completions API with stream: true
+        response = @client.chat(
+          parameters: {
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
+              { role: "user", content: prompt }
+            ],
+            max_tokens: 2500,
+            response_format: { type: "json_object" },
+            stream: proc do |chunk|
+              # This proc will be called for each chunk in the stream
+              content = chunk.dig("choices", 0, "delta", "content")
+              if content
+                yield({ type: 'chunk', content: content }.to_json) if block_given?
               end
             end
+          }
+        )
+        
+        # For the enumerator approach, we need to handle it differently
+        full_response = ""
+        completed = false
+        
+        Enumerator.new do |yielder|
+          begin
+            # We'll process the response as a stream
+            response.each do |chunk|
+              content = chunk.dig("choices", 0, "delta", "content")
+              if content
+                full_response += content
+                yielder << { type: 'chunk', content: content }.to_json
+              end
+              
+              # Check if streaming is complete
+              if chunk.dig("choices", 0, "finish_reason") == "stop"
+                completed = true
+                break
+              end
+            end
+            
+            if completed
+              # Parse and save the final response
+              begin
+                analysis_data = parse_streaming_response(full_response)
+                deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
+                deal_score_log.update_campaign_scores
+                
+                yielder << { type: 'complete', data: analysis_data }.to_json
+              rescue => e
+                Rails.logger.error "Error parsing streaming response: #{e.message}"
+                yielder << { type: 'error', message: "Failed to parse analysis: #{e.message}" }.to_json
+              end
+            end
+            
           rescue => e
             Rails.logger.error "Stream processing error: #{e.message}"
             yielder << { type: 'error', message: "Stream processing error: #{e.message}" }.to_json
