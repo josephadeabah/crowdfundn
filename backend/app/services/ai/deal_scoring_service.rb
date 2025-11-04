@@ -645,7 +645,7 @@ module AI
         # Use the chat completions API for non-streaming
         response = @client.chat(
           parameters: {
-            model: "gpt-4o-mini",
+            model: "gpt-5",
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
               { role: "user", content: prompt }
