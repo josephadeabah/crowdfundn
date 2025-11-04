@@ -52,84 +52,72 @@ module AI
       end
     end
 
-    # Method for ActionController streaming using the new Responses API
+    # Method for ActionController streaming using the correct API
     def analyze_with_rails_streaming
       start_time = Time.current
       
       begin
         prompt = build_comprehensive_prompt
         
-        Rails.logger.info "Starting streaming analysis for campaign #{@campaign.id} using GPT-5-mini Responses API"
+        Rails.logger.info "Starting streaming analysis for campaign #{@campaign.id}"
         
         full_response = ""
+        stream_completed = false
         
         # Return an enumerator for Rails streaming
         Enumerator.new do |yielder|
           begin
-            # Use the new Responses API with streaming
-            # Note: GPT-5-mini is the correct model name
-            stream = @client.responses.stream(
-              model: "gpt-5-mini",  # Updated to correct model name
-              input: [
-                {
-                  role: "user",
-                  content: prompt
-                }
-              ],
-              system_prompt: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks.",
-              max_output_tokens: 2500,
-              stream: true
+            # Use the chat completions API with stream: true and handle chunks via callback
+            @client.chat(
+              parameters: {
+                model: "gpt-5",
+                messages: [
+                  { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
+                  { role: "user", content: prompt }
+                ],
+                max_tokens: 2500,
+                response_format: { type: "json_object" },
+                stream: proc do |chunk|
+                  # This proc will be called for each chunk in the stream
+                  content = chunk.dig("choices", 0, "delta", "content")
+                  if content
+                    full_response += content
+                    yielder << { type: 'chunk', content: content }.to_json
+                  end
+                  
+                  # Check if streaming is complete
+                  if chunk.dig("choices", 0, "finish_reason") == "stop"
+                    stream_completed = true
+                    
+                    # Parse and save the final response
+                    begin
+                      analysis_data = parse_streaming_response(full_response)
+                      deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
+                      deal_score_log.update_campaign_scores
+                      
+                      yielder << { type: 'complete', data: analysis_data }.to_json
+                    rescue => e
+                      Rails.logger.error "Error parsing streaming response: #{e.message}"
+                      yielder << { type: 'error', message: "Failed to parse analysis: #{e.message}" }.to_json
+                    end
+                  end
+                end
+              }
             )
             
-            # Process the streaming events
-            stream.each do |event|
-              Rails.logger.debug "GPT-5-mini Event: #{event.type}"
-              
-              case event.type
-              when :response_created
-                Rails.logger.info "GPT-5-mini Response created event received"
-                yielder << { type: 'status', message: 'Analysis started' }.to_json
-                
-              when :response_content_part_added
-                if event.text
-                  full_response += event.text
-                  yielder << { type: 'chunk', content: event.text }.to_json
-                end
-                
-              when :response_completed
-                Rails.logger.info "GPT-5-mini Streaming analysis completed for campaign #{@campaign.id}"
-                
-                # Parse and save the final response
-                begin
-                  analysis_data = parse_streaming_response(full_response)
-                  deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
-                  deal_score_log.update_campaign_scores
-                  
-                  yielder << { type: 'complete', data: analysis_data }.to_json
-                rescue => e
-                  Rails.logger.error "Error parsing streaming response: #{e.message}"
-                  yielder << { type: 'error', message: "Failed to parse analysis: #{e.message}" }.to_json
-                end
-                
-              when :error
-                Rails.logger.error "GPT-5-mini Streaming error: #{event.data}"
-                yielder << { type: 'error', message: "Streaming error: #{event.data}" }.to_json
-                
-              else
-                # Log unhandled event types for debugging
-                Rails.logger.debug "Unhandled GPT-5-mini event type: #{event.type}"
-              end
+            # If we get here without the stream completing, send an error
+            unless stream_completed
+              yielder << { type: 'error', message: "Stream ended unexpectedly" }.to_json
             end
             
           rescue => e
-            Rails.logger.error "GPT-5-mini Stream processing error: #{e.message}"
-            Rails.logger.error e.backtrace.join("\n")
+            Rails.logger.error "Stream processing error: #{e.message}"
             yielder << { type: 'error', message: "Stream processing error: #{e.message}" }.to_json
           end
         end
         
       rescue => e
-        Rails.logger.error "GPT-5-mini Stream initialization error: #{e.message}"
+        Rails.logger.error "Stream initialization error: #{e.message}"
         Enumerator.new do |yielder|
           yielder << { type: 'error', message: "Failed to start analysis: #{e.message}" }.to_json
         end
@@ -649,25 +637,25 @@ module AI
       data.deep_transform_keys { |key| key.to_s.humanize }.to_yaml
     end
 
-       # Updated API call for non-streaming using new Responses API
+    # Updated API call for non-streaming
     def call_openai_api(prompt)
-      Rails.logger.info "Calling GPT-5-mini API with prompt length: #{prompt.length}"
+      Rails.logger.info "Calling OpenAI API with prompt length: #{prompt.length}"
       
       begin
-        # Use the new Responses API for non-streaming
-        response = @client.responses.create(
-          model: "gpt-5-mini",  # Updated to correct model name
-          input: [
-            {
-              role: "user",
-              content: prompt
-            }
-          ],
-          system_prompt: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks.",
-          max_output_tokens: 2500
+        # Use the chat completions API for non-streaming
+        response = @client.chat(
+          parameters: {
+            model: "gpt-5",
+            messages: [
+              { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
+              { role: "user", content: prompt }
+            ],
+            max_tokens: 2500,
+            response_format: { type: "json_object" }
+          }
         )
         
-        Rails.logger.info "GPT-5-mini API response received successfully"
+        Rails.logger.info "GPT-4o Mini API response received successfully"
         Rails.logger.info "API Response type: #{response.class}"
         
         # Validate response structure
@@ -684,7 +672,7 @@ module AI
         
         response
       rescue => e
-        Rails.logger.error "GPT-5-mini API call failed: #{e.message}"
+        Rails.logger.error "GPT-4o Mini API call failed: #{e.message}"
         Rails.logger.error "Backtrace: #{e.backtrace.join("\n")}"
         nil
       end
@@ -693,11 +681,11 @@ module AI
     def parse_response(response)
       return fallback_analysis("No response from API") if response.nil?
       
-      # Safely extract content with proper error handling for Responses API
-      content = if response.is_a?(Hash) && response["output"] && response["output"][0] && response["output"][0]["content"]
-                  response["output"][0]["content"].to_s.strip
+      # Safely extract content with proper error handling
+      content = if response.is_a?(Hash) && response["choices"] && response["choices"][0] && response["choices"][0]["message"]
+                  response["choices"][0]["message"]["content"].to_s.strip
                 else
-                  Rails.logger.error "Invalid GPT-5-mini response structure: #{response.inspect}"
+                  Rails.logger.error "Invalid response structure: #{response.inspect}"
                   ""
                 end
 
@@ -716,7 +704,7 @@ module AI
 
       begin
         parsed_data = JSON.parse(json_text)
-        Rails.logger.info "Successfully parsed GPT-5-mini analysis data"
+        Rails.logger.info "Successfully parsed analysis data"
         parsed_data
       rescue JSON::ParserError => e
         Rails.logger.error "Failed to parse JSON response: #{e.message}"
