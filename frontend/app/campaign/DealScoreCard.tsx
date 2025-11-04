@@ -89,7 +89,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamedContent, setStreamedContent] = useState('');
   const [partialAnalysis, setPartialAnalysis] = useState<any>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
   
   const { subscription, fetchSubscription } = usePremium();
   const hasPremium = subscription?.has_premium;
@@ -167,84 +167,99 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
       setPartialAnalysis(null);
       setError(null);
 
-      // Close any existing connection
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
+      // Create abort controller for cancellation
+      abortControllerRef.current = new AbortController();
+      const signal = abortControllerRef.current.signal;
 
-      // Create new EventSource connection
-      const eventSource = new EventSource(
+      const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/streaming_analyze?campaign_id=${campaignId}`,
         {
-          withCredentials: true,
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          signal: signal,
         }
       );
 
-      eventSourceRef.current = eventSource;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-      eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
+      if (!response.body) {
+        throw new Error('ReadableStream not supported');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
           
-          switch (data.type) {
-            case 'chunk': {
-              setStreamedContent(prev => prev + data.content);
-              break;
-            }
+          if (done) break;
+
+          // Decode the chunk and add to buffer
+          buffer += decoder.decode(value, { stream: true });
+          
+          // Process complete lines
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || ''; // Keep the last incomplete line
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6); // Remove 'data: ' prefix
+              if (data.trim() === '') continue; // Skip empty lines
               
-            case 'complete': {
-              setIsStreaming(false);
-              setLoading(false);
-              // Parse the complete analysis data
-              const analysisData = data.data;
-              setPartialAnalysis(analysisData);
-              // Reload the full analysis to get structured data
-              loadAnalysis();
-              break;
-            }
-              
-            case 'error': {
-              setIsStreaming(false);
-              setLoading(false);
-              setError(data.message);
-              break;
+              try {
+                const parsed = JSON.parse(data);
+                
+                switch (parsed.type) {
+                  case 'chunk':
+                    setStreamedContent(prev => prev + parsed.content);
+                    break;
+                    
+                  case 'complete':
+                    setIsStreaming(false);
+                    setLoading(false);
+                    setPartialAnalysis(parsed.data);
+                    loadAnalysis();
+                    break;
+                    
+                  case 'error':
+                    setIsStreaming(false);
+                    setLoading(false);
+                    setError(parsed.message);
+                    break;
+                }
+              } catch (parseError) {
+                console.error('Error parsing SSE data:', parseError, 'Data:', data);
+              }
             }
           }
-        } catch (parseError) {
-          console.error('Error parsing SSE data:', parseError);
         }
-      };
+      } finally {
+        reader.releaseLock();
+      }
 
-      eventSource.onerror = (error) => {
-        console.error('EventSource error:', error);
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.log('Streaming analysis was cancelled');
+      } else {
         setIsStreaming(false);
         setLoading(false);
-        setError('Streaming analysis failed');
-        eventSource.close();
-      };
-
-      // Set timeout to close connection after 2 minutes
-      setTimeout(() => {
-        if (eventSource.readyState === EventSource.OPEN) {
-          eventSource.close();
-          setIsStreaming(false);
-          setLoading(false);
-          setError('Analysis timeout');
-        }
-      }, 120000);
-
-    } catch (err) {
-      setIsStreaming(false);
-      setLoading(false);
-      setError('Failed to start streaming analysis');
-      console.error('Error starting streaming analysis:', err);
+        setError('Failed to start streaming analysis');
+        console.error('Error starting streaming analysis:', err);
+      }
     }
   };
 
   const stopStreaming = () => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
     }
     setIsStreaming(false);
     setLoading(false);
@@ -262,8 +277,8 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
     };
   }, []);
