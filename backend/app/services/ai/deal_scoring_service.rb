@@ -37,11 +37,6 @@ module AI
           return { success: false, error: "OpenAI API returned no response" }
         end
         
-        # Handle cases where API returns true (success but no content)
-        if response == true
-          return { success: false, error: "OpenAI API returned success but no content" }
-        end
-        
         analysis_data = parse_response(response)
         
         deal_score_log = create_deal_score_log(prompt, response, analysis_data, start_time)
@@ -53,72 +48,6 @@ module AI
         { success: false, error: "OpenAI API error: #{e.message}" }
       rescue => e
         Rails.logger.error "AI Deal Scoring failed for campaign #{@campaign.id}: #{e.message}"
-        { success: false, error: e.message }
-      end
-    end
-
-    # New streaming method using the correct API
-    def analyze_with_streaming(&block)
-      start_time = Time.current
-      
-      begin
-        # Check API key first
-        if ENV['OPENAI_API_KEY'].blank?
-          yield("Error: OpenAI API key not configured", "error") if block_given?
-          return { success: false, error: "OpenAI API key not configured" }
-        end
-        
-        prompt = build_comprehensive_prompt
-        
-        # Use the correct streaming API with responses.stream
-        stream_response = ""
-        full_response = ""
-        
-        Rails.logger.info "Starting streaming analysis for campaign #{@campaign.id}"
-        
-        # Use the responses.stream method as per the documentation
-        stream = @client.responses.stream(
-          input: prompt,
-          model: "gpt-4o-mini", # Updated model name
-          system_prompt: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks."
-        )
-        
-        # Process streaming response
-        stream.each do |event|
-          case event.type
-          when :content_part
-            content = event.text
-            if content
-              stream_response += content
-              full_response += content
-              # Yield each chunk to the caller
-              yield(content, "streaming") if block_given?
-            end
-          when :response_completed
-            Rails.logger.info "Streaming analysis completed for campaign #{@campaign.id}"
-          when :error
-            yield("Streaming error: #{event.data}", "error") if block_given?
-          end
-        end
-        
-        # Parse the complete response
-        analysis_data = parse_streaming_response(full_response)
-        
-        deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
-        deal_score_log.update_campaign_scores
-        
-        yield("Analysis completed successfully!", "complete") if block_given?
-        { success: true, analysis: analysis_data, log: deal_score_log, streamed_response: full_response }
-        
-      rescue OpenAI::Error => e
-        error_message = "OpenAI API Error for campaign #{@campaign.id}: #{e.message}"
-        Rails.logger.error error_message
-        yield("Error: #{e.message}", "error") if block_given?
-        { success: false, error: "OpenAI API error: #{e.message}" }
-      rescue => e
-        error_message = "AI Deal Scoring failed for campaign #{@campaign.id}: #{e.message}"
-        Rails.logger.error error_message
-        yield("Error: #{e.message}", "error") if block_given?
         { success: false, error: e.message }
       end
     end
@@ -199,10 +128,6 @@ module AI
       new(campaign, analysis_type: analysis_type).analyze
     end
 
-    def self.analyze_campaign_with_streaming(campaign, analysis_type: 'manual', &block)
-      new(campaign, analysis_type: analysis_type).analyze_with_streaming(&block)
-    end
-
     def self.batch_analyze_campaigns(campaign_ids, analysis_type: 'weekly')
       campaigns = Campaign.where(id: campaign_ids)
       results = []
@@ -220,10 +145,6 @@ module AI
     end
 
     private
-
-    def embedding_column_exists?
-      Campaign.column_names.include?('ai_embedding')
-    end
 
     def build_comprehensive_prompt
       campaign_data = extract_comprehensive_campaign_data
@@ -740,12 +661,6 @@ module AI
         # Validate response structure
         if response.nil?
           Rails.logger.error "API returned nil response"
-          return nil
-        end
-        
-        # Handle case where API returns simple true/false
-        if response == true || response == false
-          Rails.logger.error "API returned boolean instead of hash: #{response}"
           return nil
         end
         
