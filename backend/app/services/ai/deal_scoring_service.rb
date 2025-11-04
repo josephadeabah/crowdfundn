@@ -70,7 +70,7 @@ module AI
             # Use the chat completions API with stream: true and handle chunks via callback
             @client.chat(
               parameters: {
-                model: "gpt-4o-mini",
+                model: "gpt-5-mini",
                 messages: [
                   { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
                   { role: "user", content: prompt }
@@ -645,7 +645,7 @@ module AI
         # Use the chat completions API for non-streaming
         response = @client.chat(
           parameters: {
-            model: "gpt-4o-mini",
+            model: "gpt-5-mini",
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
               { role: "user", content: prompt }
@@ -655,7 +655,7 @@ module AI
           }
         )
         
-        Rails.logger.info "GPT-4o Mini API response received successfully"
+        Rails.logger.info "GPT-5 Mini API response received successfully"
         Rails.logger.info "API Response type: #{response.class}"
         
         # Validate response structure
@@ -672,7 +672,7 @@ module AI
         
         response
       rescue => e
-        Rails.logger.error "GPT-4o Mini API call failed: #{e.message}"
+        Rails.logger.error "GPT-5 Mini API call failed: #{e.message}"
         Rails.logger.error "Backtrace: #{e.backtrace.join("\n")}"
         nil
       end
