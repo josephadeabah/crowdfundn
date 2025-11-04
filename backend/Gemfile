@@ -68,6 +68,7 @@ gem 'brevo-ruby'
 gem 'sib-api-v3-sdk'
 
 gem 'openai'
+gem 'ruby-openai'
 gem 'neighbor' # for vector similarity search
 gem 'pgvector'
 
