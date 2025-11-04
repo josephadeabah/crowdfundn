@@ -154,7 +154,7 @@ const ProfileTabs = () => {
           badgeColor: 'bg-green-100 text-green-800',
         },
         {
-          label: 'Invest Club',
+          label: 'Investor Club',
           icon: <GroupIcon className="w-4 h-4" />,
           component: <InvestmentClubsDashboard/>,
           description: 'Join and manage investment clubs with others.',
