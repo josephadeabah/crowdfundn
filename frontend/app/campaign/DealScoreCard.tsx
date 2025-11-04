@@ -425,6 +425,45 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
 
               {/* Expandable Sections */}
               <div className="space-y-4">
+                {/* Investment Thesis */}
+                {latestAnalysis.investment_thesis && (
+                  <div className="border rounded-lg">
+                    <button
+                      onClick={() => toggleSection('thesis')}
+                      className="w-full px-4 py-3 text-left flex justify-between items-center hover:bg-gray-50"
+                    >
+                      <h4 className="font-medium text-gray-700 flex items-center">
+                        <span className="text-blue-500 mr-2">📊</span>
+                        Investment Thesis
+                      </h4>
+                      <svg
+                        className={`w-5 h-5 transform transition-transform ${
+                          expandedSection === 'thesis' ? 'rotate-180' : ''
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+                    {expandedSection === 'thesis' && (
+                      <div className="px-4 pb-4">
+                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                          <p className="text-sm text-gray-700 leading-relaxed">
+                            {latestAnalysis.investment_thesis}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Upside Potential */}
                 <div className="border rounded-lg">
                   <button
@@ -633,18 +672,6 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                   )}
                 </div>
               </div>
-
-              {/* Investment Thesis */}
-              {latestAnalysis.investment_thesis && (
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Investment Thesis
-                  </h4>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {latestAnalysis.investment_thesis}
-                  </p>
-                </div>
-              )}
             </div>
           )}
         </>
