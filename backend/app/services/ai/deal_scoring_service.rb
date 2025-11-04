@@ -16,7 +16,6 @@ module AI
       # Initialize client with proper configuration and timeout settings
       @client = OpenAI::Client.new(
         access_token: api_key,
-        log_errors: true,
         request_timeout: 120 # Increase timeout for streaming
       )
     end
@@ -58,7 +57,7 @@ module AI
       end
     end
 
-    # New streaming method
+    # New streaming method using the correct API
     def analyze_with_streaming(&block)
       start_time = Time.current
       
@@ -71,41 +70,39 @@ module AI
         
         prompt = build_comprehensive_prompt
         
-        # Use streaming API
+        # Use the correct streaming API with responses.stream
         stream_response = ""
         full_response = ""
         
         Rails.logger.info "Starting streaming analysis for campaign #{@campaign.id}"
         
-        stream = @client.chat(
-          parameters: {
-            model: "gpt-5-mini",
-            messages: [
-              { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
-              { role: "user", content: prompt }
-            ],
-            max_completion_tokens: 2500,
-            response_format: { type: "json_object" },
-            stream: true  # Enable streaming
-          },
-          stream: true
+        # Use the responses.stream method as per the documentation
+        stream = @client.responses.stream(
+          input: prompt,
+          model: "gpt-4o-mini", # Updated model name
+          system_prompt: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks."
         )
         
         # Process streaming response
-        stream.each do |chunk|
-          content = chunk.dig("choices", 0, "delta", "content")
-          if content
-            stream_response += content
-            full_response += content
-            # Yield each chunk to the caller
-            yield(content, "streaming") if block_given?
+        stream.each do |event|
+          case event.type
+          when :content_part
+            content = event.text
+            if content
+              stream_response += content
+              full_response += content
+              # Yield each chunk to the caller
+              yield(content, "streaming") if block_given?
+            end
+          when :response_completed
+            Rails.logger.info "Streaming analysis completed for campaign #{@campaign.id}"
+          when :error
+            yield("Streaming error: #{event.data}", "error") if block_given?
           end
         end
         
-        Rails.logger.info "Streaming analysis completed for campaign #{@campaign.id}"
-        
         # Parse the complete response
-        analysis_data = parse_response({ "choices" => [{ "message" => { "content" => full_response } }] })
+        analysis_data = parse_streaming_response(full_response)
         
         deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
         deal_score_log.update_campaign_scores
@@ -126,55 +123,66 @@ module AI
       end
     end
 
-    # Method for ActionController streaming
+    # Method for ActionController streaming using the correct API
     def analyze_with_rails_streaming
       start_time = Time.current
       
       begin
         prompt = build_comprehensive_prompt
         
-        stream = @client.chat(
-          parameters: {
-            model: "gpt-5-mini",
-            messages: [
-              { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
-              { role: "user", content: prompt }
-            ],
-            max_completion_tokens: 2500,
-            response_format: { type: "json_object" },
-            stream: true
-          },
-          stream: true
+        Rails.logger.info "Starting streaming analysis for campaign #{@campaign.id}"
+        
+        # Use the responses.stream method as per the documentation
+        stream = @client.responses.stream(
+          input: prompt,
+          model: "gpt-4o-mini",
+          system_prompt: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks."
         )
         
         full_response = ""
         
         # Return an enumerator for Rails streaming
         Enumerator.new do |yielder|
-          stream.each do |chunk|
-            content = chunk.dig("choices", 0, "delta", "content")
-            if content
-              full_response += content
-              yielder << { type: 'chunk', content: content }.to_json
-            end
-          end
-          
-          # After streaming completes, parse and save
           begin
-            analysis_data = parse_response({ "choices" => [{ "message" => { "content" => full_response } }] })
-            deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
-            deal_score_log.update_campaign_scores
-            
-            # Send completion signal
-            yielder << { type: 'complete', data: analysis_data }.to_json
+            stream.each do |event|
+              case event.type
+              when :content_part
+                content = event.text
+                if content
+                  full_response += content
+                  yielder << { type: 'chunk', content: content }.to_json
+                end
+              when :response_completed
+                Rails.logger.info "Streaming analysis completed for campaign #{@campaign.id}"
+                
+                # After streaming completes, parse and save
+                begin
+                  analysis_data = parse_streaming_response(full_response)
+                  deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
+                  deal_score_log.update_campaign_scores
+                  
+                  # Send completion signal with the parsed data
+                  yielder << { type: 'complete', data: analysis_data }.to_json
+                rescue => e
+                  Rails.logger.error "Error parsing streaming response: #{e.message}"
+                  yielder << { type: 'error', message: "Failed to parse analysis: #{e.message}" }.to_json
+                end
+                
+              when :error
+                Rails.logger.error "Stream error: #{event.data}"
+                yielder << { type: 'error', message: "Stream error: #{event.data}" }.to_json
+              end
+            end
           rescue => e
-            yielder << { type: 'error', message: e.message }.to_json
+            Rails.logger.error "Stream processing error: #{e.message}"
+            yielder << { type: 'error', message: "Stream processing error: #{e.message}" }.to_json
           end
         end
         
       rescue => e
+        Rails.logger.error "Stream initialization error: #{e.message}"
         Enumerator.new do |yielder|
-          yielder << { type: 'error', message: e.message }.to_json
+          yielder << { type: 'error', message: "Failed to start analysis: #{e.message}" }.to_json
         end
       end
     end
@@ -700,24 +708,26 @@ module AI
       data.deep_transform_keys { |key| key.to_s.humanize }.to_yaml
     end
 
+    # Updated API call for non-streaming
     def call_openai_api(prompt)
       Rails.logger.info "Calling OpenAI API with prompt length: #{prompt.length}"
       
       begin
+        # Use the chat completions API for non-streaming
         response = @client.chat(
           parameters: {
-            model: "gpt-5-mini",
+            model: "gpt-4o-mini",
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
               { role: "user", content: prompt }
             ],
-            max_completion_tokens: 2500,
+            max_tokens: 2500,
             response_format: { type: "json_object" }
           }
         )
         
-        Rails.logger.info "GPT-5 Mini API response received successfully"
-        Rails.logger.info "API Response type: #{response.class}" # Debug logging
+        Rails.logger.info "GPT-4o Mini API response received successfully"
+        Rails.logger.info "API Response type: #{response.class}"
         
         # Validate response structure
         if response.nil?
@@ -739,7 +749,7 @@ module AI
         
         response
       rescue => e
-        Rails.logger.error "GPT-5 Mini API call failed: #{e.message}"
+        Rails.logger.error "GPT-4o Mini API call failed: #{e.message}"
         Rails.logger.error "Backtrace: #{e.backtrace.join("\n")}"
         nil
       end
@@ -756,8 +766,18 @@ module AI
                   ""
                 end
 
+      parse_json_content(content)
+    end
+
+    def parse_streaming_response(content)
+      parse_json_content(content)
+    end
+
+    def parse_json_content(content)
+      return fallback_analysis("Empty response") if content.blank?
+      
       # Try to extract valid JSON portion between braces
-      json_text = content[/\{.*\}/m] || content
+      json_text = content[/\{[^{}]*\}/m] || content
 
       begin
         parsed_data = JSON.parse(json_text)
@@ -766,10 +786,11 @@ module AI
       rescue JSON::ParserError => e
         Rails.logger.error "Failed to parse JSON response: #{e.message}"
         Rails.logger.error "Response content: #{content}"
+        Rails.logger.error "Extracted JSON text: #{json_text}"
         fallback_analysis(content)
       end
     end
-
+    
     def fallback_analysis(content)
       Rails.logger.warn "Using fallback analysis due to parsing failure"
       {
@@ -855,6 +876,10 @@ module AI
       end
       
       nil
+    end
+
+    def embedding_column_exists?
+      Campaign.column_names.include?('ai_embedding')
     end
 
     def generate_embedding_text

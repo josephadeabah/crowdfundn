@@ -272,16 +272,14 @@ Rails.application.routes.draw do
         end
       end
 
-      # Add AI routes - UPDATED with streaming endpoint
+      # Add AI routes - UPDATED with proper streaming endpoint
       namespace :ai_scoring do
-        resources :deal_scoring, only: [] do
-          collection do
-            post :analyze
-            get :streaming_analyze  # NEW streaming endpoint
-            get :analysis_history
-            get :similar_deals
-            get :dashboard_metrics
-          end
+        namespace :deal_scoring do
+          post :analyze, to: 'deal_scoring#analyze'
+          get :streaming_analyze, to: 'deal_scoring#streaming_analyze'  # FIXED: Proper route definition
+          get :analysis_history, to: 'deal_scoring#analysis_history'
+          get :similar_deals, to: 'deal_scoring#similar_deals'
+          get :dashboard_metrics, to: 'deal_scoring#dashboard_metrics'
         end
       end
 
