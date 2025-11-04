@@ -218,6 +218,43 @@ const CampaignTabs: React.FC<CampaignTabsProps> = ({
               </div>
             </div>
 
+            {/* Campaign Title - Optimal Placement */}
+            <div className="mb-6">
+              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 line-clamp-2">
+                {campaign?.title}
+              </h1>
+              {/* Use description or other available field instead of tagline */}
+              {campaign?.description && (
+                <p className="text-gray-600 mt-2 text-lg line-clamp-2">
+                  {(() => {
+                    const desc = campaign.description;
+                    let text = '';
+                    if (!desc) return '';
+                    if (typeof desc === 'string') {
+                      text = desc;
+                    } else if ('text' in (desc as any) && typeof (desc as any).text === 'string') {
+                      text = (desc as any).text;
+                    } else if ('content' in (desc as any) && typeof (desc as any).content === 'string') {
+                      text = (desc as any).content;
+                    } else {
+                      try {
+                        text = JSON.stringify(desc);
+                      } catch {
+                        text = '';
+                      }
+                    }
+                    return text.length > 150 ? `${text.substring(0, 150)}...` : text;
+                  })()}
+                </p>
+              )}
+              {/* Alternative: If you have other fields like short_description, summary, etc. */}
+              {/* {campaign?.short_description && (
+                <p className="text-gray-600 mt-2 text-lg line-clamp-2">
+                  {campaign.short_description}
+                </p>
+              )} */}
+            </div>
+
             {/* Tab Content Area */}
             <div className="h-[400px] lg:h-[500px] rounded-2xl overflow-hidden">
               {renderTabContent()}
