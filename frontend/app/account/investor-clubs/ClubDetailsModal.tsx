@@ -9,7 +9,12 @@ interface ClubDetailsModalProps {
     name: string;
     description: string;
     balanceLabel: string;
-    members: Array<{ initials: string; name: string; role: string; contributionLabel: string }>;
+    members: Array<{
+      initials: string;
+      name: string;
+      role: string;
+      contributionLabel: string;
+    }>;
     investments?: Array<{ title: string; amountLabel: string; status: string }>;
   };
 }
@@ -54,21 +59,34 @@ const ClubDetailsModal: React.FC<{
           transition={{ duration: 0.2 }}
         >
           <div className="flex items-center justify-between p-6 border-b border-gray-100">
-            <h2 className="text-xl font-semibold text-emerald-900">{club.name}</h2>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
+            <h2 className="text-xl font-semibold text-emerald-900">
+              {club.name}
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </button>
           </div>
 
           <div className="p-6 space-y-6">
             <p className="text-gray-700">{club.description}</p>
             <div className="text-sm text-gray-500">
-              <strong className="text-emerald-700">Balance:</strong> {club.balanceLabel}
+              <strong className="text-emerald-700">Balance:</strong>{' '}
+              {club.balanceLabel}
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-emerald-900 mb-2">Members</h3>
+              <h3 className="text-lg font-semibold text-emerald-900 mb-2">
+                Members
+              </h3>
               <div className="border border-gray-100 rounded-lg divide-y">
                 {members.map((m, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3">
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-3"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-semibold">
                         {m.initials}
@@ -88,7 +106,10 @@ const ClubDetailsModal: React.FC<{
           </div>
 
           <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
-            <button onClick={onClose} className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+            >
               Close
             </button>
             <button className="px-4 py-2 rounded-md bg-emerald-700 text-white hover:bg-emerald-800">

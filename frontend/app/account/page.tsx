@@ -157,7 +157,7 @@ const ProfileTabs = () => {
         {
           label: 'Investor Club',
           icon: <GroupIcon className="w-4 h-4" />,
-          component: <InvestmentClubsDashboard/>,
+          component: <InvestmentClubsDashboard />,
           description: 'Join and manage investment clubs with others.',
           badge: 'Soon',
           badgeColor: 'bg-yellow-100 text-yellow-800',
@@ -166,11 +166,11 @@ const ProfileTabs = () => {
           label: 'See Clubs',
           icon: <DropdownMenuIcon className="w-4 h-4" />,
           component: <ClubsListPage />,
-          description: 'Find and join investment clubs that match your interests.',
+          description:
+            'Find and join investment clubs that match your interests.',
           badge: 'Soon',
           badgeColor: 'bg-yellow-100 text-yellow-800',
-        }
-
+        },
       ],
     },
     {
