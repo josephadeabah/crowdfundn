@@ -39,23 +39,20 @@ module Api
 
         # GET /api/v1/ai_scoring/deal_scoring/streaming_analyze
         def streaming_analyze
-          # Set proper SSE headers
+          # Set SSE headers
           response.headers['Content-Type'] = 'text/event-stream'
           response.headers['Cache-Control'] = 'no-cache'
           response.headers['X-Accel-Buffering'] = 'no' # Disable buffering for nginx
-          response.headers['Transfer-Encoding'] = 'chunked'
-          
+          response.headers['Access-Control-Allow-Origin'] = '*'
+          response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+
           service = ::AI::DealScoringService.new(@campaign)
           
           begin
             # Use the enumerator-based streaming
-            stream = service.analyze_with_rails_streaming
-            
-            stream.each do |chunk|
-              # Format as proper Server-Sent Events
-              response.stream.write("data: #{chunk}\n\n")
+            service.analyze_with_rails_streaming.each do |chunk_data|
+              response.stream.write("data: #{chunk_data}\n\n")
             end
-            
           rescue => e
             Rails.logger.error "Streaming analysis error: #{e.message}"
             Rails.logger.error e.backtrace.join("\n")
