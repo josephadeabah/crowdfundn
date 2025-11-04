@@ -25,25 +25,6 @@ interface Vote {
   dealScore: number;
 }
 
-const Sidebar: React.FC<{ active?: string }> = ({ active = 'clubs' }) => (
-  <aside className="w-64 bg-gray-50 p-6 border-r border-gray-100 min-h-screen">
-    <div className="flex items-center gap-3 mb-8">
-      <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold">BH</div>
-      <div className="text-lg font-semibold text-emerald-900">BantuHive</div>
-    </div>
-
-    <nav className="flex flex-col gap-2 text-gray-700">
-      <a className={`p-3 rounded-md ${active === 'dashboard' ? 'bg-emerald-100 text-emerald-900' : 'hover:bg-gray-100'}`}>Dashboard</a>
-      <a className={`p-3 rounded-md ${active === 'campaigns' ? 'bg-emerald-100 text-emerald-900' : 'hover:bg-gray-100'}`}>Campaigns</a>
-      <a className={`p-3 rounded-md ${active === 'clubs' ? 'bg-emerald-200 text-emerald-900 font-medium' : 'hover:bg-gray-100'}`}>Investment Clubs</a>
-      <a className={`p-3 rounded-md ${active === 'investments' ? 'bg-emerald-100 text-emerald-900' : 'hover:bg-gray-100'}`}>My Investments</a>
-      <a className={`p-3 rounded-md ${active === 'profile' ? 'bg-emerald-100 text-emerald-900' : 'hover:bg-gray-100'}`}>Profile</a>
-    </nav>
-
-    <div className="mt-auto pt-6 text-sm text-gray-500">Logout</div>
-  </aside>
-);
-
 const ClubCard: React.FC<{ club: Club }> = ({ club }) => (
   <div className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm flex justify-between items-start">
     <div className="flex items-start gap-4">
@@ -116,7 +97,6 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-gray-50 text-gray-900">
-      <Sidebar active="clubs" />
 
       <main className="flex-1 p-10">
         <div className="max-w-6xl mx-auto">
