@@ -77,7 +77,7 @@ module AI
               ],
               system_prompt: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks.",
               max_output_tokens: 2500,
-              stream: true
+              stream=True
             )
             
             # Process the streaming events
@@ -661,7 +661,7 @@ module AI
             }
           ],
           system_prompt: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks.",
-          max_output_tokens: 2500
+          max_tokens: 2500
         )
         
         Rails.logger.info "GPT-5 API response received successfully"
