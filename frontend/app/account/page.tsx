@@ -42,6 +42,7 @@ import { useAuth } from '../context/auth/AuthContext';
 import { Landmark } from 'lucide-react';
 import { FiArchive } from 'react-icons/fi';
 import ArchivedCampaigns from './ArchivedCampaigns';
+import InvestmentClubsDashboard from './InvestmentClubsDashboard';
 
 // Define proper TypeScript interfaces
 interface Tab {
@@ -152,6 +153,14 @@ const ProfileTabs = () => {
           badge: 'New',
           badgeColor: 'bg-green-100 text-green-800',
         },
+        {
+          label: 'Invest Club',
+          icon: <GroupIcon className="w-4 h-4" />,
+          component: <InvestmentClubsDashboard/>,
+          description: 'Join and manage investment clubs with others.',
+          badge: 'Coming Soon',
+          badgeColor: 'bg-yellow-100 text-yellow-800',
+        }
       ],
     },
     {
