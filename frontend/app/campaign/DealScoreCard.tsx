@@ -1,10 +1,11 @@
 // app/components/campaign/DealScoreCard.tsx
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnalysisHistoryModal } from './AnalysisHistoryModal';
 import { SimilarDealsModal } from './SimilarDealsModal';
 import { DealScoreChart } from './DealScoreChart';
 import { useAuth } from '../context/auth/AuthContext';
+import { usePremium } from '../context/premium/PremiumContext';
 
 interface DealScoreCardProps {
   campaignId: string;
@@ -85,50 +86,16 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   const [showSimilarDeals, setShowSimilarDeals] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [streamedContent, setStreamedContent] = useState('');
-  const abortControllerRef = useRef<AbortController | null>(null);
-  
+  const { subscription, fetchSubscription } = usePremium();
+  const hasPremium = subscription?.has_premium;
   const { token, user } = useAuth();
 
   useEffect(() => {
     if (campaignId) {
       loadAnalysis();
+      fetchSubscription();
     }
-  }, [campaignId]);
-
-  // Add cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-      // Reset streaming state on unmount
-      setIsStreaming(false);
-      setLoading(false);
-    };
-  }, []);
-
-  // Add periodic status check for stuck streams
-  useEffect(() => {
-    let checkInterval: NodeJS.Timeout;
-    
-    if (isStreaming) {
-      checkInterval = setInterval(() => {
-        // If no content has been received for 30 seconds, assume stuck
-        if (streamedContent === '' && isStreaming) {
-          console.warn('Stream appears stuck - no content received');
-          // Optionally trigger a recovery action
-          setError('Stream appears to be stuck. Please try again.');
-          stopStreaming();
-        }
-      }, 30000);
-    }
-    
-    return () => {
-      if (checkInterval) clearInterval(checkInterval);
-    };
-  }, [isStreaming, streamedContent]);
+  }, [campaignId, fetchSubscription]);
 
   const loadAnalysis = async () => {
     try {
@@ -155,184 +122,35 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     }
   };
 
-  const runStreamingAnalysis = async () => {
-    const TIMEOUT_MS = 120000; // 2 minutes
-    
+  const runAnalysis = async () => {
     try {
       setLoading(true);
-      setIsStreaming(true);
-      setStreamedContent('');
       setError(null);
 
-      abortControllerRef.current = new AbortController();
-      const signal = abortControllerRef.current.signal;
-
-      // Add timeout
-      const timeoutId = setTimeout(() => {
-        if (isStreaming) {
-          console.log('Streaming analysis timeout reached');
-          stopStreaming();
-          setError('Analysis timed out after 2 minutes');
-        }
-      }, TIMEOUT_MS);
-
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/streaming_analyze?campaign_id=${campaignId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/analyze`,
         {
-          method: 'GET',
+          method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'text/event-stream',
-            'Accept': 'text/event-stream',
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-          signal: signal,
-        }
+          body: JSON.stringify({ campaign_id: campaignId }),
+        },
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const result = await response.json();
 
-      if (!response.body) {
-        throw new Error('ReadableStream not supported');
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      
-      let buffer = '';
-      
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          
-          if (done) {
-            console.log('Stream completed');
-            break;
-          }
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          
-          // Keep the last incomplete line in the buffer
-          buffer = lines.pop() || '';
-
-          for (const line of lines) {
-            if (line.startsWith('data: ') && line.length > 6) {
-              const data = line.slice(6);
-              
-              // Skip empty lines and heartbeat messages
-              if (data.trim() === '' || data === ': heartbeat') continue;
-              
-              try {
-                const parsed = JSON.parse(data);
-                console.log('Received event:', parsed.type);
-                
-                switch (parsed.type) {
-                  case 'chunk':
-                    setStreamedContent(prev => prev + (parsed.content || ''));
-                    break;
-                    
-                  case 'complete':
-                    // Clear timeout on completion
-                    clearTimeout(timeoutId);
-                    setIsStreaming(false);
-                    setLoading(false);
-                    await loadAnalysis();
-                    return; // Exit the function on completion
-                    
-                  case 'error':
-                    // Clear timeout on error
-                    clearTimeout(timeoutId);
-                    setIsStreaming(false);
-                    setLoading(false);
-                    setError(parsed.message || 'Analysis failed');
-                    return;
-                    
-                  default:
-                    console.warn('Unknown event type:', parsed.type);
-                }
-              } catch (parseError) {
-                console.warn('Failed to parse SSE data:', parseError, 'Data:', data);
-                // Continue processing other lines
-              }
-            }
-          }
-        }
-        
-        // If we get here without a completion event, something went wrong
-        if (isStreaming) {
-          clearTimeout(timeoutId);
-          setIsStreaming(false);
-          setLoading(false);
-          setError('Stream ended unexpectedly without completion');
-        }
-        
-      } finally {
-        reader.releaseLock();
-      }
-
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        console.log('Streaming analysis was cancelled by user');
-        setIsStreaming(false);
-        setLoading(false);
+      if (result.success) {
+        await loadAnalysis(); // Reload to get updated data
       } else {
-        setIsStreaming(false);
-        setLoading(false);
-        setError('Failed to start streaming analysis: ' + err.message);
-        console.error('Error starting streaming analysis:', err);
+        setError(result.error || 'Analysis failed');
       }
-    }
-  };
-
-  const stopStreaming = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-    }
-    setIsStreaming(false);
-    setLoading(false);
-  };
-
-  // Update the UI to show streaming progress
-  const renderStreamingUI = () => {
-    if (!isStreaming) return null;
-
-    return (
-      <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <div className="flex items-center justify-between mb-2">
-          <div className="text-sm font-medium text-blue-700 flex items-center">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700 mr-2"></div>
-            AI Analysis in Progress...
-          </div>
-          <button
-            onClick={stopStreaming}
-            className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
-          >
-            Stop
-          </button>
-        </div>
-        <div className="text-sm text-blue-800 bg-white p-3 rounded border max-h-32 overflow-y-auto">
-          {streamedContent ? (
-            <div className="whitespace-pre-wrap">{streamedContent}</div>
-          ) : (
-            <div className="text-blue-400">Starting analysis...</div>
-          )}
-        </div>
-        <div className="mt-2 text-xs text-blue-600">
-          This may take 1-2 minutes. You can stop at any time.
-        </div>
-      </div>
-    );
-  };
-
-  // Update the analysis button
-  const handleRunAnalysis = () => {
-    if (isStreaming) {
-      stopStreaming();
-    } else {
-      runStreamingAnalysis();
+    } catch (err) {
+      setError('Failed to run analysis');
+      console.error('Error running analysis:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -396,7 +214,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     );
   }
 
-  if (loading && !analysis && !isStreaming) {
+  if (loading && !analysis) {
     return (
       <div className="bg-white rounded-3xl shadow-sm border p-6 mb-3">
         <div className="animate-pulse">
@@ -432,33 +250,34 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
           <p className="text-red-700 text-sm">{error}</p>
-          <button
-            onClick={() => setError(null)}
-            className="mt-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
-          >
-            Dismiss
-          </button>
         </div>
       )}
 
-      {/* Show streaming UI when analysis is in progress */}
-      {renderStreamingUI()}
-
-      {!currentScores && !isStreaming ? (
+      {!currentScores ? (
         // No analysis state
         <div className="text-center py-8">
           <div className="text-gray-400 mb-3">
-            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              className="w-12 h-12 mx-auto"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
           </div>
           <p className="text-gray-500 mb-4">No AI analysis available yet</p>
           <button
-            onClick={handleRunAnalysis}
+            onClick={runAnalysis}
             disabled={loading}
             className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
           >
-            {loading ? 'Starting...' : 'Run Comprehensive Analysis'}
+            {loading ? 'Analyzing...' : 'Run Comprehensive Analysis'}
           </button>
         </div>
       ) : (
@@ -468,11 +287,13 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             {/* Deal Score Chart */}
             <div className="flex flex-col items-center">
               <div className="relative w-32 h-32">
-                <DealScoreChart score={currentScores?.deal_score || 0} />
+                <DealScoreChart score={currentScores.deal_score} />
               </div>
               <div className="mt-2 text-center">
-                <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getScoreBadgeClass(currentScores?.deal_score || 0)}`}>
-                  {getDealGrade(currentScores?.deal_score || 0)} Grade
+                <span
+                  className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getScoreBadgeClass(currentScores.deal_score)}`}
+                >
+                  {getDealGrade(currentScores.deal_score)} Grade
                 </span>
               </div>
             </div>
@@ -480,23 +301,28 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             {/* Risk Assessment & Core Metrics */}
             <div className="flex flex-col justify-center space-y-4">
               <div>
-                <h4 className="text-sm font-medium text-gray-500 mb-1">Risk Assessment</h4>
+                <h4 className="text-sm font-medium text-gray-500 mb-1">
+                  Risk Assessment
+                </h4>
                 <div className="flex items-center">
                   <div className="w-24 bg-gray-200 rounded-full h-2 mr-3">
                     <div
                       className="h-2 rounded-full"
                       style={{
-                        width: `${currentScores?.risk_score || 0}%`,
-                        backgroundColor: getRiskColor(currentScores?.risk_score || 0),
+                        width: `${currentScores.risk_score}%`,
+                        backgroundColor: getRiskColor(currentScores.risk_score),
                       }}
                     ></div>
                   </div>
-                  <span className="text-sm font-medium" style={{ color: getRiskColor(currentScores?.risk_score || 0) }}>
-                    {currentScores?.risk_score || 0}%
+                  <span
+                    className="text-sm font-medium"
+                    style={{ color: getRiskColor(currentScores.risk_score) }}
+                  >
+                    {currentScores.risk_score}%
                   </span>
                 </div>
                 <span className="text-xs text-gray-500 mt-1">
-                  {getRiskLevel(currentScores?.risk_score || 0)} Risk
+                  {getRiskLevel(currentScores.risk_score)} Risk
                 </span>
               </div>
 
@@ -504,20 +330,34 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Sentiment:</span>
-                  <span className={`font-medium ${getSentimentColorClass(currentScores?.sentiment_analysis)}`}>
-                    {currentScores?.sentiment_analysis || 'N/A'}
+                  <span
+                    className={`font-medium ${getSentimentColorClass(currentScores.sentiment_analysis)}`}
+                  >
+                    {currentScores.sentiment_analysis || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Team:</span>
-                  <span className={`font-medium ${getTeamAssessmentColorClass(currentScores?.team_assessment)}`}>
-                    {currentScores?.team_assessment || 'N/A'}
+                  <span
+                    className={`font-medium ${getTeamAssessmentColorClass(currentScores.team_assessment)}`}
+                  >
+                    {currentScores.team_assessment || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Market:</span>
-                  <span className={`font-medium ${getMarketOpportunityColorClass(currentScores?.market_opportunity)}`}>
-                    {currentScores?.market_opportunity || 'N/A'}
+                  <span
+                    className={`font-medium ${getMarketOpportunityColorClass(currentScores.market_opportunity)}`}
+                  >
+                    {currentScores.market_opportunity || 'N/A'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Funding Potential:</span>
+                  <span
+                    className={`font-medium ${getFundingPotentialColorClass(currentScores.funding_potential)}`}
+                  >
+                    {currentScores.funding_potential || 'N/A'}
                   </span>
                 </div>
               </div>
@@ -526,24 +366,11 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             {/* Action Buttons */}
             <div className="flex flex-col justify-center space-y-3">
               <button
-                onClick={handleRunAnalysis}
-                disabled={loading && !isStreaming}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 ${
-                  isStreaming 
-                    ? 'bg-red-600 text-white hover:bg-red-700' 
-                    : 'bg-gray-600 text-white hover:bg-gray-700'
-                }`}
+                onClick={runAnalysis}
+                disabled={loading}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 bg-gray-600 text-white hover:bg-gray-700`}
               >
-                {isStreaming ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Stop Analysis
-                  </div>
-                ) : loading ? (
-                  'Preparing...'
-                ) : (
-                  'Re-analyze'
-                )}
+                {loading ? 'Re-analyzing...' : 'Re-analyze'}
               </button>
               <button
                 onClick={() => setShowSimilarDeals(true)}
@@ -901,9 +728,8 @@ const getRiskLevel = (score: number): string => {
   return 'Very High';
 };
 
-const getSentimentColorClass = (sentiment?: string): string => {
-  const s = (sentiment || '').toLowerCase();
-  switch (s) {
+const getSentimentColorClass = (sentiment: string): string => {
+  switch (sentiment) {
     case 'positive':
       return 'text-green-600';
     case 'neutral':
@@ -915,9 +741,8 @@ const getSentimentColorClass = (sentiment?: string): string => {
   }
 };
 
-const getTeamAssessmentColorClass = (assessment?: string): string => {
-  const a = (assessment || '').toLowerCase();
-  switch (a) {
+const getTeamAssessmentColorClass = (assessment: string): string => {
+  switch (assessment) {
     case 'strong':
       return 'text-green-600';
     case 'adequate':
@@ -929,9 +754,8 @@ const getTeamAssessmentColorClass = (assessment?: string): string => {
   }
 };
 
-const getMarketOpportunityColorClass = (opportunity?: string): string => {
-  const o = (opportunity || '').toLowerCase();
-  switch (o) {
+const getMarketOpportunityColorClass = (opportunity: string): string => {
+  switch (opportunity) {
     case 'large':
       return 'text-green-600';
     case 'medium':
@@ -943,9 +767,21 @@ const getMarketOpportunityColorClass = (opportunity?: string): string => {
   }
 };
 
-const getTimingAssessmentColorClass = (timing?: string): string => {
-  const t = (timing || '').toLowerCase();
-  switch (t) {
+const getFundingPotentialColorClass = (potential: string): string => {
+  switch (potential) {
+    case 'high':
+      return 'text-green-600';
+    case 'medium':
+      return 'text-yellow-600';
+    case 'low':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+const getTimingAssessmentColorClass = (timing: string): string => {
+  switch (timing) {
     case 'excellent':
       return 'text-green-600';
     case 'good':
@@ -959,9 +795,8 @@ const getTimingAssessmentColorClass = (timing?: string): string => {
   }
 };
 
-const getCompetitiveAdvantageColorClass = (advantage?: string): string => {
-  const a = (advantage || '').toLowerCase();
-  switch (a) {
+const getCompetitiveAdvantageColorClass = (advantage: string): string => {
+  switch (advantage) {
     case 'strong':
       return 'text-green-600';
     case 'moderate':
@@ -973,9 +808,8 @@ const getCompetitiveAdvantageColorClass = (advantage?: string): string => {
   }
 };
 
-const getExitPotentialColorClass = (potential?: string): string => {
-  const p = (potential || '').toLowerCase();
-  switch (p) {
+const getExitPotentialColorClass = (potential: string): string => {
+  switch (potential) {
     case 'high':
       return 'text-green-600';
     case 'medium':
