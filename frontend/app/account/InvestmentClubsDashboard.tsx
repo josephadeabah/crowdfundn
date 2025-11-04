@@ -1,23 +1,11 @@
-// BantuHive Investment Clubs Dashboard (TypeScript version)
-// Copy and paste into e.g. components/InvestmentClubsDashboard.tsx
-// Requires Tailwind CSS and React 18+
-
+'use client';
 import React, { useState } from 'react';
+import ClubDetailsModal, { Club, Member } from './investor-clubs/ClubDetailsModal';
 
-interface Club {
-  name: string;
-  description: string;
-  members: number;
-  minContributionLabel: string;
-  balanceLabel: string;
-}
+// ======================
+// INTERFACES
+// ======================
 
-interface Member {
-  initials: string;
-  name: string;
-  role: string;
-  contributionLabel: string;
-}
 
 interface Vote {
   title: string;
@@ -25,14 +13,25 @@ interface Vote {
   dealScore: number;
 }
 
-const ClubCard: React.FC<{ club: Club }> = ({ club }) => (
+// ======================
+// CLUB CARD COMPONENT
+// ======================
+const ClubCard: React.FC<{ club: Club; onViewDetails: () => void }> = ({ club, onViewDetails }) => (
   <div className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm flex justify-between items-start">
     <div className="flex items-start gap-4">
       <div className="w-12 h-12 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xl">🍃</div>
       <div>
         <h3 className="text-lg font-semibold text-emerald-900">{club.name}</h3>
         <p className="text-sm text-gray-600">{club.description}</p>
-        <p className="text-sm text-gray-500 mt-2">{club.members} members • Min. contribution {club.minContributionLabel}</p>
+        <p className="text-sm text-gray-500 mt-2">
+          {club.members} members • Min. contribution {club.minContributionLabel}
+        </p>
+        <button
+          onClick={onViewDetails}
+          className="mt-3 text-sm font-medium text-emerald-700 hover:underline"
+        >
+          View Details →
+        </button>
       </div>
     </div>
     <div className="text-right">
@@ -42,6 +41,9 @@ const ClubCard: React.FC<{ club: Club }> = ({ club }) => (
   </div>
 );
 
+// ======================
+// MEMBER ROW COMPONENT
+// ======================
 const MemberRow: React.FC<{ member: Member }> = ({ member }) => (
   <div className="flex items-center justify-between p-3 border-b last:border-b-0">
     <div className="flex items-center gap-3">
@@ -55,6 +57,9 @@ const MemberRow: React.FC<{ member: Member }> = ({ member }) => (
   </div>
 );
 
+// ======================
+// VOTE CARD COMPONENT
+// ======================
 const VoteCard: React.FC<{ vote: Vote; onVote: (choice: string) => void }> = ({ vote, onVote }) => (
   <div className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
     <h4 className="text-sm font-semibold text-gray-600">Current Vote</h4>
@@ -66,10 +71,17 @@ const VoteCard: React.FC<{ vote: Vote; onVote: (choice: string) => void }> = ({ 
       <button onClick={() => onVote('pass')} className="px-5 py-2 rounded-md border border-gray-200">Pass</button>
     </div>
 
-    <div className="mt-4 text-sm text-gray-500">Deal Score: <span className="font-semibold text-gray-800">{vote.dealScore}</span></div>
+    <div className="mt-4 text-sm text-gray-500">
+      Deal Score: <span className="font-semibold text-gray-800">{vote.dealScore}</span>
+    </div>
   </div>
 );
 
+
+
+// ======================
+// MAIN DASHBOARD COMPONENT
+// ======================
 const InvestmentClubsDashboard: React.FC = () => {
   const [club] = useState<Club>({
     name: 'Green Impact Club',
@@ -91,13 +103,14 @@ const InvestmentClubsDashboard: React.FC = () => {
     dealScore: 85
   });
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const onVote = (choice: string) => {
     alert(`You voted: ${choice}. (Hook this to your API)`);
   };
 
   return (
     <div className="min-h-screen flex bg-gray-50 text-gray-900">
-
       <main className="flex-1 p-10">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
@@ -111,7 +124,7 @@ const InvestmentClubsDashboard: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
               <h2 className="text-xl font-semibold">Your Clubs</h2>
-              <ClubCard club={club} />
+              <ClubCard club={club} onViewDetails={() => setIsModalOpen(true)} />
 
               <h3 className="text-lg font-semibold">Members</h3>
               <div className="bg-white rounded-lg border border-gray-100 shadow-sm">
@@ -129,9 +142,16 @@ const InvestmentClubsDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-
         </div>
       </main>
+
+      {/* Modal */}
+      <ClubDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        club={club}
+        members={members}
+      />
     </div>
   );
 };
