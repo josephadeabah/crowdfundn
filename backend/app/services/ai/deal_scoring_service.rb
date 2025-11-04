@@ -70,7 +70,7 @@ module AI
             # Use the chat completions API with stream: true and handle chunks via callback
             @client.chat(
               parameters: {
-                model: "gpt-5",
+                model: "gpt-4o-mini",
                 messages: [
                   { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
                   { role: "user", content: prompt }
@@ -645,7 +645,7 @@ module AI
         # Use the chat completions API for non-streaming
         response = @client.chat(
           parameters: {
-            model: "gpt-5",
+            model: "gpt-4o-mini",
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
               { role: "user", content: prompt }
