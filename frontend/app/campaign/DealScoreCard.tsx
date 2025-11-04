@@ -97,6 +97,39 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     }
   }, [campaignId]);
 
+  // Add cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Reset streaming state on unmount
+      setIsStreaming(false);
+      setLoading(false);
+    };
+  }, []);
+
+  // Add periodic status check for stuck streams
+  useEffect(() => {
+    let checkInterval: NodeJS.Timeout;
+    
+    if (isStreaming) {
+      checkInterval = setInterval(() => {
+        // If no content has been received for 30 seconds, assume stuck
+        if (streamedContent === '' && isStreaming) {
+          console.warn('Stream appears stuck - no content received');
+          // Optionally trigger a recovery action
+          setError('Stream appears to be stuck. Please try again.');
+          stopStreaming();
+        }
+      }, 30000);
+    }
+    
+    return () => {
+      if (checkInterval) clearInterval(checkInterval);
+    };
+  }, [isStreaming, streamedContent]);
+
   const loadAnalysis = async () => {
     try {
       setLoading(true);
@@ -123,15 +156,25 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   };
 
   const runStreamingAnalysis = async () => {
+    const TIMEOUT_MS = 120000; // 2 minutes
+    
     try {
       setLoading(true);
       setIsStreaming(true);
       setStreamedContent('');
       setError(null);
 
-      // Create abort controller for cancellation
       abortControllerRef.current = new AbortController();
       const signal = abortControllerRef.current.signal;
+
+      // Add timeout
+      const timeoutId = setTimeout(() => {
+        if (isStreaming) {
+          console.log('Streaming analysis timeout reached');
+          stopStreaming();
+          setError('Analysis timed out after 2 minutes');
+        }
+      }, TIMEOUT_MS);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/streaming_analyze?campaign_id=${campaignId}`,
@@ -157,50 +200,74 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       
+      let buffer = '';
+      
       try {
         while (true) {
           const { done, value } = await reader.read();
           
-          if (done) break;
+          if (done) {
+            console.log('Stream completed');
+            break;
+          }
 
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split('\n');
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          
+          // Keep the last incomplete line in the buffer
+          buffer = lines.pop() || '';
 
           for (const line of lines) {
             if (line.startsWith('data: ') && line.length > 6) {
               const data = line.slice(6);
               
+              // Skip empty lines and heartbeat messages
+              if (data.trim() === '' || data === ': heartbeat') continue;
+              
               try {
                 const parsed = JSON.parse(data);
+                console.log('Received event:', parsed.type);
                 
                 switch (parsed.type) {
                   case 'chunk':
-                    // Accumulate streaming content
-                    setStreamedContent(prev => prev + parsed.content);
+                    setStreamedContent(prev => prev + (parsed.content || ''));
                     break;
                     
                   case 'complete':
-                    // Analysis completed successfully
+                    // Clear timeout on completion
+                    clearTimeout(timeoutId);
                     setIsStreaming(false);
                     setLoading(false);
-                    // Reload the analysis data to show updated scores
                     await loadAnalysis();
-                    break;
+                    return; // Exit the function on completion
                     
                   case 'error':
-                    // Error during streaming
+                    // Clear timeout on error
+                    clearTimeout(timeoutId);
                     setIsStreaming(false);
                     setLoading(false);
                     setError(parsed.message || 'Analysis failed');
-                    break;
+                    return;
+                    
+                  default:
+                    console.warn('Unknown event type:', parsed.type);
                 }
               } catch (parseError) {
                 console.warn('Failed to parse SSE data:', parseError, 'Data:', data);
-                // Don't break the stream for parse errors
+                // Continue processing other lines
               }
             }
           }
         }
+        
+        // If we get here without a completion event, something went wrong
+        if (isStreaming) {
+          clearTimeout(timeoutId);
+          setIsStreaming(false);
+          setLoading(false);
+          setError('Stream ended unexpectedly without completion');
+        }
+        
       } finally {
         reader.releaseLock();
       }
@@ -253,6 +320,9 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             <div className="text-blue-400">Starting analysis...</div>
           )}
         </div>
+        <div className="mt-2 text-xs text-blue-600">
+          This may take 1-2 minutes. You can stop at any time.
+        </div>
       </div>
     );
   };
@@ -265,15 +335,6 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
       runStreamingAnalysis();
     }
   };
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
 
   const formatTimeAgo = (dateString: string): string => {
     const date = new Date(dateString);
@@ -371,6 +432,12 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
           <p className="text-red-700 text-sm">{error}</p>
+          <button
+            onClick={() => setError(null)}
+            className="mt-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
+          >
+            Dismiss
+          </button>
         </div>
       )}
 
