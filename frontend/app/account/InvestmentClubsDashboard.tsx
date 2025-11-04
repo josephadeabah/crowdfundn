@@ -111,8 +111,8 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-gray-50 text-gray-900">
-      <main className="flex-1 p-10">
-        <div className="max-w-6xl mx-auto">
+      <main className="flex-1 p-4">
+        <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold">Investment Clubs</h1>
             <div className="flex items-center gap-4">
