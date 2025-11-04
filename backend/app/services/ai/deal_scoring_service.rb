@@ -650,7 +650,7 @@ module AI
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
               { role: "user", content: prompt }
             ],
-            max_tokens: 2500,
+            max_completions_tokens: 2500,
             response_format: { type: "json_object" }
           }
         )
