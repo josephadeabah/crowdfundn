@@ -5,6 +5,10 @@ module Api
       class DealScoringController < ApplicationController
         include ActionController::Live
 
+        # Add this require statement to load the service
+        require Rails.root.join('app/services/ai/deal_scoring_service')
+        require Rails.root.join('app/services/ai/similar_deals_service')
+
         before_action :authenticate_request
         before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals, :streaming_analyze]
 
