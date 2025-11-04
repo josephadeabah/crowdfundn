@@ -158,7 +158,7 @@ const ProfileTabs = () => {
           icon: <GroupIcon className="w-4 h-4" />,
           component: <InvestmentClubsDashboard/>,
           description: 'Join and manage investment clubs with others.',
-          badge: 'Coming Soon',
+          badge: 'Soon',
           badgeColor: 'bg-yellow-100 text-yellow-800',
         }
       ],
