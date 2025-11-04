@@ -57,18 +57,24 @@ module AI
       start_time = Time.current
       
       begin
+        # Test API connection first
+        api_key = ENV['OPENAI_API_KEY']
+        if api_key.blank?
+          return Enumerator.new do |yielder|
+            yielder << { type: 'error', message: "OpenAI API key not configured" }.to_json
+          end
+        end
+
         prompt = build_comprehensive_prompt
         
         Rails.logger.info "Starting streaming analysis for campaign #{@campaign.id}"
         
         full_response = ""
-        stream_completed = false
         
         # Return an enumerator for Rails streaming
         Enumerator.new do |yielder|
           begin
-            # Use the chat completions API with stream: true and handle chunks via callback
-            @client.chat(
+            response = @client.chat(
               parameters: {
                 model: "gpt-4o-mini",
                 messages: [
@@ -77,19 +83,21 @@ module AI
                 ],
                 max_tokens: 2500,
                 response_format: { type: "json_object" },
-                stream: proc do |chunk|
-                  # This proc will be called for each chunk in the stream
+                stream: proc do |chunk, bytes|
+                  Rails.logger.debug "Received chunk: #{chunk.inspect}"
+                  
+                  # Handle content chunks
                   content = chunk.dig("choices", 0, "delta", "content")
                   if content
                     full_response += content
                     yielder << { type: 'chunk', content: content }.to_json
                   end
                   
-                  # Check if streaming is complete
-                  if chunk.dig("choices", 0, "finish_reason") == "stop"
-                    stream_completed = true
+                  # Handle completion
+                  finish_reason = chunk.dig("choices", 0, "finish_reason")
+                  if finish_reason == "stop"
+                    Rails.logger.info "Stream completed successfully"
                     
-                    # Parse and save the final response
                     begin
                       analysis_data = parse_streaming_response(full_response)
                       deal_score_log = create_deal_score_log(prompt, { "streaming_response" => full_response }, analysis_data, start_time)
@@ -100,15 +108,14 @@ module AI
                       Rails.logger.error "Error parsing streaming response: #{e.message}"
                       yielder << { type: 'error', message: "Failed to parse analysis: #{e.message}" }.to_json
                     end
+                  elsif finish_reason == "length"
+                    yielder << { type: 'error', message: "Analysis exceeded maximum token length" }.to_json
                   end
                 end
               }
             )
             
-            # If we get here without the stream completing, send an error
-            unless stream_completed
-              yielder << { type: 'error', message: "Stream ended unexpectedly" }.to_json
-            end
+            Rails.logger.info "Stream request completed"
             
           rescue => e
             Rails.logger.error "Stream processing error: #{e.message}"
@@ -116,6 +123,11 @@ module AI
           end
         end
         
+      rescue OpenAI::Error => e
+        Rails.logger.error "OpenAI API Error: #{e.message}"
+        Enumerator.new do |yielder|
+          yielder << { type: 'error', message: "OpenAI API error: #{e.message}" }.to_json
+        end
       rescue => e
         Rails.logger.error "Stream initialization error: #{e.message}"
         Enumerator.new do |yielder|
