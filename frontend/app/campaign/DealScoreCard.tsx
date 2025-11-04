@@ -177,7 +177,8 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            'Content-Type': 'text/event-stream',
+            'Accept': 'text/event-stream',
           },
           signal: signal,
         }
@@ -193,49 +194,48 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let buffer = '';
-
+      
       try {
         while (true) {
           const { done, value } = await reader.read();
           
           if (done) break;
 
-          // Decode the chunk and add to buffer
-          buffer += decoder.decode(value, { stream: true });
-          
-          // Process complete lines
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || ''; // Keep the last incomplete line
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
 
           for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6); // Remove 'data: ' prefix
-              if (data.trim() === '') continue; // Skip empty lines
+            if (line.startsWith('data: ') && line.length > 6) {
+              const data = line.slice(6);
               
               try {
                 const parsed = JSON.parse(data);
                 
                 switch (parsed.type) {
                   case 'chunk':
+                    // Accumulate streaming content
                     setStreamedContent(prev => prev + parsed.content);
                     break;
                     
                   case 'complete':
+                    // Analysis completed successfully
                     setIsStreaming(false);
                     setLoading(false);
                     setPartialAnalysis(parsed.data);
-                    loadAnalysis();
+                    // Reload the analysis data to show updated scores
+                    await loadAnalysis();
                     break;
                     
                   case 'error':
+                    // Error during streaming
                     setIsStreaming(false);
                     setLoading(false);
-                    setError(parsed.message);
+                    setError(parsed.message || 'Analysis failed');
                     break;
                 }
               } catch (parseError) {
-                console.error('Error parsing SSE data:', parseError, 'Data:', data);
+                console.warn('Failed to parse SSE data:', parseError, 'Data:', data);
+                // Don't break the stream for parse errors
               }
             }
           }
@@ -246,11 +246,13 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
 
     } catch (err: any) {
       if (err.name === 'AbortError') {
-        console.log('Streaming analysis was cancelled');
+        console.log('Streaming analysis was cancelled by user');
+        setIsStreaming(false);
+        setLoading(false);
       } else {
         setIsStreaming(false);
         setLoading(false);
-        setError('Failed to start streaming analysis');
+        setError('Failed to start streaming analysis: ' + err.message);
         console.error('Error starting streaming analysis:', err);
       }
     }
@@ -265,7 +267,36 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     setLoading(false);
   };
 
-  // Update the analysis button to use streaming
+  // Update the UI to show streaming progress
+  const renderStreamingUI = () => {
+    if (!isStreaming) return null;
+
+    return (
+      <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm font-medium text-blue-700 flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700 mr-2"></div>
+            AI Analysis in Progress...
+          </div>
+          <button
+            onClick={stopStreaming}
+            className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
+          >
+            Stop
+          </button>
+        </div>
+        <div className="text-sm text-blue-800 bg-white p-3 rounded border max-h-32 overflow-y-auto">
+          {streamedContent ? (
+            <div className="whitespace-pre-wrap">{streamedContent}</div>
+          ) : (
+            <div className="text-blue-400">Starting analysis...</div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Update the analysis button
   const handleRunAnalysis = () => {
     if (isStreaming) {
       stopStreaming();
@@ -382,51 +413,25 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
         </div>
       )}
 
-      {!currentScores ? (
+      {/* Show streaming UI when analysis is in progress */}
+      {renderStreamingUI()}
+
+      {!currentScores && !isStreaming ? (
         // No analysis state
         <div className="text-center py-8">
           <div className="text-gray-400 mb-3">
-            <svg
-              className="w-12 h-12 mx-auto"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
+            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
           <p className="text-gray-500 mb-4">No AI analysis available yet</p>
           <button
             onClick={handleRunAnalysis}
-            disabled={loading && !isStreaming}
+            disabled={loading}
             className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
           >
-            {isStreaming ? (
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Analyzing...
-              </div>
-            ) : loading ? (
-              'Preparing...'
-            ) : (
-              'Run Comprehensive Analysis'
-            )}
+            {loading ? 'Starting...' : 'Run Comprehensive Analysis'}
           </button>
-          
-          {/* Show streaming content */}
-          {isStreaming && streamedContent && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <div className="text-sm text-gray-600 mb-2">AI Analysis in progress:</div>
-              <div className="text-sm text-gray-800 whitespace-pre-wrap">
-                {streamedContent}
-              </div>
-            </div>
-          )}
         </div>
       ) : (
         // Analysis present state
@@ -435,13 +440,11 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             {/* Deal Score Chart */}
             <div className="flex flex-col items-center">
               <div className="relative w-32 h-32">
-                <DealScoreChart score={currentScores.deal_score} />
+                <DealScoreChart score={currentScores?.deal_score || 0} />
               </div>
               <div className="mt-2 text-center">
-                <span
-                  className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getScoreBadgeClass(currentScores.deal_score)}`}
-                >
-                  {getDealGrade(currentScores.deal_score)} Grade
+                <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getScoreBadgeClass(currentScores?.deal_score || 0)}`}>
+                  {getDealGrade(currentScores?.deal_score || 0)} Grade
                 </span>
               </div>
             </div>
@@ -449,28 +452,23 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             {/* Risk Assessment & Core Metrics */}
             <div className="flex flex-col justify-center space-y-4">
               <div>
-                <h4 className="text-sm font-medium text-gray-500 mb-1">
-                  Risk Assessment
-                </h4>
+                <h4 className="text-sm font-medium text-gray-500 mb-1">Risk Assessment</h4>
                 <div className="flex items-center">
                   <div className="w-24 bg-gray-200 rounded-full h-2 mr-3">
                     <div
                       className="h-2 rounded-full"
                       style={{
-                        width: `${currentScores.risk_score}%`,
-                        backgroundColor: getRiskColor(currentScores.risk_score),
+                        width: `${currentScores?.risk_score || 0}%`,
+                        backgroundColor: getRiskColor(currentScores?.risk_score || 0),
                       }}
                     ></div>
                   </div>
-                  <span
-                    className="text-sm font-medium"
-                    style={{ color: getRiskColor(currentScores.risk_score) }}
-                  >
-                    {currentScores.risk_score}%
+                  <span className="text-sm font-medium" style={{ color: getRiskColor(currentScores?.risk_score || 0) }}>
+                    {currentScores?.risk_score || 0}%
                   </span>
                 </div>
                 <span className="text-xs text-gray-500 mt-1">
-                  {getRiskLevel(currentScores.risk_score)} Risk
+                  {getRiskLevel(currentScores?.risk_score || 0)} Risk
                 </span>
               </div>
 
@@ -478,34 +476,20 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Sentiment:</span>
-                  <span
-                    className={`font-medium ${getSentimentColorClass(currentScores.sentiment_analysis)}`}
-                  >
-                    {currentScores.sentiment_analysis || 'N/A'}
+                  <span className={`font-medium ${getSentimentColorClass(currentScores?.sentiment_analysis)}`}>
+                    {currentScores?.sentiment_analysis || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Team:</span>
-                  <span
-                    className={`font-medium ${getTeamAssessmentColorClass(currentScores.team_assessment)}`}
-                  >
-                    {currentScores.team_assessment || 'N/A'}
+                  <span className={`font-medium ${getTeamAssessmentColorClass(currentScores?.team_assessment)}`}>
+                    {currentScores?.team_assessment || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Market:</span>
-                  <span
-                    className={`font-medium ${getMarketOpportunityColorClass(currentScores.market_opportunity)}`}
-                  >
-                    {currentScores.market_opportunity || 'N/A'}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Funding Potential:</span>
-                  <span
-                    className={`font-medium ${getFundingPotentialColorClass(currentScores.funding_potential)}`}
-                  >
-                    {currentScores.funding_potential || 'N/A'}
+                  <span className={`font-medium ${getMarketOpportunityColorClass(currentScores?.market_opportunity)}`}>
+                    {currentScores?.market_opportunity || 'N/A'}
                   </span>
                 </div>
               </div>
@@ -516,15 +500,19 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
               <button
                 onClick={handleRunAnalysis}
                 disabled={loading && !isStreaming}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 bg-gray-600 text-white hover:bg-gray-700`}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 ${
+                  isStreaming 
+                    ? 'bg-red-600 text-white hover:bg-red-700' 
+                    : 'bg-gray-600 text-white hover:bg-gray-700'
+                }`}
               >
                 {isStreaming ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Stop
+                    Stop Analysis
                   </div>
                 ) : loading ? (
-                  'Re-analyzing...'
+                  'Preparing...'
                 ) : (
                   'Re-analyze'
                 )}
@@ -885,8 +873,9 @@ const getRiskLevel = (score: number): string => {
   return 'Very High';
 };
 
-const getSentimentColorClass = (sentiment: string): string => {
-  switch (sentiment) {
+const getSentimentColorClass = (sentiment?: string): string => {
+  const s = (sentiment || '').toLowerCase();
+  switch (s) {
     case 'positive':
       return 'text-green-600';
     case 'neutral':
@@ -898,8 +887,9 @@ const getSentimentColorClass = (sentiment: string): string => {
   }
 };
 
-const getTeamAssessmentColorClass = (assessment: string): string => {
-  switch (assessment) {
+const getTeamAssessmentColorClass = (assessment?: string): string => {
+  const a = (assessment || '').toLowerCase();
+  switch (a) {
     case 'strong':
       return 'text-green-600';
     case 'adequate':
@@ -911,8 +901,9 @@ const getTeamAssessmentColorClass = (assessment: string): string => {
   }
 };
 
-const getMarketOpportunityColorClass = (opportunity: string): string => {
-  switch (opportunity) {
+const getMarketOpportunityColorClass = (opportunity?: string): string => {
+  const o = (opportunity || '').toLowerCase();
+  switch (o) {
     case 'large':
       return 'text-green-600';
     case 'medium':
@@ -924,8 +915,9 @@ const getMarketOpportunityColorClass = (opportunity: string): string => {
   }
 };
 
-const getFundingPotentialColorClass = (potential: string): string => {
-  switch (potential) {
+const getFundingPotentialColorClass = (potential?: string): string => {
+  const p = (potential || '').toLowerCase();
+  switch (p) {
     case 'high':
       return 'text-green-600';
     case 'medium':
@@ -937,8 +929,9 @@ const getFundingPotentialColorClass = (potential: string): string => {
   }
 };
 
-const getTimingAssessmentColorClass = (timing: string): string => {
-  switch (timing) {
+const getTimingAssessmentColorClass = (timing?: string): string => {
+  const t = (timing || '').toLowerCase();
+  switch (t) {
     case 'excellent':
       return 'text-green-600';
     case 'good':
@@ -952,8 +945,9 @@ const getTimingAssessmentColorClass = (timing: string): string => {
   }
 };
 
-const getCompetitiveAdvantageColorClass = (advantage: string): string => {
-  switch (advantage) {
+const getCompetitiveAdvantageColorClass = (advantage?: string): string => {
+  const a = (advantage || '').toLowerCase();
+  switch (a) {
     case 'strong':
       return 'text-green-600';
     case 'moderate':
@@ -965,8 +959,9 @@ const getCompetitiveAdvantageColorClass = (advantage: string): string => {
   }
 };
 
-const getExitPotentialColorClass = (potential: string): string => {
-  switch (potential) {
+const getExitPotentialColorClass = (potential?: string): string => {
+  const p = (potential || '').toLowerCase();
+  switch (p) {
     case 'high':
       return 'text-green-600';
     case 'medium':
