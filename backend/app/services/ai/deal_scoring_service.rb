@@ -655,7 +655,7 @@ module AI
           }
         )
         
-        Rails.logger.info "GPT-4o Mini API response received successfully"
+        Rails.logger.info "GPT-5 Mini API response received successfully"
         Rails.logger.info "API Response type: #{response.class}"
         
         # Validate response structure
@@ -672,7 +672,7 @@ module AI
         
         response
       rescue => e
-        Rails.logger.error "GPT-4o Mini API call failed: #{e.message}"
+        Rails.logger.error "GPT-5 Mini API call failed: #{e.message}"
         Rails.logger.error "Backtrace: #{e.backtrace.join("\n")}"
         nil
       end
