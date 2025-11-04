@@ -1,6 +1,6 @@
 // app/components/campaign/DealScoreCard.tsx
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AnalysisHistoryModal } from './AnalysisHistoryModal';
 import { SimilarDealsModal } from './SimilarDealsModal';
 import { DealScoreChart } from './DealScoreChart';
@@ -86,6 +86,11 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   const [showSimilarDeals, setShowSimilarDeals] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [streamedContent, setStreamedContent] = useState('');
+  const [partialAnalysis, setPartialAnalysis] = useState<any>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
+  
   const { subscription, fetchSubscription } = usePremium();
   const hasPremium = subscription?.has_premium;
   const { token, user } = useAuth();
@@ -154,6 +159,115 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     }
   };
 
+  const runStreamingAnalysis = async () => {
+    try {
+      setLoading(true);
+      setIsStreaming(true);
+      setStreamedContent('');
+      setPartialAnalysis(null);
+      setError(null);
+
+      // Close any existing connection
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+
+      // Create new EventSource connection
+      const eventSource = new EventSource(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/streaming_analyze?campaign_id=${campaignId}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      eventSourceRef.current = eventSource;
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          
+          switch (data.type) {
+            case 'chunk': {
+              setStreamedContent(prev => prev + data.content);
+              break;
+            }
+              
+            case 'complete': {
+              setIsStreaming(false);
+              setLoading(false);
+              // Parse the complete analysis data
+              const analysisData = data.data;
+              setPartialAnalysis(analysisData);
+              // Reload the full analysis to get structured data
+              loadAnalysis();
+              break;
+            }
+              
+            case 'error': {
+              setIsStreaming(false);
+              setLoading(false);
+              setError(data.message);
+              break;
+            }
+          }
+        } catch (parseError) {
+          console.error('Error parsing SSE data:', parseError);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error('EventSource error:', error);
+        setIsStreaming(false);
+        setLoading(false);
+        setError('Streaming analysis failed');
+        eventSource.close();
+      };
+
+      // Set timeout to close connection after 2 minutes
+      setTimeout(() => {
+        if (eventSource.readyState === EventSource.OPEN) {
+          eventSource.close();
+          setIsStreaming(false);
+          setLoading(false);
+          setError('Analysis timeout');
+        }
+      }, 120000);
+
+    } catch (err) {
+      setIsStreaming(false);
+      setLoading(false);
+      setError('Failed to start streaming analysis');
+      console.error('Error starting streaming analysis:', err);
+    }
+  };
+
+  const stopStreaming = () => {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+    setIsStreaming(false);
+    setLoading(false);
+  };
+
+  // Update the analysis button to use streaming
+  const handleRunAnalysis = () => {
+    if (isStreaming) {
+      stopStreaming();
+    } else {
+      runStreamingAnalysis();
+    }
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+    };
+  }, []);
+
   const formatTimeAgo = (dateString: string): string => {
     const date = new Date(dateString);
     const now = new Date();
@@ -214,7 +328,7 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     );
   }
 
-  if (loading && !analysis) {
+  if (loading && !analysis && !isStreaming) {
     return (
       <div className="bg-white rounded-3xl shadow-sm border p-6 mb-3">
         <div className="animate-pulse">
@@ -273,12 +387,31 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
           </div>
           <p className="text-gray-500 mb-4">No AI analysis available yet</p>
           <button
-            onClick={runAnalysis}
-            disabled={loading}
+            onClick={handleRunAnalysis}
+            disabled={loading && !isStreaming}
             className="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
           >
-            {loading ? 'Analyzing...' : 'Run Comprehensive Analysis'}
+            {isStreaming ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Analyzing...
+              </div>
+            ) : loading ? (
+              'Preparing...'
+            ) : (
+              'Run Comprehensive Analysis'
+            )}
           </button>
+          
+          {/* Show streaming content */}
+          {isStreaming && streamedContent && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <div className="text-sm text-gray-600 mb-2">AI Analysis in progress:</div>
+              <div className="text-sm text-gray-800 whitespace-pre-wrap">
+                {streamedContent}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         // Analysis present state
@@ -366,11 +499,20 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
             {/* Action Buttons */}
             <div className="flex flex-col justify-center space-y-3">
               <button
-                onClick={runAnalysis}
-                disabled={loading}
+                onClick={handleRunAnalysis}
+                disabled={loading && !isStreaming}
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 bg-gray-600 text-white hover:bg-gray-700`}
               >
-                {loading ? 'Re-analyzing...' : 'Re-analyze'}
+                {isStreaming ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Stop
+                  </div>
+                ) : loading ? (
+                  'Re-analyzing...'
+                ) : (
+                  'Re-analyze'
+                )}
               </button>
               <button
                 onClick={() => setShowSimilarDeals(true)}
