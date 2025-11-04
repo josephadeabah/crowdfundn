@@ -790,7 +790,7 @@ module AI
         fallback_analysis(content)
       end
     end
-    
+
     def fallback_analysis(content)
       Rails.logger.warn "Using fallback analysis due to parsing failure"
       {
