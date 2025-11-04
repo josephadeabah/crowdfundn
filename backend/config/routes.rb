@@ -1,4 +1,3 @@
-# config/routes.rb
 Rails.application.routes.draw do
   # redirect to the detailed campaign page
   get 'campaign/:id', to: 'campaigns#show', as: 'campaign'
@@ -272,12 +271,11 @@ Rails.application.routes.draw do
         end
       end
 
-      # Add AI routes - UPDATED with proper streaming endpoint
+      # Add AI routes
       namespace :ai_scoring do
         resources :deal_scoring, only: [] do
           collection do
             post :analyze
-            get :streaming_analyze
             get :analysis_history
             get :similar_deals
             get :dashboard_metrics

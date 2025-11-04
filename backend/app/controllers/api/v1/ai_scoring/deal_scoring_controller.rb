@@ -3,14 +3,13 @@ module Api
   module V1
     module AiScoring
       class DealScoringController < ApplicationController
-        include ActionController::Live
 
-        # Add this require statement to load the service
+        # Add these require statements
         require Rails.root.join('app/services/ai/deal_scoring_service')
         require Rails.root.join('app/services/ai/similar_deals_service')
 
         before_action :authenticate_request
-        before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals, :streaming_analyze]
+        before_action :set_campaign, only: [:analyze, :analysis_history, :similar_deals]
 
         # POST /api/v1/ai_scoring/deal_scoring/analyze
         def analyze
@@ -23,6 +22,7 @@ module Api
               deal_score: result[:analysis]['deal_score'],
               risk_score: result[:analysis]['risk_score'],
               risk_category: result[:analysis]['risk_category'],
+              # Include new metrics in response
               sentiment_analysis: result[:analysis]['sentiment_analysis'],
               team_assessment: result[:analysis]['team_assessment'],
               market_opportunity: result[:analysis]['market_opportunity'],
@@ -34,31 +34,6 @@ module Api
             }
           else
             render json: { success: false, error: result[:error] }, status: :unprocessable_entity
-          end
-        end
-
-        # GET /api/v1/ai_scoring/deal_scoring/streaming_analyze
-        def streaming_analyze
-          # Set SSE headers
-          response.headers['Content-Type'] = 'text/event-stream'
-          response.headers['Cache-Control'] = 'no-cache'
-          response.headers['X-Accel-Buffering'] = 'no' # Disable buffering for nginx
-          response.headers['Access-Control-Allow-Origin'] = '*'
-          response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-
-          service = ::AI::DealScoringService.new(@campaign)
-          
-          begin
-            # Use the enumerator-based streaming
-            service.analyze_with_rails_streaming.each do |chunk_data|
-              response.stream.write("data: #{chunk_data}\n\n")
-            end
-          rescue => e
-            Rails.logger.error "Streaming analysis error: #{e.message}"
-            Rails.logger.error e.backtrace.join("\n")
-            response.stream.write("data: #{ { type: 'error', message: e.message }.to_json }\n\n")
-          ensure
-            response.stream.close
           end
         end
 
@@ -85,13 +60,14 @@ module Api
                 risk_score: log.risk_score,
                 risk_category: log.risk_category,
                 analyzed_at: log.analyzed_at,
-                downside_risks: log.downside_risks || log.key_risks,
+                downside_risks: log.downside_risks || log.key_risks, # Backward compatible
                 upside_potential: log.upside_potential,
                 strengths: log.strengths,
                 sentiment_analysis: log.sentiment_analysis,
                 team_assessment: log.team_assessment,
                 market_opportunity: log.market_opportunity,
                 investment_thesis: log.investment_thesis,
+                # New comprehensive metrics
                 funding_potential: log.funding_potential,
                 timing_assessment: log.timing_assessment,
                 competitive_advantage: log.competitive_advantage,
@@ -129,6 +105,7 @@ module Api
                 risk_score: campaign.ai_risk_score,
                 similarity_score: similar[:similarity_score],
                 common_features: similar[:common_features],
+                # Include AI metrics for enhanced frontend display
                 ai_metrics: similar[:ai_metrics]
               }
             end
@@ -175,16 +152,14 @@ module Api
         private
 
         def set_campaign
-          # Handle both campaign_id parameter (from POST) and id parameter (from GET)
-          campaign_id = params[:campaign_id] || params[:id]
-          
-          @campaign = Campaign.find_by(id: campaign_id) || 
-                      Campaign.find_by(slug: campaign_id)
+          # Try to find by ID first, then by slug
+          @campaign = Campaign.find_by(id: params[:campaign_id]) || 
+                      Campaign.find_by(slug: params[:campaign_id])
           
           unless @campaign
             render json: { 
               success: false, 
-              error: "Campaign not found: #{campaign_id}" 
+              error: "Campaign not found: #{params[:campaign_id]}" 
             }, status: :not_found
             return false
           end
@@ -201,6 +176,7 @@ module Api
             team_assessment: latest_log.team_assessment,
             market_opportunity: latest_log.market_opportunity,
             investment_thesis: latest_log.investment_thesis,
+            # New comprehensive metrics
             funding_potential: latest_log.funding_potential,
             timing_assessment: latest_log.timing_assessment,
             competitive_advantage: latest_log.competitive_advantage,
