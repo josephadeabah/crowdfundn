@@ -153,10 +153,16 @@ const CampaignDetails = ({
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                if (e.target.value.length <= 150) setTitle(e.target.value);
+              }}
+              maxLength={150}
               placeholder="Enter your campaign title..."
               className="block w-full px-4 py-2 rounded-md border focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white"
             />
+            <p className="text-sm text-gray-500 mt-1 text-right">
+              {title.length}/150 characters
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
