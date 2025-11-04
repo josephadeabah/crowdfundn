@@ -263,8 +263,6 @@ GEM
     nokogiri (1.16.7-x86_64-linux)
       racc (~> 1.4)
     observer (0.1.2)
-    openai (0.35.1)
-      connection_pool
     ostruct (0.6.1)
     parallel (1.26.3)
     parser (3.3.7.1)
@@ -491,7 +489,6 @@ DEPENDENCIES
   mail
   mini_magick
   neighbor
-  openai (~> 0.35.1)
   pg (~> 1.1)
   pgvector
   prawn
@@ -505,7 +502,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails
   rubocop-rspec
-  ruby-openai
+  ruby-openai (~> 8.3)
   selenium-webdriver
   sib-api-v3-sdk
   sidekiq

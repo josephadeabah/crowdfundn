@@ -59,7 +59,7 @@ module AI
       begin
         prompt = build_comprehensive_prompt
         
-        Rails.logger.info "Starting streaming analysis for campaign #{@campaign.id} using GPT-5 Responses API"
+        Rails.logger.info "Starting streaming analysis for campaign #{@campaign.id} using GPT-5-mini Responses API"
         
         full_response = ""
         
@@ -67,8 +67,9 @@ module AI
         Enumerator.new do |yielder|
           begin
             # Use the new Responses API with streaming
+            # Note: GPT-5-mini is the correct model name
             stream = @client.responses.stream(
-              model: "gpt-5",
+              model: "gpt-5-mini",  # Updated to correct model name
               input: [
                 {
                   role: "user",
@@ -77,14 +78,16 @@ module AI
               ],
               system_prompt: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks.",
               max_output_tokens: 2500,
-              stream=True
+              stream: true
             )
             
             # Process the streaming events
             stream.each do |event|
+              Rails.logger.debug "GPT-5-mini Event: #{event.type}"
+              
               case event.type
               when :response_created
-                Rails.logger.info "GPT-5 Response created event received"
+                Rails.logger.info "GPT-5-mini Response created event received"
                 yielder << { type: 'status', message: 'Analysis started' }.to_json
                 
               when :response_content_part_added
@@ -94,7 +97,7 @@ module AI
                 end
                 
               when :response_completed
-                Rails.logger.info "GPT-5 Streaming analysis completed for campaign #{@campaign.id}"
+                Rails.logger.info "GPT-5-mini Streaming analysis completed for campaign #{@campaign.id}"
                 
                 # Parse and save the final response
                 begin
@@ -109,24 +112,24 @@ module AI
                 end
                 
               when :error
-                Rails.logger.error "GPT-5 Streaming error: #{event.data}"
+                Rails.logger.error "GPT-5-mini Streaming error: #{event.data}"
                 yielder << { type: 'error', message: "Streaming error: #{event.data}" }.to_json
                 
               else
                 # Log unhandled event types for debugging
-                Rails.logger.debug "Unhandled GPT-5 event type: #{event.type}"
+                Rails.logger.debug "Unhandled GPT-5-mini event type: #{event.type}"
               end
             end
             
           rescue => e
-            Rails.logger.error "GPT-5 Stream processing error: #{e.message}"
+            Rails.logger.error "GPT-5-mini Stream processing error: #{e.message}"
             Rails.logger.error e.backtrace.join("\n")
             yielder << { type: 'error', message: "Stream processing error: #{e.message}" }.to_json
           end
         end
         
       rescue => e
-        Rails.logger.error "GPT-5 Stream initialization error: #{e.message}"
+        Rails.logger.error "GPT-5-mini Stream initialization error: #{e.message}"
         Enumerator.new do |yielder|
           yielder << { type: 'error', message: "Failed to start analysis: #{e.message}" }.to_json
         end
@@ -646,14 +649,14 @@ module AI
       data.deep_transform_keys { |key| key.to_s.humanize }.to_yaml
     end
 
-    # Updated API call for non-streaming using new Responses API
+       # Updated API call for non-streaming using new Responses API
     def call_openai_api(prompt)
-      Rails.logger.info "Calling GPT-5 API with prompt length: #{prompt.length}"
+      Rails.logger.info "Calling GPT-5-mini API with prompt length: #{prompt.length}"
       
       begin
         # Use the new Responses API for non-streaming
         response = @client.responses.create(
-          model: "gpt-5",
+          model: "gpt-5-mini",  # Updated to correct model name
           input: [
             {
               role: "user",
@@ -661,10 +664,10 @@ module AI
             }
           ],
           system_prompt: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks.",
-          max_tokens: 2500
+          max_output_tokens: 2500
         )
         
-        Rails.logger.info "GPT-5 API response received successfully"
+        Rails.logger.info "GPT-5-mini API response received successfully"
         Rails.logger.info "API Response type: #{response.class}"
         
         # Validate response structure
@@ -681,7 +684,7 @@ module AI
         
         response
       rescue => e
-        Rails.logger.error "GPT-5 API call failed: #{e.message}"
+        Rails.logger.error "GPT-5-mini API call failed: #{e.message}"
         Rails.logger.error "Backtrace: #{e.backtrace.join("\n")}"
         nil
       end
@@ -694,7 +697,7 @@ module AI
       content = if response.is_a?(Hash) && response["output"] && response["output"][0] && response["output"][0]["content"]
                   response["output"][0]["content"].to_s.strip
                 else
-                  Rails.logger.error "Invalid GPT-5 response structure: #{response.inspect}"
+                  Rails.logger.error "Invalid GPT-5-mini response structure: #{response.inspect}"
                   ""
                 end
 
@@ -713,7 +716,7 @@ module AI
 
       begin
         parsed_data = JSON.parse(json_text)
-        Rails.logger.info "Successfully parsed GPT-5 analysis data"
+        Rails.logger.info "Successfully parsed GPT-5-mini analysis data"
         parsed_data
       rescue JSON::ParserError => e
         Rails.logger.error "Failed to parse JSON response: #{e.message}"
