@@ -5,7 +5,6 @@ import { AnalysisHistoryModal } from './AnalysisHistoryModal';
 import { SimilarDealsModal } from './SimilarDealsModal';
 import { DealScoreChart } from './DealScoreChart';
 import { useAuth } from '../context/auth/AuthContext';
-import { usePremium } from '../context/premium/PremiumContext';
 
 interface DealScoreCardProps {
   campaignId: string;
@@ -88,19 +87,15 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamedContent, setStreamedContent] = useState('');
-  const [partialAnalysis, setPartialAnalysis] = useState<any>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   
-  const { subscription, fetchSubscription } = usePremium();
-  const hasPremium = subscription?.has_premium;
   const { token, user } = useAuth();
 
   useEffect(() => {
     if (campaignId) {
       loadAnalysis();
-      fetchSubscription();
     }
-  }, [campaignId, fetchSubscription]);
+  }, [campaignId]);
 
   const loadAnalysis = async () => {
     try {
@@ -127,44 +122,11 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
     }
   };
 
-  const runAnalysis = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ai_scoring/deal_scoring/analyze`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ campaign_id: campaignId }),
-        },
-      );
-
-      const result = await response.json();
-
-      if (result.success) {
-        await loadAnalysis(); // Reload to get updated data
-      } else {
-        setError(result.error || 'Analysis failed');
-      }
-    } catch (err) {
-      setError('Failed to run analysis');
-      console.error('Error running analysis:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const runStreamingAnalysis = async () => {
     try {
       setLoading(true);
       setIsStreaming(true);
       setStreamedContent('');
-      setPartialAnalysis(null);
       setError(null);
 
       // Create abort controller for cancellation
@@ -221,7 +183,6 @@ export const DealScoreCard: React.FC<DealScoreCardProps> = ({
                     // Analysis completed successfully
                     setIsStreaming(false);
                     setLoading(false);
-                    setPartialAnalysis(parsed.data);
                     // Reload the analysis data to show updated scores
                     await loadAnalysis();
                     break;
@@ -909,20 +870,6 @@ const getMarketOpportunityColorClass = (opportunity?: string): string => {
     case 'medium':
       return 'text-yellow-600';
     case 'small':
-      return 'text-red-600';
-    default:
-      return 'text-gray-600';
-  }
-};
-
-const getFundingPotentialColorClass = (potential?: string): string => {
-  const p = (potential || '').toLowerCase();
-  switch (p) {
-    case 'high':
-      return 'text-green-600';
-    case 'medium':
-      return 'text-yellow-600';
-    case 'low':
       return 'text-red-600';
     default:
       return 'text-gray-600';
