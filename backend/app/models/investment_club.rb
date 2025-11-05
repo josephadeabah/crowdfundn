@@ -13,6 +13,7 @@ class InvestmentClub < ApplicationRecord
   validates :max_members, numericality: { greater_than: 0 }
   
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
+  before_validation :map_club_type_to_access_type
   
   # FIX: Use prefix with non-conflicting names
   enum access_type: { 
@@ -22,6 +23,9 @@ class InvestmentClub < ApplicationRecord
   }, _prefix: true
   
   enum status: { active: 'active', inactive: 'inactive', suspended: 'suspended' }
+  
+  # Allow setting club_type from params (maps to access_type internally)
+  attr_accessor :club_type
   
   # Helper methods for clean access
   def public?
@@ -92,5 +96,18 @@ class InvestmentClub < ApplicationRecord
   
   def calculate_current_balance
     total_contributions - total_invested
+  end
+  
+  def map_club_type_to_access_type
+    return if club_type.blank?
+    
+    case club_type
+    when 'public'
+      self.access_type = 'open'
+    when 'private'
+      self.access_type = 'restricted'
+    when 'verified'
+      self.access_type = 'certified'
+    end
   end
 end

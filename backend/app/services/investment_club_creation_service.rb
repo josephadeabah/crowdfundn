@@ -7,7 +7,11 @@ class InvestmentClubCreationService
   
   def create
     InvestmentClub.transaction do
-      club = InvestmentClub.new(@params.merge(creator: @creator))
+      # Extract and prepare club data
+      club_data = @params[:investment_club] || @params
+      
+      # Create the club with the creator
+      club = InvestmentClub.new(club_data.merge(creator: @creator))
       
       if club.save
         # Creator becomes first admin member
