@@ -141,7 +141,6 @@ const InvestmentClubsDashboard: React.FC = () => {
               <button className="px-4 py-2 rounded-md bg-emerald-700 text-white">
                 Create Club
               </button>
-              <div className="text-sm text-gray-600">Ama</div>
             </div>
           </div>
 
