@@ -1,4 +1,3 @@
-# app/controllers/api/v1/investment_clubs_controller.rb
 module Api
   module V1
     class InvestmentClubsController < ApplicationController
@@ -16,6 +15,9 @@ module Api
       end
       
       def create
+        # Log the incoming parameters for debugging
+        Rails.logger.info "DEBUG: Received params: #{params.inspect}"
+        
         result = InvestmentClubCreationService.new(@current_user, club_params).create
         
         if result[:success]
@@ -36,7 +38,6 @@ module Api
           }, status: :unprocessable_entity
         end
       end
-      
       
       def show
         club = InvestmentClub.find_by(slug: params[:id])
@@ -99,6 +100,7 @@ module Api
       private
       
       def club_params
+        # Permit club_type explicitly
         params.require(:investment_club).permit(
           :name, :mission, :minimum_monthly_contribution, 
           :investment_focus, :max_members, :club_type,
