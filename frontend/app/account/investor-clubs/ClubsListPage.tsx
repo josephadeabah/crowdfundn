@@ -54,7 +54,7 @@ const ClubsListPage: React.FC = () => {
   };
 
   const filteredClubs = clubs.filter(
-    (club) => filter === 'all' || club.access_type === filter,
+    (club) => filter === 'all' || club.club_type === filter,
   );
 
   const formatCurrency = (amount: number) => {
@@ -141,12 +141,12 @@ const ClubsListPage: React.FC = () => {
                     </div>
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        club.access_type === 'public'
+                        club.club_type === 'public'
                           ? 'bg-green-100 text-green-800'
                           : 'bg-blue-100 text-blue-800'
                       }`}
                     >
-                      {club.access_type}
+                      {club.club_type}
                     </span>
                   </div>
 
