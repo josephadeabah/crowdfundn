@@ -283,6 +283,35 @@ Rails.application.routes.draw do
         end
       end
 
+
+    # Investment Clubs
+    resources :investment_clubs, only: [:index, :create, :show, :update] do
+      resources :memberships, only: [:index, :create, :update, :destroy], controller: 'club_memberships'
+      resources :contributions, only: [:index, :create], controller: 'club_contributions'
+      resources :investments, only: [:index, :create], controller: 'club_investments' do
+        member do
+          post :vote
+          post :execute
+          get :ai_recommendation
+          get :voting_insights
+        end
+      end
+      
+      member do
+        get :portfolio
+        get :analytics
+        get :member_portfolio
+        post :join
+        post :leave
+        post :create_wallet
+      end
+    end
+    
+    # Reusable voting system
+    post 'votes/:votable_type/:votable_id', to: 'votes#create'
+    get 'votes/:votable_type/:votable_id', to: 'votes#index'
+    delete 'votes/:votable_type/:votable_id', to: 'votes#destroy'
+
     end
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_01_221617) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_05_085023) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -213,6 +213,28 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_01_221617) do
     t.index ["type"], name: "index_campaigns_on_type"
   end
 
+  create_table "club_investments", force: :cascade do |t|
+    t.bigint "investment_club_id", null: false
+    t.bigint "campaign_id", null: false
+    t.decimal "investment_amount", precision: 15, scale: 2, null: false
+    t.decimal "shares_acquired", precision: 20, scale: 4
+    t.decimal "percentage_acquired", precision: 10, scale: 4
+    t.string "status", default: "pending"
+    t.string "voting_session_id"
+    t.integer "yes_votes", default: 0
+    t.integer "no_votes", default: 0
+    t.decimal "approval_rate", precision: 5, scale: 2
+    t.boolean "approved", default: false
+    t.decimal "equity_percentage", precision: 10, scale: 4
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_club_investments_on_campaign_id"
+    t.index ["investment_club_id", "campaign_id"], name: "index_club_investments_on_investment_club_id_and_campaign_id", unique: true
+    t.index ["investment_club_id"], name: "index_club_investments_on_investment_club_id"
+    t.index ["status"], name: "index_club_investments_on_status"
+    t.index ["voting_session_id"], name: "index_club_investments_on_voting_session_id"
+  end
+
   create_table "comments", force: :cascade do |t|
     t.text "content"
     t.bigint "campaign_id", null: false
@@ -362,6 +384,56 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_01_221617) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_fundraisers_on_user_id"
+  end
+
+  create_table "investment_club_contributions", force: :cascade do |t|
+    t.bigint "investment_club_id", null: false
+    t.bigint "user_id", null: false
+    t.decimal "amount", precision: 15, scale: 2, null: false
+    t.string "currency", default: "USD"
+    t.string "status", default: "pending"
+    t.string "transaction_reference"
+    t.string "payment_method"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["investment_club_id"], name: "index_investment_club_contributions_on_investment_club_id"
+    t.index ["status"], name: "index_investment_club_contributions_on_status"
+    t.index ["transaction_reference"], name: "index_investment_club_contributions_on_transaction_reference", unique: true
+    t.index ["user_id"], name: "index_investment_club_contributions_on_user_id"
+  end
+
+  create_table "investment_club_memberships", force: :cascade do |t|
+    t.bigint "investment_club_id", null: false
+    t.bigint "user_id", null: false
+    t.string "role", default: "member"
+    t.string "status", default: "pending"
+    t.decimal "total_contributed", precision: 15, scale: 2, default: "0.0"
+    t.decimal "current_share", precision: 10, scale: 4, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["investment_club_id", "user_id"], name: "index_club_memberships_on_club_and_user", unique: true
+    t.index ["investment_club_id"], name: "index_investment_club_memberships_on_investment_club_id"
+    t.index ["user_id"], name: "index_investment_club_memberships_on_user_id"
+  end
+
+  create_table "investment_clubs", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "mission"
+    t.decimal "minimum_monthly_contribution", precision: 15, scale: 2, default: "0.0"
+    t.string "investment_focus"
+    t.integer "max_members"
+    t.string "club_type", default: "private"
+    t.string "status", default: "active"
+    t.bigint "creator_id", null: false
+    t.string "slug", null: false
+    t.decimal "total_contributions", precision: 15, scale: 2, default: "0.0"
+    t.decimal "total_invested", precision: 15, scale: 2, default: "0.0"
+    t.decimal "current_balance", precision: 15, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_investment_clubs_on_creator_id"
+    t.index ["slug"], name: "index_investment_clubs_on_slug", unique: true
+    t.index ["status"], name: "index_investment_clubs_on_status"
   end
 
   create_table "investor_documents", force: :cascade do |t|
@@ -748,6 +820,21 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_01_221617) do
     t.index ["subaccount_id"], name: "index_users_on_subaccount_id"
   end
 
+  create_table "votes", force: :cascade do |t|
+    t.string "votable_type", null: false
+    t.bigint "votable_id", null: false
+    t.bigint "user_id", null: false
+    t.string "vote_type", null: false
+    t.text "reason"
+    t.string "voting_session_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_votes_on_user_id"
+    t.index ["votable_type", "votable_id", "user_id", "voting_session_id"], name: "index_votes_on_votable_and_user_and_session", unique: true
+    t.index ["votable_type", "votable_id"], name: "index_votes_on_votable"
+    t.index ["voting_session_id"], name: "index_votes_on_voting_session_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "admin_actions", "campaigns"
@@ -772,6 +859,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_01_221617) do
   add_foreign_key "favorites", "users"
   add_foreign_key "fundraiser_leaderboard_entries", "users"
   add_foreign_key "fundraisers", "users"
+  add_foreign_key "investment_clubs", "users", column: "creator_id"
   add_foreign_key "investor_documents", "campaigns"
   add_foreign_key "investor_documents", "users"
   add_foreign_key "kyc_addresses", "kycs"

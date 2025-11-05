@@ -1,0 +1,51 @@
+# app/services/investment_club_creation_service.rb
+class InvestmentClubCreationService
+  def initialize(creator, params)
+    @creator = creator
+    @params = params
+  end
+  
+  def create
+    InvestmentClub.transaction do
+      club = InvestmentClub.new(@params.merge(creator: @creator))
+      
+      if club.save
+        # Creator becomes first admin member
+        membership = club.investment_club_memberships.create!(
+          user: @creator,
+          role: 'creator',
+          status: 'active'
+        )
+        
+        # Generate digital constitution
+        generate_constitution(club)
+        
+        { success: true, club: club, membership: membership }
+      else
+        { success: false, errors: club.errors.full_messages }
+      end
+    end
+  rescue => e
+    { success: false, error: e.message }
+  end
+  
+  private
+  
+  def generate_constitution(club)
+    # Use existing canvas signature setup as mentioned in your requirements
+    constitution_data = {
+      club_name: club.name,
+      mission: club.mission,
+      rules: {
+        minimum_contribution: club.minimum_monthly_contribution,
+        voting_threshold: 60.0,
+        max_members: club.max_members
+      },
+      created_at: Time.current,
+      creator: @creator.full_name
+    }
+    
+    # Store constitution - could be PDF generated with your existing system
+    club.update(constitution_data: constitution_data)
+  end
+end

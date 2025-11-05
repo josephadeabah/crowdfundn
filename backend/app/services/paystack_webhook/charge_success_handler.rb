@@ -12,7 +12,13 @@ class PaystackWebhook::ChargeSuccessHandler
     return if EventProcessed.exists?(event_id: transaction_reference)
 
     ActiveRecord::Base.transaction do
-      if equity_investment?(@data)
+      metadata = @data[:metadata] || {}
+      
+      if metadata[:premium_access]
+        PaystackWebhook::PremiumSubscriptionHandler.new(@data).call
+      elsif metadata[:type] == 'club_contribution'
+        PaystackWebhook::Handlers::ClubContributionHandler.new(@data).call
+      elsif equity_investment?(@data)
         PaystackWebhook::Handlers::EquityInvestmentHandler.new(@data).call
       else
         PaystackWebhook::Handlers::DonationHandler.new(@data).call

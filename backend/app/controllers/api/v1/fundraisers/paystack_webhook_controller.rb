@@ -1,3 +1,4 @@
+# app/controllers/api/v1/fundraisers/paystack_webhook_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -54,6 +55,9 @@ module Api
             if metadata[:premium_access]
               Rails.logger.info "Routing to PremiumSubscriptionHandler for charge.success"
               PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+            elsif metadata[:type] == 'club_contribution'
+              Rails.logger.info "Routing to ClubContributionHandler for charge.success"
+              PaystackWebhook::Handlers::ClubContributionHandler.new(event[:data]).call
             else
               Rails.logger.info "Routing to ChargeSuccessHandler"
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
@@ -61,15 +65,30 @@ module Api
 
           when 'charge.failed'
             Rails.logger.info "Processing charge.failed event"
-            PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
+            if metadata[:type] == 'club_contribution'
+              Rails.logger.info "Routing to ClubContributionHandler for charge.failed"
+              PaystackWebhook::Handlers::ClubContributionHandler.new(event[:data]).call
+            else
+              PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
+            end
 
           when 'transfer.success'
             Rails.logger.info "Processing transfer.success event"
-            PaystackWebhook::TransferSuccessHandler.new(event[:data]).call
+            if metadata[:type] == 'club_investment'
+              Rails.logger.info "Routing to ClubInvestmentHandler for transfer.success"
+              PaystackWebhook::Handlers::ClubInvestmentHandler.new(event[:data]).call
+            else
+              PaystackWebhook::TransferSuccessHandler.new(event[:data]).call
+            end
 
           when 'transfer.failed'
             Rails.logger.info "Processing transfer.failed event"
-            PaystackWebhook::TransferFailedHandler.new(event[:data]).call
+            if metadata[:type] == 'club_investment'
+              Rails.logger.info "Routing to ClubInvestmentHandler for transfer.failed"
+              PaystackWebhook::Handlers::ClubInvestmentHandler.new(event[:data]).call
+            else
+              PaystackWebhook::TransferFailedHandler.new(event[:data]).call
+            end
 
           when 'transfer.reversed'
             Rails.logger.info "Processing transfer.reversed event"
@@ -79,6 +98,8 @@ module Api
             metadata = event[:data][:metadata] || {}
             if metadata[:type] == 'equity_investment'
               PaystackWebhook::Handlers::RefundProcessedHandler.new(event[:data]).call
+            elsif metadata[:type] == 'club_contribution'
+              PaystackWebhook::Handlers::ClubContributionRefundHandler.new(event[:data]).call
             else
               PaystackWebhook::Handlers::DonationRefundHandler.new(event[:data]).call
             end
