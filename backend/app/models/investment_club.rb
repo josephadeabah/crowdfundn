@@ -11,6 +11,8 @@ class InvestmentClub < ApplicationRecord
   validates :slug, uniqueness: true
   validates :minimum_monthly_contribution, numericality: { greater_than_or_equal_to: 0 }
   validates :max_members, numericality: { greater_than: 0 }
+
+  attribute :constitution_data, :json, default: -> { {} }
   
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
   before_validation :map_club_type_to_access_type

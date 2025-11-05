@@ -65,7 +65,8 @@ module Api
       def club_params
         params.require(:investment_club).permit(
           :name, :mission, :minimum_monthly_contribution, 
-          :investment_focus, :max_members, :club_type
+          :investment_focus, :max_members, :club_type,
+          :constitution_data
         )
       end
     end
