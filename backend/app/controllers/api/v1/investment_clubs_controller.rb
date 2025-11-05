@@ -69,6 +69,33 @@ module Api
           render json: { error: 'Access denied' }, status: :forbidden
         end
       end
+
+      # app/controllers/api/v1/investment_clubs_controller.rb
+      def portfolio
+        club = InvestmentClub.find_by(slug: params[:id])
+        
+        if club && club.is_member?(@current_user)
+          portfolio_service = ClubPortfolioService.new(club)
+          portfolio_data = portfolio_service.calculate_portfolio
+          
+          render json: portfolio_data
+        else
+          render json: { error: 'Access denied' }, status: :forbidden
+        end
+      end
+
+      def analytics
+        club = InvestmentClub.find_by(slug: params[:id])
+        
+        if club && club.is_member?(@current_user)
+          analytics_service = ClubAnalyticsService.new(club)
+          analytics_data = analytics_service.calculate_analytics
+          
+          render json: analytics_data
+        else
+          render json: { error: 'Access denied' }, status: :forbidden
+        end
+      end
       
       private
       

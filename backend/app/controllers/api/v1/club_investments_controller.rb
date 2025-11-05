@@ -6,6 +6,15 @@ module Api
       before_action :set_club
       before_action :verify_membership
       
+      # ADD THIS INDEX ACTION
+      def index
+        investments = @club.club_investments.includes(:campaign).order(created_at: :desc)
+        
+        render json: {
+          investments: investments.map { |investment| ClubInvestmentSerializer.new(investment).as_json }
+        }
+      end
+      
       def create
         campaign = Campaign.find_by(id: params[:campaign_id])
         
@@ -56,7 +65,8 @@ module Api
           }, status: :unprocessable_entity
         end
         
-        voting_service = VotingService.new(club_investment, @current_user)
+        # Use your existing VotingService
+        voting_service = VotingService.new(club_investment, @current_user, club_investment.voting_session_id)
         
         result = voting_service.cast_vote(params[:vote_type], params[:reason])
         
@@ -108,10 +118,59 @@ module Api
         end
       end
       
+      # Add these methods for the additional routes
+      def ai_recommendation
+        club_investment = @club.club_investments.find(params[:investment_id])
+        
+        # Use your existing AI service to generate recommendations
+        ai_service = AI::DealScoringService.new
+        recommendation = ai_service.generate_club_recommendation(club_investment)
+        
+        render json: {
+          success: true,
+          recommendation: recommendation
+        }
+      end
+      
+      def voting_insights
+        club_investment = @club.club_investments.find(params[:investment_id])
+        
+        # Use your existing VotingService
+        voting_service = VotingService.new(club_investment, @current_user, club_investment.voting_session_id)
+        stats = voting_service.voting_stats
+        
+        # Get additional insights
+        member_votes = Vote.where(
+          votable: club_investment, 
+          voting_session_id: club_investment.voting_session_id
+        ).includes(:user).map do |vote|
+          {
+            user_name: vote.user.full_name,
+            vote_type: vote.vote_type,
+            reason: vote.reason,
+            voted_at: vote.created_at
+          }
+        end
+        
+        insights = {
+          stats: stats,
+          member_votes: member_votes,
+          voting_deadline: club_investment.voting_ends_at,
+          approval_threshold: 60.0, # Your club's threshold
+          is_approved: calculate_approval_percentage(stats) >= 60.0,
+          time_remaining: time_remaining(club_investment.voting_ends_at)
+        }
+        
+        render json: {
+          success: true,
+          insights: insights
+        }
+      end
+      
       private
       
       def set_club
-        @club = InvestmentClub.find_by(slug: params[:club_id])
+        @club = InvestmentClub.find_by(slug: params[:investment_club_id])
         render json: { error: 'Club not found' }, status: :not_found unless @club
       end
       
@@ -145,6 +204,25 @@ module Api
       def execute_investment(club_investment)
         investment_service = ClubInvestmentService.new(club_investment)
         investment_service.execute_investment
+      end
+      
+      def calculate_approval_percentage(stats)
+        total_votes = stats[:total_votes] || 0
+        yes_votes = stats[:vote_breakdown]&.fetch('yes', 0) || 0
+        total_votes > 0 ? (yes_votes.to_f / total_votes * 100).round(2) : 0
+      end
+      
+      def time_remaining(voting_ends_at)
+        return 'ended' if voting_ends_at.nil? || voting_ends_at < Time.current
+        
+        diff = voting_ends_at - Time.current
+        if diff > 1.day
+          "#{(diff / 1.day).floor} days"
+        elsif diff > 1.hour
+          "#{(diff / 1.hour).floor} hours"
+        else
+          "#{(diff / 1.minute).floor} minutes"
+        end
       end
     end
   end
