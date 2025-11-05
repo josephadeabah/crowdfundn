@@ -1,4 +1,3 @@
-# app/services/club_portfolio_service.rb
 class ClubPortfolioService
   def initialize(investment_club)
     @club = investment_club
@@ -130,19 +129,22 @@ class ClubPortfolioService
   end
 
   def calculate_risk_metrics(investments)
+    # FIXED: Handle empty investments and division by zero
     return default_risk_metrics if investments.empty?
 
     # Simplified risk metrics
     returns = investments.map do |investment|
       investment_amount = investment.investment_amount
-      next 0 if investment_amount.zero? # Skip division by zero
+      # Skip if investment amount is zero to avoid division by zero
+      next 0 if investment_amount.zero?
       
       current_value = calculate_campaign_current_value(investment.campaign, investment.shares_acquired)
       (current_value - investment_amount) / investment_amount
     end.compact # Remove nil values
 
-    return default_risk_metrics if returns.empty?
-    
+    # Return default if no valid returns
+    return default_risk_metrics if returns.empty? || returns.size.zero?
+
     avg_return = returns.sum / returns.size
     variance = returns.sum { |r| (r - avg_return) ** 2 } / returns.size
     volatility = Math.sqrt(variance)

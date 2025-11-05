@@ -1,4 +1,3 @@
-# app/serializers/investment_club_serializer.rb
 class InvestmentClubSerializer
   def initialize(club, options = {})
     @club = club
@@ -12,7 +11,7 @@ class InvestmentClubSerializer
       name: @club.name,
       mission: @club.mission,
       investment_focus: @club.investment_focus,
-      club_type: @club.club_type,
+      club_type: @club.club_type, # This calls the virtual method
       status: @club.status,
       minimum_monthly_contribution: @club.minimum_monthly_contribution,
       max_members: @club.max_members,
@@ -26,7 +25,6 @@ class InvestmentClubSerializer
         id: @club.creator.id,
         name: @club.creator.full_name
       },
-      # FIX: Ensure creator is recognized as member
       is_member: @current_user ? @club.is_member?(@current_user) : false,
       is_admin: @current_user ? @club.is_admin?(@current_user) : false,
       created_at: @club.created_at,

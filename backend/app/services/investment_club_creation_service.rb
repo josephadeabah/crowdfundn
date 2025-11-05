@@ -1,4 +1,3 @@
-# app/services/investment_club_creation_service.rb
 class InvestmentClubCreationService
   def initialize(creator, params)
     @creator = creator
@@ -20,11 +19,14 @@ class InvestmentClubCreationService
       Rails.logger.info "DEBUG: Club attributes before save:"
       Rails.logger.info "  club_type=#{club.club_type}"
       Rails.logger.info "  access_type=#{club.access_type}"
+      Rails.logger.info "  valid?=#{club.valid?}"
+      Rails.logger.info "  errors=#{club.errors.full_messages}" unless club.valid?
       
       if club.save
         Rails.logger.info "DEBUG: Club saved successfully:"
         Rails.logger.info "  club_type=#{club.club_type}"
         Rails.logger.info "  access_type=#{club.access_type}"
+        
         # Creator becomes first admin member
         membership = club.investment_club_memberships.create!(
           user: @creator,
@@ -42,6 +44,7 @@ class InvestmentClubCreationService
       end
     end
   rescue => e
+    Rails.logger.error "DEBUG: Club creation error: #{e.message}"
     { success: false, error: e.message }
   end
   

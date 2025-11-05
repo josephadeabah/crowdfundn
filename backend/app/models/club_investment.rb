@@ -1,4 +1,3 @@
-# app/models/club_investment.rb
 class ClubInvestment < ApplicationRecord
   belongs_to :investment_club
   belongs_to :campaign
@@ -17,7 +16,9 @@ class ClubInvestment < ApplicationRecord
   }
   
   before_create :generate_voting_session_id
-  after_save :execute_investment, if: -> { saved_change_to_status? && approved? }
+  
+  # FIXED: Use after_update instead of after_save to avoid infinite loops
+  after_update :execute_investment, if: -> { saved_change_to_status? && approved? }
   
   def start_voting
     update(status: 'voting', voting_session_id: generate_voting_session_id)
@@ -35,14 +36,18 @@ class ClubInvestment < ApplicationRecord
     update(
       yes_votes: votes_data['invest'] || votes_data['yes'] || 0,
       no_votes: votes_data['pass'] || votes_data['no'] || 0,
-      approval_rate: calculate_approval_rate,
-      approved: calculate_approval_rate >= 60.0
+      approval_rate: calculate_approval_rate
     )
     
     # Auto-approve if threshold met
-    if approved? && voting?
+    if calculate_approval_rate >= 60.0 && voting?
       update(status: 'approved')
     end
+  end
+  
+  def approved?
+    # Check if investment meets approval criteria
+    calculate_approval_rate >= 60.0
   end
   
   def can_vote?(user)
