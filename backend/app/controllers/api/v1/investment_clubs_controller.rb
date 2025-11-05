@@ -5,14 +5,13 @@ module Api
       before_action :authenticate_request
       
       def index
-        # Preload associations to avoid N+1 queries
         clubs = InvestmentClub.active.includes(
           :creator, 
           investment_club_memberships: :user
         )
         
         render json: {
-          clubs: clubs.map { |club| InvestmentClubSerializer.new(club).as_json }
+          clubs: clubs.map { |club| InvestmentClubSerializer.new(club, current_user: @current_user).as_json }
         }
       end
       
@@ -28,7 +27,7 @@ module Api
           
           render json: { 
             success: true, 
-            club: InvestmentClubSerializer.new(club).as_json 
+            club: InvestmentClubSerializer.new(club, current_user: @current_user).as_json 
           }, status: :created
         else
           render json: { 
@@ -37,6 +36,7 @@ module Api
           }, status: :unprocessable_entity
         end
       end
+      
       
       def show
         club = InvestmentClub.find_by(slug: params[:id])

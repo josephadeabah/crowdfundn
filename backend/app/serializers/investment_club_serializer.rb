@@ -16,8 +16,7 @@ class InvestmentClubSerializer
       status: @club.status,
       minimum_monthly_contribution: @club.minimum_monthly_contribution,
       max_members: @club.max_members,
-      # FIX: Use counter_cache or preload to avoid N+1 queries
-      current_members_count: @club.active_members.size, # Use size instead of count to use loaded association
+      current_members_count: @club.active_members.size,
       financials: {
         total_contributions: @club.total_contributions,
         total_invested: @club.total_invested,
@@ -27,6 +26,7 @@ class InvestmentClubSerializer
         id: @club.creator.id,
         name: @club.creator.full_name
       },
+      # FIX: Ensure creator is recognized as member
       is_member: @current_user ? @club.is_member?(@current_user) : false,
       is_admin: @current_user ? @club.is_admin?(@current_user) : false,
       created_at: @club.created_at,
