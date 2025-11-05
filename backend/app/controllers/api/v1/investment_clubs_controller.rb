@@ -8,8 +8,7 @@ module Api
         clubs = InvestmentClub.active.includes(:creator, :active_members)
         
         render json: {
-          clubs: clubs.map { |club| InvestmentClubSerializer.new(club).as_json },
-          pagination: pagination_data(clubs)
+          clubs: clubs.map { |club| InvestmentClubSerializer.new(club).as_json }
         }
       end
       
@@ -66,7 +65,7 @@ module Api
       def club_params
         params.require(:investment_club).permit(
           :name, :mission, :minimum_monthly_contribution, 
-          :investment_focus, :max_members, :club_type # Added club_type here
+          :investment_focus, :max_members, :club_type
         )
       end
     end
