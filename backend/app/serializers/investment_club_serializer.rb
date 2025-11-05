@@ -12,11 +12,12 @@ class InvestmentClubSerializer
       name: @club.name,
       mission: @club.mission,
       investment_focus: @club.investment_focus,
-      club_type: @club.club_type, # This uses the helper method
+      club_type: @club.club_type,
       status: @club.status,
       minimum_monthly_contribution: @club.minimum_monthly_contribution,
       max_members: @club.max_members,
-      current_members_count: @club.active_members.count,
+      # FIX: Use counter_cache or preload to avoid N+1 queries
+      current_members_count: @club.active_members.size, # Use size instead of count to use loaded association
       financials: {
         total_contributions: @club.total_contributions,
         total_invested: @club.total_invested,

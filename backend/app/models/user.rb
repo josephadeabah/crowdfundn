@@ -20,6 +20,8 @@ class User < ApplicationRecord
   has_many :equity_investments, dependent: :destroy
   has_many :invested_campaigns, through: :equity_investments, source: :campaign
   has_many :investor_documents, dependent: :destroy
+  has_many :investment_club_memberships, dependent: :destroy
+  has_many :investment_clubs, through: :investment_club_memberships
   has_many :premium_subscriptions
   # Add archive association
   has_many :archived_campaigns, dependent: :destroy
