@@ -11,6 +11,7 @@ class InvestmentClub < ApplicationRecord
   validates :slug, uniqueness: true
   validates :minimum_monthly_contribution, numericality: { greater_than_or_equal_to: 0 }
   validates :max_members, numericality: { greater_than: 0 }
+   validate :club_type_must_be_mapped
 
   attribute :constitution_data, :json, default: -> { {} }
   
@@ -25,6 +26,13 @@ class InvestmentClub < ApplicationRecord
   }, _prefix: true
   
   enum status: { active: 'active', inactive: 'inactive', suspended: 'suspended' }
+
+
+  def club_type_must_be_mapped
+    if club_type.present? && access_type.blank?
+      errors.add(:club_type, "could not be mapped to access_type")
+    end
+  end
   
   # Allow setting club_type from params (maps to access_type internally)
   attr_accessor :club_type
@@ -53,12 +61,19 @@ class InvestmentClub < ApplicationRecord
   # All your existing methods remain the same...
   def active_members
     members.joins(:investment_club_memberships)
-           .where(investment_club_memberships: { status: 'active' })
+           .where(investment_club_memberships: { 
+             status: 'active',
+             investment_club_id: id  # Add this to scope to current club
+           })
   end
   
   def admin_members
     members.joins(:investment_club_memberships)
-           .where(investment_club_memberships: { status: 'active', role: ['admin', 'creator'] })
+           .where(investment_club_memberships: { 
+             status: 'active', 
+             role: ['admin', 'creator'],
+             investment_club_id: id  # Add this to scope to current club
+           })
   end
   
   def is_member?(user)
@@ -101,6 +116,8 @@ class InvestmentClub < ApplicationRecord
   end
   
   def map_club_type_to_access_type
+    Rails.logger.info "DEBUG: Mapping club_type=#{club_type} to access_type"
+    
     return if club_type.blank?
     
     case club_type
@@ -111,5 +128,7 @@ class InvestmentClub < ApplicationRecord
     when 'verified'
       self.access_type = 'certified'
     end
+    
+    Rails.logger.info "DEBUG: Mapped to access_type=#{access_type}"
   end
 end

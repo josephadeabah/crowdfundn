@@ -16,7 +16,7 @@ class InvestmentClubSerializer
       status: @club.status,
       minimum_monthly_contribution: @club.minimum_monthly_contribution,
       max_members: @club.max_members,
-      current_members_count: @club.active_members.size,
+      current_members_count: @club.investment_club_memberships.active.count,
       financials: {
         total_contributions: @club.total_contributions,
         total_invested: @club.total_invested,

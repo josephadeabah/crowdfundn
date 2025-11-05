@@ -10,10 +10,21 @@ class InvestmentClubCreationService
       # Extract and prepare club data
       club_data = @params[:investment_club] || @params
       
+      # Ensure club_type is properly set
+      Rails.logger.info "DEBUG: Creating club with club_type=#{club_data[:club_type]}"
+      
       # Create the club with the creator
       club = InvestmentClub.new(club_data.merge(creator: @creator))
       
+      # Debug the club attributes before save
+      Rails.logger.info "DEBUG: Club attributes before save:"
+      Rails.logger.info "  club_type=#{club.club_type}"
+      Rails.logger.info "  access_type=#{club.access_type}"
+      
       if club.save
+        Rails.logger.info "DEBUG: Club saved successfully:"
+        Rails.logger.info "  club_type=#{club.club_type}"
+        Rails.logger.info "  access_type=#{club.access_type}"
         # Creator becomes first admin member
         membership = club.investment_club_memberships.create!(
           user: @creator,
@@ -26,6 +37,7 @@ class InvestmentClubCreationService
         
         { success: true, club: club, membership: membership }
       else
+        Rails.logger.error "DEBUG: Club save failed: #{club.errors.full_messages}"
         { success: false, errors: club.errors.full_messages }
       end
     end

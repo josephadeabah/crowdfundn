@@ -1,6 +1,6 @@
 # app/models/investment_club_membership.rb
 class InvestmentClubMembership < ApplicationRecord
-  belongs_to :investment_club
+  belongs_to :investment_club, counter_cache: :active_members_count
   belongs_to :user
   
   validates :user_id, uniqueness: { scope: :investment_club_id }
@@ -10,6 +10,9 @@ class InvestmentClubMembership < ApplicationRecord
   
   before_create :set_initial_share
   after_save :update_club_financials, if: -> { saved_change_to_total_contributed? }
+  # Only count active memberships
+  after_save :update_counter_cache, if: -> { saved_change_to_status? }
+  after_destroy :update_counter_cache
   
   def update_share_percentage
     return if investment_club.total_contributions.zero?
@@ -27,5 +30,10 @@ class InvestmentClubMembership < ApplicationRecord
   def update_club_financials
     investment_club.update_financials
     update_share_percentage
+  end
+
+  def update_counter_cache
+    investment_club.update_column(:active_members_count, 
+      investment_club.investment_club_memberships.active.count)
   end
 end
