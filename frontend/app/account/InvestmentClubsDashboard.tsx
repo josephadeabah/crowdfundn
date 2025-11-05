@@ -36,12 +36,12 @@ const InvestmentClubsDashboard: React.FC = () => {
     try {
       setLoading(true);
       const response = await clubService.getClubs(token);
-      
+
       // Filter clubs where user is a member OR is the creator
-      const userClubs = response.clubs.filter((club) => 
-        club.is_member || Number(club.creator.id) === user.id
+      const userClubs = response.clubs.filter(
+        (club) => club.is_member || Number(club.creator.id) === user.id,
       );
-      
+
       setClubs(userClubs);
 
       if (userClubs.length > 0) {
@@ -163,7 +163,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                 >
                   Discover Clubs
                 </button>
-                <button 
+                <button
                   onClick={() => setIsCreateModalOpen(true)}
                   className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
                 >
@@ -241,17 +241,26 @@ const InvestmentClubsDashboard: React.FC = () => {
                       <h2 className="text-2xl font-bold text-gray-900">
                         {currentClub.name}
                       </h2>
-                      <p className="text-gray-600 mt-1">{currentClub.mission}</p>
+                      <p className="text-gray-600 mt-1">
+                        {currentClub.mission}
+                      </p>
                       <div className="flex gap-4 mt-3 text-sm text-gray-500">
                         <span>{currentClub.current_members_count} members</span>
                         <span>•</span>
-                        <span>Min. contribution: {formatCurrency(currentClub.minimum_monthly_contribution)}</span>
+                        <span>
+                          Min. contribution:{' '}
+                          {formatCurrency(
+                            currentClub.minimum_monthly_contribution,
+                          )}
+                        </span>
                         <span>•</span>
-                        <span className={`px-2 py-1 rounded-full ${
-                          currentClub.club_type === 'public' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded-full ${
+                            currentClub.club_type === 'public'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-blue-100 text-blue-800'
+                          }`}
+                        >
                           {currentClub.club_type}
                         </span>
                       </div>
@@ -284,7 +293,8 @@ const InvestmentClubsDashboard: React.FC = () => {
                           {investment.campaign.title}
                         </h4>
                         <p className="text-gray-600 mb-4">
-                          Investment: {formatCurrency(investment.investment_amount)}
+                          Investment:{' '}
+                          {formatCurrency(investment.investment_amount)}
                         </p>
                         <div className="flex gap-3">
                           <button
@@ -312,21 +322,30 @@ const InvestmentClubsDashboard: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <h3 className="text-xl font-semibold mb-4">Recent Investments</h3>
+                <h3 className="text-xl font-semibold mb-4">
+                  Recent Investments
+                </h3>
                 <div className="bg-white rounded-lg border border-gray-200 shadow-sm divide-y">
                   {investments.slice(0, 5).map((investment) => (
                     <div key={investment.id} className="p-4">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h4 className="font-semibold">{investment.campaign.title}</h4>
+                          <h4 className="font-semibold">
+                            {investment.campaign.title}
+                          </h4>
                           <p className="text-sm text-gray-600">
-                            {formatCurrency(investment.investment_amount)} • 
-                            <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
-                              investment.status === 'executed' ? 'bg-green-100 text-green-800' :
-                              investment.status === 'voting' ? 'bg-yellow-100 text-yellow-800' :
-                              investment.status === 'approved' ? 'bg-blue-100 text-blue-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
+                            {formatCurrency(investment.investment_amount)} •
+                            <span
+                              className={`ml-2 px-2 py-1 rounded-full text-xs ${
+                                investment.status === 'executed'
+                                  ? 'bg-green-100 text-green-800'
+                                  : investment.status === 'voting'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : investment.status === 'approved'
+                                      ? 'bg-blue-100 text-blue-800'
+                                      : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
                               {investment.status}
                             </span>
                           </p>
@@ -350,7 +369,9 @@ const InvestmentClubsDashboard: React.FC = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
                 >
-                  <h3 className="text-lg font-semibold mb-4">Portfolio Summary</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Portfolio Summary
+                  </h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Total Invested</span>
@@ -366,10 +387,15 @@ const InvestmentClubsDashboard: React.FC = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Total Returns</span>
-                      <span className={`font-semibold ${
-                        portfolio.total_returns >= 0 ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {formatCurrency(portfolio.total_returns)} ({portfolio.return_percentage}%)
+                      <span
+                        className={`font-semibold ${
+                          portfolio.total_returns >= 0
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }`}
+                      >
+                        {formatCurrency(portfolio.total_returns)} (
+                        {portfolio.return_percentage}%)
                       </span>
                     </div>
                   </div>
@@ -385,19 +411,19 @@ const InvestmentClubsDashboard: React.FC = () => {
               >
                 <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
                 <div className="space-y-3">
-                  <button 
+                  <button
                     onClick={handleMakeContribution}
                     className="w-full px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-left"
                   >
                     Make Contribution
                   </button>
-                  <button 
+                  <button
                     onClick={handleProposeInvestment}
                     className="w-full px-4 py-3 border border-emerald-600 text-emerald-700 rounded-lg hover:bg-emerald-50 font-medium text-left"
                   >
                     Propose Investment
                   </button>
-                  <button 
+                  <button
                     onClick={handleViewAnalytics}
                     className="w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-left"
                   >
@@ -429,7 +455,9 @@ const InvestmentClubsDashboard: React.FC = () => {
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-emerald-700">
-                      {formatCurrency(currentClub.financials.total_contributions)}
+                      {formatCurrency(
+                        currentClub.financials.total_contributions,
+                      )}
                     </div>
                     <div className="text-sm text-gray-600">Total Raised</div>
                   </div>
@@ -453,7 +481,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                 <p className="text-emerald-100 text-sm mb-4">
                   Create your own investment club and invite others to join
                 </p>
-                <button 
+                <button
                   onClick={() => setIsCreateModalOpen(true)}
                   className="w-full px-4 py-2 bg-white text-emerald-700 rounded-lg hover:bg-emerald-50 font-medium transition-colors"
                 >

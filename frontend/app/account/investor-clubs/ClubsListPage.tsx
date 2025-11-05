@@ -98,7 +98,7 @@ const ClubsListPage: React.FC = () => {
               Discover Investment Clubs
             </h1>
             <p className="text-gray-600 mt-2 max-w-2xl">
-              Find and join investment clubs that match your interests. 
+              Find and join investment clubs that match your interests.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -122,7 +122,7 @@ const ClubsListPage: React.FC = () => {
               ))}
             </div>
             {/* Update this button to open the create modal */}
-            <button 
+            <button
               onClick={() => setIsCreateModalOpen(true)}
               className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium whitespace-nowrap"
             >
