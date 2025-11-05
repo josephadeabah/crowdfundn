@@ -98,15 +98,13 @@ const ClubsListPage: React.FC = () => {
               Discover Investment Clubs
             </h1>
             <p className="text-gray-600 mt-2 max-w-2xl">
-              Join investment clubs that match your interests and collaborate
-              with like-minded investors to make collective investment
-              decisions.
+              Find and join investment clubs that match your interests. 
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex bg-white border border-gray-300 rounded-lg p-1">
               {[
-                { id: 'all', label: 'All Clubs' },
+                { id: 'all', label: 'All' },
                 { id: 'public', label: 'Public' },
                 { id: 'private', label: 'Private' },
               ].map((filterOption) => (

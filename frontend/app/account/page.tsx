@@ -167,7 +167,7 @@ const ProfileTabs = () => {
           icon: <DropdownMenuIcon className="w-4 h-4" />,
           component: <ClubsListPage />,
           description:
-            'Find and join investment clubs that match your interests.',
+            'Join investment clubs that match your interests and collaborate with like-minded investors to make collective investment decisions.',
           badge: 'Soon',
           badgeColor: 'bg-yellow-100 text-yellow-800',
         },
