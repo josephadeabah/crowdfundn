@@ -3,16 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ClubDetailsModal from './ClubDetailsModal';
+import CreateClubModal from './CreateClubModal'; // Add this import
 import { Club, Member } from './clubTypes';
 import { clubService, membershipService } from './clubservice';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
 const ClubsListPage: React.FC = () => {
-  const { token } = useAuth(); // Get token from useAuth
+  const { token } = useAuth();
   const [clubs, setClubs] = useState<Club[]>([]);
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); // Add this state
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
 
@@ -51,6 +53,11 @@ const ClubsListPage: React.FC = () => {
     setSelectedClub(club);
     await loadClubMembers(club);
     setIsModalOpen(true);
+  };
+
+  // Add this function to handle club creation
+  const handleClubCreated = () => {
+    loadClubs(); // Reload the clubs list
   };
 
   const filteredClubs = clubs.filter(
@@ -116,7 +123,11 @@ const ClubsListPage: React.FC = () => {
                 </button>
               ))}
             </div>
-            <button className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium whitespace-nowrap">
+            {/* Update this button to open the create modal */}
+            <button 
+              onClick={() => setIsCreateModalOpen(true)}
+              className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium whitespace-nowrap"
+            >
               Create New Club
             </button>
           </div>
@@ -224,6 +235,13 @@ const ClubsListPage: React.FC = () => {
           members={members}
         />
       )}
+
+      {/* Create Club Modal */}
+      <CreateClubModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onClubCreated={handleClubCreated}
+      />
     </div>
   );
 };
