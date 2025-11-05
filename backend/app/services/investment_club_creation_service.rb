@@ -12,13 +12,28 @@ class InvestmentClubCreationService
       # Ensure club_type is properly set
       Rails.logger.info "DEBUG: Creating club with club_type=#{club_data[:club_type]}"
       
-      # Create the club with the creator
-      club = InvestmentClub.new(club_data.merge(creator: @creator))
+      # Create the club with the creator - use merge to ensure proper assignment
+      club_attributes = {
+        name: club_data[:name],
+        mission: club_data[:mission],
+        investment_focus: club_data[:investment_focus],
+        minimum_monthly_contribution: club_data[:minimum_monthly_contribution],
+        max_members: club_data[:max_members],
+        creator: @creator,
+        # Set initial members count to 1 (the creator)
+        current_members_count: 1
+      }
+      
+      # Set club_type which will map to access_type via the setter
+      club_attributes[:club_type] = club_data[:club_type] if club_data[:club_type].present?
+      
+      club = InvestmentClub.new(club_attributes)
       
       # Debug the club attributes before save
       Rails.logger.info "DEBUG: Club attributes before save:"
       Rails.logger.info "  club_type=#{club.club_type}"
       Rails.logger.info "  access_type=#{club.access_type}"
+      Rails.logger.info "  current_members_count=#{club.current_members_count}"
       Rails.logger.info "  valid?=#{club.valid?}"
       Rails.logger.info "  errors=#{club.errors.full_messages}" unless club.valid?
       
@@ -26,6 +41,7 @@ class InvestmentClubCreationService
         Rails.logger.info "DEBUG: Club saved successfully:"
         Rails.logger.info "  club_type=#{club.club_type}"
         Rails.logger.info "  access_type=#{club.access_type}"
+        Rails.logger.info "  current_members_count=#{club.current_members_count}"
         
         # Creator becomes first admin member
         membership = club.investment_club_memberships.create!(
@@ -45,6 +61,7 @@ class InvestmentClubCreationService
     end
   rescue => e
     Rails.logger.error "DEBUG: Club creation error: #{e.message}"
+    Rails.logger.error "DEBUG: Backtrace: #{e.backtrace.first(10).join("\n")}"
     { success: false, error: e.message }
   end
   

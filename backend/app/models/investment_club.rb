@@ -10,13 +10,15 @@ class InvestmentClub < ApplicationRecord
   validates :slug, uniqueness: true
   validates :minimum_monthly_contribution, numericality: { greater_than_or_equal_to: 0 }
   validates :max_members, numericality: { greater_than: 0 }
+  validates :current_members_count, numericality: { greater_than_or_equal_to: 0 }
 
   attribute :constitution_data, :json, default: -> { {} }
   
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
   before_validation :map_club_type_to_access_type
+  after_save :update_members_count
   
-  # FIXED: Correct enum definition - use string values that match what we want to store
+  # FIXED: Simple enum without complex mappings
   enum access_type: { 
     open: 'open', 
     restricted: 'restricted', 
@@ -24,9 +26,20 @@ class InvestmentClub < ApplicationRecord
   }, _prefix: true
   
   enum status: { active: 'active', inactive: 'inactive', suspended: 'suspended' }
-  
-  # Allow setting club_type from params (maps to access_type internally)
-  attr_accessor :club_type
+
+  # Override the club_type setter to map to access_type
+  def club_type=(value)
+    case value.to_s
+    when 'public'
+      self.access_type = 'open'
+    when 'private'
+      self.access_type = 'restricted'
+    when 'verified'
+      self.access_type = 'certified'
+    else
+      self.access_type = 'restricted' # default
+    end
+  end
   
   # Helper methods for clean access
   def public?
@@ -48,6 +61,12 @@ class InvestmentClub < ApplicationRecord
     when 'certified' then 'verified'
     else 'private' # default fallback
     end
+  end
+  
+  # Update members count callback
+  def update_members_count
+    active_count = investment_club_memberships.active.count
+    update_column(:current_members_count, active_count) if current_members_count != active_count
   end
   
   # All your existing methods remain the same...
@@ -104,30 +123,12 @@ class InvestmentClub < ApplicationRecord
   end
   
   def calculate_current_balance
-    total_contributions - total_invested
+    (total_contributions || 0) - (total_invested || 0)
   end
   
   def map_club_type_to_access_type
-    Rails.logger.info "DEBUG: Mapping club_type=#{club_type} to access_type"
-    
-    # If club_type is provided via form, map it to access_type
-    if club_type.present?
-      case club_type.to_s
-      when 'public'
-        self.access_type = 'open'
-      when 'private'
-        self.access_type = 'restricted'
-      when 'verified'
-        self.access_type = 'certified'
-      else
-        # Default to private if invalid value
-        self.access_type = 'restricted'
-      end
-    elsif access_type.blank?
-      # If no club_type provided and no access_type set, use default
-      self.access_type = 'restricted'
-    end
-    
-    Rails.logger.info "DEBUG: Mapped to access_type=#{access_type}"
+    # This method is now handled by the club_type= setter
+    # Set default if no access_type is set
+    self.access_type = 'restricted' if access_type.blank?
   end
 end
