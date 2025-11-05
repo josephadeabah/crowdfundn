@@ -31,13 +31,17 @@ const InvestmentClubsDashboard: React.FC = () => {
   }, [token]);
 
   const loadUserClubs = async () => {
-    if (!token) return;
+    if (!token || !user) return;
 
     try {
       setLoading(true);
       const response = await clubService.getClubs(token);
-      // Filter clubs where user is a member
-      const userClubs = response.clubs.filter((club) => club.is_member);
+      
+      // Filter clubs where user is a member OR is the creator
+      const userClubs = response.clubs.filter((club) => 
+        club.is_member || club.creator.id === user.id
+      );
+      
       setClubs(userClubs);
 
       if (userClubs.length > 0) {
