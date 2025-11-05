@@ -14,9 +14,11 @@ class InvestmentClub < ApplicationRecord
   
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
   
-  enum club_type: { private: 'private', public: 'public', verified: 'verified' }
+  # Clean enum definition - no conflicts
+  enum access_type: { private: 'private', public: 'public', verified: 'verified' }
   enum status: { active: 'active', inactive: 'inactive', suspended: 'suspended' }
   
+  # All your existing methods remain the same...
   def active_members
     members.joins(:investment_club_memberships)
            .where(investment_club_memberships: { status: 'active' })

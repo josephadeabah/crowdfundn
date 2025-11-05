@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_05_085023) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_05_132408) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -422,7 +422,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_05_085023) do
     t.decimal "minimum_monthly_contribution", precision: 15, scale: 2, default: "0.0"
     t.string "investment_focus"
     t.integer "max_members"
-    t.string "club_type", default: "private"
+    t.string "access_type", default: "private"
     t.string "status", default: "active"
     t.bigint "creator_id", null: false
     t.string "slug", null: false

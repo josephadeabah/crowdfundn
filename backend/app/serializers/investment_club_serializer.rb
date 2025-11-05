@@ -12,7 +12,8 @@ class InvestmentClubSerializer
       name: @club.name,
       mission: @club.mission,
       investment_focus: @club.investment_focus,
-      club_type: @club.club_type,
+      # This will now return 'private', 'public', or 'verified'
+      club_type: @club.access_type, # Simply use access_type
       status: @club.status,
       minimum_monthly_contribution: @club.minimum_monthly_contribution,
       max_members: @club.max_members,
