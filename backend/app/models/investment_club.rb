@@ -16,7 +16,7 @@ class InvestmentClub < ApplicationRecord
   
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
   before_validation :map_club_type_to_access_type
-  after_save :update_members_count
+  after_create :create_creator_membership
   
   # FIXED: Simple enum without complex mappings
   enum access_type: { 
@@ -63,10 +63,22 @@ class InvestmentClub < ApplicationRecord
     end
   end
   
-  # Update members count callback
+  # Update members count method
   def update_members_count
     active_count = investment_club_memberships.active.count
-    update_column(:current_members_count, active_count) if current_members_count != active_count
+    if current_members_count != active_count
+      update_columns(current_members_count: active_count)
+    end
+  end
+  
+  # Create creator membership after club creation
+  def create_creator_membership
+    investment_club_memberships.create!(
+      user: creator,
+      role: 'creator',
+      status: 'active'
+    )
+    update_members_count # This will set current_members_count to 1
   end
   
   # All your existing methods remain the same...

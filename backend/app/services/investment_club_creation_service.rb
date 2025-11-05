@@ -20,8 +20,8 @@ class InvestmentClubCreationService
         minimum_monthly_contribution: club_data[:minimum_monthly_contribution],
         max_members: club_data[:max_members],
         creator: @creator,
-        # Set initial members count to 1 (the creator)
-        current_members_count: 1
+        # Don't set current_members_count here - let the callback handle it
+        current_members_count: 0 # Start with 0, callback will update to 1
       }
       
       # Set club_type which will map to access_type via the setter
@@ -43,17 +43,11 @@ class InvestmentClubCreationService
         Rails.logger.info "  access_type=#{club.access_type}"
         Rails.logger.info "  current_members_count=#{club.current_members_count}"
         
-        # Creator becomes first admin member
-        membership = club.investment_club_memberships.create!(
-          user: @creator,
-          role: 'creator',
-          status: 'active'
-        )
-        
+        # The creator membership is now created via after_create callback
         # Generate digital constitution
         generate_constitution(club)
         
-        { success: true, club: club, membership: membership }
+        { success: true, club: club }
       else
         Rails.logger.error "DEBUG: Club save failed: #{club.errors.full_messages}"
         { success: false, errors: club.errors.full_messages }
