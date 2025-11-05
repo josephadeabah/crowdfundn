@@ -6,7 +6,7 @@ export interface Club {
   mission: string;
   description?: string; // Added to match your modal
   investment_focus: string;
-  club_type: 'public' | 'private';
+  access_type: 'public' | 'private';
   status: 'active' | 'inactive';
   minimum_monthly_contribution: number;
   max_members: number;

@@ -109,7 +109,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                 <div className="bg-gray-50 rounded-lg p-4">
                   <div className="text-sm text-gray-600">Club Type</div>
                   <div className="text-xl font-bold text-gray-900 capitalize">
-                    {club.club_type}
+                    {club.access_type}
                   </div>
                 </div>
               </div>
