@@ -70,13 +70,12 @@ module Api
         end
       end
 
-      # app/controllers/api/v1/investment_clubs_controller.rb
       def portfolio
         club = InvestmentClub.find_by(slug: params[:id])
         
         if club && club.is_member?(@current_user)
           portfolio_service = ClubPortfolioService.new(club)
-          portfolio_data = portfolio_service.calculate_portfolio
+          portfolio_data = portfolio_service.portfolio_overview
           
           render json: portfolio_data
         else
