@@ -130,11 +130,18 @@ class ClubPortfolioService
   end
 
   def calculate_risk_metrics(investments)
+    return default_risk_metrics if investments.empty?
+
     # Simplified risk metrics
     returns = investments.map do |investment|
+      investment_amount = investment.investment_amount
+      next 0 if investment_amount.zero? # Skip division by zero
+      
       current_value = calculate_campaign_current_value(investment.campaign, investment.shares_acquired)
-      (current_value - investment.investment_amount) / investment.investment_amount
-    end
+      (current_value - investment_amount) / investment_amount
+    end.compact # Remove nil values
+
+    return default_risk_metrics if returns.empty?
     
     avg_return = returns.sum / returns.size
     variance = returns.sum { |r| (r - avg_return) ** 2 } / returns.size
@@ -144,6 +151,14 @@ class ClubPortfolioService
       volatility: volatility.round(4),
       max_drawdown: calculate_max_drawdown(returns),
       var_95: calculate_var(returns, 0.95)
+    }
+  end
+
+  def default_risk_metrics
+    {
+      volatility: 0,
+      max_drawdown: 0,
+      var_95: 0
     }
   end
 
