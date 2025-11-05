@@ -39,7 +39,7 @@ const InvestmentClubsDashboard: React.FC = () => {
       
       // Filter clubs where user is a member OR is the creator
       const userClubs = response.clubs.filter((club) => 
-        club.is_member || club.creator.id === user.id
+        club.is_member || Number(club.creator.id) === user.id
       );
       
       setClubs(userClubs);
