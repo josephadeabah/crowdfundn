@@ -24,7 +24,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
     investment_focus: '',
     minimum_monthly_contribution: '',
     max_members: '',
-    access_type: 'public' as 'public' | 'private',
+    club_type: 'public' as 'public' | 'private', // Changed from access_type to club_type
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,7 +33,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
 
     setLoading(true);
     try {
-      await clubService.createClub(token, {
+      const response = await clubService.createClub(token, {
         investment_club: {
           ...formData,
           minimum_monthly_contribution: parseFloat(formData.minimum_monthly_contribution),
@@ -41,20 +41,25 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
         },
       });
       
-      onClubCreated();
-      onClose();
-      // Reset form
-      setFormData({
-        name: '',
-        mission: '',
-        investment_focus: '',
-        minimum_monthly_contribution: '',
-        max_members: '',
-        access_type: 'public',
-      });
-    } catch (error) {
+      if (response.success) {
+        onClubCreated();
+        onClose();
+        // Reset form
+        setFormData({
+          name: '',
+          mission: '',
+          investment_focus: '',
+          minimum_monthly_contribution: '',
+          max_members: '',
+          club_type: 'public',
+        });
+      } else {
+        // service response type does not include an 'error' field, so throw a generic error
+        throw new Error('Failed to create club');
+      }
+    } catch (error: any) {
       console.error('Failed to create club:', error);
-      alert('Failed to create club. Please try again.');
+      alert(error.message || 'Failed to create club. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -191,14 +196,14 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
 
                 {/* Club Type */}
                 <div>
-                  <label htmlFor="access_type" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="club_type" className="block text-sm font-medium text-gray-700 mb-2">
                     Club Type *
                   </label>
                   <select
-                    id="access_type"
-                    name="access_type"
+                    id="club_type"
+                    name="club_type" // Changed from access_type to club_type
                     required
-                    value={formData.access_type}
+                    value={formData.club_type}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   >
