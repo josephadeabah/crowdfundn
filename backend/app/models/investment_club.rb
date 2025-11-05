@@ -14,9 +14,35 @@ class InvestmentClub < ApplicationRecord
   
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
   
-  # Clean enum definition - no conflicts
-  enum access_type: { private: 'private', public: 'public', verified: 'verified' }
+  # FIX: Use prefix with non-conflicting names
+  enum access_type: { 
+    restricted: 'private', 
+    open: 'public', 
+    certified: 'verified' 
+  }, _prefix: true
+  
   enum status: { active: 'active', inactive: 'inactive', suspended: 'suspended' }
+  
+  # Helper methods for clean access
+  def public?
+    access_type_open?
+  end
+  
+  def private?
+    access_type_restricted?
+  end
+  
+  def verified?
+    access_type_certified?
+  end
+  
+  def club_type
+    case access_type
+    when 'restricted' then 'private'
+    when 'open' then 'public' 
+    when 'certified' then 'verified'
+    end
+  end
   
   # All your existing methods remain the same...
   def active_members
