@@ -40,6 +40,21 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     }
   }, [isOpen, token, club.slug]);
 
+  // Safe number formatting functions
+  const safeToFixed = (value: any, decimals: number = 2): string => {
+    if (value === null || value === undefined || isNaN(Number(value))) {
+      return '0.00';
+    }
+    return Number(value).toFixed(decimals);
+  };
+
+  const safeNumber = (value: any): number => {
+    if (value === null || value === undefined || isNaN(Number(value))) {
+      return 0;
+    }
+    return Number(value);
+  };
+
   const loadMyMembership = async () => {
     if (!token) return;
 
@@ -209,7 +224,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
-    }).format(amount);
+    }).format(safeNumber(amount));
   };
 
   const getMemberInitials = (fullName: string) => {
@@ -418,7 +433,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                           {formatCurrency(member.total_contributed)}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {member.current_share.toFixed(1)}% share
+                          {safeToFixed(member.current_share, 1)}% share
                         </div>
                       </div>
 
@@ -618,7 +633,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     <div>
                       <span className="text-gray-600">Your Share:</span>
                       <div className="font-semibold">
-                        {myMembership.current_share.toFixed(2)}%
+                        {safeToFixed(myMembership.current_share, 2)}%
                       </div>
                     </div>
                     <div>
