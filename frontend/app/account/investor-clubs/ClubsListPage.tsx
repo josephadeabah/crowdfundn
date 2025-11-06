@@ -179,7 +179,7 @@ const ClubsListPage: React.FC = () => {
     if (club.club_type === 'private') {
       return {
         label: actionLoading === club.id ? 'Requesting...' : 'Request to Join',
-        style: 'bg-orange-200 text-orange-700 hover:bg-orange-600',
+        style: 'bg-orange-100 text-orange-800 hover:bg-orange-600 hover:text-white',
         onClick: (e: React.MouseEvent) => handleJoinRequest(club, e),
         disabled: actionLoading === club.id,
       };
