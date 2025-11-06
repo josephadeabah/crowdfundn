@@ -46,8 +46,19 @@ module Api
 
       # POST /api/v1/investment_clubs/:investment_club_id/memberships
       def create
+        Rails.logger.info "CREATE MEMBERSHIP DEBUG: User #{@current_user.id} creating membership for club #{@club.slug}"
+        Rails.logger.info "CREATE MEMBERSHIP DEBUG: Club private? #{@club.private?}, Invitation token: #{params[:invitation_token]}"
+
+        if @club.private? && !params[:invitation_token]
+          return render json: { 
+            success: false,
+            error: 'Invitation required for private club' 
+          }, status: :forbidden
+        end
+
         # Check if user is already a member
         if @club.is_member?(@current_user)
+          Rails.logger.info "CREATE MEMBERSHIP DEBUG: User already a member"
           return render json: { 
             success: false,
             error: 'Already a member of this club' 
@@ -56,6 +67,7 @@ module Api
 
         # Check if club is at capacity
         if @club.at_capacity?
+          Rails.logger.info "CREATE MEMBERSHIP DEBUG: Club at capacity"
           return render json: { 
             success: false,
             error: 'Club has reached maximum member capacity' 
@@ -68,7 +80,11 @@ module Api
           status: determine_initial_status
         )
 
+        Rails.logger.info "CREATE MEMBERSHIP DEBUG: Membership attributes: #{membership.attributes}"
+        Rails.logger.info "CREATE MEMBERSHIP DEBUG: Initial status: #{determine_initial_status}"
+
         if membership.save
+          Rails.logger.info "CREATE MEMBERSHIP DEBUG: Membership saved successfully with ID: #{membership.id}"
           notify_admins_of_pending_member(membership) if membership.pending?
           
           render json: { 
@@ -77,12 +93,14 @@ module Api
             message: membership_message(membership)
           }, status: :created
         else
+          Rails.logger.error "CREATE MEMBERSHIP DEBUG: Membership save failed: #{membership.errors.full_messages}"
           render json: { 
             success: false, 
             errors: membership.errors.full_messages 
           }, status: :unprocessable_entity
         end
       end
+
 
       # GET /api/v1/investment_clubs/:investment_club_id/memberships/:id
       def show
