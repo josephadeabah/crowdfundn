@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Club, Member, Membership } from './clubTypes';
 import { clubService, membershipService } from './clubservice';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import { deslugify } from '@/app/utils/helpers/categories';
 
 interface ClubDetailsModalProps {
   isOpen: boolean;
@@ -311,7 +312,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                       Investment Focus
                     </h4>
                     <p className="text-gray-700">
-                      {club.investment_focus || 'General investments'}
+                      {deslugify(club.investment_focus )|| 'General investments'}
                     </p>
                   </div>
                 </div>
