@@ -12,7 +12,8 @@ class InvestmentClubMembership < ApplicationRecord
   
   before_create :set_initial_share
   after_save :update_club_financials, if: -> { saved_change_to_total_contributed? }
-  after_save :update_club_members_count, if: -> { saved_change_to_status? }
+    # FIXED: Use after_commit to ensure club is saved and available
+  after_commit :update_club_members_count, on: [:create, :update, :destroy]
   after_destroy :update_club_members_count
   
   scope :active, -> { where(status: 'active') }
@@ -26,10 +27,15 @@ class InvestmentClubMembership < ApplicationRecord
     update_column(:current_share, new_share.round(4))
   end
 
+  # Fix the method name and implementation
   def update_club_members_count
-    investment_club.update_members_count
+    # Use update_column to avoid callbacks and validations
+    investment_club.update_column(:current_members_count, investment_club.investment_club_memberships.active.count)
+  rescue => e
+    Rails.logger.error "Error updating club members count: #{e.message}"
   end
   
+  # Add this to handle the callback properly
   def can_manage?
     admin? || creator?
   end
@@ -40,6 +46,13 @@ class InvestmentClubMembership < ApplicationRecord
   
   def can_contribute?
     active?
+  end
+  
+  def estimated_share_value
+    return 0 unless active?
+    
+    # Simple calculation - you might want to make this more sophisticated
+    (current_share / 100.0) * investment_club.current_balance.to_f
   end
   
   def total_investment_value

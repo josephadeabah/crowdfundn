@@ -21,7 +21,7 @@ class InvestmentClubCreationService
         minimum_monthly_contribution: club_data[:minimum_monthly_contribution],
         max_members: club_data[:max_members],
         creator: @creator,
-        current_members_count: 0 # Start with 0, callback will update to 1
+        current_members_count: 0 # Start with 0, will be updated by callback
       }
       
       # Set club_type which will map to access_type via the setter
@@ -47,6 +47,9 @@ class InvestmentClubCreationService
         creator_membership = club.investment_club_memberships.find_by(user: @creator)
         Rails.logger.info "DEBUG: Creator membership created: #{creator_membership.present?}"
         Rails.logger.info "DEBUG: Creator membership details: #{creator_membership.as_json}" if creator_membership
+        
+        # Force update members count to ensure it's correct
+        club.update_members_count
         
         # Generate digital constitution
         generate_constitution(club)

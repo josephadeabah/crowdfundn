@@ -1,3 +1,4 @@
+# app/models/investment_club.rb
 class InvestmentClub < ApplicationRecord
   belongs_to :creator, class_name: 'User'
   has_many :investment_club_memberships, dependent: :destroy
@@ -13,7 +14,6 @@ class InvestmentClub < ApplicationRecord
   validates :current_members_count, numericality: { greater_than_or_equal_to: 0 }
 
   attribute :constitution_data, :json, default: -> { {} }
-    # Add sensible defaults
   attribute :current_members_count, :integer, default: 0
   attribute :max_members, :integer, default: 50
   attribute :minimum_monthly_contribution, :decimal, default: 0.0
@@ -22,10 +22,10 @@ class InvestmentClub < ApplicationRecord
   before_validation :map_club_type_to_access_type
   after_create :create_creator_membership
   after_initialize :set_default_members_count, if: :new_record?
-  # Add this callback to ensure members count is updated
+  
+  # FIXED: Remove the problematic callback and use a simpler approach
   after_save :update_members_count_if_needed
   
-  # FIXED: Simple enum without complex mappings
   enum access_type: { 
     open: 'open', 
     restricted: 'restricted', 
@@ -70,11 +70,11 @@ class InvestmentClub < ApplicationRecord
     end
   end
   
-  # Update members count method
+  # Update members count method - SIMPLIFIED
   def update_members_count
     active_count = investment_club_memberships.active.count
     if current_members_count != active_count
-      update_columns(current_members_count: active_count)
+      update_column(:current_members_count, active_count)
     end
   end
   
@@ -97,11 +97,6 @@ class InvestmentClub < ApplicationRecord
              investment_club_id: id
            })
   end
-
-  def active_member?(user)
-    # Check only for active memberships
-    investment_club_memberships.active.exists?(user: user)
-  end
   
   def admin_members
     members.joins(:investment_club_memberships)
@@ -113,8 +108,7 @@ class InvestmentClub < ApplicationRecord
   end
   
   def is_member?(user)
-    # Check for any membership (active or pending)
-    investment_club_memberships.exists?(user: user)
+    investment_club_memberships.active.exists?(user: user)
   end
   
   def is_admin?(user)
@@ -154,11 +148,6 @@ class InvestmentClub < ApplicationRecord
   def pending_members_count
     investment_club_memberships.pending.count
   end
-
-  def update_members_count
-    active_count = investment_club_memberships.active.count
-    update_column(:current_members_count, active_count) if current_members_count != active_count
-  end
   
   private
   
@@ -181,11 +170,17 @@ class InvestmentClub < ApplicationRecord
     self.access_type = 'restricted' if access_type.blank?
   end
 
-  def update_members_count_if_needed
-    update_members_count if saved_change_to_investment_club_memberships_count?
-  end
-
   def set_default_members_count
     self.current_members_count ||= 0
+  end
+  
+  # FIXED: Simplified callback that doesn't rely on non-existent methods
+  def update_members_count_if_needed
+    # Only update if we think the count might be wrong
+    # This is a conservative approach to avoid unnecessary updates
+    actual_count = investment_club_memberships.active.count
+    if current_members_count != actual_count
+      update_column(:current_members_count, actual_count)
+    end
   end
 end
