@@ -1,3 +1,4 @@
+# app/serializers/investment_club_serializer.rb
 class InvestmentClubSerializer
   def initialize(club, options = {})
     @club = club
@@ -5,6 +6,8 @@ class InvestmentClubSerializer
   end
   
   def as_json
+    membership = @club.membership_for(@current_user) if @current_user
+    
     {
       id: @club.id,
       slug: @club.slug,
@@ -15,7 +18,6 @@ class InvestmentClubSerializer
       status: @club.status,
       minimum_monthly_contribution: @club.minimum_monthly_contribution,
       max_members: @club.max_members,
-      # ADD: Now this field exists in the database
       current_members_count: @club.current_members_count,
       financials: {
         total_contributions: @club.total_contributions,
@@ -28,6 +30,8 @@ class InvestmentClubSerializer
       },
       is_member: @current_user ? @club.is_member?(@current_user) : false,
       is_admin: @current_user ? @club.is_admin?(@current_user) : false,
+      # ADD THIS:
+      membership_status: membership ? membership.status : 'none',
       created_at: @club.created_at,
       updated_at: @club.updated_at
     }
