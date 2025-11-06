@@ -1,31 +1,52 @@
+# app/controllers/api/v1/investment_clubs_controller.rb
 module Api
   module V1
     class InvestmentClubsController < ApplicationController
       before_action :authenticate_request
+      before_action :set_club, only: [:show, :update, :portfolio, :analytics, :member_portfolio, :join, :leave, :my_membership_status, :transfer_ownership]
       
+      # GET /api/v1/investment_clubs
       def index
-        clubs = InvestmentClub.active.includes(
-          :creator, 
-          investment_club_memberships: :user
-        )
+        clubs = InvestmentClub.active.includes(:creator, investment_club_memberships: :user)
         
         render json: {
+          success: true,
           clubs: clubs.map { |club| InvestmentClubSerializer.new(club, current_user: @current_user).as_json }
         }
       end
-      
-      def create
-        # Log the incoming parameters for debugging
-        Rails.logger.info "DEBUG: Received params: #{params.inspect}"
+
+      # GET /api/v1/investment_clubs/my_clubs
+      def my_clubs
+        user_clubs = InvestmentClub.joins(:investment_club_memberships)
+                                  .where(investment_club_memberships: { user_id: @current_user.id, status: 'active' })
+                                  .includes(:creator, investment_club_memberships: :user)
         
+        render json: {
+          success: true,
+          clubs: user_clubs.map { |club| InvestmentClubSerializer.new(club, current_user: @current_user).as_json }
+        }
+      end
+
+      # GET /api/v1/investment_clubs/discover
+      def discover
+        # Clubs that user is not a member of
+        user_club_ids = @current_user.investment_club_memberships.pluck(:investment_club_id)
+        discover_clubs = InvestmentClub.active
+                                      .where.not(id: user_club_ids)
+                                      .includes(:creator, investment_club_memberships: :user)
+        
+        render json: {
+          success: true,
+          clubs: discover_clubs.map { |club| InvestmentClubSerializer.new(club, current_user: @current_user).as_json }
+        }
+      end
+
+      # POST /api/v1/investment_clubs
+      def create
         result = InvestmentClubCreationService.new(@current_user, club_params).create
         
         if result[:success]
-          # Reload the club with associations for serialization
-          club = InvestmentClub.includes(
-            :creator, 
-            investment_club_memberships: :user
-          ).find(result[:club].id)
+          club = InvestmentClub.includes(:creator, investment_club_memberships: :user).find(result[:club].id)
           
           render json: { 
             success: true, 
@@ -38,74 +59,239 @@ module Api
           }, status: :unprocessable_entity
         end
       end
-      
+
+      # GET /api/v1/investment_clubs/:id
       def show
-        club = InvestmentClub.find_by(slug: params[:id])
-        
-        if club && (club.public? || club.is_member?(@current_user))
+        if @club && (@club.public? || @club.is_member?(@current_user))
           render json: { 
-            club: InvestmentClubSerializer.new(club, current_user: @current_user).as_json 
+            success: true,
+            club: InvestmentClubSerializer.new(@club, current_user: @current_user).as_json 
           }
         else
-          render json: { error: 'Club not found or access denied' }, status: :not_found
+          render json: { 
+            success: false,
+            error: 'Club not found or access denied' 
+          }, status: :not_found
         end
       end
-      
+
+      # PUT /api/v1/investment_clubs/:id
       def update
-        club = InvestmentClub.find_by(slug: params[:id])
-        
-        if club && club.is_admin?(@current_user)
-          if club.update(club_params)
+        if @club && @club.is_admin?(@current_user)
+          if @club.update(club_params)
             render json: { 
               success: true, 
-              club: InvestmentClubSerializer.new(club).as_json 
+              club: InvestmentClubSerializer.new(@club).as_json 
             }
           else
             render json: { 
               success: false, 
-              errors: club.errors.full_messages 
+              errors: @club.errors.full_messages 
             }, status: :unprocessable_entity
           end
         else
-          render json: { error: 'Access denied' }, status: :forbidden
+          render json: { 
+            success: false,
+            error: 'Access denied' 
+          }, status: :forbidden
         end
       end
 
-      def portfolio
-        club = InvestmentClub.find_by(slug: params[:id])
+      # POST /api/v1/investment_clubs/:id/join
+      def join
+        if @club.is_member?(@current_user)
+          return render json: { 
+            success: false,
+            error: 'Already a member of this club' 
+          }, status: :unprocessable_entity
+        end
+
+        if @club.at_capacity?
+          return render json: { 
+            success: false,
+            error: 'Club has reached maximum member capacity' 
+          }, status: :unprocessable_entity
+        end
+
+        membership = @club.investment_club_memberships.new(
+          user: @current_user,
+          role: 'member',
+          status: @club.public? ? 'active' : 'pending'
+        )
+
+        if membership.save
+          notify_admins_of_pending_member(membership) if membership.pending?
+          
+          render json: { 
+            success: true, 
+            membership: ClubMembershipSerializer.new(membership).as_json,
+            message: @club.public? ? 'Successfully joined club' : 'Membership request submitted for approval'
+          }
+        else
+          render json: { 
+            success: false, 
+            errors: membership.errors.full_messages 
+          }, status: :unprocessable_entity
+        end
+      end
+
+      # POST /api/v1/investment_clubs/:id/leave
+      def leave
+        membership = @club.investment_club_memberships.find_by(user: @current_user)
         
-        if club && club.is_member?(@current_user)
-          portfolio_service = ClubPortfolioService.new(club)
+        if membership.nil?
+          return render json: { 
+            success: false,
+            error: 'Not a member of this club' 
+          }, status: :not_found
+        end
+
+        if membership.creator? && @club.investment_club_memberships.admin.count == 1
+          return render json: { 
+            success: false,
+            error: 'Cannot leave club as the only admin. Transfer ownership first.' 
+          }, status: :unprocessable_entity
+        end
+
+        # Get portfolio summary before removal
+        portfolio_summary = ClubPortfolioService.new(@club).member_portfolio(@current_user)
+        
+        if membership.destroy
+          ClubMembershipService.new(membership).handle_member_removal
+          
+          render json: { 
+            success: true, 
+            message: 'Successfully left the club',
+            portfolio_summary: portfolio_summary
+          }
+        else
+          render json: { 
+            success: false, 
+            errors: membership.errors.full_messages 
+          }, status: :unprocessable_entity
+        end
+      end
+
+      # GET /api/v1/investment_clubs/:id/my_membership_status
+      def my_membership_status
+        membership = @club.investment_club_memberships.find_by(user: @current_user)
+        
+        if membership
+          render json: {
+            success: true,
+            membership: ClubMembershipSerializer.new(membership).as_json
+          }
+        else
+          render json: {
+            success: false,
+            is_member: false,
+            message: 'Not a member of this club'
+          }
+        end
+      end
+
+      # POST /api/v1/investment_clubs/:id/transfer_ownership
+      def transfer_ownership
+        unless @club.is_creator?(@current_user)
+          return render json: { 
+            success: false,
+            error: 'Only club creator can transfer ownership' 
+          }, status: :forbidden
+        end
+
+        new_admin_id = params[:new_admin_id]
+        service = ClubMembershipService.new(@club.membership_for(@current_user))
+        result = service.transfer_ownership(new_admin_id)
+
+        if result[:success]
+          render json: { 
+            success: true, 
+            message: result[:message] 
+          }
+        else
+          render json: { 
+            success: false, 
+            error: result[:error] 
+          }, status: :unprocessable_entity
+        end
+      end
+
+      # GET /api/v1/investment_clubs/:id/portfolio
+      def portfolio
+        if @club && @club.is_member?(@current_user)
+          portfolio_service = ClubPortfolioService.new(@club)
           portfolio_data = portfolio_service.portfolio_overview
           
-          render json: portfolio_data
+          render json: {
+            success: true,
+            portfolio: portfolio_data
+          }
         else
-          render json: { error: 'Access denied' }, status: :forbidden
+          render json: { 
+            success: false,
+            error: 'Access denied' 
+          }, status: :forbidden
         end
       end
 
+      # GET /api/v1/investment_clubs/:id/analytics
       def analytics
-        club = InvestmentClub.find_by(slug: params[:id])
-        
-        if club && club.is_member?(@current_user)
-          analytics_service = ClubAnalyticsService.new(club)
-          analytics_data = analytics_service.calculate_analytics
+        if @club && @club.is_member?(@current_user)
+          portfolio_service = ClubPortfolioService.new(@club)
+          analytics_data = portfolio_service.performance_analytics
           
-          render json: analytics_data
+          render json: {
+            success: true,
+            analytics: analytics_data
+          }
         else
-          render json: { error: 'Access denied' }, status: :forbidden
+          render json: { 
+            success: false,
+            error: 'Access denied' 
+          }, status: :forbidden
         end
       end
-      
+
+      # GET /api/v1/investment_clubs/:id/member_portfolio
+      def member_portfolio
+        if @club && @club.is_member?(@current_user)
+          portfolio_service = ClubPortfolioService.new(@club)
+          member_portfolio_data = portfolio_service.member_portfolio(@current_user)
+          
+          render json: {
+            success: true,
+            member_portfolio: member_portfolio_data
+          }
+        else
+          render json: { 
+            success: false,
+            error: 'Access denied' 
+          }, status: :forbidden
+        end
+      end
+
       private
       
+      def set_club
+        @club = InvestmentClub.find_by(slug: params[:id])
+        render json: { 
+          success: false,
+          error: 'Club not found' 
+        }, status: :not_found unless @club
+      end
+      
       def club_params
-        # Permit club_type explicitly
         params.require(:investment_club).permit(
           :name, :mission, :minimum_monthly_contribution, 
           :investment_focus, :max_members, :club_type,
           :constitution_data
         )
+      end
+
+      def notify_admins_of_pending_member(membership)
+        @club.admin_members.each do |admin|
+          ClubMailer.pending_member_notification(admin, membership).deliver_later
+        end
       end
     end
   end

@@ -74,6 +74,23 @@ class ClubPortfolioService
     }
   end
 
+  def calculate_member_share_value(member_share)
+    campaign = member_share.club_investment.campaign
+    calculate_campaign_current_value(campaign, member_share.effective_shares)
+  end
+
+  def calculate_member_investment_performance(member_shares)
+    total_invested = member_shares.sum(&:invested_amount)
+    current_value = member_shares.sum { |share| calculate_member_share_value(share) }
+    
+    {
+      total_invested: total_invested.round(2),
+      current_value: current_value.round(2),
+      total_returns: (current_value - total_invested).round(2),
+      return_percentage: total_invested > 0 ? ((current_value - total_invested) / total_invested * 100).round(2) : 0
+    }
+  end
+
   private
 
   def calculate_current_portfolio_value(investments)

@@ -285,27 +285,48 @@ Rails.application.routes.draw do
 
 
     # Investment Clubs
-    resources :investment_clubs, only: [:index, :create, :show, :update] do
-      resources :memberships, only: [:index, :create, :update, :destroy], controller: 'club_memberships'
-      resources :contributions, only: [:index, :create], controller: 'club_contributions'
-      resources :investments, only: [:index, :create], controller: 'club_investments' do
+      resources :investment_clubs, only: [:index, :create, :show, :update] do
+        # Membership management
+        resources :memberships, only: [:index, :create, :update, :destroy], controller: 'club_memberships' do
+          member do
+            post :approve
+            post :reject
+            post :leave
+          end
+          collection do
+            get :pending
+            get :my_membership
+          end
+        end
+
+        # Club operations
+        resources :contributions, only: [:index, :create], controller: 'club_contributions'
+        resources :investments, only: [:index, :create], controller: 'club_investments' do
+          member do
+            post :vote
+            post :execute
+            get :ai_recommendation
+            get :voting_insights
+            post :start_voting
+          end
+        end
+        
         member do
-          post :vote
-          post :execute
-          get :ai_recommendation
-          get :voting_insights
+          get :portfolio
+          get :analytics
+          get :member_portfolio
+          post :join
+          post :leave
+          post :create_wallet
+          get :my_membership_status
+          post :transfer_ownership
+        end
+
+        collection do
+          get :my_clubs
+          get :discover
         end
       end
-      
-      member do
-        get :portfolio
-        get :analytics
-        get :member_portfolio
-        post :join
-        post :leave
-        post :create_wallet
-      end
-    end
     
     # Reusable voting system
     post 'votes/:votable_type/:votable_id', to: 'votes#create'

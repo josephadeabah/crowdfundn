@@ -4,37 +4,77 @@ module Api
     class ClubMembershipsController < ApplicationController
       before_action :authenticate_request
       before_action :set_club
-      before_action :verify_admin_access, only: [:update, :destroy]
+      before_action :set_membership, only: [:show, :update, :destroy, :approve, :reject]
+      before_action :verify_admin_access, only: [:update, :destroy, :approve, :reject, :pending]
 
+      # GET /api/v1/investment_clubs/:investment_club_id/memberships
       def index
         memberships = @club.investment_club_memberships.includes(:user)
         
         render json: {
+          success: true,
           members: memberships.map { |m| ClubMembershipSerializer.new(m).as_json }
         }
       end
 
-      def create
-        # For public clubs, users can join directly
-        # For private clubs, users need invitation/approval
+      # GET /api/v1/investment_clubs/:investment_club_id/memberships/pending
+      def pending
+        pending_memberships = @club.investment_club_memberships.pending.includes(:user)
         
-        if @club.private? && !params[:invitation_token]
-          return render json: { error: 'Invitation required for private club' }, status: :forbidden
+        render json: {
+          success: true,
+          pending_members: pending_memberships.map { |m| ClubMembershipSerializer.new(m).as_json }
+        }
+      end
+
+      # GET /api/v1/investment_clubs/:investment_club_id/memberships/my_membership
+      def my_membership
+        membership = @club.investment_club_memberships.find_by(user: @current_user)
+        
+        if membership
+          render json: {
+            success: true,
+            membership: ClubMembershipSerializer.new(membership).as_json
+          }
+        else
+          render json: {
+            success: false,
+            error: 'Not a member of this club'
+          }, status: :not_found
+        end
+      end
+
+      # POST /api/v1/investment_clubs/:investment_club_id/memberships
+      def create
+        # Check if user is already a member
+        if @club.is_member?(@current_user)
+          return render json: { 
+            success: false,
+            error: 'Already a member of this club' 
+          }, status: :unprocessable_entity
+        end
+
+        # Check if club is at capacity
+        if @club.at_capacity?
+          return render json: { 
+            success: false,
+            error: 'Club has reached maximum member capacity' 
+          }, status: :unprocessable_entity
         end
 
         membership = @club.investment_club_memberships.new(
           user: @current_user,
           role: 'member',
-          status: @club.public? ? 'active' : 'pending'
+          status: determine_initial_status
         )
 
         if membership.save
-          # Send notification to club admins for pending memberships
           notify_admins_of_pending_member(membership) if membership.pending?
           
           render json: { 
             success: true, 
-            membership: ClubMembershipSerializer.new(membership).as_json 
+            membership: ClubMembershipSerializer.new(membership).as_json,
+            message: membership_message(membership)
           }, status: :created
         else
           render json: { 
@@ -44,40 +84,141 @@ module Api
         end
       end
 
+      # GET /api/v1/investment_clubs/:investment_club_id/memberships/:id
+      def show
+        render json: {
+          success: true,
+          membership: ClubMembershipSerializer.new(@membership).as_json
+        }
+      end
+
+      # PUT /api/v1/investment_clubs/:investment_club_id/memberships/:id
       def update
-        membership = @club.investment_club_memberships.find(params[:id])
-        
-        if membership.update(membership_params)
-          # Notify user of status change
-          notify_member_of_status_change(membership) if membership.saved_change_to_status?
+        if @membership.update(membership_params)
+          notify_member_of_status_change(@membership) if @membership.saved_change_to_status?
+          notify_member_of_role_change(@membership) if @membership.saved_change_to_role?
           
           render json: { 
             success: true, 
-            membership: ClubMembershipSerializer.new(membership).as_json 
+            membership: ClubMembershipSerializer.new(@membership).as_json 
           }
         else
           render json: { 
             success: false, 
-            errors: membership.errors.full_messages 
+            errors: @membership.errors.full_messages 
           }, status: :unprocessable_entity
         end
       end
 
+      # POST /api/v1/investment_clubs/:investment_club_id/memberships/:id/approve
+      def approve
+        if @membership.pending?
+          if @membership.update(status: 'active')
+            notify_member_of_approval(@membership)
+            render json: { 
+              success: true, 
+              membership: ClubMembershipSerializer.new(@membership).as_json,
+              message: 'Member approved successfully'
+            }
+          else
+            render json: { 
+              success: false, 
+              errors: @membership.errors.full_messages 
+            }, status: :unprocessable_entity
+          end
+        else
+          render json: { 
+            success: false,
+            error: 'Only pending members can be approved'
+          }, status: :unprocessable_entity
+        end
+      end
+
+      # POST /api/v1/investment_clubs/:investment_club_id/memberships/:id/reject
+      def reject
+        if @membership.pending?
+          if @membership.destroy
+            notify_member_of_rejection(@membership)
+            render json: { 
+              success: true, 
+              message: 'Membership request rejected'
+            }
+          else
+            render json: { 
+              success: false, 
+              errors: @membership.errors.full_messages 
+            }, status: :unprocessable_entity
+          end
+        else
+          render json: { 
+            success: false,
+            error: 'Only pending members can be rejected'
+          }, status: :unprocessable_entity
+        end
+      end
+
+      # DELETE /api/v1/investment_clubs/:investment_club_id/memberships/:id
       def destroy
-        membership = @club.investment_club_memberships.find(params[:id])
-        
+        # Users can leave their own membership, admins can remove others
+        if @membership.user != @current_user && !@club.is_admin?(@current_user)
+          return render json: { 
+            success: false,
+            error: 'Not authorized to remove this member' 
+          }, status: :forbidden
+        end
+
         # Prevent creator from leaving without transferring ownership
+        if @membership.creator? && @club.investment_club_memberships.admin.count == 1
+          return render json: { 
+            success: false,
+            error: 'Cannot remove the only admin. Transfer ownership first.' 
+          }, status: :unprocessable_entity
+        end
+
+        if @membership.destroy
+          ClubMembershipService.new(@membership).handle_member_removal
+          
+          render json: { 
+            success: true, 
+            message: 'Membership removed successfully' 
+          }
+        else
+          render json: { 
+            success: false, 
+            errors: @membership.errors.full_messages 
+          }, status: :unprocessable_entity
+        end
+      end
+
+      # POST /api/v1/investment_clubs/:investment_club_id/memberships/:id/leave
+      def leave
+        membership = @club.investment_club_memberships.find_by(user: @current_user)
+        
+        if membership.nil?
+          return render json: { 
+            success: false,
+            error: 'Not a member of this club' 
+          }, status: :not_found
+        end
+
         if membership.creator? && @club.investment_club_memberships.admin.count == 1
           return render json: { 
+            success: false,
             error: 'Cannot leave club as the only admin. Transfer ownership first.' 
           }, status: :unprocessable_entity
         end
 
+        # Get portfolio summary before removal for reporting
+        portfolio_summary = ClubPortfolioService.new(@club).member_portfolio(@current_user)
+        
         if membership.destroy
-          # Handle member's investment shares redistribution
-          redistribute_member_shares(membership.user) if membership.active?
+          ClubMembershipService.new(membership).handle_member_removal
           
-          render json: { success: true }
+          render json: { 
+            success: true, 
+            message: 'Successfully left the club',
+            portfolio_summary: portfolio_summary
+          }
         else
           render json: { 
             success: false, 
@@ -90,15 +231,51 @@ module Api
 
       def set_club
         @club = InvestmentClub.find_by(slug: params[:investment_club_id])
-        render json: { error: 'Club not found' }, status: :not_found unless @club
+        render json: { 
+          success: false,
+          error: 'Club not found' 
+        }, status: :not_found unless @club
+      end
+
+      def set_membership
+        @membership = @club.investment_club_memberships.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: { 
+          success: false,
+          error: 'Membership not found' 
+        }, status: :not_found
       end
 
       def verify_admin_access
-        render json: { error: 'Admin access required' }, status: :forbidden unless @club.is_admin?(@current_user)
+        return if action_name == 'leave' || action_name == 'my_membership'
+        return if action_name == 'destroy' && @membership&.user == @current_user
+        
+        unless @club.is_admin?(@current_user)
+          render json: { 
+            success: false,
+            error: 'Admin access required' 
+          }, status: :forbidden
+        end
       end
 
       def membership_params
         params.require(:membership).permit(:role, :status)
+      end
+
+      def determine_initial_status
+        if @club.public?
+          'active'
+        else
+          'pending'
+        end
+      end
+
+      def membership_message(membership)
+        if membership.pending?
+          'Membership request submitted. Waiting for admin approval.'
+        else
+          'Successfully joined the club!'
+        end
       end
 
       def notify_admins_of_pending_member(membership)
@@ -111,33 +288,16 @@ module Api
         ClubMailer.membership_status_changed(membership.user, membership).deliver_later
       end
 
-      def redistribute_member_shares(user)
-        # Redistribute the leaving member's investment shares to remaining members
-        member_shares = MemberInvestmentShare.where(user: user)
-        
-        member_shares.each do |share|
-          club_investment = share.club_investment
-          remaining_members = @club.active_members.where.not(id: user.id)
-          
-          if remaining_members.any?
-            share_per_member = share.share_percentage / remaining_members.count
-            
-            remaining_members.each do |member|
-              existing_share = MemberInvestmentShare.find_or_initialize_by(
-                user: member,
-                club_investment: club_investment
-              )
-              
-              new_share_percentage = existing_share.share_percentage.to_f + share_per_member
-              existing_share.update!(
-                share_percentage: new_share_percentage,
-                effective_shares: (new_share_percentage / 100) * club_investment.shares_acquired.to_f
-              )
-            end
-          end
-          
-          share.destroy
-        end
+      def notify_member_of_role_change(membership)
+        ClubMailer.membership_role_changed(membership.user, membership).deliver_later
+      end
+
+      def notify_member_of_approval(membership)
+        ClubMailer.membership_approved(membership.user, membership).deliver_later
+      end
+
+      def notify_member_of_rejection(membership)
+        ClubMailer.membership_rejected(membership.user, membership).deliver_later
       end
     end
   end

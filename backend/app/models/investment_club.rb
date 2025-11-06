@@ -122,6 +122,22 @@ class InvestmentClub < ApplicationRecord
   def can_invest?(amount)
     current_balance >= amount
   end
+
+    def at_capacity?
+    current_members_count >= max_members
+  end
+
+  def is_creator?(user)
+    creator_id == user.id
+  end
+
+  def can_join?(user)
+    !at_capacity? && !is_member?(user)
+  end
+
+  def pending_members_count
+    investment_club_memberships.pending.count
+  end
   
   private
   
