@@ -23,6 +23,8 @@ export interface Club {
   is_member: boolean;
   is_admin: boolean;
   is_creator?: boolean;
+  // ADD THIS:
+  membership_status?: 'active' | 'pending' | 'none';
   created_at: string;
   updated_at: string;
 }
