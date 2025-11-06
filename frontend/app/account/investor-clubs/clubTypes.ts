@@ -23,12 +23,12 @@ export interface Club {
   is_member: boolean;
   is_admin: boolean;
   is_creator?: boolean;
-  // ADD THIS:
   membership_status?: 'active' | 'pending' | 'none';
   created_at: string;
   updated_at: string;
 }
 
+// ... rest of your existing interfaces remain the same
 export interface Member {
   id: string;
   user: {
@@ -119,7 +119,7 @@ export interface JoinClubResponse {
   success: boolean;
   membership?: Membership;
   message: string;
-  is_member?: boolean; // Add this optional property
+  is_member?: boolean;
 }
 
 export interface MembershipStatusResponse {

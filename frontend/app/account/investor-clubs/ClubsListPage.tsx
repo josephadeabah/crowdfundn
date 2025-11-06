@@ -71,10 +71,25 @@ const ClubsListPage: React.FC = () => {
   };
 
   const handleClubClick = async (club: Club) => {
-    // Allow clicking on any club to view details and request membership
     setSelectedClub(club);
     await loadClubMembers(club);
     setIsModalOpen(true);
+  };
+
+  // Helper function to update club with pending status
+  const updateClubWithPendingStatus = (club: Club): Club => {
+    return {
+      ...club,
+      membership_status: 'pending' as const,
+    };
+  };
+
+  // Helper function to update club with none status
+  const updateClubWithNoneStatus = (club: Club): Club => {
+    return {
+      ...club,
+      membership_status: 'none' as const,
+    };
   };
 
   const handleJoinRequest = async (club: Club, event?: React.MouseEvent) => {
@@ -87,6 +102,25 @@ const ClubsListPage: React.FC = () => {
     setActionLoading(club.id);
     setMessage(null);
 
+    // OPTIMISTIC UPDATE - Immediately update UI with proper typing
+    setClubs(prevClubs => 
+      prevClubs.map(c => 
+        c.id === club.id ? updateClubWithPendingStatus(c) : c
+      )
+    );
+
+    setMyClubs(prevMyClubs => 
+      prevMyClubs.map(c => 
+        c.id === club.id ? updateClubWithPendingStatus(c) : c
+      )
+    );
+
+    setDiscoverClubs(prevDiscoverClubs => 
+      prevDiscoverClubs.map(c => 
+        c.id === club.id ? updateClubWithPendingStatus(c) : c
+      )
+    );
+
     try {
       const response = await clubService.joinClub(token, club.slug);
 
@@ -97,20 +131,7 @@ const ClubsListPage: React.FC = () => {
           clubId: club.id,
         });
         
-        // Immediately update the club's membership status
-        const updatedClubs = clubs.map(c => {
-          if (c.id === club.id) {
-            return {
-              ...c,
-              is_member: true, // Mark as member to trigger button change
-              // You might want to add a pending status flag to your Club type
-            };
-          }
-          return c;
-        });
-        setClubs(updatedClubs);
-        
-        // Also reload the full data
+        // Reload the full data to ensure consistency with backend
         await loadClubs();
       } else {
         setMessage({
@@ -118,6 +139,9 @@ const ClubsListPage: React.FC = () => {
           text: response.message || 'Failed to send membership request',
           clubId: club.id,
         });
+        
+        // Revert optimistic update on error
+        revertOptimisticUpdate(club.id);
       }
     } catch (error: any) {
       setMessage({
@@ -125,9 +149,32 @@ const ClubsListPage: React.FC = () => {
         text: error.message || 'Failed to send membership request',
         clubId: club.id,
       });
+      
+      // Revert optimistic update on error
+      revertOptimisticUpdate(club.id);
     } finally {
       setActionLoading(null);
     }
+  };
+
+  const revertOptimisticUpdate = (clubId: string) => {
+    setClubs(prevClubs => 
+      prevClubs.map(c => 
+        c.id === clubId ? updateClubWithNoneStatus(c) : c
+      )
+    );
+
+    setMyClubs(prevMyClubs => 
+      prevMyClubs.map(c => 
+        c.id === clubId ? updateClubWithNoneStatus(c) : c
+      )
+    );
+
+    setDiscoverClubs(prevDiscoverClubs => 
+      prevDiscoverClubs.map(c => 
+        c.id === clubId ? updateClubWithNoneStatus(c) : c
+      )
+    );
   };
 
   const handleClubCreated = () => {
@@ -172,6 +219,9 @@ const ClubsListPage: React.FC = () => {
   };
 
   const getClubStatus = (club: Club) => {
+    if (club.membership_status === 'pending') {
+      return { label: 'Pending', color: 'bg-yellow-100 text-yellow-800' };
+    }
     if (club.is_member) {
       return { label: 'Member', color: 'bg-green-100 text-green-800' };
     }
@@ -182,24 +232,21 @@ const ClubsListPage: React.FC = () => {
   };
 
   const getActionButton = (club: Club) => {
-    // Check if user has a pending membership request for this club
-    const userMembership = members.find(m => m.user.id === String(user?.id));
-    const hasPendingRequest = userMembership?.status === 'pending';
-
-    if (club.is_member || userMembership?.status === 'active') {
-      return {
-        label: 'View Club',
-        style: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200',
-        onClick: () => handleClubClick(club),
-      };
-    }
-
-    if (hasPendingRequest) {
+    // Use the club's membership_status for immediate feedback
+    if (club.membership_status === 'pending') {
       return {
         label: 'Request Pending',
         style: 'bg-yellow-100 text-yellow-700 cursor-not-allowed',
         onClick: undefined,
         disabled: true,
+      };
+    }
+
+    if (club.is_member) {
+      return {
+        label: 'View Club',
+        style: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200',
+        onClick: () => handleClubClick(club),
       };
     }
 
@@ -336,6 +383,12 @@ const ClubsListPage: React.FC = () => {
                         {getClubIcon(club)}
                       </div>
                       <div className="flex flex-col items-end gap-2">
+                        {/* ADDED: Request Pending Status Indicator */}
+                        {club.membership_status === 'pending' && (
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Request Pending
+                          </span>
+                        )}
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${status.color}`}
                         >
