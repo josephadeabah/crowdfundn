@@ -115,8 +115,9 @@ export interface Vote {
 
 export interface JoinClubResponse {
   success: boolean;
-  membership: Membership;
+  membership?: Membership;
   message: string;
+  is_member?: boolean; // Add this optional property
 }
 
 export interface MembershipStatusResponse {

@@ -84,28 +84,29 @@ export const clubService = {
   // Join club
   joinClub: async (token: string, clubId: string): Promise<JoinClubResponse> => {
     try {
-      console.log('Attempting to join club:', clubId);
-      
       const response = await apiCall(`/investment_clubs/${clubId}/join`, token, {
         method: 'POST',
       });
       
       console.log('Join club response:', response);
-      return response;
+      return {
+        ...response,
+        is_member: response.is_member !== undefined ? response.is_member : true
+      };
     } catch (error: any) {
       console.error('Join club error:', error);
-      console.error('Error details:', {
-        message: error.message,
-        clubId: clubId
-      });
       
-      // Provide more user-friendly error messages
+      // Check if it's already a membership status response
+      if (error.message && error.message.includes('Already a member')) {
+        return {
+          success: false,
+          is_member: true,
+          message: error.message
+        };
+      }
+      
       if (error.message.includes('capacity')) {
         throw new Error('This club has reached its maximum member limit.');
-      } else if (error.message.includes('Already a member')) {
-        throw new Error('You are already a member of this club.');
-      } else if (error.message.includes('Not a member')) {
-        throw new Error('Unable to join club at this time.');
       } else {
         throw new Error('Failed to join club. Please try again.');
       }
@@ -131,7 +132,20 @@ export const clubService = {
     token: string,
     clubId: string,
   ): Promise<MembershipStatusResponse> => {
-    return apiCall(`/investment_clubs/${clubId}/my_membership_status`, token);
+    try {
+      const response = await apiCall(`/investment_clubs/${clubId}/my_membership_status`, token);
+      return response;
+    } catch (error: any) {
+      // If we get a 404, it means the user is not a member
+      if (error.message.includes('404') || error.message.includes('Not a member')) {
+        return {
+          success: false,
+          is_member: false,
+          message: 'Not a member of this club'
+        };
+      }
+      throw error;
+    }
   },
 
   // Transfer ownership

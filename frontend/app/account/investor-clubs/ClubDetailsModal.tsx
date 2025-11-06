@@ -40,48 +40,106 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     }
   }, [isOpen, token, club.slug]);
 
-  const loadMyMembership = async () => {
-    if (!token) return;
+// In your ClubDetailsModal.tsx - update the handleJoinClub function
+const handleJoinClub = async () => {
+  if (!token) return;
 
-    try {
-      const response = await clubService.getMyMembershipStatus(
-        token,
-        club.slug,
-      );
-      if (response.success && response.membership) {
+  setActionLoading(true);
+  setMessage(null);
+
+  try {
+    const response = await clubService.joinClub(token, club.slug);
+
+    // Check both success and is_member to determine the actual state
+    if (response.success || response.is_member) {
+      setMessage({ 
+        type: 'success', 
+        text: response.message || 'Successfully joined the club!' 
+      });
+      
+      // If we have membership data, use it, otherwise reload
+      if (response.membership) {
         setMyMembership(response.membership);
       } else {
-        setMyMembership(null);
+        // Reload membership status if we don't have the data
+        await loadMyMembership();
       }
-    } catch (error) {
-      console.error('Failed to load membership status:', error);
-      setMyMembership(null);
-    }
-  };
-
-  const handleJoinClub = async () => {
-    if (!token) return;
-
-    setActionLoading(true);
-    setMessage(null);
-
-    try {
-      const response = await clubService.joinClub(token, club.slug);
-
-      if (response.success) {
-        setMessage({ type: 'success', text: response.message });
-        setMyMembership(response.membership);
-        onMembershipUpdate?.();
-      }
-    } catch (error: any) {
+      
+      onMembershipUpdate?.();
+    } else {
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to join club',
+        text: response.message || 'Failed to join club'
       });
-    } finally {
-      setActionLoading(false);
     }
-  };
+  } catch (error: any) {
+    setMessage({
+      type: 'error',
+      text: error.message || 'Failed to join club'
+    });
+  } finally {
+    setActionLoading(false);
+  }
+};
+
+// Update the loadMyMembership function
+const loadMyMembership = async () => {
+  if (!token) return;
+
+  try {
+    const response = await clubService.getMyMembershipStatus(token, club.slug);
+    
+    // Handle the response properly
+    if (response.success && response.membership) {
+      setMyMembership(response.membership);
+    } else if (response.is_member) {
+      // User is a member but we need to get the full membership details
+      // Try to get the full membership via the memberships endpoint
+      try {
+        const fullResponse = await membershipService.getMyMembership(token, club.slug);
+        if (fullResponse.membership) {
+          setMyMembership(fullResponse.membership);
+        }
+      } catch (error) {
+        console.error('Failed to load full membership details:', error);
+        // At least we know they're a member — build a safe fallback user object
+        const fallbackUser = user
+          ? {
+              id: (user as any).id,
+              full_name: (user as any).full_name,
+              email: (user as any).email ?? '',
+              // ensure avatar_url exists to satisfy Membership.user shape
+              avatar_url: (user as any).avatar_url ?? null,
+            }
+          : {
+              id: 'unknown',
+              full_name: 'Unknown',
+              email: '',
+              avatar_url: null,
+            };
+
+        setMyMembership({
+          id: 'unknown',
+          status: 'active',
+          role: 'member',
+          user: fallbackUser,
+          total_contributed: 0,
+          current_share: 0,
+          joined_at: new Date().toISOString(),
+          can_manage: false,
+          can_vote: true,
+          can_contribute: true,
+          estimated_share_value: 0
+        } as Membership);
+      }
+    } else {
+      setMyMembership(null);
+    }
+  } catch (error) {
+    console.error('Failed to load membership status:', error);
+    setMyMembership(null);
+  }
+};
 
   const handleLeaveClub = async () => {
     if (!token || !myMembership) return;
