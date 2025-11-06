@@ -98,21 +98,27 @@ module Api
       end
 
       # POST /api/v1/investment_clubs/:id/join
+      # app/controllers/api/v1/investment_clubs_controller.rb
       def join
-        # Add better error handling and logging
-        Rails.logger.info "Join attempt for club: #{@club.slug} by user: #{@current_user.id}"
-        
+        Rails.logger.info "=== JOIN CLUB DEBUG ==="
+        Rails.logger.info "Club: #{@club.slug}, User: #{@current_user.id}"
+        Rails.logger.info "Club exists: #{@club.present?}"
+        Rails.logger.info "User exists: #{@current_user.present?}"
+        Rails.logger.info "Is member: #{@club.is_member?(@current_user)}"
+        Rails.logger.info "At capacity: #{@club.at_capacity?}"
+        Rails.logger.info "Club type: #{@club.club_type}, Public: #{@club.public?}"
+
         if @club.is_member?(@current_user)
-          Rails.logger.warn "User #{@current_user.id} already member of club #{@club.slug}"
+          membership = @club.membership_for(@current_user)
+          Rails.logger.info "Already member with status: #{membership&.status}"
           return render json: { 
             success: false,
             error: 'Already a member of this club' 
           }, status: :unprocessable_entity
         end
 
-        # Fix the capacity check with nil handling
         if @club.at_capacity?
-          Rails.logger.warn "Club #{@club.slug} at capacity: #{@club.current_members_count}/#{@club.max_members}"
+          Rails.logger.info "Club at capacity: #{@club.current_members_count}/#{@club.max_members}"
           return render json: { 
             success: false,
             error: 'Club has reached maximum member capacity' 
@@ -126,13 +132,17 @@ module Api
             status: @club.public? ? 'active' : 'pending'
           )
 
+          Rails.logger.info "Membership valid: #{membership.valid?}"
+          Rails.logger.info "Membership errors: #{membership.errors.full_messages}" unless membership.valid?
+
           if membership.save
-            # Update members count after successful membership creation
+            # Force update members count immediately
             @club.update_members_count
             
-            notify_admins_of_pending_member(membership) if membership.pending?
+            Rails.logger.info "Membership created successfully: #{membership.id}"
+            Rails.logger.info "New members count: #{@club.current_members_count}"
             
-            Rails.logger.info "Successfully created membership: #{membership.id} for user #{@current_user.id}"
+            notify_admins_of_pending_member(membership) if membership.pending?
             
             render json: { 
               success: true, 
@@ -148,6 +158,7 @@ module Api
           end
         rescue => e
           Rails.logger.error "Error in join method: #{e.message}"
+          Rails.logger.error e.backtrace.join("\n")
           render json: { 
             success: false, 
             error: 'Internal server error' 
@@ -194,11 +205,19 @@ module Api
 
       # GET /api/v1/investment_clubs/:id/my_membership_status
       def my_membership_status
+        Rails.logger.info "=== MEMBERSHIP STATUS DEBUG ==="
+        Rails.logger.info "Club: #{@club.slug}, User: #{@current_user.id}"
+        
+        # Check for any membership (including pending)
         membership = @club.investment_club_memberships.find_by(user: @current_user)
+        
+        Rails.logger.info "Membership found: #{membership.present?}"
+        Rails.logger.info "Membership status: #{membership&.status}" if membership
         
         if membership
           render json: {
             success: true,
+            is_member: true,
             membership: ClubMembershipSerializer.new(membership).as_json
           }
         else

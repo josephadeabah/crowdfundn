@@ -95,6 +95,11 @@ class InvestmentClub < ApplicationRecord
              investment_club_id: id
            })
   end
+
+  def active_member?(user)
+    # Check only for active memberships
+    investment_club_memberships.active.exists?(user: user)
+  end
   
   def admin_members
     members.joins(:investment_club_memberships)
@@ -106,7 +111,8 @@ class InvestmentClub < ApplicationRecord
   end
   
   def is_member?(user)
-    investment_club_memberships.active.exists?(user: user)
+    # Check for any membership (active or pending)
+    investment_club_memberships.exists?(user: user)
   end
   
   def is_admin?(user)
