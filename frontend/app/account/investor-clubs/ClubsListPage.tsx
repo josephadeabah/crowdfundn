@@ -18,9 +18,7 @@ const ClubsListPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'all' | 'my_clubs' | 'discover'>(
-    'all',
-  );
+  const [activeTab, setActiveTab] = useState<'all' | 'my_clubs' | 'discover'>('all');
   const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
 
   useEffect(() => {
@@ -35,7 +33,6 @@ const ClubsListPage: React.FC = () => {
     try {
       setLoading(true);
 
-      // Load all clubs, my clubs, and discover clubs in parallel
       const [allClubsResponse, myClubsResponse, discoverClubsResponse] =
         await Promise.all([
           clubService.getClubs(token),
@@ -61,21 +58,25 @@ const ClubsListPage: React.FC = () => {
       setMembers(response.members);
     } catch (error) {
       console.error('Failed to load club members:', error);
+      setMembers([]);
     }
   };
 
   const handleClubClick = async (club: Club) => {
-    setSelectedClub(club);
-    await loadClubMembers(club);
-    setIsModalOpen(true);
+    // Only allow clicking if user is a member or club is public
+    if (club.is_member || club.club_type === 'public') {
+      setSelectedClub(club);
+      await loadClubMembers(club);
+      setIsModalOpen(true);
+    }
   };
 
   const handleClubCreated = () => {
-    loadClubs(); // Reload all club lists
+    loadClubs();
   };
 
   const handleMembershipUpdate = () => {
-    loadClubs(); // Reload when membership changes
+    loadClubs();
   };
 
   const getDisplayClubs = () => {
@@ -139,8 +140,7 @@ const ClubsListPage: React.FC = () => {
               Investment Clubs
             </h1>
             <p className="text-gray-600 mt-2 max-w-2xl">
-              Collaborate with like-minded investors and make collective
-              investment decisions.
+              Collaborate with like-minded investors and make collective investment decisions.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -206,6 +206,7 @@ const ClubsListPage: React.FC = () => {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredClubs.map((club, index) => {
             const status = getClubStatus(club);
+            const canViewDetails = club.is_member || club.club_type === 'public';
 
             return (
               <motion.div
@@ -213,8 +214,12 @@ const ClubsListPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group"
-                onClick={() => handleClubClick(club)}
+                className={`bg-white border border-gray-200 rounded-xl p-6 shadow-sm transition-all duration-300 ${
+                  canViewDetails 
+                    ? 'cursor-pointer hover:shadow-md group' 
+                    : 'cursor-not-allowed opacity-75'
+                }`}
+                onClick={() => canViewDetails && handleClubClick(club)}
               >
                 <div className="flex flex-col h-full">
                   <div className="flex-1">
@@ -240,8 +245,15 @@ const ClubsListPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
+                    <h3 className={`text-xl font-semibold mb-2 ${
+                      canViewDetails 
+                        ? 'text-gray-900 group-hover:text-emerald-700 transition-colors' 
+                        : 'text-gray-600'
+                    }`}>
                       {club.name}
+                      {!canViewDetails && (
+                        <span className="ml-2 text-sm text-gray-400">🔒</span>
+                      )}
                     </h3>
 
                     <p className="text-gray-600 text-sm line-clamp-3 mb-4">
@@ -280,15 +292,15 @@ const ClubsListPage: React.FC = () => {
                           Club Balance
                         </div>
                       </div>
-                      <button
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                          club.is_member
-                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                            : 'bg-emerald-600 text-white hover:bg-emerald-700'
-                        }`}
-                      >
-                        {club.is_member ? 'View Club' : 'Learn More'}
-                      </button>
+                      <div className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                        club.is_member
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : canViewDetails
+                            ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}>
+                        {club.is_member ? 'View Club' : canViewDetails ? 'Learn More' : 'Private Club'}
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -23,9 +23,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   onMembershipUpdate,
 }) => {
   const { token, user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'about' | 'members' | 'actions'>(
-    'about',
-  );
+  const [activeTab, setActiveTab] = useState<'about' | 'members' | 'actions'>('about');
   const [myMembership, setMyMembership] = useState<Membership | null>(null);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
@@ -40,106 +38,98 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     }
   }, [isOpen, token, club.slug]);
 
-// In your ClubDetailsModal.tsx - update the handleJoinClub function
-const handleJoinClub = async () => {
-  if (!token) return;
+  const loadMyMembership = async () => {
+    if (!token) return;
 
-  setActionLoading(true);
-  setMessage(null);
-
-  try {
-    const response = await clubService.joinClub(token, club.slug);
-
-    // Check both success and is_member to determine the actual state
-    if (response.success || response.is_member) {
-      setMessage({ 
-        type: 'success', 
-        text: response.message || 'Successfully joined the club!' 
-      });
+    try {
+      const response = await clubService.getMyMembershipStatus(token, club.slug);
       
-      // If we have membership data, use it, otherwise reload
-      if (response.membership) {
+      if (response.success && response.membership) {
         setMyMembership(response.membership);
-      } else {
-        // Reload membership status if we don't have the data
-        await loadMyMembership();
-      }
-      
-      onMembershipUpdate?.();
-    } else {
-      setMessage({
-        type: 'error',
-        text: response.message || 'Failed to join club'
-      });
-    }
-  } catch (error: any) {
-    setMessage({
-      type: 'error',
-      text: error.message || 'Failed to join club'
-    });
-  } finally {
-    setActionLoading(false);
-  }
-};
+      } else if (response.is_member) {
+        // User is a member but we need to get the full membership details
+        try {
+          const fullResponse = await membershipService.getMyMembership(token, club.slug);
+          if (fullResponse.membership) {
+            setMyMembership(fullResponse.membership);
+          }
+        } catch (error) {
+          console.error('Failed to load full membership details:', error);
+          // Create a safe fallback membership
+          const fallbackUser = user
+            ? {
+                id: (user as any).id,
+                full_name: (user as any).full_name,
+                email: (user as any).email ?? '',
+                avatar_url: (user as any).avatar_url ?? null,
+              }
+            : {
+                id: 'unknown',
+                full_name: 'Unknown',
+                email: '',
+                avatar_url: null,
+              };
 
-// Update the loadMyMembership function
-const loadMyMembership = async () => {
-  if (!token) return;
-
-  try {
-    const response = await clubService.getMyMembershipStatus(token, club.slug);
-    
-    // Handle the response properly
-    if (response.success && response.membership) {
-      setMyMembership(response.membership);
-    } else if (response.is_member) {
-      // User is a member but we need to get the full membership details
-      // Try to get the full membership via the memberships endpoint
-      try {
-        const fullResponse = await membershipService.getMyMembership(token, club.slug);
-        if (fullResponse.membership) {
-          setMyMembership(fullResponse.membership);
+          setMyMembership({
+            id: 'unknown',
+            status: 'active',
+            role: 'member',
+            user: fallbackUser,
+            total_contributed: 0,
+            current_share: 0,
+            joined_at: new Date().toISOString(),
+            can_manage: false,
+            can_vote: true,
+            can_contribute: true,
+            estimated_share_value: 0
+          } as Membership);
         }
-      } catch (error) {
-        console.error('Failed to load full membership details:', error);
-        // At least we know they're a member — build a safe fallback user object
-        const fallbackUser = user
-          ? {
-              id: (user as any).id,
-              full_name: (user as any).full_name,
-              email: (user as any).email ?? '',
-              // ensure avatar_url exists to satisfy Membership.user shape
-              avatar_url: (user as any).avatar_url ?? null,
-            }
-          : {
-              id: 'unknown',
-              full_name: 'Unknown',
-              email: '',
-              avatar_url: null,
-            };
-
-        setMyMembership({
-          id: 'unknown',
-          status: 'active',
-          role: 'member',
-          user: fallbackUser,
-          total_contributed: 0,
-          current_share: 0,
-          joined_at: new Date().toISOString(),
-          can_manage: false,
-          can_vote: true,
-          can_contribute: true,
-          estimated_share_value: 0
-        } as Membership);
+      } else {
+        setMyMembership(null);
       }
-    } else {
+    } catch (error) {
+      console.error('Failed to load membership status:', error);
       setMyMembership(null);
     }
-  } catch (error) {
-    console.error('Failed to load membership status:', error);
-    setMyMembership(null);
-  }
-};
+  };
+
+  const handleJoinClub = async () => {
+    if (!token) return;
+
+    setActionLoading(true);
+    setMessage(null);
+
+    try {
+      const response = await clubService.joinClub(token, club.slug);
+
+      if (response.success || response.is_member) {
+        setMessage({ 
+          type: 'success', 
+          text: response.message || 'Successfully joined the club!' 
+        });
+        
+        if (response.membership) {
+          setMyMembership(response.membership);
+        } else {
+          await loadMyMembership();
+        }
+        
+        onMembershipUpdate?.();
+      } else {
+        setMessage({
+          type: 'error',
+          text: response.message || 'Failed to join club'
+        });
+      }
+    } catch (error: any) {
+      setMessage({
+        type: 'error',
+        text: error.message || 'Failed to join club'
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const handleLeaveClub = async () => {
     if (!token || !myMembership) return;
@@ -234,6 +224,353 @@ const loadMyMembership = async () => {
   const isCreator = club.is_creator || myMembership?.role === 'creator';
   const pendingMembers = members.filter((m) => m.status === 'pending');
 
+  // Render content based on active tab and membership status
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'about':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                About This Club
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                {club.mission || 'No description available.'}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="text-sm text-gray-600">Club Balance</div>
+                <div className="text-xl font-bold text-emerald-700">
+                  {formatCurrency(club.financials.current_balance)}
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="text-sm text-gray-600">
+                  Minimum Contribution
+                </div>
+                <div className="text-xl font-bold text-gray-900">
+                  {formatCurrency(club.minimum_monthly_contribution)}
+                  /month
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="text-sm text-gray-600">Members</div>
+                <div className="text-xl font-bold text-gray-900">
+                  {club.current_members_count}/{club.max_members}
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="text-sm text-gray-600">
+                  Total Invested
+                </div>
+                <div className="text-xl font-bold text-gray-900">
+                  {formatCurrency(club.financials.total_invested)}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">
+                Investment Focus
+              </h4>
+              <p className="text-gray-700">
+                {deslugify(club.investment_focus) || 'General investments'}
+              </p>
+            </div>
+          </div>
+        );
+
+      case 'members':
+        // Only show members tab if user is a member or the club is public
+        if (!myMembership && club.club_type === 'private') {
+          return (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🔒</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Members Only
+              </h3>
+              <p className="text-gray-600">
+                You need to be a member to view the members list.
+              </p>
+              <button
+                onClick={handleJoinClub}
+                disabled={actionLoading}
+                className="mt-4 px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50"
+              >
+                {actionLoading ? 'Joining...' : 'Join Club'}
+              </button>
+            </div>
+          );
+        }
+
+        return (
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Members ({members.length})
+              </h3>
+              {pendingMembers.length > 0 && isAdmin && (
+                <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
+                  {pendingMembers.length} pending
+                </span>
+              )}
+            </div>
+
+            <div className="border border-gray-200 rounded-lg divide-y">
+              {members.length === 0 ? (
+                <div className="p-4 text-center text-gray-500">
+                  No members found
+                </div>
+              ) : (
+                members.map((member) => (
+                  <div
+                    key={member.id}
+                    className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-semibold text-sm">
+                        {getMemberInitials(member.user.full_name)}
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {member.user.full_name}
+                          {member.user.id === String(user?.id) && (
+                            <span className="ml-2 text-xs text-emerald-600">
+                              (You)
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-500 flex items-center gap-2">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${
+                              member.role === 'creator'
+                                ? 'bg-purple-100 text-purple-800'
+                                : member.role === 'admin'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
+                            {formatRole(member.role)}
+                          </span>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${
+                              member.status === 'active'
+                                ? 'bg-green-100 text-green-800'
+                                : member.status === 'pending'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
+                            {member.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <div className="font-semibold text-gray-900">
+                          {formatCurrency(member.total_contributed)}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {member.current_share.toFixed(1)}% share
+                        </div>
+                      </div>
+
+                      {isAdmin && member.status === 'pending' && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleApproveMember(member.id)}
+                            className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleRejectMember(member.id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        );
+
+      case 'actions':
+        // Only show actions tab if user is a member
+        if (!myMembership) {
+          return (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🚀</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Join to Access Actions
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Become a member to access club actions and features.
+              </p>
+              <button
+                onClick={handleJoinClub}
+                disabled={actionLoading}
+                className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50"
+              >
+                {actionLoading ? 'Joining...' : 'Join Club'}
+              </button>
+            </div>
+          );
+        }
+
+        return (
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Club Actions
+            </h3>
+
+            {/* Membership Actions */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h4 className="font-semibold text-gray-900 mb-4">
+                Membership
+              </h4>
+
+              {myMembership.status === 'pending' ? (
+                <div className="space-y-4">
+                  <p className="text-yellow-600">
+                    Your membership request is pending approval from club admins.
+                  </p>
+                  <button
+                    onClick={handleLeaveClub}
+                    disabled={actionLoading}
+                    className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium disabled:opacity-50"
+                  >
+                    {actionLoading ? 'Canceling...' : 'Cancel Request'}
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">Your Share:</span>
+                      <div className="font-semibold">
+                        {myMembership.current_share.toFixed(2)}%
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">
+                        Total Contributed:
+                      </span>
+                      <div className="font-semibold">
+                        {formatCurrency(myMembership.total_contributed)}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">
+                        Estimated Value:
+                      </span>
+                      <div className="font-semibold">
+                        {formatCurrency(myMembership.estimated_share_value)}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Role:</span>
+                      <div className="font-semibold capitalize">
+                        {myMembership.role}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleLeaveClub}
+                    disabled={actionLoading}
+                    className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50"
+                  >
+                    {actionLoading ? 'Leaving...' : 'Leave Club'}
+                  </button>
+
+                  {isCreator && (
+                    <div className="pt-4 border-t border-gray-200">
+                      <p className="text-sm text-gray-600 mb-3">
+                        As the club creator, you have additional administrative privileges.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Quick Actions */}
+            {myMembership?.status === 'active' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button 
+                  onClick={() => alert('Make Contribution feature would open here')}
+                  className="p-4 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors text-left"
+                >
+                  <div className="font-semibold text-emerald-900">
+                    Make Contribution
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    Add funds to the club pool
+                  </div>
+                </button>
+
+                <button 
+                  onClick={() => alert('Propose Investment feature would open here')}
+                  className="p-4 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors text-left"
+                >
+                  <div className="font-semibold text-emerald-900">
+                    Propose Investment
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    Suggest a new investment opportunity
+                  </div>
+                </button>
+
+                {isAdmin && (
+                  <>
+                    <button 
+                      onClick={() => alert('Manage Club feature would open here')}
+                      className="p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors text-left"
+                    >
+                      <div className="font-semibold text-blue-900">
+                        Manage Club
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        Update club settings and members
+                      </div>
+                    </button>
+
+                    <button 
+                      onClick={() => alert('View Analytics feature would open here')}
+                      className="p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors text-left"
+                    >
+                      <div className="font-semibold text-blue-900">
+                        View Analytics
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        Detailed performance reports
+                      </div>
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -322,305 +659,7 @@ const loadMyMembership = async () => {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6">
-              {activeTab === 'about' && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                      About This Club
-                    </h3>
-                    <p className="text-gray-700 leading-relaxed">
-                      {club.mission || 'No description available.'}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="text-sm text-gray-600">Club Balance</div>
-                      <div className="text-xl font-bold text-emerald-700">
-                        {formatCurrency(club.financials.current_balance)}
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="text-sm text-gray-600">
-                        Minimum Contribution
-                      </div>
-                      <div className="text-xl font-bold text-gray-900">
-                        {formatCurrency(club.minimum_monthly_contribution)}
-                        /month
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="text-sm text-gray-600">Members</div>
-                      <div className="text-xl font-bold text-gray-900">
-                        {club.current_members_count}/{club.max_members}
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="text-sm text-gray-600">
-                        Total Invested
-                      </div>
-                      <div className="text-xl font-bold text-gray-900">
-                        {formatCurrency(club.financials.total_invested)}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-900 mb-2">
-                      Investment Focus
-                    </h4>
-                    <p className="text-gray-700">
-                      {deslugify(club.investment_focus )|| 'General investments'}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'members' && (
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Members ({members.length})
-                    </h3>
-                    {pendingMembers.length > 0 && isAdmin && (
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
-                        {pendingMembers.length} pending
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="border border-gray-200 rounded-lg divide-y">
-                    {members.length === 0 ? (
-                      <div className="p-4 text-center text-gray-500">
-                        No members found
-                      </div>
-                    ) : (
-                      members.map((member) => (
-                        <div
-                          key={member.id}
-                          className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-semibold text-sm">
-                              {getMemberInitials(member.user.full_name)}
-                            </div>
-                            <div>
-                              <div className="font-medium text-gray-900">
-                                {member.user.full_name}
-                                {member.user.id === String(user?.id) && (
-                                  <span className="ml-2 text-xs text-emerald-600">
-                                    (You)
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-sm text-gray-500 flex items-center gap-2">
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs ${
-                                    member.role === 'creator'
-                                      ? 'bg-purple-100 text-purple-800'
-                                      : member.role === 'admin'
-                                        ? 'bg-blue-100 text-blue-800'
-                                        : 'bg-gray-100 text-gray-800'
-                                  }`}
-                                >
-                                  {formatRole(member.role)}
-                                </span>
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs ${
-                                    member.status === 'active'
-                                      ? 'bg-green-100 text-green-800'
-                                      : member.status === 'pending'
-                                        ? 'bg-yellow-100 text-yellow-800'
-                                        : 'bg-gray-100 text-gray-800'
-                                  }`}
-                                >
-                                  {member.status}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-3">
-                            <div className="text-right">
-                              <div className="font-semibold text-gray-900">
-                                {formatCurrency(member.total_contributed)}
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {member.current_share.toFixed(1)}% share
-                              </div>
-                            </div>
-
-                            {isAdmin && member.status === 'pending' && (
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => handleApproveMember(member.id)}
-                                  className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
-                                >
-                                  Approve
-                                </button>
-                                <button
-                                  onClick={() => handleRejectMember(member.id)}
-                                  className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
-                                >
-                                  Reject
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'actions' && (
-                <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Club Actions
-                  </h3>
-
-                  {/* Membership Actions */}
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h4 className="font-semibold text-gray-900 mb-4">
-                      Membership
-                    </h4>
-
-                    {!myMembership ? (
-                      <div className="space-y-4">
-                        <p className="text-gray-600">
-                          You are not a member of this club.{' '}
-                          {club.club_type === 'public'
-                            ? 'Join now to start collaborating!'
-                            : 'Request to join this private club.'}
-                        </p>
-                        <button
-                          onClick={handleJoinClub}
-                          disabled={actionLoading}
-                          className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50"
-                        >
-                          {actionLoading
-                            ? 'Joining...'
-                            : club.club_type === 'public'
-                              ? 'Join Club'
-                              : 'Request to Join'}
-                        </button>
-                      </div>
-                    ) : myMembership.status === 'pending' ? (
-                      <div className="space-y-4">
-                        <p className="text-yellow-600">
-                          Your membership request is pending approval from club
-                          admins.
-                        </p>
-                        <button
-                          onClick={handleLeaveClub}
-                          disabled={actionLoading}
-                          className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium disabled:opacity-50"
-                        >
-                          {actionLoading ? 'Canceling...' : 'Cancel Request'}
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-gray-600">Your Share:</span>
-                            <div className="font-semibold">
-                              {myMembership.current_share.toFixed(2)}%
-                            </div>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">
-                              Total Contributed:
-                            </span>
-                            <div className="font-semibold">
-                              {formatCurrency(myMembership.total_contributed)}
-                            </div>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">
-                              Estimated Value:
-                            </span>
-                            <div className="font-semibold">
-                              {formatCurrency(
-                                myMembership.estimated_share_value,
-                              )}
-                            </div>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Role:</span>
-                            <div className="font-semibold capitalize">
-                              {myMembership.role}
-                            </div>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={handleLeaveClub}
-                          disabled={actionLoading}
-                          className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50"
-                        >
-                          {actionLoading ? 'Leaving...' : 'Leave Club'}
-                        </button>
-
-                        {isCreator && (
-                          <div className="pt-4 border-t border-gray-200">
-                            <p className="text-sm text-gray-600 mb-3">
-                              As the club creator, you have additional
-                              administrative privileges.
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Quick Actions */}
-                  {myMembership?.status === 'active' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <button className="p-4 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors text-left">
-                        <div className="font-semibold text-emerald-900">
-                          Make Contribution
-                        </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          Add funds to the club pool
-                        </div>
-                      </button>
-
-                      <button className="p-4 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors text-left">
-                        <div className="font-semibold text-emerald-900">
-                          Propose Investment
-                        </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          Suggest a new investment opportunity
-                        </div>
-                      </button>
-
-                      {isAdmin && (
-                        <>
-                          <button className="p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors text-left">
-                            <div className="font-semibold text-blue-900">
-                              Manage Club
-                            </div>
-                            <div className="text-sm text-gray-600 mt-1">
-                              Update club settings and members
-                            </div>
-                          </button>
-
-                          <button className="p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors text-left">
-                            <div className="font-semibold text-blue-900">
-                              View Analytics
-                            </div>
-                            <div className="text-sm text-gray-600 mt-1">
-                              Detailed performance reports
-                            </div>
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+              {renderTabContent()}
             </div>
 
             {/* Footer */}
