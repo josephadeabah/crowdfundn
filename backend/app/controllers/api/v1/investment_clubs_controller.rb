@@ -98,30 +98,28 @@ module Api
       end
 
       # POST /api/v1/investment_clubs/:id/join
-      # app/controllers/api/v1/investment_clubs_controller.rb
       def join
-        Rails.logger.info "=== JOIN CLUB DEBUG ==="
-        Rails.logger.info "Club: #{@club.slug}, User: #{@current_user.id}"
-        Rails.logger.info "Club exists: #{@club.present?}"
-        Rails.logger.info "User exists: #{@current_user.present?}"
-        Rails.logger.info "Is member: #{@club.is_member?(@current_user)}"
-        Rails.logger.info "At capacity: #{@club.at_capacity?}"
-        Rails.logger.info "Club type: #{@club.club_type}, Public: #{@club.public?}"
+        Rails.logger.info "DEBUG: Join attempt for club: #{@club.slug} by user: #{@current_user.id}"
+        Rails.logger.info "DEBUG: Club capacity: #{@club.current_members_count}/#{@club.max_members}"
+        Rails.logger.info "DEBUG: User already member: #{@club.is_member?(@current_user)}"
 
         if @club.is_member?(@current_user)
           membership = @club.membership_for(@current_user)
-          Rails.logger.info "Already member with status: #{membership&.status}"
           return render json: { 
             success: false,
-            error: 'Already a member of this club' 
+            error: 'Already a member of this club',
+            membership_status: membership.status,
+            is_member: true
           }, status: :unprocessable_entity
         end
 
         if @club.at_capacity?
-          Rails.logger.info "Club at capacity: #{@club.current_members_count}/#{@club.max_members}"
           return render json: { 
             success: false,
-            error: 'Club has reached maximum member capacity' 
+            error: 'Club has reached maximum member capacity',
+            current_members: @club.current_members_count,
+            max_members: @club.max_members,
+            is_member: false
           }, status: :unprocessable_entity
         end
 
@@ -132,36 +130,32 @@ module Api
             status: @club.public? ? 'active' : 'pending'
           )
 
-          Rails.logger.info "Membership valid: #{membership.valid?}"
-          Rails.logger.info "Membership errors: #{membership.errors.full_messages}" unless membership.valid?
-
           if membership.save
             # Force update members count immediately
             @club.update_members_count
             
-            Rails.logger.info "Membership created successfully: #{membership.id}"
-            Rails.logger.info "New members count: #{@club.current_members_count}"
-            
-            notify_admins_of_pending_member(membership) if membership.pending?
+            Rails.logger.info "DEBUG: Membership created successfully: #{membership.id}, status: #{membership.status}"
             
             render json: { 
               success: true, 
               membership: ClubMembershipSerializer.new(membership).as_json,
-              message: @club.public? ? 'Successfully joined club' : 'Membership request submitted for approval'
+              message: membership_message(membership),
+              is_member: true
             }
           else
-            Rails.logger.error "Failed to create membership: #{membership.errors.full_messages}"
+            Rails.logger.error "DEBUG: Failed to create membership: #{membership.errors.full_messages}"
             render json: { 
               success: false, 
-              errors: membership.errors.full_messages 
+              errors: membership.errors.full_messages,
+              is_member: false
             }, status: :unprocessable_entity
           end
         rescue => e
-          Rails.logger.error "Error in join method: #{e.message}"
-          Rails.logger.error e.backtrace.join("\n")
+          Rails.logger.error "DEBUG: Error in join method: #{e.message}\n#{e.backtrace.join("\n")}"
           render json: { 
             success: false, 
-            error: 'Internal server error' 
+            error: 'Internal server error',
+            is_member: false
           }, status: :internal_server_error
         end
       end
@@ -205,20 +199,14 @@ module Api
 
       # GET /api/v1/investment_clubs/:id/my_membership_status
       def my_membership_status
-        Rails.logger.info "=== MEMBERSHIP STATUS DEBUG ==="
-        Rails.logger.info "Club: #{@club.slug}, User: #{@current_user.id}"
-        
-        # Check for any membership (including pending)
         membership = @club.investment_club_memberships.find_by(user: @current_user)
-        
-        Rails.logger.info "Membership found: #{membership.present?}"
-        Rails.logger.info "Membership status: #{membership&.status}" if membership
         
         if membership
           render json: {
             success: true,
+            membership: ClubMembershipSerializer.new(membership).as_json,
             is_member: true,
-            membership: ClubMembershipSerializer.new(membership).as_json
+            message: "Member status: #{membership.status}"
           }
         else
           render json: {
@@ -228,7 +216,6 @@ module Api
           }
         end
       end
-
       # POST /api/v1/investment_clubs/:id/transfer_ownership
       def transfer_ownership
         unless @club.is_creator?(@current_user)
@@ -317,6 +304,14 @@ module Api
           success: false,
           error: 'Club not found' 
         }, status: :not_found unless @club
+      end
+
+      def membership_message(membership)
+        if membership.pending?
+          'Membership request submitted. Waiting for admin approval.'
+        else
+          'Successfully joined the club!'
+        end
       end
       
       def club_params

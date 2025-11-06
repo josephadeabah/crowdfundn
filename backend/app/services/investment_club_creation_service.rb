@@ -1,3 +1,4 @@
+# app/services/investment_club_creation_service.rb
 class InvestmentClubCreationService
   def initialize(creator, params)
     @creator = creator
@@ -12,7 +13,7 @@ class InvestmentClubCreationService
       # Ensure club_type is properly set
       Rails.logger.info "DEBUG: Creating club with club_type=#{club_data[:club_type]}"
       
-      # Create the club with the creator - use merge to ensure proper assignment
+      # Create the club with the creator
       club_attributes = {
         name: club_data[:name],
         mission: club_data[:mission],
@@ -20,7 +21,6 @@ class InvestmentClubCreationService
         minimum_monthly_contribution: club_data[:minimum_monthly_contribution],
         max_members: club_data[:max_members],
         creator: @creator,
-        # Don't set current_members_count here - let the callback handle it
         current_members_count: 0 # Start with 0, callback will update to 1
       }
       
@@ -43,7 +43,11 @@ class InvestmentClubCreationService
         Rails.logger.info "  access_type=#{club.access_type}"
         Rails.logger.info "  current_members_count=#{club.current_members_count}"
         
-        # The creator membership is now created via after_create callback
+        # Verify creator membership was created
+        creator_membership = club.investment_club_memberships.find_by(user: @creator)
+        Rails.logger.info "DEBUG: Creator membership created: #{creator_membership.present?}"
+        Rails.logger.info "DEBUG: Creator membership details: #{creator_membership.as_json}" if creator_membership
+        
         # Generate digital constitution
         generate_constitution(club)
         
@@ -62,7 +66,6 @@ class InvestmentClubCreationService
   private
   
   def generate_constitution(club)
-    # Use existing canvas signature setup as mentioned in your requirements
     constitution_data = {
       club_name: club.name,
       mission: club.mission,
@@ -75,7 +78,6 @@ class InvestmentClubCreationService
       creator: @creator.full_name
     }
     
-    # Store constitution - could be PDF generated with your existing system
     club.update(constitution_data: constitution_data)
   end
 end

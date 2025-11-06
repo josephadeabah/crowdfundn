@@ -25,17 +25,21 @@ class InvestmentClubMembership < ApplicationRecord
     new_share = (total_contributed / investment_club.total_contributions) * 100
     update_column(:current_share, new_share.round(4))
   end
-  
-  def can_vote?
-    active? && investment_club.active?
-  end
-  
-  def can_contribute?
-    active? && investment_club.active?
+
+  def update_club_members_count
+    investment_club.update_members_count
   end
   
   def can_manage?
     admin? || creator?
+  end
+  
+  def can_vote?
+    active?
+  end
+  
+  def can_contribute?
+    active?
   end
   
   def total_investment_value
@@ -54,7 +58,10 @@ class InvestmentClubMembership < ApplicationRecord
   
   # Simple method that doesn't duplicate complex logic
   def estimated_share_value
-    (current_share / 100) * investment_club.current_balance
+    return 0 unless active?
+    
+    # Simple calculation - you might want to make this more sophisticated
+    (current_share / 100.0) * investment_club.current_balance.to_f
   end
   
   private
@@ -66,9 +73,5 @@ class InvestmentClubMembership < ApplicationRecord
   def update_club_financials
     investment_club.update_financials
     update_share_percentage
-  end
-
-  def update_club_members_count
-    investment_club.update_members_count if investment_club.persisted?
   end
 end

@@ -22,6 +22,8 @@ class InvestmentClub < ApplicationRecord
   before_validation :map_club_type_to_access_type
   after_create :create_creator_membership
   after_initialize :set_default_members_count, if: :new_record?
+  # Add this callback to ensure members count is updated
+  after_save :update_members_count_if_needed
   
   # FIXED: Simple enum without complex mappings
   enum access_type: { 
@@ -152,6 +154,11 @@ class InvestmentClub < ApplicationRecord
   def pending_members_count
     investment_club_memberships.pending.count
   end
+
+  def update_members_count
+    active_count = investment_club_memberships.active.count
+    update_column(:current_members_count, active_count) if current_members_count != active_count
+  end
   
   private
   
@@ -174,13 +181,11 @@ class InvestmentClub < ApplicationRecord
     self.access_type = 'restricted' if access_type.blank?
   end
 
+  def update_members_count_if_needed
+    update_members_count if saved_change_to_investment_club_memberships_count?
+  end
+
   def set_default_members_count
     self.current_members_count ||= 0
-  end
-  
-  # Update the update_members_count method
-  def update_members_count
-    active_count = investment_club_memberships.active.count
-    update_columns(current_members_count: active_count)
   end
 end
