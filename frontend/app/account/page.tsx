@@ -1,3 +1,4 @@
+// app/account/ProfileTabs.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -44,6 +45,18 @@ import { FiArchive } from 'react-icons/fi';
 import ArchivedCampaigns from './ArchivedCampaigns';
 import InvestmentClubsDashboard from './InvestmentClubsDashboard';
 import ClubsListPage from './investor-clubs/ClubsListPage';
+
+// Import better icons for clubs
+import {
+  Users,
+  Building2,
+  Briefcase,
+  PieChart,
+  Target,
+  Handshake,
+  TrendingUp,
+  Shield,
+} from 'lucide-react';
 
 // Define proper TypeScript interfaces
 interface Tab {
@@ -156,20 +169,19 @@ const ProfileTabs = () => {
         },
         {
           label: 'Your Clubs',
-          icon: <GroupIcon className="w-4 h-4" />,
+          icon: <Briefcase className="w-4 h-4" />, // Changed to Briefcase - represents personal investment clubs
           component: <InvestmentClubsDashboard />,
-          description: 'Join and manage investment clubs with others.',
-          badge: 'Soon',
-          badgeColor: 'bg-yellow-100 text-yellow-800',
+          description:
+            'Manage clubs you belong to and track your contributions.',
+          badge: null, // Removed "Soon" badge since it's now implemented
         },
         {
           label: 'Investor Clubs',
-          icon: <DropdownMenuIcon className="w-4 h-4" />,
+          icon: <Building2 className="w-4 h-4" />, // Changed to Building2 - represents larger investment communities
           component: <ClubsListPage />,
           description:
-            'Join investment clubs that match your interests and collaborate with like-minded investors to make collective investment decisions.',
-          badge: 'Soon',
-          badgeColor: 'bg-yellow-100 text-yellow-800',
+            'Discover and join investment clubs to collaborate with other investors.',
+          badge: null, // Removed "Soon" badge since it's now implemented
         },
       ],
     },
