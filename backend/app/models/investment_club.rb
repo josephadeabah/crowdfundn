@@ -13,10 +13,15 @@ class InvestmentClub < ApplicationRecord
   validates :current_members_count, numericality: { greater_than_or_equal_to: 0 }
 
   attribute :constitution_data, :json, default: -> { {} }
+    # Add sensible defaults
+  attribute :current_members_count, :integer, default: 0
+  attribute :max_members, :integer, default: 50
+  attribute :minimum_monthly_contribution, :decimal, default: 0.0
   
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
   before_validation :map_club_type_to_access_type
   after_create :create_creator_membership
+  after_initialize :set_default_members_count, if: :new_record?
   
   # FIXED: Simple enum without complex mappings
   enum access_type: { 
@@ -73,12 +78,13 @@ class InvestmentClub < ApplicationRecord
   
   # Create creator membership after club creation
   def create_creator_membership
-    investment_club_memberships.create!(
+    membership = investment_club_memberships.create!(
       user: creator,
       role: 'creator',
       status: 'active'
     )
-    update_members_count # This will set current_members_count to 1
+    # Immediately update count
+    update_members_count
   end
   
   # All your existing methods remain the same...
@@ -123,7 +129,9 @@ class InvestmentClub < ApplicationRecord
     current_balance >= amount
   end
 
-    def at_capacity?
+  def at_capacity?
+    # Handle nil values gracefully
+    return false if current_members_count.nil? || max_members.nil?
     current_members_count >= max_members
   end
 
@@ -158,5 +166,15 @@ class InvestmentClub < ApplicationRecord
     # This method is now handled by the club_type= setter
     # Set default if no access_type is set
     self.access_type = 'restricted' if access_type.blank?
+  end
+
+  def set_default_members_count
+    self.current_members_count ||= 0
+  end
+  
+  # Update the update_members_count method
+  def update_members_count
+    active_count = investment_club_memberships.active.count
+    update_columns(current_members_count: active_count)
   end
 end

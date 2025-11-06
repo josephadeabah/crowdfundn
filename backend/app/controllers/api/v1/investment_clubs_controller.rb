@@ -99,39 +99,59 @@ module Api
 
       # POST /api/v1/investment_clubs/:id/join
       def join
+        # Add better error handling and logging
+        Rails.logger.info "Join attempt for club: #{@club.slug} by user: #{@current_user.id}"
+        
         if @club.is_member?(@current_user)
+          Rails.logger.warn "User #{@current_user.id} already member of club #{@club.slug}"
           return render json: { 
             success: false,
             error: 'Already a member of this club' 
           }, status: :unprocessable_entity
         end
 
+        # Fix the capacity check with nil handling
         if @club.at_capacity?
+          Rails.logger.warn "Club #{@club.slug} at capacity: #{@club.current_members_count}/#{@club.max_members}"
           return render json: { 
             success: false,
             error: 'Club has reached maximum member capacity' 
           }, status: :unprocessable_entity
         end
 
-        membership = @club.investment_club_memberships.new(
-          user: @current_user,
-          role: 'member',
-          status: @club.public? ? 'active' : 'pending'
-        )
+        begin
+          membership = @club.investment_club_memberships.new(
+            user: @current_user,
+            role: 'member',
+            status: @club.public? ? 'active' : 'pending'
+          )
 
-        if membership.save
-          notify_admins_of_pending_member(membership) if membership.pending?
-          
-          render json: { 
-            success: true, 
-            membership: ClubMembershipSerializer.new(membership).as_json,
-            message: @club.public? ? 'Successfully joined club' : 'Membership request submitted for approval'
-          }
-        else
+          if membership.save
+            # Update members count after successful membership creation
+            @club.update_members_count
+            
+            notify_admins_of_pending_member(membership) if membership.pending?
+            
+            Rails.logger.info "Successfully created membership: #{membership.id} for user #{@current_user.id}"
+            
+            render json: { 
+              success: true, 
+              membership: ClubMembershipSerializer.new(membership).as_json,
+              message: @club.public? ? 'Successfully joined club' : 'Membership request submitted for approval'
+            }
+          else
+            Rails.logger.error "Failed to create membership: #{membership.errors.full_messages}"
+            render json: { 
+              success: false, 
+              errors: membership.errors.full_messages 
+            }, status: :unprocessable_entity
+          end
+        rescue => e
+          Rails.logger.error "Error in join method: #{e.message}"
           render json: { 
             success: false, 
-            errors: membership.errors.full_messages 
-          }, status: :unprocessable_entity
+            error: 'Internal server error' 
+          }, status: :internal_server_error
         end
       end
 

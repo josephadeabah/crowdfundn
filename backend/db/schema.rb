@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_05_150225) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_06_124242) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -419,9 +419,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_05_150225) do
   create_table "investment_clubs", force: :cascade do |t|
     t.string "name", null: false
     t.text "mission"
-    t.decimal "minimum_monthly_contribution", precision: 15, scale: 2, default: "0.0"
+    t.decimal "minimum_monthly_contribution", precision: 15, scale: 2, default: "0.0", null: false
     t.string "investment_focus"
-    t.integer "max_members"
+    t.integer "max_members", default: 50, null: false
     t.string "access_type", default: "private"
     t.string "status", default: "active"
     t.bigint "creator_id", null: false
@@ -432,6 +432,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_05_150225) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "constitution_data"
+    t.integer "current_members_count", default: 0, null: false
     t.index ["creator_id"], name: "index_investment_clubs_on_creator_id"
     t.index ["slug"], name: "index_investment_clubs_on_slug", unique: true
     t.index ["status"], name: "index_investment_clubs_on_status"
