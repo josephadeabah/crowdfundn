@@ -18,6 +18,12 @@ const ClubsListPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+    clubId?: string;
+  } | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'my_clubs' | 'discover'>('all');
   const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
 
@@ -63,11 +69,48 @@ const ClubsListPage: React.FC = () => {
   };
 
   const handleClubClick = async (club: Club) => {
-    // Only allow clicking if user is a member or club is public
-    if (club.is_member || club.club_type === 'public') {
-      setSelectedClub(club);
-      await loadClubMembers(club);
-      setIsModalOpen(true);
+    // Allow clicking on any club to view details and request membership
+    setSelectedClub(club);
+    await loadClubMembers(club);
+    setIsModalOpen(true);
+  };
+
+  const handleJoinRequest = async (club: Club, event?: React.MouseEvent) => {
+    if (event) {
+      event.stopPropagation(); // Prevent triggering the card click
+    }
+
+    if (!token) return;
+
+    setActionLoading(club.id);
+    setMessage(null);
+
+    try {
+      const response = await clubService.joinClub(token, club.slug);
+
+      if (response.success || response.is_member) {
+        setMessage({
+          type: 'success',
+          text: response.message || 'Membership request sent successfully!',
+          clubId: club.id
+        });
+        // Reload clubs to update membership status
+        await loadClubs();
+      } else {
+        setMessage({
+          type: 'error',
+          text: response.message || 'Failed to send membership request',
+          clubId: club.id
+        });
+      }
+    } catch (error: any) {
+      setMessage({
+        type: 'error',
+        text: error.message || 'Failed to send membership request',
+        clubId: club.id
+      });
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -122,6 +165,32 @@ const ClubsListPage: React.FC = () => {
     return { label: 'Join', color: 'bg-gray-100 text-gray-800' };
   };
 
+  const getActionButton = (club: Club) => {
+    if (club.is_member) {
+      return {
+        label: 'View Club',
+        style: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200',
+        onClick: () => handleClubClick(club)
+      };
+    }
+
+    if (club.club_type === 'private') {
+      return {
+        label: actionLoading === club.id ? 'Requesting...' : 'Request to Join',
+        style: 'bg-blue-600 text-white hover:bg-blue-700',
+        onClick: (e: React.MouseEvent) => handleJoinRequest(club, e),
+        disabled: actionLoading === club.id
+      };
+    }
+
+    return {
+      label: actionLoading === club.id ? 'Joining...' : 'Join Club',
+      style: 'bg-emerald-600 text-white hover:bg-emerald-700',
+      onClick: (e: React.MouseEvent) => handleJoinRequest(club, e),
+      disabled: actionLoading === club.id
+    };
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -172,6 +241,19 @@ const ClubsListPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Message Alert */}
+        {message && (
+          <div
+            className={`mb-6 p-4 rounded-lg ${
+              message.type === 'success'
+                ? 'bg-green-50 text-green-800 border border-green-200'
+                : 'bg-red-50 text-red-800 border border-red-200'
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
+
         {/* Tabs */}
         <div className="flex border-b border-gray-200 mb-6">
           {[
@@ -206,7 +288,7 @@ const ClubsListPage: React.FC = () => {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredClubs.map((club, index) => {
             const status = getClubStatus(club);
-            const canViewDetails = club.is_member || club.club_type === 'public';
+            const actionButton = getActionButton(club);
 
             return (
               <motion.div
@@ -214,12 +296,8 @@ const ClubsListPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className={`bg-white border border-gray-200 rounded-xl p-6 shadow-sm transition-all duration-300 ${
-                  canViewDetails 
-                    ? 'cursor-pointer hover:shadow-md group' 
-                    : 'cursor-not-allowed opacity-75'
-                }`}
-                onClick={() => canViewDetails && handleClubClick(club)}
+                className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group"
+                onClick={() => handleClubClick(club)}
               >
                 <div className="flex flex-col h-full">
                   <div className="flex-1">
@@ -245,15 +323,8 @@ const ClubsListPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <h3 className={`text-xl font-semibold mb-2 ${
-                      canViewDetails 
-                        ? 'text-gray-900 group-hover:text-emerald-700 transition-colors' 
-                        : 'text-gray-600'
-                    }`}>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
                       {club.name}
-                      {!canViewDetails && (
-                        <span className="ml-2 text-sm text-gray-400">🔒</span>
-                      )}
                     </h3>
 
                     <p className="text-gray-600 text-sm line-clamp-3 mb-4">
@@ -292,15 +363,13 @@ const ClubsListPage: React.FC = () => {
                           Club Balance
                         </div>
                       </div>
-                      <div className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        club.is_member
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : canViewDetails
-                            ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}>
-                        {club.is_member ? 'View Club' : canViewDetails ? 'Learn More' : 'Private Club'}
-                      </div>
+                      <button
+                        onClick={actionButton.onClick}
+                        disabled={actionButton.disabled}
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${actionButton.style}`}
+                      >
+                        {actionButton.label}
+                      </button>
                     </div>
                   </div>
                 </div>

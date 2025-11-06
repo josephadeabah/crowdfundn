@@ -82,29 +82,36 @@ export const clubService = {
   },
 
   // Join club
-  joinClub: async (token: string, clubId: string): Promise<JoinClubResponse> => {
+  joinClub: async (
+    token: string,
+    clubId: string,
+  ): Promise<JoinClubResponse> => {
     try {
-      const response = await apiCall(`/investment_clubs/${clubId}/join`, token, {
-        method: 'POST',
-      });
-      
+      const response = await apiCall(
+        `/investment_clubs/${clubId}/join`,
+        token,
+        {
+          method: 'POST',
+        },
+      );
+
       console.log('Join club response:', response);
       return {
         ...response,
-        is_member: response.is_member !== undefined ? response.is_member : true
+        is_member: response.is_member !== undefined ? response.is_member : true,
       };
     } catch (error: any) {
       console.error('Join club error:', error);
-      
+
       // Check if it's already a membership status response
       if (error.message && error.message.includes('Already a member')) {
         return {
           success: false,
           is_member: true,
-          message: error.message
+          message: error.message,
         };
       }
-      
+
       if (error.message.includes('capacity')) {
         throw new Error('This club has reached its maximum member limit.');
       } else {
@@ -133,15 +140,21 @@ export const clubService = {
     clubId: string,
   ): Promise<MembershipStatusResponse> => {
     try {
-      const response = await apiCall(`/investment_clubs/${clubId}/my_membership_status`, token);
+      const response = await apiCall(
+        `/investment_clubs/${clubId}/my_membership_status`,
+        token,
+      );
       return response;
     } catch (error: any) {
       // If we get a 404, it means the user is not a member
-      if (error.message.includes('404') || error.message.includes('Not a member')) {
+      if (
+        error.message.includes('404') ||
+        error.message.includes('Not a member')
+      ) {
         return {
           success: false,
           is_member: false,
-          message: 'Not a member of this club'
+          message: 'Not a member of this club',
         };
       }
       throw error;

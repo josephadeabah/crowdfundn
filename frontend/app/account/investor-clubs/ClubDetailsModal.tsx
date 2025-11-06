@@ -283,26 +283,53 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         );
 
       case 'members':
-        // Only show members tab if user is a member or the club is public
+        // Show limited info for non-members in private clubs
         if (!myMembership && club.club_type === 'private') {
           return (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🔒</span>
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Members
+                </h3>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Members Only
-              </h3>
-              <p className="text-gray-600">
-                You need to be a member to view the members list.
-              </p>
-              <button
-                onClick={handleJoinClub}
-                disabled={actionLoading}
-                className="mt-4 px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50"
-              >
-                {actionLoading ? 'Joining...' : 'Join Club'}
-              </button>
+
+              {/* Info message for non-members */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <h4 className="text-sm font-medium text-blue-800">
+                      Private Club Membership Required
+                    </h4>
+                    <p className="text-sm text-blue-700 mt-1">
+                      This is a private club with {club.current_members_count} members. 
+                      Request to join to see the full members list and connect with other investors.
+                    </p>
+                    <button
+                      onClick={handleJoinClub}
+                      disabled={actionLoading}
+                      className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+                    >
+                      {actionLoading ? 'Requesting...' : 'Request to Join'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Basic member count info */}
+              <div className="bg-gray-50 rounded-lg p-6 text-center">
+                <div className="text-3xl font-bold text-gray-900 mb-2">
+                  {club.current_members_count}
+                </div>
+                <div className="text-gray-600">Active Members</div>
+                <div className="text-sm text-gray-500 mt-2">
+                  Join the club to see member details and connect with the community
+                </div>
+              </div>
             </div>
           );
         }
@@ -406,30 +433,111 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         );
 
       case 'actions':
-        // Only show actions tab if user is a member
+        // Only show actions tab content if user is a member or can request to join
         if (!myMembership) {
           return (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🚀</span>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Join to Access Actions
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Club Actions
               </h3>
-              <p className="text-gray-600 mb-4">
-                Become a member to access club actions and features.
-              </p>
-              <button
-                onClick={handleJoinClub}
-                disabled={actionLoading}
-                className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50"
-              >
-                {actionLoading ? 'Joining...' : 'Join Club'}
-              </button>
+
+              {/* Membership Request Section */}
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h4 className="font-semibold text-gray-900 mb-4">
+                  Become a Member
+                </h4>
+
+                <div className="space-y-4">
+                  <p className="text-gray-600">
+                    {club.club_type === 'public'
+                      ? 'Join this public club to start collaborating with other investors and participate in investment decisions.'
+                      : 'Request to join this private club. Your request will be reviewed by club admins.'}
+                  </p>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={handleJoinClub}
+                      disabled={actionLoading}
+                      className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50"
+                    >
+                      {actionLoading
+                        ? club.club_type === 'public' ? 'Joining...' : 'Requesting...'
+                        : club.club_type === 'public'
+                          ? 'Join Club Now'
+                          : 'Request to Join'}
+                    </button>
+                    
+                    {club.club_type === 'private' && (
+                      <button
+                        onClick={() => setActiveTab('about')}
+                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+                      >
+                        Learn More
+                      </button>
+                    )}
+                  </div>
+
+                  {club.club_type === 'private' && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-start">
+                        <svg className="h-5 w-5 text-blue-400 mt-0.5 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                        </svg>
+                        <div>
+                          <p className="text-sm text-blue-700">
+                            After requesting to join, club admins will review your application. 
+                            You'll receive a notification once your membership is approved.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Features Preview */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-60">
+                <div className="p-4 bg-white border border-gray-200 rounded-lg text-left">
+                  <div className="font-semibold text-gray-900">
+                    Make Contributions
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    Add funds to the club pool (Members only)
+                  </div>
+                </div>
+
+                <div className="p-4 bg-white border border-gray-200 rounded-lg text-left">
+                  <div className="font-semibold text-gray-900">
+                    Propose Investments
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    Suggest new investment opportunities (Members only)
+                  </div>
+                </div>
+
+                <div className="p-4 bg-white border border-gray-200 rounded-lg text-left">
+                  <div className="font-semibold text-gray-900">
+                    Vote on Decisions
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    Participate in club voting (Members only)
+                  </div>
+                </div>
+
+                <div className="p-4 bg-white border border-gray-200 rounded-lg text-left">
+                  <div className="font-semibold text-gray-900">
+                    View Analytics
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    Access detailed performance reports (Members only)
+                  </div>
+                </div>
+              </div>
             </div>
           );
         }
 
+        // User is a member - show full actions
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -444,9 +552,26 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
               {myMembership.status === 'pending' ? (
                 <div className="space-y-4">
-                  <p className="text-yellow-600">
-                    Your membership request is pending approval from club admins.
-                  </p>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0">
+                        <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <h3 className="text-sm font-medium text-yellow-800">
+                          Membership Pending Approval
+                        </h3>
+                        <div className="mt-2 text-sm text-yellow-700">
+                          <p>
+                            Your membership request is pending approval from club admins. 
+                            You'll be able to access all club features once approved.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <button
                     onClick={handleLeaveClub}
                     disabled={actionLoading}
