@@ -176,7 +176,7 @@ const ProfileTabs = () => {
           badge: null, // Removed "Soon" badge since it's now implemented
         },
         {
-          label: 'Investor Clubs',
+          label: 'Venture Clubs',
           icon: <Building2 className="w-4 h-4" />, // Changed to Building2 - represents larger investment communities
           component: <ClubsListPage />,
           description:
