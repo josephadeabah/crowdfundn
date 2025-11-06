@@ -298,11 +298,11 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
               </div>
 
               {/* Info message for non-members */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <svg
-                      className="h-5 w-5 text-blue-400"
+                      className="h-5 w-5 text-orange-400"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
@@ -314,10 +314,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     </svg>
                   </div>
                   <div className="ml-3 flex-1">
-                    <h4 className="text-sm font-medium text-blue-800">
+                    <h4 className="text-sm font-medium text-orange-800">
                       Private Club Membership Required
                     </h4>
-                    <p className="text-sm text-blue-700 mt-1">
+                    <p className="text-sm text-orange-700 mt-1">
                       This is a private club with {club.current_members_count}{' '}
                       members. Request to join to see the full members list and
                       connect with other investors.
@@ -325,7 +325,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     <button
                       onClick={handleJoinClub}
                       disabled={actionLoading}
-                      className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+                      className="mt-3 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm font-medium disabled:opacity-50"
                     >
                       {actionLoading ? 'Requesting...' : 'Request to Join'}
                     </button>
@@ -391,7 +391,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                               member.role === 'creator'
                                 ? 'bg-purple-100 text-purple-800'
                                 : member.role === 'admin'
-                                  ? 'bg-blue-100 text-blue-800'
+                                  ? 'bg-orange-100 text-orange-800'
                                   : 'bg-gray-100 text-gray-800'
                             }`}
                           >
@@ -494,10 +494,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                   </div>
 
                   {club.club_type === 'private' && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                       <div className="flex items-start">
                         <svg
-                          className="h-5 w-5 text-blue-400 mt-0.5 mr-3 flex-shrink-0"
+                          className="h-5 w-5 text-orange-400 mt-0.5 mr-3 flex-shrink-0"
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -508,7 +508,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                           />
                         </svg>
                         <div>
-                          <p className="text-sm text-blue-700">
+                          <p className="text-sm text-orange-700">
                             After requesting to join, club admins will review
                             your application. You'll receive a notification once
                             your membership is approved.
@@ -698,9 +698,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                       onClick={() =>
                         alert('Manage Club feature would open here')
                       }
-                      className="p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors text-left"
+                      className="p-4 bg-white border border-orange-200 rounded-lg hover:bg-orange-50 transition-colors text-left"
                     >
-                      <div className="font-semibold text-blue-900">
+                      <div className="font-semibold text-orange-900">
                         Manage Club
                       </div>
                       <div className="text-sm text-gray-600 mt-1">
@@ -712,9 +712,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                       onClick={() =>
                         alert('View Analytics feature would open here')
                       }
-                      className="p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors text-left"
+                      className="p-4 bg-white border border-orange-200 rounded-lg hover:bg-orange-50 transition-colors text-left"
                     >
-                      <div className="font-semibold text-blue-900">
+                      <div className="font-semibold text-orange-900">
                         View Analytics
                       </div>
                       <div className="text-sm text-gray-600 mt-1">
@@ -761,7 +761,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
                       club.club_type === 'public'
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-blue-100 text-blue-800'
+                        : 'bg-orange-100 text-orange-800'
                     }`}
                   >
                     {club.club_type} Club

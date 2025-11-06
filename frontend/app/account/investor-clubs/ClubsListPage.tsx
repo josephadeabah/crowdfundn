@@ -162,7 +162,7 @@ const ClubsListPage: React.FC = () => {
       return { label: 'Member', color: 'bg-green-100 text-green-800' };
     }
     if (club.club_type === 'private') {
-      return { label: 'Private', color: 'bg-blue-100 text-blue-800' };
+      return { label: 'Private', color: 'bg-orange-100 text-orange-800' };
     }
     return { label: 'Join', color: 'bg-gray-100 text-gray-800' };
   };
@@ -179,7 +179,7 @@ const ClubsListPage: React.FC = () => {
     if (club.club_type === 'private') {
       return {
         label: actionLoading === club.id ? 'Requesting...' : 'Request to Join',
-        style: 'bg-blue-600 text-white hover:bg-blue-700',
+        style: 'bg-orange-600 text-white hover:bg-orange-700',
         onClick: (e: React.MouseEvent) => handleJoinRequest(club, e),
         disabled: actionLoading === club.id,
       };
@@ -318,7 +318,7 @@ const ClubsListPage: React.FC = () => {
                           className={`px-2 py-1 rounded-full text-xs ${
                             club.club_type === 'public'
                               ? 'bg-green-100 text-green-800'
-                              : 'bg-blue-100 text-blue-800'
+                              : 'bg-orange-100 text-orange-800'
                           }`}
                         >
                           {club.club_type}
