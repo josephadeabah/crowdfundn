@@ -1,10 +1,10 @@
-// types/clubTypes.ts
+// app/account/investor-clubs/clubTypes.ts
 export interface Club {
   id: string;
   slug: string;
   name: string;
   mission: string;
-  description?: string; // Added to match your modal
+  description?: string;
   investment_focus: string;
   club_type: 'public' | 'private';
   status: 'active' | 'inactive';
@@ -22,6 +22,7 @@ export interface Club {
   };
   is_member: boolean;
   is_admin: boolean;
+  is_creator?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -39,6 +40,29 @@ export interface Member {
   total_contributed: number;
   current_share: number;
   joined_at: string;
+  can_manage?: boolean;
+  can_vote?: boolean;
+  can_contribute?: boolean;
+  estimated_share_value?: number;
+}
+
+export interface Membership {
+  id: string;
+  user: {
+    id: string;
+    full_name: string;
+    email: string;
+    avatar_url: string | null;
+  };
+  role: 'creator' | 'admin' | 'member';
+  status: 'pending' | 'active' | 'inactive';
+  total_contributed: number;
+  current_share: number;
+  joined_at: string;
+  can_manage: boolean;
+  can_vote: boolean;
+  can_contribute: boolean;
+  estimated_share_value: number;
 }
 
 export interface ClubContribution {
@@ -87,4 +111,17 @@ export interface Vote {
     full_name: string;
   };
   created_at: string;
+}
+
+export interface JoinClubResponse {
+  success: boolean;
+  membership: Membership;
+  message: string;
+}
+
+export interface MembershipStatusResponse {
+  success: boolean;
+  membership?: Membership;
+  is_member?: boolean;
+  message?: string;
 }

@@ -35,17 +35,11 @@ const InvestmentClubsDashboard: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await clubService.getClubs(token);
+      const response = await clubService.getMyClubs(token);
+      setClubs(response.clubs);
 
-      // Filter clubs where user is a member OR is the creator
-      const userClubs = response.clubs.filter(
-        (club) => club.is_member || Number(club.creator.id) === user.id,
-      );
-
-      setClubs(userClubs);
-
-      if (userClubs.length > 0) {
-        await loadClubDetails(userClubs[0]);
+      if (response.clubs.length > 0) {
+        await loadClubDetails(response.clubs[0]);
       }
     } catch (error) {
       console.error('Failed to load clubs:', error);
@@ -103,11 +97,12 @@ const InvestmentClubsDashboard: React.FC = () => {
       setInvestments(investmentsResponse.investments);
     } catch (error) {
       console.error('Failed to vote:', error);
+      alert('Failed to vote. Please try again.');
     }
   };
 
   const handleClubCreated = () => {
-    loadUserClubs(); // Reload the clubs list
+    loadUserClubs();
   };
 
   const formatCurrency = (amount: number, currency: string = 'USD') => {
@@ -118,17 +113,14 @@ const InvestmentClubsDashboard: React.FC = () => {
   };
 
   const handleMakeContribution = () => {
-    // This would open a contribution modal or navigate to contributions page
     alert('Make Contribution feature would open here');
   };
 
   const handleProposeInvestment = () => {
-    // This would open an investment proposal modal
     alert('Propose Investment feature would open here');
   };
 
   const handleViewAnalytics = () => {
-    // This would navigate to analytics page
     alert('View Analytics feature would open here');
   };
 
@@ -158,7 +150,7 @@ const InvestmentClubsDashboard: React.FC = () => {
               </p>
               <div className="flex gap-4 justify-center">
                 <button
-                  onClick={() => (window.location.hash = 'See Clubs')}
+                  onClick={() => (window.location.hash = 'Investor Clubs')}
                   className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium"
                 >
                   Discover Clubs
@@ -174,7 +166,6 @@ const InvestmentClubsDashboard: React.FC = () => {
           </div>
         </main>
 
-        {/* Create Club Modal */}
         <CreateClubModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
@@ -194,7 +185,7 @@ const InvestmentClubsDashboard: React.FC = () => {
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-bold">Investment Clubs</h1>
+              <h1 className="text-3xl font-bold">My Investment Clubs</h1>
               <p className="text-gray-600 mt-2">
                 Manage your club investments and collaborate with members
               </p>

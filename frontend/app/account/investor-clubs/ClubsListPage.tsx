@@ -3,19 +3,24 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ClubDetailsModal from './ClubDetailsModal';
-import CreateClubModal from './CreateClubModal'; // Add this import
+import CreateClubModal from './CreateClubModal';
 import { Club, Member } from './clubTypes';
 import { clubService, membershipService } from './clubservice';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
 const ClubsListPage: React.FC = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [clubs, setClubs] = useState<Club[]>([]);
+  const [myClubs, setMyClubs] = useState<Club[]>([]);
+  const [discoverClubs, setDiscoverClubs] = useState<Club[]>([]);
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); // Add this state
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'all' | 'my_clubs' | 'discover'>(
+    'all',
+  );
   const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
 
   useEffect(() => {
@@ -29,8 +34,18 @@ const ClubsListPage: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await clubService.getClubs(token);
-      setClubs(response.clubs);
+
+      // Load all clubs, my clubs, and discover clubs in parallel
+      const [allClubsResponse, myClubsResponse, discoverClubsResponse] =
+        await Promise.all([
+          clubService.getClubs(token),
+          clubService.getMyClubs(token),
+          clubService.getDiscoverClubs(token),
+        ]);
+
+      setClubs(allClubsResponse.clubs);
+      setMyClubs(myClubsResponse.clubs);
+      setDiscoverClubs(discoverClubsResponse.clubs);
     } catch (error) {
       console.error('Failed to load clubs:', error);
     } finally {
@@ -55,12 +70,26 @@ const ClubsListPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  // Add this function to handle club creation
   const handleClubCreated = () => {
-    loadClubs(); // Reload the clubs list
+    loadClubs(); // Reload all club lists
   };
 
-  const filteredClubs = clubs.filter(
+  const handleMembershipUpdate = () => {
+    loadClubs(); // Reload when membership changes
+  };
+
+  const getDisplayClubs = () => {
+    switch (activeTab) {
+      case 'my_clubs':
+        return myClubs;
+      case 'discover':
+        return discoverClubs;
+      default:
+        return clubs;
+    }
+  };
+
+  const filteredClubs = getDisplayClubs().filter(
     (club) => filter === 'all' || club.club_type === filter,
   );
 
@@ -77,7 +106,19 @@ const ClubsListPage: React.FC = () => {
     if (focus?.includes('climate') || focus?.includes('green')) return '🌿';
     if (focus?.includes('agriculture') || focus?.includes('agri')) return '🌱';
     if (focus?.includes('health')) return '🏥';
+    if (focus?.includes('real estate')) return '🏠';
+    if (focus?.includes('energy')) return '⚡';
     return '💼';
+  };
+
+  const getClubStatus = (club: Club) => {
+    if (club.is_member) {
+      return { label: 'Member', color: 'bg-green-100 text-green-800' };
+    }
+    if (club.club_type === 'private') {
+      return { label: 'Private', color: 'bg-blue-100 text-blue-800' };
+    }
+    return { label: 'Join', color: 'bg-gray-100 text-gray-800' };
   };
 
   if (loading) {
@@ -95,10 +136,11 @@ const ClubsListPage: React.FC = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8">
           <div className="mb-6 lg:mb-0">
             <h1 className="text-3xl font-bold text-gray-900">
-              Discover Investment Clubs
+              Investment Clubs
             </h1>
             <p className="text-gray-600 mt-2 max-w-2xl">
-              Find and join investment clubs that match your interests.
+              Collaborate with like-minded investors and make collective
+              investment decisions.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -121,7 +163,6 @@ const ClubsListPage: React.FC = () => {
                 </button>
               ))}
             </div>
-            {/* Update this button to open the create modal */}
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium whitespace-nowrap"
@@ -131,95 +172,174 @@ const ClubsListPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Tabs */}
+        <div className="flex border-b border-gray-200 mb-6">
+          {[
+            { id: 'all', label: 'All Clubs', count: clubs.length },
+            { id: 'my_clubs', label: 'My Clubs', count: myClubs.length },
+            { id: 'discover', label: 'Discover', count: discoverClubs.length },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm ${
+                activeTab === tab.id
+                  ? 'border-emerald-500 text-emerald-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              {tab.label}
+              <span
+                className={`px-2 py-1 rounded-full text-xs ${
+                  activeTab === tab.id
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                {tab.count}
+              </span>
+            </button>
+          ))}
+        </div>
+
         {/* Clubs Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredClubs.map((club, index) => (
-            <motion.div
-              key={club.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group"
-              onClick={() => handleClubClick(club)}
-            >
-              <div className="flex flex-col h-full">
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white text-2xl">
-                      {getClubIcon(club)}
-                    </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        club.club_type === 'public'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-blue-100 text-blue-800'
-                      }`}
-                    >
-                      {club.club_type}
-                    </span>
-                  </div>
+          {filteredClubs.map((club, index) => {
+            const status = getClubStatus(club);
 
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
-                    {club.name}
-                  </h3>
-
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-                    {club.mission}
-                  </p>
-
-                  <div className="space-y-2 text-sm text-gray-500">
-                    <div className="flex items-center justify-between">
-                      <span>Members</span>
-                      <span className="font-medium text-gray-900">
-                        {club.current_members_count}/{club.max_members}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Min. Contribution</span>
-                      <span className="font-medium text-gray-900">
-                        {formatCurrency(club.minimum_monthly_contribution)}/mo
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Focus Area</span>
-                      <span className="font-medium text-gray-900 capitalize">
-                        {club.investment_focus || 'General'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-gray-100">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="text-2xl font-bold text-emerald-700">
-                        {formatCurrency(club.financials.current_balance)}
+            return (
+              <motion.div
+                key={club.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group"
+                onClick={() => handleClubClick(club)}
+              >
+                <div className="flex flex-col h-full">
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white text-2xl">
+                        {getClubIcon(club)}
                       </div>
-                      <div className="text-xs text-gray-500">Club Balance</div>
+                      <div className="flex flex-col items-end gap-2">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${status.color}`}
+                        >
+                          {status.label}
+                        </span>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            club.club_type === 'public'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-blue-100 text-blue-800'
+                          }`}
+                        >
+                          {club.club_type}
+                        </span>
+                      </div>
                     </div>
-                    <button className="px-4 py-2 rounded-lg bg-emerald-100 text-emerald-700 font-medium hover:bg-emerald-200 transition-colors group-hover:bg-emerald-600 group-hover:text-white">
-                      {club.is_member ? 'View Club' : 'Join Club'}
-                    </button>
+
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-emerald-700 transition-colors">
+                      {club.name}
+                    </h3>
+
+                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+                      {club.mission}
+                    </p>
+
+                    <div className="space-y-2 text-sm text-gray-500">
+                      <div className="flex items-center justify-between">
+                        <span>Members</span>
+                        <span className="font-medium text-gray-900">
+                          {club.current_members_count}/{club.max_members}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Min. Contribution</span>
+                        <span className="font-medium text-gray-900">
+                          {formatCurrency(club.minimum_monthly_contribution)}/mo
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Focus Area</span>
+                        <span className="font-medium text-gray-900 capitalize">
+                          {club.investment_focus || 'General'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-gray-100">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="text-2xl font-bold text-emerald-700">
+                          {formatCurrency(club.financials.current_balance)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Club Balance
+                        </div>
+                      </div>
+                      <button
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                          club.is_member
+                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                            : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        }`}
+                      >
+                        {club.is_member ? 'View Club' : 'Learn More'}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
         {filteredClubs.length === 0 && (
           <div className="text-center py-12">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-3xl">🔍</span>
+              <span className="text-3xl">
+                {activeTab === 'my_clubs'
+                  ? '👥'
+                  : activeTab === 'discover'
+                    ? '🔍'
+                    : '🏢'}
+              </span>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No clubs found
+              {activeTab === 'my_clubs'
+                ? 'No clubs yet'
+                : activeTab === 'discover'
+                  ? 'No clubs to discover'
+                  : 'No clubs found'}
             </h3>
-            <p className="text-gray-600 max-w-md mx-auto">
-              {filter === 'all'
-                ? 'There are no investment clubs available at the moment.'
-                : `No ${filter} clubs match your criteria.`}
+            <p className="text-gray-600 max-w-md mx-auto mb-6">
+              {activeTab === 'my_clubs'
+                ? "You haven't joined any investment clubs yet. Explore clubs below or create your own."
+                : activeTab === 'discover'
+                  ? "You've joined all available clubs or there are no clubs matching your criteria."
+                  : filter === 'all'
+                    ? 'There are no investment clubs available at the moment.'
+                    : `No ${filter} clubs match your criteria.`}
             </p>
+            {activeTab === 'my_clubs' && (
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={() => setActiveTab('discover')}
+                  className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium"
+                >
+                  Discover Clubs
+                </button>
+                <button
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+                >
+                  Create Club
+                </button>
+              </div>
+            )}
           </div>
         )}
       </main>
@@ -231,6 +351,7 @@ const ClubsListPage: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
           club={selectedClub}
           members={members}
+          onMembershipUpdate={handleMembershipUpdate}
         />
       )}
 

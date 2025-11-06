@@ -83,19 +83,21 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
 
   const validateForm = (): string[] => {
     const errors: string[] = [];
-    
+
     if (!formData.name.trim()) errors.push('Club name is required');
     if (!formData.mission.trim()) errors.push('Mission is required');
-    if (parseFloat(formData.minimum_monthly_contribution) <= 0) 
+    if (parseFloat(formData.minimum_monthly_contribution) <= 0)
       errors.push('Minimum contribution must be greater than 0');
-    if (parseInt(formData.max_members) < 1) 
+    if (parseInt(formData.max_members) < 1)
       errors.push('Maximum members must be at least 1');
-    
+
     return errors;
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     setFormData({
       ...formData,
@@ -111,8 +113,8 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
   };
 
   // Sort categories alphabetically by label for better UX
-  const sortedCategories = [...categoriesWithIcons].sort((a, b) => 
-    a.label.localeCompare(b.label)
+  const sortedCategories = [...categoriesWithIcons].sort((a, b) =>
+    a.label.localeCompare(b.label),
   );
 
   return (

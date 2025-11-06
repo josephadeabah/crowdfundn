@@ -1,15 +1,18 @@
-// services/clubService.ts
+// app/account/investor-clubs/clubservice.ts
 import {
   Club,
   Member,
+  Membership,
   ClubContribution,
   ClubInvestment,
   Vote,
+  JoinClubResponse,
+  MembershipStatusResponse,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
-// Generic API call function that accepts token
+// Generic API call function
 const apiCall = async (
   endpoint: string,
   token: string,
@@ -26,17 +29,28 @@ const apiCall = async (
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
   if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `API error: ${response.status}`);
   }
 
   return response.json();
 };
 
-// Investment Club API calls - all functions now accept token as first parameter
+// Investment Club API calls
 export const clubService = {
   // Get all clubs
   getClubs: async (token: string): Promise<{ clubs: Club[] }> => {
     return apiCall('/investment_clubs', token);
+  },
+
+  // Get user's clubs
+  getMyClubs: async (token: string): Promise<{ clubs: Club[] }> => {
+    return apiCall('/investment_clubs/my_clubs', token);
+  },
+
+  // Discover clubs (not joined)
+  getDiscoverClubs: async (token: string): Promise<{ clubs: Club[] }> => {
+    return apiCall('/investment_clubs/discover', token);
   },
 
   // Get club details
@@ -71,7 +85,7 @@ export const clubService = {
   joinClub: async (
     token: string,
     clubId: string,
-  ): Promise<{ success: boolean; membership: any }> => {
+  ): Promise<JoinClubResponse> => {
     return apiCall(`/investment_clubs/${clubId}/join`, token, {
       method: 'POST',
     });
@@ -81,9 +95,33 @@ export const clubService = {
   leaveClub: async (
     token: string,
     clubId: string,
-  ): Promise<{ success: boolean }> => {
+  ): Promise<{
+    success: boolean;
+    message: string;
+    portfolio_summary?: any;
+  }> => {
     return apiCall(`/investment_clubs/${clubId}/leave`, token, {
       method: 'POST',
+    });
+  },
+
+  // Get membership status
+  getMyMembershipStatus: async (
+    token: string,
+    clubId: string,
+  ): Promise<MembershipStatusResponse> => {
+    return apiCall(`/investment_clubs/${clubId}/my_membership_status`, token);
+  },
+
+  // Transfer ownership
+  transferOwnership: async (
+    token: string,
+    clubId: string,
+    newAdminId: string,
+  ): Promise<{ success: boolean; message: string }> => {
+    return apiCall(`/investment_clubs/${clubId}/transfer_ownership`, token, {
+      method: 'POST',
+      body: JSON.stringify({ new_admin_id: newAdminId }),
     });
   },
 };
@@ -96,6 +134,25 @@ export const membershipService = {
     clubId: string,
   ): Promise<{ members: Member[] }> => {
     return apiCall(`/investment_clubs/${clubId}/memberships`, token);
+  },
+
+  // Get pending members
+  getPendingMembers: async (
+    token: string,
+    clubId: string,
+  ): Promise<{ pending_members: Member[] }> => {
+    return apiCall(`/investment_clubs/${clubId}/memberships/pending`, token);
+  },
+
+  // Get my membership
+  getMyMembership: async (
+    token: string,
+    clubId: string,
+  ): Promise<{ membership: Membership }> => {
+    return apiCall(
+      `/investment_clubs/${clubId}/memberships/my_membership`,
+      token,
+    );
   },
 
   // Update member role
@@ -126,6 +183,51 @@ export const membershipService = {
       token,
       {
         method: 'DELETE',
+      },
+    );
+  },
+
+  // Approve member
+  approveMember: async (
+    token: string,
+    clubId: string,
+    membershipId: string,
+  ): Promise<{ success: boolean; membership: Member }> => {
+    return apiCall(
+      `/investment_clubs/${clubId}/memberships/${membershipId}/approve`,
+      token,
+      {
+        method: 'POST',
+      },
+    );
+  },
+
+  // Reject member
+  rejectMember: async (
+    token: string,
+    clubId: string,
+    membershipId: string,
+  ): Promise<{ success: boolean }> => {
+    return apiCall(
+      `/investment_clubs/${clubId}/memberships/${membershipId}/reject`,
+      token,
+      {
+        method: 'POST',
+      },
+    );
+  },
+
+  // Leave club (via membership endpoint)
+  leaveClub: async (
+    token: string,
+    clubId: string,
+    membershipId: string,
+  ): Promise<{ success: boolean }> => {
+    return apiCall(
+      `/investment_clubs/${clubId}/memberships/${membershipId}/leave`,
+      token,
+      {
+        method: 'POST',
       },
     );
   },
