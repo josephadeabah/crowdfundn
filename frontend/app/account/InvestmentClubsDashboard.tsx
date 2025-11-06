@@ -145,16 +145,10 @@ const InvestmentClubsDashboard: React.FC = () => {
                 No Investment Clubs Yet
               </h2>
               <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                Join an investment club to start collaborating with other
+                Create an investment club to start collaborating with other
                 investors and make collective investment decisions.
               </p>
               <div className="flex gap-4 justify-center">
-                <button
-                  onClick={() => (window.location.hash = 'Investor Clubs')}
-                  className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium"
-                >
-                  Discover Clubs
-                </button>
                 <button
                   onClick={() => setIsCreateModalOpen(true)}
                   className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
