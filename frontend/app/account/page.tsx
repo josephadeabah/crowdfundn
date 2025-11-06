@@ -173,7 +173,8 @@ const ProfileTabs = () => {
           component: <InvestmentClubsDashboard />,
           description:
             'Manage clubs you belong to and track your contributions.',
-          badge: null, // Removed "Soon" badge since it's now implemented
+          badge: 'Soon',
+          badgeColor: 'bg-yellow-100 text-yellow-800',
         },
         {
           label: 'Venture Clubs',
@@ -181,7 +182,8 @@ const ProfileTabs = () => {
           component: <ClubsListPage />,
           description:
             'Discover and join investment clubs to collaborate with other investors.',
-          badge: null, // Removed "Soon" badge since it's now implemented
+          badge: 'Soon',
+          badgeColor: 'bg-yellow-100 text-yellow-800',
         },
       ],
     },
