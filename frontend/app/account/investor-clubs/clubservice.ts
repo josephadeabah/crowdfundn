@@ -82,13 +82,25 @@ export const clubService = {
   },
 
   // Join club
-  joinClub: async (
-    token: string,
-    clubId: string,
-  ): Promise<JoinClubResponse> => {
-    return apiCall(`/investment_clubs/${clubId}/join`, token, {
-      method: 'POST',
-    });
+  joinClub: async (token: string, clubId: string): Promise<JoinClubResponse> => {
+    try {
+      const response = await apiCall(`/investment_clubs/${clubId}/join`, token, {
+        method: 'POST',
+      });
+      
+      console.log('Join club response:', response);
+      return response;
+    } catch (error: any) {
+      console.error('Join club error:', error);
+      // Provide more user-friendly error messages
+      if (error.message.includes('capacity')) {
+        throw new Error('This club has reached its maximum member limit.');
+      } else if (error.message.includes('Already a member')) {
+        throw new Error('You are already a member of this club.');
+      } else {
+        throw new Error('Failed to join club. Please try again.');
+      }
+    }
   },
 
   // Leave club
