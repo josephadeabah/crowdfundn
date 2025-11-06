@@ -103,22 +103,22 @@ const ClubsListPage: React.FC = () => {
     setMessage(null);
 
     // OPTIMISTIC UPDATE - Immediately update UI with proper typing
-    setClubs(prevClubs => 
-      prevClubs.map(c => 
-        c.id === club.id ? updateClubWithPendingStatus(c) : c
-      )
+    setClubs((prevClubs) =>
+      prevClubs.map((c) =>
+        c.id === club.id ? updateClubWithPendingStatus(c) : c,
+      ),
     );
 
-    setMyClubs(prevMyClubs => 
-      prevMyClubs.map(c => 
-        c.id === club.id ? updateClubWithPendingStatus(c) : c
-      )
+    setMyClubs((prevMyClubs) =>
+      prevMyClubs.map((c) =>
+        c.id === club.id ? updateClubWithPendingStatus(c) : c,
+      ),
     );
 
-    setDiscoverClubs(prevDiscoverClubs => 
-      prevDiscoverClubs.map(c => 
-        c.id === club.id ? updateClubWithPendingStatus(c) : c
-      )
+    setDiscoverClubs((prevDiscoverClubs) =>
+      prevDiscoverClubs.map((c) =>
+        c.id === club.id ? updateClubWithPendingStatus(c) : c,
+      ),
     );
 
     try {
@@ -130,7 +130,7 @@ const ClubsListPage: React.FC = () => {
           text: response.message || 'Membership request sent successfully!',
           clubId: club.id,
         });
-        
+
         // Reload the full data to ensure consistency with backend
         await loadClubs();
       } else {
@@ -139,7 +139,7 @@ const ClubsListPage: React.FC = () => {
           text: response.message || 'Failed to send membership request',
           clubId: club.id,
         });
-        
+
         // Revert optimistic update on error
         revertOptimisticUpdate(club.id);
       }
@@ -149,7 +149,7 @@ const ClubsListPage: React.FC = () => {
         text: error.message || 'Failed to send membership request',
         clubId: club.id,
       });
-      
+
       // Revert optimistic update on error
       revertOptimisticUpdate(club.id);
     } finally {
@@ -158,22 +158,20 @@ const ClubsListPage: React.FC = () => {
   };
 
   const revertOptimisticUpdate = (clubId: string) => {
-    setClubs(prevClubs => 
-      prevClubs.map(c => 
-        c.id === clubId ? updateClubWithNoneStatus(c) : c
-      )
+    setClubs((prevClubs) =>
+      prevClubs.map((c) => (c.id === clubId ? updateClubWithNoneStatus(c) : c)),
     );
 
-    setMyClubs(prevMyClubs => 
-      prevMyClubs.map(c => 
-        c.id === clubId ? updateClubWithNoneStatus(c) : c
-      )
+    setMyClubs((prevMyClubs) =>
+      prevMyClubs.map((c) =>
+        c.id === clubId ? updateClubWithNoneStatus(c) : c,
+      ),
     );
 
-    setDiscoverClubs(prevDiscoverClubs => 
-      prevDiscoverClubs.map(c => 
-        c.id === clubId ? updateClubWithNoneStatus(c) : c
-      )
+    setDiscoverClubs((prevDiscoverClubs) =>
+      prevDiscoverClubs.map((c) =>
+        c.id === clubId ? updateClubWithNoneStatus(c) : c,
+      ),
     );
   };
 
@@ -253,7 +251,8 @@ const ClubsListPage: React.FC = () => {
     if (club.club_type === 'private') {
       return {
         label: actionLoading === club.id ? 'Requesting...' : 'Request to Join',
-        style: 'bg-orange-100 text-orange-800 hover:bg-orange-600 hover:text-white',
+        style:
+          'bg-orange-100 text-orange-800 hover:bg-orange-600 hover:text-white',
         onClick: (e: React.MouseEvent) => handleJoinRequest(club, e),
         disabled: actionLoading === club.id,
       };
