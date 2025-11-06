@@ -4,6 +4,14 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clubService } from './clubservice';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import { categoriesWithIcons, Category } from '@/app/utils/helpers/categories';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
 
 interface CreateClubModalProps {
   isOpen: boolean;
@@ -24,12 +32,19 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
     investment_focus: '',
     minimum_monthly_contribution: '',
     max_members: '',
-    club_type: 'public' as 'public' | 'private', // Changed from access_type to club_type
+    club_type: 'public' as 'public' | 'private',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
+
+    // Validate form
+    const errors = validateForm();
+    if (errors.length > 0) {
+      alert(errors.join('\n'));
+      return;
+    }
 
     setLoading(true);
     try {
@@ -56,7 +71,6 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
           club_type: 'public',
         });
       } else {
-        // service response type does not include an 'error' field, so throw a generic error
         throw new Error('Failed to create club');
       }
     } catch (error: any) {
@@ -67,16 +81,39 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
     }
   };
 
+  const validateForm = (): string[] => {
+    const errors: string[] = [];
+    
+    if (!formData.name.trim()) errors.push('Club name is required');
+    if (!formData.mission.trim()) errors.push('Mission is required');
+    if (parseFloat(formData.minimum_monthly_contribution) <= 0) 
+      errors.push('Minimum contribution must be greater than 0');
+    if (parseInt(formData.max_members) < 1) 
+      errors.push('Maximum members must be at least 1');
+    
+    return errors;
+  };
+
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
+
+  const handleInvestmentFocusChange = (value: string) => {
+    setFormData({
+      ...formData,
+      investment_focus: value,
+    });
+  };
+
+  // Sort categories alphabetically by label for better UX
+  const sortedCategories = [...categoriesWithIcons].sort((a, b) => 
+    a.label.localeCompare(b.label)
+  );
 
   return (
     <AnimatePresence>
@@ -154,7 +191,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
                   />
                 </div>
 
-                {/* Investment Focus */}
+                {/* Investment Focus - UPDATED with Select */}
                 <div>
                   <label
                     htmlFor="investment_focus"
@@ -162,15 +199,31 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
                   >
                     Investment Focus
                   </label>
-                  <input
-                    type="text"
-                    id="investment_focus"
-                    name="investment_focus"
+                  <Select
                     value={formData.investment_focus}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="e.g., Technology, Climate, Agriculture, Healthcare"
-                  />
+                    onValueChange={handleInvestmentFocusChange}
+                  >
+                    <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                      <SelectValue placeholder="Select investment focus..." />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {sortedCategories.map((category) => (
+                        <SelectItem
+                          key={category.value}
+                          value={category.value}
+                          className="flex items-center space-x-2 py-2"
+                        >
+                          <div className="flex items-center space-x-2">
+                            {category.icon}
+                            <span>{category.label}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Choose the primary focus area for your club's investments
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -210,6 +263,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
                       name="max_members"
                       required
                       min="1"
+                      max="100"
                       value={formData.max_members}
                       onChange={handleChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
@@ -228,7 +282,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
                   </label>
                   <select
                     id="club_type"
-                    name="club_type" // Changed from access_type to club_type
+                    name="club_type"
                     required
                     value={formData.club_type}
                     onChange={handleChange}
