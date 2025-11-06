@@ -99,12 +99,7 @@ module Api
 
       # POST /api/v1/investment_clubs/:id/join
       def join
-        # Debug logging
-        Rails.logger.info "JOIN CLUB DEBUG: User #{@current_user.id} attempting to join club #{@club.slug}"
-        Rails.logger.info "JOIN CLUB DEBUG: Club public? #{@club.public?}, User member? #{@club.is_member?(@current_user)}"
-
         if @club.is_member?(@current_user)
-          Rails.logger.info "JOIN CLUB DEBUG: User already a member"
           return render json: { 
             success: false,
             error: 'Already a member of this club' 
@@ -112,7 +107,6 @@ module Api
         end
 
         if @club.at_capacity?
-          Rails.logger.info "JOIN CLUB DEBUG: Club at capacity"
           return render json: { 
             success: false,
             error: 'Club has reached maximum member capacity' 
@@ -125,12 +119,7 @@ module Api
           status: @club.public? ? 'active' : 'pending'
         )
 
-        Rails.logger.info "JOIN CLUB DEBUG: Membership attributes: #{membership.attributes}"
-        Rails.logger.info "JOIN CLUB DEBUG: Membership valid? #{membership.valid?}"
-        Rails.logger.info "JOIN CLUB DEBUG: Membership errors: #{membership.errors.full_messages}" unless membership.valid?
-
         if membership.save
-          Rails.logger.info "JOIN CLUB DEBUG: Membership saved successfully"
           notify_admins_of_pending_member(membership) if membership.pending?
           
           render json: { 
@@ -139,7 +128,6 @@ module Api
             message: @club.public? ? 'Successfully joined club' : 'Membership request submitted for approval'
           }
         else
-          Rails.logger.error "JOIN CLUB DEBUG: Membership save failed: #{membership.errors.full_messages}"
           render json: { 
             success: false, 
             errors: membership.errors.full_messages 
