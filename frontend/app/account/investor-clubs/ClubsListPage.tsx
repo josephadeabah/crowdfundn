@@ -24,7 +24,9 @@ const ClubsListPage: React.FC = () => {
     text: string;
     clubId?: string;
   } | null>(null);
-  const [activeTab, setActiveTab] = useState<'all' | 'my_clubs' | 'discover'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'my_clubs' | 'discover'>(
+    'all',
+  );
   const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
 
   useEffect(() => {
@@ -92,7 +94,7 @@ const ClubsListPage: React.FC = () => {
         setMessage({
           type: 'success',
           text: response.message || 'Membership request sent successfully!',
-          clubId: club.id
+          clubId: club.id,
         });
         // Reload clubs to update membership status
         await loadClubs();
@@ -100,14 +102,14 @@ const ClubsListPage: React.FC = () => {
         setMessage({
           type: 'error',
           text: response.message || 'Failed to send membership request',
-          clubId: club.id
+          clubId: club.id,
         });
       }
     } catch (error: any) {
       setMessage({
         type: 'error',
         text: error.message || 'Failed to send membership request',
-        clubId: club.id
+        clubId: club.id,
       });
     } finally {
       setActionLoading(null);
@@ -170,7 +172,7 @@ const ClubsListPage: React.FC = () => {
       return {
         label: 'View Club',
         style: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200',
-        onClick: () => handleClubClick(club)
+        onClick: () => handleClubClick(club),
       };
     }
 
@@ -179,7 +181,7 @@ const ClubsListPage: React.FC = () => {
         label: actionLoading === club.id ? 'Requesting...' : 'Request to Join',
         style: 'bg-blue-600 text-white hover:bg-blue-700',
         onClick: (e: React.MouseEvent) => handleJoinRequest(club, e),
-        disabled: actionLoading === club.id
+        disabled: actionLoading === club.id,
       };
     }
 
@@ -187,7 +189,7 @@ const ClubsListPage: React.FC = () => {
       label: actionLoading === club.id ? 'Joining...' : 'Join Club',
       style: 'bg-emerald-600 text-white hover:bg-emerald-700',
       onClick: (e: React.MouseEvent) => handleJoinRequest(club, e),
-      disabled: actionLoading === club.id
+      disabled: actionLoading === club.id,
     };
   };
 
@@ -209,7 +211,8 @@ const ClubsListPage: React.FC = () => {
               Investment Clubs
             </h1>
             <p className="text-gray-600 mt-2 max-w-2xl">
-              Collaborate with like-minded investors and make collective investment decisions.
+              Collaborate with like-minded investors and make collective
+              investment decisions.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">

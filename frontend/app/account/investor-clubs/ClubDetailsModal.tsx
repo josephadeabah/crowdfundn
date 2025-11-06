@@ -23,7 +23,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   onMembershipUpdate,
 }) => {
   const { token, user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'about' | 'members' | 'actions'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'members' | 'actions'>(
+    'about',
+  );
   const [myMembership, setMyMembership] = useState<Membership | null>(null);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
@@ -42,14 +44,20 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     if (!token) return;
 
     try {
-      const response = await clubService.getMyMembershipStatus(token, club.slug);
-      
+      const response = await clubService.getMyMembershipStatus(
+        token,
+        club.slug,
+      );
+
       if (response.success && response.membership) {
         setMyMembership(response.membership);
       } else if (response.is_member) {
         // User is a member but we need to get the full membership details
         try {
-          const fullResponse = await membershipService.getMyMembership(token, club.slug);
+          const fullResponse = await membershipService.getMyMembership(
+            token,
+            club.slug,
+          );
           if (fullResponse.membership) {
             setMyMembership(fullResponse.membership);
           }
@@ -81,7 +89,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
             can_manage: false,
             can_vote: true,
             can_contribute: true,
-            estimated_share_value: 0
+            estimated_share_value: 0,
           } as Membership);
         }
       } else {
@@ -103,28 +111,28 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       const response = await clubService.joinClub(token, club.slug);
 
       if (response.success || response.is_member) {
-        setMessage({ 
-          type: 'success', 
-          text: response.message || 'Successfully joined the club!' 
+        setMessage({
+          type: 'success',
+          text: response.message || 'Successfully joined the club!',
         });
-        
+
         if (response.membership) {
           setMyMembership(response.membership);
         } else {
           await loadMyMembership();
         }
-        
+
         onMembershipUpdate?.();
       } else {
         setMessage({
           type: 'error',
-          text: response.message || 'Failed to join club'
+          text: response.message || 'Failed to join club',
         });
       }
     } catch (error: any) {
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to join club'
+        text: error.message || 'Failed to join club',
       });
     } finally {
       setActionLoading(false);
@@ -262,9 +270,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                 </div>
               </div>
               <div className="bg-gray-50 rounded-lg p-4">
-                <div className="text-sm text-gray-600">
-                  Total Invested
-                </div>
+                <div className="text-sm text-gray-600">Total Invested</div>
                 <div className="text-xl font-bold text-gray-900">
                   {formatCurrency(club.financials.total_invested)}
                 </div>
@@ -288,17 +294,23 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           return (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Members
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-900">Members</h3>
               </div>
 
               {/* Info message for non-members */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    <svg
+                      className="h-5 w-5 text-blue-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                   <div className="ml-3 flex-1">
@@ -306,8 +318,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                       Private Club Membership Required
                     </h4>
                     <p className="text-sm text-blue-700 mt-1">
-                      This is a private club with {club.current_members_count} members. 
-                      Request to join to see the full members list and connect with other investors.
+                      This is a private club with {club.current_members_count}{' '}
+                      members. Request to join to see the full members list and
+                      connect with other investors.
                     </p>
                     <button
                       onClick={handleJoinClub}
@@ -327,7 +340,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                 </div>
                 <div className="text-gray-600">Active Members</div>
                 <div className="text-sm text-gray-500 mt-2">
-                  Join the club to see member details and connect with the community
+                  Join the club to see member details and connect with the
+                  community
                 </div>
               </div>
             </div>
@@ -461,12 +475,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                       className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50"
                     >
                       {actionLoading
-                        ? club.club_type === 'public' ? 'Joining...' : 'Requesting...'
+                        ? club.club_type === 'public'
+                          ? 'Joining...'
+                          : 'Requesting...'
                         : club.club_type === 'public'
                           ? 'Join Club Now'
                           : 'Request to Join'}
                     </button>
-                    
+
                     {club.club_type === 'private' && (
                       <button
                         onClick={() => setActiveTab('about')}
@@ -480,13 +496,22 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                   {club.club_type === 'private' && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <div className="flex items-start">
-                        <svg className="h-5 w-5 text-blue-400 mt-0.5 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                        <svg
+                          className="h-5 w-5 text-blue-400 mt-0.5 mr-3 flex-shrink-0"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                         <div>
                           <p className="text-sm text-blue-700">
-                            After requesting to join, club admins will review your application. 
-                            You'll receive a notification once your membership is approved.
+                            After requesting to join, club admins will review
+                            your application. You'll receive a notification once
+                            your membership is approved.
                           </p>
                         </div>
                       </div>
@@ -546,17 +571,23 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
             {/* Membership Actions */}
             <div className="bg-gray-50 rounded-lg p-6">
-              <h4 className="font-semibold text-gray-900 mb-4">
-                Membership
-              </h4>
+              <h4 className="font-semibold text-gray-900 mb-4">Membership</h4>
 
               {myMembership.status === 'pending' ? (
                 <div className="space-y-4">
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                        <svg
+                          className="h-5 w-5 text-yellow-400"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                       </div>
                       <div className="ml-3">
@@ -565,8 +596,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                         </h3>
                         <div className="mt-2 text-sm text-yellow-700">
                           <p>
-                            Your membership request is pending approval from club admins. 
-                            You'll be able to access all club features once approved.
+                            Your membership request is pending approval from
+                            club admins. You'll be able to access all club
+                            features once approved.
                           </p>
                         </div>
                       </div>
@@ -590,17 +622,13 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                       </div>
                     </div>
                     <div>
-                      <span className="text-gray-600">
-                        Total Contributed:
-                      </span>
+                      <span className="text-gray-600">Total Contributed:</span>
                       <div className="font-semibold">
                         {formatCurrency(myMembership.total_contributed)}
                       </div>
                     </div>
                     <div>
-                      <span className="text-gray-600">
-                        Estimated Value:
-                      </span>
+                      <span className="text-gray-600">Estimated Value:</span>
                       <div className="font-semibold">
                         {formatCurrency(myMembership.estimated_share_value)}
                       </div>
@@ -624,7 +652,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                   {isCreator && (
                     <div className="pt-4 border-t border-gray-200">
                       <p className="text-sm text-gray-600 mb-3">
-                        As the club creator, you have additional administrative privileges.
+                        As the club creator, you have additional administrative
+                        privileges.
                       </p>
                     </div>
                   )}
@@ -635,8 +664,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
             {/* Quick Actions */}
             {myMembership?.status === 'active' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button 
-                  onClick={() => alert('Make Contribution feature would open here')}
+                <button
+                  onClick={() =>
+                    alert('Make Contribution feature would open here')
+                  }
                   className="p-4 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors text-left"
                 >
                   <div className="font-semibold text-emerald-900">
@@ -647,8 +678,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                   </div>
                 </button>
 
-                <button 
-                  onClick={() => alert('Propose Investment feature would open here')}
+                <button
+                  onClick={() =>
+                    alert('Propose Investment feature would open here')
+                  }
                   className="p-4 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors text-left"
                 >
                   <div className="font-semibold text-emerald-900">
@@ -661,8 +694,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
                 {isAdmin && (
                   <>
-                    <button 
-                      onClick={() => alert('Manage Club feature would open here')}
+                    <button
+                      onClick={() =>
+                        alert('Manage Club feature would open here')
+                      }
                       className="p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors text-left"
                     >
                       <div className="font-semibold text-blue-900">
@@ -673,8 +708,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                       </div>
                     </button>
 
-                    <button 
-                      onClick={() => alert('View Analytics feature would open here')}
+                    <button
+                      onClick={() =>
+                        alert('View Analytics feature would open here')
+                      }
                       className="p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors text-left"
                     >
                       <div className="font-semibold text-blue-900">
