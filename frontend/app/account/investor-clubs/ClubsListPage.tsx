@@ -14,7 +14,49 @@ import {
   Globe,
   Clock,
   TrendingUp,
+  BookOpen,
+  Leaf,
+  PawPrint,
+  Palette,
+  Music,
+  TreePine,
+  Handshake,
+  Lightbulb,
+  Droplets,
+  CloudSun,
+  Heart,
+  Landmark,
+  Laptop,
+  Briefcase,
+  Building,
+  User,
+  Sun,
+  Recycle,
+  Fish,
+  Home,
+  Microscope,
+  Shield,
+  Bus,
+  Car,
+  Gamepad,
+  Bitcoin,
+  GraduationCap,
+  ShoppingCart,
+  Utensils,
+  Cpu,
+  Satellite,
+  Truck,
+  Plane,
+  Headphones,
+  Shirt,
+  Cloud,
+  Wallet,
+  ChartLine,
+  PiggyBank,
+  Code,
+  Banknote,
 } from 'lucide-react';
+import { categoriesWithIcons, deslugify } from '@/app/utils/helpers/categories';
 
 const ClubsListPage: React.FC = () => {
   const { token, user } = useAuth();
@@ -213,15 +255,65 @@ const ClubsListPage: React.FC = () => {
     }).format(amount);
   };
 
+  // Enhanced icon mapping with valid Lucide React icons
   const getClubIcon = (club: Club) => {
     const focus = club.investment_focus?.toLowerCase();
-    if (focus?.includes('tech')) return '🚀';
-    if (focus?.includes('climate') || focus?.includes('green')) return '🌿';
-    if (focus?.includes('agriculture') || focus?.includes('agri')) return '🌱';
-    if (focus?.includes('health')) return '🏥';
-    if (focus?.includes('real estate')) return '🏠';
-    if (focus?.includes('energy')) return '⚡';
-    return '💼';
+    
+    // Tech & Innovation
+    if (focus?.includes('tech') || focus?.includes('software') || focus?.includes('ai') || focus?.includes('machine learning')) 
+      return <Laptop className="w-5 h-5" />;
+    if (focus?.includes('blockchain') || focus?.includes('crypto') || focus?.includes('web3'))
+      return <Bitcoin className="w-5 h-5" />;
+    if (focus?.includes('robot') || focus?.includes('automation'))
+      return <Cpu className="w-5 h-5" />;
+    
+    // Environment & Sustainability
+    if (focus?.includes('climate') || focus?.includes('green') || focus?.includes('environment'))
+      return <Leaf className="w-5 h-5" />;
+    if (focus?.includes('energy') || focus?.includes('solar') || focus?.includes('renewable'))
+      return <Sun className="w-5 h-5" />;
+    if (focus?.includes('agriculture') || focus?.includes('agri') || focus?.includes('farm'))
+      return <TreePine className="w-5 h-5" />;
+    if (focus?.includes('water') || focus?.includes('clean water'))
+      return <Droplets className="w-5 h-5" />;
+    if (focus?.includes('recycle') || focus?.includes('waste'))
+      return <Recycle className="w-5 h-5" />;
+    
+    // Social & Community
+    if (focus?.includes('education') || focus?.includes('edtech') || focus?.includes('learning'))
+      return <BookOpen className="w-5 h-5" />;
+    if (focus?.includes('health') || focus?.includes('medical') || focus?.includes('healthcare'))
+      return <Heart className="w-5 h-5" />;
+    if (focus?.includes('real estate') || focus?.includes('property') || focus?.includes('housing'))
+      return <Home className="w-5 h-5" />;
+    if (focus?.includes('finance') || focus?.includes('fintech') || focus?.includes('banking'))
+      return <Wallet className="w-5 h-5" />;
+    if (focus?.includes('community') || focus?.includes('social'))
+      return <Users className="w-5 h-5" />;
+    
+    // Specific categories
+    if (focus?.includes('art') || focus?.includes('culture') || focus?.includes('creative'))
+      return <Palette className="w-5 h-5" />;
+    if (focus?.includes('music') || focus?.includes('entertainment'))
+      return <Music className="w-5 h-5" />;
+    if (focus?.includes('animal') || focus?.includes('wildlife') || focus?.includes('pet'))
+      return <PawPrint className="w-5 h-5" />;
+    if (focus?.includes('sport') || focus?.includes('fitness') || focus?.includes('recreation'))
+      return <Gamepad className="w-5 h-5" />;
+    if (focus?.includes('food') || focus?.includes('restaurant') || focus?.includes('culinary'))
+      return <Utensils className="w-5 h-5" />;
+    if (focus?.includes('game') || focus?.includes('gaming') || focus?.includes('esports'))
+      return <Gamepad className="w-5 h-5" />;
+    if (focus?.includes('transport') || focus?.includes('mobility') || focus?.includes('logistics'))
+      return <Car className="w-5 h-5" />;
+    if (focus?.includes('business') || focus?.includes('enterprise'))
+      return <Building className="w-5 h-5" />;
+    if (focus?.includes('research') || focus?.includes('science'))
+      return <Microscope className="w-5 h-5" />;
+    if (focus?.includes('security') || focus?.includes('safety'))
+      return <Shield className="w-5 h-5" />;
+    
+    return <TrendingUp className="w-5 h-5" />;
   };
 
   const getClubStatus = (club: Club) => {
@@ -299,7 +391,7 @@ const ClubsListPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto">
         {/* Header - Twitter/X Style */}
-        <div className="sticky top-0 bg-gray-50 bg-opacity-80 backdrop-blur-sm z-10 border-b border-gray-200">
+        <div className="sticky top-0 bg-gray-50 z-10 border-b border-gray-200">
           <div className="px-4 py-3">
             <div className="flex items-center justify-between">
               <div>
@@ -410,7 +502,7 @@ const ClubsListPage: React.FC = () => {
                 <div className="flex gap-3">
                   {/* Club Avatar */}
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white text-lg font-semibold">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white">
                       {getClubIcon(club)}
                     </div>
                   </div>
@@ -418,8 +510,8 @@ const ClubsListPage: React.FC = () => {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     {/* Header */}
-                    <div className="flex items-start justify-between mb-1">
-                      <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-1 gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <h3 className="font-bold text-gray-900 text-base hover:text-emerald-700 transition-colors">
                           {club.name}
                         </h3>
@@ -449,13 +541,12 @@ const ClubsListPage: React.FC = () => {
                       {club.mission}
                     </p>
 
-                    {/* Stats */}
-                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                    {/* Stats - Block layout on mobile, flex on desktop */}
+                    <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center sm:gap-4 text-sm text-gray-600 mb-3">
                       <div className="flex items-center gap-1">
                         <Users size={16} />
                         <span>
-                          {club.current_members_count}/{club.max_members}{' '}
-                          members
+                          {club.current_members_count}/{club.max_members} members
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
@@ -465,15 +556,15 @@ const ClubsListPage: React.FC = () => {
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <TrendingUp size={16} />
+                        {getClubIcon(club)}
                         <span className="capitalize">
-                          {club.investment_focus || 'General'}
+                          {deslugify(club.investment_focus || 'general')}
                         </span>
                       </div>
                     </div>
 
                     {/* Balance and Action */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div>
                         <div className="text-lg font-bold text-emerald-700">
                           {formatCurrency(club.financials.current_balance)}
@@ -503,7 +594,7 @@ const ClubsListPage: React.FC = () => {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">
                 {activeTab === 'my_clubs'
-                  ? '👥'
+                  ? <Users className="w-8 h-8 text-gray-400" />
                   : activeTab === 'discover'
                     ? '🔍'
                     : '🏢'}
