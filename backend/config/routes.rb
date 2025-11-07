@@ -308,6 +308,7 @@ Rails.application.routes.draw do
             get :ai_recommendation
             get :voting_insights
             post :start_voting
+            delete :destroy, on: :member
           end
         end
         
@@ -320,7 +321,6 @@ Rails.application.routes.draw do
           post :create_wallet
           get :my_membership_status
           post :transfer_ownership
-          delete :destroy, on: :member
         end
 
         collection do
