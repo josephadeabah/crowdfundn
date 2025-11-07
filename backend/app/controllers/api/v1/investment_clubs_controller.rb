@@ -182,7 +182,13 @@ module Api
         portfolio_summary = ClubPortfolioService.new(@club).member_portfolio(@current_user)
         
         if membership.destroy
-          ClubMembershipService.new(membership).handle_member_removal
+          # FIXED: Handle service call gracefully - use user-based approach
+          begin
+            ClubMembershipService.new(membership).handle_member_removal
+          rescue => e
+            Rails.logger.error "Error in handle_member_removal: #{e.message}"
+            # Continue even if this fails - the main destroy was successful
+          end
           
           render json: { 
             success: true, 

@@ -1,7 +1,9 @@
 class InvestmentClubMembership < ApplicationRecord
   belongs_to :user
   belongs_to :investment_club
-  has_many :member_investment_shares, dependent: :destroy
+  
+  # FIXED: Use the correct association through user
+  has_many :member_investment_shares, through: :user
   has_many :club_investments, through: :member_investment_shares
   
   validates :user_id, uniqueness: { scope: :investment_club_id }
@@ -12,8 +14,8 @@ class InvestmentClubMembership < ApplicationRecord
   before_create :set_initial_share
   after_save :update_club_financials, if: -> { saved_change_to_total_contributed? }
   
-  # FIXED: Remove problematic callbacks and use a simpler approach
-  after_commit :update_club_members_count_callback, on: [:create, :update, :destroy]
+  # FIXED: Simplified callback to avoid issues
+  after_commit :update_club_members_count_callback
   
   scope :active, -> { where(status: 'active') }
   scope :admin, -> { where(role: ['admin', 'creator']) }
@@ -26,15 +28,16 @@ class InvestmentClubMembership < ApplicationRecord
     update_column(:current_share, new_share.round(4))
   end
 
-  # FIXED: Simplified callback method
+  # FIXED: Safe callback method
   def update_club_members_count_callback
+    return if destroyed? || investment_club.destroyed?
+    
     # Use update_column to avoid callbacks and validations
     investment_club.update_column(:current_members_count, investment_club.investment_club_memberships.active.count)
   rescue => e
     Rails.logger.error "Error updating club members count: #{e.message}"
   end
   
-  # Add this to handle the callback properly
   def can_manage?
     admin? || creator?
   end
@@ -47,19 +50,6 @@ class InvestmentClubMembership < ApplicationRecord
     active?
   end
   
-  def estimated_share_value
-    return 0 unless active?
-    
-    # Simple calculation - you might want to make this more sophisticated
-    (current_share / 100.0) * investment_club.current_balance.to_f
-  end
-  
-  def total_investment_value
-    member_investment_shares.sum do |share|
-      share.club_investment.executed? ? share.investment_value : 0
-    end
-  end
-
   def portfolio_summary
     ClubPortfolioService.new(investment_club).member_portfolio(user)
   end

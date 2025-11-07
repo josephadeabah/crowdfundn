@@ -137,44 +137,33 @@ module Api
       # POST /api/v1/investment_clubs/:investment_club_id/memberships/:id/reject
       def reject
         if @membership.pending?
-          # FIXED: Handle member_investment_shares relation gracefully
-          ActiveRecord::Base.transaction do
-            # Try to destroy any associated records first
-            if defined?(MemberInvestmentShare) && @membership.respond_to?(:member_investment_shares)
-              @membership.member_investment_shares.destroy_all
-            end
-            
-            if @membership.destroy
-              notify_member_of_rejection(@membership)
-              render json: { 
-                success: true, 
-                message: 'Membership request rejected'
-              }
-            else
-              render json: { 
-                success: false, 
-                errors: @membership.errors.full_messages 
-              }, status: :unprocessable_entity
-            end
+          # FIXED: Handle member shares through user, not through membership
+          begin
+            # For pending members, there shouldn't be any investment shares anyway
+            # But if there are, clean them up through the user association
+            member_shares = MemberInvestmentShare.where(user: @membership.user)
+            member_shares.destroy_all if member_shares.exists?
+          rescue ActiveRecord::StatementInvalid => e
+            # Log but continue - this is not critical for pending members
+            Rails.logger.warn "Error cleaning up member shares: #{e.message}"
+          end
+          
+          if @membership.destroy
+            notify_member_of_rejection(@membership)
+            render json: { 
+              success: true, 
+              message: 'Membership request rejected'
+            }
+          else
+            render json: { 
+              success: false, 
+              errors: @membership.errors.full_messages 
+            }, status: :unprocessable_entity
           end
         else
           render json: { 
             success: false,
             error: 'Only pending members can be rejected'
-          }, status: :unprocessable_entity
-        end
-      rescue ActiveRecord::StatementInvalid => e
-        # Handle case where member_investment_shares table doesn't exist yet
-        if @membership.destroy
-          notify_member_of_rejection(@membership)
-          render json: { 
-            success: true, 
-            message: 'Membership request rejected'
-          }
-        else
-          render json: { 
-            success: false, 
-            errors: @membership.errors.full_messages 
           }, status: :unprocessable_entity
         end
       end

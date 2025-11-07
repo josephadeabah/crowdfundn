@@ -1,4 +1,3 @@
-# app/services/club_membership_service.rb
 class ClubMembershipService
   def initialize(membership)
     @membership = membership
@@ -32,6 +31,7 @@ class ClubMembershipService
   private
 
   def redistribute_investment_shares
+    # FIXED: Get member shares through user, not through membership
     member_shares = MemberInvestmentShare.where(user: @user)
     
     member_shares.each do |share|
