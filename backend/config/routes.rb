@@ -285,7 +285,7 @@ Rails.application.routes.draw do
 
 
     # Investment Clubs
-      resources :investment_clubs, only: [:index, :create, :show, :update] do
+      resources :investment_clubs, only: [:index, :create, :show, :update, :destroy] do
         # Membership management
         resources :memberships, only: [:index, :create, :update, :destroy], controller: 'club_memberships' do
           member do
@@ -308,7 +308,6 @@ Rails.application.routes.draw do
             get :ai_recommendation
             get :voting_insights
             post :start_voting
-            delete :destroy, on: :member
           end
         end
         
