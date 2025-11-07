@@ -30,6 +30,7 @@ class InvestmentClubSerializer
       },
       is_member: @current_user ? @club.is_member?(@current_user) : false,
       is_admin: @current_user ? @club.is_admin?(@current_user) : false,
+      is_creator: @current_user ? @club.is_creator?(@current_user) : false,
       # ADD THIS:
       membership_status: membership ? membership.status : 'none',
       created_at: @club.created_at,

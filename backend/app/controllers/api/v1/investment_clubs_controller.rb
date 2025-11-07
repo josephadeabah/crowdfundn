@@ -203,6 +203,45 @@ module Api
         end
       end
 
+      # DELETE /api/v1/investment_clubs/:id
+      def destroy
+        unless @club.is_creator?(@current_user)
+          return render json: { 
+            success: false,
+            error: 'Only club creator can delete the club' 
+          }, status: :forbidden
+        end
+
+        # Check if club has active investments or members
+        if @club.club_investments.executed.any?
+          return render json: { 
+            success: false,
+            error: 'Cannot delete club with active investments. Transfer ownership first.' 
+          }, status: :unprocessable_entity
+        end
+
+        if @club.investment_club_memberships.active.count > 1
+          return render json: { 
+            success: false,
+            error: 'Cannot delete club with active members. Transfer ownership or remove members first.' 
+          }, status: :unprocessable_entity
+        end
+
+        club_name = @club.name
+        
+        if @club.destroy
+          render json: { 
+            success: true, 
+            message: "Club '#{club_name}' has been deleted successfully" 
+          }
+        else
+          render json: { 
+            success: false, 
+            errors: @club.errors.full_messages 
+          }, status: :unprocessable_entity
+        end
+      end
+
       # GET /api/v1/investment_clubs/:id/my_membership_status
       def my_membership_status
         membership = @club.investment_club_memberships.find_by(user: @current_user)

@@ -320,6 +320,7 @@ Rails.application.routes.draw do
           post :create_wallet
           get :my_membership_status
           post :transfer_ownership
+          delete :destroy, on: :member
         end
 
         collection do
