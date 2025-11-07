@@ -12,6 +12,13 @@ import {
   portfolioService,
 } from './investor-clubs/clubservice';
 import { Club, Member, ClubInvestment } from './investor-clubs/clubTypes';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const { user, token } = useAuth();
@@ -185,20 +192,24 @@ const InvestmentClubsDashboard: React.FC = () => {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <select
-                className="px-4 py-2 border border-gray-300 rounded-lg bg-white"
+              <Select
                 value={currentClub.slug}
-                onChange={(e) => {
-                  const club = clubs.find((c) => c.slug === e.target.value);
+                onValueChange={(value) => {
+                  const club = clubs.find((c) => c.slug === value);
                   if (club) loadClubDetails(club);
                 }}
               >
-                {clubs.map((club) => (
-                  <option key={club.slug} value={club.slug}>
-                    {club.name}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select a club" />
+                </SelectTrigger>
+                <SelectContent>
+                  {clubs.map((club) => (
+                    <SelectItem key={club.slug} value={club.slug}>
+                      {club.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 font-medium"
