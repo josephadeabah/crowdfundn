@@ -307,7 +307,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                 className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6 shadow-sm"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                  <div className="flex items-start gap-3 lg:gap-4">
+                  <div className="flex items-start gap-3 lg:gap-4 flex-1 min-w-0">
                     <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white text-lg lg:text-2xl flex-shrink-0">
                       {currentClub.name.charAt(0)}
                     </div>
@@ -344,8 +344,8 @@ const InvestmentClubsDashboard: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="text-right sm:text-left sm:min-w-[120px]">
-                    <div className="text-xl lg:text-3xl font-bold text-emerald-700">
+                  <div className="sm:text-left sm:min-w-[140px] lg:min-w-[160px]">
+                    <div className="text-xl lg:text-3xl font-bold text-emerald-700 break-words">
                       {formatCurrency(currentClub.financials.current_balance)}
                     </div>
                     <div className="text-xs lg:text-sm text-gray-500">
