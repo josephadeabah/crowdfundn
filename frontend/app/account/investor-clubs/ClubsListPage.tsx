@@ -1,6 +1,6 @@
 // app/account/investor-clubs/ClubsListPage.tsx
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import ClubDetailsModal from './ClubDetailsModal';
 import CreateClubModal from './CreateClubModal';
@@ -78,12 +78,33 @@ const ClubsListPage: React.FC = () => {
     'all',
   );
   const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     if (token) {
       loadClubs();
     }
   }, [token]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        // Scrolling down and past threshold - hide header
+        setIsHeaderVisible(false);
+      } else if (currentScrollY < lastScrollY.current) {
+        // Scrolling up - show header
+        setIsHeaderVisible(true);
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const loadClubs = async () => {
     if (!token) return;
@@ -258,53 +279,114 @@ const ClubsListPage: React.FC = () => {
   // Enhanced icon mapping with valid Lucide React icons
   const getClubIcon = (club: Club) => {
     const focus = club.investment_focus?.toLowerCase();
-    
+
     // Tech & Innovation
-    if (focus?.includes('tech') || focus?.includes('software') || focus?.includes('ai') || focus?.includes('machine learning')) 
+    if (
+      focus?.includes('tech') ||
+      focus?.includes('software') ||
+      focus?.includes('ai') ||
+      focus?.includes('machine learning')
+    )
       return <Laptop className="w-5 h-5" />;
-    if (focus?.includes('blockchain') || focus?.includes('crypto') || focus?.includes('web3'))
+    if (
+      focus?.includes('blockchain') ||
+      focus?.includes('crypto') ||
+      focus?.includes('web3')
+    )
       return <Bitcoin className="w-5 h-5" />;
     if (focus?.includes('robot') || focus?.includes('automation'))
       return <Cpu className="w-5 h-5" />;
-    
+
     // Environment & Sustainability
-    if (focus?.includes('climate') || focus?.includes('green') || focus?.includes('environment'))
+    if (
+      focus?.includes('climate') ||
+      focus?.includes('green') ||
+      focus?.includes('environment')
+    )
       return <Leaf className="w-5 h-5" />;
-    if (focus?.includes('energy') || focus?.includes('solar') || focus?.includes('renewable'))
+    if (
+      focus?.includes('energy') ||
+      focus?.includes('solar') ||
+      focus?.includes('renewable')
+    )
       return <Sun className="w-5 h-5" />;
-    if (focus?.includes('agriculture') || focus?.includes('agri') || focus?.includes('farm'))
+    if (
+      focus?.includes('agriculture') ||
+      focus?.includes('agri') ||
+      focus?.includes('farm')
+    )
       return <TreePine className="w-5 h-5" />;
     if (focus?.includes('water') || focus?.includes('clean water'))
       return <Droplets className="w-5 h-5" />;
     if (focus?.includes('recycle') || focus?.includes('waste'))
       return <Recycle className="w-5 h-5" />;
-    
+
     // Social & Community
-    if (focus?.includes('education') || focus?.includes('edtech') || focus?.includes('learning'))
+    if (
+      focus?.includes('education') ||
+      focus?.includes('edtech') ||
+      focus?.includes('learning')
+    )
       return <BookOpen className="w-5 h-5" />;
-    if (focus?.includes('health') || focus?.includes('medical') || focus?.includes('healthcare'))
+    if (
+      focus?.includes('health') ||
+      focus?.includes('medical') ||
+      focus?.includes('healthcare')
+    )
       return <Heart className="w-5 h-5" />;
-    if (focus?.includes('real estate') || focus?.includes('property') || focus?.includes('housing'))
+    if (
+      focus?.includes('real estate') ||
+      focus?.includes('property') ||
+      focus?.includes('housing')
+    )
       return <Home className="w-5 h-5" />;
-    if (focus?.includes('finance') || focus?.includes('fintech') || focus?.includes('banking'))
+    if (
+      focus?.includes('finance') ||
+      focus?.includes('fintech') ||
+      focus?.includes('banking')
+    )
       return <Wallet className="w-5 h-5" />;
     if (focus?.includes('community') || focus?.includes('social'))
       return <Users className="w-5 h-5" />;
-    
+
     // Specific categories
-    if (focus?.includes('art') || focus?.includes('culture') || focus?.includes('creative'))
+    if (
+      focus?.includes('art') ||
+      focus?.includes('culture') ||
+      focus?.includes('creative')
+    )
       return <Palette className="w-5 h-5" />;
     if (focus?.includes('music') || focus?.includes('entertainment'))
       return <Music className="w-5 h-5" />;
-    if (focus?.includes('animal') || focus?.includes('wildlife') || focus?.includes('pet'))
+    if (
+      focus?.includes('animal') ||
+      focus?.includes('wildlife') ||
+      focus?.includes('pet')
+    )
       return <PawPrint className="w-5 h-5" />;
-    if (focus?.includes('sport') || focus?.includes('fitness') || focus?.includes('recreation'))
+    if (
+      focus?.includes('sport') ||
+      focus?.includes('fitness') ||
+      focus?.includes('recreation')
+    )
       return <Gamepad className="w-5 h-5" />;
-    if (focus?.includes('food') || focus?.includes('restaurant') || focus?.includes('culinary'))
+    if (
+      focus?.includes('food') ||
+      focus?.includes('restaurant') ||
+      focus?.includes('culinary')
+    )
       return <Utensils className="w-5 h-5" />;
-    if (focus?.includes('game') || focus?.includes('gaming') || focus?.includes('esports'))
+    if (
+      focus?.includes('game') ||
+      focus?.includes('gaming') ||
+      focus?.includes('esports')
+    )
       return <Gamepad className="w-5 h-5" />;
-    if (focus?.includes('transport') || focus?.includes('mobility') || focus?.includes('logistics'))
+    if (
+      focus?.includes('transport') ||
+      focus?.includes('mobility') ||
+      focus?.includes('logistics')
+    )
       return <Car className="w-5 h-5" />;
     if (focus?.includes('business') || focus?.includes('enterprise'))
       return <Building className="w-5 h-5" />;
@@ -312,7 +394,7 @@ const ClubsListPage: React.FC = () => {
       return <Microscope className="w-5 h-5" />;
     if (focus?.includes('security') || focus?.includes('safety'))
       return <Shield className="w-5 h-5" />;
-    
+
     return <TrendingUp className="w-5 h-5" />;
   };
 
@@ -390,98 +472,110 @@ const ClubsListPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto">
-        {/* Header - Twitter/X Style */}
-        <div className="sticky top-0 bg-gray-50 z-10 border-b border-gray-200">
-          <div className="px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  Investment Clubs
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  Collaborate and invest together
-                </p>
+        {/* Header - Smart hide/show on scroll */}
+        <motion.div
+          className="fixed top-0 left-0 right-0 bg-gray-50 z-20 border-b border-gray-200"
+          initial={{ y: 0 }}
+          animate={{ y: isHeaderVisible ? 0 : -100 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          <div className="max-w-2xl mx-auto">
+            <div className="px-4 py-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">
+                    Investment Clubs
+                  </h1>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Collaborate and invest together
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="px-4 py-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-medium text-sm transition-colors"
+                >
+                  Create Club
+                </button>
               </div>
-              <button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="px-4 py-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-medium text-sm transition-colors"
-              >
-                Create Club
-              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex border-b border-gray-200">
+              {[
+                { id: 'all', label: 'For You', count: clubs.length },
+                { id: 'my_clubs', label: 'My Clubs', count: myClubs.length },
+                {
+                  id: 'discover',
+                  label: 'Discover',
+                  count: discoverClubs.length,
+                },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-emerald-500 text-emerald-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  {tab.label}
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      activeTab === tab.id
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Filter Chips */}
+            <div className="px-4 py-3 flex gap-2 overflow-x-auto">
+              {[
+                { id: 'all', label: 'All', icon: Globe },
+                { id: 'public', label: 'Public', icon: Globe },
+                { id: 'private', label: 'Private', icon: Lock },
+              ].map((filterOption) => {
+                const IconComponent = filterOption.icon;
+                return (
+                  <button
+                    key={filterOption.id}
+                    onClick={() => setFilter(filterOption.id as any)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
+                      filter === filterOption.id
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    <IconComponent size={14} />
+                    {filterOption.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
+        </motion.div>
 
-          {/* Tabs */}
-          <div className="flex border-b border-gray-200">
-            {[
-              { id: 'all', label: 'For You', count: clubs.length },
-              { id: 'my_clubs', label: 'My Clubs', count: myClubs.length },
-              {
-                id: 'discover',
-                label: 'Discover',
-                count: discoverClubs.length,
-              },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-emerald-500 text-emerald-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {tab.label}
-                <span
-                  className={`px-2 py-1 rounded-full text-xs ${
-                    activeTab === tab.id
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Filter Chips */}
-          <div className="px-4 py-3 flex gap-2 overflow-x-auto">
-            {[
-              { id: 'all', label: 'All', icon: Globe },
-              { id: 'public', label: 'Public', icon: Globe },
-              { id: 'private', label: 'Private', icon: Lock },
-            ].map((filterOption) => {
-              const IconComponent = filterOption.icon;
-              return (
-                <button
-                  key={filterOption.id}
-                  onClick={() => setFilter(filterOption.id as any)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
-                    filter === filterOption.id
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  <IconComponent size={14} />
-                  {filterOption.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        {/* Spacer for fixed header */}
+        <div className="h-[140px]" />
 
         {/* Message Alert */}
         {message && (
-          <div
-            className={`mx-4 mt-4 p-4 rounded-lg border ${
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`mx-4 mb-4 p-4 rounded-lg border ${
               message.type === 'success'
                 ? 'bg-green-50 text-green-800 border-green-200'
                 : 'bg-red-50 text-red-800 border-red-200'
             }`}
           >
             {message.text}
-          </div>
+          </motion.div>
         )}
 
         {/* Clubs Feed - Twitter/X Style */}
@@ -546,7 +640,8 @@ const ClubsListPage: React.FC = () => {
                       <div className="flex items-center gap-1">
                         <Users size={16} />
                         <span>
-                          {club.current_members_count}/{club.max_members} members
+                          {club.current_members_count}/{club.max_members}{' '}
+                          members
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
@@ -593,11 +688,13 @@ const ClubsListPage: React.FC = () => {
           <div className="text-center py-12 px-4">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">
-                {activeTab === 'my_clubs'
-                  ? <Users className="w-8 h-8 text-gray-400" />
-                  : activeTab === 'discover'
-                    ? '🔍'
-                    : '🏢'}
+                {activeTab === 'my_clubs' ? (
+                  <Users className="w-8 h-8 text-gray-400" />
+                ) : activeTab === 'discover' ? (
+                  '🔍'
+                ) : (
+                  '🏢'
+                )}
               </span>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
