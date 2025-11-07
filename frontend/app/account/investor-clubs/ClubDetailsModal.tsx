@@ -41,6 +41,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
+  const [deleteClubAlert, setDeleteClubAlert] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen && token) {
@@ -281,6 +283,39 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
   const formatRole = (role: string) => {
     return role.charAt(0).toUpperCase() + role.slice(1);
+  };
+
+  // Add delete club handler
+  const handleDeleteClub = () => {
+    setDeleteClubAlert(true);
+  };
+
+  const confirmDeleteClub = async () => {
+    if (!token) return;
+
+    setDeleteLoading(true);
+    setMessage(null);
+
+    try {
+      const response = await clubService.deleteClub(token, club.slug);
+
+      if (response.success) {
+        setMessage({ type: 'success', text: response.message });
+        onMembershipUpdate?.();
+        // Close modal after successful deletion
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      }
+    } catch (error: any) {
+      setMessage({
+        type: 'error',
+        text: error.message || 'Failed to delete club',
+      });
+    } finally {
+      setDeleteLoading(false);
+      setDeleteClubAlert(false);
+    }
   };
 
   const isAdmin =
@@ -707,12 +742,20 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     {actionLoading ? 'Leaving...' : 'Leave Club'}
                   </button>
 
+                  {/* In the actions tab content, replace the isCreator section with: */}
                   {isCreator && (
                     <div className="pt-4 border-t border-gray-200">
                       <p className="text-sm text-gray-600 mb-3">
                         As the club creator, you have additional administrative
                         privileges.
                       </p>
+                      <button
+                        onClick={handleDeleteClub}
+                        disabled={actionLoading}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50 text-sm"
+                      >
+                        Delete Club
+                      </button>
                     </div>
                   )}
                 </div>
@@ -931,6 +974,39 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         confirmText="Cancel Request"
         confirmButtonClass="bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
         loading={actionLoading}
+      />
+
+      <AlertPopup
+        title="Delete Club"
+        message={
+          <div>
+            <p className="mb-2 font-semibold text-red-700">
+              Warning: This action cannot be undone!
+            </p>
+            <p className="mb-2">
+              Are you sure you want to delete the club "{club.name}"?
+            </p>
+            <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+              <li>All club data will be permanently deleted</li>
+              <li>Any pending investments will be cancelled</li>
+              <li>
+                Member contributions will be refunded according to club rules
+              </li>
+              <li>This action is irreversible</li>
+            </ul>
+            <p className="mt-3 text-sm text-red-600 font-medium">
+              Please ensure all members have been notified and all financial
+              matters are settled.
+            </p>
+          </div>
+        }
+        isOpen={deleteClubAlert}
+        setIsOpen={setDeleteClubAlert}
+        onConfirm={confirmDeleteClub}
+        confirmText={deleteLoading ? 'Deleting...' : 'Yes, Delete Club'}
+        confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+        loading={deleteLoading}
+        confirmDisabled={deleteLoading}
       />
 
       <AlertPopup

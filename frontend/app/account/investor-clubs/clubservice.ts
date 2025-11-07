@@ -134,6 +134,19 @@ export const clubService = {
     });
   },
 
+  // Delete club (creator only)
+  deleteClub: async (
+    token: string,
+    clubId: string,
+  ): Promise<{
+    success: boolean;
+    message: string;
+  }> => {
+    return apiCall(`/investment_clubs/${clubId}`, token, {
+      method: 'DELETE',
+    });
+  },
+
   // Get membership status
   getMyMembershipStatus: async (
     token: string,
