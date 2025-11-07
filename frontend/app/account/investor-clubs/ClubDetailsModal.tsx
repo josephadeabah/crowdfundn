@@ -309,13 +309,13 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       } else {
         setMessage({
           type: 'error',
-          text: response.message || 'Failed to delete club'
+          text: response.message || 'Failed to delete club',
         });
       }
     } catch (error: any) {
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to delete club'
+        text: error.message || 'Failed to delete club',
       });
     } finally {
       setDeleteLoading(false);
