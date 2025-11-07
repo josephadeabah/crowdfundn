@@ -95,7 +95,6 @@ export const clubService = {
         },
       );
 
-      console.log('Join club response:', response);
       return {
         ...response,
         is_member: response.is_member !== undefined ? response.is_member : true,
