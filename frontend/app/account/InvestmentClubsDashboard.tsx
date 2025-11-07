@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ClubDetailsModal from './investor-clubs/ClubDetailsModal';
 import CreateClubModal from './investor-clubs/CreateClubModal';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import {
   clubService,
@@ -39,6 +40,12 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Alert states
+  const [featureAlert, setFeatureAlert] = useState(false);
+  const [featureMessage, setFeatureMessage] = useState('');
+  const [voteErrorAlert, setVoteErrorAlert] = useState(false);
+  const [voteErrorMessage, setVoteErrorMessage] = useState('');
 
   useEffect(() => {
     if (token) {
@@ -111,9 +118,10 @@ const InvestmentClubsDashboard: React.FC = () => {
         selectedClub.slug,
       );
       setInvestments(investmentsResponse.investments);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to vote:', error);
-      alert('Failed to vote. Please try again.');
+      setVoteErrorMessage(error.message || 'Failed to vote. Please try again.');
+      setVoteErrorAlert(true);
     }
   };
 
@@ -129,15 +137,18 @@ const InvestmentClubsDashboard: React.FC = () => {
   };
 
   const handleMakeContribution = () => {
-    alert('Make Contribution feature would open here');
+    setFeatureMessage('Make Contribution feature would open here');
+    setFeatureAlert(true);
   };
 
   const handleProposeInvestment = () => {
-    alert('Propose Investment feature would open here');
+    setFeatureMessage('Propose Investment feature would open here');
+    setFeatureAlert(true);
   };
 
   const handleViewAnalytics = () => {
-    alert('View Analytics feature would open here');
+    setFeatureMessage('View Analytics feature would open here');
+    setFeatureAlert(true);
   };
 
   if (loading) {
@@ -619,6 +630,27 @@ const InvestmentClubsDashboard: React.FC = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onClubCreated={handleClubCreated}
+      />
+
+      {/* Alert Popups */}
+      <AlertPopup
+        title="Feature Coming Soon"
+        message={featureMessage}
+        isOpen={featureAlert}
+        setIsOpen={setFeatureAlert}
+        onConfirm={() => setFeatureAlert(false)}
+        confirmText="Got it"
+        confirmButtonClass="bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500"
+      />
+
+      <AlertPopup
+        title="Vote Failed"
+        message={voteErrorMessage}
+        isOpen={voteErrorAlert}
+        setIsOpen={setVoteErrorAlert}
+        onConfirm={() => setVoteErrorAlert(false)}
+        confirmText="OK"
+        confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       />
     </div>
   );
