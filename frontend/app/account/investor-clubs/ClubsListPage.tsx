@@ -561,7 +561,7 @@ const ClubsListPage: React.FC = () => {
         </motion.div>
 
         {/* Spacer for fixed header */}
-        <div className="h-[140px]" />
+        <div className="h-[80px]" />
 
         {/* Message Alert */}
         {message && (
