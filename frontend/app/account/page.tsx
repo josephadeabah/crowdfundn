@@ -759,8 +759,7 @@ const ProfileTabs = () => {
           {/* Footer */}
           <div className="bg-white border-t border-gray-200 px-6 py-4 text-center">
             <p className="text-sm text-gray-600">
-              © 2025 Bantu Hive Ltd • Building the future of African
-              fundraising
+              © 2025 Bantu Hive Ltd • Building the future of fundraising
             </p>
           </div>
         </div>

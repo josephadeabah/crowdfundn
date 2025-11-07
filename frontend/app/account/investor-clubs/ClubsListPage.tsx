@@ -7,7 +7,14 @@ import CreateClubModal from './CreateClubModal';
 import { Club, Member } from './clubTypes';
 import { clubService, membershipService } from './clubservice';
 import { useAuth } from '@/app/context/auth/AuthContext';
-import { Users, DollarSign, Lock, Globe, Clock, TrendingUp } from 'lucide-react';
+import {
+  Users,
+  DollarSign,
+  Lock,
+  Globe,
+  Clock,
+  TrendingUp,
+} from 'lucide-react';
 
 const ClubsListPage: React.FC = () => {
   const { token, user } = useAuth();
@@ -270,8 +277,10 @@ const ClubsListPage: React.FC = () => {
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
+    );
+
     if (diffInHours < 1) return 'Just now';
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
@@ -315,7 +324,11 @@ const ClubsListPage: React.FC = () => {
             {[
               { id: 'all', label: 'For You', count: clubs.length },
               { id: 'my_clubs', label: 'My Clubs', count: myClubs.length },
-              { id: 'discover', label: 'Discover', count: discoverClubs.length },
+              {
+                id: 'discover',
+                label: 'Discover',
+                count: discoverClubs.length,
+              },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -441,12 +454,15 @@ const ClubsListPage: React.FC = () => {
                       <div className="flex items-center gap-1">
                         <Users size={16} />
                         <span>
-                          {club.current_members_count}/{club.max_members} members
+                          {club.current_members_count}/{club.max_members}{' '}
+                          members
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
                         <DollarSign size={16} />
-                        <span>{formatCurrency(club.minimum_monthly_contribution)}/mo</span>
+                        <span>
+                          {formatCurrency(club.minimum_monthly_contribution)}/mo
+                        </span>
                       </div>
                       <div className="flex items-center gap-1">
                         <TrendingUp size={16} />
@@ -462,7 +478,9 @@ const ClubsListPage: React.FC = () => {
                         <div className="text-lg font-bold text-emerald-700">
                           {formatCurrency(club.financials.current_balance)}
                         </div>
-                        <div className="text-xs text-gray-500">Club Balance</div>
+                        <div className="text-xs text-gray-500">
+                          Club Balance
+                        </div>
                       </div>
                       <button
                         onClick={actionButton.onClick}
