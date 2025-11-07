@@ -90,7 +90,7 @@ const ClubsListPage: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
         // Scrolling down and past threshold - hide header
         setIsHeaderVisible(false);
@@ -98,7 +98,7 @@ const ClubsListPage: React.FC = () => {
         // Scrolling up - show header
         setIsHeaderVisible(true);
       }
-      
+
       lastScrollY.current = currentScrollY;
     };
 
