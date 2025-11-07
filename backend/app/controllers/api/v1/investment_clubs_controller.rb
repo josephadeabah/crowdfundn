@@ -3,7 +3,7 @@ module Api
   module V1
     class InvestmentClubsController < ApplicationController
       before_action :authenticate_request
-      before_action :set_club, only: [:show, :update, :portfolio, :analytics, :member_portfolio, :join, :leave, :my_membership_status, :transfer_ownership]
+      before_action :set_club, only: [:show, :update, :portfolio, :analytics, :member_portfolio, :join, :leave, :my_membership_status, :transfer_ownership, :destroy]
       
       # GET /api/v1/investment_clubs
       def index
