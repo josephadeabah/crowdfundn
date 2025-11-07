@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_06_125604) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_07_123835) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -542,6 +542,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_06_125604) do
     t.index ["user_id"], name: "index_leaderboard_entries_on_user_id"
   end
 
+  create_table "member_investment_shares", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "club_investment_id", null: false
+    t.decimal "share_percentage", precision: 10, scale: 4, default: "0.0"
+    t.decimal "effective_shares", precision: 15, scale: 6, default: "0.0"
+    t.decimal "investment_value", precision: 15, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_investment_id"], name: "index_member_investment_shares_on_club_investment_id"
+    t.index ["user_id", "club_investment_id"], name: "index_member_shares_on_user_and_investment", unique: true
+    t.index ["user_id"], name: "index_member_investment_shares_on_user_id"
+  end
+
   create_table "pledges", force: :cascade do |t|
     t.bigint "donation_id"
     t.bigint "reward_id", null: false
@@ -869,6 +882,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_06_125604) do
   add_foreign_key "kycs", "users"
   add_foreign_key "kycs", "users", column: "verified_by_id"
   add_foreign_key "leaderboard_entries", "users"
+  add_foreign_key "member_investment_shares", "club_investments"
+  add_foreign_key "member_investment_shares", "users"
   add_foreign_key "pledges", "donations"
   add_foreign_key "pledges", "rewards"
   add_foreign_key "points", "donations"
