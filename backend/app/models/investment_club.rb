@@ -148,6 +148,21 @@ class InvestmentClub < ApplicationRecord
   def pending_members_count
     investment_club_memberships.pending.count
   end
+
+  def can_be_deleted_by?(user)
+    return false unless is_creator?(user)
+    return false if club_investments.executed.any?
+    return false if investment_club_memberships.active.count > 1
+    true
+  end
+
+  def deletion_errors(user)
+    errors = []
+    errors << 'Only club creator can delete the club' unless is_creator?(user)
+    errors << 'Cannot delete club with active investments' if club_investments.executed.any?
+    errors << 'Cannot delete club with active members' if investment_club_memberships.active.count > 1
+    errors
+  end
   
   private
   

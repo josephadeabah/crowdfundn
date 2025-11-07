@@ -99,10 +99,6 @@ module Api
 
       # POST /api/v1/investment_clubs/:id/join
       def join
-        Rails.logger.info "DEBUG: Join attempt for club: #{@club.slug} by user: #{@current_user.id}"
-        Rails.logger.info "DEBUG: Club capacity: #{@club.current_members_count}/#{@club.max_members}"
-        Rails.logger.info "DEBUG: User already member: #{@club.is_member?(@current_user)}"
-
         if @club.is_member?(@current_user)
           membership = @club.membership_for(@current_user)
           return render json: { 
@@ -205,30 +201,16 @@ module Api
 
       # DELETE /api/v1/investment_clubs/:id
       def destroy
-        unless @club.is_creator?(@current_user)
+        deletion_errors = @club.deletion_errors(@current_user)
+        
+        if deletion_errors.any?
           return render json: { 
             success: false,
-            error: 'Only club creator can delete the club' 
-          }, status: :forbidden
-        end
-
-        # Check if club has active investments or members
-        if @club.club_investments.executed.any?
-          return render json: { 
-            success: false,
-            error: 'Cannot delete club with active investments. Transfer ownership first.' 
-          }, status: :unprocessable_entity
-        end
-
-        if @club.investment_club_memberships.active.count > 1
-          return render json: { 
-            success: false,
-            error: 'Cannot delete club with active members. Transfer ownership or remove members first.' 
+            errors: deletion_errors
           }, status: :unprocessable_entity
         end
 
         club_name = @club.name
-        
         if @club.destroy
           render json: { 
             success: true, 
@@ -345,10 +327,21 @@ module Api
       
       def set_club
         @club = InvestmentClub.find_by(slug: params[:id])
-        render json: { 
-          success: false,
-          error: 'Club not found' 
-        }, status: :not_found unless @club
+        unless @club
+          # For destroy action, we might want a different response
+          if action_name == 'destroy'
+            render json: { 
+              success: false,
+              error: 'Club not found' 
+            }, status: :not_found
+          else
+            render json: { 
+              success: false,
+              error: 'Club not found' 
+            }, status: :not_found
+          end
+          return false
+        end
       end
 
       def membership_message(membership)
