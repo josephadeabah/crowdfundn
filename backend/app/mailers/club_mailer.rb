@@ -10,6 +10,40 @@ class ClubMailer < ApplicationMailer
       subject: "New member request for #{@club.name}"
     )
   end
+
+    # ADD THIS MISSING METHOD
+  def membership_approved(user, membership)
+    @user = user
+    @membership = membership
+    @club = membership.investment_club
+    
+    mail(
+      to: @user.email,
+      subject: "Your membership to #{@club.name} has been approved!"
+    )
+  end
+
+  def membership_rejected(user, membership)
+    @user = user
+    @membership = membership
+    @club = membership.investment_club
+    
+    mail(
+      to: @user.email,
+      subject: "Update on your membership request for #{@club.name}"
+    )
+  end
+
+  def membership_role_changed(user, membership)
+    @user = user
+    @membership = membership
+    @club = membership.investment_club
+    
+    mail(
+      to: @user.email,
+      subject: "Your role in #{@club.name} has been updated"
+    )
+  end
   
   def membership_status_changed(user, membership)
     @user = user

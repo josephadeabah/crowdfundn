@@ -1,4 +1,3 @@
-# app/models/investment_club_membership.rb
 class InvestmentClubMembership < ApplicationRecord
   belongs_to :user
   belongs_to :investment_club
@@ -12,9 +11,9 @@ class InvestmentClubMembership < ApplicationRecord
   
   before_create :set_initial_share
   after_save :update_club_financials, if: -> { saved_change_to_total_contributed? }
-    # FIXED: Use after_commit to ensure club is saved and available
-  after_commit :update_club_members_count, on: [:create, :update, :destroy]
-  after_destroy :update_club_members_count
+  
+  # FIXED: Remove problematic callbacks and use a simpler approach
+  after_commit :update_club_members_count_callback, on: [:create, :update, :destroy]
   
   scope :active, -> { where(status: 'active') }
   scope :admin, -> { where(role: ['admin', 'creator']) }
@@ -27,8 +26,8 @@ class InvestmentClubMembership < ApplicationRecord
     update_column(:current_share, new_share.round(4))
   end
 
-  # Fix the method name and implementation
-  def update_club_members_count
+  # FIXED: Simplified callback method
+  def update_club_members_count_callback
     # Use update_column to avoid callbacks and validations
     investment_club.update_column(:current_members_count, investment_club.investment_club_memberships.active.count)
   rescue => e
