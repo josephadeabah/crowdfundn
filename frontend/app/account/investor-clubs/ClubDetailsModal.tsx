@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Modal from '@/app/components/modal/Modal';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Club, Member, Membership } from './clubTypes';
 import { clubService, membershipService } from './clubservice';
 import { useAuth } from '@/app/context/auth/AuthContext';
@@ -40,9 +39,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const [rejectMemberAlert, setRejectMemberAlert] = useState(false);
   const [cancelRequestAlert, setCancelRequestAlert] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
-  const [selectedMemberName, setSelectedMemberName] = useState<string | null>(
-    null,
-  );
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
   const [deleteClubAlert, setDeleteClubAlert] = useState(false);
@@ -72,7 +68,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const loadMyMembership = async () => {
     if (!token) return;
 
-    setLoading(true);
     try {
       const response = await clubService.getMyMembershipStatus(
         token,
@@ -128,8 +123,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     } catch (error) {
       console.error('Failed to load membership status:', error);
       setMyMembership(null);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -148,12 +141,13 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           text: response.message || 'Successfully joined the club!',
         });
 
-        // Immediately update UI
-        await loadMyMembership();
-        onMembershipUpdate?.();
+        if (response.membership) {
+          setMyMembership(response.membership);
+        } else {
+          await loadMyMembership();
+        }
 
-        // Switch to actions tab to show membership info
-        setActiveTab('actions');
+        onMembershipUpdate?.();
       } else {
         setMessage({
           type: 'error',
@@ -177,44 +171,16 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   };
 
   const confirmLeaveClub = async () => {
-    if (!token || !myMembership) return;
-
     setActionLoading(true);
     setMessage(null);
 
     try {
-      let response;
-
-      // Use membership service if we have membership ID, otherwise use club service
-      if (myMembership.id && myMembership.id !== 'unknown') {
-        response = await membershipService.leaveClub(
-          token,
-          club.slug,
-          myMembership.id,
-        );
-      } else {
-        response = await clubService.leaveClub(token, club.slug);
-      }
+      const response = await clubService.leaveClub(token!, club.slug);
 
       if (response.success) {
-        setMessage({
-          type: 'success',
-          text: response.message || 'Successfully left the club!',
-        });
-
-        // Immediately update UI
+        setMessage({ type: 'success', text: response.message });
         setMyMembership(null);
         onMembershipUpdate?.();
-
-        // Close the modal after a short delay
-        setTimeout(() => {
-          onClose();
-        }, 1500);
-      } else {
-        setMessage({
-          type: 'error',
-          text: response.message || 'Failed to leave club',
-        });
       }
     } catch (error: any) {
       setMessage({
@@ -230,79 +196,40 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const handleApproveMember = async (memberId: string) => {
     if (!token) return;
 
-    setActionLoading(true);
     try {
-      const response = await membershipService.approveMember(
-        token,
-        club.slug,
-        memberId,
-      );
-
-      if (response.success) {
-        setMessage({ type: 'success', text: 'Member approved successfully' });
-        // Refresh members list and membership status
-        onMembershipUpdate?.();
-        await loadMyMembership();
-      } else {
-        setMessage({
-          type: 'error',
-          text: 'Failed to approve member',
-        });
-      }
+      await membershipService.approveMember(token, club.slug, memberId);
+      setMessage({ type: 'success', text: 'Member approved successfully' });
+      onMembershipUpdate?.();
     } catch (error: any) {
       setMessage({
         type: 'error',
         text: error.message || 'Failed to approve member',
       });
-    } finally {
-      setActionLoading(false);
     }
   };
 
-  const handleRejectMember = async (memberId: string, memberName: string) => {
+  const handleRejectMember = async (memberId: string) => {
     if (!token) return;
 
     setSelectedMemberId(memberId);
-    setSelectedMemberName(memberName);
     setRejectMemberAlert(true);
   };
 
   const confirmRejectMember = async () => {
-    if (!selectedMemberId || !token) return;
+    if (!selectedMemberId) return;
 
-    setActionLoading(true);
     try {
-      const response = await membershipService.rejectMember(
-        token,
-        club.slug,
-        selectedMemberId,
-      );
-
-      if (response.success) {
-        setMessage({
-          type: 'success',
-          text: `Membership request for ${selectedMemberName} has been rejected`,
-        });
-
-        // Immediately update UI
-        onMembershipUpdate?.();
-        await loadMyMembership();
-      } else {
-        setMessage({
-          type: 'error',
-          text: response.message || 'Failed to reject member request',
-        });
-      }
+      await membershipService.rejectMember(token!, club.slug, selectedMemberId);
+      setMessage({ type: 'success', text: 'Membership request rejected' });
+      onMembershipUpdate?.();
     } catch (error: any) {
       setMessage({
         type: 'error',
         text: error.message || 'Failed to reject member',
       });
     } finally {
-      setActionLoading(false);
       setRejectMemberAlert(false);
       setSelectedMemberId(null);
-      setSelectedMemberName(null);
     }
   };
 
@@ -311,45 +238,16 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   };
 
   const confirmCancelRequest = async () => {
-    if (!token || !myMembership) return;
-
     setActionLoading(true);
     setMessage(null);
 
     try {
-      let response;
-
-      // Use membership service if we have membership ID
-      if (myMembership.id && myMembership.id !== 'unknown') {
-        response = await membershipService.cancelRequest(
-          token,
-          club.slug,
-          myMembership.id,
-        );
-      } else {
-        response = await clubService.leaveClub(token, club.slug);
-      }
+      const response = await clubService.leaveClub(token!, club.slug);
 
       if (response.success) {
-        setMessage({
-          type: 'success',
-          text:
-            response.message || 'Membership request cancelled successfully!',
-        });
-
-        // Immediately update UI
+        setMessage({ type: 'success', text: response.message });
         setMyMembership(null);
         onMembershipUpdate?.();
-
-        // Close the modal after a short delay
-        setTimeout(() => {
-          onClose();
-        }, 1500);
-      } else {
-        setMessage({
-          type: 'error',
-          text: response.message || 'Failed to cancel request',
-        });
       }
     } catch (error: any) {
       setMessage({
@@ -402,10 +300,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       const response = await clubService.deleteClub(token, club.slug);
 
       if (response.success) {
-        setMessage({
-          type: 'success',
-          text: response.message || 'Club deleted successfully!',
-        });
+        setMessage({ type: 'success', text: response.message });
         onMembershipUpdate?.();
         // Close modal after successful deletion
         setTimeout(() => {
@@ -629,20 +524,13 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleApproveMember(member.id)}
-                            disabled={actionLoading}
-                            className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm disabled:opacity-50"
+                            className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
                           >
-                            {actionLoading ? 'Approving...' : 'Approve'}
+                            Approve
                           </button>
                           <button
-                            onClick={() =>
-                              handleRejectMember(
-                                member.id,
-                                member.user.full_name,
-                              )
-                            }
-                            disabled={actionLoading}
-                            className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm disabled:opacity-50"
+                            onClick={() => handleRejectMember(member.id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
                           >
                             Reject
                           </button>
@@ -945,88 +833,113 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
   return (
     <>
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        closeOnBackdropClick={false}
-        size="xxxlarge"
-        customStyles={{ padding: 0 }}
-      >
-        <motion.div
-          className="bg-white rounded-2xl shadow-xl w-full overflow-hidden max-h-[90vh] flex flex-col"
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.95, opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-white">
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-emerald-900">
-                {club.name}
-              </h2>
-              <p className="text-gray-600 mt-1">{club.mission}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    club.club_type === 'public'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-orange-100 text-orange-800'
-                  }`}
-                >
-                  {club.club_type} Club
-                </span>
-                {myMembership && (
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      myMembership.status === 'active'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}
-                  >
-                    {myMembership.status === 'active' ? 'Member' : 'Pending'}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Message Alert */}
-          {message && (
-            <div
-              className={`mx-6 mt-4 p-3 rounded-lg ${
-                message.type === 'success'
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              }`}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-2xl shadow-xl w-full max-w-4xl mx-4 overflow-hidden max-h-[90vh] flex flex-col"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
-              {message.text}
-            </div>
-          )}
-
-          {/* Tabs */}
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {['about', 'members', 'actions'].map((tab) => (
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-white">
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-emerald-900">
+                    {club.name}
+                  </h2>
+                  <p className="text-gray-600 mt-1">{club.mission}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        club.club_type === 'public'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-orange-100 text-orange-800'
+                      }`}
+                    >
+                      {club.club_type} Club
+                    </span>
+                    {myMembership && (
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          myMembership.status === 'active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
+                        {myMembership.status === 'active'
+                          ? 'Member'
+                          : 'Pending'}
+                      </span>
+                    )}
+                  </div>
+                </div>
                 <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab as any)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm capitalize ${
-                    activeTab === tab
-                      ? 'border-emerald-500 text-emerald-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  onClick={onClose}
+                  className="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Message Alert */}
+              {message && (
+                <div
+                  className={`mx-6 mt-4 p-3 rounded-lg ${
+                    message.type === 'success'
+                      ? 'bg-green-50 text-green-800 border border-green-200'
+                      : 'bg-red-50 text-red-800 border border-red-200'
                   }`}
                 >
-                  {tab}
-                </button>
-              ))}
-            </nav>
-          </div>
+                  {message.text}
+                </div>
+              )}
 
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6">{renderTabContent()}</div>
-        </motion.div>
-      </Modal>
+              {/* Tabs */}
+              <div className="border-b border-gray-200">
+                <nav className="flex space-x-8 px-6">
+                  {['about', 'members', 'actions'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab as any)}
+                      className={`py-4 px-1 border-b-2 font-medium text-sm capitalize ${
+                        activeTab === tab
+                          ? 'border-emerald-500 text-emerald-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                {renderTabContent()}
+              </div>
+
+              {/* Footer */}
+              <div className="p-6 border-t border-gray-100 bg-gray-50">
+                <div className="flex justify-end">
+                  <button
+                    onClick={onClose}
+                    className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 font-medium transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Alert Popups */}
       <AlertPopup
@@ -1042,32 +955,19 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         isOpen={leaveClubAlert}
         setIsOpen={setLeaveClubAlert}
         onConfirm={confirmLeaveClub}
-        confirmText={actionLoading ? 'Leaving...' : 'Leave Club'}
+        confirmText="Leave Club"
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
         loading={actionLoading}
-        confirmDisabled={actionLoading}
       />
 
       <AlertPopup
         title="Reject Membership Request"
-        message={
-          <div>
-            <p className="mb-2">
-              Are you sure you want to reject {selectedMemberName}'s membership
-              request?
-            </p>
-            <p className="text-sm text-gray-600">
-              This action cannot be undone.
-            </p>
-          </div>
-        }
+        message="Are you sure you want to reject this membership request?"
         isOpen={rejectMemberAlert}
         setIsOpen={setRejectMemberAlert}
         onConfirm={confirmRejectMember}
-        confirmText={actionLoading ? 'Rejecting...' : 'Reject Request'}
+        confirmText="Reject"
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-        loading={actionLoading}
-        confirmDisabled={actionLoading}
       />
 
       <AlertPopup
@@ -1076,10 +976,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         isOpen={cancelRequestAlert}
         setIsOpen={setCancelRequestAlert}
         onConfirm={confirmCancelRequest}
-        confirmText={actionLoading ? 'Canceling...' : 'Cancel Request'}
+        confirmText="Cancel Request"
         confirmButtonClass="bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
         loading={actionLoading}
-        confirmDisabled={actionLoading}
       />
 
       <AlertPopup
