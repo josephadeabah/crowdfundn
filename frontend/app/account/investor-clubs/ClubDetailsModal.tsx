@@ -82,7 +82,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       if (response.success && response.membership) {
         setMyMembership(response.membership);
       } else if (response.is_member) {
-        // User is a member but we need to get the full membership details
         try {
           const fullResponse = await membershipService.getMyMembership(
             token,
@@ -92,8 +91,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
             setMyMembership(fullResponse.membership);
           }
         } catch (error) {
-          console.error('Failed to load full membership details:', error);
-          // Create a safe fallback membership
           const fallbackUser = user
             ? {
                 id: (user as any).id,
@@ -108,8 +105,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                 avatar_url: null,
               };
 
+          const existingMember = members.find(m => m.user.id === String(user?.id));
+          
           setMyMembership({
-            id: 'unknown',
+            id: existingMember?.id || 'unknown',
             status: 'active',
             role: 'member',
             user: fallbackUser,
@@ -126,7 +125,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         setMyMembership(null);
       }
     } catch (error) {
-      console.error('Failed to load membership status:', error);
       setMyMembership(null);
     } finally {
       setLoading(false);
@@ -148,11 +146,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           text: response.message || 'Successfully joined the club!',
         });
 
-        // Immediately update UI
         await loadMyMembership();
         onMembershipUpdate?.();
 
-        // Switch to actions tab to show membership info
         setActiveTab('actions');
       } else {
         setMessage({
@@ -177,36 +173,23 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   };
 
   const confirmLeaveClub = async () => {
-    console.log('🔄 confirmLeaveClub called');
-    if (!token || !myMembership) {
-      console.error('❌ Missing token or membership:', {
-        token: !!token,
-        membership: !!myMembership,
-      });
-      return;
-    }
+    if (!token || !myMembership) return;
 
     setActionLoading(true);
     setMessage(null);
 
     try {
-      console.log('🚀 Making leave club API call...');
       let response;
 
-      // Use membership service if we have membership ID, otherwise use club service
       if (myMembership.id && myMembership.id !== 'unknown') {
-        console.log('📝 Using membership service with ID:', myMembership.id);
         response = await membershipService.leaveClub(
           token,
           club.slug,
           myMembership.id,
         );
       } else {
-        console.log('📝 Using club service');
         response = await clubService.leaveClub(token, club.slug);
       }
-
-      console.log('✅ Leave club response:', response);
 
       if (response.success) {
         setMessage({
@@ -214,11 +197,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           text: response.message || 'Successfully left the club!',
         });
 
-        // Immediately update UI
         setMyMembership(null);
         onMembershipUpdate?.();
 
-        // Close the modal after a short delay
         setTimeout(() => {
           onClose();
         }, 1500);
@@ -229,10 +210,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         });
       }
     } catch (error: any) {
-      console.error('💥 Leave club error:', error);
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to leave club',
+        text: error.message || 'Failed to leave club. Please try again.',
       });
     } finally {
       setActionLoading(false);
@@ -241,25 +221,15 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   };
 
   const confirmRejectMember = async () => {
-    console.log('🔄 confirmRejectMember called');
-    if (!selectedMemberId || !token) {
-      console.error('❌ Missing selectedMemberId or token:', {
-        selectedMemberId,
-        token: !!token,
-      });
-      return;
-    }
+    if (!selectedMemberId || !token) return;
 
     setActionLoading(true);
     try {
-      console.log('🚀 Making reject member API call for:', selectedMemberId);
       const response = await membershipService.rejectMember(
         token,
         club.slug,
         selectedMemberId,
       );
-
-      console.log('✅ Reject member response:', response);
 
       if (response.success) {
         setMessage({
@@ -267,7 +237,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           text: `Membership request for ${selectedMemberName} has been rejected`,
         });
 
-        // Immediately update UI
         onMembershipUpdate?.();
         await loadMyMembership();
       } else {
@@ -277,10 +246,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         });
       }
     } catch (error: any) {
-      console.error('💥 Reject member error:', error);
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to reject member',
+        text: error.message || 'Failed to reject member. Please try again.',
       });
     } finally {
       setActionLoading(false);
@@ -291,36 +259,23 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   };
 
   const confirmCancelRequest = async () => {
-    console.log('🔄 confirmCancelRequest called');
-    if (!token || !myMembership) {
-      console.error('❌ Missing token or membership:', {
-        token: !!token,
-        membership: !!myMembership,
-      });
-      return;
-    }
+    if (!token || !myMembership) return;
 
     setActionLoading(true);
     setMessage(null);
 
     try {
-      console.log('🚀 Making cancel request API call...');
       let response;
 
-      // Use membership service if we have membership ID
       if (myMembership.id && myMembership.id !== 'unknown') {
-        console.log('📝 Using membership service with ID:', myMembership.id);
         response = await membershipService.cancelRequest(
           token,
           club.slug,
           myMembership.id,
         );
       } else {
-        console.log('📝 Using club service');
         response = await clubService.leaveClub(token, club.slug);
       }
-
-      console.log('✅ Cancel request response:', response);
 
       if (response.success) {
         setMessage({
@@ -329,11 +284,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
             response.message || 'Membership request cancelled successfully!',
         });
 
-        // Immediately update UI
         setMyMembership(null);
         onMembershipUpdate?.();
 
-        // Close the modal after a short delay
         setTimeout(() => {
           onClose();
         }, 1500);
@@ -344,10 +297,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         });
       }
     } catch (error: any) {
-      console.error('💥 Cancel request error:', error);
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to cancel request',
+        text: error.message || 'Failed to cancel request. Please try again.',
       });
     } finally {
       setActionLoading(false);
@@ -356,20 +308,13 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   };
 
   const confirmDeleteClub = async () => {
-    console.log('🔄 confirmDeleteClub called');
-    if (!token) {
-      console.error('❌ Missing token');
-      return;
-    }
+    if (!token) return;
 
     setDeleteLoading(true);
     setMessage(null);
 
     try {
-      console.log('🚀 Making delete club API call...');
       const response = await clubService.deleteClub(token, club.slug);
-
-      console.log('✅ Delete club response:', response);
 
       if (response.success) {
         setMessage({
@@ -377,7 +322,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           text: response.message || 'Club deleted successfully!',
         });
         onMembershipUpdate?.();
-        // Close modal after successful deletion
         setTimeout(() => {
           onClose();
         }, 2000);
@@ -388,10 +332,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         });
       }
     } catch (error: any) {
-      console.error('💥 Delete club error:', error);
       setMessage({
         type: 'error',
-        text: error.message || 'Failed to delete club',
+        text: error.message || 'Failed to delete club. Please try again.',
       });
     } finally {
       setDeleteLoading(false);
@@ -412,7 +355,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
       if (response.success) {
         setMessage({ type: 'success', text: 'Member approved successfully' });
-        // Refresh members list and membership status
         onMembershipUpdate?.();
         await loadMyMembership();
       } else {
@@ -468,7 +410,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     return role.charAt(0).toUpperCase() + role.slice(1);
   };
 
-  // Add delete club handler
   const handleDeleteClub = () => {
     setDeleteClubAlert(true);
   };
@@ -537,7 +478,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         );
 
       case 'members':
-        // Show limited info for non-members in private clubs
         if (!myMembership && club.club_type === 'private') {
           return (
             <div>
@@ -545,7 +485,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                 <h3 className="text-lg font-semibold text-gray-900">Members</h3>
               </div>
 
-              {/* Info message for non-members */}
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -581,7 +520,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                 </div>
               </div>
 
-              {/* Basic member count info */}
               <div className="bg-gray-50 rounded-lg p-6 text-center">
                 <div className="text-3xl font-bold text-gray-900 mb-2">
                   {club.current_members_count}
@@ -702,7 +640,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         );
 
       case 'actions':
-        // Only show actions tab content if user is a member or can request to join
         if (!myMembership) {
           return (
             <div className="space-y-6">
@@ -710,7 +647,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                 Club Actions
               </h3>
 
-              {/* Membership Request Section */}
               <div className="bg-gray-50 rounded-lg p-6">
                 <h4 className="font-semibold text-gray-900 mb-4">
                   Become a Member
@@ -775,7 +711,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                 </div>
               </div>
 
-              {/* Features Preview */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-60">
                 <div className="p-4 bg-white border border-gray-200 rounded-lg text-left">
                   <div className="font-semibold text-gray-900">
@@ -817,14 +752,12 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           );
         }
 
-        // User is a member - show full actions
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Club Actions
             </h3>
 
-            {/* Membership Actions */}
             <div className="bg-gray-50 rounded-lg p-6">
               <h4 className="font-semibold text-gray-900 mb-4">Membership</h4>
 
@@ -904,7 +837,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     {actionLoading ? 'Leaving...' : 'Leave Club'}
                   </button>
 
-                  {/* In the actions tab content, replace the isCreator section with: */}
                   {isCreator && (
                     <div className="pt-4 border-t border-gray-200">
                       <p className="text-sm text-gray-600 mb-3">
@@ -924,7 +856,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
               )}
             </div>
 
-            {/* Quick Actions */}
             {myMembership?.status === 'active' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
@@ -1072,9 +1003,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           <div className="flex-1 overflow-y-auto p-6">{renderTabContent()}</div>
         </motion.div>
       </Modal>
+
       {/* Alert Popups */}
-      // Update your AlertPopup components in ClubDetailsModal.tsx to add
-      logging:
       <AlertPopup
         title="Leave Club"
         message={
@@ -1086,14 +1016,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           </div>
         }
         isOpen={leaveClubAlert}
-        setIsOpen={(open) => {
-          console.log('🔔 Leave Club Alert setIsOpen:', open);
-          setLeaveClubAlert(open);
-        }}
-        onConfirm={() => {
-          console.log('🔔 Leave Club Alert onConfirm triggered');
-          confirmLeaveClub();
-        }}
+        setIsOpen={setLeaveClubAlert}
+        onConfirm={confirmLeaveClub}
         confirmText={actionLoading ? 'Leaving...' : 'Leave Club'}
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
         loading={actionLoading}
@@ -1113,14 +1037,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           </div>
         }
         isOpen={rejectMemberAlert}
-        setIsOpen={(open) => {
-          console.log('🔔 Reject Member Alert setIsOpen:', open);
-          setRejectMemberAlert(open);
-        }}
-        onConfirm={() => {
-          console.log('🔔 Reject Member Alert onConfirm triggered');
-          confirmRejectMember();
-        }}
+        setIsOpen={setRejectMemberAlert}
+        onConfirm={confirmRejectMember}
         confirmText={actionLoading ? 'Rejecting...' : 'Reject Request'}
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
         loading={actionLoading}
@@ -1130,14 +1048,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         title="Cancel Membership Request"
         message="Are you sure you want to cancel your membership request?"
         isOpen={cancelRequestAlert}
-        setIsOpen={(open) => {
-          console.log('🔔 Cancel Request Alert setIsOpen:', open);
-          setCancelRequestAlert(open);
-        }}
-        onConfirm={() => {
-          console.log('🔔 Cancel Request Alert onConfirm triggered');
-          confirmCancelRequest();
-        }}
+        setIsOpen={setCancelRequestAlert}
+        onConfirm={confirmCancelRequest}
         confirmText={actionLoading ? 'Canceling...' : 'Cancel Request'}
         confirmButtonClass="bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
         loading={actionLoading}
@@ -1168,14 +1080,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           </div>
         }
         isOpen={deleteClubAlert}
-        setIsOpen={(open) => {
-          console.log('🔔 Delete Club Alert setIsOpen:', open);
-          setDeleteClubAlert(open);
-        }}
-        onConfirm={() => {
-          console.log('🔔 Delete Club Alert onConfirm triggered');
-          confirmDeleteClub();
-        }}
+        setIsOpen={setDeleteClubAlert}
+        onConfirm={confirmDeleteClub}
         confirmText={deleteLoading ? 'Deleting...' : 'Yes, Delete Club'}
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
         loading={deleteLoading}

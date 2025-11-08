@@ -17,18 +17,12 @@ import {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
-// Generic API call function with enhanced debugging
+// Generic API call function
 const apiCall = async (
   endpoint: string,
   token: string,
   options: RequestInit = {},
 ) => {
-  console.log(
-    '🔗 API CALL:',
-    `${API_BASE_URL}${endpoint}`,
-    options.method || 'GET',
-  );
-
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -37,27 +31,14 @@ const apiCall = async (
     ...options,
   };
 
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    console.log(
-      '📡 API RESPONSE STATUS:',
-      response.status,
-      response.statusText,
-    );
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.log('❌ API ERROR:', errorData);
-      throw new Error(errorData.error || `API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('✅ API SUCCESS:', data);
-    return data;
-  } catch (error) {
-    console.error('💥 API CALL FAILED:', error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `API error: ${response.status}`);
   }
+
+  return await response.json();
 };
 
 // Investment Club API calls
@@ -124,9 +105,6 @@ export const clubService = {
         is_member: response.is_member !== undefined ? response.is_member : true,
       };
     } catch (error: any) {
-      console.error('Join club error:', error);
-
-      // Check if it's already a membership status response
       if (error.message && error.message.includes('Already a member')) {
         return {
           success: false,
@@ -143,7 +121,7 @@ export const clubService = {
     }
   },
 
-  // Leave club - FIXED: Use correct endpoint
+  // Leave club
   leaveClub: async (
     token: string,
     clubId: string,
@@ -172,7 +150,6 @@ export const clubService = {
       );
       return response;
     } catch (error: any) {
-      // If we get a 404, it means the user is not a member
       if (
         error.message.includes('404') ||
         error.message.includes('Not a member')
@@ -261,7 +238,7 @@ export const membershipService = {
     );
   },
 
-  // Approve member - FIXED: Return proper type
+  // Approve member
   approveMember: async (
     token: string,
     clubId: string,
@@ -276,13 +253,12 @@ export const membershipService = {
     );
   },
 
-  // Reject member - FIXED: Return proper type with message
+  // Reject member
   rejectMember: async (
     token: string,
     clubId: string,
     membershipId: string,
   ): Promise<RejectMemberResponse> => {
-    console.log('🔄 Rejecting member:', { clubId, membershipId });
     return apiCall(
       `/investment_clubs/${clubId}/memberships/${membershipId}/reject`,
       token,
@@ -292,13 +268,12 @@ export const membershipService = {
     );
   },
 
-  // Leave club (via membership endpoint) - FIXED: Return proper type
+  // Leave club (via membership endpoint)
   leaveClub: async (
     token: string,
     clubId: string,
     membershipId: string,
   ): Promise<LeaveClubResponse> => {
-    console.log('🔄 Leaving club via membership:', { clubId, membershipId });
     return apiCall(
       `/investment_clubs/${clubId}/memberships/${membershipId}/leave`,
       token,
@@ -314,7 +289,6 @@ export const membershipService = {
     clubId: string,
     membershipId: string,
   ): Promise<CancelRequestResponse> => {
-    console.log('🔄 Cancelling membership request:', { clubId, membershipId });
     return apiCall(
       `/investment_clubs/${clubId}/memberships/${membershipId}/leave`,
       token,
