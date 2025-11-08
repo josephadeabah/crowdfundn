@@ -859,7 +859,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     <div className="pt-4 border-t border-gray-200">
                       <p className="text-sm text-gray-600 mb-3">
                         As the club creator, you have additional administrative
-                        privileges. You cannot delete club with active investments and members.
+                        privileges.
                       </p>
                       <button
                         onClick={handleDeleteClub}
