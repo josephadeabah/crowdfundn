@@ -8,16 +8,27 @@ import {
   Vote,
   JoinClubResponse,
   MembershipStatusResponse,
+  BaseResponse,
+  LeaveClubResponse,
+  RejectMemberResponse,
+  CancelRequestResponse,
+  ApproveMemberResponse,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
-// Generic API call function
+// Generic API call function with enhanced debugging
 const apiCall = async (
   endpoint: string,
   token: string,
   options: RequestInit = {},
 ) => {
+  console.log(
+    '🔗 API CALL:',
+    `${API_BASE_URL}${endpoint}`,
+    options.method || 'GET',
+  );
+
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -26,14 +37,27 @@ const apiCall = async (
     ...options,
   };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    console.log(
+      '📡 API RESPONSE STATUS:',
+      response.status,
+      response.statusText,
+    );
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `API error: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.log('❌ API ERROR:', errorData);
+      throw new Error(errorData.error || `API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ API SUCCESS:', data);
+    return data;
+  } catch (error) {
+    console.error('💥 API CALL FAILED:', error);
+    throw error;
   }
-
-  return response.json();
 };
 
 // Investment Club API calls
@@ -119,28 +143,18 @@ export const clubService = {
     }
   },
 
-  // Leave club
+  // Leave club - FIXED: Use correct endpoint
   leaveClub: async (
     token: string,
     clubId: string,
-  ): Promise<{
-    success: boolean;
-    message: string;
-    portfolio_summary?: any;
-  }> => {
+  ): Promise<LeaveClubResponse> => {
     return apiCall(`/investment_clubs/${clubId}/leave`, token, {
       method: 'POST',
     });
   },
 
   // Delete club (creator only)
-  deleteClub: async (
-    token: string,
-    clubId: string,
-  ): Promise<{
-    success: boolean;
-    message: string;
-  }> => {
+  deleteClub: async (token: string, clubId: string): Promise<BaseResponse> => {
     return apiCall(`/investment_clubs/${clubId}`, token, {
       method: 'DELETE',
     });
@@ -178,7 +192,7 @@ export const clubService = {
     token: string,
     clubId: string,
     newAdminId: string,
-  ): Promise<{ success: boolean; message: string }> => {
+  ): Promise<BaseResponse> => {
     return apiCall(`/investment_clubs/${clubId}/transfer_ownership`, token, {
       method: 'POST',
       body: JSON.stringify({ new_admin_id: newAdminId }),
@@ -237,7 +251,7 @@ export const membershipService = {
     token: string,
     clubId: string,
     membershipId: string,
-  ): Promise<{ success: boolean }> => {
+  ): Promise<BaseResponse> => {
     return apiCall(
       `/investment_clubs/${clubId}/memberships/${membershipId}`,
       token,
@@ -247,12 +261,12 @@ export const membershipService = {
     );
   },
 
-  // Approve member
+  // Approve member - FIXED: Return proper type
   approveMember: async (
     token: string,
     clubId: string,
     membershipId: string,
-  ): Promise<{ success: boolean; membership: Member }> => {
+  ): Promise<ApproveMemberResponse> => {
     return apiCall(
       `/investment_clubs/${clubId}/memberships/${membershipId}/approve`,
       token,
@@ -262,12 +276,13 @@ export const membershipService = {
     );
   },
 
-  // Reject member
+  // Reject member - FIXED: Return proper type with message
   rejectMember: async (
     token: string,
     clubId: string,
     membershipId: string,
-  ): Promise<{ success: boolean }> => {
+  ): Promise<RejectMemberResponse> => {
+    console.log('🔄 Rejecting member:', { clubId, membershipId });
     return apiCall(
       `/investment_clubs/${clubId}/memberships/${membershipId}/reject`,
       token,
@@ -277,12 +292,29 @@ export const membershipService = {
     );
   },
 
-  // Leave club (via membership endpoint)
+  // Leave club (via membership endpoint) - FIXED: Return proper type
   leaveClub: async (
     token: string,
     clubId: string,
     membershipId: string,
-  ): Promise<{ success: boolean }> => {
+  ): Promise<LeaveClubResponse> => {
+    console.log('🔄 Leaving club via membership:', { clubId, membershipId });
+    return apiCall(
+      `/investment_clubs/${clubId}/memberships/${membershipId}/leave`,
+      token,
+      {
+        method: 'POST',
+      },
+    );
+  },
+
+  // Cancel membership request (alias for leave for pending members)
+  cancelRequest: async (
+    token: string,
+    clubId: string,
+    membershipId: string,
+  ): Promise<CancelRequestResponse> => {
+    console.log('🔄 Cancelling membership request:', { clubId, membershipId });
     return apiCall(
       `/investment_clubs/${clubId}/memberships/${membershipId}/leave`,
       token,

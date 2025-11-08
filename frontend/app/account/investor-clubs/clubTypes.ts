@@ -28,7 +28,6 @@ export interface Club {
   updated_at: string;
 }
 
-// ... rest of your existing interfaces remain the same
 export interface Member {
   id: string;
   user: {
@@ -127,4 +126,22 @@ export interface MembershipStatusResponse {
   membership?: Membership;
   is_member?: boolean;
   message?: string;
+}
+
+// Add new response interfaces for service methods
+export interface BaseResponse {
+  success: boolean;
+  message?: string;
+}
+
+export interface LeaveClubResponse extends BaseResponse {
+  portfolio_summary?: any;
+}
+
+export interface RejectMemberResponse extends BaseResponse {}
+
+export interface CancelRequestResponse extends BaseResponse {}
+
+export interface ApproveMemberResponse extends BaseResponse {
+  membership?: Member;
 }
