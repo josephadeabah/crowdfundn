@@ -793,7 +793,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     </div>
                   </div>
                   <button
-                    onClick={handleCancelRequest}
+                    onClick={confirmCancelRequest}
                     disabled={actionLoading}
                     className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium disabled:opacity-50"
                   >
