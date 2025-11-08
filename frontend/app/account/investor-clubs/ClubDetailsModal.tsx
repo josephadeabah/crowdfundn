@@ -859,14 +859,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     <div className="pt-4 border-t border-gray-200">
                       <p className="text-sm text-gray-600 mb-3">
                         As the club creator, you have additional administrative
-                        privileges.
+                        privileges. You cannot delete club with active investments and members.
                       </p>
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-600">
-                          As the club creator, you cannot delete club with
-                          active investments and members.
-                        </p>
-                      </div>
                       <button
                         onClick={handleDeleteClub}
                         disabled={!!actionLoading}
