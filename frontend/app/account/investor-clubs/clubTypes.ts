@@ -144,18 +144,6 @@ export interface LeaveClubResponse {
   portfolio_summary?: any;
 }
 
-export interface DeletionInfoResponse {
-  success: boolean;
-  deletion_info: {
-    requirements: string[];
-    consequences: string[];
-    can_delete: boolean;
-    club_name: string;
-    active_investments_count: number;
-    active_members_count: number;
-  };
-}
-
 export interface RejectMemberResponse extends BaseResponse {}
 
 export interface CancelRequestResponse extends BaseResponse {}

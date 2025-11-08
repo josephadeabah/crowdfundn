@@ -40,7 +40,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
   const [deleteAlert, setDeleteAlert] = useState(false);
-  const [deletionInfo, setDeletionInfo] = useState<any>(null);
   const [transferAlert, setTransferAlert] = useState(false);
 
   useEffect(() => {
@@ -48,6 +47,38 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       loadMyMembership();
     }
   }, [isOpen, token, club.slug]);
+
+  // Calculate deletion info locally instead of API call
+  const getDeletionInfo = () => {
+    const requirements = [];
+    const consequences = [
+      "All club data including member contributions and investment history will be permanently deleted",
+      "This action cannot be undone",
+      "Any pending investment proposals will be cancelled"
+    ];
+
+    // Check if there are active investments
+    if (club.financials.total_invested > 0) {
+      requirements.push(`There are active investments that need to be resolved (${formatCurrency(club.financials.total_invested)} invested)`);
+    }
+
+    // Check if there are other members
+    const otherMembersCount = club.current_members_count - 1; // excluding current user
+    if (otherMembersCount > 0) {
+      requirements.push(`All ${otherMembersCount} other members must leave the club first`);
+    }
+
+    const canDelete = requirements.length === 0;
+
+    return {
+      requirements,
+      consequences,
+      can_delete: canDelete,
+      club_name: club.name,
+      active_investments_count: club.financials.total_invested > 0 ? 1 : 0, // Simplified count
+      active_members_count: otherMembersCount
+    };
+  };
 
   // Safe number formatting functions
   const safeToFixed = (value: any, decimals: number = 2): string => {
@@ -302,31 +333,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     }
   };
 
-  const loadDeletionInfo = async () => {
-    if (!token) return;
-
-    try {
-      const response = await clubService.getDeletionInfo(token, club.slug);
-      if (response.success) {
-        setDeletionInfo(response.deletion_info);
-      }
-    } catch (error) {
-      console.error('Failed to load deletion info:', error);
-    }
-  };
-
-  const handleDeleteClick = async () => {
-    if (!token) return;
-
-    try {
-      await loadDeletionInfo();
-      setDeleteAlert(true);
-    } catch (error) {
-      setMessage({
-        type: 'error',
-        text: 'Failed to load deletion information',
-      });
-    }
+  const handleDeleteClick = () => {
+    // Calculate deletion info locally instead of API call
+    setDeleteAlert(true);
   };
 
   const handleDeleteClub = async () => {
@@ -429,6 +438,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
   // Filter out pending members after approval/rejection
   const activeMembers = members.filter((m) => m.status !== 'pending');
+
+  // Get deletion info for the alert
+  const deletionInfo = getDeletionInfo();
 
   // Render content based on active tab and membership status
   const renderTabContent = () => {
@@ -1054,48 +1066,45 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           <div className="flex-1 overflow-y-auto p-6">{renderTabContent()}</div>
         </motion.div>
       </Modal>
+
       {/* Club Deletion Alert */}
       <AlertPopup
         title="Delete Club - Important Notice"
         message={
           <div className="space-y-4">
             <p className="text-sm text-gray-700">
-              You are about to permanently delete <strong>{club.name}</strong>.
+              You are about to permanently delete <strong>{club.name}</strong>. 
               This action cannot be undone.
             </p>
-
-            {deletionInfo && !deletionInfo.can_delete && (
+            
+            {!deletionInfo.can_delete && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                 <h4 className="font-semibold text-red-800 text-sm mb-2">
                   Before you can delete this club:
                 </h4>
                 <ul className="text-sm text-red-700 space-y-1">
-                  {deletionInfo.requirements.map(
-                    (req: string, index: number) => (
-                      <li key={index} className="flex items-start">
-                        <span className="mr-2">•</span>
-                        {req}
-                      </li>
-                    ),
-                  )}
+                  {deletionInfo.requirements.map((req: string, index: number) => (
+                    <li key={index} className="flex items-start">
+                      <span className="mr-2">•</span>
+                      {req}
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}
 
-            {deletionInfo && deletionInfo.can_delete && (
+            {deletionInfo.can_delete && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                 <h4 className="font-semibold text-yellow-800 text-sm mb-2">
                   Consequences of deletion:
                 </h4>
                 <ul className="text-sm text-yellow-700 space-y-1">
-                  {deletionInfo.consequences.map(
-                    (consequence: string, index: number) => (
-                      <li key={index} className="flex items-start">
-                        <span className="mr-2">•</span>
-                        {consequence}
-                      </li>
-                    ),
-                  )}
+                  {deletionInfo.consequences.map((consequence: string, index: number) => (
+                    <li key={index} className="flex items-start">
+                      <span className="mr-2">•</span>
+                      {consequence}
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}
@@ -1109,30 +1118,27 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         setIsOpen={setDeleteAlert}
         onConfirm={handleDeleteClub}
         onCancel={() => setDeleteAlert(false)}
-        confirmText={
-          deletionInfo?.can_delete ? 'Yes, Delete Club' : 'I Understand'
-        }
+        confirmText={deletionInfo.can_delete ? "Yes, Delete Club" : "I Understand"}
         confirmButtonClass={
-          deletionInfo?.can_delete
-            ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
-            : 'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'
+          deletionInfo.can_delete 
+            ? "bg-red-600 hover:bg-red-700 focus:ring-red-500" 
+            : "bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
         }
         loading={actionLoading === 'delete'}
-        confirmDisabled={!deletionInfo?.can_delete}
-        showCancelButton={deletionInfo?.can_delete} // Only show cancel when deletion is possible
+        confirmDisabled={!deletionInfo.can_delete}
+        showCancelButton={deletionInfo.can_delete}
       />
+
       {/* Transfer Ownership Alert */}
       <AlertPopup
         title="Transfer Ownership Required"
         message={
           <div className="space-y-3">
             <p className="text-sm text-gray-700">
-              As the club creator, you cannot leave the club without first
-              transferring ownership to another admin member.
+              As the club creator, you cannot leave the club without first transferring ownership to another admin member.
             </p>
             <p className="text-sm text-gray-700">
-              Please transfer ownership to another member before leaving the
-              club.
+              Please transfer ownership to another member before leaving the club.
             </p>
           </div>
         }
@@ -1141,8 +1147,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         onConfirm={() => setTransferAlert(false)}
         confirmText="I Understand"
         confirmButtonClass="bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
-        showCancelButton={false} // No cancel button for this informational alert
+        showCancelButton={false}
       />
+
       {/* Feature Coming Soon Alert */}
       <AlertPopup
         title="Feature Coming Soon"
@@ -1152,7 +1159,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         onConfirm={() => setFeatureAlert(false)}
         confirmText="Got it"
         confirmButtonClass="bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500"
-        showCancelButton={false} // No cancel button for this informational alert
+        showCancelButton={false}
       />
     </>
   );

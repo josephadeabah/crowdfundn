@@ -152,14 +152,6 @@ export const clubService = {
     });
   },
 
-  // Get deletion info for alert popup
-  getDeletionInfo: async (
-    token: string,
-    clubId: string,
-  ): Promise<DeletionInfoResponse> => {
-    return apiCall(`/investment_clubs/${clubId}/deletion_info`, token);
-  },
-
   // Get membership status
   getMyMembershipStatus: async (
     token: string,
