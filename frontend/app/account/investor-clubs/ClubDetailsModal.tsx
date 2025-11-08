@@ -1150,10 +1150,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         setIsOpen={setDeleteAlert}
         onConfirm={
           deletionInfo.can_delete
-            ? handleDeleteClub
+            ? () => handleDeleteClub()
             : () => setDeleteAlert(false)
         }
-        onCancel={() => setDeleteAlert(false)}
         confirmText={
           deletionInfo.can_delete ? 'Yes, Delete Club' : 'I Understand'
         }
