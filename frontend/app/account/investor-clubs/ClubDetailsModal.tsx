@@ -105,7 +105,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                 avatar_url: null,
               };
 
-          const existingMember = members.find(m => m.user.id === String(user?.id));
+          const existingMember = members.find(m => Number(m.user.id) === user?.id);
           
           setMyMembership({
             id: existingMember?.id || 'unknown',
@@ -166,13 +166,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     }
   };
 
+  // FIXED: Direct API call functions for immediate actions
   const handleLeaveClub = async () => {
-    if (!token || !myMembership) return;
-
-    setLeaveClubAlert(true);
-  };
-
-  const confirmLeaveClub = async () => {
     if (!token || !myMembership) return;
 
     setActionLoading(true);
@@ -216,25 +211,24 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       });
     } finally {
       setActionLoading(false);
-      setLeaveClubAlert(false);
     }
   };
 
-  const confirmRejectMember = async () => {
-    if (!selectedMemberId || !token) return;
+  const handleRejectMember = async (memberId: string, memberName: string) => {
+    if (!token) return;
 
     setActionLoading(true);
     try {
       const response = await membershipService.rejectMember(
         token,
         club.slug,
-        selectedMemberId,
+        memberId,
       );
 
       if (response.success) {
         setMessage({
           type: 'success',
-          text: `Membership request for ${selectedMemberName} has been rejected`,
+          text: `Membership request for ${memberName} has been rejected`,
         });
 
         onMembershipUpdate?.();
@@ -252,13 +246,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       });
     } finally {
       setActionLoading(false);
-      setRejectMemberAlert(false);
-      setSelectedMemberId(null);
-      setSelectedMemberName(null);
     }
   };
 
-  const confirmCancelRequest = async () => {
+  const handleCancelRequest = async () => {
     if (!token || !myMembership) return;
 
     setActionLoading(true);
@@ -280,8 +271,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       if (response.success) {
         setMessage({
           type: 'success',
-          text:
-            response.message || 'Membership request cancelled successfully!',
+          text: response.message || 'Membership request cancelled successfully!',
         });
 
         setMyMembership(null);
@@ -303,11 +293,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       });
     } finally {
       setActionLoading(false);
-      setCancelRequestAlert(false);
     }
   };
 
-  const confirmDeleteClub = async () => {
+  const handleDeleteClub = async () => {
     if (!token) return;
 
     setDeleteLoading(true);
@@ -338,7 +327,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       });
     } finally {
       setDeleteLoading(false);
-      setDeleteClubAlert(false);
     }
   };
 
@@ -373,16 +361,23 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     }
   };
 
-  const handleRejectMember = async (memberId: string, memberName: string) => {
-    if (!token) return;
+  // FIXED: These functions now just set the alert state for confirmation dialogs
+  const showLeaveClubConfirmation = () => {
+    setLeaveClubAlert(true);
+  };
 
+  const showRejectMemberConfirmation = (memberId: string, memberName: string) => {
     setSelectedMemberId(memberId);
     setSelectedMemberName(memberName);
     setRejectMemberAlert(true);
   };
 
-  const handleCancelRequest = () => {
+  const showCancelRequestConfirmation = () => {
     setCancelRequestAlert(true);
+  };
+
+  const showDeleteClubConfirmation = () => {
+    setDeleteClubAlert(true);
   };
 
   const handleFeatureClick = (featureName: string) => {
@@ -408,10 +403,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
   const formatRole = (role: string) => {
     return role.charAt(0).toUpperCase() + role.slice(1);
-  };
-
-  const handleDeleteClub = () => {
-    setDeleteClubAlert(true);
   };
 
   const isAdmin =
@@ -618,12 +609,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                             {actionLoading ? 'Approving...' : 'Approve'}
                           </button>
                           <button
-                            onClick={() =>
-                              handleRejectMember(
-                                member.id,
-                                member.user.full_name,
-                              )
-                            }
+                            onClick={() => showRejectMemberConfirmation(
+                              member.id,
+                              member.user.full_name,
+                            )}
                             disabled={actionLoading}
                             className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm disabled:opacity-50"
                           >
@@ -792,8 +781,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                       </div>
                     </div>
                   </div>
+                  {/* FIXED: Now calls the actual API function directly */}
                   <button
-                    onClick={confirmCancelRequest}
+                    onClick={handleCancelRequest}
                     disabled={actionLoading}
                     className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium disabled:opacity-50"
                   >
@@ -829,6 +819,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     </div>
                   </div>
 
+                  {/* FIXED: Now calls the actual API function directly */}
                   <button
                     onClick={handleLeaveClub}
                     disabled={actionLoading}
@@ -843,6 +834,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                         As the club creator, you have additional administrative
                         privileges.
                       </p>
+                      {/* FIXED: Now calls the actual API function directly */}
                       <button
                         onClick={handleDeleteClub}
                         disabled={actionLoading}
@@ -1004,25 +996,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         </motion.div>
       </Modal>
 
-      {/* Alert Popups */}
-      <AlertPopup
-        title="Leave Club"
-        message={
-          <div>
-            <p className="mb-2">Are you sure you want to leave this club?</p>
-            <p className="text-sm text-gray-600">
-              Your shares will be redistributed to other members.
-            </p>
-          </div>
-        }
-        isOpen={leaveClubAlert}
-        setIsOpen={setLeaveClubAlert}
-        onConfirm={confirmLeaveClub}
-        confirmText={actionLoading ? 'Leaving...' : 'Leave Club'}
-        confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-        loading={actionLoading}
-        confirmDisabled={actionLoading}
-      />
+      {/* Alert Popups - Only for actions that need confirmation */}
       <AlertPopup
         title="Reject Membership Request"
         message={
@@ -1038,55 +1012,13 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         }
         isOpen={rejectMemberAlert}
         setIsOpen={setRejectMemberAlert}
-        onConfirm={confirmRejectMember}
+        onConfirm={() => selectedMemberId && selectedMemberName && handleRejectMember(selectedMemberId, selectedMemberName)}
         confirmText={actionLoading ? 'Rejecting...' : 'Reject Request'}
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
         loading={actionLoading}
         confirmDisabled={actionLoading}
       />
-      <AlertPopup
-        title="Cancel Membership Request"
-        message="Are you sure you want to cancel your membership request?"
-        isOpen={cancelRequestAlert}
-        setIsOpen={setCancelRequestAlert}
-        onConfirm={confirmCancelRequest}
-        confirmText={actionLoading ? 'Canceling...' : 'Cancel Request'}
-        confirmButtonClass="bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
-        loading={actionLoading}
-        confirmDisabled={actionLoading}
-      />
-      <AlertPopup
-        title="Delete Club"
-        message={
-          <div>
-            <p className="mb-2 font-semibold text-red-700">
-              Warning: This action cannot be undone!
-            </p>
-            <p className="mb-2">
-              Are you sure you want to delete the club "{club.name}"?
-            </p>
-            <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-              <li>All club data will be permanently deleted</li>
-              <li>Any pending investments will be cancelled</li>
-              <li>
-                Member contributions will be refunded according to club rules
-              </li>
-              <li>This action is irreversible</li>
-            </ul>
-            <p className="mt-3 text-sm text-red-600 font-medium">
-              Please ensure all members have been notified and all financial
-              matters are settled.
-            </p>
-          </div>
-        }
-        isOpen={deleteClubAlert}
-        setIsOpen={setDeleteClubAlert}
-        onConfirm={confirmDeleteClub}
-        confirmText={deleteLoading ? 'Deleting...' : 'Yes, Delete Club'}
-        confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-        loading={deleteLoading}
-        confirmDisabled={deleteLoading}
-      />
+      
       <AlertPopup
         title="Feature Coming Soon"
         message={featureMessage}
