@@ -74,34 +74,37 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const getDeletionInfo = () => {
     const requirements = [];
     const consequences = [
-      "All club data including member contributions and investment history will be permanently deleted",
-      "This action cannot be undone",
-      "Any pending investment proposals will be cancelled"
+      'All club data including member contributions and investment history will be permanently deleted',
+      'This action cannot be undone',
+      'Any pending investment proposals will be cancelled',
     ];
 
-    // Check if there are active investments (using the same logic as backend)
-    // The backend checks club_investments.executed.any?
-    // Since we don't have the exact count, we'll use total_invested as indicator
-    if (club.financials.total_invested > 0) {
-      requirements.push(`Cannot delete club with active investments (${formatCurrency(club.financials.total_invested)} total invested)`);
+    // Check if user is creator (this should always be true if they see the delete button)
+    if (!isCreator) {
+      requirements.push('Only the club creator can delete the club');
     }
 
     // Check if there are other active members (using the same logic as backend)
     // The backend checks: investment_club_memberships.active.count > 1
     const otherActiveMembersCount = club.current_members_count - 1; // excluding current user
     if (otherActiveMembersCount > 0) {
-      requirements.push(`Cannot delete club with ${otherActiveMembersCount} other active members. All other members must leave first.`);
+      requirements.push(
+        `Cannot delete club with ${otherActiveMembersCount} other active members. All other members must leave first.`,
+      );
     }
 
-    const canDelete = requirements.length === 0;
+    // Note: We CANNOT accurately check for active investments on frontend
+    // because we don't have the distinction between executed vs pending investments
+    // This check will be done by the backend API
+
+    const canDelete = requirements.length === 0 && isCreator;
 
     return {
       requirements,
       consequences,
       can_delete: canDelete,
       club_name: club.name,
-      active_investments_count: club.financials.total_invested > 0 ? 1 : 0,
-      active_members_count: otherActiveMembersCount
+      active_members_count: otherActiveMembersCount,
     };
   };
 
@@ -344,14 +347,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   };
 
   const handleDeleteClick = () => {
-    // Calculate deletion info locally instead of API call
     const deletionInfo = getDeletionInfo();
-    
+
     if (!deletionInfo.can_delete) {
-      // Show the deletion alert with requirements
+      // Show requirements that prevent deletion
       setDeleteAlert(true);
     } else {
-      // Show the deletion confirmation alert
+      // For cases that might pass frontend checks but fail backend,
+      // we'll let the API handle the final validation
       setDeleteAlert(true);
     }
   };
@@ -1079,29 +1082,41 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       </Modal>
 
       {/* Club Deletion Alert */}
+      {/* Club Deletion Alert */}
       <AlertPopup
-        title={deletionInfo.can_delete ? "Delete Club - Confirmation" : "Cannot Delete Club"}
+        title={
+          deletionInfo.can_delete
+            ? 'Delete Club - Confirmation'
+            : 'Cannot Delete Club'
+        }
         message={
           <div className="space-y-4">
             <p className="text-sm text-gray-700">
-              {deletionInfo.can_delete 
+              {deletionInfo.can_delete
                 ? `You are about to permanently delete <strong>${club.name}</strong>. This action cannot be undone.`
-                : `You cannot delete <strong>${club.name}</strong> at this time.`
-              }
+                : `You cannot delete <strong>${club.name}</strong> at this time.`}
             </p>
-            
+
             {!deletionInfo.can_delete && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                 <h4 className="font-semibold text-red-800 text-sm mb-2">
                   Before you can delete this club:
                 </h4>
                 <ul className="text-sm text-red-700 space-y-1">
-                  {deletionInfo.requirements.map((req: string, index: number) => (
-                    <li key={index} className="flex items-start">
-                      <span className="mr-2">•</span>
-                      {req}
-                    </li>
-                  ))}
+                  {deletionInfo.requirements.map(
+                    (req: string, index: number) => (
+                      <li key={index} className="flex items-start">
+                        <span className="mr-2">•</span>
+                        {req}
+                      </li>
+                    ),
+                  )}
+                  {/* Always show this note since we can't check investments on frontend */}
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    Club must have no active investments (this will be checked
+                    by the system)
+                  </li>
                 </ul>
               </div>
             )}
@@ -1112,12 +1127,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                   Consequences of deletion:
                 </h4>
                 <ul className="text-sm text-yellow-700 space-y-1">
-                  {deletionInfo.consequences.map((consequence: string, index: number) => (
-                    <li key={index} className="flex items-start">
-                      <span className="mr-2">•</span>
-                      {consequence}
-                    </li>
-                  ))}
+                  {deletionInfo.consequences.map(
+                    (consequence: string, index: number) => (
+                      <li key={index} className="flex items-start">
+                        <span className="mr-2">•</span>
+                        {consequence}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             )}
@@ -1131,13 +1148,19 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         }
         isOpen={deleteAlert}
         setIsOpen={setDeleteAlert}
-        onConfirm={deletionInfo.can_delete ? handleDeleteClub : () => setDeleteAlert(false)}
+        onConfirm={
+          deletionInfo.can_delete
+            ? handleDeleteClub
+            : () => setDeleteAlert(false)
+        }
         onCancel={() => setDeleteAlert(false)}
-        confirmText={deletionInfo.can_delete ? "Yes, Delete Club" : "I Understand"}
+        confirmText={
+          deletionInfo.can_delete ? 'Yes, Delete Club' : 'I Understand'
+        }
         confirmButtonClass={
-          deletionInfo.can_delete 
-            ? "bg-red-600 hover:bg-red-700 focus:ring-red-500" 
-            : "bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
+          deletionInfo.can_delete
+            ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+            : 'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'
         }
         loading={actionLoading === 'delete'}
         showCancelButton={deletionInfo.can_delete}
@@ -1149,10 +1172,12 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         message={
           <div className="space-y-3">
             <p className="text-sm text-gray-700">
-              As the club creator, you cannot leave the club without first transferring ownership to another admin member.
+              As the club creator, you cannot leave the club without first
+              transferring ownership to another admin member.
             </p>
             <p className="text-sm text-gray-700">
-              Please transfer ownership to another member before leaving the club.
+              Please transfer ownership to another member before leaving the
+              club.
             </p>
           </div>
         }
