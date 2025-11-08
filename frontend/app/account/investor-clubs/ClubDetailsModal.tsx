@@ -39,7 +39,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   // Alert Popup States
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
-  const [deleteAlert, setDeleteAlert] = useState(false);
   const [transferAlert, setTransferAlert] = useState(false);
 
   useEffect(() => {
@@ -308,18 +307,11 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     }
   };
 
-  // SIMPLIFIED: Direct deletion without complex validation
-  const handleDeleteClick = () => {
-    setDeleteAlert(true);
-  };
-
   const handleDeleteClub = async () => {
     if (!token) return;
 
     setActionLoading('delete');
     setMessage(null);
-    setDeleteAlert(false);
-
     try {
       console.log('Deleting club:', club.slug);
       const response = await clubService.deleteClub(token, club.slug);
@@ -870,8 +862,18 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                         As the club creator, you have additional administrative
                         privileges.
                       </p>
+                      <div className="space-y-3">
+          <p className="text-sm text-gray-700">
+            As the club creator, you cannot leave the club without first
+            transferring ownership to another admin member.
+          </p>
+          <p className="text-sm text-gray-700">
+            Please transfer ownership to another member before leaving the
+            club.
+          </p>
+        </div>
                       <button
-                        onClick={handleDeleteClick}
+                        onClick={handleDeleteClub}
                         disabled={!!actionLoading}
                         className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50 text-sm"
                       >
@@ -1031,31 +1033,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           <div className="flex-1 overflow-y-auto p-6">{renderTabContent()}</div>
         </motion.div>
       </Modal>
-
-      {/* SIMPLIFIED: Single deletion confirmation dialog */}
-      <AlertPopup
-        isOpen={deleteAlert}
-        setIsOpen={setDeleteAlert}
-        title="Delete Club?"
-        message={<div className="space-y-3">
-          <p className="text-sm text-gray-700">
-            As the club creator, you cannot leave the club without first
-            transferring ownership to another admin member.
-          </p>
-          <p className="text-sm text-gray-700">
-            Please transfer ownership to another member before leaving the
-            club.
-          </p>
-        </div>}
-        confirmText="Yes, Delete Club"
-        onConfirm={handleDeleteClub}
-        onCancel={() => setDeleteAlert(false)} 
-        confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-        loading={actionLoading === 'delete'}
-        showCancelButton={true}
-        />
-
-
 
       {/* Transfer Ownership Alert */}
       <AlertPopup
