@@ -37,11 +37,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   } | null>(null);
 
   // Alert Popup States
-  const [rejectMemberAlert, setRejectMemberAlert] = useState(false);
-  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
-  const [selectedMemberName, setSelectedMemberName] = useState<string | null>(
-    null,
-  );
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
 
@@ -1017,37 +1012,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           <div className="flex-1 overflow-y-auto p-6">{renderTabContent()}</div>
         </motion.div>
       </Modal>
-
-      {/* Alert Popups - Only for actions that need confirmation */}
-      <AlertPopup
-        title="Reject Membership Request"
-        message={
-          <div>
-            <p className="mb-2">
-              Are you sure you want to reject {selectedMemberName}'s membership
-              request?
-            </p>
-            <p className="text-sm text-gray-600">
-              This action cannot be undone.
-            </p>
-          </div>
-        }
-        isOpen={rejectMemberAlert}
-        setIsOpen={setRejectMemberAlert}
-        onConfirm={() =>
-          selectedMemberId &&
-          selectedMemberName &&
-          handleRejectMember(selectedMemberId, selectedMemberName)
-        }
-        confirmText={
-          actionLoading === `reject-${selectedMemberId}`
-            ? 'Rejecting...'
-            : 'Reject Request'
-        }
-        confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-        loading={!!actionLoading && actionLoading.startsWith('reject-')}
-        confirmDisabled={!!actionLoading}
-      />
 
       <AlertPopup
         title="Feature Coming Soon"
