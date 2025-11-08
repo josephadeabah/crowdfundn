@@ -233,28 +233,6 @@ module Api
         end
       end
 
-      # NEW: GET /api/v1/investment_clubs/:id/deletion_info
-      def deletion_info
-        unless @club.is_creator?(@current_user)
-          return render json: { 
-            success: false,
-            error: 'Only club creator can access deletion information' 
-          }, status: :forbidden
-        end
-
-        render json: {
-          success: true,
-          deletion_info: {
-            requirements: @club.deletion_requirements,
-            consequences: @club.deletion_consequences,
-            can_delete: @club.can_be_deleted_by?(@current_user),
-            club_name: @club.name,
-            active_investments_count: @club.club_investments.executed.count,
-            active_members_count: @club.investment_club_memberships.active.count - 1 # excluding creator
-          }
-        }
-      end
-
       # GET /api/v1/investment_clubs/:id/my_membership_status
       def my_membership_status
         membership = @club.investment_club_memberships.find_by(user: @current_user)
