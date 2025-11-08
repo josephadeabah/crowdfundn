@@ -147,13 +147,6 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
             <h2 className="text-xl font-semibold text-gray-900">
               Create New Investment Club
             </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              disabled={loading}
-            >
-              ✕
-            </button>
           </div>
 
           {/* Form */}
