@@ -1,3 +1,4 @@
+// app/account/investor-clubs/ClubDetailsModal.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -29,24 +30,20 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   );
   const [myMembership, setMyMembership] = useState<Membership | null>(null);
   const [loading, setLoading] = useState(false);
-  const [actionLoading, setActionLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [message, setMessage] = useState<{
     type: 'success' | 'error';
     text: string;
   } | null>(null);
 
   // Alert Popup States
-  const [leaveClubAlert, setLeaveClubAlert] = useState(false);
   const [rejectMemberAlert, setRejectMemberAlert] = useState(false);
-  const [cancelRequestAlert, setCancelRequestAlert] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [selectedMemberName, setSelectedMemberName] = useState<string | null>(
     null,
   );
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
-  const [deleteClubAlert, setDeleteClubAlert] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen && token) {
@@ -105,8 +102,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                 avatar_url: null,
               };
 
-          const existingMember = members.find(m => Number(m.user.id) === user?.id);
-          
+          const existingMember = members.find(
+            (m) => Number(m.user.id) === user?.id,
+          );
+
           setMyMembership({
             id: existingMember?.id || 'unknown',
             status: 'active',
@@ -134,7 +133,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const handleJoinClub = async () => {
     if (!token) return;
 
-    setActionLoading(true);
+    setActionLoading('join');
     setMessage(null);
 
     try {
@@ -162,15 +161,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         text: error.message || 'Failed to join club',
       });
     } finally {
-      setActionLoading(false);
+      setActionLoading(null);
     }
   };
 
-  // FIXED: Direct API call functions for immediate actions
   const handleLeaveClub = async () => {
     if (!token || !myMembership) return;
 
-    setActionLoading(true);
+    setActionLoading('leave');
     setMessage(null);
 
     try {
@@ -210,14 +208,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         text: error.message || 'Failed to leave club. Please try again.',
       });
     } finally {
-      setActionLoading(false);
+      setActionLoading(null);
     }
   };
 
   const handleRejectMember = async (memberId: string, memberName: string) => {
     if (!token) return;
 
-    setActionLoading(true);
+    setActionLoading(`reject-${memberId}`);
     try {
       const response = await membershipService.rejectMember(
         token,
@@ -245,14 +243,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         text: error.message || 'Failed to reject member. Please try again.',
       });
     } finally {
-      setActionLoading(false);
+      setActionLoading(null);
     }
   };
 
   const handleCancelRequest = async () => {
     if (!token || !myMembership) return;
 
-    setActionLoading(true);
+    setActionLoading('cancel');
     setMessage(null);
 
     try {
@@ -271,7 +269,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       if (response.success) {
         setMessage({
           type: 'success',
-          text: response.message || 'Membership request cancelled successfully!',
+          text:
+            response.message || 'Membership request cancelled successfully!',
         });
 
         setMyMembership(null);
@@ -292,14 +291,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         text: error.message || 'Failed to cancel request. Please try again.',
       });
     } finally {
-      setActionLoading(false);
+      setActionLoading(null);
     }
   };
 
   const handleDeleteClub = async () => {
     if (!token) return;
 
-    setDeleteLoading(true);
+    setActionLoading('delete');
     setMessage(null);
 
     try {
@@ -326,14 +325,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         text: error.message || 'Failed to delete club. Please try again.',
       });
     } finally {
-      setDeleteLoading(false);
+      setActionLoading(null);
     }
   };
 
   const handleApproveMember = async (memberId: string) => {
     if (!token) return;
 
-    setActionLoading(true);
+    setActionLoading(`approve-${memberId}`);
     try {
       const response = await membershipService.approveMember(
         token,
@@ -357,27 +356,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         text: error.message || 'Failed to approve member',
       });
     } finally {
-      setActionLoading(false);
+      setActionLoading(null);
     }
-  };
-
-  // FIXED: These functions now just set the alert state for confirmation dialogs
-  const showLeaveClubConfirmation = () => {
-    setLeaveClubAlert(true);
-  };
-
-  const showRejectMemberConfirmation = (memberId: string, memberName: string) => {
-    setSelectedMemberId(memberId);
-    setSelectedMemberName(memberName);
-    setRejectMemberAlert(true);
-  };
-
-  const showCancelRequestConfirmation = () => {
-    setCancelRequestAlert(true);
-  };
-
-  const showDeleteClubConfirmation = () => {
-    setDeleteClubAlert(true);
   };
 
   const handleFeatureClick = (featureName: string) => {
@@ -411,6 +391,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     myMembership?.role === 'creator';
   const isCreator = club.is_creator || myMembership?.role === 'creator';
   const pendingMembers = members.filter((m) => m.status === 'pending');
+
+  // Filter out pending members after approval/rejection
+  const activeMembers = members.filter((m) => m.status !== 'pending');
 
   // Render content based on active tab and membership status
   const renderTabContent = () => {
@@ -502,10 +485,12 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     </p>
                     <button
                       onClick={handleJoinClub}
-                      disabled={actionLoading}
+                      disabled={!!actionLoading}
                       className="mt-3 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm font-medium disabled:opacity-50"
                     >
-                      {actionLoading ? 'Requesting...' : 'Request to Join'}
+                      {actionLoading === 'join'
+                        ? 'Requesting...'
+                        : 'Request to Join'}
                     </button>
                   </div>
                 </div>
@@ -529,7 +514,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           <div>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Members ({members.length})
+                Members ({activeMembers.length})
+                {pendingMembers.length > 0 &&
+                  ` (${pendingMembers.length} pending)`}
               </h3>
               {pendingMembers.length > 0 && isAdmin && (
                 <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
@@ -538,58 +525,118 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
               )}
             </div>
 
-            <div className="border border-gray-200 rounded-lg divide-y">
-              {members.length === 0 ? (
-                <div className="p-4 text-center text-gray-500">
-                  No members found
-                </div>
-              ) : (
-                members.map((member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-semibold text-sm">
-                        {getMemberInitials(member.user.full_name)}
+            {/* Pending Members Section (Admin only) */}
+            {isAdmin && pendingMembers.length > 0 && (
+              <div className="mb-6">
+                <h4 className="text-md font-semibold text-gray-900 mb-3">
+                  Pending Membership Requests
+                </h4>
+                <div className="border border-yellow-200 rounded-lg divide-y divide-yellow-100 bg-yellow-50">
+                  {pendingMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex items-center justify-between p-4 hover:bg-yellow-100 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 flex items-center justify-center text-white font-semibold text-sm">
+                          {getMemberInitials(member.user.full_name)}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {member.user.full_name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Requested to join
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-medium text-gray-900">
-                          {member.user.full_name}
-                          {member.user.id === String(user?.id) && (
-                            <span className="ml-2 text-xs text-emerald-600">
-                              (You)
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-sm text-gray-500 flex items-center gap-2">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs ${
-                              member.role === 'creator'
-                                ? 'bg-purple-100 text-purple-800'
-                                : member.role === 'admin'
-                                  ? 'bg-orange-100 text-orange-800'
-                                  : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {formatRole(member.role)}
-                          </span>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs ${
-                              member.status === 'active'
-                                ? 'bg-green-100 text-green-800'
-                                : member.status === 'pending'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {member.status}
-                          </span>
-                        </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleApproveMember(member.id)}
+                          disabled={!!actionLoading}
+                          className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm disabled:opacity-50 min-w-[80px]"
+                        >
+                          {actionLoading === `approve-${member.id}`
+                            ? 'Approving...'
+                            : 'Approve'}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedMemberId(member.id);
+                            setSelectedMemberName(member.user.full_name);
+                            setRejectMemberAlert(true);
+                          }}
+                          disabled={!!actionLoading}
+                          className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm disabled:opacity-50 min-w-[80px]"
+                        >
+                          {actionLoading === `reject-${member.id}`
+                            ? 'Rejecting...'
+                            : 'Reject'}
+                        </button>
                       </div>
                     </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-                    <div className="flex items-center gap-3">
+            {/* Active Members Section */}
+            <div>
+              <h4 className="text-md font-semibold text-gray-900 mb-3">
+                Active Members
+              </h4>
+              <div className="border border-gray-200 rounded-lg divide-y">
+                {activeMembers.length === 0 ? (
+                  <div className="p-4 text-center text-gray-500">
+                    No active members found
+                  </div>
+                ) : (
+                  activeMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-semibold text-sm">
+                          {getMemberInitials(member.user.full_name)}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {member.user.full_name}
+                            {member.user.id === String(user?.id) && (
+                              <span className="ml-2 text-xs text-emerald-600">
+                                (You)
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-500 flex items-center gap-2">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs ${
+                                member.role === 'creator'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : member.role === 'admin'
+                                    ? 'bg-orange-100 text-orange-800'
+                                    : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {formatRole(member.role)}
+                            </span>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs ${
+                                member.status === 'active'
+                                  ? 'bg-green-100 text-green-800'
+                                  : member.status === 'pending'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {member.status}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="text-right">
                         <div className="font-semibold text-gray-900">
                           {formatCurrency(member.total_contributed)}
@@ -598,32 +645,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                           {safeToFixed(member.current_share, 1)}% share
                         </div>
                       </div>
-
-                      {isAdmin && member.status === 'pending' && (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleApproveMember(member.id)}
-                            disabled={actionLoading}
-                            className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm disabled:opacity-50"
-                          >
-                            {actionLoading ? 'Approving...' : 'Approve'}
-                          </button>
-                          <button
-                            onClick={() => handleRejectMember(
-                              member.id,
-                              member.user.full_name,
-                            )}
-                            disabled={actionLoading}
-                            className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm disabled:opacity-50"
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </div>
           </div>
         );
@@ -651,10 +676,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                   <div className="flex gap-3">
                     <button
                       onClick={handleJoinClub}
-                      disabled={actionLoading}
+                      disabled={!!actionLoading}
                       className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50"
                     >
-                      {actionLoading
+                      {actionLoading === 'join'
                         ? club.club_type === 'public'
                           ? 'Joining...'
                           : 'Requesting...'
@@ -781,13 +806,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                       </div>
                     </div>
                   </div>
-                  {/* FIXED: Now calls the actual API function directly */}
                   <button
                     onClick={handleCancelRequest}
-                    disabled={actionLoading}
+                    disabled={!!actionLoading}
                     className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium disabled:opacity-50"
                   >
-                    {actionLoading ? 'Canceling...' : 'Cancel Request'}
+                    {actionLoading === 'cancel'
+                      ? 'Canceling...'
+                      : 'Cancel Request'}
                   </button>
                 </div>
               ) : (
@@ -819,13 +845,12 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                     </div>
                   </div>
 
-                  {/* FIXED: Now calls the actual API function directly */}
                   <button
                     onClick={handleLeaveClub}
-                    disabled={actionLoading}
+                    disabled={!!actionLoading}
                     className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50"
                   >
-                    {actionLoading ? 'Leaving...' : 'Leave Club'}
+                    {actionLoading === 'leave' ? 'Leaving...' : 'Leave Club'}
                   </button>
 
                   {isCreator && (
@@ -834,13 +859,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                         As the club creator, you have additional administrative
                         privileges.
                       </p>
-                      {/* FIXED: Now calls the actual API function directly */}
                       <button
                         onClick={handleDeleteClub}
-                        disabled={actionLoading}
+                        disabled={!!actionLoading}
                         className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50 text-sm"
                       >
-                        Delete Club
+                        {actionLoading === 'delete'
+                          ? 'Deleting...'
+                          : 'Delete Club'}
                       </button>
                     </div>
                   )}
@@ -1012,13 +1038,21 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         }
         isOpen={rejectMemberAlert}
         setIsOpen={setRejectMemberAlert}
-        onConfirm={() => selectedMemberId && selectedMemberName && handleRejectMember(selectedMemberId, selectedMemberName)}
-        confirmText={actionLoading ? 'Rejecting...' : 'Reject Request'}
+        onConfirm={() =>
+          selectedMemberId &&
+          selectedMemberName &&
+          handleRejectMember(selectedMemberId, selectedMemberName)
+        }
+        confirmText={
+          actionLoading === `reject-${selectedMemberId}`
+            ? 'Rejecting...'
+            : 'Reject Request'
+        }
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-        loading={actionLoading}
-        confirmDisabled={actionLoading}
+        loading={!!actionLoading && actionLoading.startsWith('reject-')}
+        confirmDisabled={!!actionLoading}
       />
-      
+
       <AlertPopup
         title="Feature Coming Soon"
         message={featureMessage}
