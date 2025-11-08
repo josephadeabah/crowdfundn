@@ -13,6 +13,7 @@ import {
   RejectMemberResponse,
   CancelRequestResponse,
   ApproveMemberResponse,
+  DeletionInfoResponse,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -126,9 +127,22 @@ export const clubService = {
     token: string,
     clubId: string,
   ): Promise<LeaveClubResponse> => {
-    return apiCall(`/investment_clubs/${clubId}/leave`, token, {
-      method: 'POST',
-    });
+    try {
+      const response = await apiCall(
+        `/investment_clubs/${clubId}/leave`,
+        token,
+        {
+          method: 'POST',
+        },
+      );
+      return response;
+    } catch (error: any) {
+      // Enhanced error handling for creator leaving
+      if (error.message.includes('transfer ownership')) {
+        throw new Error(error.message);
+      }
+      throw new Error('Failed to leave club. Please try again.');
+    }
   },
 
   // Delete club (creator only)
@@ -136,6 +150,14 @@ export const clubService = {
     return apiCall(`/investment_clubs/${clubId}`, token, {
       method: 'DELETE',
     });
+  },
+
+  // Get deletion info for alert popup
+  getDeletionInfo: async (
+    token: string,
+    clubId: string,
+  ): Promise<DeletionInfoResponse> => {
+    return apiCall(`/investment_clubs/${clubId}/deletion_info`, token);
   },
 
   // Get membership status

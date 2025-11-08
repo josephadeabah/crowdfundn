@@ -134,8 +134,26 @@ export interface BaseResponse {
   message?: string;
 }
 
-export interface LeaveClubResponse extends BaseResponse {
+export interface LeaveClubResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+  error_type?: string;
+  requires_transfer?: boolean;
+  available_members?: Array<{ id: string; name: string }>;
   portfolio_summary?: any;
+}
+
+export interface DeletionInfoResponse {
+  success: boolean;
+  deletion_info: {
+    requirements: string[];
+    consequences: string[];
+    can_delete: boolean;
+    club_name: string;
+    active_investments_count: number;
+    active_members_count: number;
+  };
 }
 
 export interface RejectMemberResponse extends BaseResponse {}

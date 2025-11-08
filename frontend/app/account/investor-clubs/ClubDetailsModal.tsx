@@ -39,6 +39,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   // Alert Popup States
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
+  const [deleteAlert, setDeleteAlert] = useState(false);
+  const [deletionInfo, setDeletionInfo] = useState<any>(null);
+  const [transferAlert, setTransferAlert] = useState(false);
 
   useEffect(() => {
     if (isOpen && token) {
@@ -198,10 +201,19 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         });
       }
     } catch (error: any) {
-      setMessage({
-        type: 'error',
-        text: error.message || 'Failed to leave club. Please try again.',
-      });
+      // Enhanced error handling for creator leaving
+      if (error.message.includes('transfer ownership')) {
+        setMessage({
+          type: 'error',
+          text: error.message,
+        });
+        setTransferAlert(true);
+      } else {
+        setMessage({
+          type: 'error',
+          text: error.message || 'Failed to leave club. Please try again.',
+        });
+      }
     } finally {
       setActionLoading(null);
     }
@@ -290,11 +302,39 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     }
   };
 
+  const loadDeletionInfo = async () => {
+    if (!token) return;
+
+    try {
+      const response = await clubService.getDeletionInfo(token, club.slug);
+      if (response.success) {
+        setDeletionInfo(response.deletion_info);
+      }
+    } catch (error) {
+      console.error('Failed to load deletion info:', error);
+    }
+  };
+
+  const handleDeleteClick = async () => {
+    if (!token) return;
+
+    try {
+      await loadDeletionInfo();
+      setDeleteAlert(true);
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: 'Failed to load deletion information',
+      });
+    }
+  };
+
   const handleDeleteClub = async () => {
     if (!token) return;
 
     setActionLoading('delete');
     setMessage(null);
+    setDeleteAlert(false);
 
     try {
       const response = await clubService.deleteClub(token, club.slug);
@@ -557,7 +597,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                             : 'Approve'}
                         </button>
                         <button
-                          onClick={() => handleRejectMember(member.id, member.user.full_name)}
+                          onClick={() =>
+                            handleRejectMember(member.id, member.user.full_name)
+                          }
                           disabled={!!actionLoading}
                           className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm disabled:opacity-50 min-w-[80px]"
                         >
@@ -851,12 +893,12 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                         privileges.
                       </p>
                       <button
-                        onClick={handleDeleteClub}
+                        onClick={handleDeleteClick}
                         disabled={!!actionLoading}
                         className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50 text-sm"
                       >
                         {actionLoading === 'delete'
-                          ? 'Deleting...'
+                          ? 'Loading...'
                           : 'Delete Club'}
                       </button>
                     </div>
@@ -1013,6 +1055,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         </motion.div>
       </Modal>
 
+      {/* Feature Coming Soon Alert */}
       <AlertPopup
         title="Feature Coming Soon"
         message={featureMessage}
@@ -1021,6 +1064,95 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         onConfirm={() => setFeatureAlert(false)}
         confirmText="Got it"
         confirmButtonClass="bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500"
+      />
+
+      {/* Club Deletion Alert */}
+      <AlertPopup
+        title="Delete Club - Important Notice"
+        message={
+          <div className="space-y-4">
+            <p className="text-sm text-gray-700">
+              You are about to permanently delete <strong>{club.name}</strong>.
+              This action cannot be undone.
+            </p>
+
+            {deletionInfo && !deletionInfo.can_delete && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <h4 className="font-semibold text-red-800 text-sm mb-2">
+                  Before you can delete this club:
+                </h4>
+                <ul className="text-sm text-red-700 space-y-1">
+                  {deletionInfo.requirements.map(
+                    (req: string, index: number) => (
+                      <li key={index} className="flex items-start">
+                        <span className="mr-2">•</span>
+                        {req}
+                      </li>
+                    ),
+                  )}
+                </ul>
+              </div>
+            )}
+
+            {deletionInfo && deletionInfo.can_delete && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <h4 className="font-semibold text-yellow-800 text-sm mb-2">
+                  Consequences of deletion:
+                </h4>
+                <ul className="text-sm text-yellow-700 space-y-1">
+                  {deletionInfo.consequences.map(
+                    (consequence: string, index: number) => (
+                      <li key={index} className="flex items-start">
+                        <span className="mr-2">•</span>
+                        {consequence}
+                      </li>
+                    ),
+                  )}
+                </ul>
+              </div>
+            )}
+
+            <p className="text-sm font-medium text-gray-900">
+              Are you sure you want to proceed with deleting this club?
+            </p>
+          </div>
+        }
+        isOpen={deleteAlert}
+        setIsOpen={setDeleteAlert}
+        onConfirm={handleDeleteClub}
+        onCancel={() => setDeleteAlert(false)}
+        confirmText={
+          deletionInfo?.can_delete ? 'Yes, Delete Club' : 'Understand'
+        }
+        confirmButtonClass={
+          deletionInfo?.can_delete
+            ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+            : 'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'
+        }
+        loading={actionLoading === 'delete'}
+        confirmDisabled={!deletionInfo?.can_delete}
+      />
+
+      {/* Transfer Ownership Alert */}
+      <AlertPopup
+        title="Transfer Ownership Required"
+        message={
+          <div className="space-y-3">
+            <p className="text-sm text-gray-700">
+              As the club creator, you cannot leave the club without first
+              transferring ownership to another admin member.
+            </p>
+            <p className="text-sm text-gray-700">
+              Please transfer ownership to another member before leaving the
+              club.
+            </p>
+          </div>
+        }
+        isOpen={transferAlert}
+        setIsOpen={setTransferAlert}
+        onConfirm={() => setTransferAlert(false)}
+        confirmText="I Understand"
+        confirmButtonClass="bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
       />
     </>
   );
