@@ -313,7 +313,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     setActionLoading('delete');
     setMessage(null);
     try {
-      console.log('Deleting club:', club.slug);
       const response = await clubService.deleteClub(token, club.slug);
 
       if (response.success) {
@@ -863,23 +862,24 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                         privileges.
                       </p>
                       <div className="space-y-3">
-          <p className="text-sm text-gray-700">
-            As the club creator, you cannot leave the club without first
-            transferring ownership to another admin member.
-          </p>
-          <p className="text-sm text-gray-700">
-            Please transfer ownership to another member before leaving the
-            club.
-          </p>
-        </div>
+                        <p className="text-sm text-gray-700">
+                          As the club creator, you cannot leave the club without
+                          first transferring ownership to another admin member.
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          Please transfer ownership to another member before
+                          leaving the club.
+                        </p>
+                      </div>
                       <button
                         onClick={handleDeleteClub}
                         disabled={!!actionLoading}
                         className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50 text-sm"
                       >
-                        {actionLoading === 'delete' ? 'Loading...' : 'Delete Club'}
+                        {actionLoading === 'delete'
+                          ? 'Loading...'
+                          : 'Delete Club'}
                       </button>
-
                     </div>
                   )}
                 </div>
