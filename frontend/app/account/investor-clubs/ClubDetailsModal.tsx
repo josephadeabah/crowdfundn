@@ -1054,18 +1054,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           <div className="flex-1 overflow-y-auto p-6">{renderTabContent()}</div>
         </motion.div>
       </Modal>
-
-      {/* Feature Coming Soon Alert */}
-      <AlertPopup
-        title="Feature Coming Soon"
-        message={featureMessage}
-        isOpen={featureAlert}
-        setIsOpen={setFeatureAlert}
-        onConfirm={() => setFeatureAlert(false)}
-        confirmText="Got it"
-        confirmButtonClass="bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500"
-      />
-
       {/* Club Deletion Alert */}
       <AlertPopup
         title="Delete Club - Important Notice"
@@ -1122,7 +1110,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         onConfirm={handleDeleteClub}
         onCancel={() => setDeleteAlert(false)}
         confirmText={
-          deletionInfo?.can_delete ? 'Yes, Delete Club' : 'Understand'
+          deletionInfo?.can_delete ? 'Yes, Delete Club' : 'I Understand'
         }
         confirmButtonClass={
           deletionInfo?.can_delete
@@ -1131,8 +1119,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         }
         loading={actionLoading === 'delete'}
         confirmDisabled={!deletionInfo?.can_delete}
+        showCancelButton={deletionInfo?.can_delete} // Only show cancel when deletion is possible
       />
-
       {/* Transfer Ownership Alert */}
       <AlertPopup
         title="Transfer Ownership Required"
@@ -1153,6 +1141,18 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         onConfirm={() => setTransferAlert(false)}
         confirmText="I Understand"
         confirmButtonClass="bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
+        showCancelButton={false} // No cancel button for this informational alert
+      />
+      {/* Feature Coming Soon Alert */}
+      <AlertPopup
+        title="Feature Coming Soon"
+        message={featureMessage}
+        isOpen={featureAlert}
+        setIsOpen={setFeatureAlert}
+        onConfirm={() => setFeatureAlert(false)}
+        confirmText="Got it"
+        confirmButtonClass="bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500"
+        showCancelButton={false} // No cancel button for this informational alert
       />
     </>
   );
