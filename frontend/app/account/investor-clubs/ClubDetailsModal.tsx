@@ -837,7 +837,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        closeOnBackDropClick={false}
+        closeOnBackdropClick={false}
         size="xxxlarge"
         customStyles={{ padding: 0 }}
       >
