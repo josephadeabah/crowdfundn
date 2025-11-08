@@ -148,47 +148,19 @@ class InvestmentClub < ApplicationRecord
     investment_club_memberships.pending.count
   end
 
+  # SIMPLIFIED: Only check if user is creator - let the API handle other validations
   def can_be_deleted_by?(user)
-    return false unless is_creator?(user)
-    return false if club_investments.executed.any?
-    return false if investment_club_memberships.active.count > 1
-    true
+    is_creator?(user)
   end
 
   def deletion_errors(user)
     errors = []
-    errors << 'Only club creator can delete the club' unless is_creator?(user)
+    errors << 'Only club creator can delete the club' unless can_be_deleted_by?(user)
     errors << 'Cannot delete club with active investments' if club_investments.executed.any?
     errors << 'Cannot delete club with active members' if investment_club_memberships.active.count > 1
     errors
   end
 
-  # NEW: Get deletion requirements for alert popup
-  def deletion_requirements
-    requirements = []
-    
-    if club_investments.executed.any?
-      requirements << "There are #{club_investments.executed.count} active investments that need to be resolved"
-    end
-    
-    if investment_club_memberships.active.count > 1
-      requirements << "All #{investment_club_memberships.active.count - 1} other members must leave the club first"
-    end
-    
-    requirements
-  end
-
-  # NEW: Get deletion consequences
-  def deletion_consequences
-    consequences = []
-    
-    consequences << "All club data including member contributions and investment history will be permanently deleted"
-    consequences << "This action cannot be undone"
-    consequences << "Any pending investment proposals will be cancelled"
-    
-    consequences
-  end
-  
   private
   
   def generate_slug

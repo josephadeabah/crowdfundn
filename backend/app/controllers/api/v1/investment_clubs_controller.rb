@@ -2,7 +2,7 @@ module Api
   module V1
     class InvestmentClubsController < ApplicationController
       before_action :authenticate_request
-      before_action :set_club, only: [:show, :update, :portfolio, :analytics, :member_portfolio, :join, :leave, :my_membership_status, :transfer_ownership, :destroy, :deletion_info]
+      before_action :set_club, only: [:show, :update, :portfolio, :analytics, :member_portfolio, :join, :leave, :my_membership_status, :transfer_ownership, :destroy]
       
       # GET /api/v1/investment_clubs
       def index
@@ -166,7 +166,7 @@ module Api
           }, status: :not_found
         end
 
-        # NEW: Enhanced error handling for creator leaving
+        # Enhanced error handling for creator leaving
         if membership.creator?
           # Check if there are other admins who can take over
           other_admins = @club.investment_club_memberships.active.admin.where.not(user_id: @current_user.id)
@@ -209,14 +209,12 @@ module Api
 
       # DELETE /api/v1/investment_clubs/:id
       def destroy
-        deletion_errors = @club.deletion_errors(@current_user)
-        
-        if deletion_errors.any?
+        # SIMPLIFIED: Only check if user is creator
+        unless @club.deletion_errors?(@current_user)
           return render json: { 
             success: false,
-            errors: deletion_errors,
-            error_type: 'deletion_requirements_not_met'
-          }, status: :unprocessable_entity
+            error: 'Only club creator can delete the club' 
+          }, status: :forbidden
         end
 
         club_name = @club.name
@@ -252,6 +250,7 @@ module Api
           }
         end
       end
+
       # POST /api/v1/investment_clubs/:id/transfer_ownership
       def transfer_ownership
         unless @club.is_creator?(@current_user)
@@ -337,18 +336,10 @@ module Api
       def set_club
         @club = InvestmentClub.find_by(slug: params[:id])
         unless @club
-          # For destroy action, we might want a different response
-          if action_name == 'destroy'
-            render json: { 
-              success: false,
-              error: 'Club not found' 
-            }, status: :not_found
-          else
-            render json: { 
-              success: false,
-              error: 'Club not found' 
-            }, status: :not_found
-          end
+          render json: { 
+            success: false,
+            error: 'Club not found' 
+          }, status: :not_found
           return false
         end
       end
