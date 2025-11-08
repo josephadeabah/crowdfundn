@@ -48,43 +48,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     }
   }, [isOpen, token, club.slug]);
 
-  // Calculate deletion info locally instead of API call
-// In your ClubDetailsModal.tsx, update the getDeletionInfo function:
-
-const getDeletionInfo = () => {
-  const requirements = [];
-  const consequences = [
-    "All club data including member contributions and investment history will be permanently deleted",
-    "This action cannot be undone",
-    "Any pending investment proposals will be cancelled"
-  ];
-
-  // Check if there are active investments (using the same logic as backend)
-  // The backend checks club_investments.executed.any?
-  // Since we don't have the exact count, we'll use total_invested as indicator
-  if (club.financials.total_invested > 0) {
-    requirements.push(`Cannot delete club with active investments (${formatCurrency(club.financials.total_invested)} total invested)`);
-  }
-
-  // Check if there are other active members (using the same logic as backend)
-  // The backend checks: investment_club_memberships.active.count > 1
-  const otherActiveMembersCount = club.current_members_count - 1; // excluding current user
-  if (otherActiveMembersCount > 0) {
-    requirements.push(`Cannot delete club with ${otherActiveMembersCount} other active members. All other members must leave first.`);
-  }
-
-  const canDelete = requirements.length === 0;
-
-  return {
-    requirements,
-    consequences,
-    can_delete: canDelete,
-    club_name: club.name,
-    active_investments_count: club.financials.total_invested > 0 ? 1 : 0,
-    active_members_count: otherActiveMembersCount
-  };
-};
-
   // Safe number formatting functions
   const safeToFixed = (value: any, decimals: number = 2): string => {
     if (value === null || value === undefined || isNaN(Number(value))) {
@@ -98,6 +61,48 @@ const getDeletionInfo = () => {
       return 0;
     }
     return Number(value);
+  };
+
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(safeNumber(amount));
+  };
+
+  // Calculate deletion info locally instead of API call
+  const getDeletionInfo = () => {
+    const requirements = [];
+    const consequences = [
+      "All club data including member contributions and investment history will be permanently deleted",
+      "This action cannot be undone",
+      "Any pending investment proposals will be cancelled"
+    ];
+
+    // Check if there are active investments (using the same logic as backend)
+    // The backend checks club_investments.executed.any?
+    // Since we don't have the exact count, we'll use total_invested as indicator
+    if (club.financials.total_invested > 0) {
+      requirements.push(`Cannot delete club with active investments (${formatCurrency(club.financials.total_invested)} total invested)`);
+    }
+
+    // Check if there are other active members (using the same logic as backend)
+    // The backend checks: investment_club_memberships.active.count > 1
+    const otherActiveMembersCount = club.current_members_count - 1; // excluding current user
+    if (otherActiveMembersCount > 0) {
+      requirements.push(`Cannot delete club with ${otherActiveMembersCount} other active members. All other members must leave first.`);
+    }
+
+    const canDelete = requirements.length === 0;
+
+    return {
+      requirements,
+      consequences,
+      can_delete: canDelete,
+      club_name: club.name,
+      active_investments_count: club.financials.total_invested > 0 ? 1 : 0,
+      active_members_count: otherActiveMembersCount
+    };
   };
 
   const loadMyMembership = async () => {
@@ -412,13 +417,6 @@ const getDeletionInfo = () => {
   const handleFeatureClick = (featureName: string) => {
     setFeatureMessage(`${featureName} feature would open here`);
     setFeatureAlert(true);
-  };
-
-  const formatCurrency = (amount: number, currency: string = 'USD') => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-    }).format(safeNumber(amount));
   };
 
   const getMemberInitials = (fullName: string) => {
