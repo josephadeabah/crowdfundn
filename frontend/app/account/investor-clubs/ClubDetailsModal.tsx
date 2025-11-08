@@ -345,7 +345,15 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
   const handleDeleteClick = () => {
     // Calculate deletion info locally instead of API call
-    setDeleteAlert(true);
+    const deletionInfo = getDeletionInfo();
+    
+    if (!deletionInfo.can_delete) {
+      // Show the deletion alert with requirements
+      setDeleteAlert(true);
+    } else {
+      // Show the deletion confirmation alert
+      setDeleteAlert(true);
+    }
   };
 
   const handleDeleteClub = async () => {
@@ -1072,12 +1080,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
       {/* Club Deletion Alert */}
       <AlertPopup
-        title="Delete Club - Important Notice"
+        title={deletionInfo.can_delete ? "Delete Club - Confirmation" : "Cannot Delete Club"}
         message={
           <div className="space-y-4">
             <p className="text-sm text-gray-700">
-              You are about to permanently delete <strong>{club.name}</strong>. 
-              This action cannot be undone.
+              {deletionInfo.can_delete 
+                ? `You are about to permanently delete <strong>${club.name}</strong>. This action cannot be undone.`
+                : `You cannot delete <strong>${club.name}</strong> at this time.`
+              }
             </p>
             
             {!deletionInfo.can_delete && (
@@ -1112,14 +1122,16 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
               </div>
             )}
 
-            <p className="text-sm font-medium text-gray-900">
-              Are you sure you want to proceed with deleting this club?
-            </p>
+            {deletionInfo.can_delete && (
+              <p className="text-sm font-medium text-gray-900">
+                Are you sure you want to proceed with deleting this club?
+              </p>
+            )}
           </div>
         }
         isOpen={deleteAlert}
         setIsOpen={setDeleteAlert}
-        onConfirm={handleDeleteClub}
+        onConfirm={deletionInfo.can_delete ? handleDeleteClub : () => setDeleteAlert(false)}
         onCancel={() => setDeleteAlert(false)}
         confirmText={deletionInfo.can_delete ? "Yes, Delete Club" : "I Understand"}
         confirmButtonClass={
@@ -1128,7 +1140,6 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
             : "bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
         }
         loading={actionLoading === 'delete'}
-        confirmDisabled={!deletionInfo.can_delete}
         showCancelButton={deletionInfo.can_delete}
       />
 
