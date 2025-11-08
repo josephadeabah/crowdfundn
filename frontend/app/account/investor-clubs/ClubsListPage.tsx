@@ -616,7 +616,8 @@ const ClubsListPage: React.FC = () => {
                         <div className="flex items-center gap-1">
                           <DollarSign size={16} />
                           <span>
-                            {formatCurrency(club.minimum_monthly_contribution)}/mo
+                            {formatCurrency(club.minimum_monthly_contribution)}
+                            /mo
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
