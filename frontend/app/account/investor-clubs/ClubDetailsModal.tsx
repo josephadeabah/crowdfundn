@@ -562,11 +562,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                             : 'Approve'}
                         </button>
                         <button
-                          onClick={() => {
-                            setSelectedMemberId(member.id);
-                            setSelectedMemberName(member.user.full_name);
-                            setRejectMemberAlert(true);
-                          }}
+                          onClick={() => handleRejectMember(member.id, member.user.full_name)}
                           disabled={!!actionLoading}
                           className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm disabled:opacity-50 min-w-[80px]"
                         >
