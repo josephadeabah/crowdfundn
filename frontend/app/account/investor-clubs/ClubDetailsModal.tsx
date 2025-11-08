@@ -49,36 +49,41 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   }, [isOpen, token, club.slug]);
 
   // Calculate deletion info locally instead of API call
-  const getDeletionInfo = () => {
-    const requirements = [];
-    const consequences = [
-      "All club data including member contributions and investment history will be permanently deleted",
-      "This action cannot be undone",
-      "Any pending investment proposals will be cancelled"
-    ];
+// In your ClubDetailsModal.tsx, update the getDeletionInfo function:
 
-    // Check if there are active investments
-    if (club.financials.total_invested > 0) {
-      requirements.push(`There are active investments that need to be resolved (${formatCurrency(club.financials.total_invested)} invested)`);
-    }
+const getDeletionInfo = () => {
+  const requirements = [];
+  const consequences = [
+    "All club data including member contributions and investment history will be permanently deleted",
+    "This action cannot be undone",
+    "Any pending investment proposals will be cancelled"
+  ];
 
-    // Check if there are other members
-    const otherMembersCount = club.current_members_count - 1; // excluding current user
-    if (otherMembersCount > 0) {
-      requirements.push(`All ${otherMembersCount} other members must leave the club first`);
-    }
+  // Check if there are active investments (using the same logic as backend)
+  // The backend checks club_investments.executed.any?
+  // Since we don't have the exact count, we'll use total_invested as indicator
+  if (club.financials.total_invested > 0) {
+    requirements.push(`Cannot delete club with active investments (${formatCurrency(club.financials.total_invested)} total invested)`);
+  }
 
-    const canDelete = requirements.length === 0;
+  // Check if there are other active members (using the same logic as backend)
+  // The backend checks: investment_club_memberships.active.count > 1
+  const otherActiveMembersCount = club.current_members_count - 1; // excluding current user
+  if (otherActiveMembersCount > 0) {
+    requirements.push(`Cannot delete club with ${otherActiveMembersCount} other active members. All other members must leave first.`);
+  }
 
-    return {
-      requirements,
-      consequences,
-      can_delete: canDelete,
-      club_name: club.name,
-      active_investments_count: club.financials.total_invested > 0 ? 1 : 0, // Simplified count
-      active_members_count: otherMembersCount
-    };
+  const canDelete = requirements.length === 0;
+
+  return {
+    requirements,
+    consequences,
+    can_delete: canDelete,
+    club_name: club.name,
+    active_investments_count: club.financials.total_invested > 0 ? 1 : 0,
+    active_members_count: otherActiveMembersCount
   };
+};
 
   // Safe number formatting functions
   const safeToFixed = (value: any, decimals: number = 2): string => {

@@ -13,7 +13,6 @@ import {
   RejectMemberResponse,
   CancelRequestResponse,
   ApproveMemberResponse,
-  DeletionInfoResponse,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
