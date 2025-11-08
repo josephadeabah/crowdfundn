@@ -863,7 +863,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                       </p>
                       <div className="space-y-2">
                         <p className="text-sm text-gray-600">
-                          As the club creator, you cannot delete club with active investments and members.
+                          As the club creator, you cannot delete club with
+                          active investments and members.
                         </p>
                       </div>
                       <button
