@@ -609,7 +609,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                             {actionLoading ? 'Approving...' : 'Approve'}
                           </button>
                           <button
-                            onClick={() => showRejectMemberConfirmation(
+                            onClick={() => handleRejectMember(
                               member.id,
                               member.user.full_name,
                             )}
