@@ -1,9 +1,8 @@
-# app/controllers/api/v1/investment_clubs_controller.rb
 module Api
   module V1
     class InvestmentClubsController < ApplicationController
       before_action :authenticate_request
-      before_action :set_club, only: [:show, :update, :portfolio, :analytics, :member_portfolio, :join, :leave, :my_membership_status, :transfer_ownership, :destroy]
+      before_action :set_club, only: [:show, :update, :portfolio, :analytics, :member_portfolio, :join, :leave, :my_membership_status, :transfer_ownership, :destroy, :deletion_info]
       
       # GET /api/v1/investment_clubs
       def index
@@ -167,11 +166,20 @@ module Api
           }, status: :not_found
         end
 
-        if membership.creator? && @club.investment_club_memberships.admin.count == 1
-          return render json: { 
-            success: false,
-            error: 'Cannot leave club as the only admin. Transfer ownership first.' 
-          }, status: :unprocessable_entity
+        # NEW: Enhanced error handling for creator leaving
+        if membership.creator?
+          # Check if there are other admins who can take over
+          other_admins = @club.investment_club_memberships.active.admin.where.not(user_id: @current_user.id)
+          
+          if other_admins.empty?
+            return render json: { 
+              success: false,
+              error: 'Cannot leave club as the only admin. You must transfer ownership to another member first.',
+              error_type: 'creator_cannot_leave',
+              requires_transfer: true,
+              available_members: @club.active_members.where.not(id: @current_user.id).map { |m| { id: m.id, name: m.full_name } }
+            }, status: :unprocessable_entity
+          end
         end
 
         # Get portfolio summary before removal
@@ -206,7 +214,8 @@ module Api
         if deletion_errors.any?
           return render json: { 
             success: false,
-            errors: deletion_errors
+            errors: deletion_errors,
+            error_type: 'deletion_requirements_not_met'
           }, status: :unprocessable_entity
         end
 
@@ -222,6 +231,28 @@ module Api
             errors: @club.errors.full_messages 
           }, status: :unprocessable_entity
         end
+      end
+
+      # NEW: GET /api/v1/investment_clubs/:id/deletion_info
+      def deletion_info
+        unless @club.is_creator?(@current_user)
+          return render json: { 
+            success: false,
+            error: 'Only club creator can access deletion information' 
+          }, status: :forbidden
+        end
+
+        render json: {
+          success: true,
+          deletion_info: {
+            requirements: @club.deletion_requirements,
+            consequences: @club.deletion_consequences,
+            can_delete: @club.can_be_deleted_by?(@current_user),
+            club_name: @club.name,
+            active_investments_count: @club.club_investments.executed.count,
+            active_members_count: @club.investment_club_memberships.active.count - 1 # excluding creator
+          }
+        }
       end
 
       # GET /api/v1/investment_clubs/:id/my_membership_status
