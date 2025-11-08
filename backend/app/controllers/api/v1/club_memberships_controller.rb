@@ -1,3 +1,4 @@
+# app/controllers/api/v1/club_memberships_controller.rb
 module Api
   module V1
     class ClubMembershipsController < ApplicationController
@@ -45,7 +46,6 @@ module Api
 
       # POST /api/v1/investment_clubs/:investment_club_id/memberships
       def create
-        # Check if user is already a member
         if @club.is_member?(@current_user)
           return render json: { 
             success: false,
@@ -53,7 +53,6 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        # Check if club is at capacity
         if @club.at_capacity?
           return render json: { 
             success: false,
@@ -113,7 +112,6 @@ module Api
       def approve
         if @membership.pending?
           if @membership.update(status: 'active')
-            # FIXED: Use the correct method name
             notify_member_of_approval(@membership)
             render json: { 
               success: true, 
@@ -137,15 +135,10 @@ module Api
       # POST /api/v1/investment_clubs/:investment_club_id/memberships/:id/reject
       def reject
         if @membership.pending?
-          # FIXED: Handle member shares through user, not through membership
           begin
-            # For pending members, there shouldn't be any investment shares anyway
-            # But if there are, clean them up through the user association
             member_shares = MemberInvestmentShare.where(user: @membership.user)
             member_shares.destroy_all if member_shares.exists?
           rescue ActiveRecord::StatementInvalid => e
-            # Log but continue - this is not critical for pending members
-            Rails.logger.warn "Error cleaning up member shares: #{e.message}"
           end
           
           if @membership.destroy
@@ -170,7 +163,6 @@ module Api
 
       # DELETE /api/v1/investment_clubs/:investment_club_id/memberships/:id
       def destroy
-        # Users can leave their own membership, admins can remove others
         if @membership.user != @current_user && !@club.is_admin?(@current_user)
           return render json: { 
             success: false,
@@ -178,7 +170,6 @@ module Api
           }, status: :forbidden
         end
 
-        # Prevent creator from leaving without transferring ownership
         if @membership.creator? && @club.investment_club_memberships.admin.count == 1
           return render json: { 
             success: false,
@@ -187,12 +178,9 @@ module Api
         end
 
         if @membership.destroy
-          # FIXED: Handle service call gracefully
           begin
             ClubMembershipService.new(@membership).handle_member_removal
           rescue => e
-            Rails.logger.error "Error in handle_member_removal: #{e.message}"
-            # Continue even if this fails - the main destroy was successful
           end
           
           render json: { 
@@ -209,13 +197,20 @@ module Api
 
       # POST /api/v1/investment_clubs/:investment_club_id/memberships/:id/leave
       def leave
-        membership = @club.investment_club_memberships.find_by(user: @current_user)
+        membership = @club.investment_club_memberships.find_by(id: params[:id])
         
         if membership.nil?
           return render json: { 
             success: false,
-            error: 'Not a member of this club' 
+            error: 'Membership not found' 
           }, status: :not_found
+        end
+
+        if membership.user != @current_user && !@club.is_admin?(@current_user)
+          return render json: { 
+            success: false,
+            error: 'Not authorized to leave this membership' 
+          }, status: :forbidden
         end
 
         if membership.creator? && @club.investment_club_memberships.admin.count == 1
@@ -225,16 +220,12 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        # Get portfolio summary before removal for reporting
-        portfolio_summary = ClubPortfolioService.new(@club).member_portfolio(@current_user)
+        portfolio_summary = ClubPortfolioService.new(@club).member_portfolio(membership.user)
         
         if membership.destroy
-          # FIXED: Handle service call gracefully
           begin
             ClubMembershipService.new(membership).handle_member_removal
           rescue => e
-            Rails.logger.error "Error in handle_member_removal: #{e.message}"
-            # Continue even if this fails - the main destroy was successful
           end
           
           render json: { 
@@ -315,7 +306,6 @@ module Api
         ClubMailer.membership_role_changed(membership.user, membership).deliver_later
       end
 
-      # FIXED: Use the correct method name that exists in ClubMailer
       def notify_member_of_approval(membership)
         ClubMailer.membership_approved(membership.user, membership).deliver_later
       end
