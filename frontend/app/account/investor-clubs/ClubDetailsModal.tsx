@@ -861,14 +861,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
                         As the club creator, you have additional administrative
                         privileges.
                       </p>
-                      <div className="space-y-3">
-                        <p className="text-sm text-gray-700">
-                          As the club creator, you cannot leave the club without
-                          first transferring ownership to another admin member.
-                        </p>
-                        <p className="text-sm text-gray-700">
-                          Please transfer ownership to another member before
-                          leaving the club.
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600">
+                          As the club creator, you cannot delete club with active investments and members.
                         </p>
                       </div>
                       <button
