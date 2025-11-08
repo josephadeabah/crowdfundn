@@ -90,20 +90,32 @@ const ClubsListPage: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+      
+      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
         // Scrolling down and past threshold - hide header
         setIsHeaderVisible(false);
       } else if (currentScrollY < lastScrollY.current) {
         // Scrolling up - show header
         setIsHeaderVisible(true);
       }
-
+      
       lastScrollY.current = currentScrollY;
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Add a slight delay to prevent flickering on fast scroll
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledScroll, { passive: true });
+    return () => window.removeEventListener('scroll', throttledScroll);
   }, []);
 
   const loadClubs = async () => {
@@ -474,10 +486,10 @@ const ClubsListPage: React.FC = () => {
       <div className="max-w-2xl mx-auto">
         {/* Header - Smart hide/show on scroll */}
         <motion.div
-          className="fixed top-0 left-0 right-0 bg-gray-50 z-20 border-b border-gray-200"
+          className="fixed top-0 left-0 right-0 bg-gray-50 z-20 border-b border-gray-200 shadow-sm"
           initial={{ y: 0 }}
-          animate={{ y: isHeaderVisible ? 0 : -100 }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          animate={{ y: isHeaderVisible ? 0 : -80 }}
+          transition={{ duration: 0.2, ease: 'easeInOut' }}
         >
           <div className="max-w-2xl mx-auto">
             <div className="px-4 py-3">
@@ -560,8 +572,8 @@ const ClubsListPage: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Spacer for fixed header */}
-        <div className="h-[80px]" />
+        {/* Spacer for fixed header - Reduced height */}
+        <div className="h-[120px]" />
 
         {/* Message Alert */}
         {message && (
