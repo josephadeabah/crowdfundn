@@ -153,7 +153,7 @@ class InvestmentClub < ApplicationRecord
     is_creator?(user)
   end
 
-  def deletion_errors(user)
+  def deletion_errors?(user)
     errors = []
     errors << 'Only club creator can delete the club' unless can_be_deleted_by?(user)
     errors << 'Cannot delete club with active investments' if club_investments.executed.any?
