@@ -161,7 +161,7 @@ module AI
         campaigns.sort_by(&:created_at).reverse
       end
     end
-    
+
     def enhanced_filter_by_investment_focus(campaigns)
       focus = extract_investment_focus
       return campaigns unless focus
@@ -250,6 +250,7 @@ module AI
       else # moderate
         campaigns.where("(ai_risk_score BETWEEN 25 AND 65) OR ai_risk_score IS NULL")
       end
+      campaigns
     end
 
     def enhanced_filter_by_financial_constraints(campaigns)
