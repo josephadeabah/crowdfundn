@@ -783,7 +783,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                   {!showAIRecommendations && (
                     <button
                       onClick={handleGetAIRecommendations}
-                      className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-gradient-to-r from-yellow-100 to-orange-400 text-white rounded-lg hover:from-yellow-300 hover:to-orange-200 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-all hover:shadow-md"
+                      className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-gradient-to-r from-yellow-200 to-orange-400 text-white rounded-full hover:from-yellow-300 hover:to-orange-200 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-all hover:shadow-md"
                     >
                       <Sparkles size={16} />
                       Get AI Recommendations
