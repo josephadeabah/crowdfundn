@@ -13,7 +13,7 @@ module Api
           risk_tolerance = params[:risk_tolerance]
           investment_focus = params[:investment_focus]
 
-          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
+          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)  # Use @current_user
           result = recommendation_service.recommend_campaigns(
             limit: limit.to_i,
             risk_tolerance: risk_tolerance,
@@ -48,7 +48,7 @@ module Api
             }, status: :not_found
           end
 
-          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
+          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)  # Use @current_user
           result = recommendation_service.explain_recommendation(campaign)
 
           if result[:success]
@@ -70,7 +70,7 @@ module Api
 
         # GET /api/v1/investment_clubs/:id/ai_recommendations/risk_profile
         def risk_profile
-          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
+          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)  # Use @current_user
           risk_profile = recommendation_service.get_club_risk_profile
 
           render json: {
@@ -94,7 +94,7 @@ module Api
         end
 
         def check_membership
-          unless @investment_club.is_member?(@current_user)
+          unless @investment_club.is_member?(@current_user)  # Use @current_user
             render json: { success: false, error: "Not a member of this investment club" }, status: :forbidden
           end
         end

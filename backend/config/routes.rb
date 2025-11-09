@@ -1,3 +1,4 @@
+# config/routes.rb
 Rails.application.routes.draw do
   # redirect to the detailed campaign page
   get 'campaign/:id', to: 'campaigns#show', as: 'campaign'
@@ -283,7 +284,6 @@ Rails.application.routes.draw do
         end
       end
 
-
     # Investment Clubs
       resources :investment_clubs, only: [:index, :create, :show, :update, :destroy] do
         # Membership management
@@ -296,15 +296,6 @@ Rails.application.routes.draw do
           collection do
             get :pending
             get :my_membership
-          end
-        end
-
-        resources :clubs, only: [] do
-          member do
-            # AI Recommendation routes
-            get 'ai_recommendations', to: 'ai_recommendations#index'
-            get 'ai_recommendations/explain', to: 'ai_recommendations#explain'
-            get 'ai_recommendations/risk_profile', to: 'ai_recommendations#risk_profile'
           end
         end
 
@@ -334,6 +325,13 @@ Rails.application.routes.draw do
         collection do
           get :my_clubs
           get :discover
+        end
+
+        # AI Recommendation routes - FIXED VERSION with explicit controller
+        member do
+          get 'ai_recommendations', to: 'investment_clubs/ai_recommendations#index'
+          get 'ai_recommendations/risk_profile', to: 'investment_clubs/ai_recommendations#risk_profile'
+          get 'ai_recommendations/explain', to: 'investment_clubs/ai_recommendations#explain'
         end
       end
     
