@@ -12,7 +12,6 @@ const ClubHeader: React.FC<ClubHeaderProps> = ({ club, myMembership }) => {
     <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-white">
       <div className="flex-1">
         <h2 className="text-2xl font-bold text-emerald-900">{club.name}</h2>
-        {/* <p className="text-gray-600 mt-1">{club.mission}</p> */}
         <div className="flex items-center gap-2 mt-2">
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium ${
