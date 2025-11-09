@@ -72,19 +72,20 @@ class AIRecommendationService {
     this.baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || '';
   }
 
-  async getRecommendations(
-    token: string,
-    clubId: string,
-    limit: number = 10,
-    riskTolerance?: string,
-    investmentFocus?: string,
-  ): Promise<{
-    success: boolean;
-    recommendations: AIRecommendation[];
-    matching_criteria: any;
-    total_considered: number;
-    club_risk_profile: RiskProfile;
-  }> {
+async getRecommendations(
+  token: string,
+  clubId: string,
+  limit: number = 10,
+  riskTolerance?: string,
+  investmentFocus?: string,
+): Promise<{
+  success: boolean;
+  recommendations: AIRecommendation[];
+  matching_criteria: any;
+  total_considered: number;
+  club_risk_profile: RiskProfile;
+}> {
+  try {
     const params = new URLSearchParams({
       limit: limit.toString(),
       ...(riskTolerance && { risk_tolerance: riskTolerance }),
@@ -102,11 +103,33 @@ class AIRecommendationService {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch AI recommendations');
+      const errorText = await response.text();
+      console.error('AI Recommendation API Error:', errorText);
+      throw new Error(`Failed to fetch AI recommendations: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    
+    // DEBUG: Log what we received
+    console.log('AI Recommendations Response:', data);
+    
+    if (data.success && data.recommendations) {
+      // Verify we have campaign data
+      data.recommendations.forEach((rec: any, index: number) => {
+        if (!rec.campaign || !rec.campaign.title) {
+          console.error(`Invalid recommendation at index ${index}:`, rec);
+        } else {
+          console.log(`Recommendation ${index}:`, rec.campaign.title, rec.campaign.category);
+        }
+      });
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('AI Recommendation Service Error:', error);
+    throw error;
   }
+}
 
   async getExplanation(
     token: string,
