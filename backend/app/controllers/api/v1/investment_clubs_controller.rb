@@ -1,3 +1,4 @@
+# app/controllers/api/v1/investment_clubs_controller.rb
 module Api
   module V1
     class InvestmentClubsController < ApplicationController
@@ -142,6 +143,11 @@ module Api
             @club.update_members_count
             
             Rails.logger.info "DEBUG: Membership created successfully: #{membership.id}, status: #{membership.status}"
+            
+            # Send notifications using new email service
+            if membership.pending?
+              notify_admins_of_pending_member(membership)
+            end
             
             render json: { 
               success: true, 
@@ -374,7 +380,10 @@ module Api
 
       def notify_admins_of_pending_member(membership)
         @club.admin_members.each do |admin|
-          ClubMailer.pending_member_notification(admin, membership).deliver_later
+          ClubEmailService.send_pending_member_notification(
+            admin: admin,
+            membership: membership
+          )
         end
       end
 

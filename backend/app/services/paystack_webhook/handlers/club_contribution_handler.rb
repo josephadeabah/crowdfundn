@@ -79,8 +79,11 @@ module PaystackWebhook::Handlers
           description: "Member contribution from #{contribution.user.full_name}"
         )
 
-        # Send confirmation email
-        send_contribution_confirmation(contribution)
+        # Send confirmation email using new service
+        ClubEmailService.send_contribution_confirmation(
+          user: contribution.user,
+          contribution: contribution
+        )
         
         Rails.logger.info "Successfully processed club contribution: #{contribution.id}"
       end
@@ -97,25 +100,11 @@ module PaystackWebhook::Handlers
         transaction_reference: @data[:reference]
       )
 
-      send_contribution_failure_notification(contribution)
-    end
-
-    def send_contribution_confirmation(contribution)
-      ClubMailer.contribution_confirmation(
-        contribution.user,
-        contribution
-      ).deliver_later
-    rescue => e
-      Rails.logger.error "Failed to send contribution confirmation: #{e.message}"
-    end
-
-    def send_contribution_failure_notification(contribution)
-      ClubMailer.contribution_failed(
-        contribution.user,
-        contribution
-      ).deliver_later
-    rescue => e
-      Rails.logger.error "Failed to send contribution failure notification: #{e.message}"
+      # Send failure notification using new service
+      ClubEmailService.send_contribution_failed(
+        user: contribution.user,
+        contribution: contribution
+      )
     end
   end
 end

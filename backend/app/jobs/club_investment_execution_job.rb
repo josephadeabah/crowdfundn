@@ -13,17 +13,15 @@ class ClubInvestmentExecutionJob < ApplicationJob
       
       unless result[:success]
         Rails.logger.error "Failed to auto-execute club investment #{club_investment_id}: #{result[:error]}"
-        # Notify club admins of failure
-        notify_execution_failure(club_investment, result[:error])
+        # Notify club admins of failure using new service
+        club_investment.investment_club.admin_members.each do |admin|
+          ClubEmailService.send_investment_execution_failed(
+            admin: admin,
+            club_investment: club_investment,
+            error: result[:error]
+          )
+        end
       end
-    end
-  end
-
-  private
-
-  def notify_execution_failure(club_investment, error)
-    club_investment.investment_club.admin_members.each do |admin|
-      ClubMailer.investment_execution_failed(admin, club_investment, error).deliver_later
     end
   end
 end

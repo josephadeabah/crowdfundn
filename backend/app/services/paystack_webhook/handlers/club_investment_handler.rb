@@ -78,8 +78,8 @@ module PaystackWebhook::Handlers
             description: "Investment in #{club_investment.campaign.title}"
           )
 
-          # Notify all club members
-          send_investment_execution_notification(club_investment)
+          # Notify all club members using new service
+          ClubEmailService.send_investment_executed(club_investment: club_investment)
           
           Rails.logger.info "Successfully processed club investment: #{club_investment.id}"
         else
@@ -102,22 +102,14 @@ module PaystackWebhook::Handlers
         transaction_reference: @data[:reference]
       )
 
-      send_investment_failure_notification(club_investment)
-    end
-
-    def send_investment_execution_notification(club_investment)
-      ClubMailer.investment_executed(club_investment).deliver_later
-    rescue => e
-      Rails.logger.error "Failed to send investment execution notification: #{e.message}"
-    end
-
-    def send_investment_failure_notification(club_investment)
-      # Notify club admins of investment failure
+      # Notify club admins of investment failure using new service
       club_investment.investment_club.admin_members.each do |admin|
-        ClubMailer.investment_failed(admin, club_investment).deliver_later
+        ClubEmailService.send_investment_execution_failed(
+          admin: admin,
+          club_investment: club_investment,
+          error: 'Investment transfer failed'
+        )
       end
-    rescue => e
-      Rails.logger.error "Failed to send investment failure notification: #{e.message}"
     end
   end
 end

@@ -63,22 +63,16 @@ module PaystackWebhook::Handlers
           description: "Refund for contribution from #{contribution.user.full_name}"
         )
 
-        # Send refund notification
-        send_refund_notification(contribution)
+        # Send refund notification using new service
+        ClubEmailService.send_contribution_refunded(
+          user: contribution.user,
+          contribution: contribution
+        )
         
         Rails.logger.info "Successfully processed club contribution refund: #{contribution.id}"
       end
     rescue => e
       Rails.logger.error "Error processing club contribution refund #{contribution.id}: #{e.message}"
-    end
-
-    def send_refund_notification(contribution)
-      ClubMailer.contribution_refunded(
-        contribution.user,
-        contribution
-      ).deliver_later
-    rescue => e
-      Rails.logger.error "Failed to send refund notification: #{e.message}"
     end
   end
 end
