@@ -144,7 +144,6 @@ class ClubEmailService
   # HTML Content Builders
   def self.build_pending_member_html(admin, membership, club)
     applicant_name = membership.user.full_name
-    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~HTML
       <!DOCTYPE html>
@@ -184,7 +183,6 @@ class ClubEmailService
   end
 
   def self.build_membership_approved_html(user, membership, club)
-    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~HTML
       <!DOCTYPE html>
@@ -318,7 +316,6 @@ class ClubEmailService
   end
 
   def self.build_investment_executed_html(member, club_investment, club, campaign)
-    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~HTML
       <!DOCTYPE html>
@@ -379,7 +376,6 @@ class ClubEmailService
   # Text Content Builders
   def self.build_pending_member_text(admin, membership, club)
     applicant_name = membership.user.full_name
-    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~TEXT
       Hello #{admin.full_name},
@@ -394,7 +390,6 @@ class ClubEmailService
   end
 
   def self.build_membership_approved_text(user, membership, club)
-    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~TEXT
       Hello #{user.full_name},
@@ -443,7 +438,6 @@ class ClubEmailService
   end
 
   def self.build_investment_executed_text(member, club_investment, club, campaign)
-    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~TEXT
       Hello #{member.full_name},
@@ -646,7 +640,7 @@ class ClubEmailService
         htmlContent: html_content,
         textContent: text_content,
         sender: {
-          name: 'Bantuhive Investments',
+          name: 'Bantuhive Investments Clubs',
           email: 'help@bantuhive.com'
         },
         headers: {
