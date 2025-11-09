@@ -13,24 +13,12 @@ module AI
         club_profile = build_comprehensive_club_profile
         available_campaigns = find_comprehensive_eligible_campaigns
         
-        # DEBUG: Log what campaigns we found
-        Rails.logger.info "AI Recommendation - Found #{available_campaigns.count} eligible campaigns for club #{@club.id}"
-        available_campaigns.each do |campaign|
-          Rails.logger.info "Campaign: #{campaign.id} - #{campaign.title} - Type: #{campaign.class.name}"
-        end
-        
         if available_campaigns.any?
           # Use enhanced AI-powered matching with comprehensive data
           recommendations = enhanced_ai_powered_recommendations(available_campaigns, club_profile, limit)
         else
           # Enhanced rule-based matching as fallback
           recommendations = enhanced_rule_based_recommendations(available_campaigns, club_profile, limit)
-        end
-
-        # DEBUG: Log final recommendations
-        Rails.logger.info "AI Recommendation - Final #{recommendations.count} recommendations"
-        recommendations.each do |rec|
-          Rails.logger.info "Recommended: #{rec[:campaign].id} - #{rec[:campaign].title} - Score: #{rec[:match_score]}"
         end
 
         {
@@ -136,23 +124,12 @@ module AI
                             fundraiser: [:latest_kyc, :reports_against]
                           )
       
-      Rails.logger.info "Base comprehensive query found: #{campaigns.count} campaigns"
-      
-      # Apply enhanced filters one by one with debugging
+      # Apply enhanced filters one by one
       campaigns = enhanced_filter_by_investment_focus(campaigns)
-      Rails.logger.info "After investment focus filter: #{campaigns.count} campaigns"
-      
       campaigns = enhanced_filter_by_risk_tolerance(campaigns)
-      Rails.logger.info "After risk tolerance filter: #{campaigns.count} campaigns"
-      
       campaigns = enhanced_filter_by_financial_constraints(campaigns)
-      Rails.logger.info "After financial constraints filter: #{campaigns.count} campaigns"
-      
       campaigns = filter_by_fundraiser_trustworthiness(campaigns)
-      Rails.logger.info "After fundraiser trustworthiness filter: #{campaigns.count} campaigns"
-      
       campaigns = filter_by_campaign_quality(campaigns)
-      Rails.logger.info "After campaign quality filter: #{campaigns.count} campaigns"
       
       # Handle both arrays and relations
       if campaigns.is_a?(ActiveRecord::Relation)
@@ -250,7 +227,6 @@ module AI
       else # moderate
         campaigns.where("(ai_risk_score BETWEEN 25 AND 65) OR ai_risk_score IS NULL")
       end
-      campaigns
     end
 
     def enhanced_filter_by_financial_constraints(campaigns)
