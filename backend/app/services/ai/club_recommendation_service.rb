@@ -7,14 +7,23 @@ module AI
       @client = initialize_openai_client
     end
 
+
     def recommend_campaigns(limit: 10, risk_tolerance: nil, investment_focus: nil)
       begin
         # Get club preferences and constraints
         club_profile = build_club_profile
         available_campaigns = find_eligible_campaigns
         
+        # DEBUG: Log what campaigns we found
+        Rails.logger.info "AI Recommendation - Found #{available_campaigns.count} eligible campaigns for club #{@club.id}"
+        available_campaigns.each do |campaign|
+          Rails.logger.info "Campaign: #{campaign.id} - #{campaign.title} - Type: #{campaign.class.name}"
+        end
+        
         # If we have AI analysis data, use it for matching
         campaigns_with_analysis = available_campaigns.with_ai_analysis
+        
+        Rails.logger.info "AI Recommendation - #{campaigns_with_analysis.count} campaigns have AI analysis"
         
         if campaigns_with_analysis.any?
           # Use AI-powered matching
@@ -22,6 +31,12 @@ module AI
         else
           # Fallback to rule-based matching
           recommendations = rule_based_recommendations(available_campaigns, club_profile, limit)
+        end
+
+        # DEBUG: Log final recommendations
+        Rails.logger.info "AI Recommendation - Final #{recommendations.count} recommendations"
+        recommendations.each do |rec|
+          Rails.logger.info "Recommended: #{rec[:campaign].id} - #{rec[:campaign].title} - Score: #{rec[:match_score]}"
         end
 
         {
@@ -36,6 +51,7 @@ module AI
         }
       rescue => e
         Rails.logger.error "AI Club Recommendation failed for club #{@club.id}: #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
         {
           success: false,
           error: "Failed to generate recommendations: #{e.message}",
@@ -234,15 +250,28 @@ module AI
     end
 
     def find_eligible_campaigns
-      # Base query for active campaigns
+      # Base query for active campaigns that are public and appear in search
       campaigns = Campaign.active
                           .where(is_public: true)
                           .where(appear_in_search_results: true)
+                          .where.not(status: 'canceled') # Exclude canceled campaigns
+      
+      # DEBUG: Log initial query count
+      Rails.logger.info "Base campaigns query found: #{campaigns.count} campaigns"
       
       # Apply club-specific filters
       campaigns = filter_by_investment_focus(campaigns)
       campaigns = filter_by_risk_tolerance(campaigns)
       campaigns = filter_by_financial_constraints(campaigns)
+      
+      # DEBUG: Log final count after filters
+      Rails.logger.info "After filters: #{campaigns.count} campaigns"
+      
+      # Ensure we're returning Campaign objects, not Clubs
+      if campaigns.any? && !campaigns.first.is_a?(Campaign)
+        Rails.logger.error "ERROR: Expected Campaign objects but got: #{campaigns.first.class.name}"
+        return Campaign.none
+      end
       
       campaigns.order(created_at: :desc)
     end
