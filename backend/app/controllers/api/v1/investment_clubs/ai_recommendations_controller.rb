@@ -15,7 +15,7 @@ module Api
           risk_tolerance = params[:risk_tolerance]
           investment_focus = params[:investment_focus]
 
-          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)  # Use @current_user
+          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
           result = recommendation_service.recommend_campaigns(
             limit: limit.to_i,
             risk_tolerance: risk_tolerance,
@@ -28,7 +28,7 @@ module Api
               recommendations: result[:recommendations].map { |rec| format_recommendation(rec) },
               matching_criteria: result[:matching_criteria],
               total_considered: result[:total_considered],
-              club_risk_profile: recommendation_service.get_club_risk_profile
+              club_risk_profile: result[:club_risk_profile] # Use the one from result instead of calling method again
             }
           else
             render json: { 
@@ -50,7 +50,7 @@ module Api
             }, status: :not_found
           end
 
-          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)  # Use @current_user
+          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
           result = recommendation_service.explain_recommendation(campaign)
 
           if result[:success]
@@ -72,7 +72,7 @@ module Api
 
         # GET /api/v1/investment_clubs/:id/ai_recommendations/risk_profile
         def risk_profile
-          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)  # Use @current_user
+          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
           risk_profile = recommendation_service.get_club_risk_profile
 
           render json: {
@@ -96,7 +96,7 @@ module Api
         end
 
         def check_membership
-          unless @investment_club.is_member?(@current_user)  # Use @current_user
+          unless @investment_club.is_member?(@current_user)
             render json: { success: false, error: "Not a member of this investment club" }, status: :forbidden
           end
         end
@@ -109,11 +109,13 @@ module Api
             reasoning: recommendation[:reasoning],
             key_alignment_factors: recommendation[:key_alignment_factors],
             potential_concerns: recommendation[:potential_concerns],
+            investment_confidence: recommendation[:investment_confidence] || "medium", # Add this new field
             ai_analysis_available: campaign.comprehensive_ai_analysis_present?,
             quick_assessment: {
               risk_alignment: calculate_risk_alignment_display(campaign),
               strategic_fit: calculate_strategic_fit_display(campaign),
-              financial_suitability: calculate_financial_suitability_display(campaign)
+              financial_suitability: calculate_financial_suitability_display(campaign),
+              fundraiser_trust: calculate_fundraiser_trust_display(campaign) # Add this new field
             }
           }
         end
@@ -136,11 +138,22 @@ module Api
             fundraiser: {
               id: campaign.fundraiser.id,
               name: campaign.fundraiser.full_name,
-              kyc_verified: campaign.fundraiser.kyc_verified?
+              kyc_verified: campaign.fundraiser.kyc_verified?,
+              reports_count: campaign.fundraiser.reports_against.where('created_at >= ?', 6.months.ago).count # Add this
             },
             media_url: campaign.media_url,
             total_donors: campaign.total_donors,
-            remaining_days: campaign.remaining_days
+            remaining_days: campaign.remaining_days,
+            # Add equity campaign specific fields
+            type: campaign.class.name,
+            equity_data: campaign.is_a?(EquityCampaign) ? {
+              valuation: campaign.valuation,
+              equity_offered: campaign.equity_offered,
+              shares_available: campaign.shares_available,
+              equity_status: campaign.equity_status,
+              company_name: campaign.company_name,
+              funding_round: campaign.funding_round
+            } : nil
           }
         end
 
@@ -149,7 +162,17 @@ module Api
             team_assessment: campaign.ai_team_assessment_data,
             market_analysis: campaign.ai_market_analysis,
             investment_thesis: campaign.investment_thesis,
-            upside_downside_analysis: campaign.upside_downside_analysis
+            upside_downside_analysis: campaign.upside_downside_analysis,
+            team_members: campaign.campaign_team_members.includes(:user).map do |member|
+              {
+                id: member.id,
+                name: member.name,
+                role: member.role,
+                title: member.title,
+                equity_percentage: member.equity_percentage,
+                description: member.description
+              }
+            end
           })
         end
 
@@ -165,14 +188,20 @@ module Api
         end
 
         def calculate_strategic_fit_display(campaign)
-          # Simple strategic fit based on category alignment with club
+          # Enhanced strategic fit based on category alignment with club
           club_mission = @investment_club.mission.to_s.downcase
           campaign_category = campaign.category.to_s.downcase
+          campaign_description = campaign.description.to_s.downcase
           
-          if club_mission.include?(campaign_category) || campaign_category.include?(@investment_club.mission.to_s.downcase)
-            "high"
-          else
-            "medium"
+          # Check multiple fields for better alignment
+          alignment_score = 0
+          alignment_score += 1 if club_mission.include?(campaign_category) || campaign_category.include?(@investment_club.mission.to_s.downcase)
+          alignment_score += 1 if campaign_description.include?(@investment_club.mission.to_s.downcase[0..20]) # Check first part of mission
+          
+          case alignment_score
+          when 2 then "high"
+          when 1 then "medium"
+          else "low"
           end
         end
 
@@ -184,10 +213,35 @@ module Api
             "excellent"
           elsif campaign_goal <= club_balance * 0.3
             "good"
-          elsif campaign_goal <= club_balance
+          elsif campaign_goal <= club_balance * 0.6
             "moderate"
-          else
+          elsif campaign_goal <= club_balance
             "challenging"
+          else
+            "very challenging"
+          end
+        end
+
+        def calculate_fundraiser_trust_display(campaign)
+          fundraiser = campaign.fundraiser
+          return "unknown" unless fundraiser
+          
+          # Calculate trust score based on multiple factors
+          trust_score = 0
+          trust_score += 4 if fundraiser.kyc_verified?
+          
+          recent_reports = fundraiser.reports_against
+                                   .where('created_at >= ?', 6.months.ago)
+                                   .where(status: ['pending', 'under_review'])
+          trust_score += 3 if recent_reports.empty?
+          
+          successful_campaigns = fundraiser.campaigns.where(status: 'completed')
+          trust_score += [successful_campaigns.count, 3].min
+          
+          case trust_score
+          when 8..10 then "high"
+          when 5..7 then "medium"
+          else "low"
           end
         end
       end
