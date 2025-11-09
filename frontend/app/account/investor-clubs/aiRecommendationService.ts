@@ -72,64 +72,70 @@ class AIRecommendationService {
     this.baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || '';
   }
 
-async getRecommendations(
-  token: string,
-  clubId: string,
-  limit: number = 10,
-  riskTolerance?: string,
-  investmentFocus?: string,
-): Promise<{
-  success: boolean;
-  recommendations: AIRecommendation[];
-  matching_criteria: any;
-  total_considered: number;
-  club_risk_profile: RiskProfile;
-}> {
-  try {
-    const params = new URLSearchParams({
-      limit: limit.toString(),
-      ...(riskTolerance && { risk_tolerance: riskTolerance }),
-      ...(investmentFocus && { investment_focus: investmentFocus }),
-    });
-
-    const response = await fetch(
-      `${this.baseUrl}/investment_clubs/${clubId}/ai_recommendations?${params}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('AI Recommendation API Error:', errorText);
-      throw new Error(`Failed to fetch AI recommendations: ${response.status}`);
-    }
-
-    const data = await response.json();
-    
-    // DEBUG: Log what we received
-    console.log('AI Recommendations Response:', data);
-    
-    if (data.success && data.recommendations) {
-      // Verify we have campaign data
-      data.recommendations.forEach((rec: any, index: number) => {
-        if (!rec.campaign || !rec.campaign.title) {
-          console.error(`Invalid recommendation at index ${index}:`, rec);
-        } else {
-          console.log(`Recommendation ${index}:`, rec.campaign.title, rec.campaign.category);
-        }
+  async getRecommendations(
+    token: string,
+    clubId: string,
+    limit: number = 10,
+    riskTolerance?: string,
+    investmentFocus?: string,
+  ): Promise<{
+    success: boolean;
+    recommendations: AIRecommendation[];
+    matching_criteria: any;
+    total_considered: number;
+    club_risk_profile: RiskProfile;
+  }> {
+    try {
+      const params = new URLSearchParams({
+        limit: limit.toString(),
+        ...(riskTolerance && { risk_tolerance: riskTolerance }),
+        ...(investmentFocus && { investment_focus: investmentFocus }),
       });
+
+      const response = await fetch(
+        `${this.baseUrl}/investment_clubs/${clubId}/ai_recommendations?${params}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('AI Recommendation API Error:', errorText);
+        throw new Error(
+          `Failed to fetch AI recommendations: ${response.status}`,
+        );
+      }
+
+      const data = await response.json();
+
+      // DEBUG: Log what we received
+      console.log('AI Recommendations Response:', data);
+
+      if (data.success && data.recommendations) {
+        // Verify we have campaign data
+        data.recommendations.forEach((rec: any, index: number) => {
+          if (!rec.campaign || !rec.campaign.title) {
+            console.error(`Invalid recommendation at index ${index}:`, rec);
+          } else {
+            console.log(
+              `Recommendation ${index}:`,
+              rec.campaign.title,
+              rec.campaign.category,
+            );
+          }
+        });
+      }
+
+      return data;
+    } catch (error) {
+      console.error('AI Recommendation Service Error:', error);
+      throw error;
     }
-    
-    return data;
-  } catch (error) {
-    console.error('AI Recommendation Service Error:', error);
-    throw error;
   }
-}
 
   async getExplanation(
     token: string,
@@ -157,10 +163,12 @@ async getRecommendations(
       return {
         success: false,
         error: 'Failed to fetch explanation',
-        fallback_explanation: 'Unable to generate detailed analysis at this time. Please try again later.',
+        fallback_explanation:
+          'Unable to generate detailed analysis at this time. Please try again later.',
         explanation: {
-          explanation: 'Unable to generate detailed analysis at this time. Please try again later.'
-        }
+          explanation:
+            'Unable to generate detailed analysis at this time. Please try again later.',
+        },
       };
     }
   }

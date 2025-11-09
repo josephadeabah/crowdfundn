@@ -32,7 +32,10 @@ import {
   Zap,
 } from 'lucide-react';
 import ClubDetailsModal from './investor-clubs/club-details/ClubDetailsModal';
-import { aiRecommendationService, AIRecommendation } from './investor-clubs/aiRecommendationService';
+import {
+  aiRecommendationService,
+  AIRecommendation,
+} from './investor-clubs/aiRecommendationService';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const { user, token } = useAuth();
@@ -47,7 +50,9 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // AI Recommendation states
-  const [aiRecommendations, setAiRecommendations] = useState<AIRecommendation[]>([]);
+  const [aiRecommendations, setAiRecommendations] = useState<
+    AIRecommendation[]
+  >([]);
   const [showAIRecommendations, setShowAIRecommendations] = useState(false);
   const [recommendationsLoading, setRecommendationsLoading] = useState(false);
   const [clubRiskProfile, setClubRiskProfile] = useState<any>(null);
@@ -120,10 +125,14 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const loadAIRecommendations = async (clubId: string) => {
     if (!token) return;
-    
+
     try {
       setRecommendationsLoading(true);
-      const response = await aiRecommendationService.getRecommendations(token, clubId, 5);
+      const response = await aiRecommendationService.getRecommendations(
+        token,
+        clubId,
+        5,
+      );
       if (response.success) {
         setAiRecommendations(response.recommendations);
         setClubRiskProfile(response.club_risk_profile);
@@ -139,7 +148,10 @@ const InvestmentClubsDashboard: React.FC = () => {
     if (!token) return;
 
     try {
-      const response = await aiRecommendationService.getRiskProfile(token, clubId);
+      const response = await aiRecommendationService.getRiskProfile(
+        token,
+        clubId,
+      );
       if (response.success) {
         setClubRiskProfile(response.risk_profile);
       }
@@ -173,13 +185,15 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const handleGetAIRecommendations = async () => {
     if (!selectedClub) return;
-    
+
     setShowAIRecommendations(true);
     await loadAIRecommendations(selectedClub.slug);
   };
 
   const handleProposeInvestmentWithCampaign = (campaign: any) => {
-    setFeatureMessage(`Propose investment for: ${campaign.title}\n\nAmount: ${formatCurrency(campaign.goal_amount)}\n\nThis would open the investment proposal form with this campaign pre-selected.`);
+    setFeatureMessage(
+      `Propose investment for: ${campaign.title}\n\nAmount: ${formatCurrency(campaign.goal_amount)}\n\nThis would open the investment proposal form with this campaign pre-selected.`,
+    );
     setFeatureAlert(true);
   };
 
@@ -190,14 +204,17 @@ const InvestmentClubsDashboard: React.FC = () => {
       const response = await aiRecommendationService.getExplanation(
         token,
         selectedClub.slug,
-        campaignId
+        campaignId,
       );
-      
+
       if (response.success) {
         setExplanationMessage(response.explanation.explanation);
         setExplanationAlert(true);
       } else {
-        setExplanationMessage(response.fallback_explanation || 'Unable to generate explanation at this time.');
+        setExplanationMessage(
+          response.fallback_explanation ||
+            'Unable to generate explanation at this time.',
+        );
         setExplanationAlert(true);
       }
     } catch (error) {
@@ -417,24 +434,36 @@ const InvestmentClubsDashboard: React.FC = () => {
                     <div className="mb-4 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
                       <div className="flex items-center gap-2 mb-2">
                         <Target className="text-purple-600" size={16} />
-                        <span className="text-sm font-medium text-purple-800">Club Profile</span>
+                        <span className="text-sm font-medium text-purple-800">
+                          Club Profile
+                        </span>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                         <div>
                           <div className="text-gray-600">Risk Tolerance</div>
-                          <div className="font-semibold text-purple-700 capitalize">{clubRiskProfile.risk_tolerance}</div>
+                          <div className="font-semibold text-purple-700 capitalize">
+                            {clubRiskProfile.risk_tolerance}
+                          </div>
                         </div>
                         <div>
                           <div className="text-gray-600">Focus</div>
-                          <div className="font-semibold text-purple-700 capitalize">{clubRiskProfile.investment_focus || 'Diversified'}</div>
+                          <div className="font-semibold text-purple-700 capitalize">
+                            {clubRiskProfile.investment_focus || 'Diversified'}
+                          </div>
                         </div>
                         <div>
                           <div className="text-gray-600">Members</div>
-                          <div className="font-semibold text-purple-700">{currentClub.current_members_count}</div>
+                          <div className="font-semibold text-purple-700">
+                            {currentClub.current_members_count}
+                          </div>
                         </div>
                         <div>
                           <div className="text-gray-600">Balance</div>
-                          <div className="font-semibold text-purple-700">{formatCurrency(currentClub.financials.current_balance)}</div>
+                          <div className="font-semibold text-purple-700">
+                            {formatCurrency(
+                              currentClub.financials.current_balance,
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -443,7 +472,9 @@ const InvestmentClubsDashboard: React.FC = () => {
                   {recommendationsLoading ? (
                     <div className="flex items-center justify-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-                      <span className="ml-3 text-gray-600">Analyzing opportunities...</span>
+                      <span className="ml-3 text-gray-600">
+                        Analyzing opportunities...
+                      </span>
                     </div>
                   ) : aiRecommendations.length > 0 ? (
                     <div className="space-y-4">
@@ -463,11 +494,9 @@ const InvestmentClubsDashboard: React.FC = () => {
                             </div>
                             <div className="flex items-center gap-2 ml-4">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  aiRecommendationService.getMatchScoreColor(
-                                    recommendation.match_score,
-                                  )
-                                } bg-opacity-10 border`}
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${aiRecommendationService.getMatchScoreColor(
+                                  recommendation.match_score,
+                                )} bg-opacity-10 border`}
                               >
                                 {aiRecommendationService.formatMatchScore(
                                   recommendation.match_score,
@@ -481,27 +510,34 @@ const InvestmentClubsDashboard: React.FC = () => {
 
                           <div className="grid grid-cols-3 gap-4 mb-3 text-xs">
                             <div className="text-center p-2 bg-gray-50 rounded-lg">
-                              <div className="font-medium text-gray-600">Risk</div>
+                              <div className="font-medium text-gray-600">
+                                Risk
+                              </div>
                               <div
                                 className={`font-semibold ${
-                                  recommendation.quick_assessment.risk_alignment === 'low'
+                                  recommendation.quick_assessment
+                                    .risk_alignment === 'low'
                                     ? 'text-green-600'
-                                    : recommendation.quick_assessment.risk_alignment ===
-                                        'medium'
+                                    : recommendation.quick_assessment
+                                          .risk_alignment === 'medium'
                                       ? 'text-yellow-600'
                                       : 'text-red-600'
                                 }`}
                               >
                                 {aiRecommendationService.formatRiskAlignment(
-                                  recommendation.quick_assessment.risk_alignment,
+                                  recommendation.quick_assessment
+                                    .risk_alignment,
                                 )}
                               </div>
                             </div>
                             <div className="text-center p-2 bg-gray-50 rounded-lg">
-                              <div className="font-medium text-gray-600">Strategic Fit</div>
+                              <div className="font-medium text-gray-600">
+                                Strategic Fit
+                              </div>
                               <div
                                 className={`font-semibold ${
-                                  recommendation.quick_assessment.strategic_fit === 'high'
+                                  recommendation.quick_assessment
+                                    .strategic_fit === 'high'
                                     ? 'text-green-600'
                                     : 'text-yellow-600'
                                 }`}
@@ -510,11 +546,13 @@ const InvestmentClubsDashboard: React.FC = () => {
                               </div>
                             </div>
                             <div className="text-center p-2 bg-gray-50 rounded-lg">
-                              <div className="font-medium text-gray-600">Financial Fit</div>
+                              <div className="font-medium text-gray-600">
+                                Financial Fit
+                              </div>
                               <div
                                 className={`font-semibold ${
-                                  recommendation.quick_assessment.financial_suitability ===
-                                  'excellent'
+                                  recommendation.quick_assessment
+                                    .financial_suitability === 'excellent'
                                     ? 'text-green-600'
                                     : recommendation.quick_assessment
                                           .financial_suitability === 'good'
@@ -522,7 +560,10 @@ const InvestmentClubsDashboard: React.FC = () => {
                                       : 'text-yellow-600'
                                 }`}
                               >
-                                {recommendation.quick_assessment.financial_suitability}
+                                {
+                                  recommendation.quick_assessment
+                                    .financial_suitability
+                                }
                               </div>
                             </div>
                           </div>
@@ -530,28 +571,38 @@ const InvestmentClubsDashboard: React.FC = () => {
                           {recommendation.key_alignment_factors.length > 0 && (
                             <div className="mb-3">
                               <div className="flex flex-wrap gap-1">
-                                {recommendation.key_alignment_factors.slice(0, 3).map((factor, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full flex items-center gap-1"
-                                  >
-                                    <Zap size={10} />
-                                    {factor}
-                                  </span>
-                                ))}
+                                {recommendation.key_alignment_factors
+                                  .slice(0, 3)
+                                  .map((factor, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full flex items-center gap-1"
+                                    >
+                                      <Zap size={10} />
+                                      {factor}
+                                    </span>
+                                  ))}
                               </div>
                             </div>
                           )}
 
                           <div className="flex gap-2">
                             <button
-                              onClick={() => handleProposeInvestmentWithCampaign(recommendation.campaign)}
+                              onClick={() =>
+                                handleProposeInvestmentWithCampaign(
+                                  recommendation.campaign,
+                                )
+                              }
                               className="flex-1 px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm transition-colors"
                             >
                               Propose Investment
                             </button>
                             <button
-                              onClick={() => handleExplainRecommendation(recommendation.campaign.id)}
+                              onClick={() =>
+                                handleExplainRecommendation(
+                                  recommendation.campaign.id,
+                                )
+                              }
                               className="px-3 py-2 border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 font-medium text-sm transition-colors flex items-center gap-1"
                             >
                               <Sparkles size={14} />
@@ -563,9 +614,14 @@ const InvestmentClubsDashboard: React.FC = () => {
                     </div>
                   ) : (
                     <div className="text-center py-8 text-gray-500">
-                      <Sparkles size={32} className="mx-auto mb-3 text-gray-400" />
+                      <Sparkles
+                        size={32}
+                        className="mx-auto mb-3 text-gray-400"
+                      />
                       <p>No AI recommendations available at this time.</p>
-                      <p className="text-sm mt-1">Try adjusting your club's investment criteria.</p>
+                      <p className="text-sm mt-1">
+                        Try adjusting your club's investment criteria.
+                      </p>
                     </div>
                   )}
                 </motion.div>
