@@ -161,6 +161,35 @@ class InvestmentClub < ApplicationRecord
     errors
   end
 
+  def get_ai_recommendations(limit: 10, user: nil)
+    AI::ClubRecommendationService.new(self, user).recommend_campaigns(limit: limit)
+  end
+
+  def explain_campaign_recommendation(campaign, user: nil)
+    AI::ClubRecommendationService.new(self, user).explain_recommendation(campaign)
+  end
+
+  def ai_risk_profile
+    AI::ClubRecommendationService.new(self).get_club_risk_profile
+  end
+
+  def recommended_campaigns(limit: 5)
+    # Quick method for getting recommendations without full AI analysis
+    service = AI::ClubRecommendationService.new(self)
+    result = service.recommend_campaigns(limit: limit)
+    
+    if result[:success]
+      result[:recommendations].map { |r| r[:campaign] }
+    else
+      [] # Fallback to recently active campaigns
+      Campaign.active
+              .where(is_public: true)
+              .where(appear_in_search_results: true)
+              .order(created_at: :desc)
+              .limit(limit)
+    end
+  end
+
   private
   
   def generate_slug

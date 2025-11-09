@@ -1,0 +1,194 @@
+# app/controllers/api/v1/investment_clubs/ai_recommendations_controller.rb
+module Api
+  module V1
+    module InvestmentClubs
+      class AiRecommendationsController < ApplicationController
+        before_action :authenticate_request
+        before_action :set_investment_club
+        before_action :check_membership
+
+        # GET /api/v1/investment_clubs/:id/ai_recommendations
+        def index
+          limit = params[:limit] || 10
+          risk_tolerance = params[:risk_tolerance]
+          investment_focus = params[:investment_focus]
+
+          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
+          result = recommendation_service.recommend_campaigns(
+            limit: limit.to_i,
+            risk_tolerance: risk_tolerance,
+            investment_focus: investment_focus
+          )
+
+          if result[:success]
+            render json: {
+              success: true,
+              recommendations: result[:recommendations].map { |rec| format_recommendation(rec) },
+              matching_criteria: result[:matching_criteria],
+              total_considered: result[:total_considered],
+              club_risk_profile: recommendation_service.get_club_risk_profile
+            }
+          else
+            render json: { 
+              success: false, 
+              error: result[:error],
+              recommendations: []
+            }, status: :unprocessable_entity
+          end
+        end
+
+        # GET /api/v1/investment_clubs/:id/ai_recommendations/explain?campaign_id=:campaign_id
+        def explain
+          campaign = Campaign.find_by(id: params[:campaign_id])
+          
+          unless campaign
+            return render json: { 
+              success: false, 
+              error: "Campaign not found" 
+            }, status: :not_found
+          end
+
+          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
+          result = recommendation_service.explain_recommendation(campaign)
+
+          if result[:success]
+            render json: {
+              success: true,
+              explanation: result[:explanation],
+              club_alignment: result[:club_alignment],
+              key_factors: result[:key_factors],
+              campaign: format_campaign_for_explanation(campaign)
+            }
+          else
+            render json: { 
+              success: false, 
+              error: result[:error],
+              fallback_explanation: result[:fallback_explanation]
+            }, status: :unprocessable_entity
+          end
+        end
+
+        # GET /api/v1/investment_clubs/:id/ai_recommendations/risk_profile
+        def risk_profile
+          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
+          risk_profile = recommendation_service.get_club_risk_profile
+
+          render json: {
+            success: true,
+            risk_profile: risk_profile,
+            club: {
+              id: @investment_club.id,
+              name: @investment_club.name,
+              mission: @investment_club.mission
+            }
+          }
+        end
+
+        private
+
+        def set_investment_club
+          @investment_club = InvestmentClub.find_by(slug: params[:id])
+          unless @investment_club
+            render json: { success: false, error: "Investment club not found" }, status: :not_found
+          end
+        end
+
+        def check_membership
+          unless @investment_club.is_member?(@current_user)
+            render json: { success: false, error: "Not a member of this investment club" }, status: :forbidden
+          end
+        end
+
+        def format_recommendation(recommendation)
+          campaign = recommendation[:campaign]
+          {
+            campaign: format_campaign_basic(campaign),
+            match_score: recommendation[:match_score],
+            reasoning: recommendation[:reasoning],
+            key_alignment_factors: recommendation[:key_alignment_factors],
+            potential_concerns: recommendation[:potential_concerns],
+            ai_analysis_available: campaign.comprehensive_ai_analysis_present?,
+            quick_assessment: {
+              risk_alignment: calculate_risk_alignment_display(campaign),
+              strategic_fit: calculate_strategic_fit_display(campaign),
+              financial_suitability: calculate_financial_suitability_display(campaign)
+            }
+          }
+        end
+
+        def format_campaign_basic(campaign)
+          {
+            id: campaign.id,
+            title: campaign.title,
+            category: campaign.category,
+            description: campaign.description.to_plain_text.truncate(200),
+            goal_amount: campaign.goal_amount,
+            current_amount: campaign.current_amount,
+            performance_percentage: campaign.performance_percentage,
+            currency: campaign.currency,
+            location: campaign.location,
+            status: campaign.status,
+            ai_deal_score: campaign.ai_deal_score,
+            ai_risk_score: campaign.ai_risk_score,
+            ai_risk_category: campaign.ai_risk_category,
+            fundraiser: {
+              id: campaign.fundraiser.id,
+              name: campaign.fundraiser.full_name,
+              kyc_verified: campaign.fundraiser.kyc_verified?
+            },
+            media_url: campaign.media_url,
+            total_donors: campaign.total_donors,
+            remaining_days: campaign.remaining_days
+          }
+        end
+
+        def format_campaign_for_explanation(campaign)
+          format_campaign_basic(campaign).merge({
+            team_assessment: campaign.ai_team_assessment_data,
+            market_analysis: campaign.ai_market_analysis,
+            investment_thesis: campaign.investment_thesis,
+            upside_downside_analysis: campaign.upside_downside_analysis
+          })
+        end
+
+        def calculate_risk_alignment_display(campaign)
+          return "unknown" unless campaign.ai_risk_score
+          
+          case campaign.ai_risk_score
+          when 0..30 then "low"
+          when 31..60 then "medium" 
+          when 61..100 then "high"
+          else "unknown"
+          end
+        end
+
+        def calculate_strategic_fit_display(campaign)
+          # Simple strategic fit based on category alignment with club
+          club_focus = @investment_club.description.to_s.downcase
+          campaign_category = campaign.category.to_s.downcase
+          
+          if club_focus.include?(campaign_category) || campaign_category.include?(@investment_club.mission.to_s.downcase)
+            "high"
+          else
+            "medium"
+          end
+        end
+
+        def calculate_financial_suitability_display(campaign)
+          club_balance = @investment_club.current_balance.to_f
+          campaign_goal = campaign.goal_amount.to_f
+          
+          if campaign_goal <= club_balance * 0.1
+            "excellent"
+          elsif campaign_goal <= club_balance * 0.3
+            "good"
+          elsif campaign_goal <= club_balance
+            "moderate"
+          else
+            "challenging"
+          end
+        end
+      end
+    end
+  end
+end

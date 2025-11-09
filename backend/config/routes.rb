@@ -299,6 +299,15 @@ Rails.application.routes.draw do
           end
         end
 
+        resources :clubs, only: [] do
+          member do
+            # AI Recommendation routes
+            get 'ai_recommendations', to: 'ai_recommendations#index'
+            get 'ai_recommendations/explain', to: 'ai_recommendations#explain'
+            get 'ai_recommendations/risk_profile', to: 'ai_recommendations#risk_profile'
+          end
+        end
+
         # Club operations
         resources :contributions, only: [:index, :create], controller: 'club_contributions'
         resources :investments, only: [:index, :create], controller: 'club_investments' do
