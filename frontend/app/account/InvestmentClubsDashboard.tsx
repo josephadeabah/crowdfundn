@@ -783,7 +783,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                   {!showAIRecommendations && (
                     <button
                       onClick={handleGetAIRecommendations}
-                      className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-all hover:shadow-md"
+                      className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-gradient-to-r from-yellow-100 to-orange-400 text-white rounded-lg hover:from-yellow-300 hover:to-orange-200 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-all hover:shadow-md"
                     >
                       <Sparkles size={16} />
                       Get AI Recommendations
@@ -791,14 +791,14 @@ const InvestmentClubsDashboard: React.FC = () => {
                   )}
                   <button
                     onClick={handleMakeContribution}
-                    className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm lg:text-base text-left flex items-center gap-2"
+                    className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-medium text-sm lg:text-base text-left flex items-center gap-2"
                   >
                     <DollarSign size={16} />
                     Make Contribution
                   </button>
                   <button
                     onClick={handleProposeInvestment}
-                    className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-emerald-600 text-emerald-700 rounded-lg hover:bg-emerald-50 font-medium text-sm lg:text-base text-left flex items-center gap-2"
+                    className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-emerald-400 text-emerald-500 rounded-full hover:bg-emerald-50 font-medium text-sm lg:text-base text-left flex items-center gap-2"
                   >
                     <TrendingUp size={16} />
                     Propose Investment
