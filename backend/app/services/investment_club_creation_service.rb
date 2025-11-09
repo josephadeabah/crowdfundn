@@ -10,9 +10,6 @@ class InvestmentClubCreationService
       # Extract and prepare club data
       club_data = @params[:investment_club] || @params
       
-      # Ensure club_type is properly set
-      Rails.logger.info "DEBUG: Creating club with club_type=#{club_data[:club_type]}"
-      
       # Create the club with the creator
       club_attributes = {
         name: club_data[:name],
@@ -29,25 +26,7 @@ class InvestmentClubCreationService
       
       club = InvestmentClub.new(club_attributes)
       
-      # Debug the club attributes before save
-      Rails.logger.info "DEBUG: Club attributes before save:"
-      Rails.logger.info "  club_type=#{club.club_type}"
-      Rails.logger.info "  access_type=#{club.access_type}"
-      Rails.logger.info "  current_members_count=#{club.current_members_count}"
-      Rails.logger.info "  valid?=#{club.valid?}"
-      Rails.logger.info "  errors=#{club.errors.full_messages}" unless club.valid?
-      
       if club.save
-        Rails.logger.info "DEBUG: Club saved successfully:"
-        Rails.logger.info "  club_type=#{club.club_type}"
-        Rails.logger.info "  access_type=#{club.access_type}"
-        Rails.logger.info "  current_members_count=#{club.current_members_count}"
-        
-        # Verify creator membership was created
-        creator_membership = club.investment_club_memberships.find_by(user: @creator)
-        Rails.logger.info "DEBUG: Creator membership created: #{creator_membership.present?}"
-        Rails.logger.info "DEBUG: Creator membership details: #{creator_membership.as_json}" if creator_membership
-        
         # Force update members count to ensure it's correct
         club.update_members_count
         
@@ -56,13 +35,10 @@ class InvestmentClubCreationService
         
         { success: true, club: club }
       else
-        Rails.logger.error "DEBUG: Club save failed: #{club.errors.full_messages}"
         { success: false, errors: club.errors.full_messages }
       end
     end
   rescue => e
-    Rails.logger.error "DEBUG: Club creation error: #{e.message}"
-    Rails.logger.error "DEBUG: Backtrace: #{e.backtrace.first(10).join("\n")}"
     { success: false, error: e.message }
   end
   
