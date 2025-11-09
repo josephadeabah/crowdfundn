@@ -88,6 +88,11 @@ module Api
 
         private
 
+        def calculate_performance_percentage(campaign)
+          return 0 if campaign.goal_amount.to_f <= 0
+          campaign.performance_percentage || ((campaign.current_amount.to_f / campaign.goal_amount.to_f) * 100).round(2)
+        end
+
         def set_investment_club
           @investment_club = InvestmentClub.find_by(slug: params[:id])
           unless @investment_club
@@ -121,6 +126,8 @@ module Api
         end
 
         def format_campaign_basic(campaign)
+          performance_percentage = calculate_performance_percentage(campaign)
+          
           {
             id: campaign.id,
             title: campaign.title,
@@ -128,7 +135,7 @@ module Api
             description: campaign.description.to_plain_text.truncate(200),
             goal_amount: campaign.goal_amount,
             current_amount: campaign.current_amount,
-            performance_percentage: campaign.performance_percentage,
+            performance_percentage: performance_percentage, # Use calculated value
             currency: campaign.currency,
             location: campaign.location,
             status: campaign.status,

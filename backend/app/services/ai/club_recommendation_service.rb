@@ -233,11 +233,12 @@ module AI
       # More nuanced risk filtering that considers multiple factors
       case tolerance
       when 'conservative'
-        campaigns.where("(ai_risk_score <= 35 OR ai_risk_score IS NULL) AND performance_percentage >= 30")
+        # Remove performance_percentage filter since the column doesn't exist
+        campaigns.where("(ai_risk_score <= 35 OR ai_risk_score IS NULL)")
       when 'aggressive'
-        campaigns.where("(ai_risk_score >= 55 OR ai_risk_score IS NULL) AND performance_percentage >= 10")
+        campaigns.where("(ai_risk_score >= 55 OR ai_risk_score IS NULL)")
       else # moderate
-        campaigns.where("((ai_risk_score BETWEEN 25 AND 65) OR ai_risk_score IS NULL) AND performance_percentage >= 20")
+        campaigns.where("((ai_risk_score BETWEEN 25 AND 65) OR ai_risk_score IS NULL)")
       end
     end
 
@@ -278,6 +279,10 @@ module AI
         # Basic quality checks
         next false if campaign.description.blank?
         next false if campaign.goal_amount.to_f <= 0
+        
+        # Use calculated performance percentage
+        performance_percentage = calculate_performance_percentage(campaign)
+        next false if performance_percentage < 10 # Minimum performance threshold
         
         # For equity campaigns, additional checks
         if campaign.is_a?(EquityCampaign)
@@ -323,6 +328,9 @@ module AI
       score = 0
       max_score = 100
       
+      # Calculate performance percentage
+      performance_percentage = calculate_performance_percentage(campaign)
+      
       # 1. Risk alignment (20 points)
       risk_score = campaign.ai_risk_score || 50
       club_risk = case club_profile[:risk_tolerance]
@@ -355,11 +363,11 @@ module AI
       # 4. Performance potential (15 points)
       if campaign.ai_deal_score && campaign.ai_deal_score >= 80
         score += 15
-      elsif campaign.performance_percentage >= 70
+      elsif performance_percentage >= 70
         score += 12
-      elsif campaign.performance_percentage >= 40
+      elsif performance_percentage >= 40
         score += 8
-      elsif campaign.performance_percentage >= 20
+      elsif performance_percentage >= 20
         score += 5
       end
       
