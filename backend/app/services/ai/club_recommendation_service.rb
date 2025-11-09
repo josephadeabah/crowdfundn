@@ -227,6 +227,7 @@ module AI
       else # moderate
         campaigns.where("(ai_risk_score BETWEEN 25 AND 65) OR ai_risk_score IS NULL")
       end
+      campaigns # i'll remove this line later (for testing purposes)
     end
 
     def enhanced_filter_by_financial_constraints(campaigns)
