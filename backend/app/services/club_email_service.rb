@@ -144,7 +144,7 @@ class ClubEmailService
   # HTML Content Builders
   def self.build_pending_member_html(admin, membership, club)
     applicant_name = membership.user.full_name
-    club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
+    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~HTML
       <!DOCTYPE html>
@@ -169,8 +169,7 @@ class ClubEmailService
               <p><strong>#{applicant_name}</strong> has requested to join your investment club <strong>#{club.name}</strong>.</p>
               
               <div class="action-section">
-                <p>Please review this request in your club management dashboard:</p>
-                <a href="#{club_url}" class="cta-button">Review Request</a>
+                <p>Please review this request in your club management dashboard.</p>
               </div>
 
               <p>Warm regards,<br>
@@ -185,7 +184,7 @@ class ClubEmailService
   end
 
   def self.build_membership_approved_html(user, membership, club)
-    club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
+    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~HTML
       <!DOCTYPE html>
@@ -210,8 +209,7 @@ class ClubEmailService
               <p>Congratulations! Your membership request for <strong>#{club.name}</strong> has been approved.</p>
               
               <div class="action-section">
-                <p>You can now access all club features and participate in investment decisions:</p>
-                <a href="#{club_url}" class="cta-button">Visit Club</a>
+                <p>You can now access all club features and participate in investment decisions.</p>
               </div>
 
               <p>Welcome to the club!<br>
@@ -320,7 +318,7 @@ class ClubEmailService
   end
 
   def self.build_investment_executed_html(member, club_investment, club, campaign)
-    club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
+    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~HTML
       <!DOCTYPE html>
@@ -364,8 +362,7 @@ class ClubEmailService
               </div>
 
               <div class="action-section">
-                <p>View the investment details:</p>
-                <a href="#{club_url}" class="cta-button">View Club Portfolio</a>
+                <p>View the investment details on your club portfolio</p>
               </div>
 
               <p>Congratulations on this collective achievement!<br>
@@ -382,15 +379,14 @@ class ClubEmailService
   # Text Content Builders
   def self.build_pending_member_text(admin, membership, club)
     applicant_name = membership.user.full_name
-    club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
+    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~TEXT
       Hello #{admin.full_name},
 
       #{applicant_name} has requested to join your investment club #{club.name}.
 
-      Please review this request in your club management dashboard:
-      #{club_url}
+      Please review this request in your club management dashboard.
 
       Warm regards,
       The Bantuhive Team
@@ -398,15 +394,14 @@ class ClubEmailService
   end
 
   def self.build_membership_approved_text(user, membership, club)
-    club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
+    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~TEXT
       Hello #{user.full_name},
 
       Congratulations! Your membership request for #{club.name} has been approved.
 
-      You can now access all club features and participate in investment decisions:
-      #{club_url}
+      You can now access all club features and participate in investment decisions.
 
       Welcome to the club!
       The Bantuhive Team
@@ -448,7 +443,7 @@ class ClubEmailService
   end
 
   def self.build_investment_executed_text(member, club_investment, club, campaign)
-    club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
+    # club_url = Rails.application.routes.url_helpers.club_url(club.slug, host: 'bantuhive.com')
 
     <<~TEXT
       Hello #{member.full_name},
@@ -460,7 +455,7 @@ class ClubEmailService
       Investment Amount: #{campaign.currency_symbol}#{club_investment.investment_amount}
       Execution Date: #{club_investment.executed_at.strftime('%B %d, %Y')}
 
-      View the investment details: #{club_url}
+      View the investment details on your club portfolio.
 
       Congratulations on this collective achievement!
       The Bantuhive Team
