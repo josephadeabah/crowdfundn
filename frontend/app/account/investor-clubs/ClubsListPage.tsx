@@ -2,7 +2,6 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import ClubDetailsModal from './ClubDetailsModal';
 import CreateClubModal from './CreateClubModal';
 import Pagination from '@/app/components/pagination/Pagination';
 import {
@@ -65,6 +64,7 @@ import {
   Banknote,
 } from 'lucide-react';
 import { categoriesWithIcons, deslugify } from '@/app/utils/helpers/categories';
+import ClubDetailsModal from './club-details/ClubDetailsModal';
 
 const ClubsListPage: React.FC = () => {
   const { token, user } = useAuth();
