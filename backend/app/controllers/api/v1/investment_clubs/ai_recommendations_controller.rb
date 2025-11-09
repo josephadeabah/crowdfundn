@@ -3,6 +3,8 @@ module Api
   module V1
     module InvestmentClubs
       class AiRecommendationsController < ApplicationController
+        require Rails.root.join('app/services/ai/club_recommendation_service')
+
         before_action :authenticate_request
         before_action :set_investment_club
         before_action :check_membership
