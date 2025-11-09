@@ -2,7 +2,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import ClubDetailsModal from './investor-clubs/ClubDetailsModal';
 import CreateClubModal from './investor-clubs/CreateClubModal';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { useAuth } from '@/app/context/auth/AuthContext';
@@ -28,6 +27,7 @@ import {
   DollarSign,
   BarChart3,
 } from 'lucide-react';
+import ClubDetailsModal from './investor-clubs/club-details/ClubDetailsModal';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const { user, token } = useAuth();
