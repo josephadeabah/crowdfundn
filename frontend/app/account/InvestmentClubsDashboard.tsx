@@ -26,8 +26,13 @@ import {
   TrendingUp,
   DollarSign,
   BarChart3,
+  Sparkles,
+  Target,
+  Shield,
+  Zap,
 } from 'lucide-react';
 import ClubDetailsModal from './investor-clubs/club-details/ClubDetailsModal';
+import { aiRecommendationService, AIRecommendation } from './investor-clubs/aiRecommendationService';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const { user, token } = useAuth();
@@ -41,11 +46,19 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // AI Recommendation states
+  const [aiRecommendations, setAiRecommendations] = useState<AIRecommendation[]>([]);
+  const [showAIRecommendations, setShowAIRecommendations] = useState(false);
+  const [recommendationsLoading, setRecommendationsLoading] = useState(false);
+  const [clubRiskProfile, setClubRiskProfile] = useState<any>(null);
+
   // Alert states
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
   const [voteErrorAlert, setVoteErrorAlert] = useState(false);
   const [voteErrorMessage, setVoteErrorMessage] = useState('');
+  const [explanationAlert, setExplanationAlert] = useState(false);
+  const [explanationMessage, setExplanationMessage] = useState('');
 
   useEffect(() => {
     if (token) {
@@ -97,8 +110,41 @@ const InvestmentClubsDashboard: React.FC = () => {
         club.slug,
       );
       setPortfolio(portfolioResponse);
+
+      // Load AI risk profile
+      await loadClubRiskProfile(club.slug);
     } catch (error) {
       console.error('Failed to load club details:', error);
+    }
+  };
+
+  const loadAIRecommendations = async (clubId: string) => {
+    if (!token) return;
+    
+    try {
+      setRecommendationsLoading(true);
+      const response = await aiRecommendationService.getRecommendations(token, clubId, 5);
+      if (response.success) {
+        setAiRecommendations(response.recommendations);
+        setClubRiskProfile(response.club_risk_profile);
+      }
+    } catch (error) {
+      console.error('Failed to load AI recommendations:', error);
+    } finally {
+      setRecommendationsLoading(false);
+    }
+  };
+
+  const loadClubRiskProfile = async (clubId: string) => {
+    if (!token) return;
+
+    try {
+      const response = await aiRecommendationService.getRiskProfile(token, clubId);
+      if (response.success) {
+        setClubRiskProfile(response.risk_profile);
+      }
+    } catch (error) {
+      console.error('Failed to load club risk profile:', error);
     }
   };
 
@@ -122,6 +168,42 @@ const InvestmentClubsDashboard: React.FC = () => {
       console.error('Failed to vote:', error);
       setVoteErrorMessage(error.message || 'Failed to vote. Please try again.');
       setVoteErrorAlert(true);
+    }
+  };
+
+  const handleGetAIRecommendations = async () => {
+    if (!selectedClub) return;
+    
+    setShowAIRecommendations(true);
+    await loadAIRecommendations(selectedClub.slug);
+  };
+
+  const handleProposeInvestmentWithCampaign = (campaign: any) => {
+    setFeatureMessage(`Propose investment for: ${campaign.title}\n\nAmount: ${formatCurrency(campaign.goal_amount)}\n\nThis would open the investment proposal form with this campaign pre-selected.`);
+    setFeatureAlert(true);
+  };
+
+  const handleExplainRecommendation = async (campaignId: string) => {
+    if (!selectedClub || !token) return;
+
+    try {
+      const response = await aiRecommendationService.getExplanation(
+        token,
+        selectedClub.slug,
+        campaignId
+      );
+      
+      if (response.success) {
+        setExplanationMessage(response.explanation.explanation);
+        setExplanationAlert(true);
+      } else {
+        setExplanationMessage(response.fallback_explanation || 'Unable to generate explanation at this time.');
+        setExplanationAlert(true);
+      }
+    } catch (error) {
+      console.error('Failed to get explanation:', error);
+      setExplanationMessage('Failed to load explanation. Please try again.');
+      setExplanationAlert(true);
     }
   };
 
@@ -311,6 +393,184 @@ const InvestmentClubsDashboard: React.FC = () => {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
             {/* Left Column - Club Info and Members */}
             <div className="xl:col-span-2 space-y-4 lg:space-y-6">
+              {/* AI Recommendations Section */}
+              {showAIRecommendations && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6 shadow-sm"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                      <Sparkles className="text-purple-600" size={20} />
+                      AI Club Assistant Recommendations
+                    </h3>
+                    <button
+                      onClick={() => setShowAIRecommendations(false)}
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+
+                  {clubRiskProfile && (
+                    <div className="mb-4 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Target className="text-purple-600" size={16} />
+                        <span className="text-sm font-medium text-purple-800">Club Profile</span>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                        <div>
+                          <div className="text-gray-600">Risk Tolerance</div>
+                          <div className="font-semibold text-purple-700 capitalize">{clubRiskProfile.risk_tolerance}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-600">Focus</div>
+                          <div className="font-semibold text-purple-700 capitalize">{clubRiskProfile.investment_focus || 'Diversified'}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-600">Members</div>
+                          <div className="font-semibold text-purple-700">{currentClub.current_members_count}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-600">Balance</div>
+                          <div className="font-semibold text-purple-700">{formatCurrency(currentClub.financials.current_balance)}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {recommendationsLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                      <span className="ml-3 text-gray-600">Analyzing opportunities...</span>
+                    </div>
+                  ) : aiRecommendations.length > 0 ? (
+                    <div className="space-y-4">
+                      {aiRecommendations.map((recommendation, index) => (
+                        <div
+                          key={recommendation.campaign.id}
+                          className="border border-gray-200 rounded-lg p-4 hover:border-purple-300 transition-colors group"
+                        >
+                          <div className="flex justify-between items-start mb-3">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-lg line-clamp-2 group-hover:text-purple-700 transition-colors">
+                                {recommendation.campaign.title}
+                              </h4>
+                              <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+                                {recommendation.campaign.description}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2 ml-4">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  aiRecommendationService.getMatchScoreColor(
+                                    recommendation.match_score,
+                                  )
+                                } bg-opacity-10 border`}
+                              >
+                                {aiRecommendationService.formatMatchScore(
+                                  recommendation.match_score,
+                                )}
+                              </span>
+                              <span className="text-sm font-bold text-gray-700">
+                                {recommendation.match_score}%
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-4 mb-3 text-xs">
+                            <div className="text-center p-2 bg-gray-50 rounded-lg">
+                              <div className="font-medium text-gray-600">Risk</div>
+                              <div
+                                className={`font-semibold ${
+                                  recommendation.quick_assessment.risk_alignment === 'low'
+                                    ? 'text-green-600'
+                                    : recommendation.quick_assessment.risk_alignment ===
+                                        'medium'
+                                      ? 'text-yellow-600'
+                                      : 'text-red-600'
+                                }`}
+                              >
+                                {aiRecommendationService.formatRiskAlignment(
+                                  recommendation.quick_assessment.risk_alignment,
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-center p-2 bg-gray-50 rounded-lg">
+                              <div className="font-medium text-gray-600">Strategic Fit</div>
+                              <div
+                                className={`font-semibold ${
+                                  recommendation.quick_assessment.strategic_fit === 'high'
+                                    ? 'text-green-600'
+                                    : 'text-yellow-600'
+                                }`}
+                              >
+                                {recommendation.quick_assessment.strategic_fit}
+                              </div>
+                            </div>
+                            <div className="text-center p-2 bg-gray-50 rounded-lg">
+                              <div className="font-medium text-gray-600">Financial Fit</div>
+                              <div
+                                className={`font-semibold ${
+                                  recommendation.quick_assessment.financial_suitability ===
+                                  'excellent'
+                                    ? 'text-green-600'
+                                    : recommendation.quick_assessment
+                                          .financial_suitability === 'good'
+                                      ? 'text-blue-600'
+                                      : 'text-yellow-600'
+                                }`}
+                              >
+                                {recommendation.quick_assessment.financial_suitability}
+                              </div>
+                            </div>
+                          </div>
+
+                          {recommendation.key_alignment_factors.length > 0 && (
+                            <div className="mb-3">
+                              <div className="flex flex-wrap gap-1">
+                                {recommendation.key_alignment_factors.slice(0, 3).map((factor, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full flex items-center gap-1"
+                                  >
+                                    <Zap size={10} />
+                                    {factor}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleProposeInvestmentWithCampaign(recommendation.campaign)}
+                              className="flex-1 px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm transition-colors"
+                            >
+                              Propose Investment
+                            </button>
+                            <button
+                              onClick={() => handleExplainRecommendation(recommendation.campaign.id)}
+                              className="px-3 py-2 border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 font-medium text-sm transition-colors flex items-center gap-1"
+                            >
+                              <Sparkles size={14} />
+                              Learn More
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <Sparkles size={32} className="mx-auto mb-3 text-gray-400" />
+                      <p>No AI recommendations available at this time.</p>
+                      <p className="text-sm mt-1">Try adjusting your club's investment criteria.</p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
               {/* Club Summary Card */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -520,6 +780,15 @@ const InvestmentClubsDashboard: React.FC = () => {
                   Quick Actions
                 </h3>
                 <div className="space-y-2 lg:space-y-3">
+                  {!showAIRecommendations && (
+                    <button
+                      onClick={handleGetAIRecommendations}
+                      className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-all hover:shadow-md"
+                    >
+                      <Sparkles size={16} />
+                      Get AI Recommendations
+                    </button>
+                  )}
                   <button
                     onClick={handleMakeContribution}
                     className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm lg:text-base text-left flex items-center gap-2"
@@ -651,6 +920,16 @@ const InvestmentClubsDashboard: React.FC = () => {
         onConfirm={() => setVoteErrorAlert(false)}
         confirmText="OK"
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+      />
+
+      <AlertPopup
+        title="AI Recommendation Explanation"
+        message={explanationMessage}
+        isOpen={explanationAlert}
+        setIsOpen={setExplanationAlert}
+        onConfirm={() => setExplanationAlert(false)}
+        confirmText="Understood"
+        confirmButtonClass="bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
       />
     </div>
   );

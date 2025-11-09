@@ -1,0 +1,198 @@
+// app/account/investor-clubs/aiRecommendationService.ts
+export interface AIRecommendation {
+  campaign: {
+    id: string;
+    title: string;
+    category: string;
+    description: string;
+    goal_amount: number;
+    current_amount: number;
+    performance_percentage: number;
+    currency: string;
+    location: string;
+    status: string;
+    ai_deal_score: number | null;
+    ai_risk_score: number | null;
+    ai_risk_category: string | null;
+    fundraiser: {
+      id: string;
+      name: string;
+      kyc_verified: boolean;
+    };
+    media_url: string | null;
+    total_donors: number;
+    remaining_days: number;
+  };
+  match_score: number;
+  reasoning: string;
+  key_alignment_factors: string[];
+  potential_concerns: string[];
+  ai_analysis_available: boolean;
+  quick_assessment: {
+    risk_alignment: string;
+    strategic_fit: string;
+    financial_suitability: string;
+  };
+}
+
+export interface ExplanationResponse {
+  success: boolean;
+  explanation: {
+    explanation: string;
+    alignment_summary?: {
+      risk_alignment: string;
+      strategic_fit: string;
+      financial_fit: string;
+    };
+    key_considerations?: string[];
+    recommendation_strength?: string;
+  };
+  club_alignment?: any;
+  key_factors?: string[];
+  campaign?: any;
+  error?: string;
+  fallback_explanation?: string;
+}
+
+export interface RiskProfile {
+  name: string;
+  mission: string;
+  investment_focus: string;
+  risk_tolerance: string;
+  mission_alignment: any;
+  historical_investments: any;
+  member_preferences: any;
+  financial_constraints: any;
+}
+
+class AIRecommendationService {
+  private baseUrl: string;
+
+  constructor() {
+    this.baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || '';
+  }
+
+  async getRecommendations(
+    token: string,
+    clubId: string,
+    limit: number = 10,
+    riskTolerance?: string,
+    investmentFocus?: string,
+  ): Promise<{
+    success: boolean;
+    recommendations: AIRecommendation[];
+    matching_criteria: any;
+    total_considered: number;
+    club_risk_profile: RiskProfile;
+  }> {
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      ...(riskTolerance && { risk_tolerance: riskTolerance }),
+      ...(investmentFocus && { investment_focus: investmentFocus }),
+    });
+
+    const response = await fetch(
+      `${this.baseUrl}/investment_clubs/${clubId}/ai_recommendations?${params}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch AI recommendations');
+    }
+
+    return await response.json();
+  }
+
+  async getExplanation(
+    token: string,
+    clubId: string,
+    campaignId: string,
+  ): Promise<ExplanationResponse> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/investment_clubs/${clubId}/ai_recommendations/explain?campaign_id=${campaignId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch explanation');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching explanation:', error);
+      return {
+        success: false,
+        error: 'Failed to fetch explanation',
+        fallback_explanation: 'Unable to generate detailed analysis at this time. Please try again later.',
+        explanation: {
+          explanation: 'Unable to generate detailed analysis at this time. Please try again later.'
+        }
+      };
+    }
+  }
+
+  async getRiskProfile(
+    token: string,
+    clubId: string,
+  ): Promise<{
+    success: boolean;
+    risk_profile: RiskProfile;
+    club: any;
+  }> {
+    const response = await fetch(
+      `${this.baseUrl}/investment_clubs/${clubId}/ai_recommendations/risk_profile`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch risk profile');
+    }
+
+    return await response.json();
+  }
+
+  // Helper method to format match score for display
+  formatMatchScore(score: number): string {
+    if (score >= 80) return 'Excellent';
+    if (score >= 60) return 'Good';
+    if (score >= 40) return 'Fair';
+    return 'Poor';
+  }
+
+  // Helper method to get color for match score
+  getMatchScoreColor(score: number): string {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-blue-600';
+    if (score >= 40) return 'text-yellow-600';
+    return 'text-red-600';
+  }
+
+  // Helper method to format risk alignment
+  formatRiskAlignment(alignment: string): string {
+    const mapping: { [key: string]: string } = {
+      low: 'Low Risk',
+      medium: 'Medium Risk',
+      high: 'High Risk',
+      unknown: 'Risk Unknown',
+    };
+    return mapping[alignment] || alignment;
+  }
+}
+
+export const aiRecommendationService = new AIRecommendationService();
