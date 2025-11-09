@@ -166,10 +166,10 @@ module Api
 
         def calculate_strategic_fit_display(campaign)
           # Simple strategic fit based on category alignment with club
-          club_focus = @investment_club.description.to_s.downcase
+          club_mission = @investment_club.mission.to_s.downcase
           campaign_category = campaign.category.to_s.downcase
           
-          if club_focus.include?(campaign_category) || campaign_category.include?(@investment_club.mission.to_s.downcase)
+          if club_mission.include?(campaign_category) || campaign_category.include?(@investment_club.mission.to_s.downcase)
             "high"
           else
             "medium"

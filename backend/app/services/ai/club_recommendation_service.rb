@@ -109,7 +109,6 @@ module AI
     end
 
     def extract_investment_focus
-      # Parse investment focus from club description and mission
       focus_keywords = {
         'technology' => ['tech', 'software', 'ai', 'blockchain', 'digital', 'innovation'],
         'real_estate' => ['property', 'real estate', 'housing', 'commercial', 'residential'],
@@ -119,7 +118,8 @@ module AI
         'financial_services' => ['fintech', 'banking', 'finance', 'investment', 'insurance']
       }
       
-      text = "#{@club.mission} #{@club.description}".downcase
+      # Use only mission since description doesn't exist on InvestmentClub
+      text = @club.mission.to_s.downcase
       matches = focus_keywords.map do |sector, keywords|
         matches = keywords.count { |keyword| text.include?(keyword) }
         [sector, matches]
@@ -162,7 +162,7 @@ module AI
 
     def extract_mission_alignment
       # Extract key mission themes for alignment scoring
-      mission_text = "#{@club.mission} #{@club.description}".downcase
+      mission_text = @club.mission.to_s.downcase
       
       themes = {
         social_impact: ['social', 'impact', 'community', 'sustainable', 'ethical'],

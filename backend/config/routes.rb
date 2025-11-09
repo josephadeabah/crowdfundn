@@ -327,7 +327,7 @@ Rails.application.routes.draw do
           get :discover
         end
 
-        # AI Recommendation routes - FIXED VERSION with explicit controller
+        # AI Campaign Recommendation for clubs routes - FIXED VERSION with explicit controller
         member do
           get 'ai_recommendations', to: 'investment_clubs/ai_recommendations#index'
           get 'ai_recommendations/risk_profile', to: 'investment_clubs/ai_recommendations#risk_profile'
