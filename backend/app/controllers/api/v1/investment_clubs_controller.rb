@@ -7,10 +7,14 @@ module Api
       # GET /api/v1/investment_clubs
       def index
         clubs = InvestmentClub.active.includes(:creator, investment_club_memberships: :user)
-        
+                             .order(created_at: :desc)
+                             .page(params[:page] || 1)
+                             .per(params[:per_page] || 10)
+
         render json: {
           success: true,
-          clubs: clubs.map { |club| InvestmentClubSerializer.new(club, current_user: @current_user).as_json }
+          clubs: clubs.map { |club| InvestmentClubSerializer.new(club, current_user: @current_user).as_json },
+          pagination: pagination_data(clubs)
         }
       end
 
@@ -19,10 +23,14 @@ module Api
         user_clubs = InvestmentClub.joins(:investment_club_memberships)
                                   .where(investment_club_memberships: { user_id: @current_user.id, status: 'active' })
                                   .includes(:creator, investment_club_memberships: :user)
+                                  .order(created_at: :desc)
+                                  .page(params[:page] || 1)
+                                  .per(params[:per_page] || 10)
         
         render json: {
           success: true,
-          clubs: user_clubs.map { |club| InvestmentClubSerializer.new(club, current_user: @current_user).as_json }
+          clubs: user_clubs.map { |club| InvestmentClubSerializer.new(club, current_user: @current_user).as_json },
+          pagination: pagination_data(user_clubs)
         }
       end
 
@@ -33,10 +41,14 @@ module Api
         discover_clubs = InvestmentClub.active
                                       .where.not(id: user_club_ids)
                                       .includes(:creator, investment_club_memberships: :user)
+                                      .order(created_at: :desc)
+                                      .page(params[:page] || 1)
+                                      .per(params[:per_page] || 10)
         
         render json: {
           success: true,
-          clubs: discover_clubs.map { |club| InvestmentClubSerializer.new(club, current_user: @current_user).as_json }
+          clubs: discover_clubs.map { |club| InvestmentClubSerializer.new(club, current_user: @current_user).as_json },
+          pagination: pagination_data(discover_clubs)
         }
       end
 
@@ -364,6 +376,16 @@ module Api
         @club.admin_members.each do |admin|
           ClubMailer.pending_member_notification(admin, membership).deliver_later
         end
+      end
+
+      # Add pagination data method (same as in EquityInvestmentsController)
+      def pagination_data(paginated_records)
+        {
+          current_page: paginated_records.current_page,
+          total_pages: paginated_records.total_pages,
+          per_page: paginated_records.limit_value,
+          total_count: paginated_records.total_count
+        }
       end
     end
   end
