@@ -125,7 +125,6 @@ module AI
     end
 
     def find_comprehensive_eligible_campaigns
-      # Include both Campaign and EquityCampaign with comprehensive data
       campaigns = Campaign.active
                           .where(is_public: true)
                           .where(appear_in_search_results: true)
@@ -139,18 +138,30 @@ module AI
       
       Rails.logger.info "Base comprehensive query found: #{campaigns.count} campaigns"
       
-      # Apply enhanced filters
+      # Apply enhanced filters one by one with debugging
       campaigns = enhanced_filter_by_investment_focus(campaigns)
+      Rails.logger.info "After investment focus filter: #{campaigns.count} campaigns"
+      
       campaigns = enhanced_filter_by_risk_tolerance(campaigns)
+      Rails.logger.info "After risk tolerance filter: #{campaigns.count} campaigns"
+      
       campaigns = enhanced_filter_by_financial_constraints(campaigns)
+      Rails.logger.info "After financial constraints filter: #{campaigns.count} campaigns"
+      
       campaigns = filter_by_fundraiser_trustworthiness(campaigns)
+      Rails.logger.info "After fundraiser trustworthiness filter: #{campaigns.count} campaigns"
+      
       campaigns = filter_by_campaign_quality(campaigns)
+      Rails.logger.info "After campaign quality filter: #{campaigns.count} campaigns"
       
-      Rails.logger.info "After comprehensive filters: #{campaigns.count} campaigns"
-      
-      campaigns.order(created_at: :desc)
+      # Handle both arrays and relations
+      if campaigns.is_a?(ActiveRecord::Relation)
+        campaigns.order(created_at: :desc)
+      else
+        campaigns.sort_by(&:created_at).reverse
+      end
     end
-
+    
     def enhanced_filter_by_investment_focus(campaigns)
       focus = extract_investment_focus
       return campaigns unless focus
@@ -233,12 +244,11 @@ module AI
       # More nuanced risk filtering that considers multiple factors
       case tolerance
       when 'conservative'
-        # Remove performance_percentage filter since the column doesn't exist
-        campaigns.where("(ai_risk_score <= 35 OR ai_risk_score IS NULL)")
+        campaigns.where("ai_risk_score <= 35 OR ai_risk_score IS NULL")
       when 'aggressive'
-        campaigns.where("(ai_risk_score >= 55 OR ai_risk_score IS NULL)")
+        campaigns.where("ai_risk_score >= 55 OR ai_risk_score IS NULL")
       else # moderate
-        campaigns.where("((ai_risk_score BETWEEN 25 AND 65) OR ai_risk_score IS NULL)")
+        campaigns.where("(ai_risk_score BETWEEN 25 AND 65) OR ai_risk_score IS NULL")
       end
     end
 
@@ -256,8 +266,10 @@ module AI
     end
 
     def filter_by_fundraiser_trustworthiness(campaigns)
-      # Filter out campaigns from fundraisers with red flags
-      campaigns.select do |campaign|
+      # Convert to array first since we're doing complex filtering
+      campaign_array = campaigns.to_a
+      
+      campaign_array.select do |campaign|
         fundraiser = campaign.fundraiser
         next false unless fundraiser
         
@@ -275,14 +287,13 @@ module AI
     end
 
     def filter_by_campaign_quality(campaigns)
-      campaigns.select do |campaign|
+      # Convert to array for complex filtering
+      campaign_array = campaigns.to_a
+      
+      campaign_array.select do |campaign|
         # Basic quality checks
         next false if campaign.description.blank?
         next false if campaign.goal_amount.to_f <= 0
-        
-        # Use calculated performance percentage
-        performance_percentage = calculate_performance_percentage(campaign)
-        next false if performance_percentage < 10 # Minimum performance threshold
         
         # For equity campaigns, additional checks
         if campaign.is_a?(EquityCampaign)
