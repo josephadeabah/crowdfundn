@@ -182,8 +182,8 @@ const ProfileTabs = () => {
           component: <ClubsListPage />,
           description:
             'Discover and join investment clubs to collaborate with other investors.',
-          badge: 'Soon',
-          badgeColor: 'bg-yellow-100 text-yellow-800',
+          badge: 'New',
+          badgeColor: 'bg-green-100 text-green-800',
         },
       ],
     },
