@@ -805,7 +805,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                   </button>
                   <button
                     onClick={handleViewAnalytics}
-                    className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm lg:text-base text-left flex items-center gap-2"
+                    className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 font-medium text-sm lg:text-base text-left flex items-center gap-2"
                   >
                     <BarChart3 size={16} />
                     View Analytics
