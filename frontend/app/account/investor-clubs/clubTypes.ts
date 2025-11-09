@@ -151,3 +151,34 @@ export interface CancelRequestResponse extends BaseResponse {}
 export interface ApproveMemberResponse extends BaseResponse {
   membership?: Member;
 }
+
+// Pagination interfaces
+export interface PaginationData {
+  current_page: number;
+  total_pages: number;
+  per_page: number;
+  total_count: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationData;
+}
+
+export interface ClubsResponse {
+  success: boolean;
+  clubs: Club[];
+  pagination: PaginationData;
+}
+
+export interface MyClubsResponse {
+  success: boolean;
+  clubs: Club[];
+  pagination: PaginationData;
+}
+
+export interface DiscoverClubsResponse {
+  success: boolean;
+  clubs: Club[];
+  pagination: PaginationData;
+}

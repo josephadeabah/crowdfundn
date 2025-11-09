@@ -13,11 +13,15 @@ import {
   RejectMemberResponse,
   CancelRequestResponse,
   ApproveMemberResponse,
+  ClubsResponse,
+  MyClubsResponse,
+  DiscoverClubsResponse,
+  PaginationData,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
-// Generic API call function
+// Generic API call function with pagination support
 const apiCall = async (
   endpoint: string,
   token: string,
@@ -43,19 +47,34 @@ const apiCall = async (
 
 // Investment Club API calls
 export const clubService = {
-  // Get all clubs
-  getClubs: async (token: string): Promise<{ clubs: Club[] }> => {
-    return apiCall('/investment_clubs', token);
+  // Get all clubs with pagination
+  getClubs: async (
+    token: string,
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<ClubsResponse> => {
+    const endpoint = `/investment_clubs?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
   },
 
-  // Get user's clubs
-  getMyClubs: async (token: string): Promise<{ clubs: Club[] }> => {
-    return apiCall('/investment_clubs/my_clubs', token);
+  // Get user's clubs with pagination
+  getMyClubs: async (
+    token: string,
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<MyClubsResponse> => {
+    const endpoint = `/investment_clubs/my_clubs?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
   },
 
-  // Discover clubs (not joined)
-  getDiscoverClubs: async (token: string): Promise<{ clubs: Club[] }> => {
-    return apiCall('/investment_clubs/discover', token);
+  // Discover clubs (not joined) with pagination
+  getDiscoverClubs: async (
+    token: string,
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<DiscoverClubsResponse> => {
+    const endpoint = `/investment_clubs/discover?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
   },
 
   // Get club details
@@ -192,20 +211,26 @@ export const clubService = {
 
 // Club Memberships API calls
 export const membershipService = {
-  // Get club members
+  // Get club members with pagination
   getMembers: async (
     token: string,
     clubId: string,
-  ): Promise<{ members: Member[] }> => {
-    return apiCall(`/investment_clubs/${clubId}/memberships`, token);
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<{ members: Member[]; pagination: PaginationData }> => {
+    const endpoint = `/investment_clubs/${clubId}/memberships?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
   },
 
-  // Get pending members
+  // Get pending members with pagination
   getPendingMembers: async (
     token: string,
     clubId: string,
-  ): Promise<{ pending_members: Member[] }> => {
-    return apiCall(`/investment_clubs/${clubId}/memberships/pending`, token);
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<{ pending_members: Member[]; pagination: PaginationData }> => {
+    const endpoint = `/investment_clubs/${clubId}/memberships/pending?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
   },
 
   // Get my membership
@@ -314,12 +339,18 @@ export const membershipService = {
 
 // Club Contributions API calls
 export const contributionService = {
-  // Get club contributions
+  // Get club contributions with pagination
   getContributions: async (
     token: string,
     clubId: string,
-  ): Promise<{ contributions: ClubContribution[] }> => {
-    return apiCall(`/investment_clubs/${clubId}/contributions`, token);
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<{
+    contributions: ClubContribution[];
+    pagination: PaginationData;
+  }> => {
+    const endpoint = `/investment_clubs/${clubId}/contributions?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
   },
 
   // Create contribution
@@ -342,12 +373,15 @@ export const contributionService = {
 
 // Club Investments API calls
 export const investmentService = {
-  // Get club investments
+  // Get club investments with pagination
   getInvestments: async (
     token: string,
     clubId: string,
-  ): Promise<{ investments: ClubInvestment[] }> => {
-    return apiCall(`/investment_clubs/${clubId}/investments`, token);
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<{ investments: ClubInvestment[]; pagination: PaginationData }> => {
+    const endpoint = `/investment_clubs/${clubId}/investments?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
   },
 
   // Create investment proposal
@@ -440,17 +474,35 @@ export const investmentService = {
 // Portfolio API calls
 export const portfolioService = {
   // Get club portfolio
-  getClubPortfolio: async (token: string, clubId: string): Promise<any> => {
-    return apiCall(`/investment_clubs/${clubId}/portfolio`, token);
+  getClubPortfolio: async (
+    token: string,
+    clubId: string,
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<any> => {
+    const endpoint = `/investment_clubs/${clubId}/portfolio?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
   },
 
   // Get club analytics
-  getClubAnalytics: async (token: string, clubId: string): Promise<any> => {
-    return apiCall(`/investment_clubs/${clubId}/analytics`, token);
+  getClubAnalytics: async (
+    token: string,
+    clubId: string,
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<any> => {
+    const endpoint = `/investment_clubs/${clubId}/analytics?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
   },
 
   // Get member portfolio
-  getMemberPortfolio: async (token: string, clubId: string): Promise<any> => {
-    return apiCall(`/investment_clubs/${clubId}/member_portfolio`, token);
+  getMemberPortfolio: async (
+    token: string,
+    clubId: string,
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<any> => {
+    const endpoint = `/investment_clubs/${clubId}/member_portfolio?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
   },
 };
