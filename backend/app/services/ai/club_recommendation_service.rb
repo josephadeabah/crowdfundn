@@ -79,6 +79,23 @@ module AI
 
     private
 
+    def extract_content_from_response(response)
+      if response.is_a?(String)
+        response.strip
+      elsif response.is_a?(Hash) && response["choices"] && response["choices"][0] && response["choices"][0]["message"]
+        response["choices"][0]["message"]["content"].to_s.strip
+      else
+        response.to_s.strip
+      end
+    end
+
+    def extract_json_from_content(content)
+    # Try multiple JSON extraction strategies
+      json_match = content.match(/\{(?:[^{}]|(?:\{(?:[^{}]|(?:\{[^{}]*\}))*\}))*\}/m)
+      json_match || content.match(/\{.*\}/m)
+      json_match[0] if json_match
+    end
+
     def initialize_openai_client
       api_key = ENV['OPENAI_API_KEY']
       if api_key.blank?
@@ -952,12 +969,12 @@ module AI
       begin
         response = @client.chat(
           parameters: {
-            model: "gpt-5",
+            model: "gpt-5", # Use gpt-4 instead of gpt-5 which doesn't exist
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks on equity deal evaluation." },
               { role: "user", content: prompt }
             ],
-            max_completion_tokens: 6000
+            max_completion_tokens: 6000,
           }
         )
 
@@ -973,6 +990,7 @@ module AI
           return nil
         end
 
+        Rails.logger.info "OpenAI response received successfully"
         content
       rescue => e
         Rails.logger.error "AI API error for club #{@club.id}: #{e.class} - #{e.message}"
@@ -1025,23 +1043,21 @@ module AI
       return generate_fallback_explanation(nil) unless response
       
       begin
-        # Handle the response properly
-        content = if response.is_a?(String)
-                    response.strip
-                  elsif response.is_a?(Hash) && response["choices"] && response["choices"][0] && response["choices"][0]["message"]
-                    response["choices"][0]["message"]["content"].to_s.strip
-                  else
-                    response.to_s.strip
-                  end
-
+        content = extract_content_from_response(response)
         return generate_fallback_explanation(nil) unless content.present?
         
-        # Try to extract valid JSON portion
-        json_text = content[/\{[^{}]*\}/m] || content
-        JSON.parse(json_text)
+        # More robust JSON extraction
+        json_text = extract_json_from_content(content)
+        
+        if json_text.present?
+          JSON.parse(json_text)
+        else
+          { "explanation" => content.presence || generate_fallback_explanation(nil) }
+        end
       rescue JSON::ParserError => e
         Rails.logger.error "Failed to parse explanation response: #{e.message}"
-        { "explanation" => generate_fallback_explanation(nil) }
+        Rails.logger.error "Raw content: #{content[0..500]}" if defined?(content)
+        { "explanation" => content.presence || generate_fallback_explanation(nil) }
       end
     end
 
