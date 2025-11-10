@@ -34,8 +34,7 @@ Rails.application.routes.draw do
         put 'users/:id/assign_role', to: 'users#assign_role'
         put 'users/:id/remove_role', to: 'users#remove_role'
         
-        # Subaccount routes - ADD THE MISSING CREATE ROUTE
-        post 'users/:user_id/create_subaccount', to: 'users#create_subaccount' # ADD THIS LINE
+        post 'users/:user_id/create_subaccount', to: 'users#create_subaccount' 
         get 'users/:user_id/subaccount', to: 'users#show_subaccount'
         put 'users/:user_id/update_subaccount', to: 'users#update_subaccount'
         
