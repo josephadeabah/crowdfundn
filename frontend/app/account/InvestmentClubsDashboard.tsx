@@ -201,25 +201,54 @@ const InvestmentClubsDashboard: React.FC = () => {
     if (!selectedClub || !token) return;
 
     try {
+      // Show loading state immediately
+      setExplanationMessage(
+        '🔄 Generating AI explanation... This may take up to 30 seconds.',
+      );
+      setExplanationAlert(true);
+
       const response = await aiRecommendationService.getExplanation(
         token,
         selectedClub.slug,
         campaignId,
+        45000, // 45 second timeout
       );
 
+      console.log('Explanation response:', response);
+
       if (response.success) {
-        setExplanationMessage(response.explanation.explanation);
-        setExplanationAlert(true);
+        // Use the helper method to extract explanation text
+        const explanationText = aiRecommendationService.extractExplanationText(
+          response.explanation,
+        );
+
+        if (
+          explanationText &&
+          explanationText !== 'No explanation available.'
+        ) {
+          setExplanationMessage(explanationText);
+        } else if (response.fallback_explanation) {
+          setExplanationMessage(response.fallback_explanation);
+        } else {
+          setExplanationMessage(
+            'Unable to generate detailed analysis at this time. Please try again later.',
+          );
+        }
       } else {
         setExplanationMessage(
           response.fallback_explanation ||
-            'Unable to generate explanation at this time.',
+            response.error ||
+            'Unable to generate explanation. Please try again.',
         );
-        setExplanationAlert(true);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get explanation:', error);
-      setExplanationMessage('Failed to load explanation. Please try again.');
+      setExplanationMessage(
+        error.message ||
+          'Failed to load explanation. Please check your connection and try again.',
+      );
+    } finally {
+      // Ensure the alert is shown with the final message
       setExplanationAlert(true);
     }
   };
