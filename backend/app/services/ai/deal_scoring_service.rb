@@ -614,9 +614,6 @@ module AI
       end
     end
 
-
-
-
     def parse_response(response)
       return fallback_analysis("No response from API") if response.nil?
       
