@@ -132,7 +132,7 @@ module AI
         - Assess technology defensibility and IP
         - Evaluate ESG factors and social impact
 
-        RESPONSE FORMAT (JSON only):
+        RESPONSE FORMAT (JSON only - this is critical):
         {
           "deal_score": number,
           "risk_score": number,
@@ -162,6 +162,7 @@ module AI
 
         Be objective, data-driven, and focus on investor protection. Balance upside potential against downside risks.
         Provide actionable insights for both supporters and investors.
+        IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, markdown, or code formatting outside the JSON structure.
       PROMPT
     end
 
@@ -617,16 +618,22 @@ module AI
     def parse_response(response)
       return fallback_analysis("No response from API") if response.nil?
       
-      # Safely extract content with proper error handling
-      content = if response.is_a?(Hash) && response["choices"] && response["choices"][0] && response["choices"][0]["message"]
+      # Handle the response structure properly
+      content = if response.is_a?(String)
+                  # Response is already a string (JSON content)
+                  response.strip
+                elsif response.is_a?(Hash) && response["choices"] && response["choices"][0] && response["choices"][0]["message"]
+                  # Response is the full OpenAI API response structure
                   response["choices"][0]["message"]["content"].to_s.strip
                 else
-                  Rails.logger.error "Invalid response structure: #{response.inspect}"
-                  ""
+                  # Try to handle other response formats
+                  response.to_s.strip
                 end
 
+      Rails.logger.info "Raw API response content: #{content[0..500]}..." if content.present?
+
       # Try to extract valid JSON portion between braces
-      json_text = content[/\{.*\}/m] || content
+      json_text = content[/\{[^{}]*\}/m] || content
 
       begin
         parsed_data = JSON.parse(json_text)
@@ -635,37 +642,96 @@ module AI
       rescue JSON::ParserError => e
         Rails.logger.error "Failed to parse JSON response: #{e.message}"
         Rails.logger.error "Response content: #{content}"
-        fallback_analysis(content)
+        
+        # Enhanced fallback with better error recovery
+        fallback_analysis(content, e)
       end
     end
 
-    def fallback_analysis(content)
-      Rails.logger.warn "Using fallback analysis due to parsing failure"
+    def extract_data_from_text(content)
+      return {} if content.blank?
+      
+      extracted = {}
+      
+      # Try to extract key values using regex patterns
+      if content.match(/\"deal_score\":\s*(\d+)/)
+        extracted[:deal_score] = content.match(/\"deal_score\":\s*(\d+)/)[1].to_i
+      end
+      
+      if content.match(/\"risk_score\":\s*(\d+)/)
+        extracted[:risk_score] = content.match(/\"risk_score\":\s*(\d+)/)[1].to_i
+      end
+      
+      if content.match(/\"risk_category\":\s*\"([^\"]+)\"/)
+        extracted[:risk_category] = content.match(/\"risk_category\":\s*\"([^\"]+)\"/)[1]
+      end
+      
+      if content.match(/\"sustainability_score\":\s*(\d+)/)
+        extracted[:sustainability_score] = content.match(/\"sustainability_score\":\s*(\d+)/)[1].to_i
+      end
+      
+      # Extract arrays using more robust pattern matching
+      if content.match(/\"upside_potential\":\s*\[(.*?)\]/m)
+        upside_text = content.match(/\"upside_potential\":\s*\[(.*?)\]/m)[1]
+        extracted[:upside_potential] = extract_array_items(upside_text)
+      end
+      
+      if content.match(/\"downside_risks\":\s*\[(.*?)\]/m)
+        risks_text = content.match(/\"downside_risks\":\s*\[(.*?)\]/m)[1]
+        extracted[:downside_risks] = extract_array_items(risks_text)
+      end
+      
+      # Extract text fields
+      if content.match(/\"analysis_summary\":\s*\"([^\"]+)\"/)
+        extracted[:analysis_summary] = content.match(/\"analysis_summary\":\s*\"([^\"]+)\"/)[1]
+      end
+      
+      if content.match(/\"investment_thesis\":\s*\"([^\"]+)\"/)
+        extracted[:investment_thesis] = content.match(/\"investment_thesis\":\s*\"([^\"]+)\"/)[1]
+      end
+      
+      extracted
+    end
+
+    def extract_array_items(text)
+      return [] if text.blank?
+      
+      # Split by commas that are outside quotes
+      items = text.scan(/"([^"]*)"/).flatten
+      items.present? ? items : text.split(',').map(&:strip).reject(&:blank?)
+    end
+
+    def fallback_analysis(content, error = nil)
+      Rails.logger.warn "Using enhanced fallback analysis due to parsing failure: #{error&.message}"
+      
+      # Try to extract some structured data from the content even if JSON parsing fails
+      extracted_data = extract_data_from_text(content)
+      
       {
-        "deal_score" => 50,
-        "risk_score" => 50,
-        "risk_category" => "medium",
-        "upside_potential" => ["Market growth potential", "Strong team background", "Innovative product/service"],
-        "downside_risks" => ["Market competition", "Execution risk", "Regulatory challenges"],
-        "strengths" => ["Experienced team", "Clear value proposition", "Market need"],
-        "recommendations" => ["Conduct due diligence", "Assess market fit", "Review financial projections"],
-        "sentiment_analysis" => "neutral",
-        "team_assessment" => "adequate",
-        "market_opportunity" => "medium",
-        "funding_potential" => "medium",
-        "timing_assessment" => "average",
-        "competitive_advantage" => "moderate",
-        "exit_potential" => "medium",
-        "scalability_assessment" => "medium",
-        "product_market_fit" => "moderate",
-        "technology_assessment" => "Standard technology implementation",
-        "regulatory_risks" => ["Standard industry regulations", "Compliance requirements"],
-        "market_trends" => ["Growing market demand", "Increased competition"],
-        "investor_alignment" => "Suitable for moderate risk investors",
-        "social_impact" => "Standard social impact for industry",
-        "sustainability_score" => 50,
-        "analysis_summary" => "Standard analysis due to parsing limitations",
-        "investment_thesis" => "Balanced opportunity with moderate risk-reward profile"
+        "deal_score" => extracted_data[:deal_score] || 50,
+        "risk_score" => extracted_data[:risk_score] || 50,
+        "risk_category" => extracted_data[:risk_category] || "medium",
+        "upside_potential" => extracted_data[:upside_potential] || ["Market growth potential", "Strong team background", "Innovative product/service"],
+        "downside_risks" => extracted_data[:downside_risks] || ["Market competition", "Execution risk", "Regulatory challenges"],
+        "strengths" => extracted_data[:strengths] || ["Experienced team", "Clear value proposition", "Market need"],
+        "recommendations" => extracted_data[:recommendations] || ["Conduct due diligence", "Assess market fit", "Review financial projections"],
+        "sentiment_analysis" => extracted_data[:sentiment_analysis] || "neutral",
+        "team_assessment" => extracted_data[:team_assessment] || "adequate",
+        "market_opportunity" => extracted_data[:market_opportunity] || "medium",
+        "funding_potential" => extracted_data[:funding_potential] || "medium",
+        "timing_assessment" => extracted_data[:timing_assessment] || "average",
+        "competitive_advantage" => extracted_data[:competitive_advantage] || "moderate",
+        "exit_potential" => extracted_data[:exit_potential] || "medium",
+        "scalability_assessment" => extracted_data[:scalability_assessment] || "medium",
+        "product_market_fit" => extracted_data[:product_market_fit] || "moderate",
+        "technology_assessment" => extracted_data[:technology_assessment] || "Standard technology implementation",
+        "regulatory_risks" => extracted_data[:regulatory_risks] || ["Standard industry regulations", "Compliance requirements"],
+        "market_trends" => extracted_data[:market_trends] || ["Growing market demand", "Increased competition"],
+        "investor_alignment" => extracted_data[:investor_alignment] || "Suitable for moderate risk investors",
+        "social_impact" => extracted_data[:social_impact] || "Standard social impact for industry",
+        "sustainability_score" => extracted_data[:sustainability_score] || 50,
+        "analysis_summary" => extracted_data[:analysis_summary] || "Analysis completed with fallback due to parsing issues",
+        "investment_thesis" => extracted_data[:investment_thesis] || "Balanced opportunity with moderate risk-reward profile. Original analysis available in raw response."
       }
     end
 
