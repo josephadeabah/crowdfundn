@@ -581,40 +581,39 @@ module AI
       begin
         response = @client.chat(
           parameters: {
-            model: "gpt-5", # ✅ main model
+            model: "gpt-5",
             messages: [
               { role: "system", content: "You are an expert AI investment analyst specializing in crowdfunding, fintech, and equity deal evaluation." },
               { role: "user", content: prompt }
             ],
-            max_completion_tokens: 6000 # ✅ correct key for GPT-5
+            max_completion_tokens: 6000
           }
         )
 
-        if response.nil? || response.dig("choices", 0, "message", "content").blank?
-          Rails.logger.error "GPT-5 returned an empty response for campaign #{@campaign.id}"
-          return nil
+        content = response.dig("choices", 0, "message", "content")
+
+        if content.blank?
+          Rails.logger.warn "GPT-5 returned empty content. Falling back to GPT-4o..."
+          response = @client.chat(
+            parameters: {
+              model: "gpt-4o",
+              messages: [
+                { role: "system", content: "You are an expert AI investment analyst specializing in crowdfunding, fintech, and equity deal evaluation." },
+                { role: "user", content: prompt }
+              ],
+              max_tokens: 3000
+            }
+          )
+          content = response.dig("choices", 0, "message", "content")
         end
 
-        response.dig("choices", 0, "message", "content")
-
-      rescue Net::ReadTimeout, Faraday::TimeoutError => e
-        Rails.logger.error "GPT-5 API timeout for campaign #{@campaign.id}: #{e.message}"
-        sleep 5
-        retry_count ||= 0
-        retry_count += 1
-        retry if retry_count < 2
-        nil
-      rescue Faraday::ConnectionFailed => e
-        Rails.logger.error "GPT-5 connection failed: #{e.message}"
-        nil
-      rescue OpenAI::Error => e
-        Rails.logger.error "GPT-5 API error: #{e.message}"
-        nil
+        content
       rescue => e
-        Rails.logger.error "Unexpected GPT-5 error for campaign #{@campaign.id}: #{e.class} - #{e.message}"
+        Rails.logger.error "AI API error for campaign #{@campaign.id}: #{e.class} - #{e.message}"
         nil
       end
     end
+
 
 
 
