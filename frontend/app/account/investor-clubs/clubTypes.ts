@@ -15,6 +15,8 @@ export interface Club {
     total_contributions: number;
     total_invested: number;
     current_balance: number;
+    total_return?: number;
+    roi_percentage?: number;
   };
   creator: {
     id: string;
@@ -70,13 +72,14 @@ export interface ClubContribution {
   id: string;
   amount: number;
   currency: string;
-  status: 'pending' | 'completed' | 'failed';
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
   user: {
     id: string;
     full_name: string;
   };
-  transaction_reference: string;
+  transaction_reference?: string;
   created_at: string;
+  updated_at: string;
 }
 
 export interface ClubInvestment {

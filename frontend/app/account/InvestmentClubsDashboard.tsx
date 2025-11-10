@@ -1,9 +1,14 @@
+// app/account/investor-clubs/page.tsx
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { useClubData } from './investor-clubs/hooks/useClubData';
-import { investmentService } from './investor-clubs/clubservice';
+import {
+  investmentService,
+  contributionService,
+} from './investor-clubs/clubservice';
 import CreateClubModal from './investor-clubs/CreateClubModal';
+import { ContributionModal } from './investor-clubs/components/Contribution/ContributionModal';
 import { LoadingState } from './investor-clubs/components/Loading/LoadingState';
 import { MobileHeader } from './investor-clubs/components/ClubHeader/MobileHeader';
 import { ClubHeader } from './investor-clubs/components/ClubHeader/ClubHeader';
@@ -28,7 +33,7 @@ const InvestmentClubsDashboard: React.FC = () => {
     portfolio,
     loading,
     mobileMenuOpen,
-    token, // Get token from useClubData hook
+    token,
     loadUserClubs,
     loadClubDetails,
     setMobileMenuOpen,
@@ -37,7 +42,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   const {
     recommendations,
     showAIRecommendations,
-    loading: recommendationsLoading, // Use the correct property name
+    loading: recommendationsLoading,
     clubRiskProfile,
     loadAIRecommendations,
     setShowAIRecommendations,
@@ -45,12 +50,61 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
   const [voteErrorAlert, setVoteErrorAlert] = useState(false);
   const [voteErrorMessage, setVoteErrorMessage] = useState('');
   const [explanationAlert, setExplanationAlert] = useState(false);
   const [explanationMessage, setExplanationMessage] = useState('');
+
+  // Check for payment callback on component mount
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const reference = urlParams.get('reference');
+      const trxref = urlParams.get('trxref');
+
+      if (reference || trxref) {
+        const paymentRef = reference || trxref;
+
+        if (paymentRef && selectedClub && token) {
+          try {
+            // Verify the payment
+            await contributionService.verifyContribution(
+              token,
+              selectedClub.slug,
+              paymentRef,
+            );
+
+            // Reload club data to reflect the new contribution
+            await loadClubDetails(selectedClub);
+
+            // Show success message
+            setFeatureMessage(
+              'Your contribution has been processed successfully!',
+            );
+            setFeatureAlert(true);
+
+            // Clean up URL
+            window.history.replaceState(
+              {},
+              document.title,
+              window.location.pathname,
+            );
+          } catch (error) {
+            console.error('Payment verification failed:', error);
+            setFeatureMessage(
+              'Payment verification failed. Please contact support if the issue persists.',
+            );
+            setFeatureAlert(true);
+          }
+        }
+      }
+    };
+
+    checkPaymentStatus();
+  }, [selectedClub, token, loadClubDetails]);
 
   const handleVote = async (investmentId: string, voteType: string) => {
     if (!selectedClub || !token) return;
@@ -62,13 +116,6 @@ const InvestmentClubsDashboard: React.FC = () => {
         investmentId,
         voteType,
       );
-      // Reload investments to get updated voting status
-      const investmentsResponse = await investmentService.getInvestments(
-        token,
-        selectedClub.slug,
-      );
-      // Update investments state - you'll need to add this to your useClubData hook
-      // For now, we'll reload the club details
       await loadClubDetails(selectedClub);
     } catch (error: any) {
       console.error('Failed to vote:', error);
@@ -97,7 +144,6 @@ const InvestmentClubsDashboard: React.FC = () => {
     if (!selectedClub || !token) return;
 
     try {
-      // Show loading state with campaign-specific info
       setExplanationMessage(
         `🔄 Generating AI analysis for "${campaignTitle}"...\n\nThis may take 30-60 seconds for detailed analysis.`,
       );
@@ -107,10 +153,8 @@ const InvestmentClubsDashboard: React.FC = () => {
         token,
         selectedClub.slug,
         campaignId,
-        90000, // 90 second timeout
+        90000,
       );
-
-      console.log('Explanation response:', response);
 
       if (response.success) {
         const explanationText = aiRecommendationService.extractExplanationText(
@@ -152,8 +196,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   };
 
   const handleMakeContribution = () => {
-    setFeatureMessage('Make Contribution feature would open here');
-    setFeatureAlert(true);
+    setIsContributionModalOpen(true);
   };
 
   const handleProposeInvestment = () => {
@@ -166,12 +209,18 @@ const InvestmentClubsDashboard: React.FC = () => {
     setFeatureAlert(true);
   };
 
-  const formatCurrency = (amount: number, currency: string = 'USD') => {
+  const handleContributionSuccess = async () => {
+    if (selectedClub) {
+      await loadClubDetails(selectedClub);
+    }
+  };
+
+  function formatCurrency(amount: number, currency: string = 'USD'): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
     }).format(amount);
-  };
+  }
 
   if (loading) {
     return <LoadingState />;
@@ -299,12 +348,23 @@ const InvestmentClubsDashboard: React.FC = () => {
 
       {/* Modals */}
       {currentClub && (
-        <ClubDetailsModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          club={currentClub}
-          members={members}
-        />
+        <>
+          <ClubDetailsModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            club={currentClub}
+            members={members}
+          />
+
+          <ContributionModal
+            isOpen={isContributionModalOpen}
+            onClose={() => setIsContributionModalOpen(false)}
+            onContributionSuccess={handleContributionSuccess}
+            club={currentClub}
+            token={token}
+            formatCurrency={formatCurrency}
+          />
+        </>
       )}
 
       <CreateClubModal

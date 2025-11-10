@@ -369,6 +369,21 @@ export const contributionService = {
       body: JSON.stringify({ amount }),
     });
   },
+
+  // Verify contribution payment
+  verifyContribution: async (
+    token: string,
+    clubId: string,
+    reference: string,
+  ): Promise<{
+    success: boolean;
+    contribution: ClubContribution;
+  }> => {
+    return apiCall(`/investment_clubs/${clubId}/contributions/verify`, token, {
+      method: 'POST',
+      body: JSON.stringify({ reference }),
+    });
+  },
 };
 
 // Club Investments API calls

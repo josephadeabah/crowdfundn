@@ -9,7 +9,7 @@ export interface DashboardState {
   portfolio: any;
   loading: boolean;
   mobileMenuOpen: boolean;
-  token?: string; // Add token to the state
+  token?: string;
 }
 
 export interface AIRecommendationsState {
@@ -41,4 +41,5 @@ export interface ClubActions {
   handleViewAnalytics: () => void;
   handleClubCreated: () => void;
   loadClubDetails: (club: Club) => Promise<void>;
+  refreshClubData: () => Promise<void>; // Add this new method
 }
