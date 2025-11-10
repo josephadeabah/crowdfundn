@@ -17,7 +17,7 @@ module AI
       @client = OpenAI::Client.new(
         access_token: api_key,
         log_errors: true,
-        request_timeout: 60 # Increase timeout to 60 seconds
+        request_timeout: 120 # Increase timeout to 60 seconds
       )
     end
 
@@ -576,49 +576,48 @@ module AI
     end
 
     def call_openai_api(prompt)
-      Rails.logger.info "Calling OpenAI API with prompt length: #{prompt.length}"
-      
+      Rails.logger.info "Calling OpenAI GPT-5 API with prompt length: #{prompt.length}"
+
       begin
         response = @client.chat(
           parameters: {
-            model: "gpt-5",
+            model: "gpt-5", # ✅ use GPT-5 instead of gpt-5-mini
             messages: [
-              { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
+              { role: "system", content: "You are an expert AI investment analyst specializing in crowdfunding, fintech, and equity deal evaluation." },
               { role: "user", content: prompt }
             ],
-            max_completion_tokens: 2500,
-            response_format: { type: "json_object" }
+            temperature: 0.4,
+            max_tokens: 2500
           }
         )
-        
-        Rails.logger.info "GPT-5 Mini API response received successfully"
-        Rails.logger.info "API Response type: #{response.class}" # Debug logging
-        
-        # Validate response structure
-        if response.nil?
-          Rails.logger.error "API returned nil response"
+
+        if response.nil? || response.dig("choices", 0, "message", "content").blank?
+          Rails.logger.error "GPT-5 returned an empty response for campaign #{@campaign.id}"
           return nil
         end
-        
-        # Handle case where API returns simple true/false
-        if response == true || response == false
-          Rails.logger.error "API returned boolean instead of hash: #{response}"
-          return nil
-        end
-        
-        # Ensure response is a hash
-        unless response.is_a?(Hash)
-          Rails.logger.error "API returned non-hash response: #{response.class} - #{response.inspect}"
-          return nil
-        end
-        
-        response
+
+        response.dig("choices", 0, "message", "content")
+
+      rescue Net::ReadTimeout, Faraday::TimeoutError => e
+        Rails.logger.error "GPT-5 API timeout for campaign #{@campaign.id}: #{e.message}"
+        # ✅ Retry once after 5 seconds (useful for occasional network blips)
+        sleep 5
+        retry_count ||= 0
+        retry_count += 1
+        retry if retry_count < 2
+        nil
+      rescue Faraday::ConnectionFailed => e
+        Rails.logger.error "GPT-5 connection failed: #{e.message}"
+        nil
+      rescue OpenAI::Error => e
+        Rails.logger.error "GPT-5 API error: #{e.message}"
+        nil
       rescue => e
-        Rails.logger.error "GPT-5 Mini API call failed: #{e.message}"
-        Rails.logger.error "Backtrace: #{e.backtrace.join("\n")}"
+        Rails.logger.error "Unexpected GPT-5 error for campaign #{@campaign.id}: #{e.class} - #{e.message}"
         nil
       end
     end
+
 
     def parse_response(response)
       return fallback_analysis("No response from API") if response.nil?
