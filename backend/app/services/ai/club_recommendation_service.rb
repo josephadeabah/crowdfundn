@@ -962,7 +962,7 @@ module AI
           parameters: {
             model: "gpt-5",
             messages: [
-              { role: "system", content: "You are an expert AI investment analyst specializing in crowdfunding, fintech, and equity deal evaluation." },
+              { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks on equity deal evaluation." },
               { role: "user", content: prompt }
             ],
             max_completion_tokens: 6000
