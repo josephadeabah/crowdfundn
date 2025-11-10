@@ -120,6 +120,7 @@ module AI
                           .includes(
                             :fundraiser,
                             :campaign_team_members,
+                            :deal_score_logs,
                             :reports,
                             fundraiser: [:latest_kyc, :reports_against]
                           )
@@ -227,7 +228,6 @@ module AI
       else # moderate
         campaigns.where("(ai_risk_score BETWEEN 25 AND 65) OR ai_risk_score IS NULL")
       end
-      campaigns # i'll remove this line later (for testing purposes)
     end
 
     def enhanced_filter_by_financial_constraints(campaigns)
@@ -285,17 +285,25 @@ module AI
     end
 
     def enhanced_ai_powered_recommendations(campaigns, club_profile, limit)
-      # Use OpenAI with comprehensive campaign data
-      prompt = build_comprehensive_recommendation_prompt(campaigns, club_profile, limit)
-      response = call_openai_api(prompt)
+      # Filter campaigns that have AI analysis first
+      analyzed_campaigns = campaigns.select { |c| c.ai_analysis_present? }
       
-      parsed_recommendations = parse_recommendation_response(response, campaigns)
-      
-      # Fallback if AI parsing fails
-      if parsed_recommendations.empty?
-        enhanced_rule_based_recommendations(campaigns, club_profile, limit)
+      if analyzed_campaigns.any?
+        # Use OpenAI with comprehensive campaign data including deal scores
+        prompt = build_comprehensive_recommendation_prompt(analyzed_campaigns, club_profile, limit)
+        response = call_openai_api(prompt)
+        
+        parsed_recommendations = parse_recommendation_response(response, analyzed_campaigns)
+        
+        # Fallback if AI parsing fails
+        if parsed_recommendations.empty?
+          enhanced_rule_based_recommendations(analyzed_campaigns, club_profile, limit)
+        else
+          parsed_recommendations
+        end
       else
-        parsed_recommendations
+        # If no campaigns have AI analysis, use rule-based with all campaigns
+        enhanced_rule_based_recommendations(campaigns, club_profile, limit)
       end
     end
 
@@ -317,60 +325,72 @@ module AI
       score = 0
       max_score = 100
       
-      # Calculate performance percentage
-      performance_percentage = calculate_performance_percentage(campaign)
+      # 1. AI Deal Score alignment (25 points) - MOST IMPORTANT
+      if campaign.ai_deal_score
+        case club_profile[:risk_tolerance]
+        when 'conservative'
+          score += 25 if campaign.ai_deal_score >= 75
+          score += 20 if campaign.ai_deal_score >= 70
+          score += 15 if campaign.ai_deal_score >= 65
+        when 'moderate'
+          score += 25 if campaign.ai_deal_score >= 70
+          score += 20 if campaign.ai_deal_score >= 65
+          score += 15 if campaign.ai_deal_score >= 60
+        when 'aggressive'
+          score += 25 if campaign.ai_deal_score >= 65
+          score += 20 if campaign.ai_deal_score >= 60
+          score += 15 if campaign.ai_deal_score >= 55
+        end
+      end
       
-      # 1. Risk alignment (20 points)
-      risk_score = campaign.ai_risk_score || 50
-      club_risk = case club_profile[:risk_tolerance]
-                  when 'conservative' then 25
-                  when 'aggressive' then 65
-                  else 45
-                  end
+      # 2. AI Risk Score alignment (20 points)
+      if campaign.ai_risk_score
+        risk_alignment = calculate_risk_alignment(club_profile[:risk_tolerance], campaign.ai_risk_score)
+        case risk_alignment
+        when 'high' then score += 20
+        when 'medium' then score += 15
+        when 'low' then score += 5
+        end
+      end
       
-      risk_diff = (risk_score - club_risk).abs
-      score += [20 - (risk_diff / 3), 0].max
-      
-      # 2. Category alignment (15 points)
+      # 3. Category alignment (15 points)
       if club_profile[:investment_focus] && 
          campaign.category&.downcase&.include?(club_profile[:investment_focus].to_s)
         score += 15
       end
       
-      # 3. Financial fit (15 points)
+      # 4. Financial fit (15 points)
       club_balance = @club.current_balance.to_f
       if club_balance > 0
-        if campaign.goal_amount <= club_balance * 0.3
+        if campaign.goal_amount <= club_balance * 0.2
           score += 15
+        elsif campaign.goal_amount <= club_balance * 0.4
+          score += 12
         elsif campaign.goal_amount <= club_balance * 0.6
-          score += 10
-        elsif campaign.goal_amount <= club_balance
-          score += 5
+          score += 8
         end
       end
       
-      # 4. Performance potential (15 points)
-      if campaign.ai_deal_score && campaign.ai_deal_score >= 80
-        score += 15
-      elsif performance_percentage >= 70
-        score += 12
-      elsif performance_percentage >= 40
-        score += 8
-      elsif performance_percentage >= 20
-        score += 5
+      # 5. AI Team assessment (10 points)
+      if campaign.ai_team_assessment
+        case campaign.ai_team_assessment
+        when 'strong' then score += 10
+        when 'adequate' then score += 7
+        when 'weak' then score += 3
+        end
       end
       
-      # 5. Mission alignment (10 points)
-      score += 10 if check_enhanced_mission_alignment(campaign, club_profile)
+      # 6. AI Market opportunity (10 points)
+      if campaign.ai_market_opportunity
+        case campaign.ai_market_opportunity
+        when 'large' then score += 10
+        when 'medium' then score += 7
+        when 'small' then score += 3
+        end
+      end
       
-      # 6. Fundraiser trustworthiness (10 points)
+      # 7. Fundraiser trustworthiness (5 points)
       score += calculate_fundraiser_trust_score(campaign.fundraiser)
-      
-      # 7. Campaign quality (10 points)
-      score += calculate_campaign_quality_score(campaign)
-      
-      # 8. Team strength (5 points)
-      score += calculate_team_strength_score(campaign)
       
       score
     end
@@ -469,9 +489,17 @@ module AI
           goal_amount: campaign.goal_amount,
           current_amount: campaign.current_amount,
           performance_percentage: campaign.performance_percentage,
+          # Leverage AI deal scoring data
           ai_deal_score: campaign.ai_deal_score,
           ai_risk_score: campaign.ai_risk_score,
           ai_risk_category: campaign.ai_risk_category,
+          ai_team_assessment: campaign.ai_team_assessment,
+          ai_market_opportunity: campaign.ai_market_opportunity,
+          ai_sentiment_analysis: campaign.ai_sentiment,
+          ai_competitive_advantage: campaign.ai_competitive_advantage,
+          ai_exit_potential: campaign.ai_exit_potential,
+          ai_scalability: campaign.ai_scalability,
+          ai_product_market_fit: campaign.ai_product_market_fit,
           location: campaign.location,
           fundraiser: {
             id: campaign.fundraiser.id,
@@ -480,9 +508,11 @@ module AI
             kyc_status: campaign.fundraiser.latest_kyc&.status,
             reports_count: campaign.fundraiser.reports_against.recent.count
           },
-          team_strength: campaign_analysis[:team_strength],
-          market_opportunity: campaign_analysis[:market_opportunity],
-          trust_score: campaign_analysis[:trust_score],
+          # Include comprehensive AI analysis from deal scoring
+          ai_analysis_summary: campaign_analysis[:ai_analysis_summary],
+          strengths: campaign_analysis[:strengths],
+          risks: campaign_analysis[:downside_risks],
+          recommendations: campaign_analysis[:recommendations],
           # Equity campaign specific data
           equity_data: campaign.is_a?(EquityCampaign) ? {
             valuation: campaign.valuation,
@@ -496,7 +526,7 @@ module AI
       end
       
       <<~PROMPT
-        You are an expert investment advisor for investment clubs. Recommend the best campaigns for this club based on their comprehensive profile and the detailed campaign data.
+        You are an expert investment advisor for investment clubs. Recommend the best campaigns for this club based on their comprehensive profile and detailed AI analysis data.
 
         CLUB PROFILE:
         - Name: #{club_profile[:name]}
@@ -508,24 +538,36 @@ module AI
         - Mission Alignment Themes: #{club_profile[:mission_alignment].keys.join(', ')}
         - Financial Constraints: #{club_profile[:financial_constraints]}
 
-        COMPREHENSIVE CAMPAIGN DATA:
+        COMPREHENSIVE CAMPAIGN DATA WITH AI ANALYSIS:
         #{campaigns_data.to_json}
 
-        Please recommend the top #{limit} campaigns that best match this club's profile. Consider these factors:
-        1. Risk tolerance alignment (AI risk scores, performance history)
-        2. Investment focus matching (category, industry alignment)  
-        3. Mission alignment with club's stated values
-        4. Financial suitability (goal amount vs club balance)
-        5. Fundraiser trustworthiness (KYC status, report history)
-        6. Campaign quality (team strength, documentation, updates)
-        7. Growth potential and market opportunity
-        8. For equity campaigns: valuation, equity structure, funding round
+        Please recommend the top #{limit} campaigns that best match this club's profile. Consider these CRITICAL factors:
 
-        Pay special attention to:
-        - Fundraisers with verified KYC and clean report history
-        - Campaigns with strong performance metrics
-        - Teams with relevant experience
-        - Campaigns that align with the club's mission keywords: #{club_profile[:mission_alignment].keys.join(', ')}
+        PRIMARY FACTORS (Most Important):
+        1. AI Deal Score (#{club_profile[:risk_tolerance]} clubs: conservative >70, moderate >60, aggressive >50)
+        2. AI Risk Score alignment (#{club_profile[:risk_tolerance]} risk tolerance)
+        3. Investment focus matching (category alignment)
+        4. Financial suitability (goal amount vs club balance)
+
+        SECONDARY FACTORS:
+        5. Mission alignment with club's stated values
+        6. Fundraiser trustworthiness (KYC status, report history)
+        7. Campaign performance metrics
+        8. Team strength assessment from AI
+        9. Market opportunity assessment from AI
+        10. Competitive advantage from AI analysis
+
+        PAY SPECIAL ATTENTION TO AI ANALYSIS:
+        - Deal Scores: Prioritize campaigns with strong AI deal scores
+        - Risk Categories: Match risk profiles carefully
+        - Team Assessments: Strong teams reduce execution risk
+        - Market Opportunities: Large/growing markets preferred
+        - Competitive Advantages: Sustainable moats are valuable
+
+        RISK PROFILE GUIDELINES:
+        - Conservative: Deal Score >70, Risk Score <35, focus on stable markets
+        - Moderate: Deal Score >60, Risk Score 25-65, balanced risk-reward
+        - Aggressive: Deal Score >50, Risk Score >55, focus on high-growth potential
 
         RESPONSE FORMAT (JSON only):
         {
@@ -533,7 +575,7 @@ module AI
             {
               "campaign_id": number,
               "match_score": number (0-100),
-              "reasoning": "Comprehensive explanation covering risk, alignment, trustworthiness, and potential",
+              "reasoning": "Comprehensive explanation covering AI deal score alignment, risk profile match, strategic fit, and key strengths from AI analysis",
               "key_alignment_factors": ["factor1", "factor2", "factor3", "factor4"],
               "potential_concerns": ["concern1", "concern2"],
               "investment_confidence": "high/medium/low"
@@ -541,41 +583,67 @@ module AI
           ]
         }
 
-        Be objective and focus on long-term value creation while considering risk management and trust factors.
+        Be data-driven and prioritize campaigns with strong AI analysis. Focus on long-term value creation while strictly adhering to the club's risk tolerance.
+        IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, markdown, or code formatting outside the JSON structure.
       PROMPT
     end
 
     def get_comprehensive_campaign_analysis(campaign)
-      {
+      # Get the latest AI analysis from deal scoring
+      latest_analysis = campaign.deal_score_logs.order(analyzed_at: :desc).first
+      
+      analysis_data = {
         title: campaign.title,
         category: campaign.category,
         description: campaign.description.to_plain_text.truncate(500),
         goal_amount: campaign.goal_amount,
         current_amount: campaign.current_amount,
         performance_percentage: campaign.performance_percentage,
+        # Core AI metrics from deal scoring
         ai_deal_score: campaign.ai_deal_score,
         ai_risk_score: campaign.ai_risk_score,
         ai_risk_category: campaign.ai_risk_category,
+        ai_team_assessment: campaign.ai_team_assessment,
+        ai_market_opportunity: campaign.ai_market_opportunity,
+        ai_sentiment: campaign.ai_sentiment,
+        ai_competitive_advantage: campaign.ai_competitive_advantage,
+        ai_exit_potential: campaign.ai_exit_potential,
+        ai_scalability: campaign.ai_scalability,
+        ai_product_market_fit: campaign.ai_product_market_fit,
         location: campaign.location,
-        team_strength: campaign.ai_team_assessment,
-        market_opportunity: campaign.ai_market_opportunity,
-        sentiment: campaign.ai_sentiment,
         trust_score: calculate_fundraiser_trust_score(campaign.fundraiser),
         fundraiser: {
           kyc_verified: campaign.fundraiser&.kyc_verified?,
           kyc_status: campaign.fundraiser&.latest_kyc&.status,
           reports_count: campaign.fundraiser&.reports_against&.recent&.count || 0
-        },
-        # Equity campaign specific
-        equity_data: campaign.is_a?(EquityCampaign) ? {
+        }
+      }
+      
+      # Add detailed analysis from latest deal score log if available
+      if latest_analysis && latest_analysis.analysis_data
+        analysis_data.merge!({
+          ai_analysis_summary: latest_analysis.analysis_data["analysis_summary"],
+          strengths: latest_analysis.analysis_data["strengths"],
+          downside_risks: latest_analysis.analysis_data["downside_risks"],
+          upside_potential: latest_analysis.analysis_data["upside_potential"],
+          recommendations: latest_analysis.analysis_data["recommendations"],
+          investment_thesis: latest_analysis.analysis_data["investment_thesis"]
+        })
+      end
+      
+      # Equity campaign specific
+      if campaign.is_a?(EquityCampaign)
+        analysis_data[:equity_data] = {
           valuation: campaign.valuation,
           equity_offered: campaign.equity_offered,
           shares_available: campaign.shares_available,
           equity_status: campaign.equity_status,
           company_name: campaign.company_name,
           funding_round: campaign.funding_round
-        } : nil
-      }
+        }
+      end
+      
+      analysis_data
     end
 
     def calculate_enhanced_risk_tolerance
@@ -868,7 +936,7 @@ module AI
         
         Format the response as a compelling investment rationale that club members would understand.
         
-        RESPONSE FORMAT (JSON only):
+        RESPONSE FORMAT (JSON only - this is critical):
         {
           "explanation": "Comprehensive explanation text",
           "alignment_summary": {
@@ -880,6 +948,9 @@ module AI
           "key_considerations": ["point1", "point2", "point3"],
           "recommendation_strength": "strong/moderate/weak"
         }
+        Be objective, data-driven, and focus on investor protection. Balance upside potential against downside risks.
+        Provide actionable insights for both supporters and investors.
+        IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, markdown, or code formatting outside the JSON structure.
       PROMPT
     end
 
@@ -922,16 +993,25 @@ module AI
       end
     end
 
-
-
     def parse_recommendation_response(response, campaigns)
       return [] unless response
       
       begin
-        content = response.dig("choices", 0, "message", "content")
-        return [] unless content
-        
-        data = JSON.parse(content)
+        # Handle the response properly - it might already be the content string
+        content = if response.is_a?(String)
+                    response.strip
+                  elsif response.is_a?(Hash) && response["choices"] && response["choices"][0] && response["choices"][0]["message"]
+                    response["choices"][0]["message"]["content"].to_s.strip
+                  else
+                    response.to_s.strip
+                  end
+
+        Rails.logger.info "Raw recommendation response: #{content[0..500]}..." if content.present?
+
+        # Try to extract valid JSON portion between braces
+        json_text = content[/\{[^{}]*\}/m] || content
+
+        data = JSON.parse(json_text)
         recommendations = data["recommendations"] || []
         
         recommendations.map do |rec|
@@ -949,6 +1029,7 @@ module AI
         end.compact
       rescue JSON::ParserError => e
         Rails.logger.error "Failed to parse AI recommendation response: #{e.message}"
+        Rails.logger.error "Response content: #{content}" if defined?(content)
         []
       end
     end
@@ -957,11 +1038,22 @@ module AI
       return generate_fallback_explanation(nil) unless response
       
       begin
-        content = response.dig("choices", 0, "message", "content")
-        return generate_fallback_explanation(nil) unless content
+        # Handle the response properly
+        content = if response.is_a?(String)
+                    response.strip
+                  elsif response.is_a?(Hash) && response["choices"] && response["choices"][0] && response["choices"][0]["message"]
+                    response["choices"][0]["message"]["content"].to_s.strip
+                  else
+                    response.to_s.strip
+                  end
+
+        return generate_fallback_explanation(nil) unless content.present?
         
-        JSON.parse(content)
-      rescue JSON::ParserError
+        # Try to extract valid JSON portion
+        json_text = content[/\{[^{}]*\}/m] || content
+        JSON.parse(json_text)
+      rescue JSON::ParserError => e
+        Rails.logger.error "Failed to parse explanation response: #{e.message}"
         { "explanation" => generate_fallback_explanation(nil) }
       end
     end
