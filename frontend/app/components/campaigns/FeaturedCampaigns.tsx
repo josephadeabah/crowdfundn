@@ -38,11 +38,17 @@ const FeaturedCampaigns = () => {
   const rewardCampaigns = useMemo(() => {
     if (!campaigns) return [];
     return campaigns.filter((campaign) => {
+      const isRegularCampaign = campaign.type !== 'EquityCampaign';
+      const hasMinimumAmount = isRegularCampaign
+        ? Number(campaign.transferred_amount || 0) > 2000
+        : true;
+
       return (
         campaign.status !== 'completed' &&
         campaign.equity_status !== 'draft' &&
         campaign.equity_status !== 'pending_approval' &&
-        campaign.permissions.is_public
+        campaign.permissions.is_public &&
+        hasMinimumAmount
       );
     });
   }, [campaigns]);
@@ -63,11 +69,17 @@ const FeaturedCampaigns = () => {
   const trendingCampaigns = useMemo(() => {
     if (!campaigns) return [];
     return campaigns.filter((campaign) => {
+      const isRegularCampaign = campaign.type !== 'EquityCampaign';
+      const hasMinimumAmount = isRegularCampaign
+        ? Number(campaign.transferred_amount || 0) > 2000
+        : true;
+
       return (
         campaign.status !== 'completed' &&
         campaign.equity_status !== 'draft' &&
         campaign.equity_status !== 'pending_approval' &&
-        campaign.permissions.is_public
+        campaign.permissions.is_public &&
+        hasMinimumAmount
       );
     });
   }, [campaigns]);
