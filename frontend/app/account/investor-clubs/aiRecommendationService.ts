@@ -143,7 +143,7 @@ class AIRecommendationService {
     token: string,
     clubId: string,
     campaignId: string,
-    timeoutMs: number = 45000, // 45 second timeout
+    timeoutMs: number = 90000, // Increased to 90 seconds
   ): Promise<ExplanationResponse> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -222,10 +222,10 @@ class AIRecommendationService {
           success: false,
           error: 'Request timeout - explanation generation took too long',
           fallback_explanation:
-            'The AI explanation is taking longer than expected to generate. Please try again in a moment.',
+            'The AI explanation is taking longer than expected to generate. This can happen with complex analysis. Please try again in a moment.',
           explanation: {
             explanation:
-              'The AI explanation is taking longer than expected to generate. Please try again in a moment.',
+              'The AI explanation is taking longer than expected to generate. This can happen with complex analysis. Please try again in a moment.',
           },
         };
       }

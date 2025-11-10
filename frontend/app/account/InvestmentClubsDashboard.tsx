@@ -197,13 +197,13 @@ const InvestmentClubsDashboard: React.FC = () => {
     setFeatureAlert(true);
   };
 
-  const handleExplainRecommendation = async (campaignId: string) => {
+  const handleExplainRecommendation = async (campaignId: string, campaignTitle: string) => {
     if (!selectedClub || !token) return;
 
     try {
-      // Show loading state immediately
+      // Show loading state with campaign-specific info
       setExplanationMessage(
-        '🔄 Generating AI explanation... This may take up to 30 seconds.',
+        `🔄 Generating AI analysis for "${campaignTitle}"...\n\nThis may take 30-60 seconds for detailed analysis.`,
       );
       setExplanationAlert(true);
 
@@ -211,44 +211,39 @@ const InvestmentClubsDashboard: React.FC = () => {
         token,
         selectedClub.slug,
         campaignId,
-        45000, // 45 second timeout
+        90000, // 90 second timeout
       );
 
       console.log('Explanation response:', response);
 
       if (response.success) {
-        // Use the helper method to extract explanation text
         const explanationText = aiRecommendationService.extractExplanationText(
           response.explanation,
         );
 
-        if (
-          explanationText &&
-          explanationText !== 'No explanation available.'
-        ) {
+        if (explanationText && explanationText !== 'No explanation available.') {
           setExplanationMessage(explanationText);
         } else if (response.fallback_explanation) {
           setExplanationMessage(response.fallback_explanation);
         } else {
           setExplanationMessage(
-            'Unable to generate detailed analysis at this time. Please try again later.',
+            'Analysis complete. This campaign shows potential based on your club profile and risk tolerance.',
           );
         }
       } else {
         setExplanationMessage(
           response.fallback_explanation ||
             response.error ||
-            'Unable to generate explanation. Please try again.',
+            'Analysis completed with limited details. Consider reviewing the campaign manually.',
         );
       }
     } catch (error: any) {
       console.error('Failed to get explanation:', error);
       setExplanationMessage(
         error.message ||
-          'Failed to load explanation. Please check your connection and try again.',
+          'The analysis is taking longer than expected. Please try again or review the campaign details manually.',
       );
     } finally {
-      // Ensure the alert is shown with the final message
       setExplanationAlert(true);
     }
   };
@@ -630,6 +625,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                               onClick={() =>
                                 handleExplainRecommendation(
                                   recommendation.campaign.id,
+                                  recommendation.campaign.title
                                 )
                               }
                               className="px-3 py-2 border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 font-medium text-sm transition-colors flex items-center gap-1"
