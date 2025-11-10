@@ -889,13 +889,13 @@ module AI
       begin
         response = @client.chat(
           parameters: {
-            model: "gpt-5", # ✅ use GPT-5 instead of gpt-5-mini
+            model: "gpt-5", # ✅ main model
             messages: [
               { role: "system", content: "You are an expert AI investment analyst specializing in crowdfunding, fintech, and equity deal evaluation." },
               { role: "user", content: prompt }
             ],
             temperature: 0.4,
-            max_tokens: 2500
+            max_completion_tokens: 2500 # ✅ correct key for GPT-5
           }
         )
 
@@ -908,7 +908,6 @@ module AI
 
       rescue Net::ReadTimeout, Faraday::TimeoutError => e
         Rails.logger.error "GPT-5 API timeout for campaign #{@campaign.id}: #{e.message}"
-        # ✅ Retry once after 5 seconds (useful for occasional network blips)
         sleep 5
         retry_count ||= 0
         retry_count += 1
@@ -925,6 +924,7 @@ module AI
         nil
       end
     end
+
 
 
     def parse_recommendation_response(response, campaigns)
