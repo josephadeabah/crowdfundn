@@ -490,17 +490,13 @@ module AI
           goal_amount: campaign.goal_amount,
           current_amount: campaign.current_amount,
           performance_percentage: campaign.performance_percentage,
-          # Leverage AI deal scoring data
+          # Leverage AI deal scoring data - only use fields that actually exist on Campaign model
           ai_deal_score: campaign.ai_deal_score,
           ai_risk_score: campaign.ai_risk_score,
           ai_risk_category: campaign.ai_risk_category,
           ai_team_assessment: campaign.ai_team_assessment,
           ai_market_opportunity: campaign.ai_market_opportunity,
-          ai_sentiment_analysis: campaign.ai_sentiment,
-          ai_competitive_advantage: campaign.ai_competitive_advantage,
-          ai_exit_potential: campaign.ai_exit_potential,
-          ai_scalability: campaign.ai_scalability,
-          ai_product_market_fit: campaign.ai_product_market_fit,
+          ai_sentiment: campaign.ai_sentiment,
           location: campaign.location,
           fundraiser: {
             id: campaign.fundraiser.id,
@@ -556,14 +552,12 @@ module AI
         7. Campaign performance metrics
         8. Team strength assessment from AI
         9. Market opportunity assessment from AI
-        10. Competitive advantage from AI analysis
 
         PAY SPECIAL ATTENTION TO AI ANALYSIS:
         - Deal Scores: Prioritize campaigns with strong AI deal scores
         - Risk Categories: Match risk profiles carefully
         - Team Assessments: Strong teams reduce execution risk
         - Market Opportunities: Large/growing markets preferred
-        - Competitive Advantages: Sustainable moats are valuable
 
         RISK PROFILE GUIDELINES:
         - Conservative: Deal Score >70, Risk Score <35, focus on stable markets
@@ -593,6 +587,7 @@ module AI
       # Get the latest AI analysis from deal scoring
       latest_analysis = campaign.deal_score_logs.order(analyzed_at: :desc).first
       
+      # Only use fields that actually exist on the Campaign model
       analysis_data = {
         title: campaign.title,
         category: campaign.category,
@@ -600,17 +595,13 @@ module AI
         goal_amount: campaign.goal_amount,
         current_amount: campaign.current_amount,
         performance_percentage: campaign.performance_percentage,
-        # Core AI metrics from deal scoring
+        # Core AI metrics from deal scoring - only existing fields
         ai_deal_score: campaign.ai_deal_score,
         ai_risk_score: campaign.ai_risk_score,
         ai_risk_category: campaign.ai_risk_category,
         ai_team_assessment: campaign.ai_team_assessment,
         ai_market_opportunity: campaign.ai_market_opportunity,
         ai_sentiment: campaign.ai_sentiment,
-        ai_competitive_advantage: campaign.ai_competitive_advantage,
-        ai_exit_potential: campaign.ai_exit_potential,
-        ai_scalability: campaign.ai_scalability,
-        ai_product_market_fit: campaign.ai_product_market_fit,
         location: campaign.location,
         trust_score: calculate_fundraiser_trust_score(campaign.fundraiser),
         fundraiser: {
@@ -956,7 +947,7 @@ module AI
     end
 
     def call_openai_api(prompt)
-      Rails.logger.info "Calling OpenAI GPT-5 API with prompt length: #{prompt.length}"
+      Rails.logger.info "Calling OpenAI API with prompt length: #{prompt.length}"
 
       begin
         response = @client.chat(
@@ -970,26 +961,21 @@ module AI
           }
         )
 
+        if response["error"]
+          Rails.logger.error "OpenAI API error: #{response['error']['message']}"
+          return nil
+        end
+
         content = response.dig("choices", 0, "message", "content")
 
         if content.blank?
-          Rails.logger.warn "GPT-5 returned empty content. Falling back to GPT-4o..."
-          response = @client.chat(
-            parameters: {
-              model: "gpt-4o",
-              messages: [
-                { role: "system", content: "You are an expert AI investment analyst specializing in crowdfunding, fintech, and equity deal evaluation." },
-                { role: "user", content: prompt }
-              ],
-              max_tokens: 3000
-            }
-          )
-          content = response.dig("choices", 0, "message", "content")
+          Rails.logger.warn "OpenAI returned empty content. Response: #{response}"
+          return nil
         end
 
         content
       rescue => e
-        Rails.logger.error "AI API error for campaign #{@campaign.id}: #{e.class} - #{e.message}"
+        Rails.logger.error "AI API error for club #{@club.id}: #{e.class} - #{e.message}"
         nil
       end
     end
