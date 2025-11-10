@@ -894,7 +894,7 @@ module AI
               { role: "system", content: "You are an expert AI investment analyst specializing in crowdfunding, fintech, and equity deal evaluation." },
               { role: "user", content: prompt }
             ],
-            max_completion_tokens: 2500 # ✅ correct key for GPT-5
+            max_completion_tokens: 6000 # ✅ correct key for GPT-5
           }
         )
 
