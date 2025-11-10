@@ -88,7 +88,7 @@ module AI
       OpenAI::Client.new(
         access_token: api_key,
         log_errors: true,
-        request_timeout: 30
+        request_timeout: 120
       )
     end
 
@@ -884,27 +884,48 @@ module AI
     end
 
     def call_openai_api(prompt)
-      return nil unless @client
-      
+      Rails.logger.info "Calling OpenAI GPT-5 API with prompt length: #{prompt.length}"
+
       begin
         response = @client.chat(
           parameters: {
-            model: "gpt-5",
+            model: "gpt-5", # ✅ use GPT-5 instead of gpt-5-mini
             messages: [
-              { role: "system", content: "You are an expert investment advisor. Always respond with valid JSON." },
+              { role: "system", content: "You are an expert AI investment analyst specializing in crowdfunding, fintech, and equity deal evaluation." },
               { role: "user", content: prompt }
             ],
-            max_completion_tokens: 2500,
-            response_format: { type: "json_object" }
+            temperature: 0.4,
+            max_tokens: 2500
           }
         )
-        
-        response
+
+        if response.nil? || response.dig("choices", 0, "message", "content").blank?
+          Rails.logger.error "GPT-5 returned an empty response for campaign #{@campaign.id}"
+          return nil
+        end
+
+        response.dig("choices", 0, "message", "content")
+
+      rescue Net::ReadTimeout, Faraday::TimeoutError => e
+        Rails.logger.error "GPT-5 API timeout for campaign #{@campaign.id}: #{e.message}"
+        # ✅ Retry once after 5 seconds (useful for occasional network blips)
+        sleep 5
+        retry_count ||= 0
+        retry_count += 1
+        retry if retry_count < 2
+        nil
+      rescue Faraday::ConnectionFailed => e
+        Rails.logger.error "GPT-5 connection failed: #{e.message}"
+        nil
+      rescue OpenAI::Error => e
+        Rails.logger.error "GPT-5 API error: #{e.message}"
+        nil
       rescue => e
-        Rails.logger.error "OpenAI API call failed: #{e.message}"
+        Rails.logger.error "Unexpected GPT-5 error for campaign #{@campaign.id}: #{e.class} - #{e.message}"
         nil
       end
     end
+
 
     def parse_recommendation_response(response, campaigns)
       return [] unless response
