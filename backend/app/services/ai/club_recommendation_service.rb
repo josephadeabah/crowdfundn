@@ -47,7 +47,17 @@ module AI
     def explain_recommendation(campaign)
       return { success: false, error: "Campaign not provided" } unless campaign
       
+      # Cache key based on club and campaign
+      cache_key = "club_explanation_#{@club.id}_#{campaign.id}_#{campaign.updated_at.to_i}"
+      
       begin
+        # Try to fetch from cache first
+        cached_result = Rails.cache.read(cache_key)
+        if cached_result
+          Rails.logger.info "Using cached explanation for club #{@club.id}, campaign #{campaign.id}"
+          return cached_result
+        end
+
         club_profile = build_comprehensive_club_profile
         campaign_analysis = get_comprehensive_campaign_analysis(campaign)
         
@@ -56,12 +66,17 @@ module AI
         
         explanation = parse_explanation_response(response)
         
-        {
+        result = {
           success: true,
           explanation: explanation,
           club_alignment: calculate_club_alignment(club_profile, campaign_analysis),
           key_factors: extract_key_factors(club_profile, campaign_analysis)
         }
+        
+        # Cache for 1 hour
+        Rails.cache.write(cache_key, result, expires_in: 1.hour)
+        
+        result
       rescue => e
         Rails.logger.error "Explanation generation failed: #{e.message}"
         {
@@ -926,40 +941,56 @@ module AI
     end
 
     def build_explanation_prompt(club_profile, campaign, campaign_analysis)
+      # Use focused, optimized data to reduce prompt size
+      focused_club_profile = {
+        name: club_profile[:name],
+        mission: club_profile[:mission],
+        investment_focus: club_profile[:investment_focus],
+        risk_tolerance: club_profile[:risk_tolerance],
+        current_balance: @club.current_balance
+      }
+
+      focused_campaign_analysis = {
+        title: campaign_analysis[:title],
+        category: campaign_analysis[:category],
+        description: campaign_analysis[:description].to_s.truncate(300), # Reduced from 500
+        goal_amount: campaign_analysis[:goal_amount],
+        current_amount: campaign_analysis[:current_amount],
+        performance_percentage: campaign_analysis[:performance_percentage],
+        ai_deal_score: campaign_analysis[:ai_deal_score],
+        ai_risk_score: campaign_analysis[:ai_risk_score],
+        ai_risk_category: campaign_analysis[:ai_risk_category],
+        trust_score: campaign_analysis[:trust_score],
+        fundraiser: campaign_analysis[:fundraiser]
+      }
+
       <<~PROMPT
-        Explain why this investment campaign would be a good fit for this investment club.
-        
+        Provide a concise investment analysis explaining why this campaign would be a good fit for this investment club.
+
         CLUB PROFILE:
-        #{club_profile.to_json}
-        
-        CAMPAIGN DETAILS:
-        #{campaign_analysis.to_json}
-        
-        Provide a clear, concise explanation that covers:
-        1. Risk alignment
-        2. Strategic fit with club's mission and focus
-        3. Financial suitability
-        4. Fundraiser trustworthiness and track record
-        5. Key strengths and potential concerns
-        6. How it compares to the club's historical investments
-        
-        Format the response as a compelling investment rationale that club members would understand.
-        
-        RESPONSE FORMAT (JSON only - this is critical):
+        #{focused_club_profile.to_json}
+
+        CAMPAIGN ANALYSIS:
+        #{focused_campaign_analysis.to_json}
+
+        Focus on these key aspects:
+        1. Risk alignment between campaign (#{focused_campaign_analysis[:ai_risk_score]}) and club (#{focused_club_profile[:risk_tolerance]})
+        2. Strategic fit with club's mission and investment focus
+        3. Financial suitability given club's balance
+        4. Key strengths and potential concerns
+
+        RESPONSE FORMAT (JSON only):
         {
-          "explanation": "Comprehensive explanation text",
+          "explanation": "Clear, concise explanation text (3-4 paragraphs max)",
           "alignment_summary": {
             "risk_alignment": "high/medium/low",
             "strategic_fit": "high/medium/low", 
-            "financial_fit": "high/medium/low",
-            "trust_score": "high/medium/low"
+            "financial_fit": "high/medium/low"
           },
-          "key_considerations": ["point1", "point2", "point3"],
-          "recommendation_strength": "strong/moderate/weak"
+          "key_considerations": ["point1", "point2", "point3"]
         }
-        Be objective, data-driven, and focus on investor protection. Balance upside potential against downside risks.
-        Provide actionable insights for both supporters and investors.
-        IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, markdown, or code formatting outside the JSON structure.
+
+        Keep the analysis focused and under 500 words. Return ONLY valid JSON.
       PROMPT
     end
 

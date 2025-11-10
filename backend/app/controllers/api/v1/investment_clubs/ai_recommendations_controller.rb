@@ -50,23 +50,37 @@ module Api
             }, status: :not_found
           end
 
-          recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
-          result = recommendation_service.explain_recommendation(campaign)
+          begin
+            # Add timeout protection on the backend too
+            Timeout.timeout(75) do # 75 second backend timeout
+              recommendation_service = AI::ClubRecommendationService.new(@investment_club, @current_user)
+              result = recommendation_service.explain_recommendation(campaign)
 
-          if result[:success]
-            render json: {
-              success: true,
-              explanation: result[:explanation],
-              club_alignment: result[:club_alignment],
-              key_factors: result[:key_factors],
-              campaign: format_campaign_for_explanation(campaign)
-            }
-          else
+              if result[:success]
+                render json: {
+                  success: true,
+                  explanation: result[:explanation],
+                  club_alignment: result[:club_alignment],
+                  key_factors: result[:key_factors],
+                  campaign: format_campaign_for_explanation(campaign),
+                  processing_time: "completed" # Add this for debugging
+                }
+              else
+                render json: { 
+                  success: false, 
+                  error: result[:error],
+                  fallback_explanation: result[:fallback_explanation],
+                  processing_time: "failed"
+                }, status: :unprocessable_entity
+              end
+            end
+          rescue Timeout::Error
             render json: { 
               success: false, 
-              error: result[:error],
-              fallback_explanation: result[:fallback_explanation]
-            }, status: :unprocessable_entity
+              error: "Explanation generation timeout",
+              fallback_explanation: "The analysis is taking longer than expected. Please try again in a moment.",
+              processing_time: "timeout"
+            }, status: :request_timeout
           end
         end
 
