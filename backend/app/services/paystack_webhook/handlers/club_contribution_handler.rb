@@ -55,10 +55,12 @@ module PaystackWebhook::Handlers
       Rails.logger.info "Processing successful club contribution: #{contribution.id}"
 
       ActiveRecord::Base.transaction do
-        # Update contribution status
+        # Update contribution status - NO PLATFORM FEES DEDUCTED
         contribution.update!(
           status: 'completed',
-          transaction_reference: transaction_data[:reference]
+          transaction_reference: transaction_data[:reference],
+          paystack_fee: 0, # No platform fees for club contributions
+          amount_settled: contribution.amount # Full amount goes to club
         )
 
         # Update club financials

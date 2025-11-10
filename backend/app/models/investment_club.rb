@@ -1,3 +1,4 @@
+# app/models/investment_club.rb
 class InvestmentClub < ApplicationRecord
   belongs_to :creator, class_name: 'User'
   has_many :investment_club_memberships, dependent: :destroy
@@ -5,6 +6,7 @@ class InvestmentClub < ApplicationRecord
   has_many :investment_club_contributions, dependent: :destroy
   has_many :club_investments, dependent: :destroy
   has_many :invested_campaigns, through: :club_investments, source: :campaign
+  has_many :club_transactions, dependent: :destroy
   
   validates :name, :slug, presence: true
   validates :slug, uniqueness: true
@@ -69,12 +71,55 @@ class InvestmentClub < ApplicationRecord
     end
   end
   
+  # Financial methods
+  def total_contributions
+    investment_club_contributions.completed.sum(:amount) || 0
+  end
+  
+  def total_invested
+    club_investments.executed.sum(:investment_amount) || 0
+  end
+  
+  def current_balance
+    total_contributions - total_invested
+  end
+  
+  def roi_metrics
+    total_return = club_investments.executed.sum(:current_value).to_f
+    total_invested_amount = total_invested.to_f
+    
+    if total_invested_amount > 0
+      roi_percentage = ((total_return - total_invested_amount) / total_invested_amount) * 100
+    else
+      roi_percentage = 0
+    end
+    
+    {
+      total_contributions: total_contributions,
+      total_invested: total_invested,
+      current_balance: current_balance,
+      total_return: total_return,
+      roi_percentage: roi_percentage.round(2),
+      active_investments: club_investments.executed.count,
+      completed_investments: club_investments.completed.count
+    }
+  end
+  
   # Update members count method - SIMPLIFIED
   def update_members_count
     active_count = investment_club_memberships.active.count
     if current_members_count != active_count
       update_column(:current_members_count, active_count)
     end
+  end
+  
+  def update_financials
+    update_columns(
+      total_contributions: total_contributions,
+      total_invested: total_invested,
+      current_balance: current_balance,
+      updated_at: Time.current
+    )
   end
   
   # Create creator membership after club creation
@@ -88,7 +133,6 @@ class InvestmentClub < ApplicationRecord
     update_members_count
   end
   
-  # All your existing methods remain the same...
   def active_members
     members.joins(:investment_club_memberships)
            .where(investment_club_memberships: { 
@@ -116,14 +160,6 @@ class InvestmentClub < ApplicationRecord
   
   def membership_for(user)
     investment_club_memberships.find_by(user: user)
-  end
-  
-  def update_financials
-    update(
-      total_contributions: investment_club_contributions.completed.sum(:amount),
-      current_balance: calculate_current_balance,
-      total_invested: club_investments.executed.sum(:investment_amount)
-    )
   end
   
   def can_invest?(amount)
@@ -199,10 +235,6 @@ class InvestmentClub < ApplicationRecord
       self.slug = "#{name.parameterize}-#{counter}"
       counter += 1
     end
-  end
-  
-  def calculate_current_balance
-    (total_contributions || 0) - (total_invested || 0)
   end
   
   def map_club_type_to_access_type

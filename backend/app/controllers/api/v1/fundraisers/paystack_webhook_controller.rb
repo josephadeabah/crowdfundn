@@ -55,6 +55,9 @@ module Api
             if metadata[:premium_access]
               Rails.logger.info "Routing to PremiumSubscriptionHandler for charge.success"
               PaystackWebhook::PremiumSubscriptionHandler.new(event[:data]).call
+            elsif metadata[:type] == 'club_contribution'
+              Rails.logger.info "Routing to ClubContributionHandler for charge.success"
+              PaystackWebhook::Handlers::ClubContributionHandler.new(event[:data]).call
             else
               Rails.logger.info "Routing to ChargeSuccessHandler"
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
@@ -62,7 +65,11 @@ module Api
 
           when 'charge.failed'
             Rails.logger.info "Processing charge.failed event"
-            PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
+            if metadata[:type] == 'club_contribution'
+              PaystackWebhook::Handlers::ClubContributionHandler.new(event[:data]).call
+            else
+              PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
+            end
 
           when 'transfer.success'
             Rails.logger.info "Processing transfer.success event"
@@ -80,6 +87,8 @@ module Api
             metadata = event[:data][:metadata] || {}
             if metadata[:type] == 'equity_investment'
               PaystackWebhook::Handlers::RefundProcessedHandler.new(event[:data]).call
+            elsif metadata[:type] == 'club_contribution'
+              PaystackWebhook::Handlers::ClubContributionRefundHandler.new(event[:data]).call
             else
               PaystackWebhook::Handlers::DonationRefundHandler.new(event[:data]).call
             end
