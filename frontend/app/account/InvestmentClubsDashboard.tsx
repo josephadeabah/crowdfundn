@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { useClubData } from './investor-clubs/hooks/useClubData';
 import { investmentService } from './investor-clubs/clubservice';
