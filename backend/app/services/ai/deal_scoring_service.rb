@@ -581,7 +581,7 @@ module AI
       begin
         response = @client.chat(
           parameters: {
-            model: "gpt-5-mini",
+            model: "gpt-5",
             messages: [
               { role: "system", content: "You are an expert investment analyst. Always respond with valid JSON. Provide balanced analysis weighing both upside potential and downside risks." },
               { role: "user", content: prompt }

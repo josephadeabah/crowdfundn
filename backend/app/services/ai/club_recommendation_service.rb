@@ -889,12 +889,12 @@ module AI
       begin
         response = @client.chat(
           parameters: {
-            model: "gpt-3.5-turbo",
+            model: "gpt-5",
             messages: [
               { role: "system", content: "You are an expert investment advisor. Always respond with valid JSON." },
               { role: "user", content: prompt }
             ],
-            max_tokens: 1500,
+            max_completion_tokens: 2500,
             response_format: { type: "json_object" }
           }
         )
