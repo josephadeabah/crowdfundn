@@ -197,7 +197,10 @@ const InvestmentClubsDashboard: React.FC = () => {
     setFeatureAlert(true);
   };
 
-  const handleExplainRecommendation = async (campaignId: string, campaignTitle: string) => {
+  const handleExplainRecommendation = async (
+    campaignId: string,
+    campaignTitle: string,
+  ) => {
     if (!selectedClub || !token) return;
 
     try {
@@ -221,7 +224,10 @@ const InvestmentClubsDashboard: React.FC = () => {
           response.explanation,
         );
 
-        if (explanationText && explanationText !== 'No explanation available.') {
+        if (
+          explanationText &&
+          explanationText !== 'No explanation available.'
+        ) {
           setExplanationMessage(explanationText);
         } else if (response.fallback_explanation) {
           setExplanationMessage(response.fallback_explanation);
@@ -625,7 +631,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                               onClick={() =>
                                 handleExplainRecommendation(
                                   recommendation.campaign.id,
-                                  recommendation.campaign.title
+                                  recommendation.campaign.title,
                                 )
                               }
                               className="px-3 py-2 border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 font-medium text-sm transition-colors flex items-center gap-1"

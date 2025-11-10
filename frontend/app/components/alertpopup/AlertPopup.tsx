@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useRef, ReactNode } from 'react';
-import { FaExclamationTriangle } from 'react-icons/fa';
+import React, { useEffect, useRef, ReactNode, useState } from 'react';
+import { FaExclamationTriangle, FaExpand, FaCompress } from 'react-icons/fa';
 
 interface AlertPopupProps {
   title: string;
@@ -16,7 +16,9 @@ interface AlertPopupProps {
   confirmDisabled?: boolean;
   confirmButtonClass?: string;
   cancelButtonClass?: string;
-  showCancelButton?: boolean; // Add this to control cancel button visibility
+  showCancelButton?: boolean;
+  maxHeight?: string; // Custom max height for content
+  expandable?: boolean; // Whether content can be expanded
 }
 
 const AlertPopup: React.FC<AlertPopupProps> = ({
@@ -33,9 +35,23 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
   confirmDisabled = false,
   confirmButtonClass = 'bg-gray-600 hover:bg-gray-900 focus:ring-gray-500',
   cancelButtonClass = 'bg-white hover:bg-gray-50',
-  showCancelButton = true, // Default to true for backward compatibility
+  showCancelButton = true,
+  maxHeight = 'max-h-96', // Default max height
+  expandable = true, // Default to expandable for long content
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showExpandButton, setShowExpandButton] = useState(false);
+
+  // Check if content is scrollable and needs expansion
+  useEffect(() => {
+    if (isOpen && contentRef.current && expandable) {
+      const element = contentRef.current;
+      const isScrollable = element.scrollHeight > element.clientHeight;
+      setShowExpandButton(isScrollable);
+    }
+  }, [isOpen, message, expandable]);
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -44,8 +60,9 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
 
     if (isOpen) {
       window.addEventListener('keydown', handleEsc);
-      // Prevent body scroll when alert is open
       document.body.style.overflow = 'hidden';
+      // Reset expanded state when opening
+      setIsExpanded(false);
     }
 
     return () => {
@@ -73,7 +90,6 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
     };
   }, [setIsOpen, isOpen]);
 
-  // Prevent event propagation to parent modals
   const handlePopupClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
@@ -89,6 +105,43 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
     if (onCancel) onCancel();
   };
 
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  // Function to format long text with proper line breaks and paragraphs
+  const formatLongText = (content: ReactNode): ReactNode => {
+    if (typeof content === 'string') {
+      // Split by double newlines for paragraphs
+      const paragraphs = content.split(/\n\s*\n/);
+
+      return paragraphs.map((paragraph, index) => {
+        if (paragraph.trim() === '') return null;
+
+        // Split by single newlines for line breaks within paragraphs
+        const lines = paragraph.split('\n');
+
+        return (
+          <p key={index} className="mb-3 last:mb-0">
+            {lines.map((line, lineIndex) => (
+              <React.Fragment key={lineIndex}>
+                {line.trim()}
+                {lineIndex < lines.length - 1 && <br />}
+              </React.Fragment>
+            ))}
+          </p>
+        );
+      });
+    }
+
+    // If it's not a string, return as is
+    return content;
+  };
+
+  const contentHeightClass = isExpanded
+    ? 'max-h-[70vh]' // Very large max height when expanded
+    : maxHeight;
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -96,91 +149,142 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]" // Increased z-index
-          onClick={() => setIsOpen(false)} // Close when clicking backdrop
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4" // Added padding for mobile
+          onClick={() => setIsOpen(false)}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="rounded-lg w-full max-w-md mx-4" // Added mx-4 for mobile
-            onClick={handlePopupClick} // Prevent closing when clicking popup
+            className="rounded-lg w-full max-w-2xl mx-auto" // Increased max width for larger content
+            onClick={handlePopupClick}
           >
             <div
               ref={popupRef}
-              className="inline-block w-full overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:align-middle"
+              className="inline-block w-full overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:align-middle max-h-[90vh] flex flex-col" // Added flex container
             >
-              <div className="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-gray-50 rounded-full sm:mx-0 sm:h-10 sm:w-10">
-                    {icon}
+              {/* Header Section */}
+              <div className="px-6 pt-5 pb-4 bg-white border-b border-gray-200">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start space-x-3 flex-1 min-w-0">
+                    <div className="flex-shrink-0">
+                      <div className="flex items-center justify-center w-10 h-10 bg-gray-50 rounded-full">
+                        {icon}
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold leading-6 text-gray-900 truncate">
+                        {title}
+                      </h3>
+                    </div>
                   </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                    <h3
-                      className="text-lg font-medium leading-6 text-gray-900"
-                      id="modal-title"
+                  {expandable && showExpandButton && (
+                    <button
+                      type="button"
+                      onClick={toggleExpand}
+                      className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                      title={isExpanded ? 'Collapse' : 'Expand'}
                     >
-                      {title}
-                    </h3>
-                    <div className="mt-2">
-                      <div className="text-sm text-gray-500">{message}</div>
-                      {error && (
-                        <p className="mt-2 text-sm text-red-600" role="alert">
-                          Error: {error}
-                        </p>
+                      {isExpanded ? (
+                        <FaCompress className="w-4 h-4" />
+                      ) : (
+                        <FaExpand className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Scrollable Content Section */}
+              <div
+                ref={contentRef}
+                className={`flex-1 overflow-y-auto px-6 py-4 ${contentHeightClass} transition-all duration-200`}
+              >
+                <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  {formatLongText(message)}
+                </div>
+
+                {error && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                    <p
+                      className="text-sm text-red-700 font-medium"
+                      role="alert"
+                    >
+                      Error: {error}
+                    </p>
+                  </div>
+                )}
+
+                {/* Scroll indicator for non-expanded state */}
+                {!isExpanded && showExpandButton && (
+                  <div className="mt-3 text-center">
+                    <div className="inline-flex items-center px-3 py-1 text-xs text-gray-500 bg-gray-100 rounded-full">
+                      <span>Scroll for more content</span>
+                      {expandable && (
+                        <button
+                          onClick={toggleExpand}
+                          className="ml-2 text-gray-600 hover:text-gray-800 transition-colors"
+                          title="Expand to view full content"
+                        >
+                          <FaExpand className="w-3 h-3" />
+                        </button>
                       )}
                     </div>
                   </div>
-                </div>
+                )}
               </div>
-              <div className="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
-                <button
-                  type="button"
-                  className={`inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-0 sm:w-auto sm:text-sm ${
-                    confirmDisabled || loading
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : confirmButtonClass
-                  }`}
-                  onClick={handleConfirm}
-                  disabled={confirmDisabled || loading}
-                >
-                  {loading ? (
-                    <div className="flex items-center">
-                      <svg
-                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Processing...
-                    </div>
-                  ) : (
-                    confirmText
+
+              {/* Actions Section */}
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 space-y-2 sm:space-y-0">
+                  {showCancelButton && (
+                    <button
+                      type="button"
+                      className={`inline-flex justify-center w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${cancelButtonClass}`}
+                      onClick={handleCancel}
+                      disabled={loading}
+                    >
+                      Cancel
+                    </button>
                   )}
-                </button>
-                {showCancelButton && (
                   <button
                     type="button"
-                    className={`inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-0 sm:w-auto sm:text-sm ${cancelButtonClass}`}
-                    onClick={handleCancel}
-                    disabled={loading}
+                    className={`inline-flex justify-center w-full sm:w-auto px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${
+                      confirmDisabled || loading
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : confirmButtonClass
+                    }`}
+                    onClick={handleConfirm}
+                    disabled={confirmDisabled || loading}
                   >
-                    Cancel
+                    {loading ? (
+                      <div className="flex items-center">
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Processing...
+                      </div>
+                    ) : (
+                      confirmText
+                    )}
                   </button>
-                )}
+                </div>
               </div>
             </div>
           </motion.div>
