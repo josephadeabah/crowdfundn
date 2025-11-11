@@ -70,21 +70,32 @@ const InvestmentClubsDashboard: React.FC = () => {
 
         if (paymentRef && selectedClub && token) {
           try {
-            // Verify the payment
-            await contributionService.verifyContribution(
-              token,
-              selectedClub.slug,
-              paymentRef,
-            );
+            // Verify the payment using Paystack service
+            const verificationResult =
+              await contributionService.verifyContribution(
+                token,
+                selectedClub.slug,
+                paymentRef,
+              );
 
-            // Reload club data to reflect the new contribution
-            await loadClubDetails(selectedClub);
+            if (verificationResult.success) {
+              // Reload club data to reflect the new contribution
+              await loadClubDetails(selectedClub);
 
-            // Show success message
-            setFeatureMessage(
-              'Your contribution has been processed successfully!',
-            );
-            setFeatureAlert(true);
+              // Show success message
+              setFeatureMessage(
+                'Your contribution has been processed successfully!',
+              );
+              setFeatureAlert(true);
+            } else {
+              // Handle verification failure
+              const errorMsg =
+                verificationResult.paystack_error ||
+                verificationResult.transaction_status ||
+                'Payment verification failed';
+              setFeatureMessage(`Payment verification failed: ${errorMsg}`);
+              setFeatureAlert(true);
+            }
 
             // Clean up URL
             window.history.replaceState(

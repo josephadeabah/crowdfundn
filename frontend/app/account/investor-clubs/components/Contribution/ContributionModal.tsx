@@ -81,7 +81,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/v1/investment_clubs/${club.slug}/contributions`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/contributions`,
         {
           method: 'POST',
           headers: {

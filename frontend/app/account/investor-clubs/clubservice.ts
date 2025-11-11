@@ -338,6 +338,7 @@ export const membershipService = {
 };
 
 // Club Contributions API calls
+// app/account/investor-clubs/clubservice.ts
 export const contributionService = {
   // Get club contributions with pagination
   getContributions: async (
@@ -364,13 +365,14 @@ export const contributionService = {
     authorization_url: string;
     reference: string;
   }> => {
-    return apiCall(`/investment_clubs/${clubId}/contributions`, token, {
+    const endpoint = `/investment_clubs/${clubId}/contributions`;
+    return apiCall(endpoint, token, {
       method: 'POST',
       body: JSON.stringify({ amount }),
     });
   },
 
-  // Verify contribution payment
+  // Verify contribution payment - UPDATED RESPONSE TYPE
   verifyContribution: async (
     token: string,
     clubId: string,
@@ -378,8 +380,11 @@ export const contributionService = {
   ): Promise<{
     success: boolean;
     contribution: ClubContribution;
+    transaction_status?: string;
+    paystack_error?: string;
   }> => {
-    return apiCall(`/investment_clubs/${clubId}/contributions/verify`, token, {
+    const endpoint = `/investment_clubs/${clubId}/contributions/verify`;
+    return apiCall(endpoint, token, {
       method: 'POST',
       body: JSON.stringify({ reference }),
     });
