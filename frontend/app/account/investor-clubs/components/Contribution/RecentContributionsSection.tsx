@@ -1,6 +1,7 @@
 // app/account/investor-clubs/components/Contributions/RecentContributionsSection.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
+import moment from 'moment';
 import { ClubContribution } from '../../clubTypes';
 
 interface RecentContributionsSectionProps {
@@ -39,6 +40,10 @@ export const RecentContributionsSection: React.FC<
       default:
         return status;
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    return moment(dateString).format('MMM D, YYYY');
   };
 
   return (
@@ -91,7 +96,7 @@ export const RecentContributionsSection: React.FC<
                   </div>
                 </div>
                 <div className="text-right text-xs lg:text-sm text-gray-500 whitespace-nowrap">
-                  {new Date(contribution.created_at).toLocaleDateString()}
+                  {formatDate(contribution.created_at)}
                 </div>
               </div>
             </div>
