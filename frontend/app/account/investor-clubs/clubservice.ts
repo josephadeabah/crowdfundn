@@ -17,6 +17,7 @@ import {
   MyClubsResponse,
   DiscoverClubsResponse,
   PaginationData,
+  ContributionsResponse,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -345,10 +346,7 @@ export const contributionService = {
     clubId: string,
     page: number = 1,
     perPage: number = 10,
-  ): Promise<{
-    contributions: ClubContribution[];
-    pagination: PaginationData;
-  }> => {
+  ): Promise<ContributionsResponse> => {
     const endpoint = `/investment_clubs/${clubId}/contributions?page=${page}&per_page=${perPage}`;
     return apiCall(endpoint, token);
   },

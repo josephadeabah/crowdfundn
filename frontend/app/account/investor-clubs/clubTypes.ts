@@ -83,6 +83,11 @@ export interface ClubContribution {
   updated_at: string;
 }
 
+export interface ContributionsResponse {
+  contributions: ClubContribution[];
+  pagination: PaginationData;
+}
+
 export interface ClubInvestment {
   id: string;
   campaign: {

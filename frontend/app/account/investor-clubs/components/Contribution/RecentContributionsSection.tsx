@@ -2,16 +2,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import moment from 'moment';
-import { ClubContribution } from '../../clubTypes';
+import { ClubContribution, PaginationData } from '../../clubTypes';
+import Pagination from '@/app/components/pagination/Pagination';
 
 interface RecentContributionsSectionProps {
   contributions: ClubContribution[];
+  pagination: PaginationData;
+  loading: boolean;
   formatCurrency: (amount: number, currency?: string) => string;
+  onPageChange: (page: number) => void;
+  onPerPageChange?: (perPage: number) => void;
 }
 
 export const RecentContributionsSection: React.FC<
   RecentContributionsSectionProps
-> = ({ contributions, formatCurrency }) => {
+> = ({
+  contributions,
+  pagination,
+  loading,
+  formatCurrency,
+  onPageChange,
+  onPerPageChange,
+}) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
@@ -46,6 +58,39 @@ export const RecentContributionsSection: React.FC<
     return moment(dateString).format('MMM D, YYYY');
   };
 
+  if (loading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <div className="flex items-center justify-between mb-3 lg:mb-4">
+          <h3 className="text-lg lg:text-xl font-semibold">
+            Recent Contributions
+          </h3>
+          <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        <div className="bg-white rounded-sm divide-y">
+          {[...Array(5)].map((_, index) => (
+            <div key={index} className="p-3 lg:p-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
+                    <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="h-3 bg-gray-200 rounded w-20 animate-pulse"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -57,9 +102,10 @@ export const RecentContributionsSection: React.FC<
           Recent Contributions
         </h3>
         <span className="text-xs lg:text-sm text-gray-500">
-          {contributions.length} total
+          {pagination.total_count} total
         </span>
       </div>
+
       <div className="bg-white rounded-sm divide-y">
         {contributions.length === 0 ? (
           <div className="p-6 text-center text-gray-500">
@@ -72,35 +118,52 @@ export const RecentContributionsSection: React.FC<
             </p>
           </div>
         ) : (
-          contributions.slice(0, 5).map((contribution) => (
-            <div key={contribution.id} className="p-3 lg:p-4">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-sm lg:text-base line-clamp-2">
-                    {contribution.user.full_name}
-                  </h4>
-                  <div className="flex items-center gap-2 mt-1">
-                    <p className="text-xs lg:text-sm text-gray-600">
-                      {formatCurrency(
-                        contribution.amount,
-                        contribution.currency,
-                      )}
-                    </p>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${getStatusColor(
-                        contribution.status,
-                      )}`}
-                    >
-                      {getStatusText(contribution.status)}
-                    </span>
+          <>
+            {contributions.map((contribution) => (
+              <div key={contribution.id} className="p-3 lg:p-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm lg:text-base line-clamp-2">
+                      {contribution.user.full_name}
+                    </h4>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-xs lg:text-sm text-gray-600">
+                        {formatCurrency(
+                          contribution.amount,
+                          contribution.currency,
+                        )}
+                      </p>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${getStatusColor(
+                          contribution.status,
+                        )}`}
+                      >
+                        {getStatusText(contribution.status)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right text-xs lg:text-sm text-gray-500 whitespace-nowrap">
+                    {formatDate(contribution.created_at)}
                   </div>
                 </div>
-                <div className="text-right text-xs lg:text-sm text-gray-500 whitespace-nowrap">
-                  {formatDate(contribution.created_at)}
-                </div>
               </div>
-            </div>
-          ))
+            ))}
+
+            {/* Pagination */}
+            {pagination.total_pages > 1 && (
+              <div className="p-4 border-t">
+                <Pagination
+                  currentPage={pagination.current_page}
+                  totalPages={pagination.total_pages}
+                  totalCount={pagination.total_count}
+                  perPage={pagination.per_page}
+                  onPageChange={onPageChange}
+                  onPerPageChange={onPerPageChange}
+                  showPerPageSelector={true}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </motion.div>

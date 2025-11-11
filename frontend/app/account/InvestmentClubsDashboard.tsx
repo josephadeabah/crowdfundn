@@ -32,6 +32,8 @@ const InvestmentClubsDashboard: React.FC = () => {
     members,
     investments,
     contributions,
+    contributionsPagination,
+    contributionsLoading,
     portfolio,
     loading,
     mobileMenuOpen,
@@ -39,6 +41,8 @@ const InvestmentClubsDashboard: React.FC = () => {
     loadUserClubs,
     loadClubDetails,
     setMobileMenuOpen,
+    handleContributionPageChange,
+    handleContributionPerPageChange,
   } = useClubData();
 
   const {
@@ -323,7 +327,11 @@ const InvestmentClubsDashboard: React.FC = () => {
               {/* Add Recent Contributions Section */}
               <RecentContributionsSection
                 contributions={contributions}
+                pagination={contributionsPagination}
+                loading={contributionsLoading}
                 formatCurrency={formatCurrency}
+                onPageChange={handleContributionPageChange}
+                onPerPageChange={handleContributionPerPageChange}
               />
 
               <ActiveVotesSection
