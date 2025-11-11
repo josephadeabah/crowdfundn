@@ -53,21 +53,30 @@ module PaystackWebhook::Handlers
 
     def process_successful_contribution(contribution, transaction_data)
       Rails.logger.info "Processing successful club contribution: #{contribution.id}"
-
       # Double-check that the contribution hasn't already been processed
       return if contribution.completed?
 
       ActiveRecord::Base.transaction do
+        # Get currency from webhook data
+        transaction_currency = transaction_data[:currency]
+        
+        # Update club currency if it's different
+        club = contribution.investment_club
+        if club.currency != transaction_currency
+          club.update!(currency: transaction_currency)
+          Rails.logger.info "Updated club #{club.id} currency to #{transaction_currency}"
+        end
+
         # Update contribution status - NO PLATFORM FEES DEDUCTED
         contribution.update!(
           status: 'completed',
           transaction_reference: transaction_data[:reference],
           paystack_fee: 0, # No platform fees for club contributions
-          amount_settled: contribution.amount # Full amount goes to club
+          amount_settled: contribution.amount, # Full amount goes to club
+          currency: transaction_currency # Also update contribution currency
         )
 
         # Update club financials
-        club = contribution.investment_club
         club.update_financials
 
         # Update member's total contributions
