@@ -321,10 +321,10 @@ const ClubsListPage: React.FC = () => {
     (club) => filter === 'all' || club.club_type === filter,
   );
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: currency,
     }).format(amount);
   };
 
@@ -715,6 +715,7 @@ const ClubsListPage: React.FC = () => {
                               <span>
                                 {formatCurrency(
                                   club.minimum_monthly_contribution,
+                                  club.currency,
                                 )}
                                 /mo
                               </span>
@@ -733,6 +734,7 @@ const ClubsListPage: React.FC = () => {
                               <div className="text-lg font-bold text-emerald-700">
                                 {formatCurrency(
                                   club.financials.current_balance,
+                                  club.currency,
                                 )}
                               </div>
                               <div className="text-xs text-gray-500">
