@@ -10,6 +10,7 @@ interface MembershipActionsProps {
   onCancelRequest: () => void;
   onDeleteClub: () => void;
   onFeatureClick: (featureName: string) => void;
+  clubCurrency?: string; // Add club currency prop
 }
 
 const MembershipActions: React.FC<MembershipActionsProps> = ({
@@ -20,6 +21,7 @@ const MembershipActions: React.FC<MembershipActionsProps> = ({
   onCancelRequest,
   onDeleteClub,
   onFeatureClick,
+  clubCurrency = 'USD', // Default to USD if not provided
 }) => {
   const safeToFixed = (value: any, decimals: number = 2): string => {
     if (value === null || value === undefined || isNaN(Number(value))) {
@@ -28,7 +30,7 @@ const MembershipActions: React.FC<MembershipActionsProps> = ({
     return Number(value).toFixed(decimals);
   };
 
-  const formatCurrency = (amount: number, currency: string = 'USD') => {
+  const formatCurrency = (amount: number, currency: string = clubCurrency) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
@@ -89,13 +91,13 @@ const MembershipActions: React.FC<MembershipActionsProps> = ({
         <div>
           <span className="text-gray-600">Total Contributed:</span>
           <div className="font-semibold">
-            {formatCurrency(myMembership.total_contributed)}
+            {formatCurrency(myMembership.total_contributed, clubCurrency)}
           </div>
         </div>
         <div>
           <span className="text-gray-600">Estimated Value:</span>
           <div className="font-semibold">
-            {formatCurrency(myMembership.estimated_share_value)}
+            {formatCurrency(myMembership.estimated_share_value, clubCurrency)}
           </div>
         </div>
         <div>

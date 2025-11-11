@@ -141,6 +141,7 @@ const ActionsTab: React.FC<TabComponentProps> = ({
           onCancelRequest={onCancelRequest!}
           onDeleteClub={onDeleteClub!}
           onFeatureClick={onFeatureClick}
+          clubCurrency={club.currency}
         />
       </div>
 
