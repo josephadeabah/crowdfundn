@@ -22,7 +22,7 @@ export const RecentInvestmentsSection: React.FC<
           {investments.length} total
         </span>
       </div>
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm divide-y">
+      <div className="bg-white rounded-sm divide-y">
         {investments.slice(0, 5).map((investment) => (
           <div key={investment.id} className="p-3 lg:p-4">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">

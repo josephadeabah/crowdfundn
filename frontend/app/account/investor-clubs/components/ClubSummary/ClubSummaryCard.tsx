@@ -17,7 +17,7 @@ export const ClubSummaryCard: React.FC<ClubSummaryCardProps> = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6 shadow-sm"
+      className="bg-white rounded-sm p-4 lg:p-6"
     >
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div className="flex items-start gap-3 lg:gap-4 flex-1 min-w-0">

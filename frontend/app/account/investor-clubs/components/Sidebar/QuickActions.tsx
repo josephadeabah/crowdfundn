@@ -23,7 +23,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.1 }}
-      className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6 shadow-sm"
+      className="bg-white rounded-sm p-4 lg:p-6"
     >
       <h3 className="text-lg font-semibold mb-3 lg:mb-4">Quick Actions</h3>
       <div className="space-y-2 lg:space-y-3">

@@ -55,7 +55,7 @@ export const RecentContributionsSection: React.FC<
           {contributions.length} total
         </span>
       </div>
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm divide-y">
+      <div className="bg-white rounded-sm divide-y">
         {contributions.length === 0 ? (
           <div className="p-6 text-center text-gray-500">
             <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">

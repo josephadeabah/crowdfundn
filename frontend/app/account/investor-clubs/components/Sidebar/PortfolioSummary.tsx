@@ -17,7 +17,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6 shadow-sm"
+      className="bg-white rounded-sm p-4 lg:p-6"
     >
       <div className="flex items-center gap-2 mb-3 lg:mb-4">
         <TrendingUp size={18} className="text-emerald-600" />
