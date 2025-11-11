@@ -158,8 +158,9 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                     Contribution Successful!
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Your contribution of {formatCurrency(parseFloat(amount), club.currency)}{' '}
-                    has been processed successfully.
+                    Your contribution of{' '}
+                    {formatCurrency(parseFloat(amount), club.currency)} has been
+                    processed successfully.
                   </p>
                   <button
                     onClick={handleClose}
@@ -177,7 +178,10 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                         Current Club Balance:
                       </span>
                       <span className="text-lg font-semibold text-emerald-700">
-                        {formatCurrency(club.financials?.current_balance || 0, club.currency)}
+                        {formatCurrency(
+                          club.financials?.current_balance || 0,
+                          club.currency,
+                        )}
                       </span>
                     </div>
                     <div className="flex justify-between items-center mt-2">
@@ -185,7 +189,10 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                         Minimum Contribution:
                       </span>
                       <span className="text-sm font-medium text-gray-900">
-                        {formatCurrency(club.minimum_monthly_contribution, club.currency)}
+                        {formatCurrency(
+                          club.minimum_monthly_contribution,
+                          club.currency,
+                        )}
                       </span>
                     </div>
                   </div>

@@ -48,7 +48,9 @@ export const RecentContributionsSection: React.FC<
       transition={{ delay: 0.3 }}
     >
       <div className="flex items-center justify-between mb-3 lg:mb-4">
-        <h3 className="text-lg lg:text-xl font-semibold">Recent Contributions</h3>
+        <h3 className="text-lg lg:text-xl font-semibold">
+          Recent Contributions
+        </h3>
         <span className="text-xs lg:text-sm text-gray-500">
           {contributions.length} total
         </span>
@@ -60,7 +62,9 @@ export const RecentContributionsSection: React.FC<
               <span className="text-lg">💸</span>
             </div>
             <p className="text-sm">No contributions yet</p>
-            <p className="text-xs mt-1">Be the first to contribute to this club!</p>
+            <p className="text-xs mt-1">
+              Be the first to contribute to this club!
+            </p>
           </div>
         ) : (
           contributions.slice(0, 5).map((contribution) => (
@@ -72,7 +76,10 @@ export const RecentContributionsSection: React.FC<
                   </h4>
                   <div className="flex items-center gap-2 mt-1">
                     <p className="text-xs lg:text-sm text-gray-600">
-                      {formatCurrency(contribution.amount, contribution.currency)}
+                      {formatCurrency(
+                        contribution.amount,
+                        contribution.currency,
+                      )}
                     </p>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${getStatusColor(

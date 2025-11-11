@@ -39,7 +39,11 @@ export const ClubSummaryCard: React.FC<ClubSummaryCardProps> = ({
               <span className="hidden sm:inline">•</span>
               <span className="flex items-center gap-1">
                 <DollarSign size={14} />
-                Min: {formatCurrency(club.minimum_monthly_contribution, club.currency)}
+                Min:{' '}
+                {formatCurrency(
+                  club.minimum_monthly_contribution,
+                  club.currency,
+                )}
               </span>
               <span className="hidden sm:inline">•</span>
               <span
@@ -52,9 +56,7 @@ export const ClubSummaryCard: React.FC<ClubSummaryCardProps> = ({
                 {club.club_type}
               </span>
               <span className="hidden sm:inline">•</span>
-              <span className="text-gray-400">
-                {club.currency}
-              </span>
+              <span className="text-gray-400">{club.currency}</span>
             </div>
           </div>
         </div>

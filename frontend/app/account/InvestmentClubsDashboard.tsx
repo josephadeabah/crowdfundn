@@ -146,13 +146,17 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   // ADD THIS MISSING FUNCTION
   const handleProposeInvestment = () => {
-    setFeatureMessage('Propose Investment feature would open here. This would allow you to suggest new investment opportunities for the club to consider.');
+    setFeatureMessage(
+      'Propose Investment feature would open here. This would allow you to suggest new investment opportunities for the club to consider.',
+    );
     setFeatureAlert(true);
   };
 
   // ADD THIS MISSING FUNCTION TOO
   const handleViewAnalytics = () => {
-    setFeatureMessage('View Analytics feature would open here. This would show detailed performance metrics and investment analytics for the club.');
+    setFeatureMessage(
+      'View Analytics feature would open here. This would show detailed performance metrics and investment analytics for the club.',
+    );
     setFeatureAlert(true);
   };
 
