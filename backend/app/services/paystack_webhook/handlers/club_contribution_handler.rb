@@ -17,12 +17,12 @@ module PaystackWebhook::Handlers
         return
       end
 
-      # Verify transaction using PaystackService
+      # Verify transaction using PaystackService - ALWAYS verify with Paystack
       paystack_service = PaystackService.new
       verification_response = paystack_service.verify_transaction(@data[:reference])
       
       unless verification_response[:status] && verification_response[:data][:status] == 'success'
-        Rails.logger.error "Transaction verification failed for club contribution #{contribution.id}"
+        Rails.logger.error "Transaction verification failed for club contribution #{contribution.id}: #{verification_response[:message]}"
         contribution.update!(status: 'failed')
         return
       end
@@ -53,6 +53,9 @@ module PaystackWebhook::Handlers
 
     def process_successful_contribution(contribution, transaction_data)
       Rails.logger.info "Processing successful club contribution: #{contribution.id}"
+
+      # Double-check that the contribution hasn't already been processed
+      return if contribution.completed?
 
       ActiveRecord::Base.transaction do
         # Update contribution status - NO PLATFORM FEES DEDUCTED
@@ -91,6 +94,7 @@ module PaystackWebhook::Handlers
       end
     rescue => e
       Rails.logger.error "Error processing club contribution #{contribution.id}: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
       contribution.update!(status: 'failed') if contribution
     end
 

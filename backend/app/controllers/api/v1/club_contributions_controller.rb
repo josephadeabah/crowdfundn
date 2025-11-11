@@ -46,6 +46,89 @@ module Api
         end
       end
 
+      def verify
+        reference = params[:reference]
+        
+        unless reference
+          return render json: { error: 'Reference parameter is required' }, status: :bad_request
+        end
+
+        # Use PaystackService to verify the transaction
+        paystack_service = PaystackService.new
+        verification_result = paystack_service.verify_transaction(reference)
+
+        unless verification_result[:status]
+          return render json: { 
+            success: false, 
+            error: 'Transaction verification failed',
+            paystack_error: verification_result[:message]
+          }, status: :unprocessable_entity
+        end
+
+        transaction_data = verification_result[:data]
+        
+        # Check if transaction was successful
+        if transaction_data[:status] != 'success'
+          return render json: { 
+            success: false, 
+            error: "Transaction not successful: #{transaction_data[:status]}",
+            status: transaction_data[:status]
+          }, status: :unprocessable_entity
+        end
+
+        # Find contribution by reference
+        contribution = @club.investment_club_contributions.find_by(transaction_reference: reference)
+        
+        unless contribution
+          # If contribution not found by reference, try to find by metadata
+          metadata = transaction_data[:metadata] || {}
+          contribution_id = metadata[:contribution_id]
+          
+          if contribution_id
+            contribution = @club.investment_club_contributions.find_by(id: contribution_id)
+          end
+        end
+
+        unless contribution
+          return render json: { error: 'Contribution not found' }, status: :not_found
+        end
+
+        # Update contribution status if it's still pending
+        if contribution.pending?
+          ActiveRecord::Base.transaction do
+            contribution.update!(
+              status: 'completed',
+              transaction_reference: reference,
+              paystack_fee: 0, # No platform fees for club contributions
+              amount_settled: contribution.amount # Full amount goes to club
+            )
+
+            # Update club financials
+            @club.update_financials
+
+            # Update member's total contributions
+            membership = @club.membership_for(@current_user)
+            membership.update!(total_contributed: membership.total_contributed + contribution.amount)
+
+            # Create club transaction record
+            ClubTransaction.create!(
+              investment_club: @club,
+              amount: contribution.amount,
+              transaction_type: 'contribution',
+              status: 'completed',
+              reference: reference,
+              description: "Member contribution from #{@current_user.full_name}"
+            )
+          end
+        end
+
+        render json: { 
+          success: true, 
+          contribution: ClubContributionSerializer.new(contribution).as_json,
+          transaction_status: transaction_data[:status]
+        }
+      end
+
       private
 
       def set_club
@@ -71,7 +154,7 @@ module Api
         # Use your existing PaystackService initialize_transaction method
         paystack_service.initialize_transaction(
           email: @current_user.email,
-          amount: contribution.amount,
+          amount: contribution.amount * 100, # Convert to kobo/cents
           callback_url: Rails.application.routes.url_helpers.api_v1_fundraisers_paystack_webhook_receive_url,
           metadata: metadata,
           currency: contribution.currency.upcase

@@ -303,7 +303,12 @@ Rails.application.routes.draw do
         end
 
         # Club operations
-        resources :contributions, only: [:index, :create], controller: 'club_contributions'
+        resources :contributions, only: [:index, :create], controller: 'club_contributions' do
+          collection do
+            post :verify
+          end
+        end
+        
         resources :investments, only: [:index, :create], controller: 'club_investments' do
           member do
             post :vote
