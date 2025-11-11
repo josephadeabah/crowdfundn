@@ -163,7 +163,7 @@ const ProfileTabs = () => {
           label: 'Investments',
           icon: <MaskOffIcon className="w-4 h-4" />,
           component: <EquityInvestments />,
-          description: 'Manage your equity investments and portfolio.'
+          description: 'Manage your equity investments and portfolio.',
         },
         {
           label: 'Your Clubs',

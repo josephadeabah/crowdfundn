@@ -54,13 +54,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     setIsContributionModalOpen(true);
   };
 
-  const handleContributionSuccess = async () => {
-    // Refresh club data after successful contribution
-    if (onMembershipUpdate) {
-      onMembershipUpdate();
-    }
-    // You might also want to refresh the club details here
-    console.log('Contribution successful, refreshing data...');
+  // Simple close handler - no payment verification
+  const handleContributionClose = () => {
+    setIsContributionModalOpen(false);
   };
 
   const formatCurrency = (amount: number, currency: string = 'USD'): string => {
@@ -147,14 +143,14 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         </motion.div>
       </Modal>
 
-      {/* Contribution Modal */}
+      {/* Contribution Modal - Only opens modal, no payment handling */}
       <ContributionModal
         isOpen={isContributionModalOpen}
-        onClose={() => setIsContributionModalOpen(false)}
-        onContributionSuccess={handleContributionSuccess}
+        onClose={handleContributionClose}
         club={club}
         token={token}
         formatCurrency={formatCurrency}
+        showSuccess={false} // Disable success display in this modal
       />
 
       {/* Transfer Ownership Alert */}

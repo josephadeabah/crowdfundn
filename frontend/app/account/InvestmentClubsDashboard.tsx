@@ -74,7 +74,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [explanationAlert, setExplanationAlert] = useState(false);
   const [explanationMessage, setExplanationMessage] = useState('');
 
-  // Check for payment callback on component mount - FIXED
+  // Check for payment callback on component mount - ONLY IN DASHBOARD
   useEffect(() => {
     const checkPaymentStatus = async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -394,6 +394,7 @@ const InvestmentClubsDashboard: React.FC = () => {
             members={members}
           />
 
+          {/* Dashboard Contribution Modal - Handles payment verification */}
           <ContributionModal
             isOpen={isContributionModalOpen}
             onClose={() => setIsContributionModalOpen(false)}
@@ -401,6 +402,7 @@ const InvestmentClubsDashboard: React.FC = () => {
             club={currentClub}
             token={token}
             formatCurrency={formatCurrency}
+            showSuccess={true} // Enable success display in dashboard modal
           />
         </>
       )}

@@ -6,10 +6,11 @@ import Modal from '@/app/components/modal/Modal';
 interface ContributionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onContributionSuccess: () => void;
+  onContributionSuccess?: () => void; // Make this optional
   club: any;
   token: string | null;
   formatCurrency: (amount: number, currency?: string) => string;
+  showSuccess?: boolean; // Add this prop to control success display
 }
 
 export const ContributionModal: React.FC<ContributionModalProps> = ({
@@ -19,6 +20,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
   club,
   token,
   formatCurrency,
+  showSuccess = false, // Default to false for other components
 }) => {
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
@@ -98,6 +100,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
       if (data.success && data.authorization_url) {
         // Redirect to Paystack payment page
         window.location.href = data.authorization_url;
+        // Don't set success state here - let the dashboard handle it after payment
       } else {
         throw new Error('Invalid response from server');
       }
@@ -117,6 +120,9 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
     setSuccess(false);
     onClose();
   };
+
+  // Only show success state if explicitly enabled and we have success
+  const shouldShowSuccess = showSuccess && success;
 
   return (
     <Modal
@@ -144,7 +150,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
 
         {/* Content */}
         <div className="p-6 space-y-6">
-          {success ? (
+          {shouldShowSuccess ? (
             <div className="text-center py-8">
               <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
