@@ -6,6 +6,24 @@ module Api
       before_action :set_club
       before_action :verify_membership
 
+      def index
+        contributions = @club.investment_club_contributions
+                            .includes(:user)
+                            .order(created_at: :desc)
+                            .page(params[:page])
+                            .per(params[:per_page] || 10)
+
+        render json: {
+          contributions: contributions.map { |c| ClubContributionSerializer.new(c).as_json },
+          pagination: {
+            current_page: contributions.current_page,
+            total_pages: contributions.total_pages,
+            total_count: contributions.total_count,
+            per_page: contributions.limit_value
+          }
+        }
+      end
+
       def create
         if params[:amount].to_f < @club.minimum_monthly_contribution
           return render json: { 
@@ -21,7 +39,6 @@ module Api
         )
 
         if contribution.save
-          # Initialize payment using PaystackService
           result = initialize_contribution_payment(contribution)
           
           if result[:status] == true
@@ -151,11 +168,10 @@ module Api
           club_name: @club.name
         }
 
-        redirect_url = 'https://www.bantuhive.com/account#Your%20Clubs'
         paystack_service.initialize_transaction(
           email: @current_user.email,
           amount: contribution.amount,
-          callback_url: redirect_url,
+          callback_url: 'https://www.bantuhive.com/account#Your%20Clubs', # User redirect
           metadata: metadata,
           currency: contribution.currency.upcase
         )
