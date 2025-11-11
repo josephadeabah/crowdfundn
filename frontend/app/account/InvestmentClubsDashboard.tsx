@@ -246,9 +246,9 @@ const InvestmentClubsDashboard: React.FC = () => {
   if (clubs.length === 0) {
     return (
       <div className="min-h-screen flex bg-gray-50">
-        <main className="flex-1 p-4 md:p-6">
+        <main className="flex-1 p-4">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="bg-white rounded-xl border border-gray-200 p-6 md:p-12">
+            <div className="bg-white rounded-sm p-6 md:p-12">
               <div className="w-20 h-20 md:w-24 md:h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
                 <span className="text-2xl md:text-3xl">👥</span>
               </div>
