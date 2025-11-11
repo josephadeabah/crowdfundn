@@ -287,8 +287,6 @@ Rails.application.routes.draw do
 
     # Investment Clubs
       resources :investment_clubs, only: [:index, :create, :show, :update, :destroy] do
-        # Club dashboard
-            # get 'dashboard', to: 'investment_clubs/dashboard#show'
         # Membership management
         resources :memberships, only: [:index, :create, :update, :destroy], controller: 'club_memberships' do
           member do
