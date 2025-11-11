@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_07_123835) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_11_005659) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -433,6 +433,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_07_123835) do
     t.datetime "updated_at", null: false
     t.jsonb "constitution_data"
     t.integer "current_members_count", default: 0, null: false
+    t.string "currency", default: "GHS"
     t.index ["creator_id"], name: "index_investment_clubs_on_creator_id"
     t.index ["slug"], name: "index_investment_clubs_on_slug", unique: true
     t.index ["status"], name: "index_investment_clubs_on_status"

@@ -18,6 +18,7 @@ class InvestmentClub < ApplicationRecord
   attribute :current_members_count, :integer, default: 0
   attribute :max_members, :integer, default: 50
   attribute :minimum_monthly_contribution, :decimal, default: 0.0
+  attribute :currency, :string, default: 'GHS' # Add this line
   
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
   before_validation :map_club_type_to_access_type
@@ -34,6 +35,19 @@ class InvestmentClub < ApplicationRecord
   }, _prefix: true
   
   enum status: { active: 'active', inactive: 'inactive', suspended: 'suspended' }
+
+  # Add currency_symbol method
+  def currency_symbol
+    case currency&.upcase
+    when 'USD' then '$'
+    when 'EUR' then '€'
+    when 'GBP' then '£'
+    when 'NGN' then '₦'
+    when 'GHS' then '₵'
+    when 'KES' then 'KSh'
+    else 'GHS' # Default to GHS
+    end
+  end
 
   # Override the club_type setter to map to access_type
   def club_type=(value)

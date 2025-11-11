@@ -19,6 +19,7 @@ class InvestmentClubSerializer
       minimum_monthly_contribution: @club.minimum_monthly_contribution,
       max_members: @club.max_members,
       current_members_count: @club.current_members_count,
+      currency: @club.currency, # Add this line
       financials: {
         total_contributions: @club.total_contributions,
         total_invested: @club.total_invested,
@@ -31,7 +32,6 @@ class InvestmentClubSerializer
       is_member: @current_user ? @club.is_member?(@current_user) : false,
       is_admin: @current_user ? @club.is_admin?(@current_user) : false,
       is_creator: @current_user ? @club.is_creator?(@current_user) : false,
-      # ADD THIS:
       membership_status: membership ? membership.status : 'none',
       created_at: @club.created_at,
       updated_at: @club.updated_at
