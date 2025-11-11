@@ -23,6 +23,21 @@ class InvestmentClubContribution < ApplicationRecord
     
     # Update member's share percentage
     membership.update_share_percentage
+    
+    # Create club transaction record safely
+    begin
+      ClubTransaction.create!(
+        investment_club: investment_club,
+        amount: amount,
+        transaction_type: 'contribution',
+        status: 'completed',
+        reference: transaction_reference,
+        description: "Member contribution from #{user.full_name}"
+      )
+    rescue => e
+      Rails.logger.error "Failed to create club transaction: #{e.message}"
+      # Don't fail the whole process if transaction creation fails
+    end
   end
   
   def reverse_club_balance

@@ -151,7 +151,6 @@ module Api
           club_name: @club.name
         }
 
-        # Use your existing PaystackService initialize_transaction method
         paystack_service.initialize_transaction(
           email: @current_user.email,
           amount: contribution.amount,
