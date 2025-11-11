@@ -34,7 +34,7 @@ module Api
         contribution = @club.investment_club_contributions.new(
           user: @current_user,
           amount: params[:amount],
-          currency: @club.currency || 'USD',
+          currency: @club.currency || 'GHS',
           status: 'pending'
         )
 
