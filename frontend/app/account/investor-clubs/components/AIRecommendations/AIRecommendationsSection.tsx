@@ -36,7 +36,7 @@ export const AIRecommendationsSection: React.FC<
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl border border-gray-200 p-4 lg:p-6 shadow-sm"
+      className="bg-white rounded-sm p-4 lg:p-6 shadow-sm"
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold flex items-center gap-2">
