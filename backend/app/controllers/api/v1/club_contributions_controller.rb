@@ -11,7 +11,7 @@ module Api
                             .includes(:user)
                             .order(created_at: :desc)
                             .page(params[:page])
-                            .per(params[:per_page] || 10)
+                            .per(params[:per_page] || 6)
 
         render json: {
           contributions: contributions.map { |c| ClubContributionSerializer.new(c).as_json },
