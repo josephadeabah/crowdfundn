@@ -345,7 +345,7 @@ export const contributionService = {
     token: string,
     clubId: string,
     page: number = 1,
-    perPage: number = 10,
+    perPage: number = 6,
   ): Promise<ContributionsResponse> => {
     const endpoint = `/investment_clubs/${clubId}/contributions?page=${page}&per_page=${perPage}`;
     return apiCall(endpoint, token);
