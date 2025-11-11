@@ -173,8 +173,8 @@ const ProfileTabs = () => {
           component: <InvestmentClubsDashboard />,
           description:
             'Manage clubs you belong to and track your contributions.',
-          badge: 'Soon',
-          badgeColor: 'bg-yellow-100 text-yellow-800',
+          badge: 'New',
+          badgeColor: 'bg-green-100 text-green-800',
         },
         {
           label: 'Venture Clubs',
