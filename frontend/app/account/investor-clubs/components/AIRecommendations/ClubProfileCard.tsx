@@ -15,7 +15,7 @@ export const ClubProfileCard: React.FC<ClubProfileCardProps> = ({
   if (!clubRiskProfile) return null;
 
   return (
-    <div className="mb-4 p-3 bg-gradient-to-r from-emerald-50 to-indigo-50 rounded-sm">
+    <div className="mb-4 p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-sm">
       <div className="flex items-center gap-2 mb-2">
         <Target className="text-emerald-600" size={16} />
         <span className="text-sm font-medium text-emerald-800">
