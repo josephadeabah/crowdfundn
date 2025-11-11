@@ -173,7 +173,7 @@ module Api
           amount: contribution.amount,
           callback_url: 'https://www.bantuhive.com/account#Your%20Clubs', # User redirect
           metadata: metadata,
-          currency: contribution.currency.upcase
+          currency: @current_user.currency.upcase
         )
       end
     end
