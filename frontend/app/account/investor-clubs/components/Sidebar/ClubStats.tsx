@@ -26,7 +26,10 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
   };
 
   // Format currency for display with proper scaling
-  const formatCurrencyForDisplay = (amount: number, currency: string): string => {
+  const formatCurrencyForDisplay = (
+    amount: number,
+    currency: string,
+  ): string => {
     if (amount >= 1000000) {
       return formatCurrency(amount / 1000000, currency) + 'M';
     } else if (amount >= 1000) {
@@ -41,29 +44,38 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
       displayValue: formatNumber(club.current_members_count),
       fullValue: club.current_members_count.toLocaleString(),
       label: 'Members',
-      type: 'number'
+      type: 'number',
     },
     {
       id: 'investments-stat',
       displayValue: formatNumber(investmentsCount),
       fullValue: investmentsCount.toLocaleString(),
       label: 'Investments',
-      type: 'number'
+      type: 'number',
     },
     {
       id: 'raised-stat',
-      displayValue: formatCurrencyForDisplay(club.financials.total_contributions, club.currency),
-      fullValue: formatCurrency(club.financials.total_contributions, club.currency),
+      displayValue: formatCurrencyForDisplay(
+        club.financials.total_contributions,
+        club.currency,
+      ),
+      fullValue: formatCurrency(
+        club.financials.total_contributions,
+        club.currency,
+      ),
       label: 'Total Raised',
-      type: 'currency'
+      type: 'currency',
     },
     {
       id: 'invested-stat',
-      displayValue: formatCurrencyForDisplay(club.financials.total_invested, club.currency),
+      displayValue: formatCurrencyForDisplay(
+        club.financials.total_invested,
+        club.currency,
+      ),
       fullValue: formatCurrency(club.financials.total_invested, club.currency),
       label: 'Total Invested',
-      type: 'currency'
-    }
+      type: 'currency',
+    },
   ];
 
   return (
@@ -75,14 +87,14 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
     >
       <div className="flex items-center justify-between mb-3 lg:mb-4">
         <h3 className="text-lg font-semibold">Club Stats</h3>
-        <InfoTooltip 
+        <InfoTooltip
           id="club-stats-info"
           content="Displayed values are abbreviated for better readability. Hover over the info icons to see full values."
           className="text-gray-400"
           iconSize={14}
         />
       </div>
-      
+
       <div className="grid grid-cols-2 gap-3 lg:gap-4">
         {stats.map((stat) => (
           <div
@@ -91,25 +103,25 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
           >
             {/* Value with Tooltip */}
             <div className="flex items-center justify-center gap-1 mb-1">
-              <div 
+              <div
                 className={`font-bold text-emerald-700 break-words leading-tight min-h-[2rem] flex items-center ${
-                  stat.type === 'currency' ? 'text-sm lg:text-base' : 'text-lg lg:text-xl'
+                  stat.type === 'currency'
+                    ? 'text-sm lg:text-base'
+                    : 'text-lg lg:text-xl'
                 }`}
               >
                 {stat.displayValue}
               </div>
-              <InfoTooltip 
+              <InfoTooltip
                 id={stat.id}
                 content={`Full value: ${stat.fullValue}`}
                 className="text-gray-400"
                 iconSize={12}
               />
             </div>
-            
+
             {/* Label */}
-            <div className="text-xs lg:text-sm text-gray-600">
-              {stat.label}
-            </div>
+            <div className="text-xs lg:text-sm text-gray-600">{stat.label}</div>
           </div>
         ))}
       </div>
