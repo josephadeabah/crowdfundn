@@ -50,7 +50,7 @@ export const useClubData = () => {
       current_page: 1,
       total_pages: 0,
       total_count: 0,
-      per_page: 10,
+      per_page: 6,
     },
     loading: false,
   });
@@ -76,7 +76,7 @@ export const useClubData = () => {
   const loadContributions = async (
     clubSlug: string,
     page: number = 1,
-    perPage: number = 10,
+    perPage: number = 6,
   ) => {
     if (!token) return;
 
