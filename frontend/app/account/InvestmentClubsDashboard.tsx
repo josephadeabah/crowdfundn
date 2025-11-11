@@ -285,7 +285,7 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-gray-50 text-gray-900">
-      <main className="flex-1 p-3 md:p-4 lg:p-6">
+      <main className="flex-1 p-4">
         <MobileHeader
           clubs={clubs}
           currentClub={currentClub}
