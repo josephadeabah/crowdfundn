@@ -17,10 +17,10 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   onExplainRecommendation,
 }) => {
   return (
-    <div className="border border-gray-200 rounded-lg p-4 hover:border-purple-300 transition-colors group">
+    <div className="rounded-sm p-4 hover:border-orange-300 transition-colors group">
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-lg line-clamp-2 group-hover:text-purple-700 transition-colors">
+          <h4 className="font-semibold text-lg line-clamp-2 group-hover:text-orange-700 transition-colors">
             {recommendation.campaign.title}
           </h4>
           <p className="text-gray-600 text-sm mt-1 line-clamp-2">
@@ -122,7 +122,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
               recommendation.campaign.title,
             )
           }
-          className="px-3 py-2 border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 font-medium text-sm transition-colors flex items-center gap-1"
+          className="px-3 py-2 border border-orange-300 text-orange-700 rounded-lg hover:bg-orange-50 font-medium text-sm transition-colors flex items-center gap-1"
         >
           <Sparkles size={14} />
           Learn More

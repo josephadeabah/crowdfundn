@@ -40,7 +40,7 @@ export const AIRecommendationsSection: React.FC<
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Sparkles className="text-purple-600" size={20} />
+          <Sparkles className="text-gray-600" size={20} />
           AI Club Assistant Recommendations
         </h3>
         <button
@@ -59,7 +59,7 @@ export const AIRecommendationsSection: React.FC<
 
       {loading ? (
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600"></div>
           <span className="ml-3 text-gray-600">Analyzing opportunities...</span>
         </div>
       ) : recommendations.length > 0 ? (
