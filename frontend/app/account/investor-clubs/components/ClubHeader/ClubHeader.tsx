@@ -37,7 +37,7 @@ export const ClubHeader: React.FC<ClubHeaderProps> = ({
             if (club) onClubChange(club);
           }}
         >
-          <SelectTrigger className="w-[180px] lg:w-[200px]">
+          <SelectTrigger className="w-[180px] lg:w-[200px] border-0 focus:ring-0 focus:ring-offset-0 focus:outline-none shadow-none">
             <SelectValue placeholder="Select a club" />
           </SelectTrigger>
           <SelectContent>
