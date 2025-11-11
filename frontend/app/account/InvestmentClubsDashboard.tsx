@@ -24,6 +24,11 @@ import ClubDetailsModal from './investor-clubs/club-details/ClubDetailsModal';
 import { useAIRecommendations } from './investor-clubs/hooks/useAIRecommendations';
 import { aiRecommendationService } from './investor-clubs/aiRecommendationService';
 import { RecentContributionsSection } from './investor-clubs/components/Contribution/RecentContributionsSection';
+import {
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaInfoCircle,
+} from 'react-icons/fa';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const {
@@ -57,59 +62,67 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
+
+  // Separate alert states for different types of messages
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
+  const [paymentAlert, setPaymentAlert] = useState(false);
+  const [paymentMessage, setPaymentMessage] = useState('');
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [voteErrorAlert, setVoteErrorAlert] = useState(false);
   const [voteErrorMessage, setVoteErrorMessage] = useState('');
   const [explanationAlert, setExplanationAlert] = useState(false);
   const [explanationMessage, setExplanationMessage] = useState('');
 
-  // Check for payment callback on component mount
+  // Check for payment callback on component mount - FIXED
   useEffect(() => {
     const checkPaymentStatus = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const reference = urlParams.get('reference');
       const trxref = urlParams.get('trxref');
 
-      if (reference || trxref) {
-        const paymentRef = reference || trxref;
+      // Only run if we have payment reference parameters
+      if ((reference || trxref) && selectedClub && token) {
+        const paymentRef = (reference || trxref)!;
 
-        if (paymentRef && selectedClub && token) {
-          try {
-            const verificationResult =
-              await contributionService.verifyContribution(
-                token,
-                selectedClub.slug,
-                paymentRef,
-              );
-
-            if (verificationResult.success) {
-              await loadClubDetails(selectedClub);
-              setFeatureMessage(
-                'Your contribution has been processed successfully!',
-              );
-              setFeatureAlert(true);
-            } else {
-              const errorMsg =
-                verificationResult.paystack_error ||
-                verificationResult.transaction_status ||
-                'Payment verification failed';
-              setFeatureMessage(`Payment verification failed: ${errorMsg}`);
-              setFeatureAlert(true);
-            }
-
-            window.history.replaceState(
-              {},
-              document.title,
-              window.location.pathname,
+        try {
+          const verificationResult =
+            await contributionService.verifyContribution(
+              token,
+              selectedClub.slug,
+              paymentRef,
             );
-          } catch (error) {
-            console.error('Payment verification failed:', error);
-            setFeatureMessage(
-              'Payment verification failed. Please contact support if the issue persists.',
+
+          if (verificationResult.success) {
+            await loadClubDetails(selectedClub);
+            setPaymentMessage(
+              'Your contribution has been processed successfully!',
             );
-            setFeatureAlert(true);
+            setPaymentSuccess(true);
+            setPaymentAlert(true);
+          } else {
+            const errorMsg =
+              verificationResult.paystack_error ||
+              verificationResult.transaction_status ||
+              'Payment verification failed';
+            setPaymentMessage(`Payment verification failed: ${errorMsg}`);
+            setPaymentSuccess(false);
+            setPaymentAlert(true);
           }
+
+          // Clear URL parameters after processing
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname,
+          );
+        } catch (error) {
+          console.error('Payment verification failed:', error);
+          setPaymentMessage(
+            'Payment verification failed. Please contact support if the issue persists.',
+          );
+          setPaymentSuccess(false);
+          setPaymentAlert(true);
         }
       }
     };
@@ -148,7 +161,6 @@ const InvestmentClubsDashboard: React.FC = () => {
     setFeatureAlert(true);
   };
 
-  // ADD THIS MISSING FUNCTION
   const handleProposeInvestment = () => {
     setFeatureMessage(
       'Propose Investment feature would open here. This would allow you to suggest new investment opportunities for the club to consider.',
@@ -156,7 +168,6 @@ const InvestmentClubsDashboard: React.FC = () => {
     setFeatureAlert(true);
   };
 
-  // ADD THIS MISSING FUNCTION TOO
   const handleViewAnalytics = () => {
     setFeatureMessage(
       'View Analytics feature would open here. This would show detailed performance metrics and investment analytics for the club.',
@@ -401,6 +412,29 @@ const InvestmentClubsDashboard: React.FC = () => {
       />
 
       {/* Alert Popups */}
+      {/* Payment Success/Failure Alert */}
+      <AlertPopup
+        title={paymentSuccess ? 'Payment Successful' : 'Payment Failed'}
+        message={paymentMessage}
+        isOpen={paymentAlert}
+        setIsOpen={setPaymentAlert}
+        onConfirm={() => setPaymentAlert(false)}
+        confirmText="Got it"
+        icon={
+          paymentSuccess ? (
+            <FaCheckCircle className="w-6 h-6 text-green-600" />
+          ) : (
+            <FaExclamationTriangle className="w-6 h-6 text-red-600" />
+          )
+        }
+        confirmButtonClass={
+          paymentSuccess
+            ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+            : 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+        }
+      />
+
+      {/* Feature Coming Soon Alert */}
       <AlertPopup
         title="Feature Coming Soon"
         message={featureMessage}
@@ -408,9 +442,11 @@ const InvestmentClubsDashboard: React.FC = () => {
         setIsOpen={setFeatureAlert}
         onConfirm={() => setFeatureAlert(false)}
         confirmText="Got it"
-        confirmButtonClass="bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500"
+        icon={<FaInfoCircle className="w-6 h-6 text-green-600" />}
+        confirmButtonClass="bg-green-600 hover:bg-green-700 focus:ring-green-500"
       />
 
+      {/* Vote Failed Alert */}
       <AlertPopup
         title="Vote Failed"
         message={voteErrorMessage}
@@ -418,9 +454,11 @@ const InvestmentClubsDashboard: React.FC = () => {
         setIsOpen={setVoteErrorAlert}
         onConfirm={() => setVoteErrorAlert(false)}
         confirmText="OK"
+        icon={<FaExclamationTriangle className="w-6 h-6 text-red-600" />}
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       />
 
+      {/* AI Explanation Alert */}
       <AlertPopup
         title="AI Recommendation Explanation"
         message={explanationMessage}
@@ -428,6 +466,7 @@ const InvestmentClubsDashboard: React.FC = () => {
         setIsOpen={setExplanationAlert}
         onConfirm={() => setExplanationAlert(false)}
         confirmText="Understood"
+        icon={<FaInfoCircle className="w-6 h-6 text-purple-600" />}
         confirmButtonClass="bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
       />
     </div>
