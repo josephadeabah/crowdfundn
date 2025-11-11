@@ -151,10 +151,11 @@ module Api
           club_name: @club.name
         }
 
+        redirect_url = 'https://www.bantuhive.com/account#Your%20Clubs'
         paystack_service.initialize_transaction(
           email: @current_user.email,
           amount: contribution.amount,
-          callback_url: Rails.application.routes.url_helpers.api_v1_fundraisers_paystack_webhook_receive_url,
+          callback_url: redirect_url,
           metadata: metadata,
           currency: contribution.currency.upcase
         )
