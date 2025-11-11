@@ -14,6 +14,7 @@ const ActionsTab: React.FC<TabComponentProps> = ({
   onLeaveClub,
   onCancelRequest,
   onDeleteClub,
+  onMakeContribution, // Add this prop
 }) => {
   const isAdmin =
     club.is_admin ||
@@ -148,7 +149,7 @@ const ActionsTab: React.FC<TabComponentProps> = ({
       {myMembership?.status === 'active' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
-            onClick={() => onFeatureClick('Make Contribution')}
+            onClick={onMakeContribution} // Use the new prop instead of onFeatureClick
             className="p-4 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors text-left"
           >
             <div className="font-semibold text-emerald-900">

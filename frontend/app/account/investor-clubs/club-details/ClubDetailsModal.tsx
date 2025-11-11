@@ -11,6 +11,8 @@ import ClubTabs from './components/ClubTabs';
 import AboutTab from './components/AboutTab';
 import MembersTab from './components/MembersTab';
 import ActionsTab from './components/ActionsTab';
+import { ContributionModal } from '../components/Contribution/ContributionModal';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   isOpen,
@@ -25,6 +27,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
   const [transferAlert, setTransferAlert] = useState(false);
+  const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
+  const { token } = useAuth();
 
   const {
     myMembership,
@@ -44,6 +48,26 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const handleFeatureClick = (featureName: string) => {
     setFeatureMessage(`${featureName} feature would open here`);
     setFeatureAlert(true);
+  };
+
+  const handleMakeContribution = () => {
+    setIsContributionModalOpen(true);
+  };
+
+  const handleContributionSuccess = async () => {
+    // Refresh club data after successful contribution
+    if (onMembershipUpdate) {
+      onMembershipUpdate();
+    }
+    // You might also want to refresh the club details here
+    console.log('Contribution successful, refreshing data...');
+  };
+
+  const formatCurrency = (amount: number, currency: string = 'USD'): string => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
   };
 
   const renderTabContent = () => {
@@ -79,6 +103,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
             onLeaveClub={handleLeaveClub}
             onCancelRequest={handleCancelRequest}
             onDeleteClub={handleDeleteClub}
+            onMakeContribution={handleMakeContribution}
           />
         );
       default:
@@ -122,6 +147,17 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         </motion.div>
       </Modal>
 
+      {/* Contribution Modal */}
+      <ContributionModal
+        isOpen={isContributionModalOpen}
+        onClose={() => setIsContributionModalOpen(false)}
+        onContributionSuccess={handleContributionSuccess}
+        club={club}
+        token={token}
+        formatCurrency={formatCurrency}
+      />
+
+      {/* Transfer Ownership Alert */}
       <AlertPopup
         title="Transfer Ownership Required"
         message={
@@ -144,6 +180,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         showCancelButton={false}
       />
 
+      {/* Feature Coming Soon Alert */}
       <AlertPopup
         title="Feature Coming Soon"
         message={featureMessage}
