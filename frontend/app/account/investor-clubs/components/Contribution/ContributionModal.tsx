@@ -305,7 +305,7 @@ const getCurrencySymbol = (currency: string) => {
     EUR: '€',
     GBP: '£',
     NGN: '₦',
-    GHS: 'GH₵',
+    GHS: '₵',
     KES: 'KSh',
   };
   return symbols[currency] || '$';
