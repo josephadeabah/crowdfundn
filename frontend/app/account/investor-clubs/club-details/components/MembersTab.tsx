@@ -140,6 +140,7 @@ const MembersTab: React.FC<
         formatRole={formatRole}
         formatCurrency={formatCurrency}
         safeToFixed={safeToFixed}
+        clubCurrency={club.currency}
       />
     </div>
   );
