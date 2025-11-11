@@ -24,10 +24,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [paymentData, setPaymentData] = useState<{
-    authorization_url: string;
-    reference: string;
-  } | null>(null);
 
   const predefinedAmounts = [
     club.minimum_monthly_contribution,
@@ -42,7 +38,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
   };
 
   const handleCustomAmountChange = (value: string) => {
-    // Allow only numbers and decimal point
     const numericValue = value.replace(/[^0-9.]/g, '');
     setAmount(numericValue);
     setError('');
@@ -51,14 +46,14 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
   const validateAmount = (): boolean => {
     const numAmount = parseFloat(amount);
 
-    if (!amount || numAmount <= 0) {
+    if (!amount || numAmount <= 0 || isNaN(numAmount)) {
       setError('Please enter a valid amount');
       return false;
     }
 
     if (numAmount < club.minimum_monthly_contribution) {
       setError(
-        `Minimum contribution is ${formatCurrency(club.minimum_monthly_contribution)}`,
+        `Minimum contribution is ${formatCurrency(club.minimum_monthly_contribution, club.currency)}`,
       );
       return false;
     }
@@ -101,10 +96,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
       }
 
       if (data.success && data.authorization_url) {
-        setPaymentData({
-          authorization_url: data.authorization_url,
-          reference: data.reference,
-        });
         // Redirect to Paystack payment page
         window.location.href = data.authorization_url;
       } else {
@@ -124,7 +115,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
     setAmount('');
     setError('');
     setSuccess(false);
-    setPaymentData(null);
     onClose();
   };
 
@@ -168,7 +158,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                     Contribution Successful!
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Your contribution of {formatCurrency(parseFloat(amount))}{' '}
+                    Your contribution of {formatCurrency(parseFloat(amount), club.currency)}{' '}
                     has been processed successfully.
                   </p>
                   <button
@@ -187,7 +177,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                         Current Club Balance:
                       </span>
                       <span className="text-lg font-semibold text-emerald-700">
-                        {formatCurrency(club.financials?.current_balance || 0)}
+                        {formatCurrency(club.financials?.current_balance || 0, club.currency)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center mt-2">
@@ -195,7 +185,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                         Minimum Contribution:
                       </span>
                       <span className="text-sm font-medium text-gray-900">
-                        {formatCurrency(club.minimum_monthly_contribution)}
+                        {formatCurrency(club.minimum_monthly_contribution, club.currency)}
                       </span>
                     </div>
                   </div>
@@ -217,7 +207,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                           }`}
                         >
                           <div className="font-medium">
-                            {formatCurrency(predefinedAmount)}
+                            {formatCurrency(predefinedAmount, club.currency)}
                           </div>
                         </button>
                       ))}
@@ -234,7 +224,9 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span className="text-gray-500 sm:text-sm">$</span>
+                        <span className="text-gray-500 sm:text-sm">
+                          {getCurrencySymbol(club.currency)}
+                        </span>
                       </div>
                       <input
                         type="text"
@@ -248,7 +240,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                       />
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                         <span className="text-gray-500 sm:text-sm">
-                          {club.currency || 'USD'}
+                          {club.currency}
                         </span>
                       </div>
                     </div>
@@ -297,4 +289,17 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
       )}
     </AnimatePresence>
   );
+};
+
+// Helper function to get currency symbol
+const getCurrencySymbol = (currency: string) => {
+  const symbols: { [key: string]: string } = {
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    NGN: '₦',
+    GHS: 'GH₵',
+    KES: 'KSh',
+  };
+  return symbols[currency] || '$';
 };

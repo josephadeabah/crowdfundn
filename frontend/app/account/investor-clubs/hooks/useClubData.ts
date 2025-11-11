@@ -1,11 +1,13 @@
+// app/account/investor-clubs/hooks/useClubData.ts
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
-import { Club, Member, ClubInvestment } from '../clubTypes';
+import { Club, Member, ClubInvestment, ClubContribution } from '../clubTypes';
 import {
   clubService,
   investmentService,
   membershipService,
   portfolioService,
+  contributionService, // Add this import
 } from '../clubservice';
 import { DashboardState } from '../types/dashboardTypes';
 
@@ -16,6 +18,7 @@ export const useClubData = () => {
     selectedClub: null,
     members: [],
     investments: [],
+    contributions: [], // Add contributions
     portfolio: null,
     loading: true,
     mobileMenuOpen: false,
@@ -57,6 +60,12 @@ export const useClubData = () => {
         club.slug,
       );
 
+      // Load contributions
+      const contributionsResponse = await contributionService.getContributions(
+        token,
+        club.slug,
+      );
+
       // Load portfolio
       const portfolioResponse = await portfolioService.getClubPortfolio(
         token,
@@ -67,6 +76,7 @@ export const useClubData = () => {
         ...prev,
         members: membersResponse.members,
         investments: investmentsResponse.investments,
+        contributions: contributionsResponse.contributions, // Add contributions
         portfolio: portfolioResponse,
       }));
     } catch (error) {
@@ -86,7 +96,7 @@ export const useClubData = () => {
 
   return {
     ...state,
-    token, // Add token to the return object
+    token,
     loadUserClubs,
     loadClubDetails,
     setMobileMenuOpen,

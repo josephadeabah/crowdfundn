@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/Sidebar/ClubStats.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Club } from '../../clubTypes';
@@ -36,13 +37,13 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
         </div>
         <div className="bg-gray-50 rounded-lg p-3">
           <div className="text-lg lg:text-2xl font-bold text-emerald-700">
-            {formatCurrency(club.financials.total_contributions)}
+            {formatCurrency(club.financials.total_contributions, club.currency)}
           </div>
           <div className="text-xs lg:text-sm text-gray-600">Total Raised</div>
         </div>
         <div className="bg-gray-50 rounded-lg p-3">
           <div className="text-lg lg:text-2xl font-bold text-emerald-700">
-            {formatCurrency(club.financials.total_invested)}
+            {formatCurrency(club.financials.total_invested, club.currency)}
           </div>
           <div className="text-xs lg:text-sm text-gray-600">Total Invested</div>
         </div>

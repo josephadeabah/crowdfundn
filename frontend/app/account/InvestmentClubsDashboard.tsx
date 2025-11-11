@@ -23,6 +23,7 @@ import { CreateClubCard } from './investor-clubs/components/Sidebar/CreateClubCa
 import ClubDetailsModal from './investor-clubs/club-details/ClubDetailsModal';
 import { useAIRecommendations } from './investor-clubs/hooks/useAIRecommendations';
 import { aiRecommendationService } from './investor-clubs/aiRecommendationService';
+import { RecentContributionsSection } from './investor-clubs/components/Contribution/RecentContributionsSection';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const {
@@ -30,6 +31,7 @@ const InvestmentClubsDashboard: React.FC = () => {
     selectedClub,
     members,
     investments,
+    contributions,
     portfolio,
     loading,
     mobileMenuOpen,
@@ -70,7 +72,6 @@ const InvestmentClubsDashboard: React.FC = () => {
 
         if (paymentRef && selectedClub && token) {
           try {
-            // Verify the payment using Paystack service
             const verificationResult =
               await contributionService.verifyContribution(
                 token,
@@ -79,16 +80,12 @@ const InvestmentClubsDashboard: React.FC = () => {
               );
 
             if (verificationResult.success) {
-              // Reload club data to reflect the new contribution
               await loadClubDetails(selectedClub);
-
-              // Show success message
               setFeatureMessage(
                 'Your contribution has been processed successfully!',
               );
               setFeatureAlert(true);
             } else {
-              // Handle verification failure
               const errorMsg =
                 verificationResult.paystack_error ||
                 verificationResult.transaction_status ||
@@ -97,7 +94,6 @@ const InvestmentClubsDashboard: React.FC = () => {
               setFeatureAlert(true);
             }
 
-            // Clean up URL
             window.history.replaceState(
               {},
               document.title,
@@ -143,8 +139,20 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const handleProposeInvestmentWithCampaign = (campaign: any) => {
     setFeatureMessage(
-      `Propose investment for: ${campaign.title}\n\nAmount: ${formatCurrency(campaign.goal_amount)}\n\nThis would open the investment proposal form with this campaign pre-selected.`,
+      `Propose investment for: ${campaign.title}\n\nAmount: ${formatCurrency(campaign.goal_amount, campaign.currency || selectedClub?.currency)}\n\nThis would open the investment proposal form with this campaign pre-selected.`,
     );
+    setFeatureAlert(true);
+  };
+
+  // ADD THIS MISSING FUNCTION
+  const handleProposeInvestment = () => {
+    setFeatureMessage('Propose Investment feature would open here. This would allow you to suggest new investment opportunities for the club to consider.');
+    setFeatureAlert(true);
+  };
+
+  // ADD THIS MISSING FUNCTION TOO
+  const handleViewAnalytics = () => {
+    setFeatureMessage('View Analytics feature would open here. This would show detailed performance metrics and investment analytics for the club.');
     setFeatureAlert(true);
   };
 
@@ -210,28 +218,18 @@ const InvestmentClubsDashboard: React.FC = () => {
     setIsContributionModalOpen(true);
   };
 
-  const handleProposeInvestment = () => {
-    setFeatureMessage('Propose Investment feature would open here');
-    setFeatureAlert(true);
-  };
-
-  const handleViewAnalytics = () => {
-    setFeatureMessage('View Analytics feature would open here');
-    setFeatureAlert(true);
-  };
-
   const handleContributionSuccess = async () => {
     if (selectedClub) {
       await loadClubDetails(selectedClub);
     }
   };
 
-  function formatCurrency(amount: number, currency: string = 'USD'): string {
+  const formatCurrency = (amount: number, currency: string = 'USD'): string => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
     }).format(amount);
-  }
+  };
 
   if (loading) {
     return <LoadingState />;
@@ -315,6 +313,12 @@ const InvestmentClubsDashboard: React.FC = () => {
 
               <ClubSummaryCard
                 club={currentClub}
+                formatCurrency={formatCurrency}
+              />
+
+              {/* Add Recent Contributions Section */}
+              <RecentContributionsSection
+                contributions={contributions}
                 formatCurrency={formatCurrency}
               />
 

@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/ClubSummary/ClubSummaryCard.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, DollarSign } from 'lucide-react';
@@ -38,7 +39,7 @@ export const ClubSummaryCard: React.FC<ClubSummaryCardProps> = ({
               <span className="hidden sm:inline">•</span>
               <span className="flex items-center gap-1">
                 <DollarSign size={14} />
-                Min: {formatCurrency(club.minimum_monthly_contribution)}
+                Min: {formatCurrency(club.minimum_monthly_contribution, club.currency)}
               </span>
               <span className="hidden sm:inline">•</span>
               <span
@@ -50,12 +51,16 @@ export const ClubSummaryCard: React.FC<ClubSummaryCardProps> = ({
               >
                 {club.club_type}
               </span>
+              <span className="hidden sm:inline">•</span>
+              <span className="text-gray-400">
+                {club.currency}
+              </span>
             </div>
           </div>
         </div>
         <div className="sm:text-left sm:min-w-[140px] lg:min-w-[160px]">
           <div className="text-xl lg:text-3xl font-bold text-emerald-700 break-words">
-            {formatCurrency(club.financials.current_balance)}
+            {formatCurrency(club.financials.current_balance, club.currency)}
           </div>
           <div className="text-xs lg:text-sm text-gray-500">Club Balance</div>
         </div>

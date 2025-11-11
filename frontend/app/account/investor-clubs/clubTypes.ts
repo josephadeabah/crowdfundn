@@ -11,6 +11,7 @@ export interface Club {
   minimum_monthly_contribution: number;
   max_members: number;
   current_members_count: number;
+  currency: string;
   financials: {
     total_contributions: number;
     total_invested: number;

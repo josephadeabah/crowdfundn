@@ -338,7 +338,6 @@ export const membershipService = {
 };
 
 // Club Contributions API calls
-// app/account/investor-clubs/clubservice.ts
 export const contributionService = {
   // Get club contributions with pagination
   getContributions: async (
