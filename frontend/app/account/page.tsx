@@ -163,9 +163,7 @@ const ProfileTabs = () => {
           label: 'Investments',
           icon: <MaskOffIcon className="w-4 h-4" />,
           component: <EquityInvestments />,
-          description: 'Manage your equity investments and portfolio.',
-          badge: 'New',
-          badgeColor: 'bg-green-100 text-green-800',
+          description: 'Manage your equity investments and portfolio.'
         },
         {
           label: 'Your Clubs',
