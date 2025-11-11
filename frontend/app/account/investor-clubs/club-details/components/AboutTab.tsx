@@ -7,7 +7,10 @@ import { TabComponentProps } from '../types/club-details-types';
 const AboutTab: React.FC<
   Omit<TabComponentProps, 'onFeatureClick' | 'onTabChange'>
 > = ({ club }) => {
-  const formatCurrency = (amount: number, currency: string = 'USD') => {
+  const formatCurrency = (
+    amount: number,
+    currency: string = club.currency || 'USD',
+  ) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
@@ -29,13 +32,13 @@ const AboutTab: React.FC<
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="text-sm text-gray-600">Club Balance</div>
           <div className="text-xl font-bold text-emerald-700">
-            {formatCurrency(club.financials.current_balance)}
+            {formatCurrency(club.financials.current_balance, club.currency)}
           </div>
         </div>
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="text-sm text-gray-600">Minimum Contribution</div>
           <div className="text-xl font-bold text-gray-900">
-            {formatCurrency(club.minimum_monthly_contribution)}
+            {formatCurrency(club.minimum_monthly_contribution, club.currency)}
             /month
           </div>
         </div>
@@ -48,7 +51,7 @@ const AboutTab: React.FC<
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="text-sm text-gray-600">Total Invested</div>
           <div className="text-xl font-bold text-gray-900">
-            {formatCurrency(club.financials.total_invested)}
+            {formatCurrency(club.financials.total_invested, club.currency)}
           </div>
         </div>
       </div>
