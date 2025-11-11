@@ -442,8 +442,8 @@ const InvestmentClubsDashboard: React.FC = () => {
         setIsOpen={setFeatureAlert}
         onConfirm={() => setFeatureAlert(false)}
         confirmText="Got it"
-        icon={<FaInfoCircle className="w-6 h-6 text-green-600" />}
-        confirmButtonClass="bg-green-600 hover:bg-green-700 focus:ring-green-500"
+        icon={<FaInfoCircle className="w-6 h-6 text-blue-600" />}
+        confirmButtonClass="bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
       />
 
       {/* Vote Failed Alert */}
@@ -466,8 +466,8 @@ const InvestmentClubsDashboard: React.FC = () => {
         setIsOpen={setExplanationAlert}
         onConfirm={() => setExplanationAlert(false)}
         confirmText="Understood"
-        icon={<FaInfoCircle className="w-6 h-6 text-purple-600" />}
-        confirmButtonClass="bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
+        icon={<FaInfoCircle className="w-6 h-6 text-orange-600" />}
+        confirmButtonClass="bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
       />
     </div>
   );
