@@ -42,12 +42,11 @@ export interface Member {
   role: 'creator' | 'admin' | 'member';
   status: 'pending' | 'active' | 'inactive';
   total_contributed: number;
-  contributed_share: number;
+  contributed_share: number; // CHANGED: current_share → contributed_share
   joined_at: string;
   can_manage?: boolean;
   can_vote?: boolean;
   can_contribute?: boolean;
-  estimated_share_value?: number;
 }
 
 export interface Membership {
@@ -61,12 +60,11 @@ export interface Membership {
   role: 'creator' | 'admin' | 'member';
   status: 'pending' | 'active' | 'inactive';
   total_contributed: number;
-  current_share: number;
+  contributed_share: number; // CHANGED: current_share → contributed_share
   joined_at: string;
   can_manage: boolean;
   can_vote: boolean;
   can_contribute: boolean;
-  estimated_share_value: number;
 }
 
 export interface ClubContribution {

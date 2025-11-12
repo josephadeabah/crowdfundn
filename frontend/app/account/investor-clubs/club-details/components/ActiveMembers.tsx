@@ -9,7 +9,7 @@ interface ActiveMembersProps {
   formatRole: (role: string) => string;
   formatCurrency: (amount: number, currency?: string) => string;
   safeToFixed: (value: any, decimals?: number) => string;
-  clubCurrency?: string; // Add club currency prop
+  clubCurrency?: string;
 }
 
 const ActiveMembers: React.FC<ActiveMembersProps> = ({
@@ -18,7 +18,7 @@ const ActiveMembers: React.FC<ActiveMembersProps> = ({
   formatRole,
   formatCurrency,
   safeToFixed,
-  clubCurrency = 'USD', // Default to USD if not provided
+  clubCurrency = 'USD',
 }) => {
   const { user } = useAuth();
 
@@ -83,7 +83,8 @@ const ActiveMembers: React.FC<ActiveMembersProps> = ({
                   {formatCurrency(member.total_contributed, clubCurrency)}
                 </div>
                 <div className="text-sm text-gray-500">
-                  {safeToFixed(member.contributed_share, 1)}% share
+                  {safeToFixed(member.contributed_share, 1)}% share{' '}
+                  {/* CHANGED */}
                 </div>
               </div>
             </div>

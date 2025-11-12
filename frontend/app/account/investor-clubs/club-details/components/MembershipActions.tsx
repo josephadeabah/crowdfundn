@@ -10,7 +10,7 @@ interface MembershipActionsProps {
   onCancelRequest: () => void;
   onDeleteClub: () => void;
   onFeatureClick: (featureName: string) => void;
-  clubCurrency?: string; // Add club currency prop
+  clubCurrency?: string;
 }
 
 const MembershipActions: React.FC<MembershipActionsProps> = ({
@@ -21,7 +21,7 @@ const MembershipActions: React.FC<MembershipActionsProps> = ({
   onCancelRequest,
   onDeleteClub,
   onFeatureClick,
-  clubCurrency = 'USD', // Default to USD if not provided
+  clubCurrency = 'USD',
 }) => {
   const safeToFixed = (value: any, decimals: number = 2): string => {
     if (value === null || value === undefined || isNaN(Number(value))) {
@@ -85,7 +85,7 @@ const MembershipActions: React.FC<MembershipActionsProps> = ({
         <div>
           <span className="text-gray-600">Your Share:</span>
           <div className="font-semibold">
-            {safeToFixed(myMembership.current_share, 2)}%
+            {safeToFixed(myMembership.contributed_share, 2)}% {/* CHANGED */}
           </div>
         </div>
         <div>
@@ -94,12 +94,7 @@ const MembershipActions: React.FC<MembershipActionsProps> = ({
             {formatCurrency(myMembership.total_contributed, clubCurrency)}
           </div>
         </div>
-        <div>
-          <span className="text-gray-600">Estimated Value:</span>
-          <div className="font-semibold">
-            {formatCurrency(myMembership.estimated_share_value, clubCurrency)}
-          </div>
-        </div>
+        {/* REMOVED: Estimated Value since we don't calculate individual share values for contributions */}
         <div>
           <span className="text-gray-600">Role:</span>
           <div className="font-semibold capitalize">{myMembership.role}</div>
