@@ -29,14 +29,14 @@ export const ClubHeader: React.FC<ClubHeaderProps> = ({
   // Load saved club from localStorage on component mount
   useEffect(() => {
     const savedClubSlug = localStorage.getItem(CLUB_STORAGE_KEY);
-    
+
     if (savedClubSlug && clubs.length > 0) {
       const savedClub = clubs.find((club) => club.slug === savedClubSlug);
       if (savedClub && savedClub.slug !== currentClub.slug) {
         onClubChange(savedClub);
       }
     }
-    
+
     setInitialized(true);
   }, [clubs.length]); // Only run when clubs are loaded
 
@@ -54,7 +54,9 @@ export const ClubHeader: React.FC<ClubHeaderProps> = ({
     return (
       <div className="hidden lg:flex items-center justify-between mb-6 lg:mb-8">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold">My Investment Clubs</h1>
+          <h1 className="text-2xl lg:text-3xl font-bold">
+            My Investment Clubs
+          </h1>
           <p className="text-gray-600 mt-1 lg:mt-2 text-sm lg:text-base">
             Manage your club investments and collaborate with members
           </p>
@@ -81,10 +83,7 @@ export const ClubHeader: React.FC<ClubHeaderProps> = ({
         </p>
       </div>
       <div className="flex items-center gap-3 lg:gap-4">
-        <Select
-          value={currentClub.slug}
-          onValueChange={handleClubChange}
-        >
+        <Select value={currentClub.slug} onValueChange={handleClubChange}>
           <SelectTrigger className="w-[180px] lg:w-[200px] border-0 focus:ring-0 focus:ring-offset-0 focus:outline-none shadow-none">
             <SelectValue placeholder="Select a club" />
           </SelectTrigger>
