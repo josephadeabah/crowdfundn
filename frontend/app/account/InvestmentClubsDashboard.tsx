@@ -100,87 +100,96 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   // Check for payment callback on component mount - ONLY IN DASHBOARD
   // In your dashboard component - simplified payment verification
-// In your dashboard component - update the payment verification
-useEffect(() => {
-  const checkPaymentStatus = async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const reference = urlParams.get('reference');
-    const trxref = urlParams.get('trxref');
+  // In your dashboard component - update the payment verification
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const reference = urlParams.get('reference');
+      const trxref = urlParams.get('trxref');
 
-    if ((reference || trxref) && selectedClub && token) {
-      const paymentRef = (reference || trxref)!;
+      if ((reference || trxref) && selectedClub && token) {
+        const paymentRef = (reference || trxref)!;
 
-      try {
-        console.log('💰 Checking payment status for:', paymentRef);
-        const verificationResult = await contributionService.verifyContribution(
-          token,
-          selectedClub.slug,
-          paymentRef,
-        );
+        try {
+          console.log('💰 Checking payment status for:', paymentRef);
+          const verificationResult =
+            await contributionService.verifyContribution(
+              token,
+              selectedClub.slug,
+              paymentRef,
+            );
 
-        console.log('🔍 Verification result:', verificationResult);
+          console.log('🔍 Verification result:', verificationResult);
 
-        if (verificationResult.success) {
-          let successMessage = 'Your contribution has been processed successfully!';
-          
-          // Show membership data if available - now TypeScript knows this property exists
-          if (verificationResult.membership) {
-            const { total_contributed, contributed_share } = verificationResult.membership;
-            successMessage += `\n\nYour total contributions: ${formatCurrency(total_contributed, selectedClub.currency)}\nYour club share: ${contributed_share}%`;
-            
-            console.log('✅ Membership data from verification:', {
-              total_contributed,
-              contributed_share
-            });
+          if (verificationResult.success) {
+            let successMessage =
+              'Your contribution has been processed successfully!';
+
+            // Show membership data if available - now TypeScript knows this property exists
+            if (verificationResult.membership) {
+              const { total_contributed, contributed_share } =
+                verificationResult.membership;
+              successMessage += `\n\nYour total contributions: ${formatCurrency(total_contributed, selectedClub.currency)}\nYour club share: ${contributed_share}%`;
+
+              console.log('✅ Membership data from verification:', {
+                total_contributed,
+                contributed_share,
+              });
+            }
+
+            // Add info about processing method
+            if (verificationResult.processed_by_webhook) {
+              successMessage += '\n\n✅ Processed automatically by webhook';
+            } else if (verificationResult.already_processed) {
+              successMessage += '\n\n✅ Payment was already processed';
+            }
+
+            setPaymentMessage(successMessage);
+            setPaymentSuccess(true);
+            setPaymentAlert(true);
+
+            // Refresh data to show updates
+            await loadClubDetails(selectedClub);
+          } else {
+            const errorMsg =
+              verificationResult.paystack_error ||
+              verificationResult.transaction_status ||
+              'Payment verification failed';
+            setPaymentMessage(`Payment verification failed: ${errorMsg}`);
+            setPaymentSuccess(false);
+            setPaymentAlert(true);
           }
 
-          // Add info about processing method
-          if (verificationResult.processed_by_webhook) {
-            successMessage += '\n\n✅ Processed automatically by webhook';
-          } else if (verificationResult.already_processed) {
-            successMessage += '\n\n✅ Payment was already processed';
-          }
-
-          setPaymentMessage(successMessage);
-          setPaymentSuccess(true);
-          setPaymentAlert(true);
-
-          // Refresh data to show updates
-          await loadClubDetails(selectedClub);
-        } else {
-          const errorMsg =
-            verificationResult.paystack_error ||
-            verificationResult.transaction_status ||
-            'Payment verification failed';
-          setPaymentMessage(`Payment verification failed: ${errorMsg}`);
+          // Clear URL parameters
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname,
+          );
+        } catch (error) {
+          console.error('Payment verification failed:', error);
+          setPaymentMessage(
+            'Payment verification failed. Please check your contributions list.',
+          );
           setPaymentSuccess(false);
           setPaymentAlert(true);
         }
-
-        // Clear URL parameters
-        window.history.replaceState({}, document.title, window.location.pathname);
-      } catch (error) {
-        console.error('Payment verification failed:', error);
-        setPaymentMessage('Payment verification failed. Please check your contributions list.');
-        setPaymentSuccess(false);
-        setPaymentAlert(true);
       }
+    };
+
+    checkPaymentStatus();
+  }, [selectedClub, token, loadClubDetails]);
+
+  const handleContributionSuccess = async () => {
+    if (selectedClub) {
+      console.log('🔄 Refreshing data after contribution...');
+
+      // Just refresh the data - processing is handled by webhook
+      await loadClubDetails(selectedClub);
+
+      console.log('✅ Data refresh complete');
     }
   };
-
-  checkPaymentStatus();
-}, [selectedClub, token, loadClubDetails]);
-
-const handleContributionSuccess = async () => {
-  if (selectedClub) {
-    console.log('🔄 Refreshing data after contribution...');
-    
-    // Just refresh the data - processing is handled by webhook
-    await loadClubDetails(selectedClub);
-    
-    console.log('✅ Data refresh complete');
-  }
-};
 
   const handleVote = async (investmentId: string, voteType: string) => {
     if (!selectedClub || !token) return;

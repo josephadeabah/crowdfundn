@@ -375,7 +375,8 @@ export const contributionService = {
     token: string,
     clubId: string,
     reference: string,
-  ): Promise<VerifyContributionResponse> => { // Use the new interface
+  ): Promise<VerifyContributionResponse> => {
+    // Use the new interface
     const endpoint = `/investment_clubs/${clubId}/contributions/verify`;
     return apiCall(endpoint, token, {
       method: 'POST',
