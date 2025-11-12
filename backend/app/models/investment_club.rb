@@ -278,6 +278,21 @@ class InvestmentClub < ApplicationRecord
     Rails.logger.info "Updated member shares. Total: #{final_total}%"
   end
 
+
+  def verify_share_totals
+    current_total = investment_club_memberships.active.sum(:contributed_share)
+    expected_total = 100.0
+    
+    if (current_total - expected_total).abs > 0.01
+      Rails.logger.warn "Share total verification failed: #{current_total}% (expected 100%)"
+      force_correct_share_totals
+      return false
+    else
+      Rails.logger.info "Share total verification passed: #{current_total}%"
+      return true
+    end
+  end
+
   # Force correction if there are still rounding errors
   def force_correct_share_totals
     memberships = investment_club_memberships.active.order(contributed_share: :desc)

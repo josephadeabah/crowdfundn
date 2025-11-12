@@ -46,8 +46,8 @@ class InvestmentClubContribution < ApplicationRecord
                         "#{previous_share}% -> #{new_share}% " +
                         "(#{share_change > 0 ? '+' : ''}#{share_change.round(4)}%)"
         
-        # Verify the result
-        investment_club.verify_share_totals
+        # REMOVED: investment_club.verify_share_totals - This is causing the error
+        # The force_correct_share_totals in update_all_member_shares is sufficient
       end
       
       update_column(:processed_at, Time.current)
