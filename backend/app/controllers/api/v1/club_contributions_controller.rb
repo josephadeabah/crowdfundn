@@ -112,11 +112,17 @@ module Api
 
         # CRITICAL: If contribution is already completed, just return success
         if contribution.completed?
+          # Still return the current membership data
+          membership = @club.membership_for(@current_user)
           return render json: { 
             success: true, 
             contribution: ClubContributionSerializer.new(contribution).as_json,
             transaction_status: transaction_data[:status],
-            already_processed: true
+            already_processed: true,
+            membership: membership ? {
+              total_contributed: membership.total_contributed,
+              contributed_share: membership.contributed_share
+            } : nil
           }
         end
 
@@ -135,10 +141,17 @@ module Api
           end
         end
 
+        # Get updated membership data
+        membership = @club.membership_for(@current_user)
+
         render json: { 
           success: true, 
           contribution: ClubContributionSerializer.new(contribution).as_json,
-          transaction_status: transaction_data[:status]
+          transaction_status: transaction_data[:status],
+          membership: membership ? {
+            total_contributed: membership.total_contributed,
+            contributed_share: membership.contributed_share
+          } : nil
         }
       end
 

@@ -14,6 +14,7 @@ class InvestmentClubMembership < ApplicationRecord
   
   # RENAME: current_share to contributed_share
   attribute :contributed_share, :decimal, default: 0.0
+  attribute :total_contributed, :decimal, default: 0.0
   
   before_create :set_initial_share
   after_save :update_club_financials, if: -> { saved_change_to_total_contributed? }
@@ -66,6 +67,7 @@ class InvestmentClubMembership < ApplicationRecord
   
   def set_initial_share
     self.contributed_share = 0
+    self.total_contributed = 0
   end
   
   def update_club_financials

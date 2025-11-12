@@ -24,15 +24,22 @@ class InvestmentClubContribution < ApplicationRecord
     with_lock do
       return if completed? # Double check after acquiring lock
       
+      # Update member's total contributions FIRST
+      membership = investment_club.membership_for(user)
+      if membership
+        new_total_contributed = membership.total_contributed + amount
+        membership.update!(
+          total_contributed: new_total_contributed
+        )
+        
+        # Update member's share percentage AFTER updating total_contributed
+        membership.update_share_percentage
+      else
+        Rails.logger.error "No membership found for user #{user.id} in club #{investment_club.id}"
+      end
+      
       # Update club financials
       investment_club.update_financials
-      
-      # Update member's total contributions
-      membership = investment_club.membership_for(user)
-      membership.update!(total_contributed: membership.total_contributed + amount)
-      
-      # Update member's share percentage
-      membership.update_share_percentage
       
       # Create club transaction record safely
       begin
@@ -54,17 +61,17 @@ class InvestmentClubContribution < ApplicationRecord
   private
   
   def update_club_balance
-    # This is now handled by process_completion! method
-    # Keeping for backward compatibility but it should not trigger double updates
-    Rails.logger.info "Club balance updated for contribution #{id}"
+    # This method should call process_completion! to ensure consistent processing
+    process_completion! if completed? && !@processed_via_callback
+    @processed_via_callback = true
   end
   
   def reverse_club_balance
     investment_club.update_financials
     membership = investment_club.membership_for(user)
-    membership.update!(total_contributed: membership.total_contributed - amount)
-    
-    # Update member's contributed share percentage
-    membership.update_share_percentage
+    if membership
+      membership.update!(total_contributed: membership.total_contributed - amount)
+      membership.update_share_percentage
+    end
   end
 end

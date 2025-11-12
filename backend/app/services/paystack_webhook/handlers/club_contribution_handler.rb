@@ -92,6 +92,14 @@ module PaystackWebhook::Handlers
         )
         
         Rails.logger.info "Successfully processed club contribution: #{contribution.id}"
+        
+        # Debug logging
+        membership = club.membership_for(contribution.user)
+        if membership
+          Rails.logger.info "DEBUG: After processing - User #{contribution.user.id} total_contributed: #{membership.total_contributed}, contributed_share: #{membership.contributed_share}"
+        else
+          Rails.logger.error "DEBUG: No membership found for user #{contribution.user.id} after processing"
+        end
       end
     rescue => e
       Rails.logger.error "Error processing club contribution #{contribution.id}: #{e.message}"
