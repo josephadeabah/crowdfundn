@@ -9,17 +9,28 @@ class MemberInvestmentShare < ApplicationRecord
   
   before_save :calculate_investment_amount
   
-  # Simple helper method - complex calculations delegated to ClubPortfolioService
   def invested_amount
     (share_percentage / 100) * club_investment.investment_amount.to_f
   end
   
-  # Delegate complex valuation to ClubPortfolioService
   def current_value
     return 0 unless club_investment.executed?
     
-    portfolio_service = ClubPortfolioService.new(club_investment.investment_club)
-    portfolio_service.calculate_member_share_value(self)
+    if club_investment.campaign.is_a?(EquityCampaign)
+      campaign = club_investment.campaign
+      (effective_shares / campaign.total_shares.to_f) * campaign.valuation
+    else
+      invested_amount
+    end
+  end
+  
+  def total_return
+    current_value - invested_amount
+  end
+  
+  def roi
+    return 0 if invested_amount.zero?
+    (total_return / invested_amount) * 100
   end
   
   private

@@ -26,23 +26,18 @@ class ClubPortfolioService
     membership = @club.membership_for(user)
     return {} unless membership&.active?
     
+    # Only show investment shares for actual investments, not contributions
     member_shares = MemberInvestmentShare.where(user: user)
                                         .includes(club_investment: :campaign)
     
-    total_invested = member_shares.sum do |share|
-      (share.share_percentage / 100) * share.club_investment.investment_amount
-    end
-    
-    current_value = member_shares.sum do |share|
-      campaign = share.club_investment.campaign
-      share_value = calculate_campaign_current_value(campaign, share.effective_shares)
-      share_value
-    end
+    total_invested = member_shares.sum(&:invested_amount)
+    current_value = member_shares.sum(&:current_value)
     
     {
-      member_share: membership.current_share,
-      total_invested: total_invested.round(2),
-      current_value: current_value.round(2),
+      member_contributed_share: membership.contributed_share, # Contribution percentage
+      total_contributed: membership.total_contributed, # Total cash contributed
+      total_invested: total_invested.round(2), # Amount actually invested in campaigns
+      current_value: current_value.round(2), # Current value of investments
       total_returns: (current_value - total_invested).round(2),
       return_percentage: total_invested > 0 ? ((current_value - total_invested) / total_invested * 100).round(2) : 0,
       investments: member_shares.map { |s| format_member_investment(s) }
@@ -184,17 +179,16 @@ class ClubPortfolioService
   def format_member_investment(share)
     investment = share.club_investment
     campaign = investment.campaign
-    current_value = calculate_campaign_current_value(campaign, share.effective_shares)
-    invested_amount = (share.share_percentage / 100) * investment.investment_amount
     
     {
       campaign_title: campaign.title,
       campaign_type: campaign.class.name,
       share_percentage: share.share_percentage,
-      invested_amount: invested_amount.round(2),
-      current_value: current_value.round(2),
-      returns: (current_value - invested_amount).round(2),
-      return_percentage: invested_amount > 0 ? ((current_value - invested_amount) / invested_amount * 100).round(2) : 0
+      effective_shares: share.effective_shares,
+      invested_amount: share.invested_amount.round(2),
+      current_value: share.current_value.round(2),
+      returns: share.total_return.round(2),
+      return_percentage: share.roi.round(2)
     }
   end
 

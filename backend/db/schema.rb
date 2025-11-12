@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_11_005659) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_12_023335) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -235,6 +235,23 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_11_005659) do
     t.index ["voting_session_id"], name: "index_club_investments_on_voting_session_id"
   end
 
+  create_table "club_transactions", force: :cascade do |t|
+    t.bigint "investment_club_id", null: false
+    t.bigint "club_investment_id"
+    t.decimal "amount", null: false
+    t.string "transaction_type", null: false
+    t.string "status", default: "pending", null: false
+    t.string "reference"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["club_investment_id"], name: "index_club_transactions_on_club_investment_id"
+    t.index ["investment_club_id"], name: "index_club_transactions_on_investment_club_id"
+    t.index ["reference"], name: "index_club_transactions_on_reference"
+    t.index ["status"], name: "index_club_transactions_on_status"
+    t.index ["transaction_type"], name: "index_club_transactions_on_transaction_type"
+  end
+
   create_table "comments", force: :cascade do |t|
     t.text "content"
     t.bigint "campaign_id", null: false
@@ -408,7 +425,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_11_005659) do
     t.string "role", default: "member"
     t.string "status", default: "pending"
     t.decimal "total_contributed", precision: 15, scale: 2, default: "0.0"
-    t.decimal "current_share", precision: 10, scale: 4, default: "0.0"
+    t.decimal "contributed_share", precision: 10, scale: 4, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["investment_club_id", "user_id"], name: "index_club_memberships_on_club_and_user", unique: true
@@ -864,6 +881,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_11_005659) do
   add_foreign_key "campaign_team_members", "campaigns"
   add_foreign_key "campaign_team_members", "users"
   add_foreign_key "campaigns", "users", column: "fundraiser_id"
+  add_foreign_key "club_transactions", "club_investments"
+  add_foreign_key "club_transactions", "investment_clubs"
   add_foreign_key "comments", "campaigns"
   add_foreign_key "comments", "users"
   add_foreign_key "deal_score_logs", "campaigns"

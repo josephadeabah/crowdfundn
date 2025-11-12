@@ -1,3 +1,4 @@
+# app/models/investment_club_membership.rb
 class InvestmentClubMembership < ApplicationRecord
   belongs_to :user
   belongs_to :investment_club
@@ -10,6 +11,9 @@ class InvestmentClubMembership < ApplicationRecord
   
   enum role: { member: 'member', admin: 'admin', creator: 'creator' }
   enum status: { pending: 'pending', active: 'active', inactive: 'inactive' }
+  
+  # RENAME: current_share to contributed_share
+  attribute :contributed_share, :decimal, default: 0.0
   
   before_create :set_initial_share
   after_save :update_club_financials, if: -> { saved_change_to_total_contributed? }
@@ -25,7 +29,7 @@ class InvestmentClubMembership < ApplicationRecord
     return if investment_club.total_contributions.zero?
     
     new_share = (total_contributed / investment_club.total_contributions) * 100
-    update_column(:current_share, new_share.round(4))
+    update_column(:contributed_share, new_share.round(4))
   end
 
   # FIXED: Safe callback method
@@ -58,18 +62,10 @@ class InvestmentClubMembership < ApplicationRecord
     portfolio_summary[:current_value] || 0
   end
   
-  # Simple method that doesn't duplicate complex logic
-  def estimated_share_value
-    return 0 unless active?
-    
-    # Simple calculation - you might want to make this more sophisticated
-    (current_share / 100.0) * investment_club.current_balance.to_f
-  end
-  
   private
   
   def set_initial_share
-    self.current_share = 0
+    self.contributed_share = 0
   end
   
   def update_club_financials

@@ -2,95 +2,69 @@
 class ClubInvestment < ApplicationRecord
   belongs_to :investment_club
   belongs_to :campaign
-  has_many :votes, as: :votable, dependent: :destroy
+  belongs_to :created_by, class_name: 'User'
+  
   has_many :member_investment_shares, dependent: :destroy
   has_many :members, through: :member_investment_shares, source: :user
+  has_many :votes, as: :votable, dependent: :destroy
   
-  validates :investment_amount, numericality: { greater_than: 0 }
+  # REMOVED: profit_distributions association since we're getting rid of profit distribution
   
-  enum status: { 
-    pending: 'pending', 
-    voting: 'voting', 
-    approved: 'approved', 
+  validates :investment_amount, :proposed_share_percentage, numericality: { greater_than: 0 }
+  validates :shares_acquired, numericality: { greater_than_or_equal_to: 0 }
+  
+  enum status: {
+    pending: 'pending',
+    voting: 'voting',
+    approved: 'approved',
     rejected: 'rejected',
-    transfer_initiated: 'transfer_initiated',
-    executed: 'executed', 
-    completed: 'completed',
+    executed: 'executed',
     failed: 'failed'
   }
   
-  before_create :generate_voting_session_id
-  after_update :execute_investment, if: -> { saved_change_to_status? && approved? }
-  after_update :distribute_shares, if: -> { saved_change_to_status? && executed? }
+  before_create :generate_reference
+  after_save :distribute_shares_after_execution, if: -> { saved_change_to_status?(to: 'executed') }
   
-  def start_voting(duration_days = 7)
-    update(
-      status: 'voting', 
-      voting_session_id: generate_voting_session_id,
-      voting_ends_at: duration_days.days.from_now
-    )
-  end
-  
-  def calculate_approval_rate
-    total_votes = yes_votes + no_votes
-    return 0 if total_votes.zero?
+  def distribute_shares_after_execution
+    return unless campaign.is_a?(EquityCampaign)
     
-    (yes_votes.to_f / total_votes * 100).round(2)
-  end
-  
-  def update_voting_stats
-    votes_data = votes.group(:vote_type).count
-    update(
-      yes_votes: votes_data['invest'] || votes_data['yes'] || 0,
-      no_votes: votes_data['pass'] || votes_data['no'] || 0,
-      approval_rate: calculate_approval_rate
-    )
+    # Calculate total contributed shares from all active members
+    total_contributed_shares = investment_club.investment_club_memberships.active.sum(:contributed_share)
+    return if total_contributed_shares.zero?
     
-    # Auto-approve if threshold met and voting period hasn't ended
-    if calculate_approval_rate >= 60.0 && voting? && (voting_ends_at.nil? || voting_ends_at > Time.current)
-      update(status: 'approved')
-    end
-    
-    # Auto-reject if voting period ended without sufficient approval
-    if voting? && voting_ends_at && voting_ends_at <= Time.current && calculate_approval_rate < 60.0
-      update(status: 'rejected')
+    ActiveRecord::Base.transaction do
+      investment_club.investment_club_memberships.active.each do |membership|
+        member_share_percentage = (membership.contributed_share / total_contributed_shares) * 100
+        
+        MemberInvestmentShare.create!(
+          user: membership.user,
+          club_investment: self,
+          share_percentage: member_share_percentage.round(4),
+          effective_shares: (member_share_percentage / 100) * shares_acquired.to_f
+        )
+      end
     end
   end
   
-  def approved?
-    calculate_approval_rate >= 60.0
+  def current_value
+    return investment_amount unless campaign.is_a?(EquityCampaign)
+    
+    # Calculate current value based on campaign valuation and shares owned
+    (shares_acquired / campaign.total_shares.to_f) * campaign.valuation
   end
   
-  def can_vote?(user)
-    membership = investment_club.membership_for(user)
-    membership&.can_vote? && voting? && (voting_ends_at.nil? || voting_ends_at > Time.current)
+  def total_return
+    current_value - investment_amount
   end
   
-  def has_voted?(user)
-    votes.exists?(user: user)
-  end
-  
-  def voting_time_remaining
-    return nil unless voting_ends_at
-    [(voting_ends_at - Time.current).to_i, 0].max
-  end
-  
-  def execute_via_service
-    ClubInvestmentExecutionJob.perform_later(id)
+  def roi
+    return 0 if investment_amount.zero?
+    (total_return / investment_amount) * 100
   end
   
   private
   
-  def generate_voting_session_id
-    self.voting_session_id ||= "vote_#{SecureRandom.hex(10)}"
-  end
-  
-  def execute_investment
-    execute_via_service
-  end
-  
-  def distribute_shares
-    # Shares are distributed via ClubInvestmentService in process_investment_execution
-    # This ensures proper transaction handling with your existing service
+  def generate_reference
+    self.reference ||= "CLUB-INV-#{SecureRandom.alphanumeric(10).upcase}"
   end
 end

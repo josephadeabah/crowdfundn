@@ -21,7 +21,7 @@ class InvestmentClubContribution < ApplicationRecord
     membership = investment_club.membership_for(user)
     membership.update(total_contributed: membership.total_contributed + amount)
     
-    # Update member's share percentage
+    # Update member's contributed share percentage ONLY
     membership.update_share_percentage
     
     # Create club transaction record safely
@@ -45,7 +45,7 @@ class InvestmentClubContribution < ApplicationRecord
     membership = investment_club.membership_for(user)
     membership.update(total_contributed: membership.total_contributed - amount)
     
-    # Update member's share percentage
+    # Update member's contributed share percentage
     membership.update_share_percentage
   end
 end
