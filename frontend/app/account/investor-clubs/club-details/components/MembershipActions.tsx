@@ -94,7 +94,6 @@ const MembershipActions: React.FC<MembershipActionsProps> = ({
             {formatCurrency(myMembership.total_contributed, clubCurrency)}
           </div>
         </div>
-        {/* REMOVED: Estimated Value since we don't calculate individual share values for contributions */}
         <div>
           <span className="text-gray-600">Role:</span>
           <div className="font-semibold capitalize">{myMembership.role}</div>
