@@ -99,8 +99,6 @@ const InvestmentClubsDashboard: React.FC = () => {
   }, [selectedClub]);
 
   // Check for payment callback on component mount - ONLY IN DASHBOARD
-  // In your dashboard component - simplified payment verification
-  // In your dashboard component - update the payment verification
   useEffect(() => {
     const checkPaymentStatus = async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -139,7 +137,7 @@ const InvestmentClubsDashboard: React.FC = () => {
 
             // Add info about processing method
             if (verificationResult.processed_by_webhook) {
-              successMessage += '\n\n✅ Processed automatically by webhook';
+              successMessage += '\n\n✅ Processed Successfully';
             } else if (verificationResult.already_processed) {
               successMessage += '\n\n✅ Payment was already processed';
             }
