@@ -7,8 +7,6 @@ class InvestmentClubContribution < ApplicationRecord
   
   enum status: { pending: 'pending', completed: 'completed', failed: 'failed', refunded: 'refunded' }
   
-  # Add processed_at to track processing
-  attribute :processed_at, :datetime
   
   after_save :update_club_balance, if: -> { saved_change_to_status? && completed? }
   

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_12_023335) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_12_140553) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -413,6 +413,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_12_023335) do
     t.string "payment_method"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "paystack_fee", precision: 10, scale: 2, default: "0.0"
+    t.decimal "amount_settled", precision: 10, scale: 2
+    t.datetime "processed_at"
     t.index ["investment_club_id"], name: "index_investment_club_contributions_on_investment_club_id"
     t.index ["status"], name: "index_investment_club_contributions_on_status"
     t.index ["transaction_reference"], name: "index_investment_club_contributions_on_transaction_reference", unique: true
