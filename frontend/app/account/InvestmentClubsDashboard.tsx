@@ -109,15 +109,12 @@ const InvestmentClubsDashboard: React.FC = () => {
         const paymentRef = (reference || trxref)!;
 
         try {
-          console.log('💰 Checking payment status for:', paymentRef);
           const verificationResult =
             await contributionService.verifyContribution(
               token,
               selectedClub.slug,
               paymentRef,
             );
-
-          console.log('🔍 Verification result:', verificationResult);
 
           if (verificationResult.success) {
             let successMessage =
@@ -128,11 +125,6 @@ const InvestmentClubsDashboard: React.FC = () => {
               const { total_contributed, contributed_share } =
                 verificationResult.membership;
               successMessage += `\n\nYour total contributions: ${formatCurrency(total_contributed, selectedClub.currency)}\nYour club share: ${contributed_share}%`;
-
-              console.log('✅ Membership data from verification:', {
-                total_contributed,
-                contributed_share,
-              });
             }
 
             // Add info about processing method
@@ -180,12 +172,8 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const handleContributionSuccess = async () => {
     if (selectedClub) {
-      console.log('🔄 Refreshing data after contribution...');
-
       // Just refresh the data - processing is handled by webhook
       await loadClubDetails(selectedClub);
-
-      console.log('✅ Data refresh complete');
     }
   };
 
