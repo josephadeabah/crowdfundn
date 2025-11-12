@@ -31,6 +31,7 @@ const apiCall = async (
 const sanitizeShareChange = (change: any) => {
   return {
     ...change,
+    id: change.id?.toString() || `temp-${Date.now()}-${Math.random()}`,
     previous_share: change.previous_share ? Number(change.previous_share) : 0,
     new_share: change.new_share ? Number(change.new_share) : 0,
     change_amount: change.change_amount ? Number(change.change_amount) : 0,
@@ -40,6 +41,32 @@ const sanitizeShareChange = (change: any) => {
     total_contributions_at_time: change.total_contributions_at_time
       ? Number(change.total_contributions_at_time)
       : 0,
+    change_reason: change.change_reason || 'recalculation',
+    created_at: change.created_at || new Date().toISOString(),
+    updated_at: change.updated_at || new Date().toISOString(),
+    contribution: change.contribution
+      ? {
+          id: change.contribution.id?.toString(),
+          amount: change.contribution.amount
+            ? Number(change.contribution.amount)
+            : 0,
+          currency: change.contribution.currency || 'GHS',
+          created_at:
+            change.contribution.created_at || new Date().toISOString(),
+        }
+      : undefined,
+    membership: change.membership || {
+      id: 'unknown',
+      user: {
+        id: 'unknown',
+        full_name: 'Unknown User',
+      },
+      club: {
+        id: 'unknown',
+        name: 'Unknown Club',
+        slug: 'unknown',
+      },
+    },
   };
 };
 
@@ -56,8 +83,14 @@ export const shareChangeService = {
 
     // Sanitize the response data
     return {
-      ...response,
       share_changes: response.share_changes?.map(sanitizeShareChange) || [],
+      pagination: response.pagination || {
+        current_page: page,
+        total_pages: 1,
+        per_page: perPage,
+        total_count: 0,
+      },
+      summary: response.summary || null,
     };
   },
 
@@ -73,8 +106,14 @@ export const shareChangeService = {
 
     // Sanitize the response data
     return {
-      ...response,
       share_changes: response.share_changes?.map(sanitizeShareChange) || [],
+      pagination: response.pagination || {
+        current_page: page,
+        total_pages: 1,
+        per_page: perPage,
+        total_count: 0,
+      },
+      summary: response.summary || null,
     };
   },
 };

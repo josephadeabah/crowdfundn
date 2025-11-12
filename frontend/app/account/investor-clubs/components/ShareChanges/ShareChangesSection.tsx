@@ -97,7 +97,19 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
         setSummary(null);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to load share changes');
+      // Handle specific error cases
+      if (
+        err.message.includes('500') ||
+        err.message.includes('Internal Server Error')
+      ) {
+        setError(
+          'Share history service is temporarily unavailable. Please try again later.',
+        );
+      } else if (err.message.includes('404')) {
+        setError('Share history not available for this club.');
+      } else {
+        setError(err.message || 'Failed to load share changes');
+      }
       console.error('Failed to load share changes:', err);
     } finally {
       setLoading(false);
