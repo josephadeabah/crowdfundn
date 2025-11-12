@@ -113,7 +113,7 @@ const ProfileTabs = () => {
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    new Set(['dashboard', 'fundraising']),
+    new Set(['dashboard', 'investing']),
   );
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
