@@ -104,12 +104,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           />
         );
       case 'share-history':
-       return (
-         <ShareChangesSection
-          club={club}
-          formatCurrency={formatCurrency}
-        />
-       );
+        return (
+          <ShareChangesSection club={club} formatCurrency={formatCurrency} />
+        );
       default:
         return null;
     }
