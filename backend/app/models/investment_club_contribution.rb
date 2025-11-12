@@ -12,24 +12,44 @@ class InvestmentClubContribution < ApplicationRecord
   
   # CRITICAL: Safe processing method with double-processing protection
   def process_completion!
-    # Double-check using processed_at to prevent ANY double processing
     return if processed_at.present?
     
     ActiveRecord::Base.transaction do
-      # Update member's total contributions
       membership = investment_club.membership_for(user)
       if membership
+        # Store previous state for logging
+        previous_total = membership.total_contributed
+        previous_share = membership.contributed_share
+        previous_club_total = investment_club.total_contributions
+        
+        # Update member's total contributions
         new_total = membership.total_contributed + amount
         membership.update!(total_contributed: new_total)
         
         # Update club total contributions
         investment_club.update_financials
         
-        # Update all member shares
+        # Log the change
+        Rails.logger.info "Member #{user.full_name} contribution: " +
+                        "#{format_currency(amount)} " +
+                        "(Previous: #{format_currency(previous_total)}, " +
+                        "New: #{format_currency(new_total)})"
+        
+        # Update all member shares with proper redistribution
         investment_club.update_all_member_shares
+        
+        # Log share changes
+        new_share = membership.reload.contributed_share
+        share_change = new_share - previous_share
+        
+        Rails.logger.info "Share change for #{user.full_name}: " +
+                        "#{previous_share}% -> #{new_share}% " +
+                        "(#{share_change > 0 ? '+' : ''}#{share_change.round(4)}%)"
+        
+        # Verify the result
+        investment_club.verify_share_totals
       end
       
-      # Mark as processed to prevent any future processing
       update_column(:processed_at, Time.current)
     end
   end
@@ -38,5 +58,9 @@ class InvestmentClubContribution < ApplicationRecord
   
   def update_club_balance
     process_completion! if completed?
+  end
+
+  def format_currency(amount)
+  "#{amount.to_f.round(2)} #{investment_club.currency}"
   end
 end

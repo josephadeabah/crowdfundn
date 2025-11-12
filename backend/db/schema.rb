@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_12_140553) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_12_205614) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -576,6 +576,22 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_12_140553) do
     t.index ["user_id"], name: "index_member_investment_shares_on_user_id"
   end
 
+  create_table "member_share_changes", force: :cascade do |t|
+    t.bigint "investment_club_membership_id", null: false
+    t.bigint "investment_club_contribution_id"
+    t.decimal "previous_share", precision: 8, scale: 4, null: false
+    t.decimal "new_share", precision: 8, scale: 4, null: false
+    t.decimal "change_amount", precision: 8, scale: 4, null: false
+    t.decimal "total_contributions_at_time", precision: 12, scale: 2
+    t.string "change_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_member_share_changes_on_created_at"
+    t.index ["investment_club_contribution_id"], name: "index_member_share_changes_on_investment_club_contribution_id"
+    t.index ["investment_club_membership_id", "created_at"], name: "index_share_changes_on_membership_and_created_at"
+    t.index ["investment_club_membership_id"], name: "index_member_share_changes_on_investment_club_membership_id"
+  end
+
   create_table "pledges", force: :cascade do |t|
     t.bigint "donation_id"
     t.bigint "reward_id", null: false
@@ -907,6 +923,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_12_140553) do
   add_foreign_key "leaderboard_entries", "users"
   add_foreign_key "member_investment_shares", "club_investments"
   add_foreign_key "member_investment_shares", "users"
+  add_foreign_key "member_share_changes", "investment_club_contributions"
+  add_foreign_key "member_share_changes", "investment_club_memberships"
   add_foreign_key "pledges", "donations"
   add_foreign_key "pledges", "rewards"
   add_foreign_key "points", "donations"

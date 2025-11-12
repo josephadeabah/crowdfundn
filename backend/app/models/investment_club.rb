@@ -244,9 +244,180 @@ class InvestmentClub < ApplicationRecord
     total_contributions = self.total_contributions
     return if total_contributions.zero?
     
-    investment_club_memberships.active.each do |membership|
-      new_share = (membership.total_contributed / total_contributions) * 100
-      membership.update_column(:contributed_share, new_share.round(4))
+    memberships = investment_club_memberships.active.to_a
+    return if memberships.empty?
+    
+    # Calculate proportional shares based on current contributions
+    calculated_shares = {}
+    total_calculated = 0.0
+    
+    memberships.each do |membership|
+      raw_share = (membership.total_contributed / total_contributions) * 100
+      calculated_shares[membership.id] = raw_share
+      total_calculated += raw_share
+    end
+    
+    # Apply proportional adjustment to ensure exactly 100%
+    adjustment_factor = 100.0 / total_calculated
+    
+    # Update all memberships with adjusted shares
+    ActiveRecord::Base.transaction do
+      memberships.each do |membership|
+        adjusted_share = (calculated_shares[membership.id] * adjustment_factor).round(4)
+        membership.update_column(:contributed_share, adjusted_share)
+      end
+    end
+    
+    # Final verification
+    final_total = investment_club_memberships.active.sum(:contributed_share)
+    if (final_total - 100.0).abs > 0.01
+      # Force correction by adjusting the largest shareholder
+      force_correct_share_totals
+    end
+    
+    Rails.logger.info "Updated member shares. Total: #{final_total}%"
+  end
+
+  # Force correction if there are still rounding errors
+  def force_correct_share_totals
+    memberships = investment_club_memberships.active.order(contributed_share: :desc)
+    current_total = memberships.sum(:contributed_share)
+    difference = (100.0 - current_total).round(4)
+    
+    return if difference.zero?
+    
+    # Apply the difference to the largest shareholder
+    largest_member = memberships.first
+    new_share = (largest_member.contributed_share + difference).round(4)
+    largest_member.update_column(:contributed_share, new_share)
+    
+    Rails.logger.info "Force-corrected shares: Adjusted #{largest_member.user.full_name} by #{difference}%"
+  end
+
+  def simulate_share_change(member:, new_contribution:)
+    current_shares = investment_club_memberships.active.each_with_object({}) do |m, hash|
+      hash[m.id] = {
+        user: m.user.full_name,
+        current_contributed: m.total_contributed,
+        current_share: m.contributed_share
+      }
+    end
+    
+    # Calculate new totals
+    new_total_contributions = total_contributions + new_contribution
+    new_shares = {}
+    
+    investment_club_memberships.active.each do |m|
+      if m.id == member.id
+        new_contributed = m.total_contributed + new_contribution
+      else
+        new_contributed = m.total_contributed
+      end
+      
+      new_share = (new_contributed / new_total_contributions) * 100
+      new_shares[m.id] = {
+        user: m.user.full_name,
+        new_contributed: new_contributed,
+        new_share: new_share.round(4),
+        share_change: (new_share - m.contributed_share).round(4)
+      }
+    end
+    
+    {
+      current_state: current_shares,
+      projected_state: new_shares,
+      new_total_contributions: new_total_contributions,
+      contribution_impact: {
+        member: member.user.full_name,
+        new_contribution: new_contribution,
+        current_share: member.contributed_share,
+        projected_share: new_shares[member.id][:new_share],
+        share_increase: new_shares[member.id][:share_change]
+      }
+    }
+  end
+
+  # app/models/investment_club.rb
+  def update_all_member_shares_with_history(contribution = nil)
+    total_contributions = self.total_contributions
+    return if total_contributions.zero?
+    
+    memberships = investment_club_memberships.active.to_a
+    return if memberships.empty?
+    
+    # Store previous shares
+    previous_shares = memberships.each_with_object({}) do |m, hash|
+      hash[m.id] = m.contributed_share
+    end
+    
+    # Calculate new shares (same proportional logic as before)
+    calculated_shares = {}
+    total_calculated = 0.0
+    
+    memberships.each do |membership|
+      raw_share = (membership.total_contributed / total_contributions) * 100
+      calculated_shares[membership.id] = raw_share
+      total_calculated += raw_share
+    end
+    
+    adjustment_factor = 100.0 / total_calculated
+    
+    # Update shares and track changes
+    ActiveRecord::Base.transaction do
+      memberships.each do |membership|
+        new_share = (calculated_shares[membership.id] * adjustment_factor).round(4)
+        previous_share = previous_shares[membership.id]
+        
+        # Only update if share changed
+        if (new_share - previous_share).abs > 0.0001
+          membership.update_column(:contributed_share, new_share)
+          
+          # Record share change if it's significant
+          if (new_share - previous_share).abs >= 0.01
+            MemberShareChange.create!(
+              investment_club_membership: membership,
+              investment_club_contribution: contribution,
+              previous_share: previous_share,
+              new_share: new_share,
+              change_amount: new_share - previous_share,
+              total_contributions_at_time: total_contributions,
+              change_reason: contribution ? 'contribution' : 'recalculation'
+            )
+          end
+        end
+      end
+    end
+  
+    # Final correction if needed
+    force_correct_share_totals if (investment_club_memberships.active.sum(:contributed_share) - 100.0).abs > 0.01
+  end
+
+  # Update the process_completion! method to use the enhanced version
+  def process_completion!
+    return if processed_at.present?
+    
+    ActiveRecord::Base.transaction do
+      membership = investment_club.membership_for(user)
+      if membership
+        previous_total = membership.total_contributed
+        previous_share = membership.contributed_share
+        
+        new_total = membership.total_contributed + amount
+        membership.update!(total_contributed: new_total)
+        
+        investment_club.update_financials
+        
+        # Use the enhanced method with history tracking
+        investment_club.update_all_member_shares_with_history(self)
+        
+        # Log the changes
+        new_share = membership.reload.contributed_share
+        Rails.logger.info "Contribution processed: #{user.full_name} " +
+                        "+#{format_currency(amount)} " +
+                        "(#{previous_share}% → #{new_share}%)"
+      end
+      
+      update_column(:processed_at, Time.current)
     end
   end
 

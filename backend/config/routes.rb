@@ -300,6 +300,13 @@ Rails.application.routes.draw do
           end
         end
 
+        # Add share changes routes
+        resources :share_changes, only: [:index], controller: 'member_share_changes' do
+          collection do
+            get :my_changes
+          end
+        end
+
         # Club operations
         resources :contributions, only: [:index, :create], controller: 'club_contributions' do
           collection do

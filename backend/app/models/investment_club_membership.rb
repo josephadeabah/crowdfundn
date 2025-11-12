@@ -6,6 +6,7 @@ class InvestmentClubMembership < ApplicationRecord
   # FIXED: Use the correct association through user
   has_many :member_investment_shares, through: :user
   has_many :club_investments, through: :member_investment_shares
+  has_many :member_share_changes, dependent: :destroy
   
   validates :user_id, uniqueness: { scope: :investment_club_id }
   
