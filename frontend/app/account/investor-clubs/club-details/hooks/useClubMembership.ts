@@ -72,12 +72,11 @@ export const useClubMembership = (
             role: 'member',
             user: fallbackUser,
             total_contributed: 0,
-            current_share: 0,
+            contributed_share: 0, // CHANGED: current_share → contributed_share
             joined_at: new Date().toISOString(),
             can_manage: false,
             can_vote: true,
             can_contribute: true,
-            estimated_share_value: 0,
           } as Membership);
         }
       } else {
