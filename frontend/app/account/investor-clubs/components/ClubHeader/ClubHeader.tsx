@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Select,
   SelectContent,
@@ -21,6 +21,13 @@ export const ClubHeader: React.FC<ClubHeaderProps> = ({
   onClubChange,
   onOpenClubDetails,
 }) => {
+  // Persist selected club slug whenever it changes
+  useEffect(() => {
+    if (currentClub?.slug) {
+      localStorage.setItem('selectedClubSlug', currentClub.slug);
+    }
+  }, [currentClub]);
+
   return (
     <div className="hidden lg:flex items-center justify-between mb-6 lg:mb-8">
       <div>
@@ -34,7 +41,10 @@ export const ClubHeader: React.FC<ClubHeaderProps> = ({
           value={currentClub.slug}
           onValueChange={(value) => {
             const club = clubs.find((c) => c.slug === value);
-            if (club) onClubChange(club);
+            if (club) {
+              onClubChange(club);
+              localStorage.setItem('selectedClubSlug', value); // Save on selection
+            }
           }}
         >
           <SelectTrigger className="w-[180px] lg:w-[200px] border-0 focus:ring-0 focus:ring-offset-0 focus:outline-none shadow-none">
