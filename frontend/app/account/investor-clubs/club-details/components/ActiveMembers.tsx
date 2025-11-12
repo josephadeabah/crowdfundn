@@ -83,7 +83,7 @@ const ActiveMembers: React.FC<ActiveMembersProps> = ({
                   {formatCurrency(member.total_contributed, clubCurrency)}
                 </div>
                 <div className="text-sm text-gray-500">
-                  {safeToFixed(member.current_share, 1)}% share
+                  {safeToFixed(member.contributed_share, 1)}% share
                 </div>
               </div>
             </div>

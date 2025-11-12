@@ -256,7 +256,7 @@ module Api
       rescue ActiveRecord::RecordNotFound
         render json: { 
           success: false,
-          error: 'Membership not found' 
+            error: 'Membership not found' 
         }, status: :not_found
       end
 
@@ -294,24 +294,39 @@ module Api
 
       def notify_admins_of_pending_member(membership)
         @club.admin_members.each do |admin|
-          ClubMailer.pending_member_notification(admin, membership).deliver_later
+          ClubEmailService.send_pending_member_notification(
+            admin: admin,
+            membership: membership
+          )
         end
       end
 
       def notify_member_of_status_change(membership)
-        ClubMailer.membership_status_changed(membership.user, membership).deliver_later
+        ClubEmailService.send_membership_status_changed(
+          user: membership.user,
+          membership: membership
+        )
       end
 
       def notify_member_of_role_change(membership)
-        ClubMailer.membership_role_changed(membership.user, membership).deliver_later
+        ClubEmailService.send_membership_role_changed(
+          user: membership.user,
+          membership: membership
+        )
       end
 
       def notify_member_of_approval(membership)
-        ClubMailer.membership_approved(membership.user, membership).deliver_later
+        ClubEmailService.send_membership_approved(
+          user: membership.user,
+          membership: membership
+        )
       end
 
       def notify_member_of_rejection(membership)
-        ClubMailer.membership_rejected(membership.user, membership).deliver_later
+        ClubEmailService.send_membership_rejected(
+          user: membership.user,
+          membership: membership
+        )
       end
     end
   end

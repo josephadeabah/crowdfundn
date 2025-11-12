@@ -42,7 +42,7 @@ export interface Member {
   role: 'creator' | 'admin' | 'member';
   status: 'pending' | 'active' | 'inactive';
   total_contributed: number;
-  current_share: number;
+  contributed_share: number;
   joined_at: string;
   can_manage?: boolean;
   can_vote?: boolean;
