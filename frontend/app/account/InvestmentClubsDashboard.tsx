@@ -29,6 +29,7 @@ import {
   FaInfoCircle,
 } from 'react-icons/fa';
 import { useAuth } from '../context/auth/AuthContext';
+import { ShareChangesSection } from './investor-clubs/components/ShareChanges/ShareChangesSection';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const {
@@ -375,6 +376,11 @@ const InvestmentClubsDashboard: React.FC = () => {
               />
 
               <ClubSummaryCard
+                club={currentClub}
+                formatCurrency={formatCurrency}
+              />
+              {/* Add the Share Changes Section here */}
+              <ShareChangesSection
                 club={currentClub}
                 formatCurrency={formatCurrency}
               />

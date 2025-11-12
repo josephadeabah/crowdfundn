@@ -1,4 +1,10 @@
-import { Club, Member, ClubInvestment, ClubContribution } from '../clubTypes';
+import {
+  Club,
+  Member,
+  ClubInvestment,
+  ClubContribution,
+  ShareChange,
+} from '../clubTypes';
 import { AIRecommendation } from '../aiRecommendationService';
 
 export interface DashboardState {
@@ -6,7 +12,8 @@ export interface DashboardState {
   selectedClub: Club | null;
   members: Member[];
   investments: ClubInvestment[];
-  contributions: ClubContribution[]; // Add contributions
+  contributions: ClubContribution[];
+  shareChanges: ShareChange[]; // Add this line
   portfolio: any;
   loading: boolean;
   mobileMenuOpen: boolean;

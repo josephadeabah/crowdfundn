@@ -202,3 +202,43 @@ export interface VerifyContributionResponse {
   already_processed?: boolean;
   processed_by_webhook?: boolean;
 }
+
+export interface ShareChange {
+  id: string;
+  previous_share: number;
+  new_share: number;
+  change_amount: number;
+  change_percentage: number;
+  change_reason: string;
+  total_contributions_at_time: number;
+  created_at: string;
+  updated_at: string;
+  contribution?: {
+    id: string;
+    amount: number;
+    currency: string;
+    created_at: string;
+  };
+  membership: {
+    id: string;
+    user: {
+      id: string;
+      full_name: string;
+    };
+    club: {
+      id: string;
+      name: string;
+      slug: string;
+    };
+  };
+}
+
+export interface ShareChangesResponse {
+  share_changes: ShareChange[];
+  pagination: PaginationData;
+  summary?: {
+    total_changes: number;
+    current_share: number;
+    total_contributed: number;
+  };
+}

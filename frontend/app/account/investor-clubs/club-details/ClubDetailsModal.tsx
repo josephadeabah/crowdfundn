@@ -21,9 +21,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   members,
   onMembershipUpdate,
 }) => {
-  const [activeTab, setActiveTab] = useState<'about' | 'members' | 'actions'>(
-    'about',
-  );
+  const [activeTab, setActiveTab] = useState<
+    'about' | 'members' | 'actions' | 'share-history'
+  >('about');
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
   const [transferAlert, setTransferAlert] = useState(false);

@@ -520,3 +520,5 @@ export const portfolioService = {
     return apiCall(endpoint, token);
   },
 };
+
+export { shareChangeService } from './services/shareChangeService';
