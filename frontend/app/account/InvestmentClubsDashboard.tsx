@@ -1,4 +1,3 @@
-// app/account/investor-clubs/page.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
@@ -73,6 +72,27 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [voteErrorMessage, setVoteErrorMessage] = useState('');
   const [explanationAlert, setExplanationAlert] = useState(false);
   const [explanationMessage, setExplanationMessage] = useState('');
+
+  // 🧠 Added for persistence: auto-load the previously selected club
+  useEffect(() => {
+    if (clubs.length > 0) {
+      const savedSlug = localStorage.getItem('selectedClubSlug');
+      const savedClub = clubs.find((c) => c.slug === savedSlug);
+      if (savedClub) {
+        loadClubDetails(savedClub);
+      } else {
+        // fallback to first club if none saved
+        loadClubDetails(clubs[0]);
+      }
+    }
+  }, [clubs]);
+
+  // 🧠 Also watch for current club changes and save it
+  useEffect(() => {
+    if (selectedClub?.slug) {
+      localStorage.setItem('selectedClubSlug', selectedClub.slug);
+    }
+  }, [selectedClub]);
 
   // Check for payment callback on component mount - ONLY IN DASHBOARD
   useEffect(() => {
@@ -156,7 +176,10 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const handleProposeInvestmentWithCampaign = (campaign: any) => {
     setFeatureMessage(
-      `Propose investment for: ${campaign.title}\n\nAmount: ${formatCurrency(campaign.goal_amount, campaign.currency || selectedClub?.currency)}\n\nThis would open the investment proposal form with this campaign pre-selected.`,
+      `Propose investment for: ${campaign.title}\n\nAmount: ${formatCurrency(
+        campaign.goal_amount,
+        campaign.currency || selectedClub?.currency,
+      )}\n\nThis would open the investment proposal form with this campaign pre-selected.`,
     );
     setFeatureAlert(true);
   };
@@ -335,7 +358,6 @@ const InvestmentClubsDashboard: React.FC = () => {
                 formatCurrency={formatCurrency}
               />
 
-              {/* Add Recent Contributions Section */}
               <RecentContributionsSection
                 contributions={contributions}
                 pagination={contributionsPagination}
@@ -357,7 +379,7 @@ const InvestmentClubsDashboard: React.FC = () => {
               />
             </div>
 
-            {/* Right Column - Stats and Quick Actions */}
+            {/* Right Column */}
             <div className="space-y-4 lg:space-y-6">
               <PortfolioSummary
                 portfolio={portfolio}
@@ -394,7 +416,6 @@ const InvestmentClubsDashboard: React.FC = () => {
             members={members}
           />
 
-          {/* Dashboard Contribution Modal - Handles payment verification */}
           <ContributionModal
             isOpen={isContributionModalOpen}
             onClose={() => setIsContributionModalOpen(false)}
@@ -402,7 +423,7 @@ const InvestmentClubsDashboard: React.FC = () => {
             club={currentClub}
             token={token}
             formatCurrency={formatCurrency}
-            showSuccess={true} // Enable success display in dashboard modal
+            showSuccess={true}
           />
         </>
       )}
@@ -413,8 +434,7 @@ const InvestmentClubsDashboard: React.FC = () => {
         onClubCreated={handleClubCreated}
       />
 
-      {/* Alert Popups */}
-      {/* Payment Success/Failure Alert */}
+      {/* Alerts */}
       <AlertPopup
         title={paymentSuccess ? 'Payment Successful' : 'Payment Failed'}
         message={paymentMessage}
@@ -436,7 +456,6 @@ const InvestmentClubsDashboard: React.FC = () => {
         }
       />
 
-      {/* Feature Coming Soon Alert */}
       <AlertPopup
         title="Feature Coming Soon"
         message={featureMessage}
@@ -448,7 +467,6 @@ const InvestmentClubsDashboard: React.FC = () => {
         confirmButtonClass="bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
       />
 
-      {/* Vote Failed Alert */}
       <AlertPopup
         title="Vote Failed"
         message={voteErrorMessage}
@@ -460,7 +478,6 @@ const InvestmentClubsDashboard: React.FC = () => {
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       />
 
-      {/* AI Explanation Alert */}
       <AlertPopup
         title="AI Recommendation Explanation"
         message={explanationMessage}

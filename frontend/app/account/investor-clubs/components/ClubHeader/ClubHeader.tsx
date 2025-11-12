@@ -1,4 +1,3 @@
-'use client';
 import React, { useEffect } from 'react';
 import {
   Select,
@@ -22,25 +21,12 @@ export const ClubHeader: React.FC<ClubHeaderProps> = ({
   onClubChange,
   onOpenClubDetails,
 }) => {
-  // Load saved club from localStorage on mount
+  // Persist selected club slug whenever it changes
   useEffect(() => {
-    const savedClubSlug = localStorage.getItem('selectedClubSlug');
-    if (savedClubSlug && clubs.length > 0) {
-      const savedClub = clubs.find((c) => c.slug === savedClubSlug);
-      if (savedClub && savedClub.slug !== currentClub.slug) {
-        onClubChange(savedClub);
-      }
+    if (currentClub?.slug) {
+      localStorage.setItem('selectedClubSlug', currentClub.slug);
     }
-  }, [clubs]); // runs whenever clubs list changes
-
-  // Handle club change and persist selection
-  const handleClubChange = (value: string) => {
-    const club = clubs.find((c) => c.slug === value);
-    if (club) {
-      onClubChange(club);
-      localStorage.setItem('selectedClubSlug', club.slug);
-    }
-  };
+  }, [currentClub]);
 
   return (
     <div className="hidden lg:flex items-center justify-between mb-6 lg:mb-8">
@@ -50,11 +36,16 @@ export const ClubHeader: React.FC<ClubHeaderProps> = ({
           Manage your club investments and collaborate with members
         </p>
       </div>
-
       <div className="flex items-center gap-3 lg:gap-4">
         <Select
-          value={currentClub?.slug}
-          onValueChange={handleClubChange}
+          value={currentClub.slug}
+          onValueChange={(value) => {
+            const club = clubs.find((c) => c.slug === value);
+            if (club) {
+              onClubChange(club);
+              localStorage.setItem('selectedClubSlug', value); // Save on selection
+            }
+          }}
         >
           <SelectTrigger className="w-[180px] lg:w-[200px] border-0 focus:ring-0 focus:ring-offset-0 focus:outline-none shadow-none">
             <SelectValue placeholder="Select a club" />
@@ -67,7 +58,6 @@ export const ClubHeader: React.FC<ClubHeaderProps> = ({
             ))}
           </SelectContent>
         </Select>
-
         <button
           onClick={onOpenClubDetails}
           className="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 font-medium text-sm lg:text-base"
