@@ -240,6 +240,16 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
+  def update_all_member_shares
+    total_contributions = self.total_contributions
+    return if total_contributions.zero?
+    
+    investment_club_memberships.active.each do |membership|
+      new_share = (membership.total_contributed / total_contributions) * 100
+      membership.update_column(:contributed_share, new_share.round(4))
+    end
+  end
+
   private
   
   def generate_slug

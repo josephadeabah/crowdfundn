@@ -19,43 +19,31 @@ class InvestmentClubContribution < ApplicationRecord
   
   # Add method to safely process completion
   def process_completion!
-    return if completed? # Already processed
+    return unless completed? && saved_change_to_status?(to: 'completed')
     
-    with_lock do
-      return if completed? # Double check after acquiring lock
-      
-      # Update member's total contributions FIRST
+    ActiveRecord::Base.transaction do
+      # Update member's total contributions
       membership = investment_club.membership_for(user)
       if membership
-        new_total_contributed = membership.total_contributed + amount
-        membership.update!(
-          total_contributed: new_total_contributed
-        )
+        new_total = membership.total_contributed + amount
+        membership.update!(total_contributed: new_total)
         
-        # Update member's share percentage AFTER updating total_contributed
-        membership.update_share_percentage
-      else
-        Rails.logger.error "No membership found for user #{user.id} in club #{investment_club.id}"
-      end
-      
-      # Update club financials
-      investment_club.update_financials
-      
-      # Create club transaction record safely
-      begin
-        ClubTransaction.create!(
-          investment_club: investment_club,
-          amount: amount,
-          transaction_type: 'contribution',
-          status: 'completed',
-          reference: transaction_reference,
-          description: "Member contribution from #{user.full_name}"
-        )
-      rescue => e
-        Rails.logger.error "Failed to create club transaction: #{e.message}"
-        # Don't fail the whole process if transaction creation fails
+        # Update club total contributions
+        investment_club.update_financials
+        
+        # Update all member shares
+        investment_club.update_all_member_shares
       end
     end
+  end
+  
+  # Safe processing that prevents double counting
+  def safe_process_completion!
+    # Double-check this hasn't been processed already
+    return if processed_at.present?
+    
+    process_completion!
+    update_column(:processed_at, Time.current)
   end
   
   private

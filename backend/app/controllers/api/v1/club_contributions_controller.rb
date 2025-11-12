@@ -112,8 +112,10 @@ module Api
 
         # CRITICAL: If contribution is already completed, just return success
         if contribution.completed?
-          # Still return the current membership data
+          # Force reload of membership data to ensure we have the latest
           membership = @club.membership_for(@current_user)
+          membership.reload if membership
+          
           return render json: { 
             success: true, 
             contribution: ClubContributionSerializer.new(contribution).as_json,
