@@ -57,7 +57,15 @@ export const useShareChanges = (): UseShareChangesReturn => {
 
       setShareChanges(response.share_changes);
       setPagination(response.pagination);
-      setSummary(response.summary || null);
+      setSummary(
+        response.summary
+          ? {
+              total_changes: response.summary.total_changes ?? 0,
+              current_share: response.summary.current_share ?? 0,
+              total_contributed: response.summary.total_contributed ?? 0,
+            }
+          : null,
+      );
     } catch (err: any) {
       setError(err.message || 'Failed to load share changes');
       console.error('Failed to load share changes:', err);

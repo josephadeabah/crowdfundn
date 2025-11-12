@@ -205,21 +205,21 @@ export interface VerifyContributionResponse {
 
 export interface ShareChange {
   id: string;
-  previous_share: number;
-  new_share: number;
-  change_amount: number;
-  change_percentage: number;
-  change_reason: string;
-  total_contributions_at_time: number;
+  previous_share?: number;
+  new_share?: number;
+  change_amount?: number;
+  change_percentage?: number;
+  change_reason?: string;
+  total_contributions_at_time?: number;
   created_at: string;
   updated_at: string;
   contribution?: {
     id: string;
-    amount: number;
-    currency: string;
+    amount?: number;
+    currency?: string;
     created_at: string;
   };
-  membership: {
+  membership?: {
     id: string;
     user: {
       id: string;
@@ -237,8 +237,8 @@ export interface ShareChangesResponse {
   share_changes: ShareChange[];
   pagination: PaginationData;
   summary?: {
-    total_changes: number;
-    current_share: number;
-    total_contributed: number;
+    total_changes?: number;
+    current_share?: number;
+    total_contributed?: number;
   };
 }

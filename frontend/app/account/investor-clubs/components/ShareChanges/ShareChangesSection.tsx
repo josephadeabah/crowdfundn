@@ -12,6 +12,7 @@ import {
   TrendingDown,
   DollarSign,
   Calendar,
+  AlertCircle,
 } from 'lucide-react';
 
 interface ShareChangesSectionProps {
@@ -40,6 +41,21 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
   } | null>(null);
   const [expandedChange, setExpandedChange] = useState<string | null>(null);
 
+  // Safe number formatting functions
+  const safeToFixed = (value: any, decimals: number = 4): string => {
+    if (value === null || value === undefined || isNaN(Number(value))) {
+      return '0.00';
+    }
+    return Number(value).toFixed(decimals);
+  };
+
+  const safeNumber = (value: any): number => {
+    if (value === null || value === undefined || isNaN(Number(value))) {
+      return 0;
+    }
+    return Number(value);
+  };
+
   const loadShareChanges = async (page: number = 1) => {
     if (!token || !club) return;
 
@@ -55,9 +71,31 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
           pagination.per_page,
         );
 
-      setShareChanges(response.share_changes);
+      // Validate and sanitize the data
+      const validatedChanges = response.share_changes.map((change) => ({
+        ...change,
+        previous_share: safeNumber(change.previous_share),
+        new_share: safeNumber(change.new_share),
+        change_amount: safeNumber(change.change_amount),
+        change_percentage: safeNumber(change.change_percentage),
+        total_contributions_at_time: safeNumber(
+          change.total_contributions_at_time,
+        ),
+      }));
+
+      setShareChanges(validatedChanges);
       setPagination(response.pagination);
-      setSummary(response.summary || null);
+
+      // Validate summary data
+      if (response.summary) {
+        setSummary({
+          total_changes: safeNumber(response.summary.total_changes),
+          current_share: safeNumber(response.summary.current_share),
+          total_contributed: safeNumber(response.summary.total_contributed),
+        });
+      } else {
+        setSummary(null);
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to load share changes');
       console.error('Failed to load share changes:', err);
@@ -79,29 +117,36 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (error) {
+      return 'Invalid date';
+    }
   };
 
-  const getChangeIcon = (changeAmount: number) => {
-    return changeAmount > 0 ? (
+  const getChangeIcon = (changeAmount?: number) => {
+    const amt = changeAmount ?? 0;
+    return amt > 0 ? (
       <TrendingUp className="w-4 h-4 text-green-600" />
     ) : (
       <TrendingDown className="w-4 h-4 text-red-600" />
     );
   };
 
-  const getChangeColor = (changeAmount: number) => {
-    return changeAmount > 0 ? 'text-green-600' : 'text-red-600';
+  const getChangeColor = (changeAmount?: number) => {
+    const amt = changeAmount ?? 0;
+    return amt > 0 ? 'text-green-600' : 'text-red-600';
   };
 
-  const getChangeSymbol = (changeAmount: number) => {
-    return changeAmount > 0 ? '+' : '';
+  const getChangeSymbol = (changeAmount?: number) => {
+    const amt = changeAmount ?? 0;
+    return amt > 0 ? '+' : '';
   };
 
   if (loading && shareChanges.length === 0) {
@@ -138,7 +183,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
           <div className="text-sm text-gray-600">
             Current Share:{' '}
             <span className="font-semibold text-emerald-600">
-              {summary.current_share.toFixed(2)}%
+              {safeToFixed(summary.current_share, 2)}%
             </span>
           </div>
         )}
@@ -146,10 +191,13 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-          <p className="text-red-800 text-sm">{error}</p>
+          <div className="flex items-center">
+            <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
+            <p className="text-red-800 text-sm">{error}</p>
+          </div>
           <button
             onClick={() => loadShareChanges()}
-            className="mt-2 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+            className="mt-2 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors"
           >
             Retry
           </button>
@@ -182,7 +230,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
                   <div>
                     <div className="font-medium text-gray-900">
                       {getChangeSymbol(change.change_amount)}
-                      {change.change_amount.toFixed(4)}%
+                      {safeToFixed(change.change_amount, 4)}%
                     </div>
                     <div className="text-sm text-gray-500 flex items-center space-x-2">
                       <Calendar className="w-3 h-3" />
@@ -194,8 +242,8 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
                   <div
                     className={`text-sm font-semibold ${getChangeColor(change.change_amount)}`}
                   >
-                    {change.previous_share.toFixed(2)}% →{' '}
-                    {change.new_share.toFixed(2)}%
+                    {safeToFixed(change.previous_share, 2)}% →{' '}
+                    {safeToFixed(change.new_share, 2)}%
                   </div>
                   {expandedChange === change.id ? (
                     <ChevronUp className="w-4 h-4 text-gray-400" />
@@ -219,13 +267,13 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
                         <div className="flex justify-between">
                           <span className="text-gray-500">Previous Share:</span>
                           <span className="font-medium">
-                            {change.previous_share.toFixed(4)}%
+                            {safeToFixed(change.previous_share, 4)}%
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-500">New Share:</span>
                           <span className="font-medium text-emerald-600">
-                            {change.new_share.toFixed(4)}%
+                            {safeToFixed(change.new_share, 4)}%
                           </span>
                         </div>
                         <div className="flex justify-between">
@@ -234,7 +282,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
                             className={`font-medium ${getChangeColor(change.change_amount)}`}
                           >
                             {getChangeSymbol(change.change_amount)}
-                            {change.change_amount.toFixed(4)}%
+                            {safeToFixed(change.change_amount, 4)}%
                           </span>
                         </div>
                         <div className="flex justify-between">
@@ -245,7 +293,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
                             className={`font-medium ${getChangeColor(change.change_amount)}`}
                           >
                             {getChangeSymbol(change.change_percentage)}
-                            {change.change_percentage.toFixed(2)}%
+                            {safeToFixed(change.change_percentage, 2)}%
                           </span>
                         </div>
                       </div>
@@ -264,7 +312,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
                           <span className="text-gray-500">Club Funds:</span>
                           <span className="font-medium">
                             {formatCurrency(
-                              change.total_contributions_at_time,
+                              safeNumber(change.total_contributions_at_time),
                               club.currency,
                             )}
                           </span>
@@ -277,8 +325,8 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
                               </span>
                               <span className="font-medium">
                                 {formatCurrency(
-                                  change.contribution.amount,
-                                  change.contribution.currency,
+                                  safeNumber(change.contribution.amount),
+                                  change.contribution.currency || club.currency,
                                 )}
                               </span>
                             </div>
@@ -316,14 +364,14 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
             <button
               onClick={() => handlePageChange(pagination.current_page - 1)}
               disabled={pagination.current_page === 1}
-              className="px-3 py-1 text-sm border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="px-3 py-1 text-sm border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
             >
               Previous
             </button>
             <button
               onClick={() => handlePageChange(pagination.current_page + 1)}
               disabled={pagination.current_page === pagination.total_pages}
-              className="px-3 py-1 text-sm border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="px-3 py-1 text-sm border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
             >
               Next
             </button>
