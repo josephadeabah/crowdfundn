@@ -17,6 +17,12 @@ module PaystackWebhook::Handlers
         return
       end
 
+      # CRITICAL: Skip if already completed to prevent double processing
+      if contribution.completed?
+        Rails.logger.info "Club contribution #{contribution.id} already completed, skipping webhook processing"
+        return
+      end
+
       # Verify transaction using PaystackService - ALWAYS verify with Paystack
       paystack_service = PaystackService.new
       verification_response = paystack_service.verify_transaction(@data[:reference])
@@ -76,22 +82,8 @@ module PaystackWebhook::Handlers
           currency: transaction_currency # Also update contribution currency
         )
 
-        # Update club financials
-        club.update_financials
-
-        # Update member's total contributions
-        membership = club.membership_for(contribution.user)
-        membership.update!(total_contributed: membership.total_contributed + contribution.amount)
-
-        # Create club transaction record
-        ClubTransaction.create!(
-          investment_club: club,
-          amount: contribution.amount,
-          transaction_type: 'contribution',
-          status: 'completed',
-          reference: transaction_data[:reference],
-          description: "Member contribution from #{contribution.user.full_name}"
-        )
+        # Use safe processing method to prevent double counting
+        contribution.process_completion!
 
         # Send confirmation email using new service
         ClubEmailService.send_contribution_confirmation(

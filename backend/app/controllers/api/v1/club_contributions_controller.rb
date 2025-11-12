@@ -110,6 +110,16 @@ module Api
           return render json: { error: 'Contribution not found' }, status: :not_found
         end
 
+        # CRITICAL: If contribution is already completed, just return success
+        if contribution.completed?
+          return render json: { 
+            success: true, 
+            contribution: ClubContributionSerializer.new(contribution).as_json,
+            transaction_status: transaction_data[:status],
+            already_processed: true
+          }
+        end
+
         # Update contribution status if it's still pending
         if contribution.pending?
           ActiveRecord::Base.transaction do
@@ -120,22 +130,8 @@ module Api
               amount_settled: contribution.amount # Full amount goes to club
             )
 
-            # Update club financials
-            @club.update_financials
-
-            # Update member's total contributions
-            membership = @club.membership_for(@current_user)
-            membership.update!(total_contributed: membership.total_contributed + contribution.amount)
-
-            # Create club transaction record
-            ClubTransaction.create!(
-              investment_club: @club,
-              amount: contribution.amount,
-              transaction_type: 'contribution',
-              status: 'completed',
-              reference: reference,
-              description: "Member contribution from #{@current_user.full_name}"
-            )
+            # Use safe processing method to prevent double counting
+            contribution.process_completion!
           end
         end
 
