@@ -13,6 +13,7 @@ import MembersTab from './components/MembersTab';
 import ActionsTab from './components/ActionsTab';
 import { ContributionModal } from '../components/Contribution/ContributionModal';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import { ShareChangesSection } from '../components/ShareChanges/ShareChangesSection';
 
 const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   isOpen,
@@ -102,6 +103,13 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
             onMakeContribution={handleMakeContribution}
           />
         );
+      case 'share-history':
+       return (
+         <ShareChangesSection
+          club={club}
+          formatCurrency={formatCurrency}
+        />
+       );
       default:
         return null;
     }
