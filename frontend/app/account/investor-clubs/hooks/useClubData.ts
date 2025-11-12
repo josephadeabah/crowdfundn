@@ -99,31 +99,75 @@ export const useClubData = () => {
     }
   };
 
+  // CRITICAL FIX: Enhanced loadClubDetails that properly refreshes ALL data
   const loadClubDetails = async (club: Club) => {
     if (!token) return;
 
     try {
+      console.log('🔄 Loading club details for:', club.slug);
       setState((prev) => ({ ...prev, selectedClub: club }));
 
-      // Load members, investments, and portfolio
-      const [membersResponse, investmentsResponse, portfolioResponse] =
-        await Promise.all([
-          membershipService.getMembers(token, club.slug),
-          investmentService.getInvestments(token, club.slug),
-          portfolioService.getClubPortfolio(token, club.slug),
-        ]);
+      // Load ALL data in parallel to ensure consistency
+      const [
+        membersResponse,
+        investmentsResponse,
+        portfolioResponse,
+        clubDetailsResponse, // Add this to get fresh club financials
+      ] = await Promise.all([
+        membershipService.getMembers(token, club.slug),
+        investmentService.getInvestments(token, club.slug),
+        portfolioService.getClubPortfolio(token, club.slug),
+        clubService.getClub(token, club.slug), // Get fresh club data with updated financials
+      ]);
 
       // Load contributions with pagination
       await loadContributions(club.slug);
 
       setState((prev) => ({
         ...prev,
+        selectedClub: clubDetailsResponse.club, // Use the fresh club data
         members: membersResponse.members,
         investments: investmentsResponse.investments,
         portfolio: portfolioResponse,
       }));
+
+      // Debug: Log membership data to verify updates
+      const myMember = membersResponse.members.find(
+        (m) => m.user.id === String(user?.id),
+      );
+      if (myMember) {
+        console.log('📊 Current Membership Data After Reload:', {
+          total_contributed: myMember.total_contributed,
+          contributed_share: myMember.contributed_share,
+          memberId: myMember.id,
+        });
+      }
     } catch (error) {
       console.error('Failed to load club details:', error);
+    }
+  };
+
+  // NEW: Function to specifically reload membership data
+  const reloadMembershipData = async (clubSlug: string) => {
+    if (!token) return;
+
+    try {
+      console.log('🔄 Specifically reloading membership data');
+      const [membersResponse, clubDetailsResponse] = await Promise.all([
+        membershipService.getMembers(token, clubSlug),
+        clubService.getClub(token, clubSlug),
+      ]);
+
+      setState((prev) => ({
+        ...prev,
+        selectedClub: clubDetailsResponse.club,
+        members: membersResponse.members,
+      }));
+
+      return membersResponse.members;
+    } catch (error) {
+      console.error('Failed to reload membership data:', error);
+      return null;
     }
   };
 
@@ -161,6 +205,7 @@ export const useClubData = () => {
     token,
     loadUserClubs,
     loadClubDetails,
+    reloadMembershipData, // Export the new function
     setMobileMenuOpen,
     loadContributions,
     handleContributionPageChange,

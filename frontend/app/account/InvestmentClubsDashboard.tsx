@@ -42,6 +42,8 @@ const InvestmentClubsDashboard: React.FC = () => {
     loading,
     mobileMenuOpen,
     token,
+    reloadMembershipData, // ✅ Add this
+    loadContributions, // ✅ Add this
     loadUserClubs,
     loadClubDetails,
     setMobileMenuOpen,
@@ -106,6 +108,7 @@ const InvestmentClubsDashboard: React.FC = () => {
         const paymentRef = (reference || trxref)!;
 
         try {
+          console.log('💰 Processing payment verification for:', paymentRef);
           const verificationResult =
             await contributionService.verifyContribution(
               token,
@@ -113,11 +116,32 @@ const InvestmentClubsDashboard: React.FC = () => {
               paymentRef,
             );
 
+          console.log('🔍 Verification result:', verificationResult);
+
           if (verificationResult.success) {
-            await loadClubDetails(selectedClub);
-            setPaymentMessage(
-              'Your contribution has been processed successfully!',
+            // CRITICAL: Use the specific membership reload function
+            const updatedMembers = await reloadMembershipData(
+              selectedClub.slug,
             );
+
+            let successMessage =
+              'Your contribution has been processed successfully!';
+
+            // Check if we have updated membership data
+            if (updatedMembers) {
+              const myMember = updatedMembers.find(
+                (m) => m.user.id === String(user?.id),
+              );
+              if (myMember) {
+                successMessage += `\n\nYour total contributions: ${formatCurrency(myMember.total_contributed, selectedClub.currency)}\nYour club share: ${myMember.contributed_share}%`;
+                console.log('✅ Updated membership after payment:', {
+                  total_contributed: myMember.total_contributed,
+                  contributed_share: myMember.contributed_share,
+                });
+              }
+            }
+
+            setPaymentMessage(successMessage);
             setPaymentSuccess(true);
             setPaymentAlert(true);
           } else {
@@ -148,7 +172,24 @@ const InvestmentClubsDashboard: React.FC = () => {
     };
 
     checkPaymentStatus();
-  }, [selectedClub, token, loadClubDetails]);
+  }, [selectedClub, token, reloadMembershipData]); // Add reloadMembershipData to dependencies
+
+  const handleContributionSuccess = async () => {
+    if (selectedClub) {
+      console.log('🔄 Handling contribution success...');
+
+      // Add a small delay to ensure backend processing is complete
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // Use the specific membership reload function
+      await reloadMembershipData(selectedClub.slug);
+
+      // Also reload contributions to show the new one
+      await loadContributions(selectedClub.slug);
+
+      console.log('✅ Contribution success handling complete');
+    }
+  };
 
   const handleVote = async (investmentId: string, voteType: string) => {
     if (!selectedClub || !token) return;
@@ -258,12 +299,6 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const handleMakeContribution = () => {
     setIsContributionModalOpen(true);
-  };
-
-  const handleContributionSuccess = async () => {
-    if (selectedClub) {
-      await loadClubDetails(selectedClub);
-    }
   };
 
   const formatCurrency = (amount: number, currency: string = 'USD'): string => {
