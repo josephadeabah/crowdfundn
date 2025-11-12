@@ -28,6 +28,7 @@ import {
   FaExclamationTriangle,
   FaInfoCircle,
 } from 'react-icons/fa';
+import { useAuth } from '../context/auth/AuthContext';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const {
@@ -60,6 +61,7 @@ const InvestmentClubsDashboard: React.FC = () => {
     setShowAIRecommendations,
   } = useAIRecommendations();
 
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
