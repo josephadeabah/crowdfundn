@@ -110,40 +110,18 @@ module Api
           return render json: { error: 'Contribution not found' }, status: :not_found
         end
 
-        # CRITICAL: If contribution is already completed, just return success
-        if contribution.completed?
-          # Force reload of membership data to ensure we have the latest
-          membership = @club.membership_for(@current_user)
-          membership.reload if membership
-          
-          return render json: { 
-            success: true, 
-            contribution: ClubContributionSerializer.new(contribution).as_json,
-            transaction_status: transaction_data[:status],
-            already_processed: true,
-            membership: membership ? {
-              total_contributed: membership.total_contributed,
-              contributed_share: membership.contributed_share
-            } : nil
-          }
-        end
-
-        # Update contribution status if it's still pending
+        # CRITICAL: If webhook hasn't processed it yet, update status but DON'T process
         if contribution.pending?
-          ActiveRecord::Base.transaction do
-            contribution.update!(
-              status: 'completed',
-              transaction_reference: reference,
-              paystack_fee: 0, # No platform fees for club contributions
-              amount_settled: contribution.amount # Full amount goes to club
-            )
-
-            # Use safe processing method to prevent double counting
-            contribution.process_completion!
-          end
+          contribution.update!(
+            status: 'completed',
+            transaction_reference: reference,
+            paystack_fee: 0,
+            amount_settled: contribution.amount
+          )
+          # NOTE: We don't call process_completion! here - let webhook handle it
         end
 
-        # Get updated membership data
+        # Get updated membership data (webhook should have updated it)
         membership = @club.membership_for(@current_user)
 
         render json: { 
@@ -153,7 +131,9 @@ module Api
           membership: membership ? {
             total_contributed: membership.total_contributed,
             contributed_share: membership.contributed_share
-          } : nil
+          } : nil,
+          processed_by_webhook: contribution.processed_at.present?,
+          already_processed: contribution.completed? && contribution.processed_at.present?
         }
       end
 

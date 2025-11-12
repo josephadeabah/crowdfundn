@@ -7,19 +7,15 @@ class InvestmentClubContribution < ApplicationRecord
   
   enum status: { pending: 'pending', completed: 'completed', failed: 'failed', refunded: 'refunded' }
   
-  # Add optimistic locking to prevent race conditions
-  self.locking_column = :lock_version
+  # Add processed_at to track processing
+  attribute :processed_at, :datetime
   
   after_save :update_club_balance, if: -> { saved_change_to_status? && completed? }
-  after_save :reverse_club_balance, if: -> { saved_change_to_status? && refunded? }
   
-  # Add these columns to track financial details
-  attribute :paystack_fee, :decimal, default: 0
-  attribute :amount_settled, :decimal
-  
-  # Add method to safely process completion
+  # CRITICAL: Safe processing method with double-processing protection
   def process_completion!
-    return unless completed? && saved_change_to_status?(to: 'completed')
+    # Double-check using processed_at to prevent ANY double processing
+    return if processed_at.present?
     
     ActiveRecord::Base.transaction do
       # Update member's total contributions
@@ -34,32 +30,15 @@ class InvestmentClubContribution < ApplicationRecord
         # Update all member shares
         investment_club.update_all_member_shares
       end
+      
+      # Mark as processed to prevent any future processing
+      update_column(:processed_at, Time.current)
     end
-  end
-  
-  # Safe processing that prevents double counting
-  def safe_process_completion!
-    # Double-check this hasn't been processed already
-    return if processed_at.present?
-    
-    process_completion!
-    update_column(:processed_at, Time.current)
   end
   
   private
   
   def update_club_balance
-    # This method should call process_completion! to ensure consistent processing
-    process_completion! if completed? && !@processed_via_callback
-    @processed_via_callback = true
-  end
-  
-  def reverse_club_balance
-    investment_club.update_financials
-    membership = investment_club.membership_for(user)
-    if membership
-      membership.update!(total_contributed: membership.total_contributed - amount)
-      membership.update_share_percentage
-    end
+    process_completion! if completed?
   end
 end

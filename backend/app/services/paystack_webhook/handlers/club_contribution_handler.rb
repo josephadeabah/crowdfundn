@@ -59,8 +59,12 @@ module PaystackWebhook::Handlers
 
     def process_successful_contribution(contribution, transaction_data)
       Rails.logger.info "Processing successful club contribution: #{contribution.id}"
-      # Double-check that the contribution hasn't already been processed
-      return if contribution.completed?
+      
+      # CRITICAL: Use processed_at to prevent ANY double processing
+      if contribution.processed_at.present?
+        Rails.logger.info "Club contribution #{contribution.id} already processed at #{contribution.processed_at}, skipping"
+        return
+      end
 
       ActiveRecord::Base.transaction do
         # Get currency from webhook data
@@ -73,38 +77,30 @@ module PaystackWebhook::Handlers
           Rails.logger.info "Updated club #{club.id} currency to #{transaction_currency}"
         end
 
-        # Update contribution status - NO PLATFORM FEES DEDUCTED
+        # Update contribution status
         contribution.update!(
           status: 'completed',
           transaction_reference: transaction_data[:reference],
-          paystack_fee: 0, # No platform fees for club contributions
-          amount_settled: contribution.amount, # Full amount goes to club
-          currency: transaction_currency # Also update contribution currency
+          paystack_fee: 0,
+          amount_settled: contribution.amount,
+          currency: transaction_currency
         )
 
-        # Use safe processing method to prevent double counting
+        # Process the completion - this will set processed_at
         contribution.process_completion!
 
-        # Send confirmation email using new service
+        # Send confirmation email
         ClubEmailService.send_contribution_confirmation(
           user: contribution.user,
           contribution: contribution
         )
         
         Rails.logger.info "Successfully processed club contribution: #{contribution.id}"
-        
-        # Debug logging
-        membership = club.membership_for(contribution.user)
-        if membership
-          Rails.logger.info "DEBUG: After processing - User #{contribution.user.id} total_contributed: #{membership.total_contributed}, contributed_share: #{membership.contributed_share}"
-        else
-          Rails.logger.error "DEBUG: No membership found for user #{contribution.user.id} after processing"
-        end
       end
     rescue => e
       Rails.logger.error "Error processing club contribution #{contribution.id}: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
-      contribution.update!(status: 'failed') if contribution
+      # Don't mark as failed if we can't process - let frontend handle it
     end
 
     def process_failed_contribution(contribution)
