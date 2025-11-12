@@ -99,99 +99,88 @@ const InvestmentClubsDashboard: React.FC = () => {
   }, [selectedClub]);
 
   // Check for payment callback on component mount - ONLY IN DASHBOARD
-  useEffect(() => {
-    const checkPaymentStatus = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const reference = urlParams.get('reference');
-      const trxref = urlParams.get('trxref');
+  // In your dashboard component - simplified payment verification
+// In your dashboard component - update the payment verification
+useEffect(() => {
+  const checkPaymentStatus = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const reference = urlParams.get('reference');
+    const trxref = urlParams.get('trxref');
 
-      // Only run if we have payment reference parameters
-      if ((reference || trxref) && selectedClub && token) {
-        const paymentRef = (reference || trxref)!;
+    if ((reference || trxref) && selectedClub && token) {
+      const paymentRef = (reference || trxref)!;
 
-        try {
-          console.log('💰 Processing payment verification for:', paymentRef);
-          const verificationResult =
-            await contributionService.verifyContribution(
-              token,
-              selectedClub.slug,
-              paymentRef,
-            );
+      try {
+        console.log('💰 Checking payment status for:', paymentRef);
+        const verificationResult = await contributionService.verifyContribution(
+          token,
+          selectedClub.slug,
+          paymentRef,
+        );
 
-          console.log('🔍 Verification result:', verificationResult);
+        console.log('🔍 Verification result:', verificationResult);
 
-          if (verificationResult.success) {
-            // CRITICAL: Use the specific membership reload function
-            const updatedMembers = await reloadMembershipData(
-              selectedClub.slug,
-            );
-
-            let successMessage =
-              'Your contribution has been processed successfully!';
-
-            // Check if we have updated membership data
-            if (updatedMembers) {
-              const myMember = updatedMembers.find(
-                (m) => m.user.id === String(user?.id),
-              );
-              if (myMember) {
-                successMessage += `\n\nYour total contributions: ${formatCurrency(myMember.total_contributed, selectedClub.currency)}\nYour club share: ${myMember.contributed_share}%`;
-                console.log('✅ Updated membership after payment:', {
-                  total_contributed: myMember.total_contributed,
-                  contributed_share: myMember.contributed_share,
-                });
-              }
-            }
-
-            setPaymentMessage(successMessage);
-            setPaymentSuccess(true);
-            setPaymentAlert(true);
-          } else {
-            const errorMsg =
-              verificationResult.paystack_error ||
-              verificationResult.transaction_status ||
-              'Payment verification failed';
-            setPaymentMessage(`Payment verification failed: ${errorMsg}`);
-            setPaymentSuccess(false);
-            setPaymentAlert(true);
+        if (verificationResult.success) {
+          let successMessage = 'Your contribution has been processed successfully!';
+          
+          // Show membership data if available - now TypeScript knows this property exists
+          if (verificationResult.membership) {
+            const { total_contributed, contributed_share } = verificationResult.membership;
+            successMessage += `\n\nYour total contributions: ${formatCurrency(total_contributed, selectedClub.currency)}\nYour club share: ${contributed_share}%`;
+            
+            console.log('✅ Membership data from verification:', {
+              total_contributed,
+              contributed_share
+            });
           }
 
-          // Clear URL parameters after processing
-          window.history.replaceState(
-            {},
-            document.title,
-            window.location.pathname,
-          );
-        } catch (error) {
-          console.error('Payment verification failed:', error);
-          setPaymentMessage(
-            'Payment verification failed. Please contact support if the issue persists.',
-          );
+          // Add info about processing method
+          if (verificationResult.processed_by_webhook) {
+            successMessage += '\n\n✅ Processed automatically by webhook';
+          } else if (verificationResult.already_processed) {
+            successMessage += '\n\n✅ Payment was already processed';
+          }
+
+          setPaymentMessage(successMessage);
+          setPaymentSuccess(true);
+          setPaymentAlert(true);
+
+          // Refresh data to show updates
+          await loadClubDetails(selectedClub);
+        } else {
+          const errorMsg =
+            verificationResult.paystack_error ||
+            verificationResult.transaction_status ||
+            'Payment verification failed';
+          setPaymentMessage(`Payment verification failed: ${errorMsg}`);
           setPaymentSuccess(false);
           setPaymentAlert(true);
         }
+
+        // Clear URL parameters
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } catch (error) {
+        console.error('Payment verification failed:', error);
+        setPaymentMessage('Payment verification failed. Please check your contributions list.');
+        setPaymentSuccess(false);
+        setPaymentAlert(true);
       }
-    };
-
-    checkPaymentStatus();
-  }, [selectedClub, token, reloadMembershipData]); // Add reloadMembershipData to dependencies
-
-  const handleContributionSuccess = async () => {
-    if (selectedClub) {
-      console.log('🔄 Handling contribution success...');
-
-      // Add a small delay to ensure backend processing is complete
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Use the specific membership reload function
-      await reloadMembershipData(selectedClub.slug);
-
-      // Also reload contributions to show the new one
-      await loadContributions(selectedClub.slug);
-
-      console.log('✅ Contribution success handling complete');
     }
   };
+
+  checkPaymentStatus();
+}, [selectedClub, token, loadClubDetails]);
+
+const handleContributionSuccess = async () => {
+  if (selectedClub) {
+    console.log('🔄 Refreshing data after contribution...');
+    
+    // Just refresh the data - processing is handled by webhook
+    await loadClubDetails(selectedClub);
+    
+    console.log('✅ Data refresh complete');
+  }
+};
 
   const handleVote = async (investmentId: string, voteType: string) => {
     if (!selectedClub || !token) return;

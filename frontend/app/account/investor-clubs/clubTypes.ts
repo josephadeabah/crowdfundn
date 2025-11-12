@@ -189,3 +189,16 @@ export interface DiscoverClubsResponse {
   clubs: Club[];
   pagination: PaginationData;
 }
+
+export interface VerifyContributionResponse {
+  success: boolean;
+  contribution: ClubContribution;
+  transaction_status?: string;
+  paystack_error?: string;
+  membership?: {
+    total_contributed: number;
+    contributed_share: number;
+  };
+  already_processed?: boolean;
+  processed_by_webhook?: boolean;
+}

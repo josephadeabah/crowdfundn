@@ -18,6 +18,7 @@ import {
   DiscoverClubsResponse,
   PaginationData,
   ContributionsResponse,
+  VerifyContributionResponse,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -374,12 +375,7 @@ export const contributionService = {
     token: string,
     clubId: string,
     reference: string,
-  ): Promise<{
-    success: boolean;
-    contribution: ClubContribution;
-    transaction_status?: string;
-    paystack_error?: string;
-  }> => {
+  ): Promise<VerifyContributionResponse> => { // Use the new interface
     const endpoint = `/investment_clubs/${clubId}/contributions/verify`;
     return apiCall(endpoint, token, {
       method: 'POST',
