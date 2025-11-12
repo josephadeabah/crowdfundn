@@ -17,34 +17,22 @@ class InvestmentClubContribution < ApplicationRecord
     ActiveRecord::Base.transaction do
       membership = investment_club.membership_for(user)
       if membership
-        # Store previous state for logging
         previous_total = membership.total_contributed
         previous_share = membership.contributed_share
-        previous_club_total = investment_club.total_contributions
         
-        # Update member's total contributions
         new_total = membership.total_contributed + amount
         membership.update!(total_contributed: new_total)
         
-        # Update club total contributions
         investment_club.update_financials
         
-        # Log the change
-        Rails.logger.info "Member #{user.full_name} contribution: " +
-                        "#{format_currency(amount)} " +
-                        "(Previous: #{format_currency(previous_total)}, " +
-                        "New: #{format_currency(new_total)})"
+        # Use the enhanced method with history tracking
+        investment_club.update_all_member_shares_with_history(self)
         
-        # Update all member shares with proper redistribution
-        investment_club.update_all_member_shares
-        
-        # Log share changes
+        # Log the changes
         new_share = membership.reload.contributed_share
-        share_change = new_share - previous_share
-        
-        Rails.logger.info "Share change for #{user.full_name}: " +
-                        "#{previous_share}% -> #{new_share}% " +
-                        "(#{share_change > 0 ? '+' : ''}#{share_change.round(4)}%)"
+        Rails.logger.info "Contribution processed: #{user.full_name} " +
+                        "+#{format_currency(amount)} " +
+                        "(#{previous_share}% → #{new_share}%)"
       end
       
       update_column(:processed_at, Time.current)

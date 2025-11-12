@@ -365,7 +365,7 @@ class InvestmentClub < ApplicationRecord
       hash[m.id] = m.contributed_share
     end
     
-    # Calculate new shares (same proportional logic as before)
+    # Calculate new shares
     calculated_shares = {}
     total_calculated = 0.0
     
@@ -387,22 +387,19 @@ class InvestmentClub < ApplicationRecord
         if (new_share - previous_share).abs > 0.0001
           membership.update_column(:contributed_share, new_share)
           
-          # Record share change if it's significant
-          if (new_share - previous_share).abs >= 0.01
-            MemberShareChange.create!(
-              investment_club_membership: membership,
-              investment_club_contribution: contribution,
-              previous_share: previous_share,
-              new_share: new_share,
-              change_amount: new_share - previous_share,
-              total_contributions_at_time: total_contributions,
-              change_reason: contribution ? 'contribution' : 'recalculation'
-            )
-          end
+          # Record ALL share changes (removed the 0.01 threshold)
+          MemberShareChange.create!(
+            investment_club_membership: membership,
+            investment_club_contribution: contribution,
+            previous_share: previous_share,
+            new_share: new_share,
+            change_amount: new_share - previous_share,
+            total_contributions_at_time: total_contributions,
+            change_reason: contribution ? 'contribution' : 'recalculation'
+          )
         end
       end
     end
-  
     # Final correction if needed
     force_correct_share_totals if (investment_club_memberships.active.sum(:contributed_share) - 100.0).abs > 0.01
   end
