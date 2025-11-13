@@ -417,7 +417,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                 showAIRecommendations={showAIRecommendations}
                 onGetAIRecommendations={handleGetAIRecommendations}
                 onMakeContribution={handleMakeContribution}
-                onProposeInvestment={handleProposeInvestment} // Now opens modal
+                onProposeInvestment={handleProposeInvestment}
                 onViewAnalytics={handleViewAnalytics}
               />
 

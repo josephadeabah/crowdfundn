@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import {
@@ -29,6 +29,32 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   onCreateClub,
   setMobileMenuOpen,
 }) => {
+  // Persist selected club slug whenever it changes
+  useEffect(() => {
+    if (currentClub?.slug) {
+      localStorage.setItem('selectedClubSlug', currentClub.slug);
+    }
+  }, [currentClub]);
+
+  const handleClubChange = (value: string) => {
+    const club = clubs.find((c) => c.slug === value);
+    if (club) {
+      onClubChange(club);
+      localStorage.setItem('selectedClubSlug', value); // Save on selection
+      setMobileMenuOpen(false);
+    }
+  };
+
+  const handleClubDetails = () => {
+    onOpenClubDetails();
+    setMobileMenuOpen(false);
+  };
+
+  const handleCreateClub = () => {
+    onCreateClub();
+    setMobileMenuOpen(false);
+  };
+
   return (
     <div className="lg:hidden mb-4">
       <div className="flex items-center justify-between">
@@ -53,14 +79,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
           className="mt-4 bg-white rounded-xl border border-gray-200 p-4 shadow-lg"
         >
           <div className="space-y-3">
-            <Select
-              value={currentClub.slug}
-              onValueChange={(value) => {
-                const club = clubs.find((c) => c.slug === value);
-                if (club) onClubChange(club);
-                setMobileMenuOpen(false);
-              }}
-            >
+            <Select value={currentClub.slug} onValueChange={handleClubChange}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a club" />
               </SelectTrigger>
@@ -73,19 +92,13 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
               </SelectContent>
             </Select>
             <button
-              onClick={() => {
-                onOpenClubDetails();
-                setMobileMenuOpen(false);
-              }}
+              onClick={handleClubDetails}
               className="w-full px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 font-medium text-sm"
             >
               Club Details
             </button>
             <button
-              onClick={() => {
-                onCreateClub();
-                setMobileMenuOpen(false);
-              }}
+              onClick={handleCreateClub}
               className="w-full px-4 py-2 border border-emerald-600 text-emerald-700 rounded-lg hover:bg-emerald-50 font-medium text-sm"
             >
               Create New Club
