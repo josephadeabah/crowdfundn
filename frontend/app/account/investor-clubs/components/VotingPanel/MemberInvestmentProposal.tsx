@@ -119,7 +119,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10 flex-shrink-0">
+      <header className="border-b border-border/50 bg-white backdrop-blur-sm sticky top-0 z-10 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -127,8 +127,8 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 <TrendingUp className="w-6 h-6 text-gray-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">
-                  InvestSwipe
+                <h1 className="text-2xl font-bold text-gray-700">
+                  Invest w/ Swipe
                 </h1>
                 <p className="text-sm text-gray-600">
                   Vote on investment opportunities for {club?.name}
@@ -159,7 +159,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           <div className="max-w-2xl mx-auto space-y-6">
             {/* Instructions */}
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-foreground">
+              <h2 className="text-2xl font-bold text-gray-700">
                 Discover Your Next Investment
               </h2>
               <p className="text-gray-600">
@@ -175,7 +175,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   <div className="inline-block p-6 bg-gray-50 rounded-2xl mb-4">
                     <TrendingUp className="w-12 h-12 text-emerald-600 mx-auto" />
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-2">
+                  <h3 className="text-xl font-bold text-gray-700 mb-2">
                     All caught up!
                   </h3>
                   <p className="text-gray-600 mb-6">
@@ -183,7 +183,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   </p>
                   {approvedInvestments.length > 0 && (
                     <div className="mt-6 text-left">
-                      <h4 className="text-lg font-semibold text-foreground mb-3">
+                      <h4 className="text-lg font-semibold text-gray-700 mb-3">
                         Approved Investments ({approvedInvestments.length})
                       </h4>
                       <div className="space-y-3">
@@ -192,7 +192,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                             key={inv.id}
                             className="p-4 bg-card border border-emerald-600/20 rounded-xl"
                           >
-                            <h5 className="font-semibold text-foreground">
+                            <h5 className="font-semibold text-gray-700">
                               {inv.company}
                             </h5>
                             <p className="text-sm text-gray-600">
