@@ -206,6 +206,26 @@ export default {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-50%)' },
         },
+        'swipe-left': {
+          '0%': {
+            transform: 'translateX(0) rotate(0deg)',
+            opacity: '1',
+          },
+          '100%': {
+            transform: 'translateX(-120%) rotate(-25deg)',
+            opacity: '0',
+          },
+        },
+        'swipe-right': {
+          '0%': {
+            transform: 'translateX(0) rotate(0deg)',
+            opacity: '1',
+          },
+          '100%': {
+            transform: 'translateX(120%) rotate(25deg)',
+            opacity: '0',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -217,6 +237,8 @@ export default {
         'slide-right': 'slide-right 0.4s ease-out forwards',
         'fade-out': 'fade-out 0.5s ease-out',
         'scale-out': 'scale-out 0.3s ease-out',
+        'swipe-left': 'swipe-left 0.4s cubic-bezier(0.4, 0, 1, 1) forwards',
+        'swipe-right': 'swipe-right 0.4s cubic-bezier(0.4, 0, 1, 1) forwards',
         float: 'float 6s ease-in-out infinite',
         'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
         enter:

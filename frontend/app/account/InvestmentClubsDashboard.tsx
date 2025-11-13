@@ -1,3 +1,4 @@
+// app/account/investor-clubs/InvestmentClubsDashboard.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
@@ -30,6 +31,7 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../context/auth/AuthContext';
 import { ShareChangesSection } from './investor-clubs/components/ShareChanges/ShareChangesSection';
+import MemberInvestmentProposalModal from './investor-clubs/components/VotingPanel/MemberInvestmentProposalModal';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const {
@@ -44,8 +46,6 @@ const InvestmentClubsDashboard: React.FC = () => {
     loading,
     mobileMenuOpen,
     token,
-    reloadMembershipData, // ✅ Add this
-    loadContributions, // ✅ Add this
     loadUserClubs,
     loadClubDetails,
     setMobileMenuOpen,
@@ -66,6 +66,8 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
+  const [isInvestmentProposalModalOpen, setIsInvestmentProposalModalOpen] =
+    useState(false);
 
   // Separate alert states for different types of messages
   const [featureAlert, setFeatureAlert] = useState(false);
@@ -121,7 +123,7 @@ const InvestmentClubsDashboard: React.FC = () => {
             let successMessage =
               'Your contribution has been processed successfully!';
 
-            // Show membership data if available - now TypeScript knows this property exists
+            // Show membership data if available
             if (verificationResult.membership) {
               const { total_contributed, contributed_share } =
                 verificationResult.membership;
@@ -212,11 +214,9 @@ const InvestmentClubsDashboard: React.FC = () => {
     setFeatureAlert(true);
   };
 
+  // UPDATED: Open the investment proposal modal instead of showing alert
   const handleProposeInvestment = () => {
-    setFeatureMessage(
-      'Propose Investment feature would open here. This would allow you to suggest new investment opportunities for the club to consider.',
-    );
-    setFeatureAlert(true);
+    setIsInvestmentProposalModalOpen(true);
   };
 
   const handleViewAnalytics = () => {
@@ -379,7 +379,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                 club={currentClub}
                 formatCurrency={formatCurrency}
               />
-              {/* Add the Share Changes Section here */}
+
               <ShareChangesSection
                 club={currentClub}
                 formatCurrency={formatCurrency}
@@ -417,7 +417,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                 showAIRecommendations={showAIRecommendations}
                 onGetAIRecommendations={handleGetAIRecommendations}
                 onMakeContribution={handleMakeContribution}
-                onProposeInvestment={handleProposeInvestment}
+                onProposeInvestment={handleProposeInvestment} // Now opens modal
                 onViewAnalytics={handleViewAnalytics}
               />
 
@@ -451,6 +451,12 @@ const InvestmentClubsDashboard: React.FC = () => {
             token={token}
             formatCurrency={formatCurrency}
             showSuccess={true}
+          />
+
+          <MemberInvestmentProposalModal
+            isOpen={isInvestmentProposalModalOpen}
+            onClose={() => setIsInvestmentProposalModalOpen(false)}
+            club={currentClub}
           />
         </>
       )}
