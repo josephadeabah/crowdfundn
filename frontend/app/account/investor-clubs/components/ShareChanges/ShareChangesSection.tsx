@@ -14,6 +14,7 @@ import {
   Calendar,
   AlertCircle,
 } from 'lucide-react';
+import Pagination from '@/app/components/pagination/Pagination';
 
 interface ShareChangesSectionProps {
   club: any;
@@ -56,7 +57,10 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
     return Number(value);
   };
 
-  const loadShareChanges = async (page: number = 1) => {
+  const loadShareChanges = async (
+    page: number = 1,
+    perPage: number = pagination.per_page,
+  ) => {
     if (!token || !club) return;
 
     setLoading(true);
@@ -68,7 +72,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
           token,
           club.slug,
           page,
-          pagination.per_page,
+          perPage,
         );
 
       // Validate and sanitize the data
@@ -121,7 +125,11 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
   }, [club, token]);
 
   const handlePageChange = (page: number) => {
-    loadShareChanges(page);
+    loadShareChanges(page, pagination.per_page);
+  };
+
+  const handlePerPageChange = (perPage: number) => {
+    loadShareChanges(1, perPage);
   };
 
   const toggleExpand = (changeId: string) => {
@@ -227,168 +235,157 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {shareChanges.map((change) => (
-            <div
-              key={change.id}
-              className="border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
-            >
-              <button
-                onClick={() => toggleExpand(change.id)}
-                className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 rounded-lg transition-colors"
+        <>
+          <div className="space-y-3">
+            {shareChanges.map((change) => (
+              <div
+                key={change.id}
+                className="border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
               >
-                <div className="flex items-center space-x-3">
-                  {getChangeIcon(change.change_amount)}
-                  <div>
-                    <div className="font-medium text-gray-900">
-                      {getChangeSymbol(change.change_amount)}
-                      {safeToFixed(change.change_amount, 4)}%
-                    </div>
-                    <div className="text-sm text-gray-500 flex items-center space-x-2">
-                      <Calendar className="w-3 h-3" />
-                      <span>{formatDate(change.created_at)}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div
-                    className={`text-sm font-semibold ${getChangeColor(change.change_amount)}`}
-                  >
-                    {safeToFixed(change.previous_share, 2)}% →{' '}
-                    {safeToFixed(change.new_share, 2)}%
-                  </div>
-                  {expandedChange === change.id ? (
-                    <ChevronUp className="w-4 h-4 text-gray-400" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
-                  )}
-                </div>
-              </button>
-
-              {expandedChange === change.id && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="px-4 pb-4 border-t border-gray-100"
+                <button
+                  onClick={() => toggleExpand(change.id)}
+                  className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 rounded-lg transition-colors"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
+                  <div className="flex items-center space-x-3">
+                    {getChangeIcon(change.change_amount)}
                     <div>
-                      <div className="text-gray-600 mb-2">Change Details</div>
-                      <div className="space-y-1">
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Previous Share:</span>
-                          <span className="font-medium">
-                            {safeToFixed(change.previous_share, 4)}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">New Share:</span>
-                          <span className="font-medium text-emerald-600">
-                            {safeToFixed(change.new_share, 4)}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Net Change:</span>
-                          <span
-                            className={`font-medium ${getChangeColor(change.change_amount)}`}
-                          >
-                            {getChangeSymbol(change.change_amount)}
-                            {safeToFixed(change.change_amount, 4)}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">
-                            Percentage Change:
-                          </span>
-                          <span
-                            className={`font-medium ${getChangeColor(change.change_amount)}`}
-                          >
-                            {getChangeSymbol(change.change_percentage)}
-                            {safeToFixed(change.change_percentage, 2)}%
-                          </span>
-                        </div>
+                      <div className="font-medium text-gray-900">
+                        {getChangeSymbol(change.change_amount)}
+                        {safeToFixed(change.change_amount, 4)}%
                       </div>
-                    </div>
-
-                    <div>
-                      <div className="text-gray-600 mb-2">Context</div>
-                      <div className="space-y-1">
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Reason:</span>
-                          <span className="font-medium capitalize">
-                            {change.change_reason || 'recalculation'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Club Funds:</span>
-                          <span className="font-medium">
-                            {formatCurrency(
-                              safeNumber(change.total_contributions_at_time),
-                              club.currency,
-                            )}
-                          </span>
-                        </div>
-                        {change.contribution && (
-                          <>
-                            <div className="flex justify-between">
-                              <span className="text-gray-500">
-                                Contribution:
-                              </span>
-                              <span className="font-medium">
-                                {formatCurrency(
-                                  safeNumber(change.contribution.amount),
-                                  change.contribution.currency || club.currency,
-                                )}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-500">
-                                Contribution Date:
-                              </span>
-                              <span className="font-medium">
-                                {formatDate(change.contribution.created_at)}
-                              </span>
-                            </div>
-                          </>
-                        )}
+                      <div className="text-sm text-gray-500 flex items-center space-x-2">
+                        <Calendar className="w-3 h-3" />
+                        <span>{formatDate(change.created_at)}</span>
                       </div>
                     </div>
                   </div>
-                </motion.div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+                  <div className="flex items-center space-x-2">
+                    <div
+                      className={`text-sm font-semibold ${getChangeColor(change.change_amount)}`}
+                    >
+                      {safeToFixed(change.previous_share, 2)}% →{' '}
+                      {safeToFixed(change.new_share, 2)}%
+                    </div>
+                    {expandedChange === change.id ? (
+                      <ChevronUp className="w-4 h-4 text-gray-400" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                    )}
+                  </div>
+                </button>
 
-      {pagination.total_pages > 1 && (
-        <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
-          <div className="text-sm text-gray-600">
-            Showing {(pagination.current_page - 1) * pagination.per_page + 1} to{' '}
-            {Math.min(
-              pagination.current_page * pagination.per_page,
-              pagination.total_count,
-            )}{' '}
-            of {pagination.total_count} changes
+                {expandedChange === change.id && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="px-4 pb-4 border-t border-gray-100"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
+                      <div>
+                        <div className="text-gray-600 mb-2">Change Details</div>
+                        <div className="space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">
+                              Previous Share:
+                            </span>
+                            <span className="font-medium">
+                              {safeToFixed(change.previous_share, 4)}%
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">New Share:</span>
+                            <span className="font-medium text-emerald-600">
+                              {safeToFixed(change.new_share, 4)}%
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Net Change:</span>
+                            <span
+                              className={`font-medium ${getChangeColor(change.change_amount)}`}
+                            >
+                              {getChangeSymbol(change.change_amount)}
+                              {safeToFixed(change.change_amount, 4)}%
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">
+                              Percentage Change:
+                            </span>
+                            <span
+                              className={`font-medium ${getChangeColor(change.change_amount)}`}
+                            >
+                              {getChangeSymbol(change.change_percentage)}
+                              {safeToFixed(change.change_percentage, 2)}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-gray-600 mb-2">Context</div>
+                        <div className="space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Reason:</span>
+                            <span className="font-medium capitalize">
+                              {change.change_reason || 'recalculation'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Club Funds:</span>
+                            <span className="font-medium">
+                              {formatCurrency(
+                                safeNumber(change.total_contributions_at_time),
+                                club.currency,
+                              )}
+                            </span>
+                          </div>
+                          {change.contribution && (
+                            <>
+                              <div className="flex justify-between">
+                                <span className="text-gray-500">
+                                  Contribution:
+                                </span>
+                                <span className="font-medium">
+                                  {formatCurrency(
+                                    safeNumber(change.contribution.amount),
+                                    change.contribution.currency ||
+                                      club.currency,
+                                  )}
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-500">
+                                  Contribution Date:
+                                </span>
+                                <span className="font-medium">
+                                  {formatDate(change.contribution.created_at)}
+                                </span>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            ))}
           </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => handlePageChange(pagination.current_page - 1)}
-              disabled={pagination.current_page === 1}
-              className="px-3 py-1 text-sm border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => handlePageChange(pagination.current_page + 1)}
-              disabled={pagination.current_page === pagination.total_pages}
-              className="px-3 py-1 text-sm border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
-            >
-              Next
-            </button>
-          </div>
-        </div>
+
+          {/* Pagination Component */}
+          {pagination.total_pages > 1 && (
+            <Pagination
+              currentPage={pagination.current_page}
+              totalPages={pagination.total_pages}
+              totalCount={pagination.total_count}
+              perPage={pagination.per_page}
+              onPageChange={handlePageChange}
+              onPerPageChange={handlePerPageChange}
+              showPerPageSelector={true}
+            />
+          )}
+        </>
       )}
     </motion.div>
   );
