@@ -117,36 +117,36 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-white">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10 flex-shrink-0">
-        <div className="container mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-primary rounded-xl">
-                <TrendingUp className="w-6 h-6 text-primary-foreground" />
+              <div className="p-2 bg-gradient-emerald-600 rounded-xl">
+                <TrendingUp className="w-6 h-6 text-gray-400" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">
                   InvestSwipe
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600">
                   Vote on investment opportunities for {club?.name}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Opportunities</p>
-                <p className="text-2xl font-bold text-primary">
+                <p className="text-sm text-gray-600">Opportunities</p>
+                <p className="text-2xl font-bold text-emerald-600">
                   {investments.length}
                 </p>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
               >
-                <X className="w-5 h-5 text-muted-foreground" />
+                <X className="w-5 h-5 text-gray-600" />
               </button>
             </div>
           </div>
@@ -155,14 +155,14 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
-        <div className="container mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="max-w-2xl mx-auto space-y-6">
             {/* Instructions */}
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-bold text-foreground">
                 Discover Your Next Investment
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-gray-600">
                 Vote Invest to support or Pass to move on. Reach the threshold
                 to approve!
               </p>
@@ -172,13 +172,13 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
             <div className="relative min-h-[400px]">
               {investments.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="inline-block p-6 bg-secondary rounded-2xl mb-4">
-                    <TrendingUp className="w-12 h-12 text-primary mx-auto" />
+                  <div className="inline-block p-6 bg-gray-50 rounded-2xl mb-4">
+                    <TrendingUp className="w-12 h-12 text-emerald-600 mx-auto" />
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2">
                     All caught up!
                   </h3>
-                  <p className="text-muted-foreground mb-6">
+                  <p className="text-gray-600 mb-6">
                     No more investment opportunities at the moment.
                   </p>
                   {approvedInvestments.length > 0 && (
@@ -190,15 +190,15 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                         {approvedInvestments.map((inv) => (
                           <div
                             key={inv.id}
-                            className="p-4 bg-card border border-primary/20 rounded-xl"
+                            className="p-4 bg-card border border-emerald-600/20 rounded-xl"
                           >
                             <h5 className="font-semibold text-foreground">
                               {inv.company}
                             </h5>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-gray-600">
                               {inv.sector}
                             </p>
-                            <p className="text-sm text-primary font-medium">
+                            <p className="text-sm text-emerald-600 font-medium">
                               {inv.amount}
                             </p>
                           </div>
