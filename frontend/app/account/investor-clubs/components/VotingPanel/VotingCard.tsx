@@ -51,12 +51,12 @@ export const VotingCard: React.FC<VotingCardProps> = ({
             {investment.sector}
           </Badge>
           <div className="text-right">
-            <div className="text-2xl font-bold text-primary">
+            <div className="text-2xl font-bold text-emerald-600">
               {investment.amount}
             </div>
           </div>
         </div>
-        <CardTitle className="text-xl font-bold text-foreground">
+        <CardTitle className="text-xl font-bold text-gray-500">
           {investment.company}
         </CardTitle>
         <CardDescription className="text-sm leading-relaxed">
@@ -68,12 +68,12 @@ export const VotingCard: React.FC<VotingCardProps> = ({
         {/* Progress Bar */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Approval Progress</span>
-            <span className="font-semibold text-foreground">
+            <span className="text-gray-600">Approval Progress</span>
+            <span className="font-semibold text-gray-500">
               {investment.votes}/{investment.threshold} votes
             </span>
           </div>
-          <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
+          <div className="w-full bg-gray-50 h-2 rounded-full overflow-hidden">
             <div
               className="bg-gradient-to-r from-green-500 to-emerald-600 h-full rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
