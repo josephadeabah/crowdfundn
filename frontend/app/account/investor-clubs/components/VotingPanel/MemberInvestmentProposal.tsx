@@ -7,24 +7,44 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 
 // Add these transformation functions here
 const transformInvestmentForFrontend = (investment: any): any => {
+  // Safely handle missing campaign data
+  const campaign = investment.campaign || {};
+  
   return {
     id: investment.id?.toString() || Math.random().toString(),
-    company: investment.campaign?.title || 'Unknown Company',
-    description: investment.campaign?.description || 'No description available',
+    company: campaign?.title || 'Unknown Company',
+    description: campaign?.description || 'No description available',
     amount: investment.investment_amount 
-      ? formatCurrency(investment.investment_amount, investment.campaign?.currency_symbol)
+      ? formatCurrency(investment.investment_amount, campaign?.currency_symbol || '$')
       : '$0',
-    sector: investment.campaign?.category || 'General',
+    sector: campaign?.category || 'General',
     votes: investment.voting_stats?.yes_votes || 0,
     threshold: investment.threshold || 3,
     match_score: investment.match_score || 50,
     reasoning: investment.reasoning || 'Investment opportunity',
     ai_analysis: investment.ai_analysis || getDefaultAIAnalysis(),
     status: investment.status || 'voting',
-    voting_stats: investment.voting_stats,
+    voting_stats: investment.voting_stats || {
+      total_votes: 0,
+      yes_votes: 0,
+      no_votes: 0,
+      approval_percentage: 0,
+      threshold_met: false
+    },
     club_investment_id: investment.id?.toString(),
-    campaign_id: investment.campaign?.id?.toString()
+    campaign_id: campaign?.id?.toString()
   };
+};
+
+// Also update the formatCurrency function to be safer
+const formatCurrency = (amount: number, currencySymbol: string = '$'): string => {
+  if (!amount && amount !== 0) return `${currencySymbol}0`;
+  
+  if (amount >= 1000) {
+    return `${currencySymbol}${(amount / 1000).toFixed(1)}K`;
+  } else {
+    return `${currencySymbol}${amount.toFixed(0)}`;
+  }
 };
 
 const getDefaultAIAnalysis = () => ({
@@ -34,14 +54,6 @@ const getDefaultAIAnalysis = () => ({
   sentiment_analysis: 'positive',
   strengths: ['Market potential', 'Team experience']
 });
-
-const formatCurrency = (amount: number, currencySymbol: string = '$'): string => {
-  if (amount >= 1000) {
-    return `${currencySymbol}${(amount / 1000).round(1)}K`;
-  } else {
-    return `${currencySymbol}${amount.round(0)}`;
-  }
-};
 
 // Extend Number prototype for rounding (or use a utility function)
 declare global {
@@ -110,14 +122,22 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           const proposalsData = await proposalsResponse.json();
 
           if (proposalsData.success) {
-            // Transform the investments using the utility function
-            const transformedInvestments = proposalsData.investments.map((investment: any) => 
-              transformInvestmentForFrontend(investment)
-            );
+            // Validate and transform investments
+            const transformedInvestments = proposalsData.investments.map((investment: any, index: number) => {
+              // Debug: log any problematic investments
+              if (!investment.campaign) {
+                console.warn(`Investment at index ${index} has no campaign:`, investment);
+              }
+              if (!investment.campaign?.title) {
+                console.warn(`Investment at index ${index} has no campaign title:`, investment);
+              }
+              
+              return transformInvestmentForFrontend(investment);
+            });
+            
             setInvestments(transformedInvestments);
             
             if (transformedInvestments.length === 0) {
-              // Generate new proposals if none exist
               await generateProposals();
             }
           }
