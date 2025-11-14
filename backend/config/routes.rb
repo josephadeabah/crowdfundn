@@ -339,13 +339,6 @@ Rails.application.routes.draw do
           get :my_clubs
           get :discover
         end
-
-        # AI Campaign Recommendation for clubs routes - FIXED VERSION with explicit controller
-        member do
-          get 'ai_recommendations', to: 'investment_clubs/ai_recommendations#index'
-          get 'ai_recommendations/risk_profile', to: 'investment_clubs/ai_recommendations#risk_profile'
-          get 'ai_recommendations/explain', to: 'investment_clubs/ai_recommendations#explain'
-        end
       end
     
     # Reusable voting system
