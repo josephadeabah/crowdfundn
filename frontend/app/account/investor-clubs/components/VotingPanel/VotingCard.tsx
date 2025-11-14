@@ -1,7 +1,6 @@
 // app/account/investor-clubs/components/InvestmentProposal/VotingCard.tsx
-
 import React from 'react';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Star } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import {
   Card,
@@ -21,6 +20,9 @@ export interface Investment {
   sector: string;
   votes: number;
   threshold: number;
+  match_score?: number;
+  reasoning?: string;
+  ai_analysis?: any;
 }
 
 interface VotingCardProps {
@@ -47,13 +49,26 @@ export const VotingCard: React.FC<VotingCardProps> = ({
     >
       <CardHeader className="pb-4">
         <div className="flex justify-between items-start mb-2">
-          <Badge variant="secondary" className="text-xs">
-            {investment.sector}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="text-xs">
+              {investment.sector}
+            </Badge>
+            {investment.match_score && investment.match_score >= 80 && (
+              <Badge variant="default" className="text-xs bg-yellow-100 text-yellow-800">
+                <Star className="w-3 h-3 mr-1 fill-current" />
+                Top Match
+              </Badge>
+            )}
+          </div>
           <div className="text-right">
             <div className="text-2xl font-bold text-emerald-600">
               {investment.amount}
             </div>
+            {investment.match_score && (
+              <div className="text-xs text-gray-500 mt-1">
+                {investment.match_score}% match
+              </div>
+            )}
           </div>
         </div>
         <CardTitle className="text-xl font-bold text-gray-500">
@@ -62,6 +77,13 @@ export const VotingCard: React.FC<VotingCardProps> = ({
         <CardDescription className="text-sm leading-relaxed">
           {investment.description}
         </CardDescription>
+        {investment.reasoning && (
+          <div className="mt-2 p-2 bg-blue-50 rounded-lg">
+            <p className="text-xs text-blue-700">
+              💡 {investment.reasoning}
+            </p>
+          </div>
+        )}
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -80,6 +102,27 @@ export const VotingCard: React.FC<VotingCardProps> = ({
             />
           </div>
         </div>
+
+        {/* AI Analysis Badges */}
+        {investment.ai_analysis && (
+          <div className="flex flex-wrap gap-1">
+            {investment.ai_analysis.deal_score >= 70 && (
+              <Badge variant="outline" className="text-xs text-green-600 border-green-200">
+                Strong Deal
+              </Badge>
+            )}
+            {investment.ai_analysis.risk_category === 'low' && (
+              <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
+                Low Risk
+              </Badge>
+            )}
+            {investment.ai_analysis.sentiment_analysis === 'positive' && (
+              <Badge variant="outline" className="text-xs text-purple-600 border-purple-200">
+                Positive Sentiment
+              </Badge>
+            )}
+          </div>
+        )}
 
         {/* Voting Buttons */}
         <div className="flex gap-3 pt-2">
