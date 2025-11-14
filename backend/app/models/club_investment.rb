@@ -14,7 +14,6 @@ class ClubInvestment < ApplicationRecord
   
   validates :investment_amount, numericality: { greater_than: 0 }
   validates :proposed_share_percentage, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, allow_nil: true
-  validates :shares_acquired, numericality: { greater_than_or_equal_to: 0 }
   
   enum status: {
     pending: 'pending',
