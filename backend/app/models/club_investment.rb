@@ -18,7 +18,7 @@ class ClubInvestment < ApplicationRecord
   }
   
   before_create :generate_reference
-    
+  
   # Method to check if investment is approved based on voting
   def approved?
     status == 'approved'

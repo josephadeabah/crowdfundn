@@ -10,13 +10,18 @@ module Api
         result = voting_service.cast_vote(params[:vote_type], params[:reason])
         
         if result[:success]
-          render json: { 
+          response_data = { 
             success: true, 
             vote: VoteSerializer.new(result[:vote]).as_json,
-            voting_stats: voting_service.voting_stats,
-            # Include updated votable status if it's a club investment
-            votable_status: @votable.status if @votable.is_a?(ClubInvestment)
+            voting_stats: voting_service.voting_stats
           }
+          
+          # Include updated votable status if it's a club investment
+          if @votable.is_a?(ClubInvestment)
+            response_data[:votable_status] = @votable.status
+          end
+          
+          render json: response_data
         else
           render json: { 
             success: false, 

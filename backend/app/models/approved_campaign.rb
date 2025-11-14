@@ -24,12 +24,13 @@ class ApprovedCampaign < ApplicationRecord
   def notify_members
     # Notify club members about the newly approved campaign
     investment_club.active_members.each do |member|
-      ClubEmailService.send_campaign_approved_notification(
-        user: member,
-        campaign: campaign,
-        club: investment_club,
-        approved_campaign: self
-      )
+      # You'll need to implement this email service method
+      # ClubEmailService.send_campaign_approved_notification(
+      #   user: member,
+      #   campaign: campaign,
+      #   club: investment_club,
+      #   approved_campaign: self
+      # )
     end
   end
 end
