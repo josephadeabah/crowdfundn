@@ -623,6 +623,28 @@ class Campaign < ApplicationRecord
     AI::SimilarDealsService.new(self).find_similar(limit: limit)
   end
 
+  private
+
+  def enqueue_media_cleanup
+    MediaCleanupJob.perform_later(media.blob.id) if media.attached?
+  rescue => e
+    Rails.logger.error "Failed to enqueue media cleanup for campaign #{id}: #{e.message}"
+  end
+
+  def generate_slug
+    self.slug = title.parameterize
+    # Handle duplicate slugs
+    counter = 1
+    while Campaign.exists?(slug: slug) && (new_record? || Campaign.where.not(id: id).exists?(slug: slug))
+      self.slug = "#{title.parameterize}-#{counter}"
+      counter += 1
+    end
+  end
+
+  def set_default_status
+    self.status ||= :active
+  end
+
   def risk_level
     case ai_risk_score
     when 0..20 then 'Very Low'
@@ -661,28 +683,6 @@ class Campaign < ApplicationRecord
     when 40..59 then '#F59E0B' # orange
     else '#EF4444' # red
     end
-  end
-
-  private
-
-  def enqueue_media_cleanup
-    MediaCleanupJob.perform_later(media.blob.id) if media.attached?
-  rescue => e
-    Rails.logger.error "Failed to enqueue media cleanup for campaign #{id}: #{e.message}"
-  end
-
-  def generate_slug
-    self.slug = title.parameterize
-    # Handle duplicate slugs
-    counter = 1
-    while Campaign.exists?(slug: slug) && (new_record? || Campaign.where.not(id: id).exists?(slug: slug))
-      self.slug = "#{title.parameterize}-#{counter}"
-      counter += 1
-    end
-  end
-
-  def set_default_status
-    self.status ||= :active
   end
 
   def sentiment_color
