@@ -40,7 +40,9 @@ class ClubInvestment < ApplicationRecord
     total_votes = votes.count
     yes_votes = votes.where(vote_type: 'yes').count
     no_votes = votes.where(vote_type: 'no').count
-    total_members = investment_club.active_members.count
+    
+    # Use current_members_count from the club
+    total_members = investment_club.current_members_count
     
     # Calculate if threshold is met (all members voted)
     all_members_voted = total_votes >= total_members

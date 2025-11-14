@@ -292,12 +292,12 @@ module Api
       end
 
       def calculate_voting_threshold
-        # Calculate threshold based on club membership
-        active_members = @club.active_members.count
+        # Use current_members_count from the club
+        total_members = @club.current_members_count
         
-        # For approval, we need majority (more than 50%) of active members to vote YES
-        # OR if all members have voted, then use simple majority
-        (active_members / 2) + 1 # Simple majority
+        # For approval, we need majority (more than 50%) of members to vote YES
+        # when all members have voted
+        (total_members / 2) + 1 # Simple majority
       end
 
       def calculate_match_score(campaign)
