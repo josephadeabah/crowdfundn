@@ -5,6 +5,8 @@ module Api
       before_action :authenticate_request
       before_action :set_club
       before_action :verify_membership
+
+      require Rails.root.join('app/services/ai/club_recommendation_service')
       
       # ADD THIS INDEX ACTION
       def index
