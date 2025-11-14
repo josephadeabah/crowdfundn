@@ -13,7 +13,6 @@ import { LoadingState } from './investor-clubs/components/Loading/LoadingState';
 import { MobileHeader } from './investor-clubs/components/ClubHeader/MobileHeader';
 import { ClubHeader } from './investor-clubs/components/ClubHeader/ClubHeader';
 import { ClubSummaryCard } from './investor-clubs/components/ClubSummary/ClubSummaryCard';
-import { ActiveVotesSection } from './investor-clubs/components/Investments/ActiveVotesSection';
 import { RecentInvestmentsSection } from './investor-clubs/components/Investments/RecentInvestmentsSection';
 import { PortfolioSummary } from './investor-clubs/components/Sidebar/PortfolioSummary';
 import { QuickActions } from './investor-clubs/components/Sidebar/QuickActions';
@@ -63,10 +62,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [paymentAlert, setPaymentAlert] = useState(false);
   const [paymentMessage, setPaymentMessage] = useState('');
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [voteErrorAlert, setVoteErrorAlert] = useState(false);
-  const [voteErrorMessage, setVoteErrorMessage] = useState('');
   const [explanationAlert, setExplanationAlert] = useState(false);
-  const [explanationMessage, setExplanationMessage] = useState('');
 
   // 🧠 Added for persistence: auto-load the previously selected club
   useEffect(() => {
@@ -165,24 +161,6 @@ const InvestmentClubsDashboard: React.FC = () => {
     if (selectedClub) {
       // Just refresh the data - processing is handled by webhook
       await loadClubDetails(selectedClub);
-    }
-  };
-
-  const handleVote = async (investmentId: string, voteType: string) => {
-    if (!selectedClub || !token) return;
-
-    try {
-      await investmentService.voteOnInvestment(
-        token,
-        selectedClub.slug,
-        investmentId,
-        voteType,
-      );
-      await loadClubDetails(selectedClub);
-    } catch (error: any) {
-      console.error('Failed to vote:', error);
-      setVoteErrorMessage(error.message || 'Failed to vote. Please try again.');
-      setVoteErrorAlert(true);
     }
   };
 
@@ -300,12 +278,6 @@ const InvestmentClubsDashboard: React.FC = () => {
                 onPerPageChange={handleContributionPerPageChange}
               />
 
-              <ActiveVotesSection
-                activeVotes={activeVotes}
-                onVote={handleVote}
-                formatCurrency={formatCurrency}
-              />
-
               <RecentInvestmentsSection
                 investments={investments}
                 formatCurrency={formatCurrency}
@@ -402,28 +374,6 @@ const InvestmentClubsDashboard: React.FC = () => {
         confirmText="Got it"
         icon={<FaInfoCircle className="w-6 h-6 text-blue-600" />}
         confirmButtonClass="bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
-      />
-
-      <AlertPopup
-        title="Vote Failed"
-        message={voteErrorMessage}
-        isOpen={voteErrorAlert}
-        setIsOpen={setVoteErrorAlert}
-        onConfirm={() => setVoteErrorAlert(false)}
-        confirmText="OK"
-        icon={<FaExclamationTriangle className="w-6 h-6 text-red-600" />}
-        confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-      />
-
-      <AlertPopup
-        title="AI Recommendation Explanation"
-        message={explanationMessage}
-        isOpen={explanationAlert}
-        setIsOpen={setExplanationAlert}
-        onConfirm={() => setExplanationAlert(false)}
-        confirmText="Understood"
-        icon={<FaInfoCircle className="w-6 h-6 text-orange-600" />}
-        confirmButtonClass="bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
       />
     </div>
   );
