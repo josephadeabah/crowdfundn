@@ -68,7 +68,8 @@ module Api
       end
       
       def vote
-        club_investment = @club.club_investments.find(params[:investment_id])
+        # Change this line from params[:investment_id] to params[:id]
+        club_investment = @club.club_investments.find(params[:id])
         
         # Check if voting is still active
         unless club_investment.voting?
