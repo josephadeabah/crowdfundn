@@ -14,6 +14,7 @@ import { cn } from '@/app/lib/utils';
 export interface Investment {
   id: string;
   company: string;
+  title?: string;
   description: string;
   amount: string;
   sector: string;
@@ -115,7 +116,7 @@ export const VotingCard: React.FC<VotingCardProps> = ({
           </div>
         </div>
         <CardTitle className="text-xl font-bold text-gray-500">
-          {investment.company}
+          {investment.title || investment.company}
         </CardTitle>
         <CardDescription className="text-sm leading-relaxed">
           {renderDescription(investment.description)}
