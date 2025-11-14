@@ -2,42 +2,95 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/app/components/ui/card';
-import {
-  List,
-  RefreshCw,
-  TrendingUp,
-  Users,
-  DollarSign,
-  Target,
-} from 'lucide-react';
-import {
-  ApprovedCampaign,
-  ClubInvestment,
-} from '../../services/clubInvestmentService';
-import {
-  ClubDashboardProps,
-  ClubPortfolioData,
-  DashboardApprovedCampaign,
-} from '../../types/club.types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
+import { List, RefreshCw, TrendingUp, Users, DollarSign, Target, Vote } from 'lucide-react';
 
-const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
+interface Club {
+  id: string;
+  slug: string;
+  name: string;
+  mission: string;
+  investment_focus: string;
+  current_members_count: number;
+  total_contributions: number;
+  total_invested: number;
+  current_balance: number;
+  currency: string;
+  currency_symbol: string;
+  status: 'active' | 'inactive' | 'suspended';
+  access_type: 'open' | 'restricted' | 'certified';
+  created_at: string;
+  updated_at: string;
+}
+
+interface ClubDashboardProps {
+  club: Club;
+}
+
+interface ClubPortfolioData {
+  approved_campaigns_count: number;
+  pending_investments: number;
+  total_contributions: number;
+  current_balance: number;
+}
+
+interface VotingStats {
+  total_votes: number;
+  yes_votes: number;
+  no_votes: number;
+  approval_percentage: number;
+  threshold_met: boolean;
+}
+
+interface DashboardApprovedCampaign {
+  id: string;
+  campaign: {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    goal_amount: number;
+    current_amount: number;
+    currency: string;
+    currency_symbol: string;
+    fundraiser: {
+      id: string;
+      name: string;
+    };
+  };
+  club_investment: {
+    id: string;
+    proposed_amount: number;
+    proposed_share_percentage: number;
+    voting_stats: VotingStats;
+  };
+  approved_at: string;
+  voting_stats?: VotingStats;
+}
+
+interface ClubInvestment {
+  id: string;
+  campaign: {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    goal_amount: number;
+    current_amount: number;
+    currency: string;
+    currency_symbol: string;
+  };
+  investment_amount: number;
+  status: 'pending' | 'voting' | 'approved' | 'rejected';
+  voting_session_id: string;
+  voting_stats: VotingStats;
+}
+
+const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   const { token } = useAuth();
-  const [approvedCampaigns, setApprovedCampaigns] = useState<
-    DashboardApprovedCampaign[]
-  >([]);
-  const [portfolioData, setPortfolioData] = useState<ClubPortfolioData | null>(
-    null,
-  );
-  const [activeInvestments, setActiveInvestments] = useState<ClubInvestment[]>(
-    [],
-  );
+  const [approvedCampaigns, setApprovedCampaigns] = useState<DashboardApprovedCampaign[]>([]);
+  const [portfolioData, setPortfolioData] = useState<ClubPortfolioData | null>(null);
+  const [activeInvestments, setActiveInvestments] = useState<ClubInvestment[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
 
@@ -55,7 +108,7 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        },
+        }
       );
 
       // Fetch portfolio overview
@@ -66,7 +119,7 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        },
+        }
       );
 
       // Fetch active investments
@@ -77,14 +130,10 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        },
+        }
       );
 
-      if (
-        !approvedResponse.ok ||
-        !portfolioResponse.ok ||
-        !investmentsResponse.ok
-      ) {
+      if (!approvedResponse.ok || !portfolioResponse.ok || !investmentsResponse.ok) {
         throw new Error('Failed to fetch dashboard data');
       }
 
@@ -135,18 +184,14 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Total Contributions
-          </CardTitle>
+          <CardTitle className="text-sm font-medium">Total Contributions</CardTitle>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${club.total_contributions.toLocaleString()}
+            {club.currency_symbol}{club.total_contributions.toLocaleString()}
           </div>
-          <p className="text-xs text-muted-foreground">
-            Total funds contributed
-          </p>
+          <p className="text-xs text-muted-foreground">Total funds contributed</p>
         </CardContent>
       </Card>
 
@@ -157,24 +202,20 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${club.current_balance.toLocaleString()}
+            {club.currency_symbol}{club.current_balance.toLocaleString()}
           </div>
-          <p className="text-xs text-muted-foreground">
-            Available for investments
-          </p>
+          <p className="text-xs text-muted-foreground">Available for investments</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Active Votes</CardTitle>
-          <Target className="h-4 w-4 text-muted-foreground" />
+          <Vote className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{activeInvestments.length}</div>
-          <p className="text-xs text-muted-foreground">
-            Proposals being voted on
-          </p>
+          <p className="text-xs text-muted-foreground">Proposals being voted on</p>
         </CardContent>
       </Card>
     </div>
@@ -199,37 +240,27 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Approved Campaigns</span>
-                <Badge variant="secondary">
-                  {portfolioData.approved_campaigns_count}
-                </Badge>
+                <Badge variant="secondary">{portfolioData.approved_campaigns_count}</Badge>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Campaigns approved for investment
-              </p>
+              <p className="text-xs text-muted-foreground">Campaigns approved for investment</p>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Pending Votes</span>
-                <Badge variant="outline">
-                  {portfolioData.pending_investments}
-                </Badge>
+                <Badge variant="outline">{portfolioData.pending_investments}</Badge>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Active investment proposals
-              </p>
+              <p className="text-xs text-muted-foreground">Active investment proposals</p>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Available Funds</span>
                 <span className="text-sm font-bold text-green-600">
-                  ${portfolioData.current_balance.toLocaleString()}
+                  {club.currency_symbol}{portfolioData.current_balance.toLocaleString()}
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Ready for new investments
-              </p>
+              <p className="text-xs text-muted-foreground">Ready for new investments</p>
             </div>
           </div>
         ) : (
@@ -258,9 +289,7 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
             size="sm"
             disabled={loading}
           >
-            <RefreshCw
-              className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}
-            />
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
         </div>
@@ -283,19 +312,11 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {approvedCampaigns.map((campaign: DashboardApprovedCampaign) => (
-              <Card
-                key={campaign.id}
-                className="border-green-200 bg-green-50/50"
-              >
+              <Card key={campaign.id} className="border-green-200 bg-green-50/50">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <CardTitle className="text-base">
-                      {campaign.campaign.title}
-                    </CardTitle>
-                    <Badge
-                      variant="outline"
-                      className="bg-green-100 text-green-800 border-green-300"
-                    >
+                    <CardTitle className="text-base">{campaign.campaign.title}</CardTitle>
+                    <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
                       Approved
                     </Badge>
                   </div>
@@ -312,7 +333,7 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
                         {campaign.campaign.goal_amount.toLocaleString()}
                       </span>
                     </div>
-
+                    
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-muted-foreground">Raised:</span>
                       <span className="font-medium">
@@ -331,15 +352,9 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
                     {campaign.club_investment?.voting_stats && (
                       <div className="pt-2 border-t">
                         <div className="flex justify-between items-center text-xs">
-                          <span className="text-muted-foreground">
-                            Approval:
-                          </span>
+                          <span className="text-muted-foreground">Approval:</span>
                           <span className="font-medium text-green-600">
-                            {
-                              campaign.club_investment.voting_stats
-                                .approval_percentage
-                            }
-                            % Yes
+                            {campaign.club_investment.voting_stats.approval_percentage}% Yes
                           </span>
                         </div>
                       </div>
@@ -377,20 +392,23 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
           <div className="text-center py-6 text-muted-foreground">
             <Target className="h-8 w-8 mx-auto mb-2" />
             <p>No active investment proposals at the moment</p>
+            <Button 
+              onClick={handleRefresh} 
+              variant="outline" 
+              size="sm" 
+              className="mt-2"
+            >
+              Check for New Proposals
+            </Button>
           </div>
         ) : (
           <div className="space-y-4">
             {activeInvestments.map((investment: ClubInvestment) => (
-              <div
-                key={investment.id}
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
+              <div key={investment.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex-1">
                   <h4 className="font-semibold">{investment.campaign.title}</h4>
                   <p className="text-sm text-muted-foreground">
-                    {investment.campaign.category} •{' '}
-                    {investment.campaign.currency_symbol}
-                    {investment.investment_amount.toLocaleString()}
+                    {investment.campaign.category} • {investment.campaign.currency_symbol}{investment.investment_amount.toLocaleString()}
                   </p>
                 </div>
                 <div className="text-right">
@@ -400,20 +418,11 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
                         {investment.voting_stats.approval_percentage}% Yes
                       </div>
                       <div className="text-muted-foreground">
-                        {investment.voting_stats.yes_votes}/
-                        {investment.voting_stats.total_votes} votes
+                        {investment.voting_stats.yes_votes}/{investment.voting_stats.total_votes} votes
                       </div>
                     </div>
-                    <Badge
-                      variant={
-                        investment.voting_stats.threshold_met
-                          ? 'default'
-                          : 'outline'
-                      }
-                    >
-                      {investment.voting_stats.threshold_met
-                        ? 'Threshold Met'
-                        : 'Voting'}
+                    <Badge variant={investment.voting_stats.threshold_met ? "default" : "outline"}>
+                      {investment.voting_stats.threshold_met ? "Threshold Met" : "Voting"}
                     </Badge>
                   </div>
                 </div>
@@ -438,9 +447,7 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
           )}
         </div>
         <Button onClick={handleRefresh} variant="outline" disabled={loading}>
-          <RefreshCw
-            className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}
-          />
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
       </div>
@@ -453,4 +460,4 @@ const ApprovedCampaignsSection: React.FC<ClubDashboardProps> = ({ club }) => {
   );
 };
 
-export default ApprovedCampaignsSection;
+export default ClubDashboard;

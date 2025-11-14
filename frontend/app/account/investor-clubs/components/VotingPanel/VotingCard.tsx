@@ -22,7 +22,7 @@ export interface Investment {
   match_score?: number;
   reasoning?: string;
   ai_analysis?: any;
-  status?: 'voting' | 'approved' | 'rejected'; // Added status field
+  status?: 'voting' | 'approved' | 'rejected';
   voting_stats?: {
     total_votes: number;
     yes_votes: number;
@@ -37,7 +37,7 @@ interface VotingCardProps {
   onInvest: (id: string) => void;
   onPass: (id: string) => void;
   isAnimating: boolean;
-  showResults?: boolean; // Added to show voting results
+  showResults?: boolean;
 }
 
 export const VotingCard: React.FC<VotingCardProps> = ({

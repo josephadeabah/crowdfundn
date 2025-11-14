@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { VotingCard, Investment } from './VotingCard';
 import { cn } from '@/app/lib/utils';
-import { TrendingUp, X, RefreshCw, List, Grid } from 'lucide-react';
+import { TrendingUp, X, RefreshCw, List, Grid, Plus } from 'lucide-react';
 import Toast from '@/app/components/toast/Toast';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
@@ -16,6 +16,8 @@ interface AIInvestment extends Investment {
   ai_analysis?: any;
   status?: 'voting' | 'approved' | 'rejected';
   voting_stats?: any;
+  club_investment_id?: string;
+  campaign_id?: string;
 }
 
 const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
@@ -24,9 +26,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 }) => {
   const { token } = useAuth();
   const [investments, setInvestments] = useState<AIInvestment[]>([]);
-  const [approvedInvestments, setApprovedInvestments] = useState<
-    AIInvestment[]
-  >([]);
+  const [approvedInvestments, setApprovedInvestments] = useState<AIInvestment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [animatingId, setAnimatingId] = useState<string | null>(null);
@@ -55,6 +55,34 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
         },
       );
 
+      // If no proposals, generate some
+      if (proposalsResponse.status === 200) {
+        const proposalsData = await proposalsResponse.json();
+        
+        if (proposalsData.success && proposalsData.investments.length === 0) {
+          // Generate new proposals
+          const generateResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments/generate_proposals`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+
+          if (generateResponse.ok) {
+            const generateData = await generateResponse.json();
+            if (generateData.success) {
+              setInvestments(generateData.proposals || []);
+            }
+          }
+        } else {
+          setInvestments(proposalsData.investments || []);
+        }
+      }
+
       // Fetch approved campaigns
       const approvedResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/approved_campaigns`,
@@ -66,18 +94,8 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
         },
       );
 
-      if (!proposalsResponse.ok || !approvedResponse.ok) {
-        throw new Error('Failed to fetch investment data');
-      }
-
-      const proposalsData = await proposalsResponse.json();
-      const approvedData = await approvedResponse.json();
-
-      if (proposalsData.success) {
-        setInvestments(proposalsData.investments || []);
-      }
-
-      if (approvedData.success) {
+      if (approvedResponse.ok) {
+        const approvedData = await approvedResponse.json();
         setApprovedInvestments(approvedData.approved_campaigns || []);
       }
     } catch (err) {
@@ -87,7 +105,6 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           ? err.message
           : 'Failed to load investment opportunities',
       );
-      // Fallback to empty arrays
       setInvestments([]);
       setApprovedInvestments([]);
     } finally {
@@ -98,16 +115,15 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
   const castVote = async (investmentId: string, voteType: 'yes' | 'no') => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/votes/ClubInvestment/${investmentId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments/${investmentId}/vote`,
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             vote_type: voteType,
-            voting_session_id: investmentId, // Using investment ID as session ID
           }),
         },
       );
@@ -125,10 +141,40 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       }
     } catch (err) {
       console.error('Error casting vote:', err);
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : 'Failed to cast vote',
+      return { 
+        success: false, 
+        error: err instanceof Error ? err.message : 'Failed to cast vote' 
       };
+    }
+  };
+
+  const generateProposals = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments/generate_proposals`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setInvestments(data.proposals || []);
+          showToast('Proposals Generated', `Created ${data.proposals.length} new proposals`, 'success');
+        }
+      } else {
+        throw new Error('Failed to generate proposals');
+      }
+    } catch (err) {
+      showToast('Error', 'Failed to generate proposals', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -151,7 +197,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 
   const handleInvest = async (id: string) => {
     const result = await castVote(id, 'yes');
-
+    
     if (result.success) {
       const investment = investments.find((inv) => inv.id === id);
       if (!investment) return;
@@ -159,7 +205,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       // Update local state optimistically
       const updatedInvestment = {
         ...investment,
-        votes: investment.votes + 1,
+        votes: (investment.votes || 0) + 1,
         voting_stats: result.data.voting_stats,
       };
 
@@ -203,16 +249,12 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 
   const handlePass = async (id: string) => {
     const result = await castVote(id, 'no');
-
+    
     if (result.success) {
       const investment = investments.find((inv) => inv.id === id);
 
       setAnimatingId(id);
-      showToast(
-        'Vote Recorded',
-        `Voted against ${investment?.company}`,
-        'warning',
-      );
+      showToast('Vote Recorded', `Voted against ${investment?.company}`, 'warning');
 
       setTimeout(() => {
         setInvestments((prev) => prev.filter((inv) => inv.id !== id));
@@ -244,6 +286,13 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           <p className="text-gray-600 mb-6">
             There are no investment proposals currently open for voting.
           </p>
+          <button
+            onClick={generateProposals}
+            disabled={loading}
+            className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50"
+          >
+            Generate Proposals
+          </button>
         </div>
       ) : (
         <>
@@ -264,7 +313,8 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 <div
                   className={cn(
                     'animate-scale-in',
-                    animatingId === investment.id && 'animate-swipe-left',
+                    animatingId === investment.id &&
+                      'animate-swipe-left',
                   )}
                 >
                   <VotingCard
@@ -352,11 +402,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   {activeTab === 'voting' ? 'Active Proposals' : 'Approved'}
                 </p>
                 <p className="text-2xl font-bold text-emerald-600">
-                  {loading
-                    ? '...'
-                    : activeTab === 'voting'
-                      ? investments.length
-                      : approvedInvestments.length}
+                  {loading ? '...' : activeTab === 'voting' ? investments.length : approvedInvestments.length}
                 </p>
               </div>
               <button
@@ -368,6 +414,14 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 <RefreshCw
                   className={`w-5 h-5 text-gray-600 ${loading ? 'animate-spin' : ''}`}
                 />
+              </button>
+              <button
+                onClick={generateProposals}
+                disabled={loading}
+                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                title="Generate new proposals"
+              >
+                <Plus className="w-5 h-5" />
               </button>
               <button
                 onClick={onClose}
@@ -386,7 +440,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                 activeTab === 'voting'
                   ? 'bg-emerald-600 text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               )}
             >
               Active Voting ({investments.length})
@@ -397,7 +451,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                 activeTab === 'approved'
                   ? 'bg-emerald-600 text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               )}
             >
               Approved ({approvedInvestments.length})
