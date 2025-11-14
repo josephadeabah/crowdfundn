@@ -122,22 +122,14 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           const proposalsData = await proposalsResponse.json();
 
           if (proposalsData.success) {
-            // Validate and transform investments
-            const transformedInvestments = proposalsData.investments.map((investment: any, index: number) => {
-              // Debug: log any problematic investments
-              if (!investment.campaign) {
-                console.warn(`Investment at index ${index} has no campaign:`, investment);
-              }
-              if (!investment.campaign?.title) {
-                console.warn(`Investment at index ${index} has no campaign title:`, investment);
-              }
-              
-              return transformInvestmentForFrontend(investment);
-            });
-            
+            // Transform the investments using the utility function
+            const transformedInvestments = proposalsData.investments.map((investment: any) => 
+              transformInvestmentForFrontend(investment)
+            );
             setInvestments(transformedInvestments);
             
             if (transformedInvestments.length === 0) {
+              // Generate new proposals if none exist
               await generateProposals();
             }
           }
