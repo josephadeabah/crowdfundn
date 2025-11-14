@@ -7,7 +7,13 @@ class ClubInvestment < ApplicationRecord
   has_many :members, through: :member_investment_shares, source: :user
   has_many :votes, as: :votable, dependent: :destroy
   
-  validates :investment_amount, :proposed_share_percentage, numericality: { greater_than: 0 }
+  # Add these missing attributes
+  attribute :proposed_share_percentage, :decimal, precision: 5, scale: 2
+  attribute :voting_session_id, :string
+  attribute :voting_ends_at, :datetime
+  
+  validates :investment_amount, numericality: { greater_than: 0 }
+  validates :proposed_share_percentage, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, allow_nil: true
   validates :shares_acquired, numericality: { greater_than_or_equal_to: 0 }
   
   enum status: {
@@ -18,6 +24,7 @@ class ClubInvestment < ApplicationRecord
   }
   
   before_create :generate_reference
+  before_create :set_voting_session_id
   
   # Method to check if investment is approved based on voting
   def approved?
@@ -26,7 +33,7 @@ class ClubInvestment < ApplicationRecord
   
   # Method to get voting statistics
   def voting_stats
-    votes = self.votes
+    votes = self.votes.where(voting_session_id: voting_session_id)
     total_votes = votes.count
     yes_votes = votes.where(vote_type: 'yes').count
     no_votes = votes.where(vote_type: 'no').count
@@ -62,8 +69,11 @@ class ClubInvestment < ApplicationRecord
     self.reference ||= "CLUB-INV-#{SecureRandom.alphanumeric(10).upcase}"
   end
   
+  def set_voting_session_id
+    self.voting_session_id ||= SecureRandom.uuid
+  end
+  
   def add_to_approved_campaigns
-    # This will be handled by the ApprovedCampaign model
     ApprovedCampaign.find_or_create_by(
       investment_club: investment_club,
       campaign: campaign,

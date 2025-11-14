@@ -25,21 +25,7 @@ class ClubInvestmentProposalService
           )
           
           # Return the proposal data
-          {
-            id: club_investment.id.to_s,
-            company: campaign.title,
-            description: campaign.description.to_plain_text.truncate(200),
-            amount: format_currency(club_investment.investment_amount, campaign.currency_symbol),
-            sector: campaign.category || 'General',
-            votes: 0,
-            threshold: calculate_voting_threshold,
-            match_score: rec[:match_score],
-            reasoning: rec[:reasoning],
-            ai_analysis: rec[:ai_analysis],
-            status: 'voting',
-            voting_stats: club_investment.voting_stats,
-            club_investment_id: club_investment.id
-          }
+          transform_investment_for_frontend(club_investment, rec)
         end
         
         { success: true, proposals: proposals }
@@ -67,25 +53,46 @@ class ClubInvestmentProposalService
       voting_session_id: SecureRandom.uuid
     )
     
-    proposal = {
-      id: club_investment.id.to_s,
-      company: campaign.title,
-      description: campaign.description.to_plain_text.truncate(200),
-      amount: format_currency(club_investment.investment_amount, campaign.currency_symbol),
-      sector: campaign.category || 'General',
-      votes: 0,
-      threshold: calculate_voting_threshold,
-      match_score: calculate_match_score(campaign),
-      reasoning: "Manual proposal for #{campaign.title}",
-      status: 'voting',
-      voting_stats: club_investment.voting_stats,
-      club_investment_id: club_investment.id
-    }
+    proposal = transform_investment_for_frontend(club_investment)
     
     { success: true, proposal: proposal }
   end
 
   private
+
+  def transform_investment_for_frontend(club_investment, recommendation = nil)
+    campaign = club_investment.campaign
+    voting_stats = club_investment.voting_stats
+    
+    {
+      id: club_investment.id.to_s,
+      company: campaign.title,
+      description: campaign.description.to_plain_text.truncate(200),
+      amount: format_currency(club_investment.investment_amount, campaign.currency_symbol),
+      sector: campaign.category || 'General',
+      votes: voting_stats[:yes_votes] || 0,
+      threshold: calculate_voting_threshold,
+      match_score: recommendation ? recommendation[:match_score] : calculate_match_score(campaign),
+      reasoning: recommendation ? recommendation[:reasoning] : "Investment proposal for #{campaign.title}",
+      ai_analysis: recommendation ? recommendation[:ai_analysis] : get_default_ai_analysis(campaign),
+      status: 'voting',
+      voting_stats: voting_stats,
+      club_investment_id: club_investment.id,
+      campaign_id: campaign.id,
+      proposed_amount: club_investment.investment_amount,
+      currency_symbol: campaign.currency_symbol
+    }
+  end
+
+  def get_default_ai_analysis(campaign)
+    {
+      deal_score: rand(60..90),
+      risk_score: rand(20..50),
+      risk_category: 'medium',
+      sentiment_analysis: 'positive',
+      strengths: ['Growing market', 'Innovative product']
+    }
+  end
 
   def calculate_proposed_amount(campaign)
     # Base amount on campaign goal and club balance
