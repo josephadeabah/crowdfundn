@@ -19,6 +19,11 @@ const MemberInvestmentProposalModal: React.FC<
       onClose={onClose}
       size="xxxlarge"
       closeOnBackdropClick={true}
+      customStyles={{
+        padding: 0,
+        maxHeight: '95vh',
+        overflow: 'hidden',
+      }}
     >
       <div className="h-full">
         <MemberInvestmentProposal club={club} onClose={onClose} />
