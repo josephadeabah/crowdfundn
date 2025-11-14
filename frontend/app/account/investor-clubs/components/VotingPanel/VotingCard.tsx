@@ -51,6 +51,15 @@ export const VotingCard: React.FC<VotingCardProps> = ({
   const isApproved = investment.status === 'approved';
   const isRejected = investment.status === 'rejected';
 
+  // Helper function to safely render description
+  const renderDescription = (description: string) => {
+    // If description contains HTML, strip tags for clean text
+    if (description && typeof description === 'string' && description.includes('<')) {
+      return description.replace(/<[^>]*>/g, '');
+    }
+    return description || 'No description available';
+  };
+
   return (
     <Card
       className={cn(
@@ -109,7 +118,7 @@ export const VotingCard: React.FC<VotingCardProps> = ({
           {investment.company}
         </CardTitle>
         <CardDescription className="text-sm leading-relaxed">
-          {investment.description}
+          {renderDescription(investment.description)}
         </CardDescription>
         {investment.reasoning && (
           <div className="mt-2 p-2 bg-blue-50 rounded-lg">

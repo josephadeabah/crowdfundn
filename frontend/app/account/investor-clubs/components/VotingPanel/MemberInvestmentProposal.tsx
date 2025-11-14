@@ -5,6 +5,17 @@ import { TrendingUp, X, RefreshCw, List, Grid, Plus } from 'lucide-react';
 import Toast from '@/app/components/toast/Toast';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
+// Add interface for CampaignDescription
+interface CampaignDescription {
+  id: number;
+  name: string;
+  body: string;
+  record_type: string;
+  record_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // Add these transformation functions here
 const transformInvestmentForFrontend = (investment: any, club: any): any => {
   const votingStats = investment.voting_stats || {};
@@ -12,10 +23,19 @@ const transformInvestmentForFrontend = (investment: any, club: any): any => {
   const allMembersVoted = votingStats.total_votes >= totalMembers;
   const thresholdMet = allMembersVoted && votingStats.yes_votes > votingStats.no_votes;
 
+  // Handle description object - extract body if it exists
+  let description = investment.description || 'No description available';
+  if (typeof description === 'object' && description.body) {
+    description = description.body;
+  }
+  if (investment.campaign?.description && typeof investment.campaign.description === 'object' && investment.campaign.description.body) {
+    description = investment.campaign.description.body;
+  }
+
   return {
     id: investment.id?.toString() || Math.random().toString(),
     company: investment.campaign?.title || investment.title || 'Unknown Company',
-    description: investment.campaign?.description || investment.description || 'No description available',
+    description: description,
     amount: investment.investment_amount
       ? formatCurrency(
           investment.investment_amount,
