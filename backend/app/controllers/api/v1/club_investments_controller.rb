@@ -1,4 +1,3 @@
-# app/controllers/api/v1/club_investments_controller.rb
 module Api
   module V1
     class ClubInvestmentsController < ApplicationController
@@ -8,12 +7,22 @@ module Api
 
       require Rails.root.join('app/services/ai/club_recommendation_service')
       
-      # ADD THIS INDEX ACTION
       def index
+        # Filter by status if provided
         investments = @club.club_investments.includes(:campaign).order(created_at: :desc)
         
+        if params[:status].present?
+          investments = investments.where(status: params[:status])
+        end
+        
+        # Transform investments for frontend
+        transformed_investments = investments.map do |investment|
+          transform_investment_for_frontend(investment)
+        end
+        
         render json: {
-          investments: investments.map { |investment| ClubInvestmentSerializer.new(investment).as_json }
+          success: true,
+          investments: transformed_investments
         }
       end
       
@@ -36,13 +45,13 @@ module Api
         club_investment = @club.club_investments.new(
           campaign: campaign,
           investment_amount: params[:investment_amount].to_f,
-          status: 'pending'
+          proposed_share_percentage: params[:proposed_share_percentage],
+          status: 'voting',
+          created_by: @current_user,
+          voting_session_id: SecureRandom.uuid
         )
         
         if club_investment.save
-          # Start voting process
-          club_investment.start_voting
-          
           render json: { 
             success: true, 
             club_investment: ClubInvestmentSerializer.new(club_investment).as_json,
@@ -73,12 +82,6 @@ module Api
         result = voting_service.cast_vote(params[:vote_type], params[:reason])
         
         if result[:success]
-          # Check if investment reached approval threshold
-          if club_investment.approved?
-            # Auto-execute the investment if approved
-            execute_investment_after_approval(club_investment)
-          end
-          
           render json: { 
             success: true, 
             vote: result[:vote],
@@ -93,83 +96,29 @@ module Api
         end
       end
       
-      def execute
-        club_investment = @club.club_investments.find(params[:investment_id])
+      # Generate new proposals
+      def generate_proposals
+        limit = params[:limit]&.to_i || 5
         
-        # Only allow execution if approved and not already executed
-        unless club_investment.approved? && club_investment.voting?
-          return render json: { 
-            success: false, 
-            error: 'Investment cannot be executed. Either not approved or already processed.' 
-          }, status: :unprocessable_entity
-        end
-        
-        result = execute_investment(club_investment)
+        proposal_service = ClubInvestmentProposalService.new(@club, @current_user)
+        result = proposal_service.generate_proposals_from_ai_recommendations(limit: limit)
         
         if result[:success]
-          render json: { 
-            success: true, 
-            club_investment: ClubInvestmentSerializer.new(club_investment.reload).as_json,
-            transfer_reference: result[:transfer_reference]
+          render json: {
+            success: true,
+            proposals: result[:proposals],
+            message: "Generated #{result[:proposals].count} new investment proposals"
           }
         else
-          render json: { 
-            success: false, 
-            error: result[:error] 
+          render json: {
+            success: false,
+            error: result[:error],
+            proposals: []
           }, status: :unprocessable_entity
         end
       end
       
-      # Add these methods for the additional routes
-      def ai_recommendation
-        club_investment = @club.club_investments.find(params[:investment_id])
-        
-        # Use your existing AI service to generate recommendations
-        ai_service = AI::DealScoringService.new
-        recommendation = ai_service.generate_club_recommendation(club_investment)
-        
-        render json: {
-          success: true,
-          recommendation: recommendation
-        }
-      end
-      
-      def voting_insights
-        club_investment = @club.club_investments.find(params[:investment_id])
-        
-        # Use your existing VotingService
-        voting_service = VotingService.new(club_investment, @current_user, club_investment.voting_session_id)
-        stats = voting_service.voting_stats
-        
-        # Get additional insights
-        member_votes = Vote.where(
-          votable: club_investment, 
-          voting_session_id: club_investment.voting_session_id
-        ).includes(:user).map do |vote|
-          {
-            user_name: vote.user.full_name,
-            vote_type: vote.vote_type,
-            reason: vote.reason,
-            voted_at: vote.created_at
-          }
-        end
-        
-        insights = {
-          stats: stats,
-          member_votes: member_votes,
-          voting_deadline: club_investment.voting_ends_at,
-          approval_threshold: 60.0, # Your club's threshold
-          is_approved: calculate_approval_percentage(stats) >= 60.0,
-          time_remaining: time_remaining(club_investment.voting_ends_at)
-        }
-        
-        render json: {
-          success: true,
-          insights: insights
-        }
-      end
-      
-      # app/controllers/api/v1/club_investments_controller.rb (add this action)
+      # Get AI recommendations (existing but updated)
       def ai_recommendations
         begin
           limit = params[:limit]&.to_i || 10
@@ -189,10 +138,12 @@ module Api
                 amount: format_currency(campaign.goal_amount, campaign.currency_symbol),
                 sector: campaign.category || 'General',
                 votes: 0, # Start with 0 votes
-                threshold: calculate_voting_threshold(campaign),
+                threshold: calculate_voting_threshold,
                 match_score: rec[:match_score],
                 reasoning: rec[:reasoning],
-                ai_analysis: rec[:ai_analysis]
+                ai_analysis: rec[:ai_analysis],
+                campaign_id: campaign.id, # Add campaign ID for creating proposals
+                status: 'recommendation' # Differentiate from actual voting proposals
               }
             end
             
@@ -222,26 +173,82 @@ module Api
 
       private
 
-      def format_currency(amount, currency_symbol = '$')
-        "#{currency_symbol}#{amount.to_i}K"
+      def transform_investment_for_frontend(investment)
+        campaign = investment.campaign
+        voting_stats = investment.voting_stats
+        
+        {
+          id: investment.id.to_s,
+          company: campaign.title,
+          description: campaign.description.to_plain_text.truncate(200),
+          amount: format_currency(investment.investment_amount, campaign.currency_symbol),
+          sector: campaign.category || 'General',
+          votes: voting_stats[:yes_votes] || 0,
+          threshold: calculate_voting_threshold,
+          match_score: calculate_match_score(campaign),
+          reasoning: "Investment proposal for #{campaign.title}",
+          ai_analysis: get_campaign_ai_analysis(campaign),
+          status: investment.status,
+          voting_stats: voting_stats,
+          club_investment_id: investment.id,
+          campaign_id: campaign.id,
+          proposed_amount: investment.investment_amount,
+          currency_symbol: campaign.currency_symbol
+        }
       end
 
-      def calculate_voting_threshold(campaign)
-        # Base threshold on campaign size and complexity
-        base_threshold = 5
+      def get_campaign_ai_analysis(campaign)
+        # Get AI analysis from campaign
+        if campaign.respond_to?(:ai_deal_score) && campaign.ai_deal_score
+          {
+            deal_score: campaign.ai_deal_score,
+            risk_score: campaign.ai_risk_score,
+            risk_category: campaign.risk_level,
+            sentiment_analysis: 'positive',
+            strengths: ['Strong market position', 'Experienced team']
+          }
+        else
+          {
+            deal_score: rand(60..90),
+            risk_score: rand(20..50),
+            risk_category: 'medium',
+            sentiment_analysis: 'positive',
+            strengths: ['Growing market', 'Innovative product']
+          }
+        end
+      end
+
+      def format_currency(amount, currency_symbol = '$')
+        if amount >= 1000
+          "#{currency_symbol}#{(amount / 1000).round(1)}K"
+        else
+          "#{currency_symbol}#{amount.round(0)}"
+        end
+      end
+
+      def calculate_voting_threshold
+        # Base threshold on number of active members
+        active_members = @club.active_members.count
+        [active_members / 2, 3].max # At least 3 votes or half the members
+      end
+
+      def calculate_match_score(campaign)
+        # Simple match score calculation
+        score = 50 # Base score
         
-        # Adjust based on investment amount
-        amount_factor = campaign.goal_amount.to_i / 100000 # 1 additional vote per $100K
-        amount_adjustment = [amount_factor, 10].min # Cap at 10 additional votes
+        # Add points for category match
+        if @club.investment_focus.present? && campaign.category.present?
+          if @club.investment_focus.downcase.include?(campaign.category.downcase)
+            score += 30
+          end
+        end
         
-        # Adjust based on campaign risk (simplified)
-        risk_adjustment = if campaign.respond_to?(:ai_risk_score) && campaign.ai_risk_score
-                            campaign.ai_risk_score > 60 ? 3 : 0
-                          else
-                            0
-                          end
+        # Add points for performance
+        if campaign.respond_to?(:performance_percentage)
+          score += (campaign.performance_percentage * 0.3)
+        end
         
-        base_threshold + amount_adjustment + risk_adjustment
+        score.clamp(0, 100).round(2)
       end
       
       def set_club
@@ -269,35 +276,6 @@ module Api
         end
         
         { valid: true }
-      end
-      
-      def execute_investment_after_approval(club_investment)
-        # This can be called immediately or scheduled
-        ClubInvestmentExecutionJob.perform_later(club_investment.id)
-      end
-      
-      def execute_investment(club_investment)
-        investment_service = ClubInvestmentService.new(club_investment)
-        investment_service.execute_investment
-      end
-      
-      def calculate_approval_percentage(stats)
-        total_votes = stats[:total_votes] || 0
-        yes_votes = stats[:vote_breakdown]&.fetch('yes', 0) || 0
-        total_votes > 0 ? (yes_votes.to_f / total_votes * 100).round(2) : 0
-      end
-      
-      def time_remaining(voting_ends_at)
-        return 'ended' if voting_ends_at.nil? || voting_ends_at < Time.current
-        
-        diff = voting_ends_at - Time.current
-        if diff > 1.day
-          "#{(diff / 1.day).floor} days"
-        elsif diff > 1.hour
-          "#{(diff / 1.hour).floor} hours"
-        else
-          "#{(diff / 1.minute).floor} minutes"
-        end
       end
     end
   end

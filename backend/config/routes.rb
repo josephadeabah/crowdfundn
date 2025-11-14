@@ -324,6 +324,7 @@ Rails.application.routes.draw do
           end
           collection do
             get :ai_recommendations # Add this line
+            post :generate_proposals
           end
         end
 
