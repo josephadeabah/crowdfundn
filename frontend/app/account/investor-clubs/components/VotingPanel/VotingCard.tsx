@@ -57,7 +57,7 @@ export const VotingCard: React.FC<VotingCardProps> = ({
         'w-full max-w-md mx-auto shadow-xl border-0 bg-gradient-to-br from-card to-card/80 backdrop-blur-sm',
         isAnimating && 'opacity-0 scale-95 transition-all duration-300',
         isApproved && 'border-green-200 bg-green-50/50',
-        isRejected && 'border-red-200 bg-red-50/50'
+        isRejected && 'border-red-200 bg-red-50/50',
       )}
     >
       <CardHeader className="pb-4">
@@ -120,21 +120,22 @@ export const VotingCard: React.FC<VotingCardProps> = ({
 
       <CardContent className="space-y-4">
         {/* Voting Results - Show when voting is complete */}
-        {(showResults || isApproved || isRejected) && investment.voting_stats && (
-          <div className="p-3 bg-gray-50 rounded-lg">
-            <div className="flex justify-between text-sm mb-2">
-              <span className="font-semibold">Voting Results</span>
-              <span className="text-emerald-600 font-bold">
-                {investment.voting_stats.approval_percentage}% Approved
-              </span>
+        {(showResults || isApproved || isRejected) &&
+          investment.voting_stats && (
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <div className="flex justify-between text-sm mb-2">
+                <span className="font-semibold">Voting Results</span>
+                <span className="text-emerald-600 font-bold">
+                  {investment.voting_stats.approval_percentage}% Approved
+                </span>
+              </div>
+              <div className="flex justify-between text-xs text-gray-600">
+                <span>Yes: {investment.voting_stats.yes_votes}</span>
+                <span>No: {investment.voting_stats.no_votes}</span>
+                <span>Total: {investment.voting_stats.total_votes}</span>
+              </div>
             </div>
-            <div className="flex justify-between text-xs text-gray-600">
-              <span>Yes: {investment.voting_stats.yes_votes}</span>
-              <span>No: {investment.voting_stats.no_votes}</span>
-              <span>Total: {investment.voting_stats.total_votes}</span>
-            </div>
-          </div>
-        )}
+          )}
 
         {/* Progress Bar - Only show for active voting */}
         {!isApproved && !isRejected && (
