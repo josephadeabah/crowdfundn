@@ -47,9 +47,31 @@ export const VotingCard: React.FC<VotingCardProps> = ({
   isAnimating,
   showResults = false,
 }) => {
-  const progress = (investment.votes / investment.threshold) * 100;
-  const isApproved = investment.status === 'approved';
-  const isRejected = investment.status === 'rejected';
+
+  const safeInvestment = {
+    ...investment,
+    company: investment.company || 'Unknown Company',
+    description: investment.description || 'No description available',
+    amount: investment.amount || '$0',
+    sector: investment.sector || 'General',
+    votes: investment.votes || 0,
+    threshold: investment.threshold || 3,
+    voting_stats: investment.voting_stats || {
+      total_votes: 0,
+      yes_votes: 0,
+      no_votes: 0,
+      approval_percentage: 0,
+      threshold_met: false
+    }
+  };
+
+  const progress = (safeInvestment.votes / safeInvestment.threshold) * 100;
+  const isApproved = safeInvestment.status === 'approved';
+  const isRejected = safeInvestment.status === 'rejected';
+
+  if (!investment) {
+    return <div>Error: Investment data missing</div>;
+  }
 
   return (
     <Card
