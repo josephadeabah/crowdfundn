@@ -431,7 +431,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
               <button
                 onClick={generateProposals}
                 disabled={loading}
-                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="p-2 bg-gray-50 text-white rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
                 title="Generate new proposals"
               >
                 <Plus className="w-5 h-5" />
