@@ -1,7 +1,7 @@
 class ClubInvestment < ApplicationRecord
   belongs_to :investment_club
   belongs_to :campaign
-  belongs_to :created_by, class_name: 'User', foreign_key: 'created_by_id' # Fix this line
+  belongs_to :created_by, class_name: 'User', foreign_key: 'created_by_id', optional: true
   
   has_many :member_investment_shares, dependent: :destroy
   has_many :members, through: :member_investment_shares, source: :user
@@ -11,9 +11,12 @@ class ClubInvestment < ApplicationRecord
   attribute :proposed_share_percentage, :decimal, precision: 5, scale: 2
   attribute :voting_session_id, :string
   attribute :voting_ends_at, :datetime
+  attribute :shares_acquired, :integer, default: 0
+  attribute :reference, :string
   
   validates :investment_amount, numericality: { greater_than: 0 }
   validates :proposed_share_percentage, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, allow_nil: true
+  # Removed shares_acquired validation
   
   enum status: {
     pending: 'pending',
@@ -65,7 +68,15 @@ class ClubInvestment < ApplicationRecord
   private
   
   def generate_reference
-    self.reference ||= "CLUB-INV-#{SecureRandom.alphanumeric(10).upcase}"
+    return if reference.present?
+    
+    # Generate a unique reference
+    self.reference = "CLUB-INV-#{SecureRandom.alphanumeric(10).upcase}"
+    
+    # Ensure uniqueness
+    while ClubInvestment.exists?(reference: reference)
+      self.reference = "CLUB-INV-#{SecureRandom.alphanumeric(10).upcase}"
+    end
   end
   
   def set_voting_session_id
