@@ -358,7 +358,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {approvedCampaigns.map((campaign: DashboardApprovedCampaign) => (
+            {approvedCampaigns?.map((campaign: DashboardApprovedCampaign) => (
               <Card
                 key={campaign?.id}
                 className="border-green-200 bg-green-50/50"
