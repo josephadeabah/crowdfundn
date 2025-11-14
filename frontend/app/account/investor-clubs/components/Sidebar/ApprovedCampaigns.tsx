@@ -22,6 +22,7 @@ import {
   Calendar,
   User,
   PieChart,
+  AlertCircle,
 } from 'lucide-react';
 import { Club } from '../../clubTypes';
 
@@ -41,7 +42,7 @@ interface VotingStats {
   yes_votes: number;
   no_votes: number;
   approval_percentage: number;
-  threshold_met: boolean;
+  threshold_met?: boolean;
 }
 
 interface DashboardApprovedCampaign {
@@ -70,22 +71,53 @@ interface DashboardApprovedCampaign {
   voting_stats?: VotingStats;
 }
 
+// Updated interface to match the actual API response
+interface ApiClubInvestment {
+  id: string;
+  company: string;
+  description: string;
+  amount: string; // This comes as string like "22.3K", "750.0K"
+  sector: string;
+  votes: number;
+  threshold: number;
+  match_score: string;
+  reasoning: string;
+  ai_analysis: {
+    deal_score: string | number;
+    risk_score: string | number;
+    risk_category: string;
+    sentiment_analysis: string;
+    strengths: string[];
+  };
+  status: 'voting' | 'approved' | 'rejected' | 'pending';
+  voting_stats: VotingStats;
+  club_investment_id: number;
+  campaign_id: number;
+  proposed_amount: string; // This is the actual investment amount as string
+  currency_symbol: string | null;
+}
+
 interface ClubInvestment {
   id: string;
-  campaign: {
-    id: string;
-    title: string;
-    description: string;
-    category: string;
-    goal_amount: number;
-    current_amount: number;
-    currency: string;
-    currency_symbol: string;
-  };
+  title: string;
+  description: string;
+  category: string;
+  goal_amount: number;
+  current_amount: number;
+  currency: string;
+  currency_symbol: string;
   investment_amount: number;
   status: 'pending' | 'voting' | 'approved' | 'rejected';
-  voting_session_id: string;
   voting_stats: VotingStats;
+  threshold: number;
+  match_score: number;
+  ai_analysis: {
+    deal_score: number;
+    risk_score: number;
+    risk_category: string;
+    sentiment_analysis: string;
+    strengths: string[];
+  };
 }
 
 const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
@@ -104,6 +136,21 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(
     new Set(),
   );
+
+  // Helper function to parse amount strings like "22.3K", "750.0K" to numbers
+  const parseAmountString = (amountStr: string): number => {
+    if (!amountStr) return 0;
+    
+    const cleanStr = amountStr.replace(/[^\d.Kk]/g, '');
+    
+    if (cleanStr.includes('K') || cleanStr.includes('k')) {
+      const numberPart = parseFloat(cleanStr.replace(/[Kk]/g, ''));
+      return isNaN(numberPart) ? 0 : numberPart * 1000;
+    }
+    
+    const number = parseFloat(cleanStr);
+    return isNaN(number) ? 0 : number;
+  };
 
   // Safe number formatting helper
   const safeToLocaleString = (value: number | undefined | null, fallback: string = '0'): string => {
@@ -125,6 +172,44 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   const calculateProgressPercentage = (current: number | undefined, goal: number | undefined): number => {
     if (!current || !goal || goal === 0) return 0;
     return Math.min(100, (current / goal) * 100);
+  };
+
+  // Transform API investment data to our component format
+  const transformInvestmentData = (apiInvestment: ApiClubInvestment): ClubInvestment => {
+    const investmentAmount = parseFloat(apiInvestment.proposed_amount) || parseAmountString(apiInvestment.amount);
+    const goalAmount = parseAmountString(apiInvestment.amount);
+    
+    // Parse AI analysis scores safely
+    const dealScore = typeof apiInvestment.ai_analysis.deal_score === 'string' 
+      ? parseFloat(apiInvestment.ai_analysis.deal_score) 
+      : Number(apiInvestment.ai_analysis.deal_score) || 0;
+    
+    const riskScore = typeof apiInvestment.ai_analysis.risk_score === 'string'
+      ? parseFloat(apiInvestment.ai_analysis.risk_score)
+      : Number(apiInvestment.ai_analysis.risk_score) || 0;
+
+    return {
+      id: apiInvestment.id,
+      title: apiInvestment.company,
+      description: apiInvestment.description,
+      category: apiInvestment.sector,
+      goal_amount: goalAmount,
+      current_amount: investmentAmount, // Using proposed amount as current for display
+      currency: 'USD', // Default currency
+      currency_symbol: apiInvestment.currency_symbol || '$',
+      investment_amount: investmentAmount,
+      status: apiInvestment.status,
+      voting_stats: apiInvestment.voting_stats,
+      threshold: apiInvestment.threshold,
+      match_score: parseFloat(apiInvestment.match_score) || 0,
+      ai_analysis: {
+        deal_score: dealScore,
+        risk_score: riskScore,
+        risk_category: apiInvestment.ai_analysis.risk_category || 'medium',
+        sentiment_analysis: apiInvestment.ai_analysis.sentiment_analysis || 'neutral',
+        strengths: apiInvestment.ai_analysis.strengths || []
+      }
+    };
   };
 
   // Fetch all dashboard data
@@ -174,6 +259,8 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
         investmentsResponse.ok ? investmentsResponse.json() : { success: false, investments: [] },
       ]);
 
+      console.log('Investments API Response:', investmentsData); // Debug log
+
       // Handle approved campaigns data
       if (approvedData?.success) {
         setApprovedCampaigns(Array.isArray(approvedData.approved_campaigns) ? approvedData.approved_campaigns : []);
@@ -188,9 +275,12 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
         setPortfolioData(null);
       }
 
-      // Handle investments data
-      if (investmentsData?.success) {
-        setActiveInvestments(Array.isArray(investmentsData.investments) ? investmentsData.investments : []);
+      // Handle investments data - transform API data to our component format
+      if (investmentsData?.success && Array.isArray(investmentsData.investments)) {
+        const transformedInvestments = investmentsData.investments
+          .filter((inv: ApiClubInvestment) => inv.status === 'voting')
+          .map(transformInvestmentData);
+        setActiveInvestments(transformedInvestments);
       } else {
         setActiveInvestments([]);
       }
@@ -618,7 +708,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
     );
   };
 
-  // Active Investments Section
+  // Active Investments Section - Updated to use transformed data
   const ActiveInvestmentsSection = () => (
     <Card className="mt-6">
       <CardHeader>
@@ -646,46 +736,68 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
             {activeInvestments.map((investment) => {
               if (!investment?.id) return null;
               
-              const campaign = investment.campaign || {};
               const votingStats = investment.voting_stats || {};
+              const thresholdMet = votingStats.yes_votes >= investment.threshold;
 
               return (
                 <div
                   key={investment.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex-1">
-                    <h4 className="font-semibold">
-                      {campaign.title || 'Untitled Campaign'}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {campaign.category || 'Uncategorized'} •{' '}
-                      {campaign.currency_symbol || '$'}
-                      {safeToLocaleString(investment.investment_amount)}
-                    </p>
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 mt-1">
+                        <div className={`w-3 h-3 rounded-full ${
+                          investment.ai_analysis.risk_category === 'low' ? 'bg-green-500' :
+                          investment.ai_analysis.risk_category === 'medium' ? 'bg-yellow-500' :
+                          'bg-red-500'
+                        }`} />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          {investment.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                          {investment.description}
+                        </p>
+                        <div className="flex items-center space-x-4 mt-2">
+                          <Badge variant="outline" className="text-xs">
+                            {investment.category}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            Match: {investment.match_score}%
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Deal Score: {investment.ai_analysis.deal_score}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="text-right">
                     <div className="flex items-center gap-4">
                       <div className="text-sm">
-                        <div className="font-medium">
+                        <div className="font-medium text-green-600">
                           {votingStats.approval_percentage || 0}% Yes
                         </div>
                         <div className="text-muted-foreground">
                           {safeToLocaleString(votingStats.yes_votes)}/
                           {safeToLocaleString(votingStats.total_votes)} votes
                         </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Need {investment.threshold} votes
+                        </div>
                       </div>
                       <Badge
-                        variant={
-                          votingStats.threshold_met
-                            ? 'default'
-                            : 'outline'
-                        }
+                        variant={thresholdMet ? 'default' : 'outline'}
+                        className={thresholdMet ? 'bg-green-100 text-green-800 border-green-300' : ''}
                       >
-                        {votingStats.threshold_met
-                          ? 'Threshold Met'
-                          : 'Voting'}
+                        {thresholdMet ? 'Threshold Met' : 'Voting'}
                       </Badge>
+                    </div>
+                    <div className="mt-2 text-sm font-medium">
+                      {investment.currency_symbol || '$'}
+                      {safeToLocaleString(investment.investment_amount)}
                     </div>
                   </div>
                 </div>
