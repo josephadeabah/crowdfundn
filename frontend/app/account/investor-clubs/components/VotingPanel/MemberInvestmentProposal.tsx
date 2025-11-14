@@ -214,13 +214,6 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       <main className="flex-1 overflow-auto">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="max-w-2xl mx-auto space-y-6">
-            {/* Instructions */}
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-gray-700">
-                AI-Curated Investment Opportunities
-              </h2>
-            </div>
-
             {/* Loading State */}
             {loading && (
               <div className="text-center py-12">
