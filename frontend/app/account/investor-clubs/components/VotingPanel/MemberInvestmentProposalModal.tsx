@@ -18,7 +18,7 @@ const MemberInvestmentProposalModal: React.FC<
       isOpen={isOpen}
       onClose={onClose}
       size="xxxlarge"
-      closeOnBackdropClick={true}
+      closeOnBackdropClick={false}
       customStyles={{
         padding: 0,
         maxHeight: '95vh',
