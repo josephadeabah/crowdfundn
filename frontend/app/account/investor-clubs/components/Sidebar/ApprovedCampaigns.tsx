@@ -152,26 +152,32 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   // Helper function to parse amount strings like "22.3K", "750.0K" to numbers
   const parseAmountString = (amountStr: string): number => {
     if (!amountStr) return 0;
-    
+
     const cleanStr = amountStr.replace(/[^\d.Kk]/g, '');
-    
+
     if (cleanStr.includes('K') || cleanStr.includes('k')) {
       const numberPart = parseFloat(cleanStr.replace(/[Kk]/g, ''));
       return isNaN(numberPart) ? 0 : numberPart * 1000;
     }
-    
+
     const number = parseFloat(cleanStr);
     return isNaN(number) ? 0 : number;
   };
 
   // Safe number formatting helper
-  const safeToLocaleString = (value: number | undefined | null, fallback: string = '0'): string => {
+  const safeToLocaleString = (
+    value: number | undefined | null,
+    fallback: string = '0',
+  ): string => {
     if (value === undefined || value === null) return fallback;
     return value.toLocaleString();
   };
 
   // Safe date formatting helper
-  const safeDateToLocaleString = (dateString: string | undefined | null, fallback: string = 'N/A'): string => {
+  const safeDateToLocaleString = (
+    dateString: string | undefined | null,
+    fallback: string = 'N/A',
+  ): string => {
     if (!dateString) return fallback;
     try {
       return new Date(dateString).toLocaleDateString();
@@ -181,24 +187,33 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   };
 
   // Safe progress calculation
-  const calculateProgressPercentage = (current: number | undefined, goal: number | undefined): number => {
+  const calculateProgressPercentage = (
+    current: number | undefined,
+    goal: number | undefined,
+  ): number => {
     if (!current || !goal || goal === 0) return 0;
     return Math.min(100, (current / goal) * 100);
   };
 
   // Transform API investment data to our component format
-  const transformInvestmentData = (apiInvestment: ApiClubInvestment): ClubInvestment => {
-    const investmentAmount = parseFloat(apiInvestment.proposed_amount) || parseAmountString(apiInvestment.amount);
+  const transformInvestmentData = (
+    apiInvestment: ApiClubInvestment,
+  ): ClubInvestment => {
+    const investmentAmount =
+      parseFloat(apiInvestment.proposed_amount) ||
+      parseAmountString(apiInvestment.amount);
     const goalAmount = parseAmountString(apiInvestment.amount);
-    
+
     // Parse AI analysis scores safely
-    const dealScore = typeof apiInvestment.ai_analysis.deal_score === 'string' 
-      ? parseFloat(apiInvestment.ai_analysis.deal_score) 
-      : Number(apiInvestment.ai_analysis.deal_score) || 0;
-    
-    const riskScore = typeof apiInvestment.ai_analysis.risk_score === 'string'
-      ? parseFloat(apiInvestment.ai_analysis.risk_score)
-      : Number(apiInvestment.ai_analysis.risk_score) || 0;
+    const dealScore =
+      typeof apiInvestment.ai_analysis.deal_score === 'string'
+        ? parseFloat(apiInvestment.ai_analysis.deal_score)
+        : Number(apiInvestment.ai_analysis.deal_score) || 0;
+
+    const riskScore =
+      typeof apiInvestment.ai_analysis.risk_score === 'string'
+        ? parseFloat(apiInvestment.ai_analysis.risk_score)
+        : Number(apiInvestment.ai_analysis.risk_score) || 0;
 
     return {
       id: apiInvestment.id,
@@ -218,9 +233,10 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
         deal_score: dealScore,
         risk_score: riskScore,
         risk_category: apiInvestment.ai_analysis.risk_category || 'medium',
-        sentiment_analysis: apiInvestment.ai_analysis.sentiment_analysis || 'neutral',
-        strengths: apiInvestment.ai_analysis.strengths || []
-      }
+        sentiment_analysis:
+          apiInvestment.ai_analysis.sentiment_analysis || 'neutral',
+        strengths: apiInvestment.ai_analysis.strengths || [],
+      },
     };
   };
 
@@ -250,20 +266,24 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
       // Fetch approved campaigns
       const approvedResponse = await fetch(
         `${baseUrl}/investment_clubs/${club.slug}/approved_campaigns`,
-        { headers }
+        { headers },
       );
 
-
       const [approvedData] = await Promise.all([
-        approvedResponse.ok ? approvedResponse.json() : { success: false, approved_campaigns: [] }
+        approvedResponse.ok
+          ? approvedResponse.json()
+          : { success: false, approved_campaigns: [] },
       ]);
       // Handle approved campaigns data
       if (approvedData?.success) {
-        setApprovedCampaigns(Array.isArray(approvedData.approved_campaigns) ? approvedData.approved_campaigns : []);
+        setApprovedCampaigns(
+          Array.isArray(approvedData.approved_campaigns)
+            ? approvedData.approved_campaigns
+            : [],
+        );
       } else {
         setApprovedCampaigns([]);
       }
-
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       // Set empty states on error
@@ -365,10 +385,10 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                 const campaignData = campaign.campaign || {};
                 const clubInvestment = campaign.club_investment || {};
                 const votingStats = clubInvestment.voting_stats || {};
-                
+
                 const progressPercentage = calculateProgressPercentage(
                   campaignData.current_amount,
-                  campaignData.goal_amount
+                  campaignData.goal_amount,
                 );
 
                 return (
@@ -453,9 +473,11 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                               </h4>
                               <div className="text-sm text-gray-600">
                                 {campaignData.description?.body ? (
-                                  <div 
+                                  <div
                                     className="prose prose-sm max-w-none"
-                                    dangerouslySetInnerHTML={{ __html: campaignData.description.body }}
+                                    dangerouslySetInnerHTML={{
+                                      __html: campaignData.description.body,
+                                    }}
                                   />
                                 ) : (
                                   'No description available.'
@@ -465,7 +487,9 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
 
                             <div className="space-y-2">
                               <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Fundraiser:</span>
+                                <span className="text-gray-600">
+                                  Fundraiser:
+                                </span>
                                 <span className="font-medium">
                                   {campaignData.fundraiser?.name || 'Unknown'}
                                 </span>
@@ -493,7 +517,9 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                                   </span>
                                   <span className="font-medium">
                                     {club?.currency_symbol || '$'}
-                                    {safeToLocaleString(clubInvestment.proposed_amount)}
+                                    {safeToLocaleString(
+                                      clubInvestment.proposed_amount,
+                                    )}
                                   </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
@@ -501,7 +527,10 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                                     Share Percentage:
                                   </span>
                                   <span className="font-medium">
-                                    {safeToLocaleString(clubInvestment.proposed_share_percentage)}%
+                                    {safeToLocaleString(
+                                      clubInvestment.proposed_share_percentage,
+                                    )}
+                                    %
                                   </span>
                                 </div>
                               </div>
@@ -520,7 +549,9 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                                       Yes Votes:
                                     </span>
                                     <span className="font-medium text-green-600">
-                                      {safeToLocaleString(votingStats.yes_votes)}
+                                      {safeToLocaleString(
+                                        votingStats.yes_votes,
+                                      )}
                                     </span>
                                   </div>
                                   <div className="flex justify-between text-sm">
@@ -536,7 +567,11 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                                       Total Votes:
                                     </span>
                                     <span className="font-medium">
-                                      {safeToLocaleString(votingStats.total_votes)} / {votingStats.total_members || '?'} members
+                                      {safeToLocaleString(
+                                        votingStats.total_votes,
+                                      )}{' '}
+                                      / {votingStats.total_members || '?'}{' '}
+                                      members
                                     </span>
                                   </div>
                                 </div>
@@ -550,7 +585,10 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                                 Approved Date:
                               </span>
                               <span className="font-medium">
-                                {safeDateToLocaleString(campaign.approved_at, 'Not available')}
+                                {safeDateToLocaleString(
+                                  campaign.approved_at,
+                                  'Not available',
+                                )}
                               </span>
                             </div>
                           </div>
@@ -566,7 +604,6 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
       </Card>
     );
   };
-
 
   if (!club) {
     return (

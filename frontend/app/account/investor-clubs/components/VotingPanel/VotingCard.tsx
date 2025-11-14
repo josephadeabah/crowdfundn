@@ -55,7 +55,11 @@ export const VotingCard: React.FC<VotingCardProps> = ({
   // Helper function to safely render description
   const renderDescription = (description: string) => {
     // If description contains HTML, strip tags for clean text
-    if (description && typeof description === 'string' && description.includes('<')) {
+    if (
+      description &&
+      typeof description === 'string' &&
+      description.includes('<')
+    ) {
       return description.replace(/<[^>]*>/g, '');
     }
     return description || 'No description available';

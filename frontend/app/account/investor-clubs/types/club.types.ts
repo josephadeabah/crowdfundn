@@ -1,6 +1,6 @@
 // Core club types
 
-import { Club } from "../clubTypes";
+import { Club } from '../clubTypes';
 
 export interface ClubMembership {
   id: string;

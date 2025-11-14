@@ -265,7 +265,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                 formatCurrency={formatCurrency}
               />
 
-              <ClubDashboard club={currentClub}/>
+              <ClubDashboard club={currentClub} />
 
               <ShareChangesSection
                 club={currentClub}
