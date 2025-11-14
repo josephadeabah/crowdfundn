@@ -54,7 +54,10 @@ export const VotingCard: React.FC<VotingCardProps> = ({
               {investment.sector}
             </Badge>
             {investment.match_score && investment.match_score >= 80 && (
-              <Badge variant="default" className="text-xs bg-yellow-100 text-yellow-800">
+              <Badge
+                variant="default"
+                className="text-xs bg-yellow-100 text-yellow-800"
+              >
                 <Star className="w-3 h-3 mr-1 fill-current" />
                 Top Match
               </Badge>
@@ -79,9 +82,7 @@ export const VotingCard: React.FC<VotingCardProps> = ({
         </CardDescription>
         {investment.reasoning && (
           <div className="mt-2 p-2 bg-blue-50 rounded-lg">
-            <p className="text-xs text-blue-700">
-              💡 {investment.reasoning}
-            </p>
+            <p className="text-xs text-blue-700">💡 {investment.reasoning}</p>
           </div>
         )}
       </CardHeader>
@@ -107,17 +108,26 @@ export const VotingCard: React.FC<VotingCardProps> = ({
         {investment.ai_analysis && (
           <div className="flex flex-wrap gap-1">
             {investment.ai_analysis.deal_score >= 70 && (
-              <Badge variant="outline" className="text-xs text-green-600 border-green-200">
+              <Badge
+                variant="outline"
+                className="text-xs text-green-600 border-green-200"
+              >
                 Strong Deal
               </Badge>
             )}
             {investment.ai_analysis.risk_category === 'low' && (
-              <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
+              <Badge
+                variant="outline"
+                className="text-xs text-blue-600 border-blue-200"
+              >
                 Low Risk
               </Badge>
             )}
             {investment.ai_analysis.sentiment_analysis === 'positive' && (
-              <Badge variant="outline" className="text-xs text-purple-600 border-purple-200">
+              <Badge
+                variant="outline"
+                className="text-xs text-purple-600 border-purple-200"
+              >
                 Positive Sentiment
               </Badge>
             )}

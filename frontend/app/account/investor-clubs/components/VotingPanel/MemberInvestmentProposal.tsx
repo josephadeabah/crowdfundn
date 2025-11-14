@@ -21,12 +21,14 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
   club,
   onClose,
 }) => {
-  const {token } = useAuth();
+  const { token } = useAuth();
   const [investments, setInvestments] = useState<AIInvestment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [animatingId, setAnimatingId] = useState<string | null>(null);
-  const [approvedInvestments, setApprovedInvestments] = useState<AIInvestment[]>([]);
+  const [approvedInvestments, setApprovedInvestments] = useState<
+    AIInvestment[]
+  >([]);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
     title: '',
@@ -39,20 +41,23 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments/ai_recommendations`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments/ai_recommendations`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error('Failed to fetch recommendations');
       }
 
       const data = await response.json();
-      
+
       if (data.success) {
         setInvestments(data.recommendations);
       } else {
@@ -60,7 +65,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       }
     } catch (err) {
       console.error('Error fetching AI recommendations:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load investment opportunities');
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to load investment opportunities',
+      );
       // Fallback to empty array
       setInvestments([]);
     } finally {
@@ -72,7 +81,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     fetchAIRecommendations();
   }, [club.slug]);
 
-  const showAlert = (title: string, message: string, type: 'info' | 'success' | 'error' = 'info') => {
+  const showAlert = (
+    title: string,
+    message: string,
+    type: 'info' | 'success' | 'error' = 'info',
+  ) => {
     setAlertConfig({ title, message, type });
     setAlertOpen(true);
   };
@@ -97,7 +110,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       showAlert(
         '🎉 Investment Approved!',
         `${investment.company} has reached the approval threshold!`,
-        'success'
+        'success',
       );
 
       setAnimatingId(id);
@@ -113,7 +126,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       showAlert(
         'Vote Recorded',
         `${newVotes}/${updatedInvestment.threshold} votes for ${investment.company}`,
-        'info'
+        'info',
       );
     }
   };
@@ -122,11 +135,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     const investment = investments.find((inv) => inv.id === id);
 
     setAnimatingId(id);
-    showAlert(
-      'Passed',
-      `${investment?.company} has been passed.`,
-      'error'
-    );
+    showAlert('Passed', `${investment?.company} has been passed.`, 'error');
 
     setTimeout(() => {
       setInvestments((prev) => prev.filter((inv) => inv.id !== id));
@@ -197,7 +206,9 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 className="p-2 hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-50"
                 title="Refresh recommendations"
               >
-                <RefreshCw className={`w-5 h-5 text-gray-600 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-5 h-5 text-gray-600 ${loading ? 'animate-spin' : ''}`}
+                />
               </button>
               <button
                 onClick={onClose}
@@ -257,7 +268,8 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                     No Matches Found
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    No investment opportunities match your club's focus at the moment.
+                    No investment opportunities match your club's focus at the
+                    moment.
                   </p>
                   <button
                     onClick={handleRefresh}
@@ -292,7 +304,8 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   )}
                 </div>
               ) : (
-                !loading && !error && (
+                !loading &&
+                !error && (
                   <>
                     {/* Stack Effect - Show up to 3 cards */}
                     {investments.slice(0, 3).map((investment, index) => (
