@@ -219,14 +219,14 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
               <h2 className="text-2xl font-bold text-gray-700">
                 AI-Curated Investment Opportunities
               </h2>
-              <p className="text-gray-600">
+              {/* <p className="text-gray-600">
                 Vote Invest to support or Pass to move on. Reach the threshold to approve!
                 {club?.mission && (
                   <span className="block text-sm text-gray-500 mt-1">
                     Selected based on: {club.mission}
                   </span>
                 )}
-              </p>
+              </p> */}
             </div>
 
             {/* Loading State */}
