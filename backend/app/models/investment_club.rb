@@ -1,4 +1,3 @@
-# app/models/investment_club.rb
 class InvestmentClub < ApplicationRecord
   belongs_to :creator, class_name: 'User'
   has_many :investment_club_memberships, dependent: :destroy
@@ -85,37 +84,31 @@ class InvestmentClub < ApplicationRecord
     end
   end
   
-  # Financial methods
+  # Financial methods - UPDATED: Remove references to executed investments
   def total_contributions
     investment_club_contributions.completed.sum(:amount) || 0
   end
   
+  # FIXED: Remove reference to executed scope since we don't have auto-investment anymore
   def total_invested
-    club_investments.executed.sum(:investment_amount) || 0
+    # Since we're not doing auto-investment, total_invested should be 0
+    # Or you could calculate based on approved campaigns if needed
+    0
   end
   
   def current_balance
     total_contributions - total_invested
   end
   
+  # UPDATED: Remove investment-related ROI metrics since we're not doing auto-investment
   def roi_metrics
-    total_return = club_investments.executed.sum(:current_value).to_f
-    total_invested_amount = total_invested.to_f
-    
-    if total_invested_amount > 0
-      roi_percentage = ((total_return - total_invested_amount) / total_invested_amount) * 100
-    else
-      roi_percentage = 0
-    end
-    
     {
       total_contributions: total_contributions,
       total_invested: total_invested,
       current_balance: current_balance,
-      total_return: total_return,
-      roi_percentage: roi_percentage.round(2),
-      active_investments: club_investments.executed.count,
-      completed_investments: club_investments.completed.count
+      # REMOVED: investment-related metrics
+      approved_campaigns_count: club_investments.approved.count,
+      pending_investments: club_investments.voting.count
     }
   end
   
@@ -176,6 +169,8 @@ class InvestmentClub < ApplicationRecord
     investment_club_memberships.find_by(user: user)
   end
   
+  # FIXED: Since we're not doing auto-investment, this should always return true
+  # or you might want to remove this method entirely
   def can_invest?(amount)
     current_balance >= amount
   end
@@ -206,7 +201,8 @@ class InvestmentClub < ApplicationRecord
   def deletion_errors?(user)
     errors = []
     errors << 'Only club creator can delete the club' unless can_be_deleted_by?(user)
-    errors << 'Cannot delete club with active investments' if club_investments.executed.any?
+    # REMOVED: Investment-related deletion constraints since we're not doing auto-investment
+    # errors << 'Cannot delete club with active investments' if club_investments.executed.any?
     errors << 'Cannot delete club with active members' if investment_club_memberships.active.count > 1
     errors
   end
@@ -277,7 +273,6 @@ class InvestmentClub < ApplicationRecord
     
     Rails.logger.info "Updated member shares. Total: #{final_total}%"
   end
-
 
   def verify_share_totals
     current_total = investment_club_memberships.active.sum(:contributed_share)

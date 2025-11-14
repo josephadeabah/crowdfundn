@@ -17,8 +17,7 @@ class ClubPortfolioService
 
   def member_portfolio(user)
     membership = @club.membership_for(user)
-    return {} unless membership&.active?
-        
+    return {} unless membership&.active?    
     {
       member_contributed_share: membership.contributed_share,
       total_contributed: membership.total_contributed,
