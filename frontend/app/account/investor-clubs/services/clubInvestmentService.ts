@@ -69,8 +69,11 @@ export interface AIInvestment {
 export const useClubInvestmentService = () => {
   const { token } = useAuth();
 
-  const fetchClubInvestments = async (clubSlug: string, status?: string): Promise<ClubInvestment[]> => {
-    const url = status 
+  const fetchClubInvestments = async (
+    clubSlug: string,
+    status?: string,
+  ): Promise<ClubInvestment[]> => {
+    const url = status
       ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${clubSlug}/investments?status=${status}`
       : `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${clubSlug}/investments`;
 
@@ -89,7 +92,9 @@ export const useClubInvestmentService = () => {
     return data.success ? data.investments : [];
   };
 
-  const fetchApprovedCampaigns = async (clubSlug: string): Promise<ApprovedCampaign[]> => {
+  const fetchApprovedCampaigns = async (
+    clubSlug: string,
+  ): Promise<ApprovedCampaign[]> => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${clubSlug}/approved_campaigns`,
       {
@@ -108,13 +113,17 @@ export const useClubInvestmentService = () => {
     return data.success ? data.approved_campaigns : [];
   };
 
-  const castVote = async (clubSlug: string, investmentId: string, voteType: 'yes' | 'no') => {
+  const castVote = async (
+    clubSlug: string,
+    investmentId: string,
+    voteType: 'yes' | 'no',
+  ) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${clubSlug}/investments/${investmentId}/vote`,
       {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -131,7 +140,10 @@ export const useClubInvestmentService = () => {
     return data;
   };
 
-  const generateProposals = async (clubSlug: string, limit: number = 5): Promise<AIInvestment[]> => {
+  const generateProposals = async (
+    clubSlug: string,
+    limit: number = 5,
+  ): Promise<AIInvestment[]> => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${clubSlug}/investments/generate_proposals`,
       {

@@ -26,7 +26,9 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 }) => {
   const { token } = useAuth();
   const [investments, setInvestments] = useState<AIInvestment[]>([]);
-  const [approvedInvestments, setApprovedInvestments] = useState<AIInvestment[]>([]);
+  const [approvedInvestments, setApprovedInvestments] = useState<
+    AIInvestment[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [animatingId, setAnimatingId] = useState<string | null>(null);
@@ -58,7 +60,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       // If no proposals, generate some
       if (proposalsResponse.status === 200) {
         const proposalsData = await proposalsResponse.json();
-        
+
         if (proposalsData.success && proposalsData.investments.length === 0) {
           // Generate new proposals
           const generateResponse = await fetch(
@@ -119,7 +121,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -141,9 +143,9 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       }
     } catch (err) {
       console.error('Error casting vote:', err);
-      return { 
-        success: false, 
-        error: err instanceof Error ? err.message : 'Failed to cast vote' 
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : 'Failed to cast vote',
       };
     }
   };
@@ -166,7 +168,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
         const data = await response.json();
         if (data.success) {
           setInvestments(data.proposals || []);
-          showToast('Proposals Generated', `Created ${data.proposals.length} new proposals`, 'success');
+          showToast(
+            'Proposals Generated',
+            `Created ${data.proposals.length} new proposals`,
+            'success',
+          );
         }
       } else {
         throw new Error('Failed to generate proposals');
@@ -197,7 +203,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 
   const handleInvest = async (id: string) => {
     const result = await castVote(id, 'yes');
-    
+
     if (result.success) {
       const investment = investments.find((inv) => inv.id === id);
       if (!investment) return;
@@ -249,12 +255,16 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 
   const handlePass = async (id: string) => {
     const result = await castVote(id, 'no');
-    
+
     if (result.success) {
       const investment = investments.find((inv) => inv.id === id);
 
       setAnimatingId(id);
-      showToast('Vote Recorded', `Voted against ${investment?.company}`, 'warning');
+      showToast(
+        'Vote Recorded',
+        `Voted against ${investment?.company}`,
+        'warning',
+      );
 
       setTimeout(() => {
         setInvestments((prev) => prev.filter((inv) => inv.id !== id));
@@ -313,8 +323,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 <div
                   className={cn(
                     'animate-scale-in',
-                    animatingId === investment.id &&
-                      'animate-swipe-left',
+                    animatingId === investment.id && 'animate-swipe-left',
                   )}
                 >
                   <VotingCard
@@ -402,7 +411,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   {activeTab === 'voting' ? 'Active Proposals' : 'Approved'}
                 </p>
                 <p className="text-2xl font-bold text-emerald-600">
-                  {loading ? '...' : activeTab === 'voting' ? investments.length : approvedInvestments.length}
+                  {loading
+                    ? '...'
+                    : activeTab === 'voting'
+                      ? investments.length
+                      : approvedInvestments.length}
                 </p>
               </div>
               <button
@@ -440,7 +453,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                 activeTab === 'voting'
                   ? 'bg-emerald-600 text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
               )}
             >
               Active Voting ({investments.length})
@@ -451,7 +464,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                 activeTab === 'approved'
                   ? 'bg-emerald-600 text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
               )}
             >
               Approved ({approvedInvestments.length})
