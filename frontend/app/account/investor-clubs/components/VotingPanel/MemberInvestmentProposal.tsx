@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { VotingCard, Investment } from './VotingCard';
 import { cn } from '@/app/lib/utils';
 import { TrendingUp, X } from 'lucide-react';
-import { toast } from '@/app/components/ui/use-toast';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 
 interface MemberInvestmentProposalProps {
   club: any;
@@ -64,6 +64,21 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
   const [approvedInvestments, setApprovedInvestments] = useState<Investment[]>(
     [],
   );
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    title: '',
+    message: '',
+    type: 'info' as 'info' | 'success' | 'error',
+  });
+
+  const showAlert = (title: string, message: string, type: 'info' | 'success' | 'error' = 'info') => {
+    setAlertConfig({ title, message, type });
+    setAlertOpen(true);
+  };
+
+  const handleAlertConfirm = () => {
+    setAlertOpen(false);
+  };
 
   const handleInvest = (id: string) => {
     const investment = investments.find((inv) => inv.id === id);
@@ -78,10 +93,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     const isNowApproved = newVotes >= updatedInvestment.threshold;
 
     if (isNowApproved) {
-      toast({
-        title: '🎉 Investment Approved!',
-        description: `${investment.company} has reached the approval threshold!`,
-      });
+      showAlert(
+        '🎉 Investment Approved!',
+        `${investment.company} has reached the approval threshold!`,
+        'success'
+      );
 
       setAnimatingId(id);
       setTimeout(() => {
@@ -93,10 +109,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       setInvestments((prev) =>
         prev.map((inv) => (inv.id === id ? updatedInvestment : inv)),
       );
-      toast({
-        title: 'Vote Recorded',
-        description: `${newVotes}/${updatedInvestment.threshold} votes for ${investment.company}`,
-      });
+      showAlert(
+        'Vote Recorded',
+        `${newVotes}/${updatedInvestment.threshold} votes for ${investment.company}`,
+        'info'
+      );
     }
   };
 
@@ -104,16 +121,38 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     const investment = investments.find((inv) => inv.id === id);
 
     setAnimatingId(id);
-    toast({
-      title: 'Passed',
-      description: `${investment?.company} has been passed.`,
-      variant: 'destructive',
-    });
+    showAlert(
+      'Passed',
+      `${investment?.company} has been passed.`,
+      'error'
+    );
 
     setTimeout(() => {
       setInvestments((prev) => prev.filter((inv) => inv.id !== id));
       setAnimatingId(null);
     }, 400);
+  };
+
+  const getAlertIcon = () => {
+    switch (alertConfig.type) {
+      case 'success':
+        return <div className="w-6 h-6 text-green-600">🎉</div>;
+      case 'error':
+        return <div className="w-6 h-6 text-red-600">✕</div>;
+      default:
+        return <div className="w-6 h-6 text-blue-600">ℹ️</div>;
+    }
+  };
+
+  const getConfirmButtonClass = () => {
+    switch (alertConfig.type) {
+      case 'success':
+        return 'bg-green-600 hover:bg-green-700 focus:ring-green-500';
+      case 'error':
+        return 'bg-red-600 hover:bg-red-700 focus:ring-red-500';
+      default:
+        return 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500';
+    }
   };
 
   return (
@@ -253,6 +292,20 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           </div>
         </div>
       </main>
+
+      {/* Alert Popup */}
+      <AlertPopup
+        title={alertConfig.title}
+        message={alertConfig.message}
+        isOpen={alertOpen}
+        setIsOpen={setAlertOpen}
+        onConfirm={handleAlertConfirm}
+        icon={getAlertIcon()}
+        confirmText="OK"
+        confirmButtonClass={getConfirmButtonClass()}
+        showCancelButton={false}
+        expandable={false}
+      />
     </div>
   );
 };
