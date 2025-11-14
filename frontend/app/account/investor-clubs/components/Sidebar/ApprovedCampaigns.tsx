@@ -42,6 +42,8 @@ interface VotingStats {
   yes_votes: number;
   no_votes: number;
   approval_percentage: number;
+  total_members?: number;
+  all_members_voted?: boolean;
   threshold_met?: boolean;
 }
 
@@ -318,7 +320,6 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
       return newSet;
     });
   };
-
   // Approved Campaigns Section - Hamburger List Design
   const ApprovedCampaignsSection = () => {
     if (!approvedCampaigns || !Array.isArray(approvedCampaigns)) {
@@ -550,7 +551,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                                       Total Votes:
                                     </span>
                                     <span className="font-medium">
-                                      {safeToLocaleString(votingStats.total_votes)}
+                                      {safeToLocaleString(votingStats.total_votes)} / {votingStats.total_members || '?'} members
                                     </span>
                                   </div>
                                 </div>
@@ -581,7 +582,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
     );
   };
 
-  // Active Investments Section - Updated to use transformed data
+  // Active Investments Section - Updated to use dynamic threshold
   const ActiveInvestmentsSection = () => (
     <Card className="mt-6">
       <CardHeader>
@@ -610,7 +611,9 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
               if (!investment?.id) return null;
               
               const votingStats = investment.voting_stats || {};
-              const thresholdMet = votingStats.yes_votes >= investment.threshold;
+              const totalMembers = votingStats.total_members || club.current_members_count;
+              const allMembersVoted = votingStats.all_members_voted || false;
+              const thresholdMet = votingStats.threshold_met || false;
 
               return (
                 <div
@@ -658,14 +661,25 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                           {safeToLocaleString(votingStats.total_votes)} votes
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">
-                          Need {investment.threshold} votes
+                          {allMembersVoted ? (
+                            <span className={thresholdMet ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                              {thresholdMet ? 'Approved! ✅' : 'Rejected ❌'}
+                            </span>
+                          ) : (
+                            <span>
+                              {safeToLocaleString(votingStats.total_votes)}/{totalMembers} members voted
+                            </span>
+                          )}
                         </div>
                       </div>
                       <Badge
-                        variant={thresholdMet ? 'default' : 'outline'}
-                        className={thresholdMet ? 'bg-green-100 text-green-800 border-green-300' : ''}
+                        variant={thresholdMet ? 'default' : allMembersVoted ? 'destructive' : 'outline'}
+                        className={
+                          thresholdMet ? 'bg-green-100 text-green-800 border-green-300' :
+                          allMembersVoted ? 'bg-red-100 text-red-800 border-red-300' : ''
+                        }
                       >
-                        {thresholdMet ? 'Threshold Met' : 'Voting'}
+                        {thresholdMet ? 'Approved' : allMembersVoted ? 'Rejected' : 'Voting'}
                       </Badge>
                     </div>
                     <div className="mt-2 text-sm font-medium">
