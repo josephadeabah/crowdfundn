@@ -6,27 +6,37 @@ import Toast from '@/app/components/toast/Toast';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
 // Add these transformation functions here
-const transformInvestmentForFrontend = (investment: any): any => {
+const transformInvestmentForFrontend = (investment: any, club: any): any => {
+  const votingStats = investment.voting_stats || {};
+  const totalMembers = club?.current_members_count || 1;
+  const allMembersVoted = votingStats.total_votes >= totalMembers;
+  const thresholdMet = allMembersVoted && votingStats.yes_votes > votingStats.no_votes;
+
   return {
     id: investment.id?.toString() || Math.random().toString(),
-    company: investment.campaign?.title || 'Unknown Company',
-    description: investment.campaign?.description || 'No description available',
+    company: investment.campaign?.title || investment.title || 'Unknown Company',
+    description: investment.campaign?.description || investment.description || 'No description available',
     amount: investment.investment_amount
       ? formatCurrency(
           investment.investment_amount,
-          investment.campaign?.currency_symbol,
+          investment.campaign?.currency_symbol || investment.currency_symbol,
         )
       : '$0',
-    sector: investment.campaign?.category || 'General',
-    votes: investment.voting_stats?.yes_votes || 0,
-    threshold: investment.threshold || 3,
+    sector: investment.campaign?.category || investment.sector || 'General',
+    votes: votingStats.yes_votes || 0,
+    threshold: totalMembers, // Now threshold is total members
     match_score: investment.match_score || 50,
     reasoning: investment.reasoning || 'Investment opportunity',
     ai_analysis: investment.ai_analysis || getDefaultAIAnalysis(),
     status: investment.status || 'voting',
-    voting_stats: investment.voting_stats,
-    club_investment_id: investment.id?.toString(),
-    campaign_id: investment.campaign?.id?.toString(),
+    voting_stats: {
+      ...votingStats,
+      total_members: totalMembers,
+      all_members_voted: allMembersVoted,
+      threshold_met: thresholdMet
+    },
+    club_investment_id: investment.id?.toString() || investment.club_investment_id?.toString(),
+    campaign_id: investment.campaign?.id?.toString() || investment.campaign_id?.toString(),
   };
 };
 
@@ -43,21 +53,10 @@ const formatCurrency = (
   currencySymbol: string = '$',
 ): string => {
   if (amount >= 1000) {
-    return `${currencySymbol}${(amount / 1000).round(1)}K`;
+    return `${currencySymbol}${(amount / 1000).toFixed(1)}K`;
   } else {
-    return `${currencySymbol}${amount.round(0)}`;
+    return `${currencySymbol}${amount.toFixed(0)}`;
   }
-};
-
-// Extend Number prototype for rounding (or use a utility function)
-declare global {
-  interface Number {
-    round(decimals: number): number;
-  }
-}
-
-Number.prototype.round = function (decimals: number): number {
-  return Number(Math.round(Number(this + 'e' + decimals)) + 'e-' + decimals);
 };
 
 interface MemberInvestmentProposalProps {
@@ -112,33 +111,42 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
         },
       );
 
-      // If no proposals, generate some
-      if (proposalsResponse.status === 200) {
+      let investmentsData = [];
+      
+      if (proposalsResponse.ok) {
         const proposalsData = await proposalsResponse.json();
-
-        if (proposalsData.success && proposalsData.investments.length === 0) {
-          // Generate new proposals
-          const generateResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments/generate_proposals`,
-            {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
+        
+        if (proposalsData.success) {
+          if (proposalsData.investments.length === 0) {
+            // Generate new proposals if none exist
+            const generateResponse = await fetch(
+              `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments/generate_proposals`,
+              {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
               },
-            },
-          );
+            );
 
-          if (generateResponse.ok) {
-            const generateData = await generateResponse.json();
-            if (generateData.success) {
-              setInvestments(generateData.proposals || []);
+            if (generateResponse.ok) {
+              const generateData = await generateResponse.json();
+              if (generateData.success) {
+                investmentsData = generateData.proposals || [];
+              }
             }
+          } else {
+            investmentsData = proposalsData.investments || [];
           }
-        } else {
-          setInvestments(proposalsData.investments || []);
         }
       }
+
+      // Transform investments with proper voting stats
+      const transformedInvestments = investmentsData.map((inv: any) => 
+        transformInvestmentForFrontend(inv, club)
+      );
+      setInvestments(transformedInvestments);
 
       // Fetch approved campaigns
       const approvedResponse = await fetch(
@@ -153,7 +161,12 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 
       if (approvedResponse.ok) {
         const approvedData = await approvedResponse.json();
-        setApprovedInvestments(approvedData.approved_campaigns || []);
+        if (approvedData.success) {
+          const transformedApproved = (approvedData.approved_campaigns || []).map((campaign: any) => 
+            transformInvestmentForFrontend(campaign, club)
+          );
+          setApprovedInvestments(transformedApproved);
+        }
       }
     } catch (err) {
       console.error('Error fetching investment data:', err);
@@ -222,7 +235,10 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setInvestments(data.proposals || []);
+          const transformedProposals = (data.proposals || []).map((inv: any) =>
+            transformInvestmentForFrontend(inv, club)
+          );
+          setInvestments(transformedProposals);
           showToast(
             'Proposals Generated',
             `Created ${data.proposals.length} new proposals`,
@@ -263,20 +279,19 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       const investment = investments.find((inv) => inv.id === id);
       if (!investment) return;
 
-      // Update local state optimistically
-      const updatedInvestment = {
+      // Update local state with new voting stats from backend
+      const updatedInvestment = transformInvestmentForFrontend({
         ...investment,
-        votes: (investment.votes || 0) + 1,
-        voting_stats: result.data.voting_stats,
-      };
+        voting_stats: result.data.voting_stats
+      }, club);
 
-      const newVotes = updatedInvestment.votes;
-      const isNowApproved = newVotes >= updatedInvestment.threshold;
+      const votingStats = updatedInvestment.voting_stats || {};
+      const isNowApproved = votingStats.threshold_met;
 
       if (isNowApproved) {
         showToast(
           '🎉 Investment Approved!',
-          `${investment.company} has reached the approval threshold!`,
+          `${investment.company} has been approved by all members!`,
           'success',
         );
 
@@ -293,9 +308,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
         setInvestments((prev) =>
           prev.map((inv) => (inv.id === id ? updatedInvestment : inv)),
         );
+        const totalVotes = votingStats.total_votes || 0;
+        const totalMembers = votingStats.total_members || club.current_members_count;
         showToast(
           'Vote Recorded',
-          `${newVotes}/${updatedInvestment.threshold} votes for ${investment.company}`,
+          `${totalVotes}/${totalMembers} members have voted`,
           'success',
         );
       }
@@ -313,18 +330,41 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 
     if (result.success) {
       const investment = investments.find((inv) => inv.id === id);
+      if (!investment) return;
 
-      setAnimatingId(id);
-      showToast(
-        'Vote Recorded',
-        `Voted against ${investment?.company}`,
-        'warning',
-      );
+      // Update local state with new voting stats from backend
+      const updatedInvestment = transformInvestmentForFrontend({
+        ...investment,
+        voting_stats: result.data.voting_stats
+      }, club);
 
-      setTimeout(() => {
-        setInvestments((prev) => prev.filter((inv) => inv.id !== id));
-        setAnimatingId(null);
-      }, 400);
+      const votingStats = updatedInvestment.voting_stats || {};
+      const isNowRejected = votingStats.all_members_voted && !votingStats.threshold_met;
+
+      if (isNowRejected) {
+        showToast(
+          'Vote Recorded',
+          `${investment.company} has been rejected`,
+          'warning',
+        );
+
+        setAnimatingId(id);
+        setTimeout(() => {
+          setInvestments((prev) => prev.filter((inv) => inv.id !== id));
+          setAnimatingId(null);
+        }, 400);
+      } else {
+        setInvestments((prev) =>
+          prev.map((inv) => (inv.id === id ? updatedInvestment : inv)),
+        );
+        const totalVotes = votingStats.total_votes || 0;
+        const totalMembers = votingStats.total_members || club.current_members_count;
+        showToast(
+          'Vote Recorded',
+          `${totalVotes}/${totalMembers} members have voted`,
+          'warning',
+        );
+      }
     } else {
       showToast(
         'Vote Failed',
@@ -458,6 +498,9 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                     Focus: {club.investment_focus}
                   </p>
                 )}
+                <p className="text-xs text-gray-500">
+                  {club?.current_members_count} members • All must vote to decide
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-4">
