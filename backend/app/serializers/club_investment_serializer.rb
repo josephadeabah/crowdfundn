@@ -4,24 +4,39 @@ class ClubInvestmentSerializer
   end
   
   def as_json
+    campaign = @investment.campaign
+    
+    campaign_data = if campaign
+      {
+        id: campaign.id,
+        title: campaign.title,
+        category: campaign.category,
+        goal_amount: campaign.goal_amount,
+        current_amount: campaign.current_amount,
+        currency: campaign.currency,
+        currency_symbol: campaign.currency_symbol
+      }
+    else
+      {
+        id: nil,
+        title: 'Unknown Company',
+        category: 'General',
+        goal_amount: 0,
+        current_amount: 0,
+        currency: 'USD',
+        currency_symbol: '$'
+      }
+    end
+    
     {
       id: @investment.id,
-      campaign: {
-        id: @investment.campaign.id,
-        title: @investment.campaign.title,
-        category: @investment.campaign.category,
-        goal_amount: @investment.campaign.goal_amount,
-        current_amount: @investment.campaign.current_amount,
-        currency: @investment.campaign.currency,
-        currency_symbol: @investment.campaign.currency_symbol
-      },
+      campaign: campaign_data,
       investment_amount: @investment.investment_amount,
       status: @investment.status,
       voting_session_id: @investment.voting_session_id,
       voting_ends_at: @investment.voting_ends_at,
       created_at: @investment.created_at,
       voting_stats: voting_stats,
-      # Add whether this investment has been approved and added to approved campaigns
       in_approved_campaigns: ApprovedCampaign.exists?(
         investment_club: @investment.investment_club,
         campaign: @investment.campaign

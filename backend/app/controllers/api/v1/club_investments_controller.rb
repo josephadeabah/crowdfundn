@@ -178,48 +178,73 @@ module Api
 
       def transform_investment_for_frontend(investment)
         campaign = investment.campaign
-        voting_stats = investment.voting_stats
+        
+        # Ensure we have a campaign object with fallbacks
+        campaign_data = if campaign
+          {
+            title: campaign.title,
+            description: campaign.description&.to_plain_text&.truncate(200) || 'No description available',
+            category: campaign.category,
+            currency_symbol: campaign.currency_symbol,
+            id: campaign.id
+          }
+        else
+          {
+            title: 'Unknown Company',
+            description: 'No description available',
+            category: 'General',
+            currency_symbol: '$',
+            id: nil
+          }
+        end
+        
+        voting_stats = investment.voting_stats || {}
         
         {
           id: investment.id.to_s,
-          company: campaign.title,
-          description: campaign.description.to_plain_text.truncate(200),
-          amount: format_currency(investment.investment_amount, campaign.currency_symbol),
-          sector: campaign.category || 'General',
+          company: campaign_data[:title],
+          description: campaign_data[:description],
+          amount: format_currency(investment.investment_amount, campaign_data[:currency_symbol]),
+          sector: campaign_data[:category],
           votes: voting_stats[:yes_votes] || 0,
           threshold: calculate_voting_threshold,
           match_score: calculate_match_score(campaign),
-          reasoning: "Investment proposal for #{campaign.title}",
+          reasoning: "Investment proposal for #{campaign_data[:title]}",
           ai_analysis: get_campaign_ai_analysis(campaign),
           status: investment.status,
           voting_stats: voting_stats,
           club_investment_id: investment.id,
-          campaign_id: campaign.id,
+          campaign_id: campaign_data[:id],
           proposed_amount: investment.investment_amount,
-          currency_symbol: campaign.currency_symbol
+          currency_symbol: campaign_data[:currency_symbol]
         }
       end
 
       def get_campaign_ai_analysis(campaign)
-        # Check if campaign has AI analysis data
-        if campaign.respond_to?(:ai_deal_score) && campaign.ai_deal_score.present?
+        # Handle nil campaign case
+        return get_default_ai_analysis unless campaign
+        
+        if campaign.respond_to?(:ai_deal_score) && campaign.ai_deal_score
           {
             deal_score: campaign.ai_deal_score,
             risk_score: campaign.ai_risk_score,
-            risk_category: campaign.risk_level, # This is now public
+            risk_category: campaign.respond_to?(:risk_level) ? campaign.risk_level : 'medium',
             sentiment_analysis: 'positive',
             strengths: ['Strong market position', 'Experienced team']
           }
         else
-          # Fallback with random data for campaigns without AI analysis
-          {
-            deal_score: rand(60..90),
-            risk_score: rand(20..50),
-            risk_category: 'medium',
-            sentiment_analysis: 'positive',
-            strengths: ['Growing market', 'Innovative product']
-          }
+          get_default_ai_analysis
         end
+      end
+
+      def get_default_ai_analysis
+        {
+          deal_score: rand(60..90),
+          risk_score: rand(20..50),
+          risk_category: 'medium',
+          sentiment_analysis: 'positive',
+          strengths: ['Growing market', 'Innovative product']
+        }
       end
 
       def format_currency(amount, currency_symbol = '$')
