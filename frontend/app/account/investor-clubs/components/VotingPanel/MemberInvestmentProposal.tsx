@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { VotingCard, Investment } from './VotingCard';
 import { cn } from '@/app/lib/utils';
-import { TrendingUp, X, RefreshCw, List, Grid, Plus } from 'lucide-react';
+import { TrendingUp, X, RefreshCw, List, Grid, Plus, Target } from 'lucide-react';
 import Toast from '@/app/components/toast/Toast';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import { Badge } from '@/app/components/ui/badge';
+import { Button } from '@/app/components/ui/button';
 
 // Add interface for CampaignDescription
 interface CampaignDescription {
@@ -57,6 +59,11 @@ const transformInvestmentForFrontend = (investment: any, club: any): any => {
     },
     club_investment_id: investment.id?.toString() || investment.club_investment_id?.toString(),
     campaign_id: investment.campaign?.id?.toString() || investment.campaign_id?.toString(),
+    // Additional fields for the list view
+    title: investment.campaign?.title || investment.title || 'Unknown Company',
+    category: investment.campaign?.category || investment.sector || 'General',
+    currency_symbol: investment.campaign?.currency_symbol || investment.currency_symbol || '$',
+    investment_amount: investment.investment_amount || parseFloat(investment.proposed_amount) || 0,
   };
 };
 
@@ -79,6 +86,12 @@ const formatCurrency = (
   }
 };
 
+// Safe number formatting helper
+const safeToLocaleString = (value: number | undefined | null, fallback: string = '0'): string => {
+  if (value === undefined || value === null) return fallback;
+  return value.toLocaleString();
+};
+
 interface MemberInvestmentProposalProps {
   club: any;
   onClose: () => void;
@@ -92,6 +105,10 @@ interface AIInvestment extends Investment {
   voting_stats?: any;
   club_investment_id?: string;
   campaign_id?: string;
+  title?: string;
+  category?: string;
+  currency_symbol?: string;
+  investment_amount?: number;
 }
 
 const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
@@ -463,35 +480,108 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     </div>
   );
 
+  // NEW: Approved Section with list layout
   const renderApprovedSection = () => (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {approvedInvestments.length === 0 ? (
-        <div className="col-span-full text-center py-12">
-          <div className="inline-block p-6 bg-gray-50 rounded-2xl mb-4">
-            <List className="w-12 h-12 text-emerald-600 mx-auto" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-700 mb-2">
-            No Approved Campaigns
-          </h3>
-          <p className="text-gray-600">
+    <div className="space-y-4">
+      {!approvedInvestments || approvedInvestments.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          <Target className="h-12 w-12 mx-auto mb-4" />
+          <h3 className="text-xl font-bold mb-2">No Approved Campaigns</h3>
+          <p className="text-gray-600 mb-4">
             Approved campaigns will appear here after successful voting.
           </p>
+          <Button
+            onClick={handleRefresh}
+            variant="outline"
+            size="sm"
+          >
+            Check for New Approvals
+          </Button>
         </div>
       ) : (
-        approvedInvestments.map((investment) => (
-          <div key={investment.id} className="animate-scale-in">
-            <VotingCard
-              investment={{
-                ...investment,
-                status: 'approved',
-              }}
-              onInvest={() => {}}
-              onPass={() => {}}
-              isAnimating={false}
-              showResults={true}
-            />
-          </div>
-        ))
+        approvedInvestments.map((investment) => {
+          if (!investment?.id) return null;
+          
+          const votingStats = investment.voting_stats || {};
+          const totalMembers = votingStats.total_members || club.current_members_count;
+          const allMembersVoted = votingStats.all_members_voted || false;
+          const thresholdMet = votingStats.threshold_met || false;
+
+          return (
+            <div
+              key={investment.id}
+              className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex-1">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className={`w-3 h-3 rounded-full ${
+                      investment.ai_analysis?.risk_category === 'low' ? 'bg-green-500' :
+                      investment.ai_analysis?.risk_category === 'medium' ? 'bg-yellow-500' :
+                      'bg-red-500'
+                    }`} />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      {investment.title || investment.company}
+                    </h4>
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                      {investment.description}
+                    </p>
+                    <div className="flex items-center space-x-4 mt-2">
+                      <Badge variant="outline" className="text-xs">
+                        {investment.category || investment.sector}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        Match: {investment.match_score}%
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        Deal Score: {investment.ai_analysis?.deal_score || 'N/A'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="flex items-center gap-4">
+                  <div className="text-sm">
+                    <div className="font-medium text-green-600">
+                      {votingStats.approval_percentage || 0}% Yes
+                    </div>
+                    <div className="text-muted-foreground">
+                      {safeToLocaleString(votingStats.yes_votes)}/
+                      {safeToLocaleString(votingStats.total_votes)} votes
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {allMembersVoted ? (
+                        <span className={thresholdMet ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                          {thresholdMet ? 'Approved! ✅' : 'Rejected ❌'}
+                        </span>
+                      ) : (
+                        <span>
+                          {safeToLocaleString(votingStats.total_votes)}/{totalMembers} members voted
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <Badge
+                    variant={thresholdMet ? 'default' : allMembersVoted ? 'destructive' : 'outline'}
+                    className={
+                      thresholdMet ? 'bg-green-100 text-green-800 border-green-300' :
+                      allMembersVoted ? 'bg-red-100 text-red-800 border-red-300' : ''
+                    }
+                  >
+                    {thresholdMet ? 'Approved' : allMembersVoted ? 'Rejected' : 'Voting'}
+                  </Badge>
+                </div>
+                <div className="mt-2 text-sm font-medium">
+                  {investment.currency_symbol || '$'}
+                  {safeToLocaleString(investment.investment_amount)}
+                </div>
+              </div>
+            </div>
+          );
+        })
       )}
     </div>
   );
@@ -594,7 +684,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             {/* Loading State */}
             {loading && (
               <div className="text-center py-12">
