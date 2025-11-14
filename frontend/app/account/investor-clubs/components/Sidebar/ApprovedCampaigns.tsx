@@ -695,23 +695,6 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{club.name}</h1>
-          <p className="text-muted-foreground">{club.mission}</p>
-          {club.investment_focus && (
-            <Badge variant="secondary" className="mt-2">
-              Focus: {club.investment_focus}
-            </Badge>
-          )}
-        </div>
-        <Button onClick={handleRefresh} variant="outline" disabled={loading}>
-          <RefreshCw
-            className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}
-          />
-          Refresh
-        </Button>
-      </div>
       <ApprovedCampaignsSection />
       <ActiveInvestmentsSection />
     </div>
