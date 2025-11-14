@@ -1,7 +1,7 @@
 class ClubInvestment < ApplicationRecord
   belongs_to :investment_club
   belongs_to :campaign
-  belongs_to :created_by, class_name: 'User'
+  belongs_to :created_by, class_name: 'User', foreign_key: 'created_by_id' # Fix this line
   
   has_many :member_investment_shares, dependent: :destroy
   has_many :members, through: :member_investment_shares, source: :user

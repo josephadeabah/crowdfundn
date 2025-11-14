@@ -11,21 +11,29 @@ class ClubInvestmentProposalService
       result = recommendation_service.recommend_campaigns(limit: limit)
       
       if result[:success]
-        proposals = result[:recommendations].map do |rec|
+        proposals = []
+        
+        result[:recommendations].each do |rec|
           campaign = rec[:campaign]
           
           # Create a club investment proposal
-          club_investment = @club.club_investments.create!(
+          club_investment = @club.club_investments.new(
             campaign: campaign,
             investment_amount: calculate_proposed_amount(campaign),
             proposed_share_percentage: calculate_proposed_share_percentage(campaign),
             status: 'voting',
-            created_by: @user,
             voting_session_id: SecureRandom.uuid
           )
           
-          # Return the proposal data
-          transform_investment_for_frontend(club_investment, rec)
+          # Set created_by if user is present
+          club_investment.created_by = @user if @user
+          
+          if club_investment.save
+            # Return the proposal data
+            proposals << transform_investment_for_frontend(club_investment, rec)
+          else
+            Rails.logger.error "Failed to create club investment: #{club_investment.errors.full_messages}"
+          end
         end
         
         { success: true, proposals: proposals }
@@ -35,6 +43,7 @@ class ClubInvestmentProposalService
       
     rescue => e
       Rails.logger.error "Investment proposal generation error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
       { success: false, error: e.message, proposals: [] }
     end
   end
@@ -44,18 +53,23 @@ class ClubInvestmentProposalService
     return { success: false, error: 'Campaign not found' } unless campaign
     
     # Create a club investment proposal
-    club_investment = @club.club_investments.create!(
+    club_investment = @club.club_investments.new(
       campaign: campaign,
       investment_amount: calculate_proposed_amount(campaign),
       proposed_share_percentage: calculate_proposed_share_percentage(campaign),
       status: 'voting',
-      created_by: @user,
       voting_session_id: SecureRandom.uuid
     )
     
-    proposal = transform_investment_for_frontend(club_investment)
+    # Set created_by if user is present
+    club_investment.created_by = @user if @user
     
-    { success: true, proposal: proposal }
+    if club_investment.save
+      proposal = transform_investment_for_frontend(club_investment)
+      { success: true, proposal: proposal }
+    else
+      { success: false, error: club_investment.errors.full_messages.join(', ') }
+    end
   end
 
   private

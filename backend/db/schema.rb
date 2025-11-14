@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_14_152510) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_14_154304) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -241,7 +241,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_14_152510) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "proposed_share_percentage", precision: 5, scale: 2
+    t.integer "created_by_id"
     t.index ["campaign_id"], name: "index_club_investments_on_campaign_id"
+    t.index ["created_by_id"], name: "index_club_investments_on_created_by_id"
     t.index ["investment_club_id", "campaign_id"], name: "index_club_investments_on_investment_club_id_and_campaign_id", unique: true
     t.index ["investment_club_id"], name: "index_club_investments_on_investment_club_id"
     t.index ["status"], name: "index_club_investments_on_status"
@@ -916,6 +918,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_14_152510) do
   add_foreign_key "campaign_team_members", "campaigns"
   add_foreign_key "campaign_team_members", "users"
   add_foreign_key "campaigns", "users", column: "fundraiser_id"
+  add_foreign_key "club_investments", "users", column: "created_by_id"
   add_foreign_key "club_transactions", "club_investments"
   add_foreign_key "club_transactions", "investment_clubs"
   add_foreign_key "comments", "campaigns"
