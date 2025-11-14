@@ -17,6 +17,11 @@ import {
   DollarSign,
   Target,
   Vote,
+  ChevronDown,
+  ChevronUp,
+  Calendar,
+  User,
+  PieChart,
 } from 'lucide-react';
 
 interface Club {
@@ -113,6 +118,9 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   );
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(
+    new Set(),
+  );
 
   // Fetch all dashboard data
   const fetchDashboardData = async () => {
@@ -190,6 +198,18 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
 
   const handleRefresh = () => {
     fetchDashboardData();
+  };
+
+  const toggleCampaignExpansion = (campaignId: string) => {
+    setExpandedCampaigns(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(campaignId)) {
+        newSet.delete(campaignId);
+      } else {
+        newSet.add(campaignId);
+      }
+      return newSet;
+    });
   };
 
   // Stats Cards Component
@@ -317,7 +337,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
     </Card>
   );
 
-  // Approved Campaigns Section
+  // Approved Campaigns Section - Hamburger List Design
   const ApprovedCampaignsSection = () => (
     <Card>
       <CardHeader>
@@ -357,82 +377,190 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {approvedCampaigns?.map((campaign: DashboardApprovedCampaign) => (
-              <Card
-                key={campaign?.id}
-                className="border-green-200 bg-green-50/50"
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-base">
-                      {campaign?.campaign?.title}
-                    </CardTitle>
-                    <Badge
-                      variant="outline"
-                      className="bg-green-100 text-green-800 border-green-300"
-                    >
-                      Approved
-                    </Badge>
-                  </div>
-                  <CardDescription className="line-clamp-2">
-                    {campaign.campaign.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Goal:</span>
-                      <span className="font-medium">
-                        {campaign.campaign.currency_symbol}
-                        {campaign.campaign.goal_amount.toLocaleString()}
-                      </span>
-                    </div>
+          <div className="space-y-3">
+            {approvedCampaigns?.map((campaign: DashboardApprovedCampaign) => {
+              const isExpanded = expandedCampaigns.has(campaign.id);
+              const progressPercentage = Math.min(
+                100,
+                (campaign.campaign.current_amount / campaign.campaign.goal_amount) * 100
+              );
 
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Raised:</span>
-                      <span className="font-medium">
-                        {campaign.campaign.currency_symbol}
-                        {campaign.campaign.current_amount.toLocaleString()}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Category:</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {campaign.campaign.category}
-                      </Badge>
-                    </div>
-
-                    {campaign.club_investment?.voting_stats && (
-                      <div className="pt-2 border-t">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-muted-foreground">
-                            Approval:
-                          </span>
-                          <span className="font-medium text-green-600">
-                            {
-                              campaign.club_investment.voting_stats
-                                .approval_percentage
-                            }
-                            % Yes
-                          </span>
+              return (
+                <div
+                  key={campaign.id}
+                  className="border border-green-200 rounded-lg bg-green-50/50 hover:bg-green-50 transition-colors"
+                >
+                  {/* Campaign Header - Always Visible */}
+                  <div 
+                    className="p-4 cursor-pointer"
+                    onClick={() => toggleCampaignExpansion(campaign.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3 flex-1 min-w-0">
+                        <div className="flex-shrink-0">
+                          {isExpanded ? (
+                            <ChevronUp className="h-5 w-5 text-green-600" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5 text-green-600" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 truncate">
+                            {campaign.campaign.title}
+                          </h3>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <Badge variant="secondary" className="text-xs">
+                              {campaign.campaign.category}
+                            </Badge>
+                            <Badge
+                              variant="outline"
+                              className="bg-green-100 text-green-800 border-green-300 text-xs"
+                            >
+                              Approved
+                            </Badge>
+                          </div>
                         </div>
                       </div>
-                    )}
+                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                        <div className="text-right">
+                          <div className="font-medium text-green-600">
+                            {campaign.club_investment?.voting_stats?.approval_percentage || 0}% Yes
+                          </div>
+                          <div className="text-xs">
+                            {new Date(campaign.approved_at).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
-                    <div className="pt-2 border-t">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-muted-foreground">Approved:</span>
-                        <span className="font-medium">
-                          {new Date(campaign.approved_at).toLocaleDateString()}
+                    {/* Progress Bar */}
+                    <div className="mt-3">
+                      <div className="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>
+                          Raised: {campaign.campaign.currency_symbol}
+                          {campaign.campaign.current_amount.toLocaleString()}
                         </span>
+                        <span>
+                          Goal: {campaign.campaign.currency_symbol}
+                          {campaign.campaign.goal_amount.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${progressPercentage}%` }}
+                        ></div>
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+
+                  {/* Expandable Content */}
+                  {isExpanded && (
+                    <div className="px-4 pb-4 border-t border-green-200 pt-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Campaign Details */}
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="font-medium text-sm text-gray-900 mb-2 flex items-center">
+                              <User className="h-4 w-4 mr-2" />
+                              Campaign Details
+                            </h4>
+                            <p className="text-sm text-gray-600">
+                              {campaign.campaign.description}
+                            </p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">Fundraiser:</span>
+                              <span className="font-medium">
+                                {campaign.campaign.fundraiser.name}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">Category:</span>
+                              <Badge variant="outline">
+                                {campaign.campaign.category}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Investment Details */}
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="font-medium text-sm text-gray-900 mb-2 flex items-center">
+                              <PieChart className="h-4 w-4 mr-2" />
+                              Investment Details
+                            </h4>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-600">Proposed Amount:</span>
+                                <span className="font-medium">
+                                  {club.currency_symbol}
+                                  {campaign.club_investment?.proposed_amount?.toLocaleString() || '0'}
+                                </span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-600">Share Percentage:</span>
+                                <span className="font-medium">
+                                  {campaign.club_investment?.proposed_share_percentage || 0}%
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Voting Stats */}
+                          {campaign.club_investment?.voting_stats && (
+                            <div>
+                              <h4 className="font-medium text-sm text-gray-900 mb-2 flex items-center">
+                                <Vote className="h-4 w-4 mr-2" />
+                                Voting Results
+                              </h4>
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-gray-600">Yes Votes:</span>
+                                  <span className="font-medium text-green-600">
+                                    {campaign.club_investment.voting_stats.yes_votes}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-gray-600">No Votes:</span>
+                                  <span className="font-medium text-red-600">
+                                    {campaign.club_investment.voting_stats.no_votes}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-gray-600">Total Votes:</span>
+                                  <span className="font-medium">
+                                    {campaign.club_investment.voting_stats.total_votes}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Approval Date */}
+                          <div className="flex justify-between text-sm pt-2 border-t">
+                            <span className="text-gray-600 flex items-center">
+                              <Calendar className="h-4 w-4 mr-1" />
+                              Approved Date:
+                            </span>
+                            <span className="font-medium">
+                              {new Date(campaign.approved_at).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </CardContent>
