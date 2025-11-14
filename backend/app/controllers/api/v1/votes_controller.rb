@@ -1,4 +1,3 @@
-# app/controllers/api/v1/votes_controller.rb
 module Api
   module V1
     class VotesController < ApplicationController
@@ -14,7 +13,9 @@ module Api
           render json: { 
             success: true, 
             vote: VoteSerializer.new(result[:vote]).as_json,
-            voting_stats: voting_service.voting_stats
+            voting_stats: voting_service.voting_stats,
+            # Include updated votable status if it's a club investment
+            votable_status: @votable.status if @votable.is_a?(ClubInvestment)
           }
         else
           render json: { 

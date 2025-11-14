@@ -326,6 +326,9 @@ Rails.application.routes.draw do
             get :ai_recommendations # Add this line
           end
         end
+
+        # Add approved campaigns routes
+        resources :approved_campaigns, only: [:index, :show], controller: 'approved_campaigns'
         
         member do
           get :portfolio

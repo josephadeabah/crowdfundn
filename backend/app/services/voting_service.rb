@@ -1,4 +1,3 @@
-# app/services/voting_service.rb
 class VotingService
   def initialize(votable, user, voting_session_id = nil)
     @votable = votable
@@ -20,6 +19,8 @@ class VotingService
     vote.reason = reason
     
     if vote.save
+      # Check if voting should be finalized after this vote
+      check_and_finalize_voting
       { success: true, vote: vote }
     else
       { success: false, error: vote.errors.full_messages.join(', ') }
@@ -32,10 +33,15 @@ class VotingService
   
   def voting_stats
     votes = Vote.where(votable: @votable, voting_session_id: @voting_session_id)
+    total_votes = votes.count
+    yes_votes = votes.where(vote_type: 'yes').count
+    no_votes = votes.where(vote_type: 'no').count
+    
     {
-      total_votes: votes.count,
+      total_votes: total_votes,
       vote_breakdown: votes.group(:vote_type).count,
-      user_vote: get_vote&.vote_type
+      user_vote: get_vote&.vote_type,
+      approval_percentage: total_votes > 0 ? (yes_votes.to_f / total_votes * 100).round(2) : 0
     }
   end
   
@@ -51,5 +57,18 @@ class VotingService
   
   def can_vote?
     @votable.respond_to?(:can_vote?) ? @votable.can_vote?(@user) : true
+  end
+  
+  def check_and_finalize_voting
+    # Only finalize voting for club investments
+    if @votable.is_a?(ClubInvestment) && @votable.voting?
+      total_members = @votable.investment_club.active_members.count
+      current_votes = Vote.where(votable: @votable, voting_session_id: @voting_session_id).count
+      
+      # Finalize if all members have voted or after 7 days
+      if current_votes >= total_members || @votable.created_at <= 7.days.ago
+        @votable.finalize_voting
+      end
+    end
   end
 end

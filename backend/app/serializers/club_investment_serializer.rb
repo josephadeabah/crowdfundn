@@ -1,4 +1,3 @@
-# app/serializers/club_investment_serializer.rb
 class ClubInvestmentSerializer
   def initialize(club_investment)
     @investment = club_investment
@@ -18,13 +17,15 @@ class ClubInvestmentSerializer
       },
       investment_amount: @investment.investment_amount,
       status: @investment.status,
-      shares_acquired: @investment.shares_acquired,
-      percentage_acquired: @investment.percentage_acquired,
       voting_session_id: @investment.voting_session_id,
       voting_ends_at: @investment.voting_ends_at,
       created_at: @investment.created_at,
-      executed_at: @investment.executed_at,
-      voting_stats: voting_stats
+      voting_stats: voting_stats,
+      # Add whether this investment has been approved and added to approved campaigns
+      in_approved_campaigns: ApprovedCampaign.exists?(
+        investment_club: @investment.investment_club,
+        campaign: @investment.campaign
+      )
     }
   end
   
@@ -46,7 +47,8 @@ class ClubInvestmentSerializer
       total_votes: total_votes,
       yes_votes: yes_votes,
       no_votes: no_votes,
-      approval_percentage: total_votes > 0 ? (yes_votes.to_f / total_votes * 100).round(2) : 0
+      approval_percentage: total_votes > 0 ? (yes_votes.to_f / total_votes * 100).round(2) : 0,
+      threshold_met: @investment.voting_threshold_met?
     }
   end
 end

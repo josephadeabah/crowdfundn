@@ -3,251 +3,73 @@ class ClubPortfolioService
     @club = investment_club
   end
 
-  def portfolio_overview
-    executed_investments = @club.club_investments.executed.includes(:campaign)
-    
-    total_invested = executed_investments.sum(:investment_amount)
-    current_value = calculate_current_portfolio_value(executed_investments)
-    total_returns = current_value - total_invested
+  def portfolio_overview    
+    # Get approved campaigns instead
+    approved_campaigns_count = ApprovedCampaign.where(investment_club: @club).count
     
     {
-      total_invested: total_invested,
-      current_value: current_value,
-      total_returns: total_returns,
-      return_percentage: total_invested > 0 ? (total_returns / total_invested * 100).round(2) : 0,
-      active_investments: executed_investments.count,
-      performance_breakdown: performance_breakdown(executed_investments),
-      asset_allocation: asset_allocation(executed_investments),
-      risk_metrics: calculate_risk_metrics(executed_investments)
+      approved_campaigns_count: approved_campaigns_count,
+      pending_investments: @club.club_investments.voting.count,
+      total_contributions: @club.total_contributions,
+      current_balance: @club.current_balance
     }
   end
 
   def member_portfolio(user)
     membership = @club.membership_for(user)
     return {} unless membership&.active?
-    
-    # Only show investment shares for actual investments, not contributions
-    member_shares = MemberInvestmentShare.where(user: user)
-                                        .includes(club_investment: :campaign)
-    
-    total_invested = member_shares.sum(&:invested_amount)
-    current_value = member_shares.sum(&:current_value)
-    
+        
     {
-      member_contributed_share: membership.contributed_share, # Contribution percentage
-      total_contributed: membership.total_contributed, # Total cash contributed
-      total_invested: total_invested.round(2), # Amount actually invested in campaigns
-      current_value: current_value.round(2), # Current value of investments
-      total_returns: (current_value - total_invested).round(2),
-      return_percentage: total_invested > 0 ? ((current_value - total_invested) / total_invested * 100).round(2) : 0,
-      investments: member_shares.map { |s| format_member_investment(s) }
+      member_contributed_share: membership.contributed_share,
+      total_contributed: membership.total_contributed,
+      voting_participation: calculate_voting_participation(user)
     }
   end
 
-  def performance_analytics
-    investments = @club.club_investments.executed.includes(:campaign)
-    
-    {
-      monthly_performance: monthly_performance_series,
-      category_performance: category_performance(investments),
-      risk_adjusted_returns: calculate_sharpe_ratio(investments),
-      benchmark_comparison: benchmark_comparison(investments),
-      ai_insights: generate_ai_portfolio_insights(investments)
-    }
-  end
-
-  def generate_ai_portfolio_insights(investments)
-    # Use your existing AI service to analyze portfolio
-    portfolio_analysis = analyze_portfolio_diversification(investments)
-    risk_analysis = analyze_portfolio_risk(investments)
-    
-    {
-      diversification_score: portfolio_analysis[:diversification_score],
-      concentration_risks: portfolio_analysis[:concentration_risks],
-      recommended_actions: generate_recommended_actions(portfolio_analysis, risk_analysis),
-      portfolio_health: assess_portfolio_health(portfolio_analysis, risk_analysis)
-    }
-  end
-
-  def calculate_member_share_value(member_share)
-    campaign = member_share.club_investment.campaign
-    calculate_campaign_current_value(campaign, member_share.effective_shares)
-  end
-
-  def calculate_member_investment_performance(member_shares)
-    total_invested = member_shares.sum(&:invested_amount)
-    current_value = member_shares.sum { |share| calculate_member_share_value(share) }
-    
-    {
-      total_invested: total_invested.round(2),
-      current_value: current_value.round(2),
-      total_returns: (current_value - total_invested).round(2),
-      return_percentage: total_invested > 0 ? ((current_value - total_invested) / total_invested * 100).round(2) : 0
-    }
+  def approved_campaigns
+    ApprovedCampaign.for_club(@club).map do |approved_campaign|
+      campaign = approved_campaign.campaign
+      club_investment = approved_campaign.club_investment
+      
+      {
+        id: approved_campaign.id,
+        campaign: {
+          id: campaign.id,
+          title: campaign.title,
+          description: campaign.description,
+          category: campaign.category,
+          goal_amount: campaign.goal_amount,
+          current_amount: campaign.current_amount,
+          currency: campaign.currency,
+          currency_symbol: campaign.currency_symbol,
+          fundraiser: {
+            id: campaign.fundraiser.id,
+            name: campaign.fundraiser.full_name
+          }
+        },
+        club_investment: {
+          id: club_investment.id,
+          proposed_amount: club_investment.investment_amount,
+          proposed_share_percentage: club_investment.proposed_share_percentage,
+          voting_stats: club_investment.voting_stats
+        },
+        approved_at: approved_campaign.created_at
+      }
+    end
   end
 
   private
 
-  def calculate_current_portfolio_value(investments)
-    investments.sum do |investment|
-      campaign = investment.campaign
-      shares_owned = investment.shares_acquired
-      
-      if campaign.is_a?(EquityCampaign)
-        # For equity campaigns, calculate current value based on company valuation
-        (shares_owned / campaign.total_shares.to_f) * campaign.valuation
-      else
-        # For donation-based campaigns, value remains the invested amount
-        investment.investment_amount
-      end
-    end.round(2)
-  end
-
-  def calculate_campaign_current_value(campaign, shares_owned)
-    if campaign.is_a?(EquityCampaign)
-      (shares_owned / campaign.total_shares.to_f) * campaign.valuation
-    else
-      # For non-equity, return original investment (simplified)
-      (shares_owned / campaign.total_shares.to_f) * campaign.goal_amount
-    end
-  end
-
-  def performance_breakdown(investments)
-    investments.group_by { |i| i.campaign.category }
-              .transform_values do |category_investments|
-      total_invested = category_investments.sum(&:investment_amount)
-      current_value = category_investments.sum { |i| calculate_campaign_current_value(i.campaign, i.shares_acquired) }
-      returns = current_value - total_invested
-      
-      {
-        total_invested: total_invested,
-        current_value: current_value,
-        returns: returns,
-        return_percentage: total_invested > 0 ? (returns / total_invested * 100).round(2) : 0,
-        investment_count: category_investments.count
-      }
-    end
-  end
-
-  def asset_allocation(investments)
-    total_value = calculate_current_portfolio_value(investments)
-    return {} if total_value.zero?
+  def calculate_voting_participation(user)
+    total_votable_items = @club.club_investments.voting.count
+    return 0 if total_votable_items.zero?
     
-    investments.group_by { |i| i.campaign.category }
-              .transform_values do |category_investments|
-      category_value = category_investments.sum { |i| calculate_campaign_current_value(i.campaign, i.shares_acquired) }
-      (category_value / total_value * 100).round(2)
-    end
-  end
-
-  def calculate_risk_metrics(investments)
-    # FIXED: Handle empty investments and division by zero
-    return default_risk_metrics if investments.empty?
-
-    # Simplified risk metrics
-    returns = investments.map do |investment|
-      investment_amount = investment.investment_amount
-      # Skip if investment amount is zero to avoid division by zero
-      next 0 if investment_amount.zero?
-      
-      current_value = calculate_campaign_current_value(investment.campaign, investment.shares_acquired)
-      (current_value - investment_amount) / investment_amount
-    end.compact # Remove nil values
-
-    # Return default if no valid returns
-    return default_risk_metrics if returns.empty? || returns.size.zero?
-
-    avg_return = returns.sum / returns.size
-    variance = returns.sum { |r| (r - avg_return) ** 2 } / returns.size
-    volatility = Math.sqrt(variance)
+    user_votes = Vote.where(
+      votable_type: 'ClubInvestment',
+      votable_id: @club.club_investments.voting.pluck(:id),
+      user: user
+    ).count
     
-    {
-      volatility: volatility.round(4),
-      max_drawdown: calculate_max_drawdown(returns),
-      var_95: calculate_var(returns, 0.95)
-    }
+    (user_votes.to_f / total_votable_items * 100).round(2)
   end
-
-  def default_risk_metrics
-    {
-      volatility: 0,
-      max_drawdown: 0,
-      var_95: 0
-    }
-  end
-
-  def format_member_investment(share)
-    investment = share.club_investment
-    campaign = investment.campaign
-    
-    {
-      campaign_title: campaign.title,
-      campaign_type: campaign.class.name,
-      share_percentage: share.share_percentage,
-      effective_shares: share.effective_shares,
-      invested_amount: share.invested_amount.round(2),
-      current_value: share.current_value.round(2),
-      returns: share.total_return.round(2),
-      return_percentage: share.roi.round(2)
-    }
-  end
-
-  def monthly_performance_series
-    # Generate time-series performance data
-    # This would typically query historical data
-    12.times.map do |i|
-      month = i.months.ago
-      {
-        period: month.strftime('%Y-%m'),
-        value: calculate_portfolio_value_at(month.end_of_month)
-      }
-    end.reverse
-  end
-
-  def calculate_portfolio_value_at(date)
-    # Simplified - in reality, you'd need historical valuation data
-    @club.club_investments.executed
-         .where('created_at <= ?', date)
-         .sum(:investment_amount) * rand(0.8..1.5) # Placeholder
-  end
-
-  def analyze_portfolio_diversification(investments)
-    category_distribution = investments.group_by { |i| i.campaign.category }
-                                     .transform_values(&:count)
-    total_investments = investments.count
-    
-    diversification_score = calculate_diversification_score(category_distribution, total_investments)
-    
-    {
-      diversification_score: diversification_score,
-      concentration_risks: identify_concentration_risks(category_distribution, total_investments),
-      category_distribution: category_distribution
-    }
-  end
-
-  def calculate_diversification_score(distribution, total)
-    return 0 if total.zero?
-    
-    # Herfindahl index for diversification measurement
-    herfindahl = distribution.values.sum { |count| (count.to_f / total) ** 2 }
-    (1 - herfindahl) * 100 # Convert to score out of 100
-  end
-
-  def identify_concentration_risks(distribution, total)
-    risks = []
-    distribution.each do |category, count|
-      percentage = (count.to_f / total * 100).round(2)
-      risks << "#{category}: #{percentage}%" if percentage > 30
-    end
-    risks
-  end
-
-  # Placeholder methods for complex calculations
-  def calculate_sharpe_ratio(investments); 1.2; end
-  def benchmark_comparison(investments); {}; end
-  def calculate_max_drawdown(returns); 0.15; end
-  def calculate_var(returns, confidence); 0.1; end
-  def analyze_portfolio_risk(investments); {}; end
-  def generate_recommended_actions(portfolio_analysis, risk_analysis); []; end
-  def assess_portfolio_health(portfolio_analysis, risk_analysis); 'healthy'; end
 end
