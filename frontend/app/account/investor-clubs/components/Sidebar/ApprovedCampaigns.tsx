@@ -47,12 +47,22 @@ interface VotingStats {
   threshold_met?: boolean;
 }
 
+interface CampaignDescription {
+  id: number;
+  name: string;
+  body: string;
+  record_type: string;
+  record_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
 interface DashboardApprovedCampaign {
   id: string;
   campaign: {
     id: string;
     title: string;
-    description: string;
+    description: CampaignDescription;
     category: string;
     goal_amount: number;
     current_amount: number;
@@ -474,9 +484,16 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                                 <User className="h-4 w-4 mr-2" />
                                 Campaign Details
                               </h4>
-                              <p className="text-sm text-gray-600">
-                                {campaignData.description || 'No description available.'}
-                              </p>
+                              <div className="text-sm text-gray-600">
+                                {campaignData.description?.body ? (
+                                  <div 
+                                    className="prose prose-sm max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: campaignData.description.body }}
+                                  />
+                                ) : (
+                                  'No description available.'
+                                )}
+                              </div>
                             </div>
 
                             <div className="space-y-2">
