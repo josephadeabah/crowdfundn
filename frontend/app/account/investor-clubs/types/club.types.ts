@@ -1,21 +1,6 @@
 // Core club types
-export interface Club {
-  id: string;
-  slug: string;
-  name: string;
-  mission: string;
-  investment_focus: string;
-  current_members_count: number;
-  total_contributions: number;
-  total_invested: number;
-  current_balance: number;
-  currency: string;
-  currency_symbol: string;
-  status: 'active' | 'inactive' | 'suspended';
-  access_type: 'open' | 'restricted' | 'certified';
-  created_at: string;
-  updated_at: string;
-}
+
+import { Club } from "../clubTypes";
 
 export interface ClubMembership {
   id: string;

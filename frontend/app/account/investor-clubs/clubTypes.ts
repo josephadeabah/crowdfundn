@@ -7,8 +7,13 @@ export interface Club {
   description?: string;
   investment_focus: string;
   club_type: 'public' | 'private';
-  status: 'active' | 'inactive';
   minimum_monthly_contribution: number;
+  total_contributions: number;
+  total_invested: number;
+  current_balance: number;
+  currency_symbol: string;
+  status: 'active' | 'inactive' | 'suspended';
+  access_type: 'open' | 'restricted' | 'certified';
   max_members: number;
   current_members_count: number;
   currency: string;

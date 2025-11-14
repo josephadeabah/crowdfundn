@@ -28,6 +28,7 @@ import {
 import { useAuth } from '../context/auth/AuthContext';
 import { ShareChangesSection } from './investor-clubs/components/ShareChanges/ShareChangesSection';
 import MemberInvestmentProposalModal from './investor-clubs/components/VotingPanel/MemberInvestmentProposalModal';
+import ClubDashboard from './investor-clubs/components/Sidebar/ApprovedCampaigns';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const {
@@ -263,6 +264,8 @@ const InvestmentClubsDashboard: React.FC = () => {
                 club={currentClub}
                 formatCurrency={formatCurrency}
               />
+
+              <ClubDashboard club={currentClub}/>
 
               <ShareChangesSection
                 club={currentClub}
