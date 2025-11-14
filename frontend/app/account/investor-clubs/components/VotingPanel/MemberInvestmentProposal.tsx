@@ -7,44 +7,24 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 
 // Add these transformation functions here
 const transformInvestmentForFrontend = (investment: any): any => {
-  // Safely handle missing campaign data
-  const campaign = investment.campaign || {};
-  
   return {
     id: investment.id?.toString() || Math.random().toString(),
-    company: campaign?.title || 'Unknown Company',
-    description: campaign?.description || 'No description available',
+    company: investment.campaign?.title || 'Unknown Company',
+    description: investment.campaign?.description || 'No description available',
     amount: investment.investment_amount 
-      ? formatCurrency(investment.investment_amount, campaign?.currency_symbol || '$')
+      ? formatCurrency(investment.investment_amount, investment.campaign?.currency_symbol)
       : '$0',
-    sector: campaign?.category || 'General',
+    sector: investment.campaign?.category || 'General',
     votes: investment.voting_stats?.yes_votes || 0,
     threshold: investment.threshold || 3,
     match_score: investment.match_score || 50,
     reasoning: investment.reasoning || 'Investment opportunity',
     ai_analysis: investment.ai_analysis || getDefaultAIAnalysis(),
     status: investment.status || 'voting',
-    voting_stats: investment.voting_stats || {
-      total_votes: 0,
-      yes_votes: 0,
-      no_votes: 0,
-      approval_percentage: 0,
-      threshold_met: false
-    },
+    voting_stats: investment.voting_stats,
     club_investment_id: investment.id?.toString(),
-    campaign_id: campaign?.id?.toString()
+    campaign_id: investment.campaign?.id?.toString()
   };
-};
-
-// Also update the formatCurrency function to be safer
-const formatCurrency = (amount: number, currencySymbol: string = '$'): string => {
-  if (!amount && amount !== 0) return `${currencySymbol}0`;
-  
-  if (amount >= 1000) {
-    return `${currencySymbol}${(amount / 1000).toFixed(1)}K`;
-  } else {
-    return `${currencySymbol}${amount.toFixed(0)}`;
-  }
 };
 
 const getDefaultAIAnalysis = () => ({
@@ -54,6 +34,14 @@ const getDefaultAIAnalysis = () => ({
   sentiment_analysis: 'positive',
   strengths: ['Market potential', 'Team experience']
 });
+
+const formatCurrency = (amount: number, currencySymbol: string = '$'): string => {
+  if (amount >= 1000) {
+    return `${currencySymbol}${(amount / 1000).round(1)}K`;
+  } else {
+    return `${currencySymbol}${amount.round(0)}`;
+  }
+};
 
 // Extend Number prototype for rounding (or use a utility function)
 declare global {
@@ -101,71 +89,79 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
   });
   const [activeTab, setActiveTab] = useState<'voting' | 'approved'>('voting');
 
-    // In your fetchInvestmentData function, transform the data:
-    const fetchInvestmentData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  // Fetch investment proposals and approved campaigns
+  const fetchInvestmentData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        // Fetch active voting proposals
-        const proposalsResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments?status=voting`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
+      // Fetch active voting proposals
+      const proposalsResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments?status=voting`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-        );
+        },
+      );
 
-        if (proposalsResponse.status === 200) {
-          const proposalsData = await proposalsResponse.json();
+      // If no proposals, generate some
+      if (proposalsResponse.status === 200) {
+        const proposalsData = await proposalsResponse.json();
 
-          if (proposalsData.success) {
-            // Transform the investments using the utility function
-            const transformedInvestments = proposalsData.investments.map((investment: any) => 
-              transformInvestmentForFrontend(investment)
-            );
-            setInvestments(transformedInvestments);
-            
-            if (transformedInvestments.length === 0) {
-              // Generate new proposals if none exist
-              await generateProposals();
+        if (proposalsData.success && proposalsData.investments.length === 0) {
+          // Generate new proposals
+          const generateResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments/generate_proposals`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+
+          if (generateResponse.ok) {
+            const generateData = await generateResponse.json();
+            if (generateData.success) {
+              setInvestments(generateData.proposals || []);
             }
           }
+        } else {
+          setInvestments(proposalsData.investments || []);
         }
-
-        // Similarly transform approved campaigns
-        const approvedResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/approved_campaigns`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-
-        if (approvedResponse.ok) {
-          const approvedData = await approvedResponse.json();
-          const transformedApproved = approvedData.approved_campaigns?.map((campaign: any) => 
-            transformInvestmentForFrontend(campaign)
-          ) || [];
-          setApprovedInvestments(transformedApproved);
-        }
-      } catch (err) {
-        console.error('Error fetching investment data:', err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Failed to load investment opportunities',
-        );
-        setInvestments([]);
-        setApprovedInvestments([]);
-      } finally {
-        setLoading(false);
       }
-    };
+
+      // Fetch approved campaigns
+      const approvedResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/approved_campaigns`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (approvedResponse.ok) {
+        const approvedData = await approvedResponse.json();
+        setApprovedInvestments(approvedData.approved_campaigns || []);
+      }
+    } catch (err) {
+      console.error('Error fetching investment data:', err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to load investment opportunities',
+      );
+      setInvestments([]);
+      setApprovedInvestments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const castVote = async (investmentId: string, voteType: 'yes' | 'no') => {
     try {
