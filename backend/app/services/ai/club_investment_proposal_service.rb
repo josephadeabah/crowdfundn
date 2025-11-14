@@ -125,7 +125,7 @@ class ClubInvestmentProposalService
     end
     
     # Add points for performance
-    score += (campaign.performance_percentage * 0.3)
+    score += (campaign.performance_percentage * 0.3) if campaign.respond_to?(:performance_percentage)
     
     score.clamp(0, 100).round(2)
   end

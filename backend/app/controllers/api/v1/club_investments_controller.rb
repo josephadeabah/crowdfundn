@@ -5,7 +5,9 @@ module Api
       before_action :set_club
       before_action :verify_membership
 
+      # ADD THESE REQUIRE STATEMENTS
       require Rails.root.join('app/services/ai/club_recommendation_service')
+      require Rails.root.join('app/services/ai/club_investment_proposal_service')
       
       def index
         # Filter by status if provided
