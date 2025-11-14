@@ -12,7 +12,6 @@ import { ContributionModal } from './investor-clubs/components/Contribution/Cont
 import { LoadingState } from './investor-clubs/components/Loading/LoadingState';
 import { MobileHeader } from './investor-clubs/components/ClubHeader/MobileHeader';
 import { ClubHeader } from './investor-clubs/components/ClubHeader/ClubHeader';
-import { AIRecommendationsSection } from './investor-clubs/components/AIRecommendations/AIRecommendationsSection';
 import { ClubSummaryCard } from './investor-clubs/components/ClubSummary/ClubSummaryCard';
 import { ActiveVotesSection } from './investor-clubs/components/Investments/ActiveVotesSection';
 import { RecentInvestmentsSection } from './investor-clubs/components/Investments/RecentInvestmentsSection';
@@ -21,8 +20,6 @@ import { QuickActions } from './investor-clubs/components/Sidebar/QuickActions';
 import { ClubStats } from './investor-clubs/components/Sidebar/ClubStats';
 import { CreateClubCard } from './investor-clubs/components/Sidebar/CreateClubCard';
 import ClubDetailsModal from './investor-clubs/club-details/ClubDetailsModal';
-import { useAIRecommendations } from './investor-clubs/hooks/useAIRecommendations';
-import { aiRecommendationService } from './investor-clubs/aiRecommendationService';
 import { RecentContributionsSection } from './investor-clubs/components/Contribution/RecentContributionsSection';
 import {
   FaCheckCircle,
@@ -52,15 +49,6 @@ const InvestmentClubsDashboard: React.FC = () => {
     handleContributionPageChange,
     handleContributionPerPageChange,
   } = useClubData();
-
-  const {
-    recommendations,
-    showAIRecommendations,
-    loading: recommendationsLoading,
-    clubRiskProfile,
-    loadAIRecommendations,
-    setShowAIRecommendations,
-  } = useAIRecommendations();
 
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -198,22 +186,6 @@ const InvestmentClubsDashboard: React.FC = () => {
     }
   };
 
-  const handleGetAIRecommendations = async () => {
-    if (!selectedClub) return;
-    setShowAIRecommendations(true);
-    await loadAIRecommendations(selectedClub.slug);
-  };
-
-  const handleProposeInvestmentWithCampaign = (campaign: any) => {
-    setFeatureMessage(
-      `Propose investment for: ${campaign.title}\n\nAmount: ${formatCurrency(
-        campaign.goal_amount,
-        campaign.currency || selectedClub?.currency,
-      )}\n\nThis would open the investment proposal form with this campaign pre-selected.`,
-    );
-    setFeatureAlert(true);
-  };
-
   // UPDATED: Open the investment proposal modal instead of showing alert
   const handleProposeInvestment = () => {
     setIsInvestmentProposalModalOpen(true);
@@ -224,60 +196,6 @@ const InvestmentClubsDashboard: React.FC = () => {
       'View Analytics feature would open here. This would show detailed performance metrics and investment analytics for the club.',
     );
     setFeatureAlert(true);
-  };
-
-  const handleExplainRecommendation = async (
-    campaignId: string,
-    campaignTitle: string,
-  ) => {
-    if (!selectedClub || !token) return;
-
-    try {
-      setExplanationMessage(
-        `🔄 Generating AI analysis for "${campaignTitle}"...\n\nThis may take 30-60 seconds for detailed analysis.`,
-      );
-      setExplanationAlert(true);
-
-      const response = await aiRecommendationService.getExplanation(
-        token,
-        selectedClub.slug,
-        campaignId,
-        90000,
-      );
-
-      if (response.success) {
-        const explanationText = aiRecommendationService.extractExplanationText(
-          response.explanation,
-        );
-
-        if (
-          explanationText &&
-          explanationText !== 'No explanation available.'
-        ) {
-          setExplanationMessage(explanationText);
-        } else if (response.fallback_explanation) {
-          setExplanationMessage(response.fallback_explanation);
-        } else {
-          setExplanationMessage(
-            'Analysis complete. This campaign shows potential based on your club profile and risk tolerance.',
-          );
-        }
-      } else {
-        setExplanationMessage(
-          response.fallback_explanation ||
-            response.error ||
-            'Analysis completed with limited details. Consider reviewing the campaign manually.',
-        );
-      }
-    } catch (error: any) {
-      console.error('Failed to get explanation:', error);
-      setExplanationMessage(
-        error.message ||
-          'The analysis is taking longer than expected. Please try again or review the campaign details manually.',
-      );
-    } finally {
-      setExplanationAlert(true);
-    }
   };
 
   const handleClubCreated = () => {
@@ -363,18 +281,6 @@ const InvestmentClubsDashboard: React.FC = () => {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
             {/* Left Column - Club Info and Members */}
             <div className="xl:col-span-2 space-y-4 lg:space-y-6">
-              <AIRecommendationsSection
-                showAIRecommendations={showAIRecommendations}
-                recommendations={recommendations}
-                loading={recommendationsLoading}
-                clubRiskProfile={clubRiskProfile}
-                currentClub={currentClub}
-                formatCurrency={formatCurrency}
-                onClose={() => setShowAIRecommendations(false)}
-                onProposeInvestment={handleProposeInvestmentWithCampaign}
-                onExplainRecommendation={handleExplainRecommendation}
-              />
-
               <ClubSummaryCard
                 club={currentClub}
                 formatCurrency={formatCurrency}
@@ -414,8 +320,6 @@ const InvestmentClubsDashboard: React.FC = () => {
               />
 
               <QuickActions
-                showAIRecommendations={showAIRecommendations}
-                onGetAIRecommendations={handleGetAIRecommendations}
                 onMakeContribution={handleMakeContribution}
                 onProposeInvestment={handleProposeInvestment}
                 onViewAnalytics={handleViewAnalytics}

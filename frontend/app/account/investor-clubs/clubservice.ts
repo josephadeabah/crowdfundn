@@ -460,18 +460,6 @@ export const investmentService = {
     );
   },
 
-  // Get AI recommendation
-  getAIRecommendation: async (
-    token: string,
-    clubId: string,
-    investmentId: string,
-  ): Promise<any> => {
-    return apiCall(
-      `/investment_clubs/${clubId}/investments/${investmentId}/ai_recommendation`,
-      token,
-    );
-  },
-
   // Get voting insights
   getVotingInsights: async (
     token: string,
