@@ -167,7 +167,80 @@ module Api
         }
       end
       
+      # app/controllers/api/v1/club_investments_controller.rb (add this action)
+      def ai_recommendations
+        begin
+          limit = params[:limit]&.to_i || 10
+          
+          # Use the ClubRecommendationService to get AI-powered recommendations
+          recommendation_service = AI::ClubRecommendationService.new(@club, @current_user)
+          result = recommendation_service.recommend_campaigns(limit: limit)
+          
+          if result[:success]
+            # Transform recommendations into the format expected by the frontend
+            recommendations = result[:recommendations].map do |rec|
+              campaign = rec[:campaign]
+              {
+                id: campaign.id.to_s,
+                company: campaign.title,
+                description: campaign.description.to_plain_text.truncate(200),
+                amount: format_currency(campaign.goal_amount, campaign.currency_symbol),
+                sector: campaign.category || 'General',
+                votes: 0, # Start with 0 votes
+                threshold: calculate_voting_threshold(campaign),
+                match_score: rec[:match_score],
+                reasoning: rec[:reasoning],
+                ai_analysis: rec[:ai_analysis]
+              }
+            end
+            
+            render json: {
+              success: true,
+              recommendations: recommendations,
+              club_focus: @club.investment_focus,
+              mission: @club.mission
+            }
+          else
+            render json: {
+              success: false,
+              error: result[:error],
+              recommendations: []
+            }, status: :unprocessable_entity
+          end
+          
+        rescue => e
+          Rails.logger.error "AI recommendations error: #{e.message}"
+          render json: {
+            success: false,
+            error: "Failed to generate recommendations",
+            recommendations: []
+          }, status: :internal_server_error
+        end
+      end
+
       private
+
+      def format_currency(amount, currency_symbol = '$')
+        "#{currency_symbol}#{amount.to_i}K"
+      end
+
+      def calculate_voting_threshold(campaign)
+        # Base threshold on campaign size and complexity
+        base_threshold = 5
+        
+        # Adjust based on investment amount
+        amount_factor = campaign.goal_amount.to_i / 100000 # 1 additional vote per $100K
+        amount_adjustment = [amount_factor, 10].min # Cap at 10 additional votes
+        
+        # Adjust based on campaign risk (simplified)
+        risk_adjustment = if campaign.respond_to?(:ai_risk_score) && campaign.ai_risk_score
+                            campaign.ai_risk_score > 60 ? 3 : 0
+                          else
+                            0
+                          end
+        
+        base_threshold + amount_adjustment + risk_adjustment
+      end
       
       def set_club
         @club = InvestmentClub.find_by(slug: params[:investment_club_id])

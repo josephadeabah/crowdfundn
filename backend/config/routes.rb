@@ -322,6 +322,9 @@ Rails.application.routes.draw do
             get :voting_insights
             post :start_voting
           end
+          collection do
+            get :ai_recommendations # Add this line
+          end
         end
         
         member do
