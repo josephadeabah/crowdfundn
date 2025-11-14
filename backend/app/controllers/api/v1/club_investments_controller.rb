@@ -174,41 +174,6 @@ module Api
         end
       end
 
-      def get_campaign_ai_analysis(campaign)
-        if campaign.respond_to?(:ai_deal_score) && campaign.ai_deal_score.present?
-          # Calculate risk level directly in controller
-          risk_category = calculate_risk_level(campaign.ai_risk_score)
-          
-          {
-            deal_score: campaign.ai_deal_score,
-            risk_score: campaign.ai_risk_score,
-            risk_category: risk_category,
-            sentiment_analysis: 'positive',
-            strengths: ['Strong market position', 'Experienced team']
-          }
-        else
-          {
-            deal_score: rand(60..90),
-            risk_score: rand(20..50),
-            risk_category: 'medium',
-            sentiment_analysis: 'positive',
-            strengths: ['Growing market', 'Innovative product']
-          }
-        end
-      end
-
-      def calculate_risk_level(risk_score)
-        return 'Unknown' unless risk_score.present?
-        
-        case risk_score
-        when 0..20 then 'Very Low'
-        when 21..40 then 'Low'
-        when 41..60 then 'Medium'
-        when 61..80 then 'High'
-        else 'Very High'
-        end
-      end
-
       private
 
       def transform_investment_for_frontend(investment)
@@ -236,16 +201,17 @@ module Api
       end
 
       def get_campaign_ai_analysis(campaign)
-        # Get AI analysis from campaign
-        if campaign.respond_to?(:ai_deal_score) && campaign.ai_deal_score
+        # Check if campaign has AI analysis data
+        if campaign.respond_to?(:ai_deal_score) && campaign.ai_deal_score.present?
           {
             deal_score: campaign.ai_deal_score,
             risk_score: campaign.ai_risk_score,
-            risk_category: campaign.risk_level,
+            risk_category: campaign.risk_level, # This is now public
             sentiment_analysis: 'positive',
             strengths: ['Strong market position', 'Experienced team']
           }
         else
+          # Fallback with random data for campaigns without AI analysis
           {
             deal_score: rand(60..90),
             risk_score: rand(20..50),
