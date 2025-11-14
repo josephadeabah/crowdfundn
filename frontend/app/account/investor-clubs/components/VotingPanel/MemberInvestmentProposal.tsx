@@ -11,8 +11,11 @@ const transformInvestmentForFrontend = (investment: any): any => {
     id: investment.id?.toString() || Math.random().toString(),
     company: investment.campaign?.title || 'Unknown Company',
     description: investment.campaign?.description || 'No description available',
-    amount: investment.investment_amount 
-      ? formatCurrency(investment.investment_amount, investment.campaign?.currency_symbol)
+    amount: investment.investment_amount
+      ? formatCurrency(
+          investment.investment_amount,
+          investment.campaign?.currency_symbol,
+        )
       : '$0',
     sector: investment.campaign?.category || 'General',
     votes: investment.voting_stats?.yes_votes || 0,
@@ -23,7 +26,7 @@ const transformInvestmentForFrontend = (investment: any): any => {
     status: investment.status || 'voting',
     voting_stats: investment.voting_stats,
     club_investment_id: investment.id?.toString(),
-    campaign_id: investment.campaign?.id?.toString()
+    campaign_id: investment.campaign?.id?.toString(),
   };
 };
 
@@ -32,10 +35,13 @@ const getDefaultAIAnalysis = () => ({
   risk_score: Math.floor(Math.random() * 30) + 20,
   risk_category: 'medium',
   sentiment_analysis: 'positive',
-  strengths: ['Market potential', 'Team experience']
+  strengths: ['Market potential', 'Team experience'],
 });
 
-const formatCurrency = (amount: number, currencySymbol: string = '$'): string => {
+const formatCurrency = (
+  amount: number,
+  currencySymbol: string = '$',
+): string => {
   if (amount >= 1000) {
     return `${currencySymbol}${(amount / 1000).round(1)}K`;
   } else {
@@ -50,7 +56,7 @@ declare global {
   }
 }
 
-Number.prototype.round = function(decimals: number): number {
+Number.prototype.round = function (decimals: number): number {
   return Number(Math.round(Number(this + 'e' + decimals)) + 'e-' + decimals);
 };
 

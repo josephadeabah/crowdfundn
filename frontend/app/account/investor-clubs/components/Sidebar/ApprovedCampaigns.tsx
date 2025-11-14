@@ -201,7 +201,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   };
 
   const toggleCampaignExpansion = (campaignId: string) => {
-    setExpandedCampaigns(prev => {
+    setExpandedCampaigns((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(campaignId)) {
         newSet.delete(campaignId);
@@ -382,7 +382,9 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
               const isExpanded = expandedCampaigns.has(campaign.id);
               const progressPercentage = Math.min(
                 100,
-                (campaign.campaign.current_amount / campaign.campaign.goal_amount) * 100
+                (campaign.campaign.current_amount /
+                  campaign.campaign.goal_amount) *
+                  100,
               );
 
               return (
@@ -391,7 +393,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                   className="border border-green-200 rounded-lg bg-green-50/50 hover:bg-green-50 transition-colors"
                 >
                   {/* Campaign Header - Always Visible */}
-                  <div 
+                  <div
                     className="p-4 cursor-pointer"
                     onClick={() => toggleCampaignExpansion(campaign.id)}
                   >
@@ -424,10 +426,14 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                       <div className="flex items-center space-x-4 text-sm text-gray-600">
                         <div className="text-right">
                           <div className="font-medium text-green-600">
-                            {campaign.club_investment?.voting_stats?.approval_percentage || 0}% Yes
+                            {campaign.club_investment?.voting_stats
+                              ?.approval_percentage || 0}
+                            % Yes
                           </div>
                           <div className="text-xs">
-                            {new Date(campaign.approved_at).toLocaleDateString()}
+                            {new Date(
+                              campaign.approved_at,
+                            ).toLocaleDateString()}
                           </div>
                         </div>
                       </div>
@@ -495,16 +501,23 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                             </h4>
                             <div className="space-y-2">
                               <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Proposed Amount:</span>
+                                <span className="text-gray-600">
+                                  Proposed Amount:
+                                </span>
                                 <span className="font-medium">
                                   {club.currency_symbol}
-                                  {campaign.club_investment?.proposed_amount?.toLocaleString() || '0'}
+                                  {campaign.club_investment?.proposed_amount?.toLocaleString() ||
+                                    '0'}
                                 </span>
                               </div>
                               <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Share Percentage:</span>
+                                <span className="text-gray-600">
+                                  Share Percentage:
+                                </span>
                                 <span className="font-medium">
-                                  {campaign.club_investment?.proposed_share_percentage || 0}%
+                                  {campaign.club_investment
+                                    ?.proposed_share_percentage || 0}
+                                  %
                                 </span>
                               </div>
                             </div>
@@ -519,21 +532,36 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                               </h4>
                               <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-gray-600">Yes Votes:</span>
+                                  <span className="text-gray-600">
+                                    Yes Votes:
+                                  </span>
                                   <span className="font-medium text-green-600">
-                                    {campaign.club_investment.voting_stats.yes_votes}
+                                    {
+                                      campaign.club_investment.voting_stats
+                                        .yes_votes
+                                    }
                                   </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-gray-600">No Votes:</span>
+                                  <span className="text-gray-600">
+                                    No Votes:
+                                  </span>
                                   <span className="font-medium text-red-600">
-                                    {campaign.club_investment.voting_stats.no_votes}
+                                    {
+                                      campaign.club_investment.voting_stats
+                                        .no_votes
+                                    }
                                   </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-gray-600">Total Votes:</span>
+                                  <span className="text-gray-600">
+                                    Total Votes:
+                                  </span>
                                   <span className="font-medium">
-                                    {campaign.club_investment.voting_stats.total_votes}
+                                    {
+                                      campaign.club_investment.voting_stats
+                                        .total_votes
+                                    }
                                   </span>
                                 </div>
                               </div>
@@ -547,10 +575,12 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                               Approved Date:
                             </span>
                             <span className="font-medium">
-                              {new Date(campaign.approved_at).toLocaleDateString('en-US', {
+                              {new Date(
+                                campaign.approved_at,
+                              ).toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'long',
-                                day: 'numeric'
+                                day: 'numeric',
                               })}
                             </span>
                           </div>
@@ -598,7 +628,9 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                 className="flex items-center justify-between p-4 border rounded-lg"
               >
                 <div className="flex-1">
-                  <h4 className="font-semibold">{investment?.campaign?.title}</h4>
+                  <h4 className="font-semibold">
+                    {investment?.campaign?.title}
+                  </h4>
                   <p className="text-sm text-muted-foreground">
                     {investment?.campaign?.category} •{' '}
                     {investment?.campaign?.currency_symbol}
