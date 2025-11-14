@@ -1,3 +1,4 @@
+# app/models/club_investment.rb
 class ClubInvestment < ApplicationRecord
   belongs_to :investment_club
   belongs_to :campaign
@@ -39,19 +40,27 @@ class ClubInvestment < ApplicationRecord
     total_votes = votes.count
     yes_votes = votes.where(vote_type: 'yes').count
     no_votes = votes.where(vote_type: 'no').count
+    total_members = investment_club.active_members.count
+    
+    # Calculate if threshold is met (all members voted)
+    all_members_voted = total_votes >= total_members
+    threshold_met = all_members_voted && yes_votes > no_votes
     
     {
       total_votes: total_votes,
       yes_votes: yes_votes,
       no_votes: no_votes,
-      approval_percentage: total_votes > 0 ? (yes_votes.to_f / total_votes * 100).round(2) : 0
+      approval_percentage: total_votes > 0 ? (yes_votes.to_f / total_votes * 100).round(2) : 0,
+      total_members: total_members,
+      all_members_voted: all_members_voted,
+      threshold_met: threshold_met
     }
   end
   
   # Method to check if voting threshold is met
-  def voting_threshold_met?(threshold_percentage = 60)
+  def voting_threshold_met?
     stats = voting_stats
-    stats[:approval_percentage] >= threshold_percentage
+    stats[:threshold_met]
   end
   
   # Method to finalize voting and update status

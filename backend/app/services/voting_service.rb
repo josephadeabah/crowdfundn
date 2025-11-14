@@ -1,3 +1,4 @@
+# app/services/voting_service.rb
 class VotingService
   def initialize(votable, user, voting_session_id = nil)
     @votable = votable
@@ -36,12 +37,22 @@ class VotingService
     total_votes = votes.count
     yes_votes = votes.where(vote_type: 'yes').count
     no_votes = votes.where(vote_type: 'no').count
+    total_members = @votable.investment_club.active_members.count
+    
+    # Calculate if threshold is met (all members voted)
+    all_members_voted = total_votes >= total_members
+    threshold_met = all_members_voted && yes_votes > no_votes
     
     {
       total_votes: total_votes,
       vote_breakdown: votes.group(:vote_type).count,
       user_vote: get_vote&.vote_type,
-      approval_percentage: total_votes > 0 ? (yes_votes.to_f / total_votes * 100).round(2) : 0
+      approval_percentage: total_votes > 0 ? (yes_votes.to_f / total_votes * 100).round(2) : 0,
+      yes_votes: yes_votes,
+      no_votes: no_votes,
+      total_members: total_members,
+      all_members_voted: all_members_voted,
+      threshold_met: threshold_met
     }
   end
   
@@ -62,11 +73,10 @@ class VotingService
   def check_and_finalize_voting
     # Only finalize voting for club investments
     if @votable.is_a?(ClubInvestment) && @votable.voting?
-      total_members = @votable.investment_club.active_members.count
-      current_votes = Vote.where(votable: @votable, voting_session_id: @voting_session_id).count
+      stats = voting_stats
       
-      # Finalize if all members have voted or after 7 days
-      if current_votes >= total_members || @votable.created_at <= 7.days.ago
+      # Finalize if all members have voted OR after 7 days
+      if stats[:all_members_voted] || @votable.created_at <= 7.days.ago
         @votable.finalize_voting
       end
     end

@@ -1,3 +1,4 @@
+# app/controllers/api/v1/club_investments_controller.rb
 module Api
   module V1
     class ClubInvestmentsController < ApplicationController
@@ -291,9 +292,12 @@ module Api
       end
 
       def calculate_voting_threshold
-        # Base threshold on number of active members
+        # Calculate threshold based on club membership
         active_members = @club.active_members.count
-        [active_members / 2, 3].max # At least 3 votes or half the members
+        
+        # For approval, we need majority (more than 50%) of active members to vote YES
+        # OR if all members have voted, then use simple majority
+        (active_members / 2) + 1 # Simple majority
       end
 
       def calculate_match_score(campaign)
