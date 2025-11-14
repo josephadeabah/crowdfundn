@@ -320,6 +320,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
       return newSet;
     });
   };
+
   // Approved Campaigns Section - Hamburger List Design
   const ApprovedCampaignsSection = () => {
     if (!approvedCampaigns || !Array.isArray(approvedCampaigns)) {
@@ -582,7 +583,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
     );
   };
 
-  // Active Investments Section - Updated to use dynamic threshold
+  // Active Investments Section - Updated to use current_members_count
   const ActiveInvestmentsSection = () => (
     <Card className="mt-6">
       <CardHeader>
