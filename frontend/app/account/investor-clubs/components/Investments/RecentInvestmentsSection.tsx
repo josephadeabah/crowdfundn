@@ -23,16 +23,16 @@ export const RecentInvestmentsSection: React.FC<
         </span>
       </div>
       <div className="bg-white rounded-sm divide-y">
-        {investments.slice(0, 5).map((investment) => (
+        {investments?.slice(0, 5)?.map((investment) => (
           <div key={investment.id} className="p-3 lg:p-4">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
               <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-sm lg:text-base line-clamp-2">
-                  {investment.campaign.title}
+                  {investment?.campaign?.title}
                 </h4>
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-xs lg:text-sm text-gray-600">
-                    {formatCurrency(investment.investment_amount)}
+                    {formatCurrency(investment?.investment_amount)}
                   </p>
                   <span
                     className={`px-2 py-1 rounded-full text-xs ${
