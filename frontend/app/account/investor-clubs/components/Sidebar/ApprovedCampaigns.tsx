@@ -360,13 +360,13 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {approvedCampaigns.map((campaign: DashboardApprovedCampaign) => (
               <Card
-                key={campaign.id}
+                key={campaign?.id}
                 className="border-green-200 bg-green-50/50"
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-base">
-                      {campaign.campaign.title}
+                      {campaign?.campaign?.title}
                     </CardTitle>
                     <Badge
                       variant="outline"
@@ -470,11 +470,11 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                 className="flex items-center justify-between p-4 border rounded-lg"
               >
                 <div className="flex-1">
-                  <h4 className="font-semibold">{investment.campaign.title}</h4>
+                  <h4 className="font-semibold">{investment?.campaign?.title}</h4>
                   <p className="text-sm text-muted-foreground">
-                    {investment.campaign.category} •{' '}
-                    {investment.campaign.currency_symbol}
-                    {investment.investment_amount.toLocaleString()}
+                    {investment?.campaign?.category} •{' '}
+                    {investment?.campaign?.currency_symbol}
+                    {investment?.investment_amount.toLocaleString()}
                   </p>
                 </div>
                 <div className="text-right">
