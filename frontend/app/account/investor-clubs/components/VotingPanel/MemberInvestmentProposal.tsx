@@ -66,17 +66,33 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
   const [activeTab, setActiveTab] = useState<'voting' | 'approved'>('voting');
 
   // Helper function to safely extract description
+  const stripHtmlTags = (html: string): string => {
+    if (!html) return '';
+
+    // Simple and effective HTML tag stripping
+    return html.replace(/<[^>]*>/g, '');
+  };
+
+  // Then update your existing getDescription function:
   const getDescription = (investment: any): string => {
+    let description = '';
+
     if (typeof investment.description === 'string') {
-      return investment.description;
+      description = investment.description;
+    } else if (investment.description?.body) {
+      description = investment.description.body;
+    } else if (investment.campaign?.description?.body) {
+      description = investment.campaign.description.body;
+    } else {
+      return 'No description available';
     }
-    if (investment.description?.body) {
-      return investment.description.body;
-    }
-    if (investment.campaign?.description?.body) {
-      return investment.campaign.description.body;
-    }
-    return 'No description available';
+
+    // Strip HTML tags and clean up whitespace
+    const cleanDescription = stripHtmlTags(description)
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    return cleanDescription || 'No description available';
   };
 
   // Helper function to safely extract title
@@ -530,7 +546,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           </Button>
         </div>
       ) : (
-        approvedInvestments.map((investment: AIInvestment) => {
+        approvedInvestments.map((investment) => {
           if (!investment?.id) return null;
 
           const votingStats = investment.voting_stats || {};
@@ -564,12 +580,9 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                         <h4 className="font-semibold text-gray-900">
                           {getTitle(investment)}
                         </h4>
-                        <div
-                          className="prose dark:prose-dark max-w-none"
-                          dangerouslySetInnerHTML={{
-                            __html: getDescription(investment) || '',
-                          }}
-                        />
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                          {getDescription(investment)}
+                        </p>
                         <div className="flex items-center space-x-4 mt-2">
                           <Badge variant="outline" className="text-xs">
                             {getCategory(investment)}
