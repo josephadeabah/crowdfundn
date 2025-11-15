@@ -62,7 +62,6 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [paymentAlert, setPaymentAlert] = useState(false);
   const [paymentMessage, setPaymentMessage] = useState('');
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [explanationAlert, setExplanationAlert] = useState(false);
 
   // 🧠 Added for persistence: auto-load the previously selected club
   useEffect(() => {
@@ -233,7 +232,14 @@ const InvestmentClubsDashboard: React.FC = () => {
   }
 
   const currentClub = selectedClub || clubs[0];
-  const activeVotes = investments.filter((inv) => inv.status === 'voting');
+
+  // Get current user's membership and share
+  const currentUserMembership = React.useMemo(() => {
+    if (!currentClub || !user) return null;
+    return members.find((member) => Number(member.user.id) === user.id);
+  }, [currentClub, user, members]);
+
+  const currentUserShare = currentUserMembership?.contributed_share;
 
   return (
     <div className="min-h-screen flex bg-gray-50 text-gray-900">
@@ -269,6 +275,7 @@ const InvestmentClubsDashboard: React.FC = () => {
               <ShareChangesSection
                 club={currentClub}
                 formatCurrency={formatCurrency}
+                currentUserShare={currentUserShare} // Pass the share
               />
 
               <RecentContributionsSection

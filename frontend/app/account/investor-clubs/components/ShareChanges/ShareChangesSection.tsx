@@ -12,19 +12,22 @@ import {
   Calendar,
   AlertCircle,
   Users,
+  PieChart,
 } from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
 
 interface ShareChangesSectionProps {
   club: any;
   formatCurrency: (amount: number, currency?: string) => string;
+  currentUserShare?: number; // NEW: Add current user share prop
 }
 
 export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
   club,
   formatCurrency,
+  currentUserShare, // NEW: Receive current user share
 }) => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [shareChanges, setShareChanges] = useState<ShareChange[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -160,7 +163,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-sm"
+              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
             >
               <div className="space-y-2">
                 <div className="h-4 bg-gray-200 rounded w-32"></div>
@@ -185,14 +188,23 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
           <Users className="w-5 h-5 text-emerald-600" />
           <h3 className="text-lg font-semibold">All Members Share Changes</h3>
         </div>
-        <div className="text-sm text-gray-600">
-          Total Changes:{' '}
-          <span className="font-semibold">{pagination.total_count}</span>
-        </div>
+
+        {/* NEW: Current User Share Display */}
+        {currentUserShare !== undefined && (
+          <div className="flex items-center space-x-2 px-4 py-2 bg-green-50 border border-green-200 rounded-lg">
+            <PieChart className="w-4 h-4 text-green-600" />
+            <span className="text-sm font-medium text-green-800">
+              Your Share:{' '}
+              <span className="font-bold text-green-600">
+                {safeToFixed(currentUserShare, 2)}%
+              </span>
+            </span>
+          </div>
+        )}
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-sm p-4 mb-4">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
           <div className="flex items-center">
             <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
             <p className="text-red-800 text-sm">{error}</p>
@@ -222,7 +234,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
             {shareChanges.map((change) => (
               <div
                 key={change.id}
-                className="rounded-sm transition-colors"
+                className="border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
               >
                 <button
                   onClick={() => toggleExpand(change.id)}
