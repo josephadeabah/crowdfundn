@@ -68,13 +68,16 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
   // Helper function to safely extract description
   const stripHtmlTags = (html: string): string => {
     if (!html) return '';
-
-    // Simple and effective HTML tag stripping
     return html.replace(/<[^>]*>/g, '');
   };
 
-  // Then update your existing getDescription function:
-  const getDescription = (investment: any): string => {
+  const truncateText = (text: string, maxLength: number): string => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
+  };
+
+  const getDescription = (investment: any, maxLength: number = 120): string => {
     let description = '';
 
     if (typeof investment.description === 'string') {
@@ -87,12 +90,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       return 'No description available';
     }
 
-    // Strip HTML tags and clean up whitespace
     const cleanDescription = stripHtmlTags(description)
       .replace(/\s+/g, ' ')
       .trim();
 
-    return cleanDescription || 'No description available';
+    return truncateText(cleanDescription, maxLength);
   };
 
   // Helper function to safely extract title
@@ -152,7 +154,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       id: investment.id?.toString() || Math.random().toString(),
       company: getTitle(investment),
       title: getTitle(investment),
-      description: getDescription(investment),
+      description: getDescription(investment), // Default 200 chars
       amount: formatCurrency(
         getInvestmentAmount(investment),
         getCurrencySymbol(investment),
@@ -580,8 +582,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                         <h4 className="font-semibold text-gray-900">
                           {getTitle(investment)}
                         </h4>
+                        // In your approved section, use a shorter version if
+                        desired:
                         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                          {getDescription(investment)}
+                          {getDescription(investment, 120)}{' '}
+                          {/* Shorter for compact list */}
                         </p>
                         <div className="flex items-center space-x-4 mt-2">
                           <Badge variant="outline" className="text-xs">
