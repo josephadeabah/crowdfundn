@@ -582,8 +582,6 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                         <h4 className="font-semibold text-gray-900">
                           {getTitle(investment)}
                         </h4>
-                        // In your approved section, use a shorter version if
-                        desired:
                         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                           {getDescription(investment, 120)}{' '}
                           {/* Shorter for compact list */}
