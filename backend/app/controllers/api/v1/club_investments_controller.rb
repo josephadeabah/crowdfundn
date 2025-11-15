@@ -107,16 +107,17 @@ module Api
         proposal_service = ClubInvestmentProposalService.new(@club, @current_user)
         result = proposal_service.generate_proposals_from_ai_recommendations(limit: limit)
         
-        if result[:success]
+        if result[:success] || result[:proposals].any?
+          # Return success even if there were some duplicates, as long as we have proposals
           render json: {
             success: true,
             proposals: result[:proposals],
-            message: "Generated #{result[:proposals].count} new investment proposals"
+            message: "Generated #{result[:proposals].count} investment proposals"
           }
         else
           render json: {
             success: false,
-            error: result[:error],
+            error: result[:error] || 'No proposals could be generated',
             proposals: []
           }, status: :unprocessable_entity
         end
