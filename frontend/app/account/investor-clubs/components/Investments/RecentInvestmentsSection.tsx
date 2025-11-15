@@ -18,9 +18,7 @@ export const RecentInvestmentsSection: React.FC<
     >
       <div className="flex items-center justify-between mb-3 lg:mb-4">
         <h3 className="text-lg lg:text-xl font-semibold">Recent Investments</h3>
-        <span className="text-xs lg:text-sm text-gray-500">
-          {0} total
-        </span>
+        <span className="text-xs lg:text-sm text-gray-500">{0} total</span>
       </div>
       <div className="bg-white rounded-sm divide-y">
         {/* {investments?.slice(0, 5)?.map((investment) => (

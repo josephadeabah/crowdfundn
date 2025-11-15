@@ -241,7 +241,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
             <div>
               <CardTitle>Approved Campaigns</CardTitle>
               <CardDescription>
-                Campaigns that have been approved by club members
+                Campaigns that have been approved by club members for investment
               </CardDescription>
             </div>
             <Button
