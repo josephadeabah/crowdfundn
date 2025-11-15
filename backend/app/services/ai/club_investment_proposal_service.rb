@@ -16,7 +16,16 @@ class ClubInvestmentProposalService
         result[:recommendations].each do |rec|
           campaign = rec[:campaign]
           
-          # Create a club investment proposal
+          # CHECK FOR EXISTING PROPOSAL FIRST
+          existing_investment = @club.club_investments.find_by(campaign: campaign, status: 'voting')
+          
+          if existing_investment
+            # Use existing proposal instead of creating a new one
+            proposals << transform_investment_for_frontend(existing_investment, rec)
+            next
+          end
+          
+          # Create a new club investment proposal only if it doesn't exist
           club_investment = @club.club_investments.new(
             campaign: campaign,
             investment_amount: calculate_proposed_amount(campaign),
@@ -33,6 +42,11 @@ class ClubInvestmentProposalService
             proposals << transform_investment_for_frontend(club_investment, rec)
           else
             Rails.logger.error "Failed to create club investment: #{club_investment.errors.full_messages}"
+            # If save fails due to duplicate, try to find existing one
+            if club_investment.errors.details[:campaign_id]&.any? { |error| error[:error] == :taken }
+              existing = @club.club_investments.find_by(campaign: campaign)
+              proposals << transform_investment_for_frontend(existing, rec) if existing
+            end
           end
         end
         
