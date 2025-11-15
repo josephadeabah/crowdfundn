@@ -48,7 +48,7 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
     },
     {
       id: 'investments-stat',
-      displayValue: formatNumber(investmentsCount),
+      displayValue: formatNumber(0),
       fullValue: investmentsCount.toLocaleString(),
       label: 'Investments',
       type: 'number',

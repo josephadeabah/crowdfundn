@@ -19,11 +19,11 @@ export const RecentInvestmentsSection: React.FC<
       <div className="flex items-center justify-between mb-3 lg:mb-4">
         <h3 className="text-lg lg:text-xl font-semibold">Recent Investments</h3>
         <span className="text-xs lg:text-sm text-gray-500">
-          {investments.length} total
+          {0} total
         </span>
       </div>
       <div className="bg-white rounded-sm divide-y">
-        {investments?.slice(0, 5)?.map((investment) => (
+        {/* {investments?.slice(0, 5)?.map((investment) => (
           <div key={investment.id} className="p-3 lg:p-4">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
               <div className="flex-1 min-w-0">
@@ -54,7 +54,7 @@ export const RecentInvestmentsSection: React.FC<
               </div>
             </div>
           </div>
-        ))}
+        ))} */}
       </div>
     </motion.div>
   );
