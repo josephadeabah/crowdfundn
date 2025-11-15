@@ -4,7 +4,11 @@ import { Club, Membership } from '../../clubTypes';
 import MembershipActions from './MembershipActions';
 import { TabComponentProps } from '../types/club-details-types';
 
-const ActionsTab: React.FC<TabComponentProps> = ({
+interface ActionsTabProps extends TabComponentProps {
+  onProposeInvestment?: () => void; // Add this prop
+}
+
+const ActionsTab: React.FC<ActionsTabProps> = ({
   club,
   myMembership,
   actionLoading,
@@ -14,7 +18,8 @@ const ActionsTab: React.FC<TabComponentProps> = ({
   onLeaveClub,
   onCancelRequest,
   onDeleteClub,
-  onMakeContribution, // Add this prop
+  onMakeContribution,
+  onProposeInvestment, // Add this prop
 }) => {
   const isAdmin =
     club.is_admin ||
@@ -149,7 +154,7 @@ const ActionsTab: React.FC<TabComponentProps> = ({
       {myMembership?.status === 'active' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
-            onClick={onMakeContribution} // Use the new prop instead of onFeatureClick
+            onClick={onMakeContribution}
             className="p-4 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors text-left"
           >
             <div className="font-semibold text-emerald-900">
@@ -161,7 +166,7 @@ const ActionsTab: React.FC<TabComponentProps> = ({
           </button>
 
           <button
-            onClick={() => onFeatureClick('Propose Investment')}
+            onClick={onProposeInvestment} // Use the new prop instead of onFeatureClick
             className="p-4 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors text-left"
           >
             <div className="font-semibold text-emerald-900">

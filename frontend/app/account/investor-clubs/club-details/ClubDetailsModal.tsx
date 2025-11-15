@@ -14,6 +14,7 @@ import ActionsTab from './components/ActionsTab';
 import { ContributionModal } from '../components/Contribution/ContributionModal';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { ShareChangesSection } from '../components/ShareChanges/ShareChangesSection';
+import MemberInvestmentProposalModal from '../components/VotingPanel/MemberInvestmentProposalModal';
 
 const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   isOpen,
@@ -29,6 +30,8 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const [featureMessage, setFeatureMessage] = useState('');
   const [transferAlert, setTransferAlert] = useState(false);
   const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
+  const [isInvestmentProposalModalOpen, setIsInvestmentProposalModalOpen] =
+    useState(false);
   const { token } = useAuth();
 
   const {
@@ -53,6 +56,11 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
 
   const handleMakeContribution = () => {
     setIsContributionModalOpen(true);
+  };
+
+  // NEW: Handler for propose investment
+  const handleProposeInvestment = () => {
+    setIsInvestmentProposalModalOpen(true);
   };
 
   // Simple close handler - no payment verification
@@ -101,6 +109,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
             onCancelRequest={handleCancelRequest}
             onDeleteClub={handleDeleteClub}
             onMakeContribution={handleMakeContribution}
+            onProposeInvestment={handleProposeInvestment} // Pass the new handler
           />
         );
       case 'share-history':
@@ -156,6 +165,13 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         token={token}
         formatCurrency={formatCurrency}
         showSuccess={false} // Disable success display in this modal
+      />
+
+      {/* NEW: Investment Proposal Modal */}
+      <MemberInvestmentProposalModal
+        isOpen={isInvestmentProposalModalOpen}
+        onClose={() => setIsInvestmentProposalModalOpen(false)}
+        club={club}
       />
 
       {/* Transfer Ownership Alert */}

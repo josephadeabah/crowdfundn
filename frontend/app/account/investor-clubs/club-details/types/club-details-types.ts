@@ -38,7 +38,7 @@ export interface TabComponentProps {
   onFeatureClick: (featureName: string) => void;
   onTabChange?: (tab: 'about' | 'members' | 'actions') => void;
   onMakeContribution?: () => void;
-  // Add the missing action handlers
+  onProposeInvestment?: () => void;
   onJoinClub?: () => void;
   onLeaveClub?: () => void;
   onCancelRequest?: () => void;
@@ -61,4 +61,5 @@ export interface ActionsTabProps extends TabComponentProps {
   onLeaveClub: () => void;
   onCancelRequest: () => void;
   onDeleteClub: () => void;
+  onProposeInvestment?: () => void;
 }
