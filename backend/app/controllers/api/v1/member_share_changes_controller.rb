@@ -15,7 +15,7 @@ module Api
                                           .includes(:investment_club_membership, :investment_club_contribution)
                                           .order(created_at: :desc)
                                           .page(params[:page])
-                                          .per(params[:per_page] || 10)
+                                          .per(params[:per_page] || 5)
         else
           # Regular members can only see their own changes
           membership = @club.membership_for(@current_user)
@@ -23,7 +23,7 @@ module Api
                                    .includes(:investment_club_contribution)
                                    .order(created_at: :desc)
                                    .page(params[:page])
-                                   .per(params[:per_page] || 10)
+                                   .per(params[:per_page] || 5)
         end
 
         render json: {
@@ -45,7 +45,7 @@ module Api
                                  .includes(:investment_club_contribution)
                                  .order(created_at: :desc)
                                  .page(params[:page])
-                                 .per(params[:per_page] || 10)
+                                 .per(params[:per_page] || 5)
 
         render json: {
           share_changes: share_changes.map { |sc| MemberShareChangeSerializer.new(sc, include_details: true).as_json },
