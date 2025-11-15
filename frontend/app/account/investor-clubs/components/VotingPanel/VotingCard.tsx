@@ -221,7 +221,7 @@ export const VotingCard: React.FC<VotingCardProps> = ({
             )}
           </div>
         )}
-        
+
         {/* Voting Buttons - Only show for active voting */}
         {!isApproved && !isRejected && !showResults && (
           <div className="flex gap-3 pt-2">

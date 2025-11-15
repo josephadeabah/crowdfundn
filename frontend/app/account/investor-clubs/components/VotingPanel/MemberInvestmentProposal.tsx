@@ -530,7 +530,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           </Button>
         </div>
       ) : (
-        approvedInvestments.map((investment) => {
+        approvedInvestments.map((investment: AIInvestment) => {
           if (!investment?.id) return null;
 
           const votingStats = investment.voting_stats || {};
@@ -564,9 +564,12 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                         <h4 className="font-semibold text-gray-900">
                           {getTitle(investment)}
                         </h4>
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                          {getDescription(investment)}
-                        </p>
+                        <div
+                          className="prose dark:prose-dark max-w-none"
+                          dangerouslySetInnerHTML={{
+                            __html: getDescription(investment) || '',
+                          }}
+                        />
                         <div className="flex items-center space-x-4 mt-2">
                           <Badge variant="outline" className="text-xs">
                             {getCategory(investment)}
