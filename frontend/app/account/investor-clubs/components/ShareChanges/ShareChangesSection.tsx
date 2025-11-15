@@ -1,5 +1,3 @@
-// app/account/investor-clubs/components/ShareChanges/ShareChangesSection.tsx
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ShareChange, ShareChangesResponse } from '../../clubTypes';
@@ -13,6 +11,7 @@ import {
   DollarSign,
   Calendar,
   AlertCircle,
+  Users,
 } from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
 
@@ -35,11 +34,6 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
     per_page: 5,
     total_count: 0,
   });
-  const [summary, setSummary] = useState<{
-    total_changes: number;
-    current_share: number;
-    total_contributed: number;
-  } | null>(null);
   const [expandedChange, setExpandedChange] = useState<string | null>(null);
 
   // Safe number formatting functions
@@ -68,7 +62,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
 
     try {
       const response: ShareChangesResponse =
-        await shareChangeService.getMyShareChanges(
+        await shareChangeService.getShareChanges(
           token,
           club.slug,
           page,
@@ -89,17 +83,6 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
 
       setShareChanges(validatedChanges);
       setPagination(response.pagination);
-
-      // Validate summary data
-      if (response.summary) {
-        setSummary({
-          total_changes: safeNumber(response.summary.total_changes),
-          current_share: safeNumber(response.summary.current_share),
-          total_contributed: safeNumber(response.summary.total_contributed),
-        });
-      } else {
-        setSummary(null);
-      }
     } catch (err: any) {
       // Handle specific error cases
       if (
@@ -177,7 +160,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+              className="flex items-center justify-between p-4 border border-gray-200 rounded-sm"
             >
               <div className="space-y-2">
                 <div className="h-4 bg-gray-200 rounded w-32"></div>
@@ -198,19 +181,18 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
       className="bg-white rounded-sm p-4 lg:p-6"
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Share Change History</h3>
-        {summary && (
-          <div className="text-sm text-gray-600">
-            Current Share:{' '}
-            <span className="font-semibold text-emerald-600">
-              {safeToFixed(summary.current_share, 2)}%
-            </span>
-          </div>
-        )}
+        <div className="flex items-center space-x-2">
+          <Users className="w-5 h-5 text-emerald-600" />
+          <h3 className="text-lg font-semibold">All Members Share Changes</h3>
+        </div>
+        <div className="text-sm text-gray-600">
+          Total Changes:{' '}
+          <span className="font-semibold">{pagination.total_count}</span>
+        </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <div className="bg-red-50 border border-red-200 rounded-sm p-4 mb-4">
           <div className="flex items-center">
             <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
             <p className="text-red-800 text-sm">{error}</p>
@@ -231,7 +213,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
           </div>
           <p className="text-sm">No share changes recorded yet.</p>
           <p className="text-xs mt-1">
-            Your share changes will appear here after contributions.
+            Share changes will appear here after contributions.
           </p>
         </div>
       ) : (
@@ -240,7 +222,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
             {shareChanges.map((change) => (
               <div
                 key={change.id}
-                className="border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
+                className="rounded-sm transition-colors"
               >
                 <button
                   onClick={() => toggleExpand(change.id)}
@@ -250,12 +232,17 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
                     {getChangeIcon(change.change_amount)}
                     <div>
                       <div className="font-medium text-gray-900">
-                        {getChangeSymbol(change.change_amount)}
-                        {safeToFixed(change.change_amount, 4)}%
+                        {change.membership?.user?.full_name || 'Unknown Member'}
                       </div>
                       <div className="text-sm text-gray-500 flex items-center space-x-2">
                         <Calendar className="w-3 h-3" />
                         <span>{formatDate(change.created_at)}</span>
+                        <span
+                          className={`font-medium ${getChangeColor(change.change_amount)}`}
+                        >
+                          {getChangeSymbol(change.change_amount)}
+                          {safeToFixed(change.change_amount, 4)}%
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -285,6 +272,13 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
                       <div>
                         <div className="text-gray-600 mb-2">Change Details</div>
                         <div className="space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Member:</span>
+                            <span className="font-medium">
+                              {change.membership?.user?.full_name ||
+                                'Unknown Member'}
+                            </span>
+                          </div>
                           <div className="flex justify-between">
                             <span className="text-gray-500">
                               Previous Share:

@@ -1,5 +1,3 @@
-// app/account/investor-clubs/services/shareChangeService.ts
-
 import { ShareChangesResponse } from '../clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -71,7 +69,7 @@ const sanitizeShareChange = (change: any) => {
 };
 
 export const shareChangeService = {
-  // Get all share changes for a club (admin only)
+  // Get all share changes for a club (all members can see all changes)
   getShareChanges: async (
     token: string,
     clubId: string,
@@ -90,30 +88,6 @@ export const shareChangeService = {
         per_page: perPage,
         total_count: 0,
       },
-      summary: response.summary || null,
-    };
-  },
-
-  // Get my share changes
-  getMyShareChanges: async (
-    token: string,
-    clubId: string,
-    page: number = 1,
-    perPage: number = 5,
-  ): Promise<ShareChangesResponse> => {
-    const endpoint = `/investment_clubs/${clubId}/share_changes/my_changes?page=${page}&per_page=${perPage}`;
-    const response = await apiCall(endpoint, token);
-
-    // Sanitize the response data
-    return {
-      share_changes: response.share_changes?.map(sanitizeShareChange) || [],
-      pagination: response.pagination || {
-        current_page: page,
-        total_pages: 1,
-        per_page: perPage,
-        total_count: 0,
-      },
-      summary: response.summary || null,
     };
   },
 };

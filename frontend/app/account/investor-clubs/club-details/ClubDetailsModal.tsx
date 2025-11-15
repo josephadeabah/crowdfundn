@@ -1,4 +1,3 @@
-// app/account/investor-clubs/club-details/ClubDetailsModal.tsx
 'use client';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';

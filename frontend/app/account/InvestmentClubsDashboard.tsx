@@ -1,4 +1,3 @@
-// app/account/investor-clubs/InvestmentClubsDashboard.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
