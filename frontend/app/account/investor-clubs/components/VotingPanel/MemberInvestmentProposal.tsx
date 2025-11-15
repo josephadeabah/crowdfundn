@@ -325,10 +325,27 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
             'success',
           );
         }
+      } else if (response.status === 422) {
+        // Handle duplicate error gracefully
+        const errorData = await response.json();
+        if (errorData.proposals && errorData.proposals.length > 0) {
+          // Some proposals were created despite the error
+          setInvestments(errorData.proposals);
+          showToast(
+            'Proposals Partially Generated',
+            `Some proposals were created, but duplicates were skipped`,
+            'warning',
+          );
+        } else {
+          showToast('Info', 'No new proposals generated - you may already have active proposals', 'warning');
+          // Refresh to show existing proposals
+          fetchInvestmentData();
+        }
       } else {
         throw new Error('Failed to generate proposals');
       }
     } catch (err) {
+      console.error('Error generating proposals:', err);
       showToast('Error', 'Failed to generate proposals', 'error');
     } finally {
       setLoading(false);
