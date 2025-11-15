@@ -23,6 +23,7 @@ import {
   User,
   PieChart,
   AlertCircle,
+  ExternalLink,
 } from 'lucide-react';
 import { Club } from '../../clubTypes';
 
@@ -68,6 +69,7 @@ interface DashboardApprovedCampaign {
     current_amount: number;
     currency: string;
     currency_symbol: string;
+    slug: string;
     fundraiser: {
       id: string;
       name: string;
@@ -83,55 +85,6 @@ interface DashboardApprovedCampaign {
   voting_stats?: VotingStats;
 }
 
-// Updated interface to match the actual API response
-interface ApiClubInvestment {
-  id: string;
-  company: string;
-  description: string;
-  amount: string; // This comes as string like "22.3K", "750.0K"
-  sector: string;
-  votes: number;
-  threshold: number;
-  match_score: string;
-  reasoning: string;
-  ai_analysis: {
-    deal_score: string | number;
-    risk_score: string | number;
-    risk_category: string;
-    sentiment_analysis: string;
-    strengths: string[];
-  };
-  status: 'voting' | 'approved' | 'rejected' | 'pending';
-  voting_stats: VotingStats;
-  club_investment_id: number;
-  campaign_id: number;
-  proposed_amount: string; // This is the actual investment amount as string
-  currency_symbol: string | null;
-}
-
-interface ClubInvestment {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  goal_amount: number;
-  current_amount: number;
-  currency: string;
-  currency_symbol: string;
-  investment_amount: number;
-  status: 'pending' | 'voting' | 'approved' | 'rejected';
-  voting_stats: VotingStats;
-  threshold: number;
-  match_score: number;
-  ai_analysis: {
-    deal_score: number;
-    risk_score: number;
-    risk_category: string;
-    sentiment_analysis: string;
-    strengths: string[];
-  };
-}
-
 const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   const { token } = useAuth();
   const [approvedCampaigns, setApprovedCampaigns] = useState<
@@ -140,29 +93,11 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   const [portfolioData, setPortfolioData] = useState<ClubPortfolioData | null>(
     null,
   );
-  const [activeInvestments, setActiveInvestments] = useState<ClubInvestment[]>(
-    [],
-  );
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
   const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(
     new Set(),
   );
-
-  // Helper function to parse amount strings like "22.3K", "750.0K" to numbers
-  const parseAmountString = (amountStr: string): number => {
-    if (!amountStr) return 0;
-
-    const cleanStr = amountStr.replace(/[^\d.Kk]/g, '');
-
-    if (cleanStr.includes('K') || cleanStr.includes('k')) {
-      const numberPart = parseFloat(cleanStr.replace(/[Kk]/g, ''));
-      return isNaN(numberPart) ? 0 : numberPart * 1000;
-    }
-
-    const number = parseFloat(cleanStr);
-    return isNaN(number) ? 0 : number;
-  };
 
   // Safe number formatting helper
   const safeToLocaleString = (
@@ -195,49 +130,11 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
     return Math.min(100, (current / goal) * 100);
   };
 
-  // Transform API investment data to our component format
-  const transformInvestmentData = (
-    apiInvestment: ApiClubInvestment,
-  ): ClubInvestment => {
-    const investmentAmount =
-      parseFloat(apiInvestment.proposed_amount) ||
-      parseAmountString(apiInvestment.amount);
-    const goalAmount = parseAmountString(apiInvestment.amount);
-
-    // Parse AI analysis scores safely
-    const dealScore =
-      typeof apiInvestment.ai_analysis.deal_score === 'string'
-        ? parseFloat(apiInvestment.ai_analysis.deal_score)
-        : Number(apiInvestment.ai_analysis.deal_score) || 0;
-
-    const riskScore =
-      typeof apiInvestment.ai_analysis.risk_score === 'string'
-        ? parseFloat(apiInvestment.ai_analysis.risk_score)
-        : Number(apiInvestment.ai_analysis.risk_score) || 0;
-
-    return {
-      id: apiInvestment.id,
-      title: apiInvestment.company,
-      description: apiInvestment.description,
-      category: apiInvestment.sector,
-      goal_amount: goalAmount,
-      current_amount: investmentAmount, // Using proposed amount as current for display
-      currency: 'USD', // Default currency
-      currency_symbol: apiInvestment.currency_symbol || '$',
-      investment_amount: investmentAmount,
-      status: apiInvestment.status,
-      voting_stats: apiInvestment.voting_stats,
-      threshold: apiInvestment.threshold,
-      match_score: parseFloat(apiInvestment.match_score) || 0,
-      ai_analysis: {
-        deal_score: dealScore,
-        risk_score: riskScore,
-        risk_category: apiInvestment.ai_analysis.risk_category || 'medium',
-        sentiment_analysis:
-          apiInvestment.ai_analysis.sentiment_analysis || 'neutral',
-        strengths: apiInvestment.ai_analysis.strengths || [],
-      },
-    };
+  // Navigate to campaign
+  const handleNavigateToCampaign = (slug: string) => {
+    if (slug) {
+      window.open(`/campaign/${slug}`, '_blank');
+    }
   };
 
   // Fetch all dashboard data
@@ -274,6 +171,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
           ? approvedResponse.json()
           : { success: false, approved_campaigns: [] },
       ]);
+
       // Handle approved campaigns data
       if (approvedData?.success) {
         setApprovedCampaigns(
@@ -286,10 +184,8 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      // Set empty states on error
       setApprovedCampaigns([]);
       setPortfolioData(null);
-      setActiveInvestments([]);
     } finally {
       setLoading(false);
       setStatsLoading(false);
@@ -411,9 +307,24 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-900 truncate">
-                              {campaignData.title || 'Untitled Campaign'}
-                            </h3>
+                            <div className="flex items-center justify-between">
+                              <h3 className="font-semibold text-gray-900 truncate">
+                                {campaignData.title || 'Untitled Campaign'}
+                              </h3>
+                              {campaignData.slug && (
+                                <Button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleNavigateToCampaign(campaignData.slug);
+                                  }}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="ml-2"
+                                >
+                                  <ExternalLink className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
                             <div className="flex items-center space-x-2 mt-1">
                               <Badge variant="secondary" className="text-xs">
                                 {campaignData.category || 'Uncategorized'}
@@ -500,6 +411,14 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                                   {campaignData.category || 'Uncategorized'}
                                 </Badge>
                               </div>
+                              {campaignData.slug && (
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-gray-600">Slug:</span>
+                                  <span className="font-medium">
+                                    {campaignData.slug}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           </div>
 
@@ -591,6 +510,21 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                                 )}
                               </span>
                             </div>
+
+                            {/* View Campaign Button */}
+                            {campaignData.slug && (
+                              <div className="pt-2">
+                                <Button
+                                  onClick={() => handleNavigateToCampaign(campaignData.slug)}
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full"
+                                >
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  View Campaign Details
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
