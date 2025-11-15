@@ -15,17 +15,6 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 
-// Add interface for CampaignDescription
-interface CampaignDescription {
-  id: number;
-  name: string;
-  body: string;
-  record_type: string;
-  record_id: number;
-  created_at: string;
-  updated_at: string;
-}
-
 // Safe number formatting helper
 const safeToLocaleString = (
   value: number | undefined | null,
@@ -117,6 +106,34 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     }
   };
 
+  // Helper function to prepare investment for VotingCard
+  const prepareInvestmentForVotingCard = (investment: any): Investment => {
+    const votingStats = investment.voting_stats || {};
+    const totalMembers = club?.current_members_count || 1;
+    
+    return {
+      id: investment.id?.toString() || Math.random().toString(),
+      company: getTitle(investment),
+      title: getTitle(investment),
+      description: getDescription(investment),
+      amount: formatCurrency(getInvestmentAmount(investment), getCurrencySymbol(investment)),
+      sector: getCategory(investment),
+      votes: votingStats.yes_votes || 0,
+      threshold: totalMembers,
+      match_score: investment.match_score || 50,
+      reasoning: investment.reasoning || 'Investment opportunity',
+      ai_analysis: investment.ai_analysis || {
+        deal_score: Math.floor(Math.random() * 30) + 60,
+        risk_score: Math.floor(Math.random() * 30) + 20,
+        risk_category: 'medium',
+        sentiment_analysis: 'positive',
+        strengths: ['Market potential', 'Team experience'],
+      },
+      status: investment.status || 'voting',
+      voting_stats: votingStats,
+    };
+  };
+
   // Fetch investment proposals and approved campaigns
   const fetchInvestmentData = async () => {
     try {
@@ -165,7 +182,6 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
         }
       }
 
-      // Use investments data directly without transformation
       setInvestments(investmentsData);
 
       // Fetch approved campaigns
@@ -300,9 +316,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       };
 
       const votingStats = updatedInvestment.voting_stats || {};
-      const isNowApproved = votingStats.threshold_met;
+      const totalMembers = club?.current_members_count || 1;
+      const allMembersVoted = votingStats.total_votes >= totalMembers;
+      const thresholdMet = allMembersVoted && votingStats.yes_votes > votingStats.no_votes;
 
-      if (isNowApproved) {
+      if (thresholdMet) {
         showToast(
           '🎉 Investment Approved!',
           `${getTitle(investment)} has been approved by all members!`,
@@ -323,8 +341,6 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           prev.map((inv) => (inv.id === id ? updatedInvestment : inv)),
         );
         const totalVotes = votingStats.total_votes || 0;
-        const totalMembers =
-          votingStats.total_members || club.current_members_count;
         showToast(
           'Vote Recorded',
           `${totalVotes}/${totalMembers} members have voted`,
@@ -354,10 +370,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       };
 
       const votingStats = updatedInvestment.voting_stats || {};
-      const isNowRejected =
-        votingStats.all_members_voted && !votingStats.threshold_met;
+      const totalMembers = club?.current_members_count || 1;
+      const allMembersVoted = votingStats.total_votes >= totalMembers;
+      const thresholdMet = allMembersVoted && votingStats.yes_votes > votingStats.no_votes;
 
-      if (isNowRejected) {
+      if (allMembersVoted && !thresholdMet) {
         showToast(
           'Vote Recorded',
           `${getTitle(investment)} has been rejected`,
@@ -374,8 +391,6 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           prev.map((inv) => (inv.id === id ? updatedInvestment : inv)),
         );
         const totalVotes = votingStats.total_votes || 0;
-        const totalMembers =
-          votingStats.total_members || club.current_members_count;
         showToast(
           'Vote Recorded',
           `${totalVotes}/${totalMembers} members have voted`,
@@ -439,13 +454,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   )}
                 >
                   <VotingCard
-                    investment={{
-                      ...investment,
-                      company: getTitle(investment),
-                      description: getDescription(investment),
-                      amount: formatCurrency(getInvestmentAmount(investment), getCurrencySymbol(investment)),
-                      sector: getCategory(investment),
-                    }}
+                    investment={prepareInvestmentForVotingCard(investment)}
                     onInvest={handleInvest}
                     onPass={handlePass}
                     isAnimating={animatingId === investment.id}
@@ -453,13 +462,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 </div>
               ) : (
                 <VotingCard
-                  investment={{
-                    ...investment,
-                    company: getTitle(investment),
-                    description: getDescription(investment),
-                    amount: formatCurrency(getInvestmentAmount(investment), getCurrencySymbol(investment)),
-                    sector: getCategory(investment),
-                  }}
+                  investment={prepareInvestmentForVotingCard(investment)}
                   onInvest={() => {}}
                   onPass={() => {}}
                   isAnimating={false}
