@@ -190,6 +190,23 @@ const InvestmentClubsDashboard: React.FC = () => {
     }).format(amount);
   };
 
+  // FIXED: Get current user's membership and share without useMemo
+  const getCurrentUserShare = () => {
+    if (!selectedClub || !user || !members.length) return undefined;
+    
+    // Find the current user's membership
+    const currentUserMembership = members.find((member) => {
+      // Handle both string and number ID comparisons
+      const memberUserId = Number(member.user.id);
+      const currentUserId = Number(user.id);
+      return memberUserId === currentUserId;
+    });
+    
+    return currentUserMembership?.contributed_share;
+  };
+
+  const currentUserShare = getCurrentUserShare();
+
   if (loading) {
     return <LoadingState />;
   }
@@ -232,14 +249,6 @@ const InvestmentClubsDashboard: React.FC = () => {
   }
 
   const currentClub = selectedClub || clubs[0];
-
-  // Get current user's membership and share
-  const currentUserMembership = React.useMemo(() => {
-    if (!currentClub || !user) return null;
-    return members.find((member) => Number(member.user.id) === user.id);
-  }, [currentClub, user, members]);
-
-  const currentUserShare = currentUserMembership?.contributed_share;
 
   return (
     <div className="min-h-screen flex bg-gray-50 text-gray-900">
