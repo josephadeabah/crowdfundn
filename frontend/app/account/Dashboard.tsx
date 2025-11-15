@@ -72,7 +72,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Total Donations Card */}
-        <Card className="p-4 bg-white rounded-lg border-none shadow-sm hover:bg-gray-100 transition-shadow duration-200 relative">
+        <Card className="p-4 bg-white rounded-sm border-none shadow-none hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-blue-50 p-2 rounded-full">
             <Heart className="h-5 w-5 text-blue-500" />
           </div>
@@ -94,7 +94,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Total Investments Card */}
-        <Card className="p-4 bg-white rounded-lg border-none shadow-sm hover:bg-gray-100 transition-shadow duration-200 relative">
+        <Card className="p-4 bg-white rounded-sm border-none shadow-none hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-green-50 p-2 rounded-full">
             <TrendingUpIcon className="h-5 w-5 text-green-500" />
           </div>
@@ -116,7 +116,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Total Funding Card */}
-        <Card className="p-4 bg-white rounded-lg border-none shadow-sm hover:bg-gray-100 transition-shadow duration-200 relative">
+        <Card className="p-4 bg-white rounded-sm border-none shadow-none hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-purple-50 p-2 rounded-full">
             <Coins className="h-5 w-5 text-purple-500" />
           </div>
@@ -138,7 +138,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Total Backers Card */}
-        <Card className="p-4 bg-white rounded-lg border-none shadow-sm hover:bg-gray-100 transition-shadow duration-200 relative">
+        <Card className="p-4 bg-white rounded-sm border-none shadow-none hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-emerald-50 p-2 rounded-full">
             <Users className="h-5 w-5 text-emerald-500" />
           </div>
@@ -153,7 +153,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Fundraising Goal Card */}
-        <Card className="p-4 bg-white rounded-lg border-none shadow-sm hover:bg-gray-100 transition-shadow duration-200 relative">
+        <Card className="p-4 bg-white rounded-sm border-none shadow-none hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-orange-50 p-2 rounded-full">
             <Target className="h-5 w-5 text-orange-500" />
           </div>
@@ -172,7 +172,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Pending Widthdrwals Card */}
-        <Card className="p-4 bg-white rounded-lg border-none shadow-sm hover:bg-gray-100 transition-shadow duration-200 relative">
+        <Card className="p-4 bg-white rounded-sm border-none shadow-none hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-lime-50 p-2 rounded-full">
             <Clock className="h-5 w-5 text-lime-500" />
           </div>
@@ -191,7 +191,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Recent Activity Card */}
-        <Card className="p-4 bg-white rounded-lg border-none shadow-sm hover:bg-gray-100 transition-shadow duration-200 relative">
+        <Card className="p-4 bg-white rounded-sm border-none shadow-none hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-purple-50 p-2 rounded-full">
             <BarChart2 className="h-5 w-5 text-purple-500" />
           </div>
@@ -208,7 +208,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Campaign Performance Card */}
-        <Card className="p-4 bg-white rounded-lg border-none shadow-sm hover:bg-gray-100 transition-shadow duration-200 relative">
+        <Card className="p-4 bg-white rounded-sm border-none shadow-none hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-amber-50 p-2 rounded-full">
             <TrendingUp className="h-5 w-5 text-amber-500" />
           </div>
@@ -223,7 +223,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Active Campaigns Card */}
-        <Card className="p-4 bg-white rounded-lg border-none shadow-sm hover:bg-gray-100 transition-shadow duration-200 relative">
+        <Card className="p-4 bg-white rounded-sm border-none shadow-none hover:bg-gray-100 transition-shadow duration-200 relative">
           <div className="absolute top-2 right-2 bg-gray-50 p-2 rounded-full">
             <Activity className="h-5 w-5 text-gray-500" />
           </div>
@@ -241,7 +241,7 @@ export default function Dashboard() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
         {/* Metrics Grid */}
-        <Card className="p-6 bg-white rounded-lg border-none shadow-none w-full">
+        <Card className="p-6 bg-white rounded-sm border-none shadow-none w-full">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-700">
               Campaign Overview
