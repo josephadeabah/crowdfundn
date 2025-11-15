@@ -1,5 +1,11 @@
 import React from 'react';
-import { ThumbsUp, ThumbsDown, Star, CheckCircle } from 'lucide-react';
+import {
+  ThumbsUp,
+  ThumbsDown,
+  Star,
+  CheckCircle,
+  ExternalLink,
+} from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import {
   Card,
@@ -31,6 +37,7 @@ export interface Investment {
     approval_percentage: number;
     threshold_met: boolean;
   };
+  campaign_slug?: string; // ADD CAMPAIGN SLUG
 }
 
 interface VotingCardProps {
@@ -39,6 +46,7 @@ interface VotingCardProps {
   onPass: (id: string) => void;
   isAnimating: boolean;
   showResults?: boolean;
+  onViewCampaign?: () => void; // ADD VIEW CAMPAIGN CALLBACK
 }
 
 export const VotingCard: React.FC<VotingCardProps> = ({
@@ -47,6 +55,7 @@ export const VotingCard: React.FC<VotingCardProps> = ({
   onPass,
   isAnimating,
   showResults = false,
+  onViewCampaign,
 }) => {
   const progress = (investment.votes / investment.threshold) * 100;
   const isApproved = investment.status === 'approved';
@@ -119,12 +128,26 @@ export const VotingCard: React.FC<VotingCardProps> = ({
             )}
           </div>
         </div>
-        <CardTitle className="text-xl font-bold text-gray-500">
-          {investment.title || investment.company}
-        </CardTitle>
-        <CardDescription className="text-sm leading-relaxed">
-          {renderDescription(investment.description)}
-        </CardDescription>
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <CardTitle className="text-xl font-bold text-gray-500">
+              {investment.title || investment.company}
+            </CardTitle>
+            <CardDescription className="text-sm leading-relaxed">
+              {renderDescription(investment.description)}
+            </CardDescription>
+          </div>
+          {investment.campaign_slug && onViewCampaign && (
+            <Button
+              onClick={onViewCampaign}
+              variant="ghost"
+              size="sm"
+              className="ml-2 flex-shrink-0"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
         {investment.reasoning && (
           <div className="mt-2 p-2 bg-blue-50 rounded-lg">
             <p className="text-xs text-blue-700">💡 {investment.reasoning}</p>
@@ -197,6 +220,19 @@ export const VotingCard: React.FC<VotingCardProps> = ({
               </Badge>
             )}
           </div>
+        )}
+
+        {/* View Campaign Button - Show for all states */}
+        {investment.campaign_slug && onViewCampaign && (
+          <Button
+            onClick={onViewCampaign}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            <ExternalLink className="h-4 w-4 mr-2" />
+            View Campaign Details
+          </Button>
         )}
 
         {/* Voting Buttons - Only show for active voting */}

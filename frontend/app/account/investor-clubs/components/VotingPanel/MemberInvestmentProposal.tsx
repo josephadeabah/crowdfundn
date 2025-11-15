@@ -9,6 +9,7 @@ import {
   Grid,
   Plus,
   Target,
+  ExternalLink,
 } from 'lucide-react';
 import Toast from '@/app/components/toast/Toast';
 import { useAuth } from '@/app/context/auth/AuthContext';
@@ -37,6 +38,7 @@ interface AIInvestment extends Investment {
   voting_stats?: any;
   club_investment_id?: string;
   campaign_id?: string;
+  campaign_slug?: string; // ADD CAMPAIGN SLUG
   title?: string;
   category?: string;
   currency_symbol?: string;
@@ -79,7 +81,12 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 
   // Helper function to safely extract title
   const getTitle = (investment: any): string => {
-    return investment.campaign?.title || investment.title || investment.company || 'Unknown Company';
+    return (
+      investment.campaign?.title ||
+      investment.title ||
+      investment.company ||
+      'Unknown Company'
+    );
   };
 
   // Helper function to safely extract category
@@ -89,16 +96,30 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 
   // Helper function to safely extract currency symbol
   const getCurrencySymbol = (investment: any): string => {
-    return investment.campaign?.currency_symbol || investment.currency_symbol || '$';
+    return (
+      investment.campaign?.currency_symbol || investment.currency_symbol || '$'
+    );
   };
 
   // Helper function to safely extract investment amount
   const getInvestmentAmount = (investment: any): number => {
-    return investment.investment_amount || parseFloat(investment.proposed_amount) || 0;
+    return (
+      investment.investment_amount ||
+      parseFloat(investment.proposed_amount) ||
+      0
+    );
+  };
+
+  // Helper function to safely extract campaign slug
+  const getCampaignSlug = (investment: any): string => {
+    return investment.campaign_slug || investment.campaign?.slug || '';
   };
 
   // Helper function to format currency
-  const formatCurrency = (amount: number, currencySymbol: string = '$'): string => {
+  const formatCurrency = (
+    amount: number,
+    currencySymbol: string = '$',
+  ): string => {
     if (amount >= 1000) {
       return `${currencySymbol}${(amount / 1000).toFixed(1)}K`;
     } else {
@@ -110,13 +131,16 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
   const prepareInvestmentForVotingCard = (investment: any): Investment => {
     const votingStats = investment.voting_stats || {};
     const totalMembers = club?.current_members_count || 1;
-    
+
     return {
       id: investment.id?.toString() || Math.random().toString(),
       company: getTitle(investment),
       title: getTitle(investment),
       description: getDescription(investment),
-      amount: formatCurrency(getInvestmentAmount(investment), getCurrencySymbol(investment)),
+      amount: formatCurrency(
+        getInvestmentAmount(investment),
+        getCurrencySymbol(investment),
+      ),
       sector: getCategory(investment),
       votes: votingStats.yes_votes || 0,
       threshold: totalMembers,
@@ -131,7 +155,15 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       },
       status: investment.status || 'voting',
       voting_stats: votingStats,
+      campaign_slug: getCampaignSlug(investment), // ADD CAMPAIGN SLUG
     };
+  };
+
+  // Navigate to campaign
+  const handleNavigateToCampaign = (slug: string) => {
+    if (slug) {
+      window.open(`/campaign/${slug}`, '_blank');
+    }
   };
 
   // Fetch investment proposals and approved campaigns
@@ -318,7 +350,8 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       const votingStats = updatedInvestment.voting_stats || {};
       const totalMembers = club?.current_members_count || 1;
       const allMembersVoted = votingStats.total_votes >= totalMembers;
-      const thresholdMet = allMembersVoted && votingStats.yes_votes > votingStats.no_votes;
+      const thresholdMet =
+        allMembersVoted && votingStats.yes_votes > votingStats.no_votes;
 
       if (thresholdMet) {
         showToast(
@@ -372,7 +405,8 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       const votingStats = updatedInvestment.voting_stats || {};
       const totalMembers = club?.current_members_count || 1;
       const allMembersVoted = votingStats.total_votes >= totalMembers;
-      const thresholdMet = allMembersVoted && votingStats.yes_votes > votingStats.no_votes;
+      const thresholdMet =
+        allMembersVoted && votingStats.yes_votes > votingStats.no_votes;
 
       if (allMembersVoted && !thresholdMet) {
         showToast(
@@ -458,6 +492,9 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                     onInvest={handleInvest}
                     onPass={handlePass}
                     isAnimating={animatingId === investment.id}
+                    onViewCampaign={() =>
+                      handleNavigateToCampaign(getCampaignSlug(investment))
+                    }
                   />
                 </div>
               ) : (
@@ -466,6 +503,9 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   onInvest={() => {}}
                   onPass={() => {}}
                   isAnimating={false}
+                  onViewCampaign={() =>
+                    handleNavigateToCampaign(getCampaignSlug(investment))
+                  }
                 />
               )}
             </div>
@@ -498,6 +538,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
             votingStats.total_members || club.current_members_count;
           const allMembersVoted = votingStats.all_members_voted || false;
           const thresholdMet = votingStats.threshold_met || false;
+          const campaignSlug = getCampaignSlug(investment);
 
           return (
             <div
@@ -517,24 +558,38 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                       }`}
                     />
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      {getTitle(investment)}
-                    </h4>
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                      {getDescription(investment)}
-                    </p>
-                    <div className="flex items-center space-x-4 mt-2">
-                      <Badge variant="outline" className="text-xs">
-                        {getCategory(investment)}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        Match: {investment.match_score || 0}%
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        Deal Score:{' '}
-                        {investment.ai_analysis?.deal_score || 'N/A'}
-                      </span>
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">
+                          {getTitle(investment)}
+                        </h4>
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                          {getDescription(investment)}
+                        </p>
+                        <div className="flex items-center space-x-4 mt-2">
+                          <Badge variant="outline" className="text-xs">
+                            {getCategory(investment)}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            Match: {investment.match_score || 0}%
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Deal Score:{' '}
+                            {investment.ai_analysis?.deal_score || 'N/A'}
+                          </span>
+                        </div>
+                      </div>
+                      {campaignSlug && (
+                        <Button
+                          onClick={() => handleNavigateToCampaign(campaignSlug)}
+                          variant="ghost"
+                          size="sm"
+                          className="ml-4 flex-shrink-0"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -595,6 +650,17 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   {getCurrencySymbol(investment)}
                   {safeToLocaleString(getInvestmentAmount(investment))}
                 </div>
+                {campaignSlug && (
+                  <Button
+                    onClick={() => handleNavigateToCampaign(campaignSlug)}
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 w-full"
+                  >
+                    <ExternalLink className="h-3 w-3 mr-1" />
+                    View Campaign
+                  </Button>
+                )}
               </div>
             </div>
           );

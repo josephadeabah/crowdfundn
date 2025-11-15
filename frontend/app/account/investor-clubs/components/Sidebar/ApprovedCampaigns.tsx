@@ -235,7 +235,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
     }
 
     return (
-      <Card>
+      <Card className="border-none shadow-none">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -290,7 +290,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                 return (
                   <div
                     key={campaign.id}
-                    className="border border-green-200 rounded-lg bg-green-50/50 hover:bg-green-50 transition-colors"
+                    className="rounded-sm bg-green-50/50 hover:bg-green-50 transition-colors"
                   >
                     {/* Campaign Header - Always Visible */}
                     <div
@@ -515,7 +515,9 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                             {campaignData.slug && (
                               <div className="pt-2">
                                 <Button
-                                  onClick={() => handleNavigateToCampaign(campaignData.slug)}
+                                  onClick={() =>
+                                    handleNavigateToCampaign(campaignData.slug)
+                                  }
                                   variant="outline"
                                   size="sm"
                                   className="w-full"
@@ -551,7 +553,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <ApprovedCampaignsSection />
     </div>
   );
