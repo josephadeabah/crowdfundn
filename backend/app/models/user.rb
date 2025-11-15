@@ -46,6 +46,7 @@ class User < ApplicationRecord
   has_many :campaigns, foreign_key: 'fundraiser_id', dependent: :destroy
   has_many :donations
   has_many :transfers, dependent: :destroy
+  has_many :club_transfers, dependent: :nullify
   has_many :archived_campaigns
   has_many :articles, foreign_key: 'author_id', dependent: :destroy
   has_one :subaccount, dependent: :destroy

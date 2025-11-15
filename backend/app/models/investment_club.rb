@@ -8,6 +8,7 @@ class InvestmentClub < ApplicationRecord
   has_many :club_transactions, dependent: :destroy
   has_many :active_memberships, -> { active }, class_name: 'InvestmentClubMembership'
   has_many :active_members, through: :active_memberships, source: :user
+  has_many :club_transfers, dependent: :destroy
   
   validates :name, :slug, presence: true
   validates :slug, uniqueness: true

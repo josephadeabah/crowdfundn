@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_14_160044) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_15_230215) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -267,6 +267,33 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_14_160044) do
     t.index ["reference"], name: "index_club_transactions_on_reference"
     t.index ["status"], name: "index_club_transactions_on_status"
     t.index ["transaction_type"], name: "index_club_transactions_on_transaction_type"
+  end
+
+  create_table "club_transfers", force: :cascade do |t|
+    t.bigint "investment_club_id", null: false
+    t.bigint "user_id", null: false
+    t.decimal "amount", precision: 15, scale: 2, null: false
+    t.string "currency", default: "GHS", null: false
+    t.string "status", default: "pending", null: false
+    t.text "reason"
+    t.string "failure_reason"
+    t.string "transfer_code"
+    t.string "reference"
+    t.string "recipient_code"
+    t.string "account_name"
+    t.string "account_number"
+    t.string "bank_name"
+    t.datetime "completed_at"
+    t.datetime "reversed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_club_transfers_on_created_at"
+    t.index ["investment_club_id", "created_at"], name: "index_club_transfers_on_investment_club_id_and_created_at"
+    t.index ["investment_club_id"], name: "index_club_transfers_on_investment_club_id"
+    t.index ["reference"], name: "index_club_transfers_on_reference", unique: true
+    t.index ["status"], name: "index_club_transfers_on_status"
+    t.index ["transfer_code"], name: "index_club_transfers_on_transfer_code", unique: true
+    t.index ["user_id"], name: "index_club_transfers_on_user_id"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -923,6 +950,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_14_160044) do
   add_foreign_key "club_investments", "users", column: "created_by_id"
   add_foreign_key "club_transactions", "club_investments"
   add_foreign_key "club_transactions", "investment_clubs"
+  add_foreign_key "club_transfers", "investment_clubs"
+  add_foreign_key "club_transfers", "users"
   add_foreign_key "comments", "campaigns"
   add_foreign_key "comments", "users"
   add_foreign_key "deal_score_logs", "campaigns"
