@@ -26,86 +26,6 @@ interface CampaignDescription {
   updated_at: string;
 }
 
-// Add these transformation functions here
-const transformInvestmentForFrontend = (investment: any, club: any): any => {
-  const votingStats = investment.voting_stats || {};
-  const totalMembers = club?.current_members_count || 1;
-  const allMembersVoted = votingStats.total_votes >= totalMembers;
-  const thresholdMet =
-    allMembersVoted && votingStats.yes_votes > votingStats.no_votes;
-
-  // Handle description object - extract body if it exists
-  let description = investment.description || 'No description available';
-  if (typeof description === 'object' && description.body) {
-    description = description.body;
-  }
-  if (
-    investment.campaign?.description &&
-    typeof investment.campaign.description === 'object' &&
-    investment.campaign.description.body
-  ) {
-    description = investment.campaign.description.body;
-  }
-
-  return {
-    id: investment.id?.toString() || Math.random().toString(),
-    company:
-      investment.campaign?.title || investment.title || 'Unknown Company',
-    description: description,
-    amount: investment.investment_amount
-      ? formatCurrency(
-          investment.investment_amount,
-          investment.campaign?.currency_symbol || investment.currency_symbol,
-        )
-      : '$0',
-    sector: investment.campaign?.category || investment.sector || 'General',
-    votes: votingStats.yes_votes || 0,
-    threshold: totalMembers, // Now threshold is total members
-    match_score: investment.match_score || 50,
-    reasoning: investment.reasoning || 'Investment opportunity',
-    ai_analysis: investment.ai_analysis || getDefaultAIAnalysis(),
-    status: investment.status || 'voting',
-    voting_stats: {
-      ...votingStats,
-      total_members: totalMembers,
-      all_members_voted: allMembersVoted,
-      threshold_met: thresholdMet,
-    },
-    club_investment_id:
-      investment.id?.toString() || investment.club_investment_id?.toString(),
-    campaign_id:
-      investment.campaign?.id?.toString() || investment.campaign_id?.toString(),
-    // Additional fields for the list view
-    title: investment.campaign?.title || investment.title || 'Unknown Company',
-    category: investment.campaign?.category || investment.sector || 'General',
-    currency_symbol:
-      investment.campaign?.currency_symbol || investment.currency_symbol || '$',
-    investment_amount:
-      investment.investment_amount ||
-      parseFloat(investment.proposed_amount) ||
-      0,
-  };
-};
-
-const getDefaultAIAnalysis = () => ({
-  deal_score: Math.floor(Math.random() * 30) + 60,
-  risk_score: Math.floor(Math.random() * 30) + 20,
-  risk_category: 'medium',
-  sentiment_analysis: 'positive',
-  strengths: ['Market potential', 'Team experience'],
-});
-
-const formatCurrency = (
-  amount: number,
-  currencySymbol: string = '$',
-): string => {
-  if (amount >= 1000) {
-    return `${currencySymbol}${(amount / 1000).toFixed(1)}K`;
-  } else {
-    return `${currencySymbol}${amount.toFixed(0)}`;
-  }
-};
-
 // Safe number formatting helper
 const safeToLocaleString = (
   value: number | undefined | null,
@@ -153,6 +73,49 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     type: 'success' as 'success' | 'error' | 'warning',
   });
   const [activeTab, setActiveTab] = useState<'voting' | 'approved'>('voting');
+
+  // Helper function to safely extract description
+  const getDescription = (investment: any): string => {
+    if (typeof investment.description === 'string') {
+      return investment.description;
+    }
+    if (investment.description?.body) {
+      return investment.description.body;
+    }
+    if (investment.campaign?.description?.body) {
+      return investment.campaign.description.body;
+    }
+    return 'No description available';
+  };
+
+  // Helper function to safely extract title
+  const getTitle = (investment: any): string => {
+    return investment.campaign?.title || investment.title || investment.company || 'Unknown Company';
+  };
+
+  // Helper function to safely extract category
+  const getCategory = (investment: any): string => {
+    return investment.campaign?.category || investment.sector || 'General';
+  };
+
+  // Helper function to safely extract currency symbol
+  const getCurrencySymbol = (investment: any): string => {
+    return investment.campaign?.currency_symbol || investment.currency_symbol || '$';
+  };
+
+  // Helper function to safely extract investment amount
+  const getInvestmentAmount = (investment: any): number => {
+    return investment.investment_amount || parseFloat(investment.proposed_amount) || 0;
+  };
+
+  // Helper function to format currency
+  const formatCurrency = (amount: number, currencySymbol: string = '$'): string => {
+    if (amount >= 1000) {
+      return `${currencySymbol}${(amount / 1000).toFixed(1)}K`;
+    } else {
+      return `${currencySymbol}${amount.toFixed(0)}`;
+    }
+  };
 
   // Fetch investment proposals and approved campaigns
   const fetchInvestmentData = async () => {
@@ -202,11 +165,8 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
         }
       }
 
-      // Transform investments with proper voting stats
-      const transformedInvestments = investmentsData.map((inv: any) =>
-        transformInvestmentForFrontend(inv, club),
-      );
-      setInvestments(transformedInvestments);
+      // Use investments data directly without transformation
+      setInvestments(investmentsData);
 
       // Fetch approved campaigns
       const approvedResponse = await fetch(
@@ -222,12 +182,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       if (approvedResponse.ok) {
         const approvedData = await approvedResponse.json();
         if (approvedData.success) {
-          const transformedApproved = (
-            approvedData.approved_campaigns || []
-          ).map((campaign: any) =>
-            transformInvestmentForFrontend(campaign, club),
-          );
-          setApprovedInvestments(transformedApproved);
+          setApprovedInvestments(approvedData.approved_campaigns || []);
         }
       }
     } catch (err) {
@@ -297,10 +252,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          const transformedProposals = (data.proposals || []).map((inv: any) =>
-            transformInvestmentForFrontend(inv, club),
-          );
-          setInvestments(transformedProposals);
+          setInvestments(data.proposals || []);
           showToast(
             'Proposals Generated',
             `Created ${data.proposals.length} new proposals`,
@@ -342,13 +294,10 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       if (!investment) return;
 
       // Update local state with new voting stats from backend
-      const updatedInvestment = transformInvestmentForFrontend(
-        {
-          ...investment,
-          voting_stats: result.data.voting_stats,
-        },
-        club,
-      );
+      const updatedInvestment = {
+        ...investment,
+        voting_stats: result.data.voting_stats,
+      };
 
       const votingStats = updatedInvestment.voting_stats || {};
       const isNowApproved = votingStats.threshold_met;
@@ -356,7 +305,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       if (isNowApproved) {
         showToast(
           '🎉 Investment Approved!',
-          `${investment.company} has been approved by all members!`,
+          `${getTitle(investment)} has been approved by all members!`,
           'success',
         );
 
@@ -399,13 +348,10 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       if (!investment) return;
 
       // Update local state with new voting stats from backend
-      const updatedInvestment = transformInvestmentForFrontend(
-        {
-          ...investment,
-          voting_stats: result.data.voting_stats,
-        },
-        club,
-      );
+      const updatedInvestment = {
+        ...investment,
+        voting_stats: result.data.voting_stats,
+      };
 
       const votingStats = updatedInvestment.voting_stats || {};
       const isNowRejected =
@@ -414,7 +360,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       if (isNowRejected) {
         showToast(
           'Vote Recorded',
-          `${investment.company} has been rejected`,
+          `${getTitle(investment)} has been rejected`,
           'warning',
         );
 
@@ -493,7 +439,13 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   )}
                 >
                   <VotingCard
-                    investment={investment}
+                    investment={{
+                      ...investment,
+                      company: getTitle(investment),
+                      description: getDescription(investment),
+                      amount: formatCurrency(getInvestmentAmount(investment), getCurrencySymbol(investment)),
+                      sector: getCategory(investment),
+                    }}
                     onInvest={handleInvest}
                     onPass={handlePass}
                     isAnimating={animatingId === investment.id}
@@ -501,7 +453,13 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                 </div>
               ) : (
                 <VotingCard
-                  investment={investment}
+                  investment={{
+                    ...investment,
+                    company: getTitle(investment),
+                    description: getDescription(investment),
+                    amount: formatCurrency(getInvestmentAmount(investment), getCurrencySymbol(investment)),
+                    sector: getCategory(investment),
+                  }}
                   onInvest={() => {}}
                   onPass={() => {}}
                   isAnimating={false}
@@ -514,7 +472,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     </div>
   );
 
-  // NEW: Approved Section with list layout
+  // Approved Section with list layout
   const renderApprovedSection = () => (
     <div className="space-y-4">
       {!approvedInvestments || approvedInvestments.length === 0 ? (
@@ -558,20 +516,17 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">
-                      {investment.title || investment.company}
+                      {getTitle(investment)}
                     </h4>
-                    {/* <div
-                      className="prose dark:prose-dark max-w-none"
-                      dangerouslySetInnerHTML={{
-                        __html: investment?.description || '',
-                      }}
-                    /> */}
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                      {getDescription(investment)}
+                    </p>
                     <div className="flex items-center space-x-4 mt-2">
                       <Badge variant="outline" className="text-xs">
-                        {investment.category || investment.sector}
+                        {getCategory(investment)}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
-                        Match: {investment.match_score}%
+                        Match: {investment.match_score || 0}%
                       </span>
                       <span className="text-xs text-muted-foreground">
                         Deal Score:{' '}
@@ -634,8 +589,8 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                   </Badge>
                 </div>
                 <div className="mt-2 text-sm font-medium">
-                  {investment.currency_symbol || '$'}
-                  {safeToLocaleString(investment.investment_amount)}
+                  {getCurrencySymbol(investment)}
+                  {safeToLocaleString(getInvestmentAmount(investment))}
                 </div>
               </div>
             </div>
