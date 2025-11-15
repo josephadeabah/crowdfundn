@@ -560,12 +560,12 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
                     <h4 className="font-semibold text-gray-900">
                       {investment.title || investment.company}
                     </h4>
-                    <div
+                    {/* <div
                       className="prose dark:prose-dark max-w-none"
                       dangerouslySetInnerHTML={{
                         __html: investment?.description || '',
                       }}
-                    />
+                    /> */}
                     <div className="flex items-center space-x-4 mt-2">
                       <Badge variant="outline" className="text-xs">
                         {investment.category || investment.sector}
