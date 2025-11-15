@@ -302,6 +302,7 @@ Rails.application.routes.draw do
 
         # Add share changes routes
         resources :share_changes, only: [:index], controller: 'member_share_changes' do
+          # This endpoint can be removed as it's no longer needed
           collection do
             get :my_changes
           end
@@ -311,6 +312,29 @@ Rails.application.routes.draw do
         resources :contributions, only: [:index, :create], controller: 'club_contributions' do
           collection do
             post :verify
+          end
+        end
+
+
+        # Add club transfers routes
+        resources :transfers, only: [], controller: 'club_transfers' do
+          collection do
+            post :create_transfer_recipient
+            post :bulk_create_transfer_recipients
+            get :get_bank_list
+            get :list_transfer_recipients
+            get :fetch_transfer_recipient
+            get :resolve_account_details
+            post :initialize_transfer
+            post :finalize_transfer
+            post :initiate_bulk_transfer
+            get :fetch_transfers_from_paystack
+            get :fetch_transfers
+            get :fetch_club_transfers
+            get :verify_transfer
+            get :fetch_settlement_status
+            post :approve_transfer
+            put :update_transfer_recipient
           end
         end
         
