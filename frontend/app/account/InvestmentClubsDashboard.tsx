@@ -193,7 +193,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   // FIXED: Get current user's membership and share without useMemo
   const getCurrentUserShare = () => {
     if (!selectedClub || !user || !members.length) return undefined;
-    
+
     // Find the current user's membership
     const currentUserMembership = members.find((member) => {
       // Handle both string and number ID comparisons
@@ -201,7 +201,7 @@ const InvestmentClubsDashboard: React.FC = () => {
       const currentUserId = Number(user.id);
       return memberUserId === currentUserId;
     });
-    
+
     return currentUserMembership?.contributed_share;
   };
 
