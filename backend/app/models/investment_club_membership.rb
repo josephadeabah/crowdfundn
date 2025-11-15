@@ -17,13 +17,15 @@ class InvestmentClubMembership < ApplicationRecord
   attribute :contributed_share, :decimal, default: 0.0
   attribute :total_contributed, :decimal, default: 0.0
   
+  # ADD THIS SCOPE
+  scope :active, -> { where(status: 'active') }
+  
   before_create :set_initial_share
   after_save :update_club_financials, if: -> { saved_change_to_total_contributed? }
   
   # FIXED: Simplified callback to avoid issues
   after_commit :update_club_members_count_callback
   
-  scope :active, -> { where(status: 'active') }
   scope :admin, -> { where(role: ['admin', 'creator']) }
   scope :pending, -> { where(status: 'pending') }
   

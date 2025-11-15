@@ -6,6 +6,8 @@ class InvestmentClub < ApplicationRecord
   has_many :club_investments, dependent: :destroy
   has_many :invested_campaigns, through: :club_investments, source: :campaign
   has_many :club_transactions, dependent: :destroy
+  has_many :active_memberships, -> { active }, class_name: 'InvestmentClubMembership'
+  has_many :active_members, through: :active_memberships, source: :user
   
   validates :name, :slug, presence: true
   validates :slug, uniqueness: true
@@ -322,18 +324,22 @@ class InvestmentClub < ApplicationRecord
     total_contributions = self.total_contributions.to_f
     
     # Return early if no contributions
-    return if total_contributions.zero?
+    if total_contributions.zero?
+      Rails.logger.info "No contributions to calculate shares for club #{id}"
+      return
+    end
     
-    # Update all active members' shares
-    active_memberships.find_each do |membership|
-      previous_share = membership.contributed_share.to_f
-      new_share = calculate_member_share(membership.total_contributed.to_f, total_contributions)
-      
-      # Only create history record if share actually changed
-      if previous_share != new_share
-        create_share_change_history(membership, previous_share, new_share, contribution)
-        membership.update_column(:contributed_share, new_share)
+    begin
+      # Use the active memberships association
+      active_memberships.find_each do |membership|
+        update_member_share_with_history(membership, total_contributions, contribution)
       end
+      
+      Rails.logger.info "Successfully updated shares for all active members in club #{id}"
+    rescue => e
+      Rails.logger.error "Error updating member shares for club #{id}: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      raise
     end
   end
 
@@ -397,7 +403,22 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
-    def calculate_member_share(member_contribution, total_contributions)
+  def update_member_share_with_history(membership, total_contributions, contribution)
+    previous_share = membership.contributed_share.to_f
+    new_share = calculate_member_share(membership.total_contributed.to_f, total_contributions)
+    
+    # Only create history record if share actually changed
+    if (previous_share - new_share).abs > 0.0001 # Small threshold for floating point comparison
+      create_share_change_history(membership, previous_share, new_share, contribution)
+      membership.update_column(:contributed_share, new_share)
+      
+      Rails.logger.info "Updated share for #{membership.user.full_name}: #{previous_share.round(4)}% → #{new_share.round(4)}%"
+    else
+      Rails.logger.debug "No share change for #{membership.user.full_name}: #{previous_share.round(4)}%"
+    end
+  end
+
+  def calculate_member_share(member_contribution, total_contributions)
     return 0.0 if total_contributions.zero?
     
     # Calculate percentage with proper precision
@@ -408,16 +429,21 @@ class InvestmentClub < ApplicationRecord
   end
 
   def create_share_change_history(membership, previous_share, new_share, contribution)
-    change_amount = new_share - previous_share
+    change_amount = (new_share - previous_share).round(4)
     
     MemberShareChange.create!(
       investment_club_membership: membership,
       investment_club_contribution: contribution,
-      previous_share: previous_share,
-      new_share: new_share,
+      previous_share: previous_share.round(4),
+      new_share: new_share.round(4),
       change_amount: change_amount,
       change_reason: contribution ? 'contribution' : 'recalculation',
       total_contributions_at_time: self.total_contributions
     )
+    
+    Rails.logger.info "Created share change record: #{membership.user.full_name} Δ#{change_amount}%"
+  rescue => e
+    Rails.logger.error "Failed to create share change history for membership #{membership.id}: #{e.message}"
+    raise
   end
 end

@@ -27,7 +27,7 @@ class MemberShareChange < ApplicationRecord
   end
   
   def log_share_change_details
-    Rails.logger.info "Share Change Record: " +
+    Rails.logger.info "Share Change Record Created: " +
                      "Member: #{investment_club_membership.user.full_name} " +
                      "Previous: #{previous_share}% " +
                      "New: #{new_share}% " +

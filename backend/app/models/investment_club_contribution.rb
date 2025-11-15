@@ -7,7 +7,6 @@ class InvestmentClubContribution < ApplicationRecord
   
   enum status: { pending: 'pending', completed: 'completed', failed: 'failed', refunded: 'refunded' }
   
-  
   after_save :update_club_balance, if: -> { saved_change_to_status? && completed? }
   
   # FIXED: Improved processing with better share tracking
@@ -39,12 +38,16 @@ class InvestmentClubContribution < ApplicationRecord
                         "+#{format_currency(amount)} " +
                         "Share: #{previous_share.round(4)}% → #{new_share.round(4)}% " +
                         "(Δ#{actual_change.round(4)}%)"
+      else
+        Rails.logger.error "No active membership found for user #{user.id} in club #{investment_club.id}"
+        raise "No active membership found"
       end
       
       update_column(:processed_at, Time.current)
     end
   rescue => e
     Rails.logger.error "Error processing contribution #{id}: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
     raise
   end
   
@@ -55,6 +58,6 @@ class InvestmentClubContribution < ApplicationRecord
   end
 
   def format_currency(amount)
-  "#{amount.to_f.round(2)} #{investment_club.currency}"
+    "#{amount.to_f.round(2)} #{investment_club.currency}"
   end
 end
