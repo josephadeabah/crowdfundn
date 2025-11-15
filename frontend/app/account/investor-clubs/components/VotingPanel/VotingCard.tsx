@@ -221,20 +221,7 @@ export const VotingCard: React.FC<VotingCardProps> = ({
             )}
           </div>
         )}
-
-        {/* View Campaign Button - Show for all states */}
-        {investment.campaign_slug && onViewCampaign && (
-          <Button
-            onClick={onViewCampaign}
-            variant="outline"
-            size="sm"
-            className="w-full"
-          >
-            <ExternalLink className="h-4 w-4 mr-2" />
-            View Campaign Details
-          </Button>
-        )}
-
+        
         {/* Voting Buttons - Only show for active voting */}
         {!isApproved && !isRejected && !showResults && (
           <div className="flex gap-3 pt-2">
