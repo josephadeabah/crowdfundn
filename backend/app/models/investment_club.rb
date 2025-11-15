@@ -318,56 +318,23 @@ class InvestmentClub < ApplicationRecord
     }
   end
 
-  # app/models/investment_club.rb
   def update_all_member_shares_with_history(contribution = nil)
-    total_contributions = self.total_contributions
+    total_contributions = self.total_contributions.to_f
+    
+    # Return early if no contributions
     return if total_contributions.zero?
     
-    memberships = investment_club_memberships.active.to_a
-    return if memberships.empty?
-    
-    # Store previous shares
-    previous_shares = memberships.each_with_object({}) do |m, hash|
-      hash[m.id] = m.contributed_share
-    end
-    
-    # Calculate new shares
-    calculated_shares = {}
-    total_calculated = 0.0
-    
-    memberships.each do |membership|
-      raw_share = (membership.total_contributed / total_contributions) * 100
-      calculated_shares[membership.id] = raw_share
-      total_calculated += raw_share
-    end
-    
-    adjustment_factor = 100.0 / total_calculated
-    
-    # Update shares and track changes
-    ActiveRecord::Base.transaction do
-      memberships.each do |membership|
-        new_share = (calculated_shares[membership.id] * adjustment_factor).round(4)
-        previous_share = previous_shares[membership.id]
-        
-        # Only update if share changed
-        if (new_share - previous_share).abs > 0.0001
-          membership.update_column(:contributed_share, new_share)
-          
-          # Record ALL share changes (removed the 0.01 threshold)
-          MemberShareChange.create!(
-            investment_club_membership: membership,
-            investment_club_contribution: contribution,
-            previous_share: previous_share,
-            new_share: new_share,
-            change_amount: new_share - previous_share,
-            total_contributions_at_time: total_contributions,
-            change_reason: contribution ? 'contribution' : 'recalculation'
-          )
-        end
+    # Update all active members' shares
+    active_memberships.find_each do |membership|
+      previous_share = membership.contributed_share.to_f
+      new_share = calculate_member_share(membership.total_contributed.to_f, total_contributions)
+      
+      # Only create history record if share actually changed
+      if previous_share != new_share
+        create_share_change_history(membership, previous_share, new_share, contribution)
+        membership.update_column(:contributed_share, new_share)
       end
     end
-    # Final correction if needed
-    force_correct_share_totals if (investment_club_memberships.active.sum(:contributed_share) - 100.0).abs > 0.01
   end
 
   # Update the process_completion! method to use the enhanced version
@@ -428,5 +395,29 @@ class InvestmentClub < ApplicationRecord
     if current_members_count != actual_count
       update_column(:current_members_count, actual_count)
     end
+  end
+
+    def calculate_member_share(member_contribution, total_contributions)
+    return 0.0 if total_contributions.zero?
+    
+    # Calculate percentage with proper precision
+    share = (member_contribution / total_contributions) * 100.0
+    
+    # Round to 4 decimal places to avoid floating point issues
+    share.round(4)
+  end
+
+  def create_share_change_history(membership, previous_share, new_share, contribution)
+    change_amount = new_share - previous_share
+    
+    MemberShareChange.create!(
+      investment_club_membership: membership,
+      investment_club_contribution: contribution,
+      previous_share: previous_share,
+      new_share: new_share,
+      change_amount: change_amount,
+      change_reason: contribution ? 'contribution' : 'recalculation',
+      total_contributions_at_time: self.total_contributions
+    )
   end
 end

@@ -10,33 +10,42 @@ class InvestmentClubContribution < ApplicationRecord
   
   after_save :update_club_balance, if: -> { saved_change_to_status? && completed? }
   
-  # CRITICAL: Safe processing method with double-processing protection
+  # FIXED: Improved processing with better share tracking
   def process_completion!
     return if processed_at.present?
     
     ActiveRecord::Base.transaction do
       membership = investment_club.membership_for(user)
       if membership
-        previous_total = membership.total_contributed
-        previous_share = membership.contributed_share
+        # Store previous values BEFORE any changes
+        previous_total = membership.total_contributed.to_f
+        previous_share = membership.contributed_share.to_f
         
-        new_total = membership.total_contributed + amount
+        # Update member's total contribution
+        new_total = previous_total + amount.to_f
         membership.update!(total_contributed: new_total)
         
+        # Update club financials
         investment_club.update_financials
         
-        # Use the enhanced method with history tracking
+        # Update ALL member shares with proper history tracking
         investment_club.update_all_member_shares_with_history(self)
         
-        # Log the changes
-        new_share = membership.reload.contributed_share
+        # Verify the new share percentage
+        new_share = membership.reload.contributed_share.to_f
+        actual_change = new_share - previous_share
+        
         Rails.logger.info "Contribution processed: #{user.full_name} " +
                         "+#{format_currency(amount)} " +
-                        "(#{previous_share}% → #{new_share}%)"
+                        "Share: #{previous_share.round(4)}% → #{new_share.round(4)}% " +
+                        "(Δ#{actual_change.round(4)}%)"
       end
       
       update_column(:processed_at, Time.current)
     end
+  rescue => e
+    Rails.logger.error "Error processing contribution #{id}: #{e.message}"
+    raise
   end
   
   private
