@@ -64,7 +64,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
 
       {/* Admin notice */}
       {isAdmin && (
-        <div className="mt-3 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+        <div className="mt-3 p-1 bg-gray-50 border border-gray-100 rounded-sm">
           <p className="text-xs text-orange-600 text-center">
             💼 You have admin access
           </p>
