@@ -291,7 +291,7 @@ class Campaign < ApplicationRecord
         id title goal_amount current_amount transferred_amount start_date end_date
         category location currency currency_code currency_symbol status
         fundraiser_id created_at updated_at valuation equity_offered minimum_investment 
-        total_shares is_public appear_in_search_results
+        total_shares is_public appear_in_search_results slug
       ],
       methods: %i[media_url media_filename total_days remaining_days archived?]
     }.merge(options))

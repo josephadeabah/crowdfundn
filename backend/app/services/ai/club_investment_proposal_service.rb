@@ -93,6 +93,7 @@ class ClubInvestmentProposalService
       voting_stats: voting_stats,
       club_investment_id: club_investment.id,
       campaign_id: campaign.id,
+      campaign_slug: campaign.slug,  # ADD SLUG HERE
       proposed_amount: club_investment.investment_amount,
       currency_symbol: campaign.currency_symbol
     }

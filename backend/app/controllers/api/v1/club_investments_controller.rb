@@ -222,7 +222,8 @@ module Api
             description: campaign.description&.to_plain_text&.truncate(200) || 'No description available',
             category: campaign.category,
             currency_symbol: campaign.currency_symbol,
-            id: campaign.id
+            id: campaign.id,
+            slug: campaign.slug  # ADD SLUG HERE
           }
         else
           {
@@ -230,7 +231,8 @@ module Api
             description: 'No description available',
             category: 'General',
             currency_symbol: '$',
-            id: nil
+            id: nil,
+            slug: nil
           }
         end
         
@@ -251,6 +253,7 @@ module Api
           voting_stats: voting_stats,
           club_investment_id: investment.id,
           campaign_id: campaign_data[:id],
+          campaign_slug: campaign_data[:slug],  # ADD SLUG HERE
           proposed_amount: investment.investment_amount,
           currency_symbol: campaign_data[:currency_symbol]
         }

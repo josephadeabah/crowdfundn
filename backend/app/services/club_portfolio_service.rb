@@ -41,6 +41,7 @@ class ClubPortfolioService
           current_amount: campaign.current_amount,
           currency: campaign.currency,
           currency_symbol: campaign.currency_symbol,
+          slug: campaign.slug,  # ADD SLUG HERE
           fundraiser: {
             id: campaign.fundraiser.id,
             name: campaign.fundraiser.full_name
