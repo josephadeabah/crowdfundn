@@ -32,7 +32,7 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
   const [pagination, setPagination] = useState({
     current_page: 1,
     total_pages: 1,
-    per_page: 10,
+    per_page: 5,
     total_count: 0,
   });
   const [summary, setSummary] = useState<{

@@ -76,7 +76,7 @@ export const shareChangeService = {
     token: string,
     clubId: string,
     page: number = 1,
-    perPage: number = 10,
+    perPage: number = 5,
   ): Promise<ShareChangesResponse> => {
     const endpoint = `/investment_clubs/${clubId}/share_changes?page=${page}&per_page=${perPage}`;
     const response = await apiCall(endpoint, token);
@@ -99,7 +99,7 @@ export const shareChangeService = {
     token: string,
     clubId: string,
     page: number = 1,
-    perPage: number = 10,
+    perPage: number = 5,
   ): Promise<ShareChangesResponse> => {
     const endpoint = `/investment_clubs/${clubId}/share_changes/my_changes?page=${page}&per_page=${perPage}`;
     const response = await apiCall(endpoint, token);
