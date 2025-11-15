@@ -337,7 +337,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
             'warning',
           );
         } else {
-          showToast('Info', 'No new proposals generated - you may already have active proposals', 'warning');
+          showToast(
+            'Info',
+            'No new proposals generated - you may already have active proposals',
+            'warning',
+          );
           // Refresh to show existing proposals
           fetchInvestmentData();
         }
