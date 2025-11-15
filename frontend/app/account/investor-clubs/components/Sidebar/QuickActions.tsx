@@ -1,18 +1,21 @@
-// app/account/investor-clubs/components/Sidebar/QuickActions.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { DollarSign, TrendingUp, BarChart3 } from 'lucide-react';
+import { DollarSign, TrendingUp, BarChart3, Send } from 'lucide-react';
 
 interface QuickActionsProps {
   onMakeContribution: () => void;
   onProposeInvestment: () => void;
   onViewAnalytics: () => void;
+  onTransferFunds?: () => void;
+  isAdmin?: boolean;
 }
 
 export const QuickActions: React.FC<QuickActionsProps> = ({
   onMakeContribution,
   onProposeInvestment,
   onViewAnalytics,
+  onTransferFunds,
+  isAdmin = false,
 }) => {
   return (
     <motion.div
@@ -25,26 +28,48 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
       <div className="space-y-2 lg:space-y-3">
         <button
           onClick={onMakeContribution}
-          className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-medium text-sm lg:text-base text-left flex items-center gap-2"
+          className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"
         >
           <DollarSign size={16} />
           Make Contribution
         </button>
+
         <button
           onClick={onProposeInvestment}
-          className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-emerald-400 text-emerald-500 rounded-full hover:bg-emerald-50 font-medium text-sm lg:text-base text-left flex items-center gap-2"
+          className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-emerald-400 text-emerald-500 rounded-full hover:bg-emerald-50 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"
         >
           <TrendingUp size={16} />
           Propose Investment
         </button>
+
+        {/* Transfer Funds Button (Admin Only) */}
+        {isAdmin && onTransferFunds && (
+          <button
+            onClick={onTransferFunds}
+            className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-orange-400 text-orange-500 rounded-full hover:bg-orange-50 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"
+          >
+            <Send size={16} />
+            Transfer Funds
+          </button>
+        )}
+
         <button
           onClick={onViewAnalytics}
-          className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 font-medium text-sm lg:text-base text-left flex items-center gap-2"
+          className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"
         >
           <BarChart3 size={16} />
           View Analytics
         </button>
       </div>
+
+      {/* Admin notice */}
+      {isAdmin && (
+        <div className="mt-3 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+          <p className="text-xs text-orange-600 text-center">
+            💼 You have admin access
+          </p>
+        </div>
+      )}
     </motion.div>
   );
 };

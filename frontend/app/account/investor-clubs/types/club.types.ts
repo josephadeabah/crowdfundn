@@ -95,3 +95,81 @@ export interface ClubContributionsProps {
   club: Club;
   contributions: ClubContribution[];
 }
+
+export interface ClubTransfer {
+  id: number;
+  investment_club_id: number;
+  user_id: number;
+  amount: number;
+  created_at: string;
+  currency: string;
+  reason: string;
+  status: 'pending' | 'success' | 'failed' | 'reversed';
+  failure_reason: string | null;
+  transfer_code: string;
+  reference: string;
+  account_name: string | null;
+  account_number: string | null;
+  bank_name: string | null;
+  recipient_code: string;
+  completed_at: string | null;
+  reversed_at: string | null;
+  user?: {
+    id: number;
+    full_name: string;
+    email: string;
+  };
+}
+
+export interface CreateTransferRecipientResponse {
+  message: string;
+  recipient_code: string;
+  club_id?: string;
+}
+
+export interface InitiateTransferResponse {
+  transfer_code: string;
+  reference: string;
+  message: string;
+  club_balance: number;
+}
+
+export interface ClubTransfersResponse {
+  transfers: ClubTransfer[];
+  current_page: number;
+  total_pages: number;
+  total_count: number;
+}
+
+export interface BankListResponse {
+  status: boolean;
+  data: Array<{
+    name: string;
+    slug: string;
+    code: string;
+    country: string;
+    currency: string;
+    type: string;
+  }>;
+  meta: {
+    next: string | null;
+    previous: string | null;
+    perPage: number;
+  };
+}
+
+export interface AccountResolutionResponse {
+  status: boolean;
+  data: {
+    account_number: string;
+    account_name: string;
+    bank_id: number;
+  };
+  message: string;
+}
+
+export interface SettlementStatusResponse {
+  status: string;
+  data: any;
+  message: string;
+}

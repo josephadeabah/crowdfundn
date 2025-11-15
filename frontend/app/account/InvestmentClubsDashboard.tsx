@@ -28,6 +28,8 @@ import { useAuth } from '../context/auth/AuthContext';
 import { ShareChangesSection } from './investor-clubs/components/ShareChanges/ShareChangesSection';
 import MemberInvestmentProposalModal from './investor-clubs/components/VotingPanel/MemberInvestmentProposalModal';
 import ClubDashboard from './investor-clubs/components/Sidebar/ApprovedCampaigns';
+import Modal from '@/app/components/modal/Modal';
+import ClubTransfers from './investor-clubs/components/Transfers/ClubTransfers';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const {
@@ -55,6 +57,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
   const [isInvestmentProposalModalOpen, setIsInvestmentProposalModalOpen] =
     useState(false);
+  const [isTransfersModalOpen, setIsTransfersModalOpen] = useState(false);
 
   // Separate alert states for different types of messages
   const [featureAlert, setFeatureAlert] = useState(false);
@@ -163,6 +166,18 @@ const InvestmentClubsDashboard: React.FC = () => {
     }
   };
 
+  // Add handler for transfer funds
+  const handleTransferFunds = () => {
+    setIsTransfersModalOpen(true);
+  };
+
+  const handleTransferSuccess = async () => {
+    if (selectedClub) {
+      // Refresh club data to show updated balance
+      await loadClubDetails(selectedClub);
+    }
+  };
+
   // UPDATED: Open the investment proposal modal instead of showing alert
   const handleProposeInvestment = () => {
     setIsInvestmentProposalModalOpen(true);
@@ -249,6 +264,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   }
 
   const currentClub = selectedClub || clubs[0];
+  const isAdmin = currentClub?.is_admin;
 
   return (
     <div className="min-h-screen flex bg-gray-50 text-gray-900">
@@ -313,6 +329,8 @@ const InvestmentClubsDashboard: React.FC = () => {
                 onMakeContribution={handleMakeContribution}
                 onProposeInvestment={handleProposeInvestment}
                 onViewAnalytics={handleViewAnalytics}
+                onTransferFunds={isAdmin ? handleTransferFunds : undefined}
+                isAdmin={isAdmin}
               />
 
               <ClubStats
@@ -352,6 +370,19 @@ const InvestmentClubsDashboard: React.FC = () => {
             onClose={() => setIsInvestmentProposalModalOpen(false)}
             club={currentClub}
           />
+
+          {/* NEW: Club Transfers Modal */}
+          <Modal
+            isOpen={isTransfersModalOpen}
+            onClose={() => setIsTransfersModalOpen(false)}
+            size="xxxlarge"
+          >
+            <ClubTransfers
+              club={currentClub}
+              formatCurrency={formatCurrency}
+              onTransferSuccess={handleTransferSuccess}
+            />
+          </Modal>
         </>
       )}
 
