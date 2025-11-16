@@ -376,6 +376,11 @@ const InvestmentClubsDashboard: React.FC = () => {
             isOpen={isTransfersModalOpen}
             onClose={() => setIsTransfersModalOpen(false)}
             size="xxxlarge"
+            customStyles={{
+              padding: 0,
+              maxHeight: '95vh',
+              overflow: 'hidden',
+            }}
           >
             <ClubTransfers
               club={currentClub}
