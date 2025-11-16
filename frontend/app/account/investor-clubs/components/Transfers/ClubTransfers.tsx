@@ -253,22 +253,22 @@ export default function ClubTransfers({
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       success: {
-        class: 'bg-green-50 text-green-700 border border-green-200',
+        class: 'bg-green-50 text-green-700',
         label: 'PAID',
         icon: '✅',
       },
       pending: {
-        class: 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+        class: 'bg-yellow-50 text-yellow-700',
         label: 'PENDING',
         icon: '⏳',
       },
       failed: {
-        class: 'bg-red-50 text-red-700 border border-red-200',
+        class: 'bg-red-50 text-red-700',
         label: 'FAILED',
         icon: '❌',
       },
       reversed: {
-        class: 'bg-gray-50 text-gray-700 border border-gray-200',
+        class: 'bg-gray-50 text-gray-700',
         label: 'REVERSED',
         icon: '↩️',
       },
@@ -279,7 +279,7 @@ export default function ClubTransfers({
 
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${config.class}`}
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium ${config.class}`}
       >
         <span className="text-xs">{config.icon}</span>
         {config.label}
@@ -288,7 +288,7 @@ export default function ClubTransfers({
   };
 
   return (
-    <div className="bg-white rounded-xl w-full max-h-[90vh] p-4 overflow-y-auto">
+    <div className="bg-white w-full max-h-[90vh] p-6 overflow-y-auto">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -302,7 +302,7 @@ export default function ClubTransfers({
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 rounded-lg">
+              <div className="p-2 bg-emerald-50 rounded-lg">
                 <DollarSign className="w-6 h-6 text-emerald-600" />
               </div>
               Club Funds Transfer
@@ -326,20 +326,17 @@ export default function ClubTransfers({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl border-0 shadow-lg hover:shadow-none transition-all duration-200 hover:from-emerald-600 hover:to-emerald-700"
-            >
+            <div className="flex items-center px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg">
               <HiShieldCheck className="mr-2 w-4 h-4" />
               Secure Transfers
-            </Button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Transfer lock status */}
       {user?.transfer_locked && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl shadow-none">
+        <div className="mb-6 p-4 bg-red-50 rounded-lg">
           <div className="flex items-center">
             <AlertTriangle className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
             <div>
@@ -362,7 +359,7 @@ export default function ClubTransfers({
       {/* Main Content */}
       <div className="space-y-6">
         {/* Club Balance Card */}
-        <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-2xl p-6 text-white shadow-none">
+        <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-xl p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-2">
@@ -382,16 +379,16 @@ export default function ClubTransfers({
                 Funds available for transfer to admin account
               </p>
             </div>
-            <div className="bg-white/20 p-4 rounded-xl backdrop-blur-sm">
+            <div className="bg-white/20 p-4 rounded-lg">
               <Users className="w-8 h-8" />
             </div>
           </div>
         </div>
 
         {/* Transfer Form Section */}
-        <div className="bg-white rounded-2xl border border-gray-50 p-6 shadow-none">
+        <div className="bg-white rounded-xl p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-emerald-100 rounded-lg">
+            <div className="p-2 bg-emerald-50 rounded-lg">
               <Send className="w-5 h-5 text-emerald-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900">
@@ -418,11 +415,11 @@ export default function ClubTransfers({
                   value={transferAmount}
                   onChange={handleAmountChange}
                   placeholder="0.00"
-                  className="w-full px-4 py-4 border border-gray-50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg font-semibold shadow-none"
+                  className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg font-semibold"
                 />
                 <button
                   onClick={handleMaxAmount}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors shadow-none"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded hover:bg-emerald-600 transition-colors"
                 >
                   MAX
                 </button>
@@ -450,7 +447,7 @@ export default function ClubTransfers({
             {/* Transfer Button */}
             <Button
               onClick={handleRequestTransfer}
-              className="w-full px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-semibold text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-none"
+              className="w-full px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
               disabled={isTransferDisabled()}
             >
               {transferring ? (
@@ -467,7 +464,7 @@ export default function ClubTransfers({
             </Button>
 
             {!club.is_admin && (
-              <div className="p-4 bg-orange-50 border border-orange-50 rounded-xl text-center">
+              <div className="p-4 bg-orange-50 rounded-lg text-center">
                 <p className="text-orange-700 font-medium flex items-center justify-center gap-2">
                   <Shield className="w-4 h-4" />
                   Only club administrators can initiate transfers
@@ -478,11 +475,11 @@ export default function ClubTransfers({
         </div>
 
         {/* Transfer History Section */}
-        <div className="bg-white rounded-2xl border border-gray-50 shadow-none overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white overflow-hidden">
+          <div className="pb-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gray-100 rounded-lg">
+                <div className="p-2 bg-gray-50 rounded-lg">
                   <History className="w-5 h-5 text-gray-600" />
                 </div>
                 <div>
@@ -495,7 +492,7 @@ export default function ClubTransfers({
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-sm font-medium">
+                <span className="bg-gray-50 text-gray-600 px-3 py-1.5 rounded text-sm font-medium">
                   {totalCount} records
                 </span>
                 <InfoTooltip
@@ -506,7 +503,7 @@ export default function ClubTransfers({
             </div>
           </div>
 
-          <div className="p-6">
+          <div>
             {loading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
@@ -527,7 +524,7 @@ export default function ClubTransfers({
             ) : (
               <>
                 {/* Table Container with Horizontal Scroll */}
-                <div className="overflow-x-auto rounded-lg border border-gray-50">
+                <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
@@ -558,7 +555,7 @@ export default function ClubTransfers({
                       {transfers.map((transfer) => (
                         <tr
                           key={transfer.id}
-                          className="hover:bg-gray-50 transition-colors duration-150"
+                          className="transition-colors duration-150"
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">
@@ -577,7 +574,7 @@ export default function ClubTransfers({
                             {getStatusBadge(transfer.status)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900 font-mono bg-gray-50 px-2 py-1 rounded border">
+                            <div className="text-sm text-gray-900 font-mono bg-gray-50 px-2 py-1 rounded">
                               {transfer.reference}
                             </div>
                           </td>
@@ -596,12 +593,12 @@ export default function ClubTransfers({
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {transfer.status === 'pending' && (
-                              <button className="text-emerald-600 hover:text-emerald-700 font-medium text-sm px-3 py-1.5 bg-emerald-50 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition-colors">
+                              <button className="text-emerald-600 font-medium text-sm px-3 py-1.5 bg-emerald-50 rounded hover:bg-emerald-100 transition-colors">
                                 Track
                               </button>
                             )}
                             {transfer.status === 'failed' && (
-                              <button className="text-red-600 hover:text-red-700 font-medium text-sm px-3 py-1.5 bg-red-50 rounded-lg border border-red-200 hover:bg-red-100 transition-colors">
+                              <button className="text-red-600 font-medium text-sm px-3 py-1.5 bg-red-50 rounded hover:bg-red-100 transition-colors">
                                 Retry
                               </button>
                             )}
