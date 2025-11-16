@@ -78,7 +78,10 @@ export const clubTransferService = {
     const endpoint = `/investment_clubs/${clubSlug}/transfers/initialize_transfer`;
     return apiCall(endpoint, token, {
       method: 'POST',
-      body: JSON.stringify({ recipient_code: recipientCode, transfer_amount: amount }),
+      body: JSON.stringify({
+        recipient_code: recipientCode,
+        transfer_amount: amount,
+      }),
     });
   },
 

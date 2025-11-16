@@ -23,7 +23,7 @@ const TransferClubBalanceModal: React.FC<
       size="xxxlarge"
       closeOnBackdropClick={false}
       customStyles={{
-        padding: 0
+        padding: 0,
       }}
     >
       <ClubTransfers
