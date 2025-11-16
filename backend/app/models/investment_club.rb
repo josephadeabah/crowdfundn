@@ -169,7 +169,6 @@ class InvestmentClub < ApplicationRecord
 
     Rails.logger.info "Club #{id} financials updated: " +
                      "Contributions: #{new_total_contributions}, " +
-                     "Invested: #{new_total_invested}, " +
                      "Balance: #{new_current_balance}"
   rescue => e
     Rails.logger.error "Error updating financials for club #{id}: #{e.message}"
