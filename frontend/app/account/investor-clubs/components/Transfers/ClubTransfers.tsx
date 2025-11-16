@@ -302,7 +302,7 @@ export default function ClubTransfers({
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-              <div className="p-2 bg-emerald-50 rounded-lg">
+              <div className="p-2 bg-white rounded-lg">
                 <DollarSign className="w-6 h-6 text-emerald-600" />
               </div>
               Club Funds Transfer
@@ -388,7 +388,7 @@ export default function ClubTransfers({
         {/* Transfer Form Section */}
         <div className="bg-white rounded-xl p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-emerald-50 rounded-lg">
+            <div className="p-2 bg-white rounded-lg">
               <Send className="w-5 h-5 text-emerald-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900">
