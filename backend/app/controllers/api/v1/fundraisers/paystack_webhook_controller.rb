@@ -73,11 +73,29 @@ module Api
 
           when 'transfer.success'
             Rails.logger.info "Processing transfer.success event"
-            PaystackWebhook::TransferSuccessHandler.new(event[:data]).call
+            
+            # CHECK IF THIS IS A CLUB TRANSFER
+            metadata = event.dig(:data, :recipient, :metadata) || {}
+            if metadata[:club_id].present?
+              Rails.logger.info "Routing to ClubTransferSuccessHandler (club_id: #{metadata[:club_id]})"
+              PaystackWebhook::ClubTransferSuccessHandler.new(event[:data]).call
+            else
+              Rails.logger.info "Routing to TransferSuccessHandler (regular transfer)"
+              PaystackWebhook::TransferSuccessHandler.new(event[:data]).call
+            end
 
           when 'transfer.failed'
             Rails.logger.info "Processing transfer.failed event"
-            PaystackWebhook::TransferFailedHandler.new(event[:data]).call
+            
+            # CHECK IF THIS IS A CLUB TRANSFER
+            metadata = event.dig(:data, :recipient, :metadata) || {}
+            if metadata[:club_id].present?
+              Rails.logger.info "Routing to ClubTransferFailedHandler (club_id: #{metadata[:club_id]})"
+              PaystackWebhook::ClubTransferFailedHandler.new(event[:data]).call
+            else
+              Rails.logger.info "Routing to TransferFailedHandler (regular transfer)"
+              PaystackWebhook::TransferFailedHandler.new(event[:data]).call
+            end
 
           when 'transfer.reversed'
             Rails.logger.info "Processing transfer.reversed event"
@@ -102,8 +120,6 @@ module Api
         rescue => e
           Rails.logger.error "Error processing webhook event: #{e.message}"
           Rails.logger.error e.backtrace.join("\n")
-          # Don't raise the error again to prevent returning 500 to Paystack
-          # Paystack will retry if we don't return 200
         end
       end
     end

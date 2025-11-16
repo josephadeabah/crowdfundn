@@ -117,13 +117,13 @@ module Api
           }
 
           response = @paystack_service.create_transfer_recipient(
-            type: bank_code_value,  # This should be "MTN" based on your subaccount
+            type: bank_code_value,
             name: subaccount.business_name,
             account_number: subaccount.account_number,
-            bank_code: bank_code_value,  # This should be "MTN" based on your subaccount
+            bank_code: bank_code_value,
             currency: @club.currency.upcase,
             description: "Transfer recipient for #{@club.name} club payouts",
-            metadata: recipient_metadata
+            metadata: recipient_metadata  # This metadata will be in the webhook
           )
 
           if response[:status] == true
