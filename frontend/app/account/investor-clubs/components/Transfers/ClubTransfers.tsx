@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/app/components/button/Button';
 import { HiShieldCheck } from 'react-icons/hi';
@@ -250,25 +251,25 @@ export default function ClubTransfers({
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      success: { 
-        class: 'bg-green-50 text-green-700 border border-green-200', 
+      success: {
+        class: 'bg-green-50 text-green-700 border border-green-200',
         label: 'PAID',
-        icon: '✅'
+        icon: '✅',
       },
-      pending: { 
-        class: 'bg-yellow-50 text-yellow-700 border border-yellow-200', 
+      pending: {
+        class: 'bg-yellow-50 text-yellow-700 border border-yellow-200',
         label: 'PENDING',
-        icon: '⏳'
+        icon: '⏳',
       },
-      failed: { 
-        class: 'bg-red-50 text-red-700 border border-red-200', 
+      failed: {
+        class: 'bg-red-50 text-red-700 border border-red-200',
         label: 'FAILED',
-        icon: '❌'
+        icon: '❌',
       },
-      reversed: { 
-        class: 'bg-gray-50 text-gray-700 border border-gray-200', 
+      reversed: {
+        class: 'bg-gray-50 text-gray-700 border border-gray-200',
         label: 'REVERSED',
-        icon: '↩️'
+        icon: '↩️',
       },
     };
 
@@ -475,7 +476,6 @@ export default function ClubTransfers({
           </div>
         </div>
 
-
         {/* Transfer History Section */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-gray-200">
@@ -509,7 +509,9 @@ export default function ClubTransfers({
             {loading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
-                <p className="text-gray-500 mt-4 font-medium">Loading transfer history...</p>
+                <p className="text-gray-500 mt-4 font-medium">
+                  Loading transfer history...
+                </p>
               </div>
             ) : transfers?.length === 0 ? (
               <div className="text-center py-12">
@@ -559,7 +561,9 @@ export default function ClubTransfers({
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">
-                              {moment(transfer.created_at).format('MMM D, YYYY')}
+                              {moment(transfer.created_at).format(
+                                'MMM D, YYYY',
+                              )}
                             </div>
                             <div className="text-gray-500 text-xs">
                               {moment(transfer.created_at).format('h:mm A')}
@@ -580,7 +584,9 @@ export default function ClubTransfers({
                             {transfer.user?.full_name || 'N/A'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{transfer.bank_name || 'N/A'}</div>
+                            <div className="text-sm text-gray-900">
+                              {transfer.bank_name || 'N/A'}
+                            </div>
                             {transfer.account_number && (
                               <div className="text-gray-500 text-xs font-mono">
                                 ****{transfer.account_number.slice(-4)}

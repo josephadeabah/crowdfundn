@@ -23,10 +23,14 @@ const TransferClubBalanceModal: React.FC<
       size="xxxlarge"
       closeOnBackdropClick={false}
       customStyles={{
-        padding: 0
+        padding: 0,
       }}
     >
-        <ClubTransfers formatCurrency={formatCurrency} onTransferSuccess={onTransferSuccess} club={club} />
+      <ClubTransfers
+        formatCurrency={formatCurrency}
+        onTransferSuccess={onTransferSuccess}
+        club={club}
+      />
     </Modal>
   );
 };

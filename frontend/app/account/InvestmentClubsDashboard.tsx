@@ -372,13 +372,13 @@ const InvestmentClubsDashboard: React.FC = () => {
             club={currentClub}
           />
 
-            <TransferClubBalanceModal
-              isOpen={isTransfersModalOpen}
-              onClose={() => setIsTransfersModalOpen(false)}
-              club={currentClub}
-              formatCurrency={formatCurrency}
-              onTransferSuccess={handleTransferSuccess}
-            />
+          <TransferClubBalanceModal
+            isOpen={isTransfersModalOpen}
+            onClose={() => setIsTransfersModalOpen(false)}
+            club={currentClub}
+            formatCurrency={formatCurrency}
+            onTransferSuccess={handleTransferSuccess}
+          />
         </>
       )}
 
