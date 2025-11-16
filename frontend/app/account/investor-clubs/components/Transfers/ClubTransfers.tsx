@@ -74,7 +74,7 @@ export default function ClubTransfers({
     return Number(value);
   };
 
-  const clubBalance = safeNumber(club.current_balance);
+  const clubBalance = safeNumber(club.current_balance) || safeNumber(club.financials.current_balance);
 
   const fetchClubTransfers = async (page: number = 1) => {
     if (!token || !club?.slug) return;
@@ -203,6 +203,7 @@ export default function ClubTransfers({
           token,
           club.slug,
           recipientResponse.recipient_code,
+          amount,
         );
 
         if (transferResponse && transferResponse.transfer_code) {
