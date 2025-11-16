@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/Transfers/ClubTransfers.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/app/components/button/Button';
@@ -33,12 +34,13 @@ interface ClubTransfersProps {
 }
 
 export default function ClubTransfers({
-  club,
+  club: initialClub,
   formatCurrency,
   onTransferSuccess,
 }: ClubTransfersProps) {
   const { user, token } = useAuth();
 
+  const [club, setClub] = useState<Club>(initialClub);
   const [transfers, setTransfers] = useState<ClubTransfer[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [transferring, setTransferring] = useState<boolean>(false);
@@ -108,6 +110,30 @@ export default function ClubTransfers({
       fetchClubTransfers(currentPage);
     } catch (err: any) {
       console.error('Failed to fetch transfers from Paystack:', err);
+    }
+  };
+
+  // FIXED: Refresh club data after transfer
+  const refreshClubData = async () => {
+    if (!token || !club?.slug) return;
+    
+    try {
+      // Fetch updated club data
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.club) {
+          setClub(data.club);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to refresh club data:', err);
     }
   };
 
@@ -215,9 +241,14 @@ export default function ClubTransfers({
             'success',
           );
 
-          // Refresh data
-          fetchTransfersFromPaystack();
-          fetchClubTransfers(currentPage);
+          // FIXED: Refresh ALL data after successful transfer
+          await Promise.all([
+            refreshClubData(), // Refresh club balance
+            fetchTransfersFromPaystack(), // Refresh transfers from Paystack
+            fetchClubTransfers(currentPage), // Refresh local transfers
+          ]);
+
+          // Call parent callback
           onTransferSuccess?.();
           setTransferAmount('');
         } else {
@@ -289,8 +320,12 @@ export default function ClubTransfers({
     );
   };
 
-  const handleRefresh = () => {
-    fetchClubTransfers(currentPage);
+  const handleRefresh = async () => {
+    await Promise.all([
+      refreshClubData(),
+      fetchClubTransfers(currentPage),
+      fetchTransfersFromPaystack(),
+    ]);
   };
 
   return (

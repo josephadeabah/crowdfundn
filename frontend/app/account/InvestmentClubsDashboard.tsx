@@ -174,8 +174,13 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const handleTransferSuccess = async () => {
     if (selectedClub) {
-      // Refresh club data to show updated balance
+      // Refresh ALL club data to show updated balance
       await loadClubDetails(selectedClub);
+      
+      // Show success message
+      setPaymentMessage('Transfer completed successfully! Club balance has been updated.');
+      setPaymentSuccess(true);
+      setPaymentAlert(true);
     }
   };
 
