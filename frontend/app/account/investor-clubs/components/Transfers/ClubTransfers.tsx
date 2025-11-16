@@ -415,7 +415,7 @@ export default function ClubTransfers({
                   value={transferAmount}
                   onChange={handleAmountChange}
                   placeholder="0.00"
-                  className="w-full px-4 py-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg font-semibold"
+                  className="w-full px-4 py-4 border border-gray-200 rounded-lg text-lg font-semibold focus:outline-none focus:ring-0 focus:border-gray-200"
                 />
                 <button
                   onClick={handleMaxAmount}
