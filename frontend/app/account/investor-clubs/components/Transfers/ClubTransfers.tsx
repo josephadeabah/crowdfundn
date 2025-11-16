@@ -1,4 +1,3 @@
-// app/account/investor-clubs/components/Transfers/ClubTransfers.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/app/components/button/Button';
@@ -18,8 +17,6 @@ import {
   Shield,
   Clock,
   Calendar,
-  X,
-  RefreshCw,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { clubTransferService } from '../../services/clubTransferService';
@@ -34,13 +31,12 @@ interface ClubTransfersProps {
 }
 
 export default function ClubTransfers({
-  club: initialClub,
+  club,
   formatCurrency,
   onTransferSuccess,
 }: ClubTransfersProps) {
   const { user, token } = useAuth();
 
-  const [club, setClub] = useState<Club>(initialClub);
   const [transfers, setTransfers] = useState<ClubTransfer[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [transferring, setTransferring] = useState<boolean>(false);
@@ -110,59 +106,6 @@ export default function ClubTransfers({
       fetchClubTransfers(currentPage);
     } catch (err: any) {
       console.error('Failed to fetch transfers from Paystack:', err);
-    }
-  };
-
-  const refreshAllData = async () => {
-  if (!token || !club?.slug) return;
-  
-  try {
-    // Refresh club data
-    const clubResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    if (clubResponse.ok) {
-      const data = await clubResponse.json();
-      if (data.club) {
-        setClub(data.club);
-      }
-    }
-    
-    // Refresh transfers from Paystack and local
-    await fetchTransfersFromPaystack();
-    await fetchClubTransfers(1); // Reset to page 1 to see latest transfers
-    
-  } catch (err) {
-    console.error('Failed to refresh data:', err);
-  }
-};
-
-
-  // FIXED: Refresh club data after transfer
-  const refreshClubData = async () => {
-    if (!token || !club?.slug) return;
-    
-    try {
-      // Fetch updated club data
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.club) {
-          setClub(data.club);
-        }
-      }
-    } catch (err) {
-      console.error('Failed to refresh club data:', err);
     }
   };
 
@@ -270,17 +213,9 @@ export default function ClubTransfers({
             'success',
           );
 
-          // FIXED: Refresh ALL data after successful transfer
-          await Promise.all([
-            refreshClubData(), // Refresh club balance
-            fetchTransfersFromPaystack(), // Refresh transfers from Paystack
-            fetchClubTransfers(currentPage), // Refresh local transfers
-          ]);
-
-              // IMPROVED: Wait for all refreshes to complete
-         await refreshAllData();
-
-          // Call parent callback
+          // Refresh data
+          fetchTransfersFromPaystack();
+          fetchClubTransfers(currentPage);
           onTransferSuccess?.();
           setTransferAmount('');
         } else {
@@ -352,16 +287,8 @@ export default function ClubTransfers({
     );
   };
 
-  const handleRefresh = async () => {
-    await Promise.all([
-      refreshClubData(),
-      fetchClubTransfers(currentPage),
-      fetchTransfersFromPaystack(),
-    ]);
-  };
-
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="bg-white w-full max-h-[90vh] p-6 overflow-y-auto">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -370,355 +297,335 @@ export default function ClubTransfers({
         type={toast.type}
       />
 
-      {/* Header - Matching MemberInvestmentProposal design */}
-      <header className="border-b border-gray-200 bg-white backdrop-blur-sm sticky top-0 z-10 flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-50 rounded-xl">
+      {/* Header Section */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="p-2 bg-white rounded-lg">
                 <DollarSign className="w-6 h-6 text-emerald-600" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Transfer Funds
-                </h1>
-                <p className="text-sm text-gray-600">
-                  Transfer club funds to the registered bank account
-                </p>
-                {club?.financials?.current_balance && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Balance: {formatCurrency(clubBalance, club.currency)}
-                  </p>
-                )}
-                <p className="text-xs text-gray-500">
-                  {club?.current_members_count} members • Admin transfers only
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Total Transfers</p>
-                <p className="text-2xl font-bold text-emerald-600">
-                  {loading ? '...' : totalCount}
-                </p>
-              </div>
-              <button
-                onClick={handleRefresh}
-                disabled={loading}
-                className="p-2 hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-50"
-                title="Refresh data"
-              >
-                <RefreshCw
-                  className={`w-5 h-5 text-gray-600 ${loading ? 'animate-spin' : ''}`}
-                />
-              </button>
-              <div className="flex items-center px-3 py-2 bg-emerald-50 text-emerald-700 rounded-lg">
-                <HiShieldCheck className="mr-2 w-4 h-4" />
-                Secure Transfers
-              </div>
+              Club Funds Transfer
+              <InfoTooltip
+                id="club-funds-transfer-info"
+                content="Transfer club funds to the club's registered bank account"
+                iconSize={18}
+              />
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Managing transfers for{' '}
+              <span className="font-semibold text-emerald-600">
+                {club.name}
+              </span>
+              <span className="text-gray-400 ml-2">
+                •{' '}
+                {club.club_type?.charAt(0).toUpperCase() +
+                  club.club_type?.slice(1) || 'Private'}{' '}
+                Club
+              </span>
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center px-3 py-2 bg-emerald-50 text-emerald-700 rounded-full">
+              <HiShieldCheck className="mr-2 w-4 h-4" />
+              Secure Transfers
             </div>
           </div>
         </div>
-      </header>
+      </div>
+
+      {/* Transfer lock status */}
+      {user?.transfer_locked && (
+        <div className="mb-6 p-4 bg-red-50 rounded-lg">
+          <div className="flex items-center">
+            <AlertTriangle className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
+            <div>
+              <span className="text-red-700 font-medium">
+                Transfers are locked for your account
+              </span>
+              {user?.transfer_locked_reason && (
+                <p className="text-red-600 text-sm mt-1">
+                  Reason: {user?.transfer_locked_reason}
+                </p>
+              )}
+              <p className="text-red-600 text-sm">
+                Please contact support to unlock transfers.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="max-w-4xl mx-auto space-y-6">
-            {/* Transfer lock status */}
-            {user?.transfer_locked && (
-              <div className="p-4 bg-red-50 rounded-lg">
-                <div className="flex items-center">
-                  <AlertTriangle className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
-                  <div>
-                    <span className="text-red-700 font-medium">
-                      Transfers are locked for your account
-                    </span>
-                    {user?.transfer_locked_reason && (
-                      <p className="text-red-600 text-sm mt-1">
-                        Reason: {user?.transfer_locked_reason}
-                      </p>
-                    )}
-                    <p className="text-red-600 text-sm">
-                      Please contact support to unlock transfers.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Club Balance Card */}
-            <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-xl p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Banknote className="w-5 h-5 text-emerald-100" />
-                    <p className="text-emerald-100 text-sm font-medium">
-                      Available Club Balance
-                    </p>
-                    <InfoTooltip
-                      content="Total funds available in the club for transfer"
-                      id="available-club-balance-info"
-                    />
-                  </div>
-                  <p className="text-4xl font-bold mb-2">
-                    {formatCurrency(clubBalance, club.currency)}
-                  </p>
-                  <p className="text-emerald-100 text-sm">
-                    Funds available for transfer to admin account
-                  </p>
-                </div>
-                <div className="bg-white/20 p-4 rounded-lg">
-                  <Users className="w-8 h-8" />
-                </div>
-              </div>
-            </div>
-
-            {/* Transfer Form Section */}
-            <div className="bg-white rounded-xl p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-emerald-50 rounded-lg">
-                  <Send className="w-5 h-5 text-emerald-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Transfer Amount
-                </h3>
+      <div className="space-y-6">
+        {/* Club Balance Card */}
+        <div className="bg-gray-50 rounded-none p-6 text-gray-800">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Banknote className="w-5 h-5 text-gray-500" />
+                <p className="text-gray-500 text-sm font-medium">
+                  Available Club Balance
+                </p>
                 <InfoTooltip
-                  id="transfer-amount-info"
-                  content="Enter the amount you want to transfer from club funds"
+                  content="Total funds available in the club for transfer"
+                  id="available-club-balance-info"
                 />
               </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="transferAmount"
-                    className="block text-sm font-medium text-gray-700 mb-3"
-                  >
-                    Amount to Transfer ({club.currency})
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="transferAmount"
-                      type="text"
-                      value={transferAmount}
-                      onChange={handleAmountChange}
-                      placeholder="0.00"
-                      className="w-full px-4 py-4 border border-gray-200 rounded-lg text-lg font-semibold focus:outline-none focus:ring-0 focus:border-gray-200"
-                    />
-                    <button
-                      onClick={handleMaxAmount}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded hover:bg-emerald-600 transition-colors"
-                    >
-                      MAX
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center mt-3">
-                    <span className="text-sm text-gray-500">
-                      Available: {formatCurrency(clubBalance, club.currency)}
-                    </span>
-                    {getTransferAmount() > 0 && (
-                      <span
-                        className={`text-sm font-medium ${
-                          getTransferAmount() > clubBalance
-                            ? 'text-red-600'
-                            : 'text-emerald-600'
-                        }`}
-                      >
-                        {getTransferAmount() > clubBalance
-                          ? 'Exceeds balance'
-                          : 'Valid amount'}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Transfer Button */}
-                <Button
-                  onClick={handleRequestTransfer}
-                  className="w-full px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-                  disabled={isTransferDisabled()}
-                >
-                  {transferring ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Processing Transfer...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-5 h-5" />
-                      {getTransferButtonText()}
-                    </>
-                  )}
-                </Button>
-
-                {!club.is_admin && (
-                  <div className="p-4 bg-orange-50 rounded-lg text-center">
-                    <p className="text-orange-700 font-medium flex items-center justify-center gap-2">
-                      <Shield className="w-4 h-4" />
-                      Only club administrators can initiate transfers
-                    </p>
-                  </div>
-                )}
-              </div>
+              <p className="text-4xl font-bold mb-2">
+                {formatCurrency(clubBalance, club.currency)}
+              </p>
+              <p className="text-gray-600 text-sm">
+                Funds available for transfer to admin account
+              </p>
             </div>
-
-            {/* Transfer History Section */}
-            <div className="bg-white">
-              <div className="pb-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-50 rounded-lg">
-                      <History className="w-5 h-5 text-gray-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        Transfer History
-                      </h3>
-                      <p className="text-gray-500 text-sm mt-1">
-                        All your club transfer records in one place
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="bg-gray-50 text-gray-600 px-3 py-1.5 rounded text-sm font-medium">
-                      {totalCount} records
-                    </span>
-                    <InfoTooltip
-                      id="transfer-history-info"
-                      content="History of all club fund transfers"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                {loading ? (
-                  <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
-                    <p className="text-gray-500 mt-4 font-medium">
-                      Loading transfer history...
-                    </p>
-                  </div>
-                ) : transfers?.length === 0 ? (
-                  <div className="text-center py-12">
-                    <History className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-600 text-lg font-medium">
-                      No transfer history found
-                    </p>
-                    <p className="text-gray-500 mt-2">
-                      Club transfers will appear here once initiated
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    {/* Table Container with Horizontal Scroll */}
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200 text-sm">
-                        {' '}
-                        {/* Smaller text */}
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-                              Date & Time
-                            </th>
-                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-                              Amount
-                            </th>
-                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-                              Status
-                            </th>
-                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-                              Reference
-                            </th>
-                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-                              Initiated By
-                            </th>
-                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-                              Bank Details
-                            </th>
-                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-                              Actions
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {transfers.map((transfer) => (
-                            <tr key={transfer.id} className="hover:bg-gray-50">
-                              <td className="px-3 py-2 whitespace-nowrap">
-                                <div className="text-xs font-medium text-gray-900">
-                                  {moment(transfer.created_at).format(
-                                    'MMM D, YYYY',
-                                  )}
-                                </div>
-                                <div className="text-gray-500 text-xs">
-                                  {moment(transfer.created_at).format('h:mm A')}
-                                </div>
-                              </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-xs font-semibold text-gray-900">
-                                {formatCurrency(
-                                  transfer.amount,
-                                  transfer.currency,
-                                )}
-                              </td>
-                              <td className="px-3 py-2 whitespace-nowrap">
-                                {getStatusBadge(transfer.status)}
-                              </td>
-                              <td className="px-3 py-2 whitespace-nowrap">
-                                <div className="text-xs text-gray-900 font-mono bg-gray-50 px-2 py-1 rounded truncate max-w-[120px]">
-                                  {transfer.reference}
-                                </div>
-                              </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
-                                {transfer.user?.full_name || 'N/A'}
-                              </td>
-                              <td className="px-3 py-2 whitespace-nowrap">
-                                <div className="text-xs text-gray-900">
-                                  {transfer.bank_name || 'N/A'}
-                                </div>
-                                {transfer.account_number && (
-                                  <div className="text-gray-500 text-xs font-mono">
-                                    ****{transfer.account_number.slice(-4)}
-                                  </div>
-                                )}
-                              </td>
-                              <td className="px-3 py-2 whitespace-nowrap">
-                                {transfer.status === 'pending' && (
-                                  <button className="text-emerald-600 font-medium text-xs px-2 py-1 bg-emerald-50 rounded hover:bg-emerald-100 transition-colors">
-                                    Track
-                                  </button>
-                                )}
-                                {transfer.status === 'failed' && (
-                                  <button className="text-red-600 font-medium text-xs px-2 py-1 bg-red-50 rounded hover:bg-red-100 transition-colors">
-                                    Retry
-                                  </button>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {totalPages > 1 && (
-                      <div className="mt-6 pt-6 border-t border-gray-100">
-                        <Pagination
-                          currentPage={currentPage}
-                          totalPages={totalPages}
-                          onPageChange={(page) => {
-                            setCurrentPage(page);
-                            fetchClubTransfers(page);
-                          }}
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <Users className="w-8 h-8" />
             </div>
           </div>
         </div>
-      </main>
+
+        {/* Transfer Form Section */}
+        <div className="bg-white rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-white rounded-lg">
+              <Send className="w-5 h-5 text-emerald-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Transfer Amount
+            </h3>
+            <InfoTooltip
+              id="transfer-amount-info"
+              content="Enter the amount you want to transfer from club funds"
+            />
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <label
+                htmlFor="transferAmount"
+                className="block text-sm font-medium text-gray-700 mb-3"
+              >
+                Amount to Transfer ({club.currency})
+              </label>
+              <div className="relative">
+                <input
+                  id="transferAmount"
+                  type="text"
+                  value={transferAmount}
+                  onChange={handleAmountChange}
+                  placeholder="0.00"
+                  className="w-full px-4 py-4 border border-gray-200 rounded-lg text-lg font-semibold focus:outline-none focus:ring-0 focus:border-gray-200"
+                />
+                <button
+                  onClick={handleMaxAmount}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded hover:bg-emerald-600 transition-colors"
+                >
+                  MAX
+                </button>
+              </div>
+              <div className="flex justify-between items-center mt-3">
+                <span className="text-sm text-gray-500">
+                  Available: {formatCurrency(clubBalance, club.currency)}
+                </span>
+                {getTransferAmount() > 0 && (
+                  <span
+                    className={`text-sm font-medium ${
+                      getTransferAmount() > clubBalance
+                        ? 'text-red-600'
+                        : 'text-emerald-600'
+                    }`}
+                  >
+                    {getTransferAmount() > clubBalance
+                      ? 'Exceeds balance'
+                      : 'Valid amount'}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Transfer Button */}
+            <Button
+              onClick={handleRequestTransfer}
+              className="w-full px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+              disabled={isTransferDisabled()}
+            >
+              {transferring ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Processing Transfer...
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5" />
+                  {getTransferButtonText()}
+                </>
+              )}
+            </Button>
+
+            {!club.is_admin && (
+              <div className="p-4 bg-orange-50 rounded-lg text-center">
+                <p className="text-orange-700 font-medium flex items-center justify-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Only club administrators can initiate transfers
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Transfer History Section */}
+        <div className="bg-white overflow-hidden">
+          <div className="pb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gray-50 rounded-lg">
+                  <History className="w-5 h-5 text-gray-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Transfer History
+                  </h3>
+                  <p className="text-gray-500 text-sm mt-1">
+                    All your club transfer records in one place
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="bg-gray-50 text-gray-600 px-3 py-1.5 rounded text-sm font-medium">
+                  {totalCount} records
+                </span>
+                <InfoTooltip
+                  id="transfer-history-info"
+                  content="History of all club fund transfers"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
+                <p className="text-gray-500 mt-4 font-medium">
+                  Loading transfer history...
+                </p>
+              </div>
+            ) : transfers?.length === 0 ? (
+              <div className="text-center py-12">
+                <History className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-600 text-lg font-medium">
+                  No transfer history found
+                </p>
+                <p className="text-gray-500 mt-2">
+                  Club transfers will appear here once initiated
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* Table Container with Horizontal Scroll */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                          Date & Time
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                          Amount
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                          Status
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                          Reference
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                          Initiated By
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                          Bank Details
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {transfers.map((transfer) => (
+                        <tr
+                          key={transfer.id}
+                          className="transition-colors duration-150"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {moment(transfer.created_at).format(
+                                'MMM D, YYYY',
+                              )}
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              {moment(transfer.created_at).format('h:mm A')}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                            {formatCurrency(transfer.amount, transfer.currency)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {getStatusBadge(transfer.status)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900 font-mono bg-gray-50 px-2 py-1 rounded">
+                              {transfer.reference}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {transfer.user?.full_name || 'N/A'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">
+                              {transfer.bank_name || 'N/A'}
+                            </div>
+                            {transfer.account_number && (
+                              <div className="text-gray-500 text-xs font-mono">
+                                ****{transfer.account_number.slice(-4)}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {transfer.status === 'pending' && (
+                              <button className="text-emerald-600 font-medium text-sm px-3 py-1.5 bg-emerald-50 rounded hover:bg-emerald-100 transition-colors">
+                                Track
+                              </button>
+                            )}
+                            {transfer.status === 'failed' && (
+                              <button className="text-red-600 font-medium text-sm px-3 py-1.5 bg-red-50 rounded hover:bg-red-100 transition-colors">
+                                Retry
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="mt-6 pt-6 border-t border-gray-100">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={(page) => {
+                        setCurrentPage(page);
+                        fetchClubTransfers(page);
+                      }}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

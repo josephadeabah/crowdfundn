@@ -35,7 +35,7 @@ const apiCall = async (
   return await response.json();
 };
 
-  // Fetch transfers from Paystack
+// Club Transfers API calls
 export const clubTransferService = {
   // Get club transfers with pagination
   getClubTransfers: async (
@@ -76,20 +76,13 @@ export const clubTransferService = {
     amount: number,
   ): Promise<InitiateTransferResponse> => {
     const endpoint = `/investment_clubs/${clubSlug}/transfers/initialize_transfer`;
-    const response = await apiCall(endpoint, token, {
+    return apiCall(endpoint, token, {
       method: 'POST',
       body: JSON.stringify({
         recipient_code: recipientCode,
         transfer_amount: amount,
       }),
     });
-
-    // FIXED: Ensure response has the expected structure
-    if (response.transfer_code && response.reference) {
-      return response;
-    } else {
-      throw new Error('Invalid response format from transfer initiation');
-    }
   },
 
   // Get bank list
