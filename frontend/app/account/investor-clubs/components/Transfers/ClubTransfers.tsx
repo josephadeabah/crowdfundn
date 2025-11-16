@@ -388,7 +388,7 @@ export default function ClubTransfers({
         </div>
 
         {/* Transfer Form Section */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-none">
+        <div className="bg-white rounded-2xl border border-gray-50 p-6 shadow-none">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 bg-emerald-100 rounded-lg">
               <Send className="w-5 h-5 text-emerald-600" />
@@ -417,7 +417,7 @@ export default function ClubTransfers({
                   value={transferAmount}
                   onChange={handleAmountChange}
                   placeholder="0.00"
-                  className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg font-semibold shadow-none"
+                  className="w-full px-4 py-4 border border-gray-50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg font-semibold shadow-none"
                 />
                 <button
                   onClick={handleMaxAmount}
@@ -466,7 +466,7 @@ export default function ClubTransfers({
             </Button>
 
             {!club.is_admin && (
-              <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl text-center">
+              <div className="p-4 bg-orange-50 border border-orange-50 rounded-xl text-center">
                 <p className="text-orange-700 font-medium flex items-center justify-center gap-2">
                   <Shield className="w-4 h-4" />
                   Only club administrators can initiate transfers
@@ -477,7 +477,7 @@ export default function ClubTransfers({
         </div>
 
         {/* Transfer History Section */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-none overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-50 shadow-none overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -526,7 +526,7 @@ export default function ClubTransfers({
             ) : (
               <>
                 {/* Table Container with Horizontal Scroll */}
-                <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <div className="overflow-x-auto rounded-lg border border-gray-50">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
@@ -612,7 +612,7 @@ export default function ClubTransfers({
                 </div>
 
                 {totalPages > 1 && (
-                  <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="mt-6 pt-6 border-t border-gray-100">
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}
