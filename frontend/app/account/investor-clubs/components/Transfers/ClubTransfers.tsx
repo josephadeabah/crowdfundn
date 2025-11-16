@@ -327,7 +327,7 @@ export default function ClubTransfers({
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
-              className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl border-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:from-emerald-600 hover:to-emerald-700"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl border-0 shadow-lg hover:shadow-none transition-all duration-200 hover:from-emerald-600 hover:to-emerald-700"
             >
               <HiShieldCheck className="mr-2 w-4 h-4" />
               Secure Transfers
@@ -338,7 +338,7 @@ export default function ClubTransfers({
 
       {/* Transfer lock status */}
       {user?.transfer_locked && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl shadow-sm">
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl shadow-none">
           <div className="flex items-center">
             <AlertTriangle className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
             <div>
@@ -361,7 +361,7 @@ export default function ClubTransfers({
       {/* Main Content */}
       <div className="space-y-6">
         {/* Club Balance Card */}
-        <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-2xl p-6 text-white shadow-xl">
+        <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-2xl p-6 text-white shadow-none">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-2">
@@ -388,7 +388,7 @@ export default function ClubTransfers({
         </div>
 
         {/* Transfer Form Section */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-none">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 bg-emerald-100 rounded-lg">
               <Send className="w-5 h-5 text-emerald-600" />
@@ -417,11 +417,11 @@ export default function ClubTransfers({
                   value={transferAmount}
                   onChange={handleAmountChange}
                   placeholder="0.00"
-                  className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg font-semibold shadow-sm"
+                  className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg font-semibold shadow-none"
                 />
                 <button
                   onClick={handleMaxAmount}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors shadow-sm"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors shadow-none"
                 >
                   MAX
                 </button>
@@ -449,7 +449,7 @@ export default function ClubTransfers({
             {/* Transfer Button */}
             <Button
               onClick={handleRequestTransfer}
-              className="w-full px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-semibold text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+              className="w-full px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-semibold text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-none"
               disabled={isTransferDisabled()}
             >
               {transferring ? (
@@ -477,7 +477,7 @@ export default function ClubTransfers({
         </div>
 
         {/* Transfer History Section */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-none overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
