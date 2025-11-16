@@ -359,7 +359,7 @@ export default function ClubTransfers({
       {/* Main Content */}
       <div className="space-y-6">
         {/* Club Balance Card */}
-        <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-xl p-6 text-white">
+        <div className="bg-gray-50 rounded-none p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-2">
@@ -379,7 +379,7 @@ export default function ClubTransfers({
                 Funds available for transfer to admin account
               </p>
             </div>
-            <div className="bg-white/20 p-4 rounded-lg">
+            <div className="bg-gray-700 p-4 rounded-lg">
               <Users className="w-8 h-8" />
             </div>
           </div>
