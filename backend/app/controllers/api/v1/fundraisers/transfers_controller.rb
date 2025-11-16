@@ -82,12 +82,16 @@ module Api
             return
           end
 
-          metadata = subaccount.metadata
-          custom_fields = metadata['custom_fields']
+            metadata       = subaccount.metadata
+            custom_fields  = metadata['custom_fields']
 
-          # Extract the appropriate field based on the type (ghipss or mobile_money)
-          bank_code_value = custom_fields.find { |field| field['type'] == 'ghipss' }&.dig('value') ||
-                            custom_fields.find { |field| field['type'] == 'mobile_money' }&.dig('value')
+            if custom_fields.blank?
+              render json: { error: 'No custom fields provided for this subaccount' }, status: :unprocessable_entity
+              return
+            end
+
+           bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
+                              custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value')
 
           if bank_code_value.blank?
             render json: { error: 'No valid bank code or mobile money details provided' }, status: :unprocessable_entity
