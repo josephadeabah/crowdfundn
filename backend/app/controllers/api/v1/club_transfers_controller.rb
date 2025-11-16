@@ -234,7 +234,7 @@ module Api
               transfer_code: transfer_data[:transfer_code],
               reference: transfer_data[:reference],
               message: 'Transfer initiated successfully.',
-              club_balance: @club.current_balance,
+              club_balance: @club.reload.current_balance,
               transferred_amount: transfer_amount
             }, status: :ok
           else
