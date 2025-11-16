@@ -1,4 +1,3 @@
-// app/account/investor-clubs/components/Transfers/TransferClubBalanceModal.tsx
 import React from 'react';
 import Modal from '@/app/components/modal/Modal';
 import ClubTransfers from './ClubTransfers';
@@ -23,21 +22,17 @@ const TransferClubBalanceModal: React.FC<TransferClubBalanceModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="xxxlarge"
+      size="xxxlarge" // This now uses max-w-6xl (1152px) + w-[95vw]
       closeOnBackdropClick={false}
       customStyles={{
         padding: 0,
-        maxHeight: '95vh',
-        overflow: 'hidden',
       }}
     >
-      <div className="h-full">
-        <ClubTransfers
-          club={club}
-          formatCurrency={formatCurrency}
-          onTransferSuccess={onTransferSuccess}
-        />
-      </div>
+      <ClubTransfers
+        club={club}
+        formatCurrency={formatCurrency}
+        onTransferSuccess={onTransferSuccess}
+      />
     </Modal>
   );
 };
