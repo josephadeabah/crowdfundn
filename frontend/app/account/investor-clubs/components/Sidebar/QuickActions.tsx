@@ -63,13 +63,13 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
       </div>
 
       {/* Admin notice */}
-      {isAdmin && (
+      {/* {isAdmin && ( */}
         <div className="mt-3 p-1 bg-gray-50 border border-gray-100 rounded-sm">
-          <p className="text-xs text-orange-600 text-center">
+          <p className="text-xs text-gray-600 text-center">
             💼 You have admin access
           </p>
         </div>
-      )}
+      {/* )} */}
     </motion.div>
   );
 };
