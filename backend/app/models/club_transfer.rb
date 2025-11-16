@@ -15,7 +15,7 @@ class ClubTransfer < ApplicationRecord
   
   before_create :generate_reference_if_missing
   
-  # FIXED: Add callback to handle failed transfers and refund balance
+  # FIXED: Proper callback for failed transfers
   after_update :refund_balance_if_failed, if: -> { saved_change_to_status? && failed? }
   
   private
@@ -25,18 +25,9 @@ class ClubTransfer < ApplicationRecord
   end
   
   def refund_balance_if_failed
-    # If transfer fails, add the amount back to club balance
-    club = investment_club
-    new_total_contributions = club.total_contributions + amount
-    new_current_balance = new_total_contributions - club.total_invested
+    # Refund the amount back to club balance
+    investment_club.refund_transfer_amount(amount)
     
-    club.update_columns(
-      total_contributions: new_total_contributions,
-      current_balance: new_current_balance,
-      updated_at: Time.current
-    )
-    
-    Rails.logger.info "Refunded #{amount} to club #{club.id} due to failed transfer"
-    Rails.logger.info "New club balance: #{new_current_balance}"
+    Rails.logger.info "Refunded #{amount} to club #{investment_club.id} due to failed transfer"
   end
 end

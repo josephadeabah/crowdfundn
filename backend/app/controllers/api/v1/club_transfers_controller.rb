@@ -204,11 +204,11 @@ module Api
         if transfer_response[:status]
           transfer_data = transfer_response[:data]
           
-          # ALIGNED WITH FUNDRAISER: Create club transfer record with proper associations
+          # Create club transfer record
           club_transfer = ClubTransfer.create!(
             investment_club: @club,
             user: @current_user,
-            amount: transfer_amount,  # Store the actual transferred amount in main units
+            amount: transfer_amount,
             currency: currency,
             status: 'pending',
             reason: "Payout for #{@club.name} investment club",
@@ -217,19 +217,18 @@ module Api
             transfer_code: transfer_data[:transfer_code]
           )
 
-          # FIXED: DEDUCT THE TRANSFER AMOUNT FROM CLUB FUNDS
-          # Reload club to get fresh data before deduction
+          # FIXED: Reload club and validate balance
           @club.reload
           
-          # Validate that we have enough balance before deducting
           if @club.current_balance >= transfer_amount
+            # Use the corrected deduction method
             @club.deduct_transfer_amount(transfer_amount)
             
-            # Reload to get updated balance
-            @club.reload
-            
-            Rails.logger.info "Transfer amount #{transfer_amount} deducted from club #{@club.id}"
-            Rails.logger.info "New club balance: #{@club.current_balance}"
+            # Log the action properly
+            Rails.logger.info "Transfer #{transfer_data[:transfer_code]} initiated: " +
+                            "Club: #{@club.id}, " +
+                            "Amount: #{transfer_amount}, " +
+                            "New Balance: #{@club.reload.current_balance}"
             
             render json: {
               transfer_code: transfer_data[:transfer_code],
@@ -239,10 +238,9 @@ module Api
               transferred_amount: transfer_amount
             }, status: :ok
           else
-            # Rollback the transfer creation if balance is insufficient
             club_transfer.destroy
             render json: { 
-              error: "Insufficient club balance. Current balance: #{@club.current_balance}, Transfer amount: #{transfer_amount}" 
+              error: "Insufficient club balance. Current: #{@club.current_balance}, Needed: #{transfer_amount}" 
             }, status: :unprocessable_entity
           end
         else

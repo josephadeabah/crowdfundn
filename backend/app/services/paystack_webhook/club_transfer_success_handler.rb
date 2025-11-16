@@ -17,7 +17,7 @@ class PaystackWebhook::ClubTransferSuccessHandler
     end
 
     ActiveRecord::Base.transaction do
-      # Find the club transfer by transfer_code
+      # Find the club transfer by transfer_code (this is the most reliable)
       club_transfer = ClubTransfer.find_by(transfer_code: transfer_code)
       
       unless club_transfer
@@ -25,10 +25,19 @@ class PaystackWebhook::ClubTransferSuccessHandler
         return
       end
 
-      # FIXED: Verify the transfer was already deducted during initiation
-      # The amount should have been deducted when the transfer was initiated
-      # So we just need to update the status
+      club = club_transfer.investment_club
       
+      # Verify the transfer amount was already deducted during initiation
+      # If not, deduct it now (safety check)
+      expected_balance = club.total_contributions - club.total_invested - club_transfer.amount
+      if (club.current_balance - expected_balance).abs > 0.01
+        Rails.logger.warn "Balance mismatch detected. Correcting balance..."
+        club.update_columns(
+          current_balance: expected_balance,
+          updated_at: Time.current
+        )
+      end
+
       # Update the club transfer status
       club_transfer.update!(
         status: 'success',
@@ -38,31 +47,7 @@ class PaystackWebhook::ClubTransferSuccessHandler
       )
 
       Rails.logger.info "Club transfer #{transfer_code} marked as successful"
-      Rails.logger.info "Transfer amount #{club_transfer.amount} was already deducted from club balance during initiation"
-
-      # UPDATE THE SUBACCOUNT with only existing attributes
-      subaccount = Subaccount.find_by(recipient_code: club_transfer.recipient_code)
-      if subaccount
-        subaccount.update!(
-          status: 'success',
-          completed_at: Time.current,
-          amount: @data[:amount], # This is in kobo/pesewa (1000000 = 10000 GHS)
-          transfer_code: @data[:transfer_code],
-          reference: @data[:reference],
-          # Only these fields exist in Subaccount:
-          account_number: @data.dig(:recipient, :details, :account_number),
-          bank: @data.dig(:recipient, :details, :bank_name), # Use 'bank' not 'bank_name'
-          business_name: @data.dig(:recipient, :name) # Use recipient name as business_name
-        )
-        Rails.logger.info "Subaccount #{subaccount.id} updated with transfer reference #{@data[:reference]}."
-      else
-        Rails.logger.warn "Subaccount not found for recipient_code #{club_transfer.recipient_code}."
-      end
-
-      # Send notification
-      # send_club_transfer_notification(club_transfer)
-
-      Rails.logger.info "Club transfer processing completed for club: #{club_transfer.investment_club.name}"
+      Rails.logger.info "Final club balance: #{club.reload.current_balance}"
     end
 
   rescue StandardError => e
@@ -71,21 +56,5 @@ class PaystackWebhook::ClubTransferSuccessHandler
     raise e
   ensure
     EventProcessed.create(event_id: transfer_code) unless EventProcessed.exists?(event_id: transfer_code)
-  end
-
-  private
-
-  def send_club_transfer_notification(club_transfer)
-    club = club_transfer.investment_club
-    admins = club.admin_members
-
-    admins.each do |admin|
-      ClubTransferMailer.transfer_success_notification(
-        admin, 
-        club_transfer
-      ).deliver_later
-    end
-
-    Rails.logger.info "Sent success notifications to #{admins.count} admin(s)"
   end
 end

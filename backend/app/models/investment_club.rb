@@ -85,19 +85,29 @@ class InvestmentClub < ApplicationRecord
   end
   
   def deduct_transfer_amount(amount)
-    # Calculate new totals
-    new_total_contributions = total_contributions - amount
-    new_current_balance = new_total_contributions - total_invested
+    # CORRECTED: Only deduct from current_balance, not total_contributions
+    new_current_balance = current_balance - amount
     
-    # Update columns directly
     update_columns(
-      total_contributions: new_total_contributions,
       current_balance: new_current_balance,
       updated_at: Time.current
     )
     
     Rails.logger.info "Club #{id} deducted transfer amount: #{amount}"
-    Rails.logger.info "New totals - Contributions: #{new_total_contributions}, Balance: #{new_current_balance}"
+    Rails.logger.info "New balance: #{new_current_balance}"
+  end
+
+  # Add method to handle failed transfers properly
+  def refund_transfer_amount(amount)
+    new_current_balance = current_balance + amount
+    
+    update_columns(
+      current_balance: new_current_balance,
+      updated_at: Time.current
+    )
+    
+    Rails.logger.info "Club #{id} refunded transfer amount: #{amount}"
+    Rails.logger.info "New balance: #{new_current_balance}"
   end
   
   def roi_metrics
