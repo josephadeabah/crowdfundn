@@ -359,12 +359,12 @@ export default function ClubTransfers({
       {/* Main Content */}
       <div className="space-y-6">
         {/* Club Balance Card */}
-        <div className="bg-gray-50 rounded-none p-6 text-white">
+        <div className="bg-gray-50 rounded-none p-6 text-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Banknote className="w-5 h-5 text-emerald-100" />
-                <p className="text-emerald-100 text-sm font-medium">
+                <Banknote className="w-5 h-5 text-gray-500" />
+                <p className="text-gray-500 text-sm font-medium">
                   Available Club Balance
                 </p>
                 <InfoTooltip
@@ -375,11 +375,11 @@ export default function ClubTransfers({
               <p className="text-4xl font-bold mb-2">
                 {formatCurrency(clubBalance, club.currency)}
               </p>
-              <p className="text-emerald-100 text-sm">
+              <p className="text-gray-600 text-sm">
                 Funds available for transfer to admin account
               </p>
             </div>
-            <div className="bg-gray-700 p-4 rounded-lg">
+            <div className="bg-gray-50 p-4 rounded-lg">
               <Users className="w-8 h-8" />
             </div>
           </div>
