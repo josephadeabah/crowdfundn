@@ -23,7 +23,7 @@ const TransferClubBalanceModal: React.FC<TransferClubBalanceModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       size="xxxlarge" // This now uses max-w-6xl (1152px) + w-[95vw]
-      closeOnBackdropClick={false}
+      closeOnBackdropClick={true}
       customStyles={{
         padding: 0,
       }}
