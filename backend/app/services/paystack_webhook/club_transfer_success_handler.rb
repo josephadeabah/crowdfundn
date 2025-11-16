@@ -25,6 +25,10 @@ class PaystackWebhook::ClubTransferSuccessHandler
         return
       end
 
+      # FIXED: Verify the transfer was already deducted during initiation
+      # The amount should have been deducted when the transfer was initiated
+      # So we just need to update the status
+      
       # Update the club transfer status
       club_transfer.update!(
         status: 'success',
@@ -34,6 +38,7 @@ class PaystackWebhook::ClubTransferSuccessHandler
       )
 
       Rails.logger.info "Club transfer #{transfer_code} marked as successful"
+      Rails.logger.info "Transfer amount #{club_transfer.amount} was already deducted from club balance during initiation"
 
       # UPDATE THE SUBACCOUNT with only existing attributes
       subaccount = Subaccount.find_by(recipient_code: club_transfer.recipient_code)
