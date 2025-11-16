@@ -85,7 +85,7 @@ class InvestmentClub < ApplicationRecord
   end
 
     # FIXED: Proper total_contributions calculation with safe fallback
-  def total_contributions
+  def update_total_contributions
     if investment_club_contributions.loaded?
       investment_club_contributions.select { |c| c.completed? }.sum(&:amount).to_f
     else
@@ -94,8 +94,8 @@ class InvestmentClub < ApplicationRecord
   end
 
   # FIXED: Proper current_balance calculation with safe fallback
-  def current_balance
-    total_contributions - total_invested
+  def update_current_balance
+    update_total_contributions - total_invested
   end
 
   # FIXED: Proper total_invested calculation with safe fallback
@@ -114,7 +114,7 @@ class InvestmentClub < ApplicationRecord
   end
   
   def deduct_transfer_amount(amount)
-    new_total_contributions = total_contributions - amount
+    new_total_contributions = update_total_contributions - amount
     update_columns(
       total_contributions: new_total_contributions,
       current_balance: new_total_contributions,
@@ -156,7 +156,7 @@ class InvestmentClub < ApplicationRecord
   # FIXED: Safe update_financials method
   def update_financials
     # Calculate fresh values safely
-    new_total_contributions = total_contributions
+    new_total_contributions = update_total_contributions
     new_total_invested = total_invested
     new_current_balance = new_total_contributions - new_total_invested
 
@@ -279,7 +279,7 @@ class InvestmentClub < ApplicationRecord
   end
 
   def update_all_member_shares
-    total_contributions = self.total_contributions
+    total_contributions = self.update_total_contributions
     return if total_contributions.zero?
     
     memberships = investment_club_memberships.active.to_a
@@ -289,7 +289,7 @@ class InvestmentClub < ApplicationRecord
     total_calculated = 0.0
     
     memberships.each do |membership|
-      raw_share = (membership.total_contributed / total_contributions) * 100
+      raw_share = (membership.total_contributed / update_total_contributions) * 100
       calculated_shares[membership.id] = raw_share
       total_calculated += raw_share
     end
@@ -348,7 +348,7 @@ class InvestmentClub < ApplicationRecord
       }
     end
     
-    new_total_contributions = total_contributions + new_contribution
+    new_total_contributions = update_total_contributions + new_contribution
     new_shares = {}
     
     investment_club_memberships.active.each do |m|
