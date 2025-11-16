@@ -1,3 +1,4 @@
+# app/models/investment_club.rb
 class InvestmentClub < ApplicationRecord
   belongs_to :creator, class_name: 'User'
   has_many :investment_club_memberships, dependent: :destroy
@@ -20,14 +21,13 @@ class InvestmentClub < ApplicationRecord
   attribute :current_members_count, :integer, default: 0
   attribute :max_members, :integer, default: 50
   attribute :minimum_monthly_contribution, :decimal, default: 0.0
-  attribute :currency, :string, default: 'GHS' # Add this line
+  attribute :currency, :string, default: 'GHS'
   
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
   before_validation :map_club_type_to_access_type
   after_create :create_creator_membership
   after_initialize :set_default_members_count, if: :new_record?
   
-  # FIXED: Remove the problematic callback and use a simpler approach
   after_save :update_members_count_if_needed
   
   enum access_type: { 
@@ -38,7 +38,6 @@ class InvestmentClub < ApplicationRecord
   
   enum status: { active: 'active', inactive: 'inactive', suspended: 'suspended' }
 
-  # Add currency_symbol method
   def currency_symbol
     case currency&.upcase
     when 'USD' then '$'
@@ -47,11 +46,10 @@ class InvestmentClub < ApplicationRecord
     when 'NGN' then '₦'
     when 'GHS' then '₵'
     when 'KES' then 'KSh'
-    else 'GHS' # Default to GHS
+    else 'GHS'
     end
   end
 
-  # Override the club_type setter to map to access_type
   def club_type=(value)
     case value.to_s
     when 'public'
@@ -61,11 +59,10 @@ class InvestmentClub < ApplicationRecord
     when 'verified'
       self.access_type = 'certified'
     else
-      self.access_type = 'restricted' # default
+      self.access_type = 'restricted'
     end
   end
   
-  # Helper methods for clean access
   def public?
     access_type_open?
   end
@@ -83,7 +80,7 @@ class InvestmentClub < ApplicationRecord
     when 'open' then 'public'
     when 'restricted' then 'private' 
     when 'certified' then 'verified'
-    else 'private' # default fallback
+    else 'private'
     end
   end
   
@@ -94,43 +91,96 @@ class InvestmentClub < ApplicationRecord
       current_balance: new_total_contributions
     )
   end
+
+  # Add method to handle failed transfers properly
+  def refund_transfer_amount(amount)
+    new_current_balance = current_balance + amount
+    
+    update_columns(
+      current_balance: new_current_balance,
+      updated_at: Time.current
+    )
+    
+    Rails.logger.info "Club #{id} refunded transfer amount: #{amount}"
+    Rails.logger.info "New balance: #{new_current_balance}"
+  end
   
-  # UPDATED: Remove investment-related ROI metrics since we're not doing auto-investment
   def roi_metrics
     {
       total_contributions: total_contributions,
       total_invested: total_invested,
       current_balance: current_balance,
-      # REMOVED: investment-related metrics
       approved_campaigns_count: club_investments.approved.count,
       pending_investments: club_investments.voting.count
     }
   end
   
-  # Update members count method - SIMPLIFIED
   def update_members_count
     active_count = investment_club_memberships.active.count
     if current_members_count != active_count
       update_column(:current_members_count, active_count)
     end
   end
-  
+
+  # FIXED: Proper total_contributions calculation with safe fallback
+  def total_contributions
+    if investment_club_contributions.loaded?
+      investment_club_contributions.select { |c| c.completed? }.sum(&:amount).to_f
+    else
+      investment_club_contributions.completed.sum(:amount).to_f
+    end
+  end
+
+  # FIXED: Proper current_balance calculation with safe fallback
+  def current_balance
+    total_contributions - total_invested
+  end
+
+  # FIXED: Proper total_invested calculation with safe fallback
+  def total_invested
+    if club_investments.loaded?
+      club_investments.select { |i| i.executed? }.sum(&:investment_amount).to_f
+    else
+      # Use safe approach - check if executed scope exists
+      if club_investments.respond_to?(:executed)
+        club_investments.executed.sum(:investment_amount).to_f
+      else
+        # Fallback to manual filtering
+        club_investments.where(status: 'executed').sum(:investment_amount).to_f
+      end
+    end
+  end
+
+  # FIXED: Safe update_financials method
   def update_financials
+    # Calculate fresh values safely
+    new_total_contributions = total_contributions
+    new_total_invested = total_invested
+    new_current_balance = new_total_contributions - new_total_invested
+
+    # Update columns directly to avoid callbacks
     update_columns(
-      total_contributions: total_contributions,
-      current_balance: current_balance,
+      total_contributions: new_total_contributions,
+      total_invested: new_total_invested,
+      current_balance: new_current_balance,
       updated_at: Time.current
     )
+
+    Rails.logger.info "Club #{id} financials updated: " +
+                     "Contributions: #{new_total_contributions}, " +
+                     "Invested: #{new_total_invested}, " +
+                     "Balance: #{new_current_balance}"
+  rescue => e
+    Rails.logger.error "Error updating financials for club #{id}: #{e.message}"
+    # Don't raise error to prevent breaking other operations
   end
   
-  # Create creator membership after club creation
   def create_creator_membership
     membership = investment_club_memberships.create!(
       user: creator,
       role: 'creator',
       status: 'active'
     )
-    # Immediately update count
     update_members_count
   end
   
@@ -163,14 +213,11 @@ class InvestmentClub < ApplicationRecord
     investment_club_memberships.find_by(user: user)
   end
   
-  # FIXED: Since we're not doing auto-investment, this should always return true
-  # or you might want to remove this method entirely
   def can_invest?(amount)
     current_balance >= amount
   end
 
   def at_capacity?
-    # Handle nil values gracefully
     return false if current_members_count.nil? || max_members.nil?
     current_members_count >= max_members
   end
@@ -187,7 +234,6 @@ class InvestmentClub < ApplicationRecord
     investment_club_memberships.pending.count
   end
 
-  # SIMPLIFIED: Only check if user is creator - let the API handle other validations
   def can_be_deleted_by?(user)
     is_creator?(user)
   end
@@ -195,10 +241,39 @@ class InvestmentClub < ApplicationRecord
   def deletion_errors?(user)
     errors = []
     errors << 'Only club creator can delete the club' unless can_be_deleted_by?(user)
-    # REMOVED: Investment-related deletion constraints since we're not doing auto-investment
-    # errors << 'Cannot delete club with active investments' if club_investments.executed.any?
     errors << 'Cannot delete club with active members' if investment_club_memberships.active.count > 1
     errors
+  end
+
+  # FIXED: Enhanced share calculation with better logging
+  def update_all_member_shares_with_history(contribution = nil)
+    current_total = total_contributions.to_f
+    
+    Rails.logger.info "Calculating shares for club #{id}: " +
+                     "Total contributions: #{current_total}, " +
+                     "Contribution: #{contribution&.amount}"
+
+    # Return early if no contributions
+    if current_total.zero?
+      Rails.logger.warn "No contributions to calculate shares for club #{id}"
+      return
+    end
+    
+    begin
+      # Use the active memberships association
+      active_memberships.find_each do |membership|
+        update_member_share_with_history(membership, current_total, contribution)
+      end
+      
+      # Verify the totals
+      verify_share_totals
+      
+      Rails.logger.info "Successfully updated shares for all active members in club #{id}"
+    rescue => e
+      Rails.logger.error "Error updating member shares for club #{id}: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      raise
+    end
   end
 
   def update_all_member_shares
@@ -208,7 +283,6 @@ class InvestmentClub < ApplicationRecord
     memberships = investment_club_memberships.active.to_a
     return if memberships.empty?
     
-    # Calculate proportional shares based on current contributions
     calculated_shares = {}
     total_calculated = 0.0
     
@@ -218,10 +292,8 @@ class InvestmentClub < ApplicationRecord
       total_calculated += raw_share
     end
     
-    # Apply proportional adjustment to ensure exactly 100%
     adjustment_factor = 100.0 / total_calculated
     
-    # Update all memberships with adjusted shares
     ActiveRecord::Base.transaction do
       memberships.each do |membership|
         adjusted_share = (calculated_shares[membership.id] * adjustment_factor).round(4)
@@ -229,10 +301,8 @@ class InvestmentClub < ApplicationRecord
       end
     end
     
-    # Final verification
     final_total = investment_club_memberships.active.sum(:contributed_share)
     if (final_total - 100.0).abs > 0.01
-      # Force correction by adjusting the largest shareholder
       force_correct_share_totals
     end
     
@@ -253,7 +323,6 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
-  # Force correction if there are still rounding errors
   def force_correct_share_totals
     memberships = investment_club_memberships.active.order(contributed_share: :desc)
     current_total = memberships.sum(:contributed_share)
@@ -261,7 +330,6 @@ class InvestmentClub < ApplicationRecord
     
     return if difference.zero?
     
-    # Apply the difference to the largest shareholder
     largest_member = memberships.first
     new_share = (largest_member.contributed_share + difference).round(4)
     largest_member.update_column(:contributed_share, new_share)
@@ -278,7 +346,6 @@ class InvestmentClub < ApplicationRecord
       }
     end
     
-    # Calculate new totals
     new_total_contributions = total_contributions + new_contribution
     new_shares = {}
     
@@ -312,58 +379,6 @@ class InvestmentClub < ApplicationRecord
     }
   end
 
-  def update_all_member_shares_with_history(contribution = nil)
-    total_contributions = self.total_contributions.to_f
-    
-    # Return early if no contributions
-    if total_contributions.zero?
-      Rails.logger.info "No contributions to calculate shares for club #{id}"
-      return
-    end
-    
-    begin
-      # Use the active memberships association
-      active_memberships.find_each do |membership|
-        update_member_share_with_history(membership, total_contributions, contribution)
-      end
-      
-      Rails.logger.info "Successfully updated shares for all active members in club #{id}"
-    rescue => e
-      Rails.logger.error "Error updating member shares for club #{id}: #{e.message}"
-      Rails.logger.error e.backtrace.join("\n")
-      raise
-    end
-  end
-
-  # Update the process_completion! method to use the enhanced version
-  def process_completion!
-    return if processed_at.present?
-    
-    ActiveRecord::Base.transaction do
-      membership = investment_club.membership_for(user)
-      if membership
-        previous_total = membership.total_contributed
-        previous_share = membership.contributed_share
-        
-        new_total = membership.total_contributed + amount
-        membership.update!(total_contributed: new_total)
-        
-        investment_club.update_financials
-        
-        # Use the enhanced method with history tracking
-        investment_club.update_all_member_shares_with_history(self)
-        
-        # Log the changes
-        new_share = membership.reload.contributed_share
-        Rails.logger.info "Contribution processed: #{user.full_name} " +
-                        "+#{format_currency(amount)} " +
-                        "(#{previous_share}% → #{new_share}%)"
-      end
-      
-      update_column(:processed_at, Time.current)
-    end
-  end
-
   private
   
   def generate_slug
@@ -376,8 +391,6 @@ class InvestmentClub < ApplicationRecord
   end
   
   def map_club_type_to_access_type
-    # This method is now handled by the club_type= setter
-    # Set default if no access_type is set
     self.access_type = 'restricted' if access_type.blank?
   end
 
@@ -385,10 +398,7 @@ class InvestmentClub < ApplicationRecord
     self.current_members_count ||= 0
   end
   
-  # FIXED: Simplified callback that doesn't rely on non-existent methods
   def update_members_count_if_needed
-    # Only update if we think the count might be wrong
-    # This is a conservative approach to avoid unnecessary updates
     actual_count = investment_club_memberships.active.count
     if current_members_count != actual_count
       update_column(:current_members_count, actual_count)
@@ -399,8 +409,12 @@ class InvestmentClub < ApplicationRecord
     previous_share = membership.contributed_share.to_f
     new_share = calculate_member_share(membership.total_contributed.to_f, total_contributions)
     
-    # Only create history record if share actually changed
-    if (previous_share - new_share).abs > 0.0001 # Small threshold for floating point comparison
+    Rails.logger.info "Member #{membership.user.full_name}: " +
+                     "Contributed: #{membership.total_contributed}, " +
+                     "Total: #{total_contributions}, " +
+                     "Share: #{previous_share}% → #{new_share}%"
+
+    if (previous_share - new_share).abs > 0.0001
       create_share_change_history(membership, previous_share, new_share, contribution)
       membership.update_column(:contributed_share, new_share)
       
@@ -413,10 +427,7 @@ class InvestmentClub < ApplicationRecord
   def calculate_member_share(member_contribution, total_contributions)
     return 0.0 if total_contributions.zero?
     
-    # Calculate percentage with proper precision
     share = (member_contribution / total_contributions) * 100.0
-    
-    # Round to 4 decimal places to avoid floating point issues
     share.round(4)
   end
 
