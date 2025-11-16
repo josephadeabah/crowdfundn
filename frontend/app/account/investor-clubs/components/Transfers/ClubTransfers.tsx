@@ -308,7 +308,7 @@ export default function ClubTransfers({
               Club Funds Transfer
               <InfoTooltip
                 id="club-funds-transfer-info"
-                content="Transfer club funds to the admin's registered bank account"
+                content="Transfer club funds to the club's registered bank account"
                 iconSize={18}
               />
             </h2>
