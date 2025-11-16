@@ -546,86 +546,92 @@ export default function ClubTransfers({
                 ) : (
                   <>
                     {/* Table Container with Horizontal Scroll */}
-                    // In your ClubTransfers component, update the table section:
-<div className="overflow-x-auto">
-  <table className="min-w-full divide-y divide-gray-200 text-sm"> {/* Smaller text */}
-    <thead className="bg-gray-50">
-      <tr>
-        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-          Date & Time
-        </th>
-        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-          Amount
-        </th>
-        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-          Status
-        </th>
-        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-          Reference
-        </th>
-        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-          Initiated By
-        </th>
-        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-          Bank Details
-        </th>
-        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
-          Actions
-        </th>
-      </tr>
-    </thead>
-    <tbody className="bg-white divide-y divide-gray-200">
-      {transfers.map((transfer) => (
-        <tr key={transfer.id} className="hover:bg-gray-50">
-          <td className="px-3 py-2 whitespace-nowrap">
-            <div className="text-xs font-medium text-gray-900">
-              {moment(transfer.created_at).format('MMM D, YYYY')}
-            </div>
-            <div className="text-gray-500 text-xs">
-              {moment(transfer.created_at).format('h:mm A')}
-            </div>
-          </td>
-          <td className="px-3 py-2 whitespace-nowrap text-xs font-semibold text-gray-900">
-            {formatCurrency(transfer.amount, transfer.currency)}
-          </td>
-          <td className="px-3 py-2 whitespace-nowrap">
-            {getStatusBadge(transfer.status)}
-          </td>
-          <td className="px-3 py-2 whitespace-nowrap">
-            <div className="text-xs text-gray-900 font-mono bg-gray-50 px-2 py-1 rounded truncate max-w-[120px]">
-              {transfer.reference}
-            </div>
-          </td>
-          <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
-            {transfer.user?.full_name || 'N/A'}
-          </td>
-          <td className="px-3 py-2 whitespace-nowrap">
-            <div className="text-xs text-gray-900">
-              {transfer.bank_name || 'N/A'}
-            </div>
-            {transfer.account_number && (
-              <div className="text-gray-500 text-xs font-mono">
-                ****{transfer.account_number.slice(-4)}
-              </div>
-            )}
-          </td>
-          <td className="px-3 py-2 whitespace-nowrap">
-            {transfer.status === 'pending' && (
-              <button className="text-emerald-600 font-medium text-xs px-2 py-1 bg-emerald-50 rounded hover:bg-emerald-100 transition-colors">
-                Track
-              </button>
-            )}
-            {transfer.status === 'failed' && (
-              <button className="text-red-600 font-medium text-xs px-2 py-1 bg-red-50 rounded hover:bg-red-100 transition-colors">
-                Retry
-              </button>
-            )}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200 text-sm">
+                        {' '}
+                        {/* Smaller text */}
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                              Date & Time
+                            </th>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                              Amount
+                            </th>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                              Status
+                            </th>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                              Reference
+                            </th>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                              Initiated By
+                            </th>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                              Bank Details
+                            </th>
+                            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {transfers.map((transfer) => (
+                            <tr key={transfer.id} className="hover:bg-gray-50">
+                              <td className="px-3 py-2 whitespace-nowrap">
+                                <div className="text-xs font-medium text-gray-900">
+                                  {moment(transfer.created_at).format(
+                                    'MMM D, YYYY',
+                                  )}
+                                </div>
+                                <div className="text-gray-500 text-xs">
+                                  {moment(transfer.created_at).format('h:mm A')}
+                                </div>
+                              </td>
+                              <td className="px-3 py-2 whitespace-nowrap text-xs font-semibold text-gray-900">
+                                {formatCurrency(
+                                  transfer.amount,
+                                  transfer.currency,
+                                )}
+                              </td>
+                              <td className="px-3 py-2 whitespace-nowrap">
+                                {getStatusBadge(transfer.status)}
+                              </td>
+                              <td className="px-3 py-2 whitespace-nowrap">
+                                <div className="text-xs text-gray-900 font-mono bg-gray-50 px-2 py-1 rounded truncate max-w-[120px]">
+                                  {transfer.reference}
+                                </div>
+                              </td>
+                              <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                                {transfer.user?.full_name || 'N/A'}
+                              </td>
+                              <td className="px-3 py-2 whitespace-nowrap">
+                                <div className="text-xs text-gray-900">
+                                  {transfer.bank_name || 'N/A'}
+                                </div>
+                                {transfer.account_number && (
+                                  <div className="text-gray-500 text-xs font-mono">
+                                    ****{transfer.account_number.slice(-4)}
+                                  </div>
+                                )}
+                              </td>
+                              <td className="px-3 py-2 whitespace-nowrap">
+                                {transfer.status === 'pending' && (
+                                  <button className="text-emerald-600 font-medium text-xs px-2 py-1 bg-emerald-50 rounded hover:bg-emerald-100 transition-colors">
+                                    Track
+                                  </button>
+                                )}
+                                {transfer.status === 'failed' && (
+                                  <button className="text-red-600 font-medium text-xs px-2 py-1 bg-red-50 rounded hover:bg-red-100 transition-colors">
+                                    Retry
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
 
                     {totalPages > 1 && (
                       <div className="mt-6 pt-6 border-t border-gray-100">

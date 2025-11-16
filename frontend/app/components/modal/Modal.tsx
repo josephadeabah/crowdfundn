@@ -60,9 +60,7 @@ const Modal: React.FC<ModalProps> = ({
           closeOnBackdropClick ? undefined : (e) => e.preventDefault()
         }
       >
-        <div className="h-full overflow-auto">
-          {children}
-        </div>
+        <div className="h-full overflow-auto">{children}</div>
       </DialogContent>
     </Dialog>
   );
