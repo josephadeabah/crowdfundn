@@ -40,7 +40,7 @@ class PaystackWebhook::ClubTransferFailedHandler
       Rails.logger.info "Club transfer #{transfer_code} failed. Refunded #{refund_amount} to club #{club.name}. New balance: #{new_balance}"
 
       # Send failure notification
-      send_club_transfer_failure_notification(club_transfer)
+      # send_club_transfer_failure_notification(club_transfer)
 
       Rails.logger.info "Club transfer failure processing completed"
     end

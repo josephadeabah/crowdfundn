@@ -36,7 +36,7 @@ class PaystackWebhook::ClubTransferSuccessHandler
       Rails.logger.info "Club transfer #{transfer_code} marked as successful"
 
       # Send notification (no need to update balance - it was already deducted)
-      send_club_transfer_notification(club_transfer)
+      # send_club_transfer_notification(club_transfer)
 
       Rails.logger.info "Club transfer processing completed for club: #{club_transfer.investment_club.name}"
     end
