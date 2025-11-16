@@ -32,8 +32,9 @@ const Modal: React.FC<ModalProps> = ({
     large: 'max-w-lg',
     xlarge: 'max-w-xl',
     xxlarge: 'max-w-2xl',
-    xxxlarge: 'max-w-6xl w-[95vw]', // Fixed: Much wider for tables
-    full: 'max-w-full mx-4 w-[95vw]', // Fixed: Proper full width
+    xxxlarge: 'max-w-4xl w-[95vw]', // 896px but uses viewport width
+    huge: 'max-w-7xl w-[98vw]', // New: even larger for tables
+    full: 'max-w-full mx-4 w-[95vw]',
   };
 
   const handleOpenChange = (open: boolean) => {
