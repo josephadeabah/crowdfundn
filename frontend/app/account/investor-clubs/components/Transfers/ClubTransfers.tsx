@@ -564,7 +564,7 @@ export default function ClubTransfers({
             </div>
 
             {/* Transfer History Section */}
-            <div className="bg-white overflow-hidden">
+            <div className="bg-white">
               <div className="pb-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
