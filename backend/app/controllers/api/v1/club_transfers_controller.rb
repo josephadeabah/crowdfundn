@@ -72,7 +72,6 @@ module Api
 
       # Create a transfer recipient for club
       def create_transfer_recipient
-
         # Use the club admin/creator's subaccount and email
         admin_membership = @club.investment_club_memberships.admin.first
         unless admin_membership
@@ -90,22 +89,16 @@ module Api
           return
         end
 
-        metadata = subaccount.metadata
-        custom_fields = metadata['custom_fields']
+          metadata       = subaccount.metadata
+          custom_fields  = metadata['custom_fields']
 
-        Rails.logger.info "=== CLUB TRANSFER RECIPIENT CREATION ==="
-        Rails.logger.info "Club: #{@club.name}"
-        Rails.logger.info "Admin: #{admin_user.email}"
-        Rails.logger.info "Subaccount: #{subaccount.inspect}"
-        Rails.logger.info "Bank code value: #{bank_code_value}"
-        Rails.logger.info "Currency: #{@club.currency.upcase}"
-        Rails.logger.info "Account number: #{subaccount.account_number}"
-        Rails.logger.info "Business name: #{subaccount.business_name}"
+          if custom_fields.blank?
+            render json: { error: 'No custom fields provided for this subaccount' }, status: :unprocessable_entity
+            return
+          end
 
-        # Extract the appropriate field based on the type (ghipss or mobile_money)
-        # ALIGNED WITH FUNDRAISER: Use the same logic
-        bank_code_value = custom_fields.find { |field| field['type'] == 'ghipss' }&.dig('value') ||
-                          custom_fields.find { |field| field['type'] == 'mobile_money' }&.dig('value')
+          bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
+                            custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value')
 
         if bank_code_value.blank?
           render json: { error: 'No valid bank code or mobile money details provided' }, status: :unprocessable_entity
@@ -124,10 +117,10 @@ module Api
           }
 
           response = @paystack_service.create_transfer_recipient(
-            type: bank_code_value,  # ALIGNED: Use bank_code_value as type
+            type: bank_code_value,  # This should be "MTN" based on your subaccount
             name: subaccount.business_name,
             account_number: subaccount.account_number,
-            bank_code: bank_code_value,
+            bank_code: bank_code_value,  # This should be "MTN" based on your subaccount
             currency: @club.currency.upcase,
             description: "Transfer recipient for #{@club.name} club payouts",
             metadata: recipient_metadata
