@@ -90,6 +90,7 @@ class InvestmentClub < ApplicationRecord
     
     update_columns(
       current_balance: new_current_balance,
+      total_contributions: new_current_balance,
       updated_at: Time.current
     )
     
