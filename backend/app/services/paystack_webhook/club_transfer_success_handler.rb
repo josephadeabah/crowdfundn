@@ -34,6 +34,7 @@ class PaystackWebhook::ClubTransferSuccessHandler
         Rails.logger.warn "Balance mismatch detected. Correcting balance..."
         club.update_columns(
           current_balance: expected_balance,
+          total_contributions: expected_balance,
           updated_at: Time.current
         )
       end
