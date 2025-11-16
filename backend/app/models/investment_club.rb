@@ -88,7 +88,8 @@ class InvestmentClub < ApplicationRecord
     new_total_contributions = total_contributions - amount
     update_columns(
       total_contributions: new_total_contributions,
-      current_balance: new_total_contributions
+      current_balance: new_total_contributions,
+      updated_at: Time.current
     )
   end
 
