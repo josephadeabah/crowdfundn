@@ -72,6 +72,7 @@ module Api
 
       # Create a transfer recipient for club
       def create_transfer_recipient
+
         # Use the club admin/creator's subaccount and email
         admin_membership = @club.investment_club_memberships.admin.first
         unless admin_membership
@@ -92,7 +93,17 @@ module Api
         metadata = subaccount.metadata
         custom_fields = metadata['custom_fields']
 
+        Rails.logger.info "=== CLUB TRANSFER RECIPIENT CREATION ==="
+        Rails.logger.info "Club: #{@club.name}"
+        Rails.logger.info "Admin: #{admin_user.email}"
+        Rails.logger.info "Subaccount: #{subaccount.inspect}"
+        Rails.logger.info "Bank code value: #{bank_code_value}"
+        Rails.logger.info "Currency: #{@club.currency.upcase}"
+        Rails.logger.info "Account number: #{subaccount.account_number}"
+        Rails.logger.info "Business name: #{subaccount.business_name}"
+
         # Extract the appropriate field based on the type (ghipss or mobile_money)
+        # ALIGNED WITH FUNDRAISER: Use the same logic
         bank_code_value = custom_fields.find { |field| field['type'] == 'ghipss' }&.dig('value') ||
                           custom_fields.find { |field| field['type'] == 'mobile_money' }&.dig('value')
 
@@ -103,21 +114,23 @@ module Api
 
         # If no recipient_code exists, proceed to create one
         if subaccount.recipient_code.blank?
+          # ALIGNED WITH FUNDRAISER: Use the same metadata structure
+          recipient_metadata = {
+            user_id: admin_user.id,
+            club_id: @club.id,
+            email: admin_user.email,
+            user_name: admin_user.full_name,
+            metadata: metadata
+          }
+
           response = @paystack_service.create_transfer_recipient(
-            type: bank_code_value,
+            type: bank_code_value,  # ALIGNED: Use bank_code_value as type
             name: subaccount.business_name,
             account_number: subaccount.account_number,
             bank_code: bank_code_value,
             currency: @club.currency.upcase,
             description: "Transfer recipient for #{@club.name} club payouts",
-            metadata: {
-              user_id: admin_user.id,
-              club_id: @club.id,
-              email: admin_user.email,
-              user_name: admin_user.full_name,
-              club_name: @club.name,
-              metadata: metadata
-            }
+            metadata: recipient_metadata
           )
 
           if response[:status] == true
@@ -128,7 +141,10 @@ module Api
               club_id: @club.id 
             }, status: :ok
           else
-            render json: { error: 'Provide valid data' }, status: :unprocessable_entity
+            # ALIGNED: Better error handling
+            render json: { 
+              error: "Failed to create recipient: #{response[:message] || 'Unknown error'}" 
+            }, status: :unprocessable_entity
           end
         else
           # If recipient_code already exists, return it
@@ -195,7 +211,7 @@ module Api
         if transfer_response[:status]
           transfer_data = transfer_response[:data]
           
-          # Create club transfer record with the specific amount
+          # ALIGNED WITH FUNDRAISER: Create club transfer record with proper associations
           club_transfer = ClubTransfer.create!(
             investment_club: @club,
             user: @current_user,
@@ -208,7 +224,7 @@ module Api
             transfer_code: transfer_data[:transfer_code]
           )
 
-          # FIX: Only deduct the transferred amount, not the entire balance
+          # ALIGNED: Only deduct the transferred amount, not the entire balance
           new_balance = @club.current_balance - transfer_amount
           @club.update!(current_balance: new_balance)
 
@@ -220,19 +236,24 @@ module Api
             transferred_amount: transfer_amount
           }, status: :ok
         else
+          # ALIGNED: Better error parsing
           body = begin
             JSON.parse(transfer_response[:body])
           rescue StandardError
             {}
           end
-          specific_message = body['message'] || 'An error occurred'
-          Rails.logger.info "Transfer failed: #{specific_message}"
-          render json: { error: 'Sorry, this is an issue on our side. Please wait for a while.' },
-                 status: :unprocessable_entity
+          specific_message = body['message'] || transfer_response[:message] || 'An error occurred'
+          meta_info = body.dig('meta', 'nextStep') || ''
+          
+          Rails.logger.error "Transfer failed: #{specific_message} - #{meta_info}"
+          
+          render json: { 
+            error: "Transfer failed: #{specific_message}. #{meta_info}" 
+          }, status: :unprocessable_entity
         end
       rescue StandardError => e
         Rails.logger.error "Error processing transfer: #{e.message}"
-        render json: { error: e.message }, status: :unprocessable_entity
+        render json: { error: "Transfer processing error: #{e.message}" }, status: :unprocessable_entity
       end
 
       # Initialize a transfer for club
@@ -265,11 +286,20 @@ module Api
         club_balance = @club.current_balance
         raise 'Club has no funds available for payout.' if club_balance <= 0.0
 
+        # ALIGNED: Add recipient verification before transfer
+        recipient_response = @paystack_service.fetch_transfer_recipient(recipient_code)
+        unless recipient_response[:status]
+          render json: { 
+            error: "Invalid recipient: #{recipient_response[:message] || 'Recipient not found'}" 
+          }, status: :unprocessable_entity
+          return
+        end
+
         balance_response = @paystack_service.check_balance
 
         unless balance_response[:status]
           render json: { error: 'Unable to perform transaction at this time. Please try again later.' },
-                 status: :unprocessable_entity
+                status: :unprocessable_entity
           return
         end
 
@@ -286,13 +316,14 @@ module Api
         currency = @club.currency.upcase
         available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
 
-        if available_balance < club_balance
+        # ALIGNED: Check against transfer_amount, not club_balance
+        if available_balance < transfer_amount
           render json: { error: 'Insufficient balance on our side. Kindly try again later.' },
-                 status: :unprocessable_entity
+                status: :unprocessable_entity
           return
         end
 
-      process_transfer(subaccount, recipient_code, currency, transfer_amount)
+        process_transfer(subaccount, recipient_code, currency, transfer_amount)
       rescue ActiveRecord::RecordNotFound => e
         render json: { error: e.message }, status: :not_found
       rescue StandardError => e
