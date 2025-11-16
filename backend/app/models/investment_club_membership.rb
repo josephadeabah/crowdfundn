@@ -3,7 +3,6 @@ class InvestmentClubMembership < ApplicationRecord
   belongs_to :user
   belongs_to :investment_club
   
-  # FIXED: Use the correct association through user
   has_many :member_investment_shares, through: :user
   has_many :club_investments, through: :member_investment_shares
   has_many :member_share_changes, dependent: :destroy
@@ -13,17 +12,14 @@ class InvestmentClubMembership < ApplicationRecord
   enum role: { member: 'member', admin: 'admin', creator: 'creator' }
   enum status: { pending: 'pending', active: 'active', inactive: 'inactive' }
   
-  # RENAME: current_share to contributed_share
   attribute :contributed_share, :decimal, default: 0.0
   attribute :total_contributed, :decimal, default: 0.0
   
-  # ADD THIS SCOPE
   scope :active, -> { where(status: 'active') }
   
   before_create :set_initial_share
   after_save :update_club_financials, if: -> { saved_change_to_total_contributed? }
   
-  # FIXED: Simplified callback to avoid issues
   after_commit :update_club_members_count_callback
   
   scope :admin, -> { where(role: ['admin', 'creator']) }
@@ -36,11 +32,9 @@ class InvestmentClubMembership < ApplicationRecord
     update_column(:contributed_share, new_share.round(4))
   end
 
-  # FIXED: Safe callback method
   def update_club_members_count_callback
     return if destroyed? || investment_club.destroyed?
     
-    # Use update_column to avoid callbacks and validations
     investment_club.update_column(:current_members_count, investment_club.investment_club_memberships.active.count)
   rescue => e
     Rails.logger.error "Error updating club members count: #{e.message}"

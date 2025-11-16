@@ -77,30 +77,45 @@ module PaystackWebhook::Handlers
           Rails.logger.info "Updated club #{club.id} currency to #{transaction_currency}"
         end
 
-        # Update contribution status
+        # Update contribution status and details
+        # Paystack amounts are in subunits (kobo/pesewas), convert to main unit
+        amount_in_main_unit = transaction_data[:amount].to_f / 100.0
+        amount_settled_in_main_unit = (transaction_data[:amount_settled] || transaction_data[:amount]).to_f / 100.0
+        
         contribution.update!(
           status: 'completed',
           transaction_reference: transaction_data[:reference],
-          paystack_fee: 0,
-          amount_settled: contribution.amount,
+          paystack_fee: transaction_data[:fees] || 0,
+          amount_settled: amount_settled_in_main_unit,
           currency: transaction_currency
         )
 
-        # Process the completion - this will set processed_at
+        Rails.logger.info "Updated contribution #{contribution.id} status to completed: " +
+                         "Amount: #{amount_in_main_unit}, " +
+                         "Amount Settled: #{amount_settled_in_main_unit}, " +
+                         "Currency: #{transaction_currency}"
+
+        # Process the completion - this will update club balance and member shares
         contribution.process_completion!
 
         # Send confirmation email
-        ClubEmailService.send_contribution_confirmation(
-          user: contribution.user,
-          contribution: contribution
-        )
+        begin
+          ClubEmailService.send_contribution_confirmation(
+            user: contribution.user,
+            contribution: contribution
+          )
+          Rails.logger.info "Sent confirmation email for contribution #{contribution.id}"
+        rescue => e
+          Rails.logger.error "Failed to send confirmation email for contribution #{contribution.id}: #{e.message}"
+        end
         
         Rails.logger.info "Successfully processed club contribution: #{contribution.id}"
       end
     rescue => e
       Rails.logger.error "Error processing club contribution #{contribution.id}: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
-      # Don't mark as failed if we can't process - let frontend handle it
+      # Don't mark as failed if we can't process - let it retry
+      raise
     end
 
     def process_failed_contribution(contribution)
