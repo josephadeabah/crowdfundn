@@ -1,11 +1,10 @@
-// app/account/investor-clubs/components/VotingPanel/MemberInvestmentProposalModal.tsx
-
+// app/account/investor-clubs/components/Transfers/TransferClubBalanceModal.tsx
 import React from 'react';
 import Modal from '@/app/components/modal/Modal';
 import ClubTransfers from './ClubTransfers';
 import { Club } from '../../clubTypes';
 
-interface MemberInvestmentProposalModalProps {
+interface TransferClubBalanceModalProps {
   isOpen: boolean;
   onClose: () => void;
   formatCurrency: (amount: number, currency?: string) => string;
@@ -13,9 +12,13 @@ interface MemberInvestmentProposalModalProps {
   club: Club;
 }
 
-const TransferClubBalanceModal: React.FC<
-  MemberInvestmentProposalModalProps
-> = ({ isOpen, onClose, formatCurrency, onTransferSuccess, club }) => {
+const TransferClubBalanceModal: React.FC<TransferClubBalanceModalProps> = ({
+  isOpen,
+  onClose,
+  formatCurrency,
+  onTransferSuccess,
+  club,
+}) => {
   return (
     <Modal
       isOpen={isOpen}
@@ -24,13 +27,17 @@ const TransferClubBalanceModal: React.FC<
       closeOnBackdropClick={false}
       customStyles={{
         padding: 0,
+        maxHeight: '95vh',
+        overflow: 'hidden',
       }}
     >
-      <ClubTransfers
-        formatCurrency={formatCurrency}
-        onTransferSuccess={onTransferSuccess}
-        club={club}
-      />
+      <div className="h-full">
+        <ClubTransfers
+          club={club}
+          formatCurrency={formatCurrency}
+          onTransferSuccess={onTransferSuccess}
+        />
+      </div>
     </Modal>
   );
 };
