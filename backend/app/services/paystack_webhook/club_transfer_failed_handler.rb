@@ -31,7 +31,7 @@ class PaystackWebhook::ClubTransferFailedHandler
         failure_reason: @data[:gateway_response] || 'Transfer failed'
       )
 
-      # UPDATE THE SUBACCOUNT (like in regular transfers)
+      # UPDATE THE SUBACCOUNT with only existing attributes
       subaccount = Subaccount.find_by(recipient_code: club_transfer.recipient_code)
       if subaccount
         subaccount.update!(
