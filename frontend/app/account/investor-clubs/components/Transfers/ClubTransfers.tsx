@@ -286,7 +286,7 @@ export default function ClubTransfers({
   };
 
   return (
-    <div className="p-6 w-full"> {/* REMOVED: max-w-6xl mx-auto */}
+    <div className="bg-white rounded-xl w-full max-h-[90vh] overflow-y-auto">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
@@ -445,33 +445,6 @@ export default function ClubTransfers({
               </div>
             </div>
 
-            {/* Transfer Information List */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <Shield className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-gray-700">Security</p>
-                  <p className="text-sm text-emerald-600">Bank Grade</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <Users className="w-5 h-5 text-gray-600 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-gray-700">Account</p>
-                  <p className="text-sm text-gray-600">Admin Bank</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <Clock className="w-5 h-5 text-gray-600 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-gray-700">Time</p>
-                  <p className="text-sm text-gray-600">1-3 Days</p>
-                </div>
-              </div>
-            </div>
-
             {/* Transfer Button */}
             <Button
               onClick={handleRequestTransfer}
@@ -502,37 +475,6 @@ export default function ClubTransfers({
           </div>
         </div>
 
-        {/* Help Section */}
-        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
-          <div className="flex items-start gap-4">
-            <div className="p-2 bg-emerald-500 rounded-lg">
-              <HelpCircle className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-emerald-900 mb-3">
-                Need Help With Transfers?
-              </h4>
-              <div className="space-y-3 text-emerald-800 text-sm">
-                <div className="flex items-start gap-2">
-                  <Calendar className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <p>Weekdays: 10:30 AM - 4:00 PM</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Clock className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <p>Processing: 1-3 business days</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Info className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <p>Contact support for urgent transfers</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Shield className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <p>Keep bank details updated</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Transfer History Section */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">

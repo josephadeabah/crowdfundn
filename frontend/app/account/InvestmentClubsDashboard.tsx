@@ -30,6 +30,7 @@ import MemberInvestmentProposalModal from './investor-clubs/components/VotingPan
 import ClubDashboard from './investor-clubs/components/Sidebar/ApprovedCampaigns';
 import Modal from '@/app/components/modal/Modal';
 import ClubTransfers from './investor-clubs/components/Transfers/ClubTransfers';
+import TransferClubBalanceModal from './investor-clubs/components/Transfers/TransferClubBalanceModal';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const {
@@ -371,23 +372,13 @@ const InvestmentClubsDashboard: React.FC = () => {
             club={currentClub}
           />
 
-          {/* NEW: Club Transfers Modal */}
-          <Modal
-            isOpen={isTransfersModalOpen}
-            onClose={() => setIsTransfersModalOpen(false)}
-            size="xxxlarge"
-            customStyles={{
-            padding: 0
-          }}
-          >
-          <div className="h-full">
-            <ClubTransfers
+            <TransferClubBalanceModal
+              isOpen={isTransfersModalOpen}
+              onClose={() => setIsTransfersModalOpen(false)}
               club={currentClub}
               formatCurrency={formatCurrency}
               onTransferSuccess={handleTransferSuccess}
             />
-            </div>
-          </Modal>
         </>
       )}
 
