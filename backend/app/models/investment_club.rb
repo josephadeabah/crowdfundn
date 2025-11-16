@@ -109,24 +109,38 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
-  # FIXED: Proper total_contributions calculation
+  # FIXED: Proper total_contributions calculation with safe fallback
   def total_contributions
-    investment_club_contributions.completed.sum(:amount).to_f
+    if investment_club_contributions.loaded?
+      investment_club_contributions.select { |c| c.completed? }.sum(&:amount).to_f
+    else
+      investment_club_contributions.completed.sum(:amount).to_f
+    end
   end
 
-  # FIXED: Proper current_balance calculation
+  # FIXED: Proper current_balance calculation with safe fallback
   def current_balance
     total_contributions - total_invested
   end
 
-  # FIXED: Proper total_invested calculation
+  # FIXED: Proper total_invested calculation with safe fallback
   def total_invested
-    club_investments.executed.sum(:investment_amount).to_f
+    if club_investments.loaded?
+      club_investments.select { |i| i.executed? }.sum(&:investment_amount).to_f
+    else
+      # Use safe approach - check if executed scope exists
+      if club_investments.respond_to?(:executed)
+        club_investments.executed.sum(:investment_amount).to_f
+      else
+        # Fallback to manual filtering
+        club_investments.where(status: 'executed').sum(:investment_amount).to_f
+      end
+    end
   end
 
-  # FIXED: Update financials method
+  # FIXED: Safe update_financials method
   def update_financials
-    # Calculate fresh values
+    # Calculate fresh values safely
     new_total_contributions = total_contributions
     new_total_invested = total_invested
     new_current_balance = new_total_contributions - new_total_invested
@@ -143,6 +157,9 @@ class InvestmentClub < ApplicationRecord
                      "Contributions: #{new_total_contributions}, " +
                      "Invested: #{new_total_invested}, " +
                      "Balance: #{new_current_balance}"
+  rescue => e
+    Rails.logger.error "Error updating financials for club #{id}: #{e.message}"
+    # Don't raise error to prevent breaking other operations
   end
   
   def create_creator_membership

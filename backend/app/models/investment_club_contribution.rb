@@ -37,7 +37,7 @@ class InvestmentClubContribution < ApplicationRecord
       
       Rails.logger.info "Updated membership total: #{new_total}"
 
-      # Update club financials FIRST
+      # Update club financials FIRST - this now has safe error handling
       investment_club.update_financials
       
       # Get fresh total contributions after update

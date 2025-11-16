@@ -25,6 +25,10 @@ class ClubInvestment < ApplicationRecord
     approved: 'approved',
     rejected: 'rejected'
   }
+
+
+  # Add the executed scope
+  scope :executed, -> { where(status: 'executed') }
   
   before_create :generate_reference
   before_create :set_voting_session_id
