@@ -286,7 +286,7 @@ export default function ClubTransfers({
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 w-full"> {/* REMOVED: max-w-6xl mx-auto */}
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
