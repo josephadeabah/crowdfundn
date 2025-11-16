@@ -43,13 +43,13 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         </button>
 
         {/* Transfer Funds Button (Admin Only) */}
-          <button
-            onClick={onTransferFunds}
-            className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-orange-400 text-orange-500 rounded-full hover:bg-orange-50 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"
-          >
-            <Send size={16} />
-            Withdraw Funds
-          </button>
+        <button
+          onClick={onTransferFunds}
+          className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-orange-400 text-orange-500 rounded-full hover:bg-orange-50 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"
+        >
+          <Send size={16} />
+          Withdraw Funds
+        </button>
 
         <button
           onClick={onViewAnalytics}
