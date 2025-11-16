@@ -83,6 +83,35 @@ class InvestmentClub < ApplicationRecord
     else 'private'
     end
   end
+
+    # FIXED: Proper total_contributions calculation with safe fallback
+  def total_contributions
+    if investment_club_contributions.loaded?
+      investment_club_contributions.select { |c| c.completed? }.sum(&:amount).to_f
+    else
+      investment_club_contributions.completed.sum(:amount).to_f
+    end
+  end
+
+  # FIXED: Proper current_balance calculation with safe fallback
+  def current_balance
+    total_contributions - total_invested
+  end
+
+  # FIXED: Proper total_invested calculation with safe fallback
+  def total_invested
+    if club_investments.loaded?
+      club_investments.select { |i| i.executed? }.sum(&:investment_amount).to_f
+    else
+      # Use safe approach - check if executed scope exists
+      if club_investments.respond_to?(:executed)
+        club_investments.executed.sum(:investment_amount).to_f
+      else
+        # Fallback to manual filtering
+        club_investments.where(status: 'executed').sum(:investment_amount).to_f
+      end
+    end
+  end
   
   def deduct_transfer_amount(amount)
     new_total_contributions = total_contributions - amount
@@ -123,34 +152,6 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
-  # FIXED: Proper total_contributions calculation with safe fallback
-  def total_contributions
-    if investment_club_contributions.loaded?
-      investment_club_contributions.select { |c| c.completed? }.sum(&:amount).to_f
-    else
-      investment_club_contributions.completed.sum(:amount).to_f
-    end
-  end
-
-  # FIXED: Proper current_balance calculation with safe fallback
-  def current_balance
-    total_contributions - total_invested
-  end
-
-  # FIXED: Proper total_invested calculation with safe fallback
-  def total_invested
-    if club_investments.loaded?
-      club_investments.select { |i| i.executed? }.sum(&:investment_amount).to_f
-    else
-      # Use safe approach - check if executed scope exists
-      if club_investments.respond_to?(:executed)
-        club_investments.executed.sum(:investment_amount).to_f
-      else
-        # Fallback to manual filtering
-        club_investments.where(status: 'executed').sum(:investment_amount).to_f
-      end
-    end
-  end
 
   # FIXED: Safe update_financials method
   def update_financials
