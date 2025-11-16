@@ -113,6 +113,35 @@ export default function ClubTransfers({
     }
   };
 
+  const refreshAllData = async () => {
+  if (!token || !club?.slug) return;
+  
+  try {
+    // Refresh club data
+    const clubResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (clubResponse.ok) {
+      const data = await clubResponse.json();
+      if (data.club) {
+        setClub(data.club);
+      }
+    }
+    
+    // Refresh transfers from Paystack and local
+    await fetchTransfersFromPaystack();
+    await fetchClubTransfers(1); // Reset to page 1 to see latest transfers
+    
+  } catch (err) {
+    console.error('Failed to refresh data:', err);
+  }
+};
+
+
   // FIXED: Refresh club data after transfer
   const refreshClubData = async () => {
     if (!token || !club?.slug) return;
@@ -247,6 +276,9 @@ export default function ClubTransfers({
             fetchTransfersFromPaystack(), // Refresh transfers from Paystack
             fetchClubTransfers(currentPage), // Refresh local transfers
           ]);
+
+              // IMPROVED: Wait for all refreshes to complete
+         await refreshAllData();
 
           // Call parent callback
           onTransferSuccess?.();
