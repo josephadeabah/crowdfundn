@@ -176,16 +176,15 @@ module Api
       end
 
       # Handle the process of transferring funds and updating club balance
-      def process_transfer(subaccount, recipient_account, currency)
-        club_balance = @club.current_balance
-
-        if club_balance.nil? || club_balance <= 0
-          render json: { error: 'Insufficient club funds for transfer.' }, status: :unprocessable_entity
+      def process_transfer(subaccount, recipient_account, currency, transfer_amount)
+        # Use the specific transfer_amount instead of club_balance
+        if transfer_amount <= 0
+          render json: { error: 'Invalid transfer amount.' }, status: :unprocessable_entity
           return
         end
 
         transfer_response = @paystack_service.initiate_transfer(
-          amount: club_balance.round,
+          amount: transfer_amount.round,  # Use the specific amount
           recipient: recipient_account,
           reason: "Payout for #{@club.name} investment club",
           currency: currency
@@ -196,11 +195,11 @@ module Api
         if transfer_response[:status]
           transfer_data = transfer_response[:data]
           
-          # Create club transfer record
+          # Create club transfer record with the specific amount
           club_transfer = ClubTransfer.create!(
             investment_club: @club,
             user: @current_user,
-            amount: club_balance,
+            amount: transfer_amount,  # Store the actual transferred amount
             currency: currency,
             status: 'pending',
             reason: "Payout for #{@club.name} investment club",
@@ -209,14 +208,16 @@ module Api
             transfer_code: transfer_data[:transfer_code]
           )
 
-          # Update club balance (deduct transferred amount)
-          @club.update!(current_balance: 0)
+          # FIX: Only deduct the transferred amount, not the entire balance
+          new_balance = @club.current_balance - transfer_amount
+          @club.update!(current_balance: new_balance)
 
           render json: {
             transfer_code: transfer_data[:transfer_code],
             reference: transfer_data[:reference],
             message: 'Transfer initiated successfully.',
-            club_balance: 0
+            club_balance: new_balance,  # Return the updated balance
+            transferred_amount: transfer_amount
           }, status: :ok
         else
           body = begin
@@ -272,6 +273,16 @@ module Api
           return
         end
 
+        # ADD: Get the specific transfer amount from params
+        transfer_amount = params[:transfer_amount]&.to_f || club_balance
+        
+        # Validate the specific transfer amount
+        if transfer_amount <= 0 || transfer_amount > club_balance
+          render json: { error: "Invalid transfer amount. Must be between 0.01 and #{club_balance}" }, 
+                status: :unprocessable_entity
+          return
+        end
+
         currency = @club.currency.upcase
         available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
 
@@ -281,7 +292,7 @@ module Api
           return
         end
 
-        process_transfer(subaccount, recipient_code, currency)
+      process_transfer(subaccount, recipient_code, currency, transfer_amount)
       rescue ActiveRecord::RecordNotFound => e
         render json: { error: e.message }, status: :not_found
       rescue StandardError => e

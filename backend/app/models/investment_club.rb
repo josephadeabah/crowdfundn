@@ -100,7 +100,7 @@ class InvestmentClub < ApplicationRecord
   end
   
   def current_balance
-    total_contributions - total_invested
+    total_contributions
   end
   
   # UPDATED: Remove investment-related ROI metrics since we're not doing auto-investment
