@@ -377,16 +377,18 @@ const InvestmentClubsDashboard: React.FC = () => {
             onClose={() => setIsTransfersModalOpen(false)}
             size="xxxlarge"
             customStyles={{
-              padding: 0,
-              maxHeight: '95vh',
-              overflow: 'hidden',
-            }}
+            padding: 0,
+            maxHeight: '95vh',
+            overflow: 'hidden',
+          }}
           >
+          <div className="h-full">
             <ClubTransfers
               club={currentClub}
               formatCurrency={formatCurrency}
               onTransferSuccess={handleTransferSuccess}
             />
+            </div>
           </Modal>
         </>
       )}
