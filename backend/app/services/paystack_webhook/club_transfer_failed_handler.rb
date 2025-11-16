@@ -31,6 +31,18 @@ class PaystackWebhook::ClubTransferFailedHandler
         failure_reason: @data[:gateway_response] || 'Transfer failed'
       )
 
+      # UPDATE THE SUBACCOUNT (like in regular transfers)
+      subaccount = Subaccount.find_by(recipient_code: club_transfer.recipient_code)
+      if subaccount
+        subaccount.update!(
+          status: 'failed',
+          failure_reason: @data[:gateway_response] || 'Transfer failed'
+        )
+        Rails.logger.info "Subaccount #{subaccount.id} marked as failed."
+      else
+        Rails.logger.warn "Subaccount not found for recipient_code #{club_transfer.recipient_code}."
+      end
+
       # REFUND THE CLUB BALANCE
       refund_amount = club_transfer.amount
       club = club_transfer.investment_club

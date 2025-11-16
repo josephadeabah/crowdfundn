@@ -35,6 +35,24 @@ class PaystackWebhook::ClubTransferSuccessHandler
 
       Rails.logger.info "Club transfer #{transfer_code} marked as successful"
 
+      # UPDATE THE SUBACCOUNT (like in regular transfers)
+      subaccount = Subaccount.find_by(recipient_code: club_transfer.recipient_code)
+      if subaccount
+        subaccount.update!(
+          status: 'success',
+          completed_at: Time.current,
+          recipient_code: @data.dig(:recipient, :recipient_code),
+          amount: @data[:amount], # Use gross amount
+          transfer_code: @data[:transfer_code],
+          reference: @data[:reference],
+          account_number: @data.dig(:recipient, :details, :account_number),
+          bank_name: @data.dig(:recipient, :details, :bank_name)
+        )
+        Rails.logger.info "Subaccount #{subaccount.id} updated with transfer reference #{@data[:reference]}."
+      else
+        Rails.logger.warn "Subaccount not found for recipient_code #{club_transfer.recipient_code}."
+      end
+
       # Send notification (no need to update balance - it was already deducted)
       # send_club_transfer_notification(club_transfer)
 
