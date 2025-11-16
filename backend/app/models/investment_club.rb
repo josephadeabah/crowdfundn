@@ -84,43 +84,28 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
-    # FIXED: Proper total_contributions calculation with safe fallback
-  def update_total_contributions
-    if investment_club_contributions.loaded?
-      investment_club_contributions.select { |c| c.completed? }.sum(&:amount).to_f
-    else
-      investment_club_contributions.completed.sum(:amount).to_f
-    end
+  # Total contributions is historical and should only increase.
+  # Do NOT recalculate from the DB after withdrawals.
+  def recalc_total_contributions!
+    new_total = investment_club_contributions.completed.sum(:amount).to_f
+    update_columns(total_contributions: new_total)
   end
 
-  # FIXED: Proper current_balance calculation with safe fallback
-  def update_current_balance
-    update_total_contributions
+  # Current balance = total contributions - total invested - total transferred out
+  def recalc_current_balance!
+    total_invested = club_investments.where(status: 'executed').sum(:investment_amount).to_f
+    total_withdrawn = club_transfers.where(status: 'success').sum(:amount).to_f
+
+    new_balance = total_contributions - total_invested - total_withdrawn
+    update_columns(current_balance: new_balance)
   end
 
-  # FIXED: Proper total_invested calculation with safe fallback
-  def total_invested
-    if club_investments.loaded?
-      club_investments.select { |i| i.executed? }.sum(&:investment_amount).to_f
-    else
-      # Use safe approach - check if executed scope exists
-      if club_investments.respond_to?(:executed)
-        club_investments.executed.sum(:investment_amount).to_f
-      else
-        # Fallback to manual filtering
-        club_investments.where(status: 'executed').sum(:investment_amount).to_f
-      end
-    end
-  end
-  
+  # Called when transfer is completed
   def deduct_transfer_amount(amount)
-    new_total_contributions = update_total_contributions - amount
-    update_columns(
-      total_contributions: new_total_contributions,
-      current_balance: new_total_contributions,
-      updated_at: Time.current
-    )
+    new_balance = (current_balance.to_f - amount.to_f).clamp(0, Float::INFINITY)
+    update_columns(current_balance: new_balance)
   end
+end
 
   # Add method to handle failed transfers properly
   def refund_transfer_amount(amount)
