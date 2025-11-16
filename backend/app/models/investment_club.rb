@@ -105,7 +105,6 @@ class InvestmentClub < ApplicationRecord
     new_balance = (current_balance.to_f - amount.to_f).clamp(0, Float::INFINITY)
     update_columns(current_balance: new_balance)
   end
-end
 
   # Add method to handle failed transfers properly
   def refund_transfer_amount(amount)
