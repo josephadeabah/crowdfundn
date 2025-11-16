@@ -23,17 +23,14 @@ const TransferClubBalanceModal: React.FC<
       size="xxxlarge"
       closeOnBackdropClick={false}
       customStyles={{
-        padding: 0,
-        overflow: 'hidden',
+        padding: 0
       }}
     >
-    <div className="w-full">
       <ClubTransfers
         formatCurrency={formatCurrency}
         onTransferSuccess={onTransferSuccess}
         club={club}
       />
-      </div>
     </Modal>
   );
 };
