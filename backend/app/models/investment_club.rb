@@ -124,7 +124,7 @@ class InvestmentClub < ApplicationRecord
 
   # Add method to handle failed transfers properly
   def refund_transfer_amount(amount)
-    new_current_balance = current_balance + amount
+    new_current_balance = update_current_balance + amount
     
     update_columns(
       current_balance: new_current_balance,
