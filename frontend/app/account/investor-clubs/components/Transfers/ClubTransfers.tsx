@@ -287,7 +287,7 @@ export default function ClubTransfers({
   };
 
   return (
-    <div className="bg-white rounded-xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="bg-white rounded-xl w-full max-h-[90vh] p-4 overflow-y-auto">
       <ToastComponent
         isOpen={toast.isOpen}
         onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
