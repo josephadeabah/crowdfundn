@@ -43,7 +43,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         </button>
 
         {/* Transfer Funds Button (Admin Only) */}
-        {isAdmin && onTransferFunds && (
+        {onTransferFunds && (
           <button
             onClick={onTransferFunds}
             className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-orange-400 text-orange-500 rounded-full hover:bg-orange-50 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"
@@ -63,13 +63,13 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
       </div>
 
       {/* Admin notice */}
-      {/* {isAdmin && ( */}
+      {isAdmin && (
         <div className="mt-3 p-1 bg-gray-50 border border-gray-100 rounded-sm">
           <p className="text-xs text-gray-600 text-center">
             💼 You have admin access
           </p>
         </div>
-      {/* )} */}
+      )}
     </motion.div>
   );
 };
