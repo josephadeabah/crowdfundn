@@ -217,9 +217,8 @@ module Api
             transfer_code: transfer_data[:transfer_code]
           )
 
-          # ALIGNED: Only deduct the transferred amount, not the entire balance
-          new_balance = @club.total_contributions - transfer_amount
-          @club.update!(total_contributed: new_balance)
+          # DEDUCT THE TRANSFER AMOUNT FROM CLUB FUNDS
+          @club.deduct_transfer_amount(transfer_amount)
 
           render json: {
             transfer_code: transfer_data[:transfer_code],

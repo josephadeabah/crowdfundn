@@ -102,6 +102,20 @@ class InvestmentClub < ApplicationRecord
   def current_balance
     total_contributions
   end
+
+  def deduct_transfer_amount(amount)
+    # Store the actual total_contributions in the database
+    new_total_contributions = total_contributions - amount
+    
+    # Update the database column directly
+    update_column(:total_contributions, new_total_contributions)
+    
+    # Also update current_balance to match
+    update_column(:current_balance, new_total_contributions)
+    
+    # Update financials to ensure consistency
+    update_financials
+  end
   
   # UPDATED: Remove investment-related ROI metrics since we're not doing auto-investment
   def roi_metrics
