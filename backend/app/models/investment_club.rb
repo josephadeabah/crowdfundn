@@ -95,7 +95,7 @@ class InvestmentClub < ApplicationRecord
 
   # FIXED: Proper current_balance calculation with safe fallback
   def update_current_balance
-    update_total_contributions - total_invested
+    update_total_contributions
   end
 
   # FIXED: Proper total_invested calculation with safe fallback
@@ -157,13 +157,12 @@ class InvestmentClub < ApplicationRecord
   def update_financials
     # Calculate fresh values safely
     new_total_contributions = update_total_contributions
-    new_total_invested = total_invested
-    new_current_balance = new_total_contributions - new_total_invested
+    new_current_balance = new_total_contributions
 
     # Update columns directly to avoid callbacks
     update_columns(
       total_contributions: new_total_contributions,
-      total_invested: new_total_invested,
+      total_invested: 0,
       current_balance: new_current_balance,
       updated_at: Time.current
     )
