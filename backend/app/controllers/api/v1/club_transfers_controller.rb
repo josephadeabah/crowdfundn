@@ -193,7 +193,7 @@ module Api
         end
 
         transfer_response = @paystack_service.initiate_transfer(
-          amount: transfer_amount,
+          amount: transfer_amount.round,  # Use the specific amount
           recipient: recipient_account,
           reason: "Payout for #{@club.name} investment club",
           currency: currency
@@ -204,11 +204,11 @@ module Api
         if transfer_response[:status]
           transfer_data = transfer_response[:data]
           
-          # Create club transfer record
+          # ALIGNED WITH FUNDRAISER: Create club transfer record with proper associations
           club_transfer = ClubTransfer.create!(
             investment_club: @club,
             user: @current_user,
-            amount: transfer_amount,
+            amount: transfer_amount,  # Store the actual transferred amount
             currency: currency,
             status: 'pending',
             reason: "Payout for #{@club.name} investment club",
@@ -217,32 +217,16 @@ module Api
             transfer_code: transfer_data[:transfer_code]
           )
 
-          # FIXED: Reload club and validate balance
-          @club.reload
-          
-          if @club.current_balance >= transfer_amount
-            # Use the corrected deduction method
-            @club.deduct_transfer_amount(transfer_amount)
-            
-            # Log the action properly
-            Rails.logger.info "Transfer #{transfer_data[:transfer_code]} initiated: " +
-                            "Club: #{@club.id}, " +
-                            "Amount: #{transfer_amount}, " +
-                            "New Balance: #{@club.reload.current_balance}"
-            
-            render json: {
-              transfer_code: transfer_data[:transfer_code],
-              reference: transfer_data[:reference],
-              message: 'Transfer initiated successfully.',
-              club_balance: @club.reload.current_balance,
-              transferred_amount: transfer_amount
-            }, status: :ok
-          else
-            club_transfer.destroy
-            render json: { 
-              error: "Insufficient club balance. Current: #{@club.current_balance}, Needed: #{transfer_amount}" 
-            }, status: :unprocessable_entity
-          end
+          # DEDUCT THE TRANSFER AMOUNT FROM CLUB FUNDS
+          @club.deduct_transfer_amount(transfer_amount)
+
+          render json: {
+            transfer_code: transfer_data[:transfer_code],
+            reference: transfer_data[:reference],
+            message: 'Transfer initiated successfully.',
+            club_balance: @club.reload.current_balance,
+            transferred_amount: transfer_amount
+          }, status: :ok
         else
           # ALIGNED: Better error parsing
           body = begin
@@ -291,10 +275,7 @@ module Api
         raise 'Club admin does not have an account number added.' unless subaccount
         raise 'Recipient code not found for this club' unless recipient_code.present?
 
-        # FIXED: Reload club to get fresh balance data
-        @club.reload
         club_balance = @club.current_balance
-        
         raise 'Club has no funds available for payout.' if club_balance <= 0.0
 
         # ALIGNED: Add recipient verification before transfer
@@ -327,6 +308,7 @@ module Api
         currency = @club.currency.upcase
         available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
 
+        # ALIGNED: Check against transfer_amount, not club_balance
         if available_balance < transfer_amount
           render json: { error: 'Insufficient balance on our side. Kindly try again later.' },
                 status: :unprocessable_entity
