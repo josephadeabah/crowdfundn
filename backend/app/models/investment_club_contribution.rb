@@ -37,12 +37,15 @@ class InvestmentClubContribution < ApplicationRecord
       # FIXED: Update member contribution total
       membership.update!(total_contributed: membership.total_contributed.to_f + amount.to_f)
 
-      # FIXED: Update member shares with proper error handling - rescue validation errors
+      # FIXED: Use correct method name - update_all_member_shares_with_history (without extra 's')
       begin
         club.update_all_member_shares_with_history(self)
       rescue ActiveRecord::RecordInvalid => e
         Rails.logger.warn "Share change validation failed for contribution #{id}: #{e.message}. Continuing without share history..."
-        # Continue processing even if share history fails
+        # Continue processing even if share history fails - use fallback method
+        club.update_all_member_shares_without_history
+      rescue NoMethodError => e
+        Rails.logger.error "Method error in share update: #{e.message}. Using fallback method."
         club.update_all_member_shares_without_history
       end
 

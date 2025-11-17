@@ -84,44 +84,6 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
-  # def deduct_transfer_amount(amount)
-  #   ActiveRecord::Base.transaction do
-  #     lock!
-  #     new_balance = current_balance.to_f - amount.to_f
-  #     if new_balance >= 0
-  #       update_columns(
-  #         current_balance: new_balance,
-  #         updated_at: Time.current
-  #       )
-  #       Rails.logger.info "Deducted #{amount} from club #{id} balance. New balance: #{new_balance}"
-  #       true
-  #     else
-  #       Rails.logger.error "Insufficient balance for transfer: #{current_balance} - #{amount}"
-  #       false
-  #     end
-  #   end
-  # rescue => e
-  #   Rails.logger.error "Error deducting transfer amount from club #{id}: #{e.message}"
-  #   false
-  # end
-
-  # # FIXED: Thread-safe balance refund for failed transfers
-  # def refund_transfer_amount(amount)
-  #   ActiveRecord::Base.transaction do
-  #     lock!
-  #     new_balance = current_balance.to_f + amount.to_f
-  #     update_columns(
-  #       current_balance: new_balance,
-  #       updated_at: Time.current
-  #     )
-  #     Rails.logger.info "Refunded #{amount} to club #{id} balance. New balance: #{new_balance}"
-  #     true
-  #   end
-  # rescue => e
-  #   Rails.logger.error "Error refunding transfer amount to club #{id}: #{e.message}"
-  #   false
-  # end
-
   # FIXED: Consistent financial calculations with transaction safety
   def recalc_total_contributions!
     new_total = investment_club_contributions.completed.sum(:amount).to_f
@@ -200,7 +162,29 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
-  # FIXED: Member share updates with proper error handling
+  # FIXED: CORRECT METHOD NAME - update_all_member_shares_with_history (without extra 's')
+  def update_all_member_shares_with_history(contribution = nil)
+    current_total = total_contributions.to_f
+    
+    Rails.logger.info "Calculating shares for club #{id}: Total contributions: #{current_total}"
+
+    return if current_total.zero?
+
+    ActiveRecord::Base.transaction do
+      active_memberships.find_each do |membership|
+        update_member_share_with_history(membership, current_total, contribution)
+      end
+      
+      verify_share_totals
+    end
+    
+    Rails.logger.info "Successfully updated shares for all active members in club #{id}"
+  rescue => e
+    Rails.logger.error "Error updating member shares for club #{id}: #{e.message}"
+    raise
+  end
+
+  # FIXED: Method to update shares without history for cases where validation fails
   def update_all_member_shares_without_history
     current_total = total_contributions.to_f
     
