@@ -84,8 +84,6 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
-
-
   def deduct_transfer_amount(amount)
     ActiveRecord::Base.transaction do
       lock!
