@@ -24,11 +24,15 @@ class InvestmentClubMembership < ApplicationRecord
   scope :admin, -> { where(role: ['admin', 'creator']) }
   scope :pending, -> { where(status: 'pending') }
   
+  # FIXED: Better share percentage calculation with error handling
   def update_share_percentage
     return if investment_club.total_contributions.zero?
     
     new_share = (total_contributed / investment_club.total_contributions) * 100
     update_column(:contributed_share, new_share.round(4))
+  rescue => e
+    Rails.logger.error "Error updating share percentage for membership #{id}: #{e.message}"
+    # Don't raise error - this shouldn't break the main flow
   end
 
   def update_club_members_count_callback

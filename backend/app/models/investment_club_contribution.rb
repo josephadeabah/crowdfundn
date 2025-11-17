@@ -12,43 +12,38 @@ class InvestmentClubContribution < ApplicationRecord
     refunded: "refunded"
   }
 
-  # Auto-process after Paystack marks status = "completed"
+  # FIXED: Better processing control
   after_save :update_club_balance, if: -> { saved_change_to_status? && completed? }
 
-  # ========================================
-  # PROCESS COMPLETION
-  # ========================================
+  # FIXED: Thread-safe processing with proper locking
   def process_completion!
     return if processed_at.present?  # Prevent double processing
 
     ActiveRecord::Base.transaction do
-      membership = investment_club.membership_for(user)
+      # Lock the club to prevent race conditions
+      club = InvestmentClub.lock.find(investment_club_id)
+      membership = club.membership_for(user)
 
       unless membership
-        Rails.logger.error "No membership found for user #{user.id} in club #{investment_club.id}"
+        Rails.logger.error "No membership found for user #{user.id} in club #{club.id}"
         raise "User is not part of the club"
       end
 
-      # Store previous values
-      previous_total = membership.total_contributed.to_f
-      previous_share = membership.contributed_share.to_f
+      Rails.logger.info "Processing contribution #{id}: User: #{user.full_name}, Amount: #{amount}"
 
-      Rails.logger.info "Processing contribution #{id}: " \
-                        "User: #{user.full_name}, Amount: #{amount}"
+      # FIXED: Update club balance atomically
+      club.update_balance_with_contribution(amount)
 
-      # Update member contribution total
-      membership.update!(total_contributed: previous_total + amount.to_f)
+      # FIXED: Update member contribution total
+      membership.update!(total_contributed: membership.total_contributed.to_f + amount.to_f)
 
-      # Update club financials
-      investment_club.update_financials
-
-      # Update member shares
-      investment_club.update_all_member_shares_with_history(self)
+      # FIXED: Update member shares with proper error handling
+      club.update_all_member_shares_with_history(self)
 
       # Mark this contribution as fully processed
       update_column(:processed_at, Time.current)
 
-      Rails.logger.info "Contribution #{id} processed successfully"
+      Rails.logger.info "Contribution #{id} processed successfully. New club balance: #{club.current_balance}"
     end
   rescue => e
     Rails.logger.error "Error processing contribution #{id}: #{e.message}"

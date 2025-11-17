@@ -93,8 +93,8 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        # Find contribution by reference
-        contribution = @club.investment_club_contributions.find_by(transaction_reference: reference)
+        # Find contribution by reference with lock to prevent race conditions
+        contribution = InvestmentClubContribution.find_by(transaction_reference: reference)
         
         unless contribution
           # If contribution not found by reference, try to find by metadata
@@ -102,7 +102,7 @@ module Api
           contribution_id = metadata[:contribution_id]
           
           if contribution_id
-            contribution = @club.investment_club_contributions.find_by(id: contribution_id)
+            contribution = InvestmentClubContribution.find_by(id: contribution_id)
           end
         end
 
@@ -110,15 +110,18 @@ module Api
           return render json: { error: 'Contribution not found' }, status: :not_found
         end
 
-        # CRITICAL: If webhook hasn't processed it yet, update status but DON'T process
-        if contribution.pending?
-          contribution.update!(
-            status: 'completed',
-            transaction_reference: reference,
-            paystack_fee: 0,
-            amount_settled: contribution.amount
-          )
-          # NOTE: We don't call process_completion! here - let webhook handle it
+        # FIXED: Use locking to prevent race conditions between webhook and manual verification
+        contribution.with_lock do
+          # If webhook hasn't processed it yet, update status but DON'T process
+          if contribution.pending?
+            contribution.update!(
+              status: 'completed',
+              transaction_reference: reference,
+              paystack_fee: 0,
+              amount_settled: contribution.amount
+            )
+            # NOTE: We don't call process_completion! here - let webhook handle it
+          end
         end
 
         # Get updated membership data (webhook should have updated it)

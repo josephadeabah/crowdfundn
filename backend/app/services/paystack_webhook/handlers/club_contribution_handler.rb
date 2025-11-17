@@ -17,29 +17,32 @@ module PaystackWebhook::Handlers
         return
       end
 
-      # CRITICAL: Skip if already completed to prevent double processing
-      if contribution.completed?
-        Rails.logger.info "Club contribution #{contribution.id} already completed, skipping webhook processing"
-        return
-      end
+      # CRITICAL FIX: Use database-level locking to prevent race conditions
+      contribution.with_lock do
+        # Skip if already completed to prevent double processing
+        if contribution.completed?
+          Rails.logger.info "Club contribution #{contribution.id} already completed, skipping webhook processing"
+          return
+        end
 
-      # Verify transaction using PaystackService - ALWAYS verify with Paystack
-      paystack_service = PaystackService.new
-      verification_response = paystack_service.verify_transaction(@data[:reference])
-      
-      unless verification_response[:status] && verification_response[:data][:status] == 'success'
-        Rails.logger.error "Transaction verification failed for club contribution #{contribution.id}: #{verification_response[:message]}"
-        contribution.update!(status: 'failed')
-        return
-      end
+        # Verify transaction using PaystackService
+        paystack_service = PaystackService.new
+        verification_response = paystack_service.verify_transaction(@data[:reference])
+        
+        unless verification_response[:status] && verification_response[:data][:status] == 'success'
+          Rails.logger.error "Transaction verification failed for club contribution #{contribution.id}: #{verification_response[:message]}"
+          contribution.update!(status: 'failed')
+          return
+        end
 
-      case verification_response[:data][:status]
-      when 'success'
-        process_successful_contribution(contribution, verification_response[:data])
-      when 'failed'
-        process_failed_contribution(contribution)
-      else
-        Rails.logger.warn "Unhandled club contribution status: #{verification_response[:data][:status]}"
+        case verification_response[:data][:status]
+        when 'success'
+          process_successful_contribution(contribution, verification_response[:data])
+        when 'failed'
+          process_failed_contribution(contribution)
+        else
+          Rails.logger.warn "Unhandled club contribution status: #{verification_response[:data][:status]}"
+        end
       end
     end
 

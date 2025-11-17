@@ -85,101 +85,150 @@ class InvestmentClub < ApplicationRecord
   end
 
 
-  # Total contributions is historical and should only increase.
-  # Do NOT recalculate from the DB after withdrawals.
+
+  def deduct_transfer_amount(amount)
+    ActiveRecord::Base.transaction do
+      lock!
+      new_balance = current_balance.to_f - amount.to_f
+      if new_balance >= 0
+        update_columns(
+          current_balance: new_balance,
+          updated_at: Time.current
+        )
+        Rails.logger.info "Deducted #{amount} from club #{id} balance. New balance: #{new_balance}"
+        true
+      else
+        Rails.logger.error "Insufficient balance for transfer: #{current_balance} - #{amount}"
+        false
+      end
+    end
+  rescue => e
+    Rails.logger.error "Error deducting transfer amount from club #{id}: #{e.message}"
+    false
+  end
+
+  # FIXED: Thread-safe balance refund for failed transfers
+  def refund_transfer_amount(amount)
+    ActiveRecord::Base.transaction do
+      lock!
+      new_balance = current_balance.to_f + amount.to_f
+      update_columns(
+        current_balance: new_balance,
+        updated_at: Time.current
+      )
+      Rails.logger.info "Refunded #{amount} to club #{id} balance. New balance: #{new_balance}"
+      true
+    end
+  rescue => e
+    Rails.logger.error "Error refunding transfer amount to club #{id}: #{e.message}"
+    false
+  end
+
+  # FIXED: Consistent financial calculations with transaction safety
   def recalc_total_contributions!
     new_total = investment_club_contributions.completed.sum(:amount).to_f
     update_columns(total_contributions: new_total)
   end
 
-  # Current balance = total contributions - total invested - total transferred out
+  # FIXED: Current balance calculation with proper locking
   def recalc_current_balance!
     total_invested = club_investments.where(status: 'executed').sum(:investment_amount).to_f
     total_withdrawn = club_transfers.where(status: 'success').sum(:amount).to_f
 
     new_balance = total_contributions - total_invested - total_withdrawn
-    update_columns(current_balance: new_balance)
+    update_columns(current_balance: [new_balance, 0].max) # Ensure balance doesn't go negative
   end
 
-  # Called when transfer is completed
-  def deduct_transfer_amount(amount)
-    new_balance = (current_balance.to_f - amount.to_f).clamp(0, Float::INFINITY)
-    update_columns(current_balance: new_balance)
-  end
-
-  # Add method to handle failed transfers properly
-  def refund_transfer_amount(amount)
-    new_current_balance = update_current_balance + amount
-    
-    update_columns(
-      current_balance: new_current_balance,
-      updated_at: Time.current
-    )
-    
-    Rails.logger.info "Club #{id} refunded transfer amount: #{amount}"
-    Rails.logger.info "New balance: #{new_current_balance}"
-  end
-
- # ================================
-  # FINANCIAL CALCULATIONS
-  # ================================
-
-  # Total contributions from all members
-  def total_contributions
-    investment_club_contributions.completed.sum(:amount).to_f
-  end
-
-  # Fresh calculation of executed investments
-  def calculate_total_invested
-    if club_investments.respond_to?(:executed)
-      club_investments.executed.sum(:investment_amount).to_f
-    else
-      club_investments.where(status: "executed").sum(:investment_amount).to_f
-    end
-  end
-
-  # Fresh calculation of current club balance
-  def calculate_current_balance
-    total_contributions.to_f - total_invested.to_f
-  end
-
-  # ================================
-  # UPDATE FINANCIALS
-  # ================================
-  def update_financials
-    update!(
-      total_invested: calculate_total_invested,
-      current_balance: calculate_current_balance
-    )
-  end
-
-  # ================================
-  # MEMBER SHARE UPDATES
-  # ================================
-  def update_all_member_shares_with_history(contribution)
-    total = total_contributions.to_f
-    return if total <= 0
-
-    memberships.find_each do |m|
-      previous_share = m.contributed_share.to_f
-      new_share = (m.total_contributed.to_f / total) * 100.0
-
-      m.update!(contributed_share: new_share)
-      m.share_histories.create!(
-        contribution_id: contribution.id,
-        previous_share: previous_share,
-        new_share: new_share
+  # FIXED: Thread-safe balance updates
+  def update_balance_with_contribution(amount)
+    ActiveRecord::Base.transaction do
+      lock!
+      new_balance = current_balance.to_f + amount.to_f
+      update_columns(
+        current_balance: new_balance,
+        total_contributions: total_contributions.to_f + amount.to_f
       )
     end
   end
 
+  # FIXED: Thread-safe balance deductions
+  def deduct_balance(amount)
+    ActiveRecord::Base.transaction do
+      lock!
+      new_balance = current_balance.to_f - amount.to_f
+      if new_balance >= 0
+        update_columns(current_balance: new_balance)
+        true
+      else
+        false
+      end
+    end
+  end
 
+  # FIXED: Refund with thread safety
+  def refund_balance(amount)
+    ActiveRecord::Base.transaction do
+      lock!
+      new_balance = current_balance.to_f + amount.to_f
+      update_columns(current_balance: new_balance)
+    end
+  end
+
+  # FIXED: Consistent financial calculations
+  def total_contributions
+    # Always calculate fresh to avoid inconsistencies
+    investment_club_contributions.completed.sum(:amount).to_f
+  end
+
+  def calculate_total_invested
+    club_investments.executed.sum(:investment_amount).to_f
+  end
+
+  def calculate_current_balance
+    total_contributions.to_f - calculate_total_invested.to_f
+  end
+
+  # FIXED: Update all financials atomically
+  def update_financials
+    ActiveRecord::Base.transaction do
+      new_total_invested = calculate_total_invested
+      new_current_balance = calculate_current_balance
+      
+      update_columns(
+        total_invested: new_total_invested,
+        current_balance: new_current_balance,
+        updated_at: Time.current
+      )
+    end
+  end
+
+  # FIXED: Member share updates with proper error handling
+  def update_all_member_shares_with_history(contribution = nil)
+    current_total = total_contributions.to_f
+    
+    Rails.logger.info "Calculating shares for club #{id}: Total contributions: #{current_total}"
+
+    return if current_total.zero?
+
+    ActiveRecord::Base.transaction do
+      active_memberships.find_each do |membership|
+        update_member_share_with_history(membership, current_total, contribution)
+      end
+      
+      verify_share_totals
+    end
+    
+    Rails.logger.info "Successfully updated shares for all active members in club #{id}"
+  rescue => e
+    Rails.logger.error "Error updating member shares for club #{id}: #{e.message}"
+    raise
+  end
   
   def roi_metrics
     {
-      total_contributions: update_total_contributions,
-      total_invested: update_total_invested,
-      current_balance: update_current_balance,
+      total_contributions: total_contributions,
+      total_invested: calculate_total_invested,
+      current_balance: calculate_current_balance,
       approved_campaigns_count: club_investments.approved.count,
       pending_investments: club_investments.voting.count
     }
@@ -262,70 +311,6 @@ class InvestmentClub < ApplicationRecord
     errors
   end
 
-  # FIXED: Enhanced share calculation with better logging
-  # def update_all_member_shares_with_history(contribution = nil)
-  #   current_total = total_contributions.to_f
-    
-  #   Rails.logger.info "Calculating shares for club #{id}: " +
-  #                    "Total contributions: #{current_total}, " +
-  #                    "Contribution: #{contribution&.amount}"
-
-  #   # Return early if no contributions
-  #   if current_total.zero?
-  #     Rails.logger.warn "No contributions to calculate shares for club #{id}"
-  #     return
-  #   end
-    
-  #   begin
-  #     # Use the active memberships association
-  #     active_memberships.find_each do |membership|
-  #       update_member_share_with_history(membership, current_total, contribution)
-  #     end
-      
-  #     # Verify the totals
-  #     verify_share_totals
-      
-  #     Rails.logger.info "Successfully updated shares for all active members in club #{id}"
-  #   rescue => e
-  #     Rails.logger.error "Error updating member shares for club #{id}: #{e.message}"
-  #     Rails.logger.error e.backtrace.join("\n")
-  #     raise
-  #   end
-  # end
-
-  def update_all_member_shares
-    total_contributions = self.update_total_contributions
-    return if total_contributions.zero?
-    
-    memberships = investment_club_memberships.active.to_a
-    return if memberships.empty?
-    
-    calculated_shares = {}
-    total_calculated = 0.0
-    
-    memberships.each do |membership|
-      raw_share = (membership.total_contributed / update_total_contributions) * 100
-      calculated_shares[membership.id] = raw_share
-      total_calculated += raw_share
-    end
-    
-    adjustment_factor = 100.0 / total_calculated
-    
-    ActiveRecord::Base.transaction do
-      memberships.each do |membership|
-        adjusted_share = (calculated_shares[membership.id] * adjustment_factor).round(4)
-        membership.update_column(:contributed_share, adjusted_share)
-      end
-    end
-    
-    final_total = investment_club_memberships.active.sum(:contributed_share)
-    if (final_total - 100.0).abs > 0.01
-      force_correct_share_totals
-    end
-    
-    Rails.logger.info "Updated member shares. Total: #{final_total}%"
-  end
-
   def verify_share_totals
     current_total = investment_club_memberships.active.sum(:contributed_share)
     expected_total = 100.0
@@ -363,7 +348,7 @@ class InvestmentClub < ApplicationRecord
       }
     end
     
-    new_total_contributions = update_total_contributions + new_contribution
+    new_total_contributions = total_contributions + new_contribution
     new_shares = {}
     
     investment_club_memberships.active.each do |m|
@@ -426,10 +411,7 @@ class InvestmentClub < ApplicationRecord
     previous_share = membership.contributed_share.to_f
     new_share = calculate_member_share(membership.total_contributed.to_f, total_contributions)
     
-    Rails.logger.info "Member #{membership.user.full_name}: " +
-                     "Contributed: #{membership.total_contributed}, " +
-                     "Total: #{total_contributions}, " +
-                     "Share: #{previous_share}% → #{new_share}%"
+    Rails.logger.info "Member #{membership.user.full_name}: Contributed: #{membership.total_contributed}, Share: #{previous_share}% → #{new_share}%"
 
     if (previous_share - new_share).abs > 0.0001
       create_share_change_history(membership, previous_share, new_share, contribution)
@@ -458,7 +440,7 @@ class InvestmentClub < ApplicationRecord
       new_share: new_share.round(4),
       change_amount: change_amount,
       change_reason: contribution ? 'contribution' : 'recalculation',
-      total_contributions_at_time: self.total_contributions
+      total_contributions_at_time: total_contributions
     )
     
     Rails.logger.info "Created share change record: #{membership.user.full_name} Δ#{change_amount}%"

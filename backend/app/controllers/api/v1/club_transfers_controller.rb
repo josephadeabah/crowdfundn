@@ -1,3 +1,4 @@
+# app/controllers/api/v1/club_transfers_controller.rb
 module Api
   module V1
     class ClubTransfersController < ApplicationController
@@ -89,16 +90,16 @@ module Api
           return
         end
 
-          metadata       = subaccount.metadata
-          custom_fields  = metadata['custom_fields']
+        metadata       = subaccount.metadata
+        custom_fields  = metadata['custom_fields']
 
-          if custom_fields.blank?
-            render json: { error: 'No custom fields provided for this subaccount' }, status: :unprocessable_entity
-            return
-          end
+        if custom_fields.blank?
+          render json: { error: 'No custom fields provided for this subaccount' }, status: :unprocessable_entity
+          return
+        end
 
-          bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
-                            custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value')
+        bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
+                          custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value')
 
         if bank_code_value.blank?
           render json: { error: 'No valid bank code or mobile money details provided' }, status: :unprocessable_entity
@@ -184,11 +185,17 @@ module Api
         render json: { error: e.message }, status: :unprocessable_entity
       end
 
-      # Handle the process of transferring funds and updating club balance
+      # FIXED: Handle the process of transferring funds with proper balance management
       def process_transfer(subaccount, recipient_account, currency, transfer_amount)
         # Use the specific transfer_amount instead of club_balance
         if transfer_amount <= 0
           render json: { error: 'Invalid transfer amount.' }, status: :unprocessable_entity
+          return
+        end
+
+        # FIXED: Use thread-safe balance deduction with proper error handling
+        unless @club.deduct_balance(transfer_amount)
+          render json: { error: 'Insufficient club balance for this transfer.' }, status: :unprocessable_entity
           return
         end
 
@@ -204,7 +211,7 @@ module Api
         if transfer_response[:status]
           transfer_data = transfer_response[:data]
           
-          # ALIGNED WITH FUNDRAISER: Create club transfer record with proper associations
+          # FIXED: Create club transfer record with proper error handling
           club_transfer = ClubTransfer.create!(
             investment_club: @club,
             user: @current_user,
@@ -217,8 +224,8 @@ module Api
             transfer_code: transfer_data[:transfer_code]
           )
 
-          # DEDUCT THE TRANSFER AMOUNT FROM CLUB FUNDS
-          @club.deduct_transfer_amount(transfer_amount)
+          # FIXED: Balance was already deducted above using thread-safe method
+          # No need to call deduct_transfer_amount again
 
           render json: {
             transfer_code: transfer_data[:transfer_code],
@@ -228,6 +235,9 @@ module Api
             transferred_amount: transfer_amount
           }, status: :ok
         else
+          # FIXED: Refund the balance if transfer initiation fails
+          @club.refund_balance(transfer_amount)
+          
           # ALIGNED: Better error parsing
           body = begin
             JSON.parse(transfer_response[:body])
@@ -244,11 +254,14 @@ module Api
           }, status: :unprocessable_entity
         end
       rescue StandardError => e
+        # FIXED: Ensure balance is refunded on any error
+        @club.refund_balance(transfer_amount) rescue nil
+        
         Rails.logger.error "Error processing transfer: #{e.message}"
         render json: { error: "Transfer processing error: #{e.message}" }, status: :unprocessable_entity
       end
 
-      # Initialize a transfer for club
+      # FIXED: Initialize a transfer for club with better error handling
       def initialize_transfer
         # Check if transfers are locked for the admin user
         unless @current_user.can_make_transfers?
@@ -272,11 +285,22 @@ module Api
         subaccount.reload if subaccount.present?
         recipient_code = params[:recipient_code]
 
-        raise 'Club admin does not have an account number added.' unless subaccount
-        raise 'Recipient code not found for this club' unless recipient_code.present?
+        unless subaccount
+          render json: { error: 'Club admin does not have an account number added.' }, status: :unprocessable_entity
+          return
+        end
+        
+        unless recipient_code.present?
+          render json: { error: 'Recipient code not found for this club' }, status: :unprocessable_entity
+          return
+        end
 
-        club_balance = @club.current_balance
-        raise 'Club has no funds available for payout.' if club_balance <= 0.0
+        # FIXED: Use fresh calculation instead of cached balance
+        club_balance = @club.calculate_current_balance
+        if club_balance <= 0.0
+          render json: { error: 'Club has no funds available for payout.' }, status: :unprocessable_entity
+          return
+        end
 
         # ALIGNED: Add recipient verification before transfer
         recipient_response = @paystack_service.fetch_transfer_recipient(recipient_code)
@@ -295,12 +319,16 @@ module Api
           return
         end
 
-        # ADD: Get the specific transfer amount from params
-        transfer_amount = params[:transfer_amount]&.to_f || club_balance
-        
-        # Validate the specific transfer amount
-        if transfer_amount <= 0 || transfer_amount > club_balance
-          render json: { error: "Invalid transfer amount. Must be between 0.01 and #{club_balance}" }, 
+        # FIXED: Get the specific transfer amount from params with validation
+        transfer_amount = params[:transfer_amount]&.to_f
+        if transfer_amount.blank? || transfer_amount <= 0
+          render json: { error: 'Valid transfer amount is required' }, status: :unprocessable_entity
+          return
+        end
+
+        # FIXED: Validate against fresh balance calculation
+        if transfer_amount > club_balance
+          render json: { error: "Transfer amount exceeds available club balance of #{club_balance}" }, 
                 status: :unprocessable_entity
           return
         end
@@ -308,14 +336,17 @@ module Api
         currency = @club.currency.upcase
         available_balance = balance_response[:data].find { |b| b[:currency] == currency }&.dig(:balance).to_f
 
-        # ALIGNED: Check against transfer_amount, not club_balance
+        # ALIGNED: Check against transfer_amount
         if available_balance < transfer_amount
           render json: { error: 'Insufficient balance on our side. Kindly try again later.' },
                 status: :unprocessable_entity
           return
         end
 
-        process_transfer(subaccount, recipient_code, currency, transfer_amount)
+        # FIXED: Process transfer within a transaction for data consistency
+        ActiveRecord::Base.transaction do
+          process_transfer(subaccount, recipient_code, currency, transfer_amount)
+        end
       rescue ActiveRecord::RecordNotFound => e
         render json: { error: e.message }, status: :not_found
       rescue StandardError => e
@@ -411,26 +442,48 @@ module Api
         render json: { error: e.message }, status: :unprocessable_entity
       end
 
-      # Fetch transfers for the club
+      # FIXED: Fetch transfers for the club with proper serialization
       def fetch_club_transfers
         page = params[:page] || 1
-        page_size = params[:pageSize] || 8
+        page_size = params[:page_size] || 8
 
         @transfers = @club.club_transfers.includes(:user).order(created_at: :desc).page(page).per(page_size)
 
         if @transfers.any?
           render json: {
-            transfers: @transfers.as_json(include: :user),
+            transfers: @transfers.map { |t| 
+              {
+                id: t.id,
+                amount: t.amount,
+                currency: t.currency,
+                status: t.status,
+                reason: t.reason,
+                reference: t.reference,
+                transfer_code: t.transfer_code,
+                recipient_code: t.recipient_code,
+                created_at: t.created_at,
+                user: {
+                  id: t.user.id,
+                  full_name: t.user.full_name
+                }
+              }
+            },
             current_page: @transfers.current_page,
             total_pages: @transfers.total_pages,
             total_count: @transfers.total_count
           }, status: :ok
         else
-          render json: { error: 'No transfers found for this club' }, status: :not_found
+          render json: { 
+            transfers: [],
+            current_page: 1,
+            total_pages: 0,
+            total_count: 0,
+            message: 'No transfers found for this club'
+          }, status: :ok
         end
       end
 
-      # Fetch transfers from Paystack for the club
+      # FIXED: Fetch transfers from Paystack for the club with better error handling
       def fetch_transfers_from_paystack
         admin_membership = @club.investment_club_memberships.admin.first
         unless admin_membership
@@ -441,65 +494,49 @@ module Api
         admin_user = admin_membership.user
         subaccounts = Subaccount.where(subaccount_code: admin_user.subaccount_id)
 
+        if subaccounts.empty?
+          render json: { error: 'No subaccounts found for club admin' }, status: :not_found
+          return
+        end
+
+        transfer_count = 0
         subaccounts.each do |subaccount|
           response = @paystack_service.fetch_transfer(subaccount.transfer_code)
 
           if response[:status] && response[:data].present?
-            if response[:data].is_a?(Array)
-              response[:data].each do |transfer_data|
-                transfer_record = ClubTransfer.find_by(transfer_code: transfer_data[:transfer_code])
-                next if transfer_record
+            transfer_data_array = response[:data].is_a?(Array) ? response[:data] : [response[:data]]
+            
+            transfer_data_array.each do |transfer_data|
+              next if ClubTransfer.exists?(transfer_code: transfer_data[:transfer_code])
 
-                ClubTransfer.create(
-                  transfer_code: transfer_data[:transfer_code],
-                  investment_club_id: @club.id,
-                  user_id: admin_user.id,
-                  bank_name: transfer_data[:recipient][:details][:bank_name],
-                  account_number: transfer_data[:recipient][:details][:account_number],
-                  amount: transfer_data[:amount] / 100.0,
-                  currency: transfer_data[:currency],
-                  status: transfer_data[:status],
-                  reason: transfer_data[:reason],
-                  recipient_code: transfer_data[:recipient][:recipient_code],
-                  reference: transfer_data[:reference],
-                  created_at: transfer_data[:createdAt]
-                )
-                Rails.logger.info "Club transfer with code #{transfer_data[:transfer_code]} created successfully"
-              end
-            elsif response[:data].is_a?(Hash)
-              transfer_data = response[:data]
-              transfer_record = ClubTransfer.find_by(transfer_code: transfer_data[:transfer_code])
-
-              unless transfer_record
-                ClubTransfer.create(
-                  transfer_code: transfer_data[:transfer_code],
-                  investment_club_id: @club.id,
-                  user_id: admin_user.id,
-                  bank_name: transfer_data[:recipient][:details][:bank_name],
-                  account_number: transfer_data[:recipient][:details][:account_number],
-                  amount: transfer_data[:amount] / 100.0,
-                  currency: transfer_data[:currency],
-                  status: transfer_data[:status],
-                  reason: transfer_data[:reason],
-                  recipient_code: transfer_data[:recipient][:recipient_code],
-                  reference: transfer_data[:reference],
-                  created_at: transfer_data[:createdAt]
-                )
-                Rails.logger.info "Club transfer with code #{transfer_data[:transfer_code]} created successfully"
-              end
-            else
-              Rails.logger.error "Expected an array or hash but got: #{response[:data].inspect}"
-              render json: { error: 'Unexpected response format' }, status: :unprocessable_entity
-              return
+              ClubTransfer.create!(
+                transfer_code: transfer_data[:transfer_code],
+                investment_club_id: @club.id,
+                user_id: admin_user.id,
+                bank_name: transfer_data.dig(:recipient, :details, :bank_name),
+                account_number: transfer_data.dig(:recipient, :details, :account_number),
+                amount: transfer_data[:amount] / 100.0,
+                currency: transfer_data[:currency],
+                status: transfer_data[:status],
+                reason: transfer_data[:reason],
+                recipient_code: transfer_data.dig(:recipient, :recipient_code),
+                reference: transfer_data[:reference],
+                created_at: transfer_data[:createdAt]
+              )
+              transfer_count += 1
+              Rails.logger.info "Club transfer with code #{transfer_data[:transfer_code]} created successfully"
             end
           else
-            Rails.logger.error "No transfers found or an error occurred. Response: #{response.inspect}"
-            render json: { error: 'No transfers found or an error occurred' }, status: :unprocessable_entity
-            return
+            Rails.logger.warn "No transfers found for subaccount #{subaccount.subaccount_code}: #{response.inspect}"
           end
         end
 
-        render json: { message: 'Club transfers fetched and saved successfully' }, status: :ok
+        render json: { 
+          message: "Successfully fetched #{transfer_count} club transfers from Paystack" 
+        }, status: :ok
+      rescue StandardError => e
+        Rails.logger.error "Error fetching transfers from Paystack: #{e.message}"
+        render json: { error: "Failed to fetch transfers: #{e.message}" }, status: :unprocessable_entity
       end
 
       private
