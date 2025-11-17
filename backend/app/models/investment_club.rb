@@ -120,34 +120,14 @@ class InvestmentClub < ApplicationRecord
     Rails.logger.info "New balance: #{new_current_balance}"
   end
 
-    # FIXED: Proper total_contributions calculation with safe fallback
-  def update_total_contributions
-    if investment_club_contributions.loaded?
-      investment_club_contributions.select { |c| c.completed? }.sum(&:amount).to_f
-    else
-      investment_club_contributions.completed.sum(:amount).to_f
-    end
+  def calculate_current_balance
+    total_contributions.to_f - total_invested.to_f
   end
 
-  # FIXED: Proper current_balance calculation with safe fallback
-  def update_current_balance
-    total_contributions - total_invested
+  def calculate_total_invested
+    club_investments.executed.sum(:investment_amount).to_f
   end
 
-  # FIXED: Proper total_invested calculation with safe fallback
-  def update_total_invested
-    if club_investments.loaded?
-      club_investments.select { |i| i.executed? }.sum(&:investment_amount).to_f
-    else
-      # Use safe approach - check if executed scope exists
-      if club_investments.respond_to?(:executed)
-        club_investments.executed.sum(:investment_amount).to_f
-      else
-        # Fallback to manual filtering
-        club_investments.where(status: 'executed').sum(:investment_amount).to_f
-      end
-    end
-  end
   
   def roi_metrics
     {
