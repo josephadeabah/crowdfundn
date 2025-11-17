@@ -462,6 +462,8 @@ module Api
                 transfer_code: t.transfer_code,
                 recipient_code: t.recipient_code,
                 created_at: t.created_at,
+                bank_name: t.bank_name,
+                account_number: t.account_number,
                 user: {
                   id: t.user.id,
                   full_name: t.user.full_name
