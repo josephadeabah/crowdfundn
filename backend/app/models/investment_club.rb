@@ -84,6 +84,7 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
+
   # Total contributions is historical and should only increase.
   # Do NOT recalculate from the DB after withdrawals.
   def recalc_total_contributions!
@@ -118,12 +119,65 @@ class InvestmentClub < ApplicationRecord
     Rails.logger.info "Club #{id} refunded transfer amount: #{amount}"
     Rails.logger.info "New balance: #{new_current_balance}"
   end
+
+    # FIXED: Proper total_contributions calculation with safe fallback
+  def update_total_contributions
+    if investment_club_contributions.loaded?
+      investment_club_contributions.select { |c| c.completed? }.sum(&:amount).to_f
+    else
+      investment_club_contributions.completed.sum(:amount).to_f
+    end
+  end
+
+  # FIXED: Proper current_balance calculation with safe fallback
+  def update_current_balance
+    total_contributions - total_invested
+  end
+
+  # FIXED: Proper total_invested calculation with safe fallback
+  def update_total_invested
+    if club_investments.loaded?
+      club_investments.select { |i| i.executed? }.sum(&:investment_amount).to_f
+    else
+      # Use safe approach - check if executed scope exists
+      if club_investments.respond_to?(:executed)
+        club_investments.executed.sum(:investment_amount).to_f
+      else
+        # Fallback to manual filtering
+        club_investments.where(status: 'executed').sum(:investment_amount).to_f
+      end
+    end
+  end
+
+  # FIXED: Safe update_financials method
+  def update_financials
+    # Calculate fresh values safely
+    new_total_contributions = update_total_contributions
+    new_total_invested = update_total_invested
+    new_current_balance = new_total_contributions - new_total_invested
+
+    # Update columns directly to avoid callbacks
+    update_columns(
+      total_contributions: new_total_contributions,
+      total_invested: new_total_invested,
+      current_balance: new_current_balance,
+      updated_at: Time.current
+    )
+
+    Rails.logger.info "Club #{id} financials updated: " +
+                     "Contributions: #{new_total_contributions}, " +
+                     "Invested: #{new_total_invested}, " +
+                     "Balance: #{new_current_balance}"
+  rescue => e
+    Rails.logger.error "Error updating financials for club #{id}: #{e.message}"
+    # Don't raise error to prevent breaking other operations
+  end
   
   def roi_metrics
     {
-      total_contributions: total_contributions,
-      total_invested: total_invested,
-      current_balance: current_balance,
+      total_contributions: update_total_contributions,
+      total_invested: update_total_invested,
+      current_balance: update_current_balance,
       approved_campaigns_count: club_investments.approved.count,
       pending_investments: club_investments.voting.count
     }
