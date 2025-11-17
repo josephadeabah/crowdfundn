@@ -84,43 +84,43 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
-  def deduct_transfer_amount(amount)
-    ActiveRecord::Base.transaction do
-      lock!
-      new_balance = current_balance.to_f - amount.to_f
-      if new_balance >= 0
-        update_columns(
-          current_balance: new_balance,
-          updated_at: Time.current
-        )
-        Rails.logger.info "Deducted #{amount} from club #{id} balance. New balance: #{new_balance}"
-        true
-      else
-        Rails.logger.error "Insufficient balance for transfer: #{current_balance} - #{amount}"
-        false
-      end
-    end
-  rescue => e
-    Rails.logger.error "Error deducting transfer amount from club #{id}: #{e.message}"
-    false
-  end
+  # def deduct_transfer_amount(amount)
+  #   ActiveRecord::Base.transaction do
+  #     lock!
+  #     new_balance = current_balance.to_f - amount.to_f
+  #     if new_balance >= 0
+  #       update_columns(
+  #         current_balance: new_balance,
+  #         updated_at: Time.current
+  #       )
+  #       Rails.logger.info "Deducted #{amount} from club #{id} balance. New balance: #{new_balance}"
+  #       true
+  #     else
+  #       Rails.logger.error "Insufficient balance for transfer: #{current_balance} - #{amount}"
+  #       false
+  #     end
+  #   end
+  # rescue => e
+  #   Rails.logger.error "Error deducting transfer amount from club #{id}: #{e.message}"
+  #   false
+  # end
 
-  # FIXED: Thread-safe balance refund for failed transfers
-  def refund_transfer_amount(amount)
-    ActiveRecord::Base.transaction do
-      lock!
-      new_balance = current_balance.to_f + amount.to_f
-      update_columns(
-        current_balance: new_balance,
-        updated_at: Time.current
-      )
-      Rails.logger.info "Refunded #{amount} to club #{id} balance. New balance: #{new_balance}"
-      true
-    end
-  rescue => e
-    Rails.logger.error "Error refunding transfer amount to club #{id}: #{e.message}"
-    false
-  end
+  # # FIXED: Thread-safe balance refund for failed transfers
+  # def refund_transfer_amount(amount)
+  #   ActiveRecord::Base.transaction do
+  #     lock!
+  #     new_balance = current_balance.to_f + amount.to_f
+  #     update_columns(
+  #       current_balance: new_balance,
+  #       updated_at: Time.current
+  #     )
+  #     Rails.logger.info "Refunded #{amount} to club #{id} balance. New balance: #{new_balance}"
+  #     true
+  #   end
+  # rescue => e
+  #   Rails.logger.error "Error refunding transfer amount to club #{id}: #{e.message}"
+  #   false
+  # end
 
   # FIXED: Consistent financial calculations with transaction safety
   def recalc_total_contributions!
