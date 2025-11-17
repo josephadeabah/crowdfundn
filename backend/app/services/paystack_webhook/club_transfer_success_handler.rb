@@ -33,6 +33,14 @@ class PaystackWebhook::ClubTransferSuccessHandler
 
       # FIXED: Use the model method for consistency
       club_transfer.mark_as_successful!(@data)
+      
+      # Update the club transfer status
+      club_transfer.update!(
+        status: 'success',
+        completed_at: Time.current,
+        bank_name: @data.dig(:recipient, :details, :bank_name),
+        account_number: @data.dig(:recipient, :details, :account_number)
+      )
 
       Rails.logger.info "Club transfer #{transfer_code} marked as successful"
 
