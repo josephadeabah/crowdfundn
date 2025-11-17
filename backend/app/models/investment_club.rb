@@ -120,13 +120,21 @@ class InvestmentClub < ApplicationRecord
     Rails.logger.info "New balance: #{new_current_balance}"
   end
 
-  def calculate_current_balance
-    total_contributions.to_f - total_invested.to_f
+  def update_financials
+    update!(
+      total_invested: calculate_total_invested,
+      current_balance: calculate_current_balance
+    )
   end
 
   def calculate_total_invested
     club_investments.executed.sum(:investment_amount).to_f
   end
+
+  def calculate_current_balance
+    total_contributions.to_f - total_invested.to_f
+  end
+
 
   
   def roi_metrics
@@ -144,12 +152,6 @@ class InvestmentClub < ApplicationRecord
     if current_members_count != active_count
       update_column(:current_members_count, active_count)
     end
-  end
-
-
-  def update_financials!
-    recalc_total_contributions!
-    recalc_current_balance!
   end
   
   def create_creator_membership

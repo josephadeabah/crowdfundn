@@ -9,6 +9,7 @@ class InvestmentClubContribution < ApplicationRecord
   
   after_save :update_club_balance, if: -> { saved_change_to_status? && completed? }
   
+  
   # FIXED: Improved processing with better error handling and logging
   def process_completion!
     return if processed_at.present?
