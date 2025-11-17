@@ -2,81 +2,65 @@
 class InvestmentClubContribution < ApplicationRecord
   belongs_to :investment_club
   belongs_to :user
-  
+
   validates :amount, numericality: { greater_than: 0 }
-  
-  enum status: { pending: 'pending', completed: 'completed', failed: 'failed', refunded: 'refunded' }
-  
+
+  enum status: {
+    pending: "pending",
+    completed: "completed",
+    failed: "failed",
+    refunded: "refunded"
+  }
+
+  # Auto-process after Paystack marks status = "completed"
   after_save :update_club_balance, if: -> { saved_change_to_status? && completed? }
-  
-  
-  # FIXED: Improved processing with better error handling and logging
+
+  # ========================================
+  # PROCESS COMPLETION
+  # ========================================
   def process_completion!
-    return if processed_at.present?
-    
+    return if processed_at.present?  # Prevent double processing
+
     ActiveRecord::Base.transaction do
       membership = investment_club.membership_for(user)
-      
+
       unless membership
-        Rails.logger.error "No active membership found for user #{user.id} in club #{investment_club.id}"
-        raise "No active membership found for user in club"
+        Rails.logger.error "No membership found for user #{user.id} in club #{investment_club.id}"
+        raise "User is not part of the club"
       end
 
-      # Store previous values BEFORE any changes
+      # Store previous values
       previous_total = membership.total_contributed.to_f
       previous_share = membership.contributed_share.to_f
-      
-      Rails.logger.info "Processing contribution #{id}: " +
-                       "User: #{user.full_name}, " +
-                       "Amount: #{amount}, " +
-                       "Previous total: #{previous_total}, " +
-                       "Previous share: #{previous_share}%"
 
-      # Update member's total contribution
-      new_total = previous_total + amount.to_f
-      membership.update!(total_contributed: new_total)
-      
-      Rails.logger.info "Updated membership total: #{new_total}"
+      Rails.logger.info "Processing contribution #{id}: " \
+                        "User: #{user.full_name}, Amount: #{amount}"
 
-      # Update club financials FIRST - this now has safe error handling
+      # Update member contribution total
+      membership.update!(total_contributed: previous_total + amount.to_f)
+
+      # Update club financials
       investment_club.update_financials
-      
-      # Get fresh total contributions after update
-      current_total_contributions = investment_club.total_contributions
-      Rails.logger.info "Club total contributions after update: #{current_total_contributions}"
 
-      # Update ALL member shares with proper history tracking
+      # Update member shares
       investment_club.update_all_member_shares_with_history(self)
-      
-      # Reload membership to get updated share
-      membership.reload
-      new_share = membership.contributed_share.to_f
-      actual_change = new_share - previous_share
 
-      Rails.logger.info "Contribution processed: #{user.full_name} " +
-                       "+#{format_currency(amount)} " +
-                       "Share: #{previous_share.round(4)}% → #{new_share.round(4)}% " +
-                       "(Δ#{actual_change.round(4)}%)"
-
-      # Mark as processed
+      # Mark this contribution as fully processed
       update_column(:processed_at, Time.current)
-      Rails.logger.info "Contribution #{id} marked as processed at #{processed_at}"
+
+      Rails.logger.info "Contribution #{id} processed successfully"
     end
   rescue => e
     Rails.logger.error "Error processing contribution #{id}: #{e.message}"
-    Rails.logger.error e.backtrace.join("\n")
-    
-    # Mark as failed if processing fails
-    update!(status: 'failed') if may_fail?
+    update!(status: "failed") if may_fail?
     raise
   end
-  
+
   private
-  
+
   def update_club_balance
-    if completed? && processed_at.nil?
-      process_completion!
-    end
+    # Only run if status is completed AND not yet processed
+    process_completion! if processed_at.nil?
   end
 
   def format_currency(amount)

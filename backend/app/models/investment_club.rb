@@ -120,6 +120,32 @@ class InvestmentClub < ApplicationRecord
     Rails.logger.info "New balance: #{new_current_balance}"
   end
 
+ # ================================
+  # FINANCIAL CALCULATIONS
+  # ================================
+
+  # Total contributions from all members
+  def total_contributions
+    investment_club_contributions.completed.sum(:amount).to_f
+  end
+
+  # Fresh calculation of executed investments
+  def calculate_total_invested
+    if club_investments.respond_to?(:executed)
+      club_investments.executed.sum(:investment_amount).to_f
+    else
+      club_investments.where(status: "executed").sum(:investment_amount).to_f
+    end
+  end
+
+  # Fresh calculation of current club balance
+  def calculate_current_balance
+    total_contributions.to_f - total_invested.to_f
+  end
+
+  # ================================
+  # UPDATE FINANCIALS
+  # ================================
   def update_financials
     update!(
       total_invested: calculate_total_invested,
@@ -127,12 +153,24 @@ class InvestmentClub < ApplicationRecord
     )
   end
 
-  def calculate_total_invested
-    club_investments.executed.sum(:investment_amount).to_f
-  end
+  # ================================
+  # MEMBER SHARE UPDATES
+  # ================================
+  def update_all_member_shares_with_history(contribution)
+    total = total_contributions.to_f
+    return if total <= 0
 
-  def calculate_current_balance
-    total_contributions.to_f - total_invested.to_f
+    memberships.find_each do |m|
+      previous_share = m.contributed_share.to_f
+      new_share = (m.total_contributed.to_f / total) * 100.0
+
+      m.update!(contributed_share: new_share)
+      m.share_histories.create!(
+        contribution_id: contribution.id,
+        previous_share: previous_share,
+        new_share: new_share
+      )
+    end
   end
 
 
@@ -225,35 +263,35 @@ class InvestmentClub < ApplicationRecord
   end
 
   # FIXED: Enhanced share calculation with better logging
-  def update_all_member_shares_with_history(contribution = nil)
-    current_total = total_contributions.to_f
+  # def update_all_member_shares_with_history(contribution = nil)
+  #   current_total = total_contributions.to_f
     
-    Rails.logger.info "Calculating shares for club #{id}: " +
-                     "Total contributions: #{current_total}, " +
-                     "Contribution: #{contribution&.amount}"
+  #   Rails.logger.info "Calculating shares for club #{id}: " +
+  #                    "Total contributions: #{current_total}, " +
+  #                    "Contribution: #{contribution&.amount}"
 
-    # Return early if no contributions
-    if current_total.zero?
-      Rails.logger.warn "No contributions to calculate shares for club #{id}"
-      return
-    end
+  #   # Return early if no contributions
+  #   if current_total.zero?
+  #     Rails.logger.warn "No contributions to calculate shares for club #{id}"
+  #     return
+  #   end
     
-    begin
-      # Use the active memberships association
-      active_memberships.find_each do |membership|
-        update_member_share_with_history(membership, current_total, contribution)
-      end
+  #   begin
+  #     # Use the active memberships association
+  #     active_memberships.find_each do |membership|
+  #       update_member_share_with_history(membership, current_total, contribution)
+  #     end
       
-      # Verify the totals
-      verify_share_totals
+  #     # Verify the totals
+  #     verify_share_totals
       
-      Rails.logger.info "Successfully updated shares for all active members in club #{id}"
-    rescue => e
-      Rails.logger.error "Error updating member shares for club #{id}: #{e.message}"
-      Rails.logger.error e.backtrace.join("\n")
-      raise
-    end
-  end
+  #     Rails.logger.info "Successfully updated shares for all active members in club #{id}"
+  #   rescue => e
+  #     Rails.logger.error "Error updating member shares for club #{id}: #{e.message}"
+  #     Rails.logger.error e.backtrace.join("\n")
+  #     raise
+  #   end
+  # end
 
   def update_all_member_shares
     total_contributions = self.update_total_contributions
