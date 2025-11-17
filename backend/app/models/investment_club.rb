@@ -167,26 +167,9 @@ class InvestmentClub < ApplicationRecord
   end
 
 
-  # FIXED: Safe update_financials method
-  def update_financials
-    # Calculate fresh values safely
-    new_total_contributions = update_total_contributions
-    new_current_balance = new_total_contributions
-
-    # Update columns directly to avoid callbacks
-    update_columns(
-      total_contributions: new_total_contributions,
-      total_invested: 0,
-      current_balance: new_current_balance,
-      updated_at: Time.current
-    )
-
-    Rails.logger.info "Club #{id} financials updated: " +
-                     "Contributions: #{new_total_contributions}, " +
-                     "Balance: #{new_current_balance}"
-  rescue => e
-    Rails.logger.error "Error updating financials for club #{id}: #{e.message}"
-    # Don't raise error to prevent breaking other operations
+  def update_financials!
+    recalc_total_contributions!
+    recalc_current_balance!
   end
   
   def create_creator_membership

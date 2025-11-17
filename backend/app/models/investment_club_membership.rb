@@ -18,7 +18,6 @@ class InvestmentClubMembership < ApplicationRecord
   scope :active, -> { where(status: 'active') }
   
   before_create :set_initial_share
-  after_save :update_club_financials, if: -> { saved_change_to_total_contributed? }
   
   after_commit :update_club_members_count_callback
   
