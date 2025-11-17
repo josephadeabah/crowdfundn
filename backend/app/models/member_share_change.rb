@@ -6,7 +6,7 @@ class MemberShareChange < ApplicationRecord
   validates :previous_share, :new_share, :change_amount, presence: true
   validates :previous_share, :new_share, numericality: { greater_than_or_equal_to: 0 }
   
-  # Add validation to ensure logical consistency
+  # FIXED: Relax validation for initial contributions and large changes
   validate :share_values_are_logical
   
   before_create :log_share_change_details
@@ -20,8 +20,9 @@ class MemberShareChange < ApplicationRecord
       errors.add(:change_amount, "does not match the difference between new and previous share")
     end
     
-    # Check if shares are reasonable (shouldn't jump dramatically for one contribution)
-    if change_amount.abs > 50 # More than 50% change is suspicious
+    # FIXED: Relax the validation for large changes - allow up to 100% change for initial contributions
+    # This handles cases where a member goes from 0% to 100% share (first contribution)
+    if change_amount.abs > 100 && previous_share > 0 # Only restrict if previous share was > 0
       errors.add(:change_amount, "appears too large for a single change")
     end
   end

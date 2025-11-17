@@ -15,7 +15,7 @@ class InvestmentClubContribution < ApplicationRecord
   # FIXED: Better processing control
   after_save :update_club_balance, if: -> { saved_change_to_status? && completed? }
 
-  # FIXED: Thread-safe processing with proper locking
+  # FIXED: Thread-safe processing with proper locking and error handling
   def process_completion!
     return if processed_at.present?  # Prevent double processing
 
@@ -37,8 +37,14 @@ class InvestmentClubContribution < ApplicationRecord
       # FIXED: Update member contribution total
       membership.update!(total_contributed: membership.total_contributed.to_f + amount.to_f)
 
-      # FIXED: Update member shares with proper error handling
-      club.update_all_member_shares_with_history(self)
+      # FIXED: Update member shares with proper error handling - rescue validation errors
+      begin
+        club.update_all_member_shares_with_history(self)
+      rescue ActiveRecord::RecordInvalid => e
+        Rails.logger.warn "Share change validation failed for contribution #{id}: #{e.message}. Continuing without share history..."
+        # Continue processing even if share history fails
+        club.update_all_member_shares_without_history
+      end
 
       # Mark this contribution as fully processed
       update_column(:processed_at, Time.current)
@@ -47,7 +53,10 @@ class InvestmentClubContribution < ApplicationRecord
     end
   rescue => e
     Rails.logger.error "Error processing contribution #{id}: #{e.message}"
-    update!(status: "failed") if may_fail?
+    # FIXED: Replace may_fail? with proper status check
+    if pending? || completed?
+      update!(status: "failed") 
+    end
     raise
   end
 

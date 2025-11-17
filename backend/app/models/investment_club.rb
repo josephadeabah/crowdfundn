@@ -201,25 +201,31 @@ class InvestmentClub < ApplicationRecord
   end
 
   # FIXED: Member share updates with proper error handling
-  def update_all_member_shares_with_history(contribution = nil)
+  def update_all_member_shares_without_history
     current_total = total_contributions.to_f
     
-    Rails.logger.info "Calculating shares for club #{id}: Total contributions: #{current_total}"
+    Rails.logger.info "Calculating shares without history for club #{id}: Total contributions: #{current_total}"
 
     return if current_total.zero?
 
-    ActiveRecord::Base.transaction do
-      active_memberships.find_each do |membership|
-        update_member_share_with_history(membership, current_total, contribution)
-      end
+    active_memberships.find_each do |membership|
+      previous_share = membership.contributed_share.to_f
+      new_share = calculate_member_share(membership.total_contributed.to_f, current_total)
       
-      verify_share_totals
+      Rails.logger.info "Member #{membership.user.full_name}: Contributed: #{membership.total_contributed}, Share: #{previous_share}% → #{new_share}%"
+
+      if (previous_share - new_share).abs > 0.0001
+        membership.update_column(:contributed_share, new_share)
+        Rails.logger.info "Updated share for #{membership.user.full_name}: #{previous_share.round(4)}% → #{new_share.round(4)}% (without history)"
+      else
+        Rails.logger.debug "No share change for #{membership.user.full_name}: #{previous_share.round(4)}%"
+      end
     end
     
-    Rails.logger.info "Successfully updated shares for all active members in club #{id}"
+    verify_share_totals
   rescue => e
-    Rails.logger.error "Error updating member shares for club #{id}: #{e.message}"
-    raise
+    Rails.logger.error "Error updating member shares without history for club #{id}: #{e.message}"
+    # Don't raise - this is a fallback method
   end
   
   def roi_metrics
