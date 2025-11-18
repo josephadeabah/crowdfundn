@@ -105,9 +105,6 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
   return (
     <Dialog open={modalOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        {trigger || <Button>Create Investment</Button>}
-      </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Make Club Investment</DialogTitle>
