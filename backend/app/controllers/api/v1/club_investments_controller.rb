@@ -48,6 +48,14 @@ module Api
         unless campaign
           return render json: { error: 'Campaign not found' }, status: :not_found
         end
+        
+        # Validate admin access for investment creation
+        unless @club.is_admin?(@current_user)
+          return render json: { 
+            success: false, 
+            error: 'Only club admins can create investments' 
+          }, status: :forbidden
+        end
                 
         # Validate investment amount
         validation_result = validate_investment_amount(params[:investment_amount].to_f, campaign)
@@ -60,12 +68,13 @@ module Api
         
         # NEW: Different flow for equity investments vs regular voting investments
         if campaign.is_a?(EquityCampaign)
-          # Direct equity investment flow (no voting required)
+          # Direct equity investment flow (no voting required for admins)
           club_investment = @club.club_investments.new(
             campaign: campaign,
             investment_amount: params[:investment_amount].to_f,
             status: ClubInvestment::STATUS_PENDING,
-            created_by: @current_user
+            created_by: @current_user,
+            notes: params[:notes]
           )
           
           if club_investment.save
@@ -80,7 +89,7 @@ module Api
                 message: 'Equity investment initiated successfully'
               }, status: :created
             else
-              club_investment.destroy
+              club_investment.update(status: ClubInvestment::STATUS_FAILED)
               render json: { 
                 success: false, 
                 error: result[:error] 
@@ -93,14 +102,15 @@ module Api
             }, status: :unprocessable_entity
           end
         else
-          # Regular voting-based investment flow (existing functionality)
+          # Regular voting-based investment flow
           club_investment = @club.club_investments.new(
             campaign: campaign,
             investment_amount: params[:investment_amount].to_f,
             proposed_share_percentage: params[:proposed_share_percentage],
             status: ClubInvestment::STATUS_VOTING,
             created_by: @current_user,
-            voting_session_id: SecureRandom.uuid
+            voting_session_id: SecureRandom.uuid,
+            notes: params[:notes]
           )
           
           if club_investment.save
@@ -555,23 +565,22 @@ module Api
       def execute_club_investment(club_investment)
         campaign = club_investment.campaign
         
-        # Use the existing campaign investment creation logic
-        investment = campaign.create_investment(nil, club_investment.investment_amount)
-        
-        unless investment
-          return { success: false, error: 'Failed to create investment: Campaign validation failed' }
-        end
-
-        # Update investment with club information
-        investment.update!(
-          email: @club.contact_email || @club.creator.email,
+        # Create investment using club information instead of user
+        investment = campaign.equity_investments.new(
+          amount: club_investment.investment_amount,
+          email: @club.contact_email,
           full_name: @club.name,
-          metadata: investment.metadata.merge(
+          metadata: {
             club_investment: true,
             club_id: @club.id,
-            club_name: @club.name
-          )
+            club_name: @club.name,
+            created_by_user_id: @current_user.id
+          }
         )
+
+        unless investment.save
+          return { success: false, error: investment.errors.full_messages.join(', ') }
+        end
 
         # Generate callback URL
         secure_random_uuid = SecureRandom.uuid
@@ -588,7 +597,7 @@ module Api
           # Deduct amount from club balance
           if @club.deduct_balance(club_investment.investment_amount)
             club_investment.update!(
-              status: ClubInvestment::STATUS_COMMITTED,  # FIX: Use the constant from model
+              status: ClubInvestment::STATUS_COMMITTED,
               transaction_reference: investment.transaction_reference,
               equity_investment_id: investment.id,
               shares: investment.shares,
@@ -596,11 +605,11 @@ module Api
             )
             { success: true, authorization_url: initialize_payment_result[:authorization_url] }
           else
-            investment.update!(status: ClubInvestment::STATUS_FAILED)  # FIX: Use the constant from model
+            investment.update!(status: 'failed')
             { success: false, error: 'Insufficient club balance' }
           end
         else
-          investment.update!(status: ClubInvestment::STATUS_FAILED)  # FIX: Use the constant from model
+          investment.update!(status: 'failed')
           { success: false, error: initialize_payment_result[:error] }
         end
       end
@@ -622,13 +631,14 @@ module Api
           valuation: investment.campaign.valuation,
           equity_offered: investment.campaign.equity_offered,
           investor_name: @club.name,
-          investor_email: @club.contact_email || @club.creator.email,
+          investor_email: @club.contact_email,
           finalized: false,
           cancellation_window_ended: false,
           metadata: {
             club_investment: true,
             club_name: @club.name,
-            club_slug: @club.slug
+            club_slug: @club.slug,
+            created_by: @current_user.full_name
           }
         }
       end

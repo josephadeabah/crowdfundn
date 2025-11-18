@@ -84,6 +84,23 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
+  # ADD THESE METHODS:
+  def contact_email
+    creator.email
+  end
+  
+  def contact_name
+    creator.full_name
+  end
+  
+  def admin_members
+    investment_club_memberships.where(role: ['admin', 'creator']).map(&:user)
+  end
+  
+  def primary_admin
+    admin_members.first || creator
+  end
+
   # FIXED: Consistent financial calculations with transaction safety
   def recalc_total_contributions!
     new_total = investment_club_contributions.completed.sum(:amount).to_f
