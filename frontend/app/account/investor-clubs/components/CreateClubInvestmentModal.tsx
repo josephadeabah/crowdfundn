@@ -89,7 +89,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
       const result = await investmentService.createInvestment(
         token,
-        club.id,
+        club.slug,
         investmentData,
       );
 
