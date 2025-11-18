@@ -5,6 +5,7 @@ module Api
       before_action :authenticate_request
       before_action :set_club
       before_action :verify_membership
+      before_action :set_investment, only: [:show, :update, :vote, :execute, :certificate_status, :generate_certificate, :download_certificate]
 
       # ADD THESE REQUIRE STATEMENTS
       require Rails.root.join('app/services/ai/club_recommendation_service')
@@ -29,6 +30,13 @@ module Api
         }
       end
       
+      def show
+        render json: {
+          success: true,
+          investment: transform_investment_for_frontend(@investment)
+        }
+      end
+      
       def create
         campaign = Campaign.find_by(id: params[:campaign_id])
         
@@ -45,27 +53,175 @@ module Api
           }, status: :unprocessable_entity
         end
         
-        club_investment = @club.club_investments.new(
-          campaign: campaign,
-          investment_amount: params[:investment_amount].to_f,
-          proposed_share_percentage: params[:proposed_share_percentage],
-          status: 'voting',
-          created_by: @current_user,
-          voting_session_id: SecureRandom.uuid
-        )
+        # NEW: Different flow for equity investments vs regular voting investments
+        if campaign.is_a?(EquityCampaign)
+          # Direct equity investment flow (no voting required)
+          club_investment = @club.club_investments.new(
+            campaign: campaign,
+            investment_amount: params[:investment_amount].to_f,
+            status: ClubInvestment::STATUS_PENDING,
+            created_by: @current_user
+          )
+          
+          if club_investment.save
+            # Execute the investment immediately for equity campaigns
+            result = execute_club_investment(club_investment)
+            
+            if result[:success]
+              render json: { 
+                success: true, 
+                club_investment: transform_investment_for_frontend(club_investment.reload),
+                authorization_url: result[:authorization_url],
+                message: 'Equity investment initiated successfully'
+              }, status: :created
+            else
+              club_investment.destroy
+              render json: { 
+                success: false, 
+                error: result[:error] 
+              }, status: :unprocessable_entity
+            end
+          else
+            render json: { 
+              success: false, 
+              errors: club_investment.errors.full_messages 
+            }, status: :unprocessable_entity
+          end
+        else
+          # Regular voting-based investment flow (existing functionality)
+          club_investment = @club.club_investments.new(
+            campaign: campaign,
+            investment_amount: params[:investment_amount].to_f,
+            proposed_share_percentage: params[:proposed_share_percentage],
+            status: 'voting',
+            created_by: @current_user,
+            voting_session_id: SecureRandom.uuid
+          )
+          
+          if club_investment.save
+            render json: { 
+              success: true, 
+              club_investment: ClubInvestmentSerializer.new(club_investment).as_json,
+              voting_session_id: club_investment.voting_session_id
+            }, status: :created
+          else
+            render json: { 
+              success: false, 
+              errors: club_investment.errors.full_messages 
+            }, status: :unprocessable_entity
+          end
+        end
+      end
+      
+      # NEW: Execute equity investment after creation
+      def execute
+        unless @investment.campaign.is_a?(EquityCampaign)
+          return render json: { 
+            success: false, 
+            error: 'This investment type requires voting approval' 
+          }, status: :unprocessable_entity
+        end
+
+        # Check if club has sufficient balance
+        unless @club.can_invest?(@investment.investment_amount)
+          return render json: { 
+            success: false, 
+            error: 'Club does not have sufficient balance for this investment' 
+          }, status: :unprocessable_entity
+        end
+
+        result = execute_club_investment(@investment)
         
-        if club_investment.save
+        if result[:success]
           render json: { 
             success: true, 
-            club_investment: ClubInvestmentSerializer.new(club_investment).as_json,
-            voting_session_id: club_investment.voting_session_id
+            investment: transform_investment_for_frontend(@investment.reload),
+            authorization_url: result[:authorization_url]
+          }
+        else
+          render json: { 
+            success: false, 
+            error: result[:error] 
+          }, status: :unprocessable_entity
+        end
+      end
+
+      # NEW: Certificate endpoints for equity investments
+      def certificate_status
+        unless @investment.campaign.is_a?(EquityCampaign)
+          return render json: { 
+            success: false, 
+            error: 'Certificates only available for equity investments' 
+          }, status: :unprocessable_entity
+        end
+
+        render json: {
+          exists: @investment.certificate_present?,
+          url: @investment.certificate_url,
+          certificate_number: @investment.certificate_number
+        }
+      end
+
+      def generate_certificate
+        unless @investment.campaign.is_a?(EquityCampaign)
+          return render json: { 
+            success: false, 
+            error: 'Certificates only available for equity investments' 
+          }, status: :unprocessable_entity
+        end
+
+        unless @investment.successful?
+          render json: { 
+            success: false, 
+            error: 'Certificate can only be generated for successful investments' 
+          }, status: :unprocessable_entity
+          return
+        end
+
+        if @investment.certificate_present?
+          render json: { 
+            success: true, 
+            message: 'Certificate already exists',
+            certificate_url: @investment.certificate_url
+          }, status: :ok
+          return
+        end
+
+        if ClubInvestmentCertificateService.generate_certificate(@investment)
+          @investment.reload
+          render json: { 
+            success: true, 
+            message: 'Certificate generated successfully',
+            certificate_url: @investment.certificate_url
           }, status: :created
         else
           render json: { 
             success: false, 
-            errors: club_investment.errors.full_messages 
+            error: 'Failed to generate certificate' 
           }, status: :unprocessable_entity
         end
+      end
+
+      def download_certificate
+        unless @investment.campaign.is_a?(EquityCampaign)
+          return render json: { 
+            success: false, 
+            error: 'Certificates only available for equity investments' 
+          }, status: :unprocessable_entity
+        end
+
+        unless @investment.certificate_present?
+          render json: { 
+            success: false, 
+            error: 'Certificate not found' 
+          }, status: :not_found
+          return
+        end
+
+        send_data @investment.certificate.download,
+                  filename: "club_investment_certificate_#{@investment.certificate_number}.pdf",
+                  type: 'application/pdf',
+                  disposition: 'attachment'
       end
       
       def vote
@@ -239,25 +395,47 @@ module Api
         
         voting_stats = investment.voting_stats || {}
         
-        {
+        # NEW: Include equity investment data if applicable
+        base_data = {
           id: investment.id.to_s,
           company: campaign_data[:title],
           description: campaign_data[:description],
           amount: format_currency(investment.investment_amount, campaign_data[:currency_symbol]),
           sector: campaign_data[:category],
-          votes: voting_stats[:yes_votes] || 0,
-          threshold: calculate_voting_threshold,
-          match_score: calculate_match_score(campaign),
-          reasoning: "Investment proposal for #{campaign_data[:title]}",
-          ai_analysis: get_campaign_ai_analysis(campaign),
           status: investment.status,
-          voting_stats: voting_stats,
           club_investment_id: investment.id,
           campaign_id: campaign_data[:id],
-          campaign_slug: campaign_data[:slug],  # ADD SLUG HERE
+          campaign_slug: campaign_data[:slug],
           proposed_amount: investment.investment_amount,
-          currency_symbol: campaign_data[:currency_symbol]
+          currency_symbol: campaign_data[:currency_symbol],
+          is_equity_investment: campaign.is_a?(EquityCampaign)
         }
+
+        # Add voting data for voting-based investments
+        if !campaign.is_a?(EquityCampaign)
+          base_data.merge!({
+            votes: voting_stats[:yes_votes] || 0,
+            threshold: calculate_voting_threshold,
+            match_score: calculate_match_score(campaign),
+            reasoning: "Investment proposal for #{campaign_data[:title]}",
+            ai_analysis: get_campaign_ai_analysis(campaign),
+            voting_stats: voting_stats
+          })
+        else
+          # Add equity investment data
+          base_data.merge!({
+            shares: investment.shares,
+            percentage: investment.percentage,
+            certificate_url: investment.certificate_url,
+            certificate_number: investment.certificate_number,
+            current_value: investment.current_value,
+            total_returns: investment.total_returns,
+            roi: investment.roi,
+            investment_date: investment.investment_date
+          })
+        end
+        
+        base_data
       end
 
       def get_campaign_ai_analysis(campaign)
@@ -331,6 +509,12 @@ module Api
       def verify_membership
         render json: { error: 'Not a club member' }, status: :forbidden unless @club.is_member?(@current_user)
       end
+
+      def set_investment
+        @investment = @club.club_investments.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: 'Investment not found' }, status: :not_found
+      end
       
       def validate_investment_amount(amount, campaign)
         if amount <= 0
@@ -348,6 +532,117 @@ module Api
         end
         
         { valid: true }
+      end
+
+      # NEW: Execute club equity investment
+      def execute_club_investment(club_investment)
+        campaign = club_investment.campaign
+        
+        # Use the existing campaign investment creation logic
+        investment = campaign.create_investment(nil, club_investment.investment_amount)
+        
+        unless investment
+          return { success: false, error: 'Failed to create investment: Campaign validation failed' }
+        end
+
+        # Update investment with club information
+        investment.update!(
+          email: @club.contact_email || @club.creator.email,
+          full_name: @club.name,
+          metadata: investment.metadata.merge(
+            club_investment: true,
+            club_id: @club.id,
+            club_name: @club.name
+          )
+        )
+
+        # Generate callback URL
+        secure_random_uuid = SecureRandom.uuid
+        campaign_identifier = campaign.slug || campaign.id
+        redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier, host: 'bantuhive.com') + "?#{secure_random_uuid}"
+
+        # Prepare metadata
+        metadata = build_metadata(investment, redirect_url, club_investment)
+
+        # Initialize payment using existing logic
+        initialize_payment_result = initialize_club_payment(investment, metadata, redirect_url)
+        
+        if initialize_payment_result[:success]
+          # Deduct amount from club balance
+          if @club.deduct_balance(club_investment.investment_amount)
+            club_investment.update!(
+              status: ClubInvestment::STATUS_COMMITTED,
+              transaction_reference: investment.transaction_reference,
+              equity_investment_id: investment.id,
+              shares: investment.shares,
+              percentage: investment.percentage
+            )
+            { success: true, authorization_url: initialize_payment_result[:authorization_url] }
+          else
+            investment.update!(status: EquityInvestment::STATUS_FAILED)
+            { success: false, error: 'Insufficient club balance' }
+          end
+        else
+          investment.update!(status: EquityInvestment::STATUS_FAILED)
+          { success: false, error: initialize_payment_result[:error] }
+        end
+      end
+
+      def build_metadata(investment, redirect_url, club_investment)
+        {
+          user_id: nil, # No individual user for club investments
+          campaign_id: investment.campaign.id,
+          investment_id: investment.id,
+          club_investment_id: club_investment.id,
+          club_id: @club.id,
+          shares: investment.shares,
+          percentage: investment.percentage,
+          type: 'club_equity_investment',
+          redirect_url: redirect_url,
+          title: investment.campaign.title,
+          currency: investment.campaign.currency,
+          currency_symbol: investment.campaign.currency_symbol,
+          valuation: investment.campaign.valuation,
+          equity_offered: investment.campaign.equity_offered,
+          investor_name: @club.name,
+          investor_email: @club.contact_email || @club.creator.email,
+          finalized: false,
+          cancellation_window_ended: false,
+          metadata: {
+            club_investment: true,
+            club_name: @club.name,
+            club_slug: @club.slug
+          }
+        }
+      end
+
+      def initialize_club_payment(investment, metadata, redirect_url)
+        subaccount = Subaccount.find_by(user_id: investment.campaign.fundraiser_id)
+
+        unless subaccount&.subaccount_code.present?
+          return { success: false, error: 'Fundraiser does not meet requirements for raising funds' }
+        end
+
+        paystack_service = PaystackService.new
+        response = paystack_service.initialize_transaction(
+          email: metadata[:investor_email],
+          amount: investment.amount,
+          callback_url: redirect_url,
+          metadata: metadata,
+          subaccount: subaccount.subaccount_code,
+          currency: investment.campaign.currency.upcase
+        )
+
+        if response[:status]
+          investment.update!(
+            transaction_reference: response[:data][:reference],
+            metadata: metadata
+          )
+
+          { success: true, authorization_url: response[:data][:authorization_url] }
+        else
+          { success: false, error: response[:message] }
+        end
       end
     end
   end
