@@ -89,7 +89,7 @@ const LoginPage = () => {
               <h1 className="text-4xl font-bold mb-6">Welcome to BantuHive</h1>
               <p className="text-xl mb-8 text-trust-foreground/90">
                 The all-in-one, gamified crowdfunding and micro-investment
-                platform for Ghana and its diaspora.
+                platform for Africa.
               </p>
               <div className="space-y-4">
                 <div
