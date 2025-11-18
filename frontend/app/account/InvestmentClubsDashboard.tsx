@@ -270,10 +270,21 @@ const InvestmentClubsDashboard: React.FC = () => {
   };
 
   const formatCurrency = (amount: number, currency: string = 'USD'): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-    }).format(amount);
+    // Handle null/undefined/empty currency
+    const safeCurrency = currency || 'USD';
+    
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: safeCurrency,
+      }).format(amount);
+    } catch (error) {
+      console.warn(`Invalid currency code: ${safeCurrency}, using USD fallback`);
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(amount);
+    }
   };
 
   const getCurrentUserShare = () => {
