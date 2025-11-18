@@ -130,7 +130,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-6">
-            <form id="investment-form" onSubmit={handleSubmit} className="space-y-4">
+            <form
+              id="investment-form"
+              onSubmit={handleSubmit}
+              className="space-y-4"
+            >
               {/* Select Campaign */}
               <div className="space-y-2">
                 <Label htmlFor="campaign" className="text-gray-900">
@@ -150,7 +154,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
                   <SelectContent className="border-gray-200 bg-white">
                     {approvedCampaigns.length === 0 ? (
-                      <SelectItem value="none" disabled className="text-gray-500">
+                      <SelectItem
+                        value="none"
+                        disabled
+                        className="text-gray-500"
+                      >
                         No approved campaigns available
                       </SelectItem>
                     ) : (
@@ -258,7 +266,9 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                     type="submit"
                     form="investment-form"
                     disabled={
-                      loading || !selectedCampaignId || approvedCampaigns.length === 0
+                      loading ||
+                      !selectedCampaignId ||
+                      approvedCampaigns.length === 0
                     }
                     className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
                   >
@@ -270,7 +280,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
           </div>
         </div>
       </div>
-    </Modal>  
+    </Modal>
   );
 };
 
