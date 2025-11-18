@@ -263,8 +263,8 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const handleInvestmentCreated = async () => {
     if (selectedClub) {
-      await loadInvestments(selectedClub.slug);
-      await loadPortfolio(selectedClub.slug);
+      await loadInvestments(selectedClub.id);
+      await loadPortfolio(selectedClub.id);
       setIsCreateInvestmentModalOpen(false);
     }
   };

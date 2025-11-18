@@ -96,12 +96,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   return (
     <>
       {/* Trigger button if provided */}
-      {trigger && (
-        <div onClick={() => setModalOpen(true)}>
-          {trigger}
-        </div>
-      )}
-      
+      {trigger && <div onClick={() => setModalOpen(true)}>{trigger}</div>}
+
       <Modal
         isOpen={modalOpen}
         onClose={handleClose}
@@ -188,11 +184,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                disabled={loading}
-                className="flex-1"
-              >
+              <Button type="submit" disabled={loading} className="flex-1">
                 {loading ? 'Creating...' : 'Invest Now'}
               </Button>
             </div>
