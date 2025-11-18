@@ -143,7 +143,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 required
                 min={campaign?.minimum_investment || 1}
                 step="0.01"
-                className="focus:outline-none focus:ring-0"
+                className="focus:outline-none focus:ring-0 focus:border-gray-50 border-gray-50"
               />
               {campaign?.minimum_investment && (
                 <p className="text-xs text-gray-500">
@@ -161,6 +161,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add any additional context or reasoning for this investment..."
                 rows={3}
+                className="focus:outline-none focus:ring-0 focus:border-gray-50 border-gray-50"
               />
             </div>
 
