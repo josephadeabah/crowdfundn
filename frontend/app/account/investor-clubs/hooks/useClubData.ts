@@ -126,6 +126,7 @@ export const useClubData = () => {
     if (!token) return;
 
     try {
+        console.log('🔄 Loading contributions for:', clubSlug, 'page:', page);
       setContributions((prev) => ({ ...prev, loading: true }));
       const response = await contributionService.getContributions(
         token,
