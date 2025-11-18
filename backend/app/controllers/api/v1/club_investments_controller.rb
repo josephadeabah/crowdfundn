@@ -64,7 +64,7 @@ module Api
           club_investment = @club.club_investments.new(
             campaign: campaign,
             investment_amount: params[:investment_amount].to_f,
-            status: ClubInvestment::STATUS_PENDING,
+            status: ClubInvestment::STATUS_PENDING,  # FIX: Use the constant from model
             created_by: @current_user
           )
           
@@ -98,7 +98,7 @@ module Api
             campaign: campaign,
             investment_amount: params[:investment_amount].to_f,
             proposed_share_percentage: params[:proposed_share_percentage],
-            status: 'voting',
+            status: ClubInvestment::STATUS_VALUES[:voting],  # FIX: Use the constant from model
             created_by: @current_user,
             voting_session_id: SecureRandom.uuid
           )
@@ -588,7 +588,7 @@ module Api
           # Deduct amount from club balance
           if @club.deduct_balance(club_investment.investment_amount)
             club_investment.update!(
-              status: ClubInvestment::STATUS_COMMITTED,
+              status: ClubInvestment::STATUS_COMMITTED,  # FIX: Use the constant from model
               transaction_reference: investment.transaction_reference,
               equity_investment_id: investment.id,
               shares: investment.shares,
@@ -596,11 +596,11 @@ module Api
             )
             { success: true, authorization_url: initialize_payment_result[:authorization_url] }
           else
-            investment.update!(status: EquityInvestment::STATUS_FAILED)
+            investment.update!(status: ClubInvestment::STATUS_FAILED)  # FIX: Use the constant from model
             { success: false, error: 'Insufficient club balance' }
           end
         else
-          investment.update!(status: EquityInvestment::STATUS_FAILED)
+          investment.update!(status: ClubInvestment::STATUS_FAILED)  # FIX: Use the constant from model
           { success: false, error: initialize_payment_result[:error] }
         end
       end

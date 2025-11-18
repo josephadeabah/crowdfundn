@@ -42,6 +42,18 @@ class ClubInvestment < ApplicationRecord
     executed: 'executed'
   }.freeze
 
+  # Add these after the STATUS_VALUES definition
+  STATUS_PENDING = STATUS_VALUES[:pending]
+  STATUS_VOTING = STATUS_VALUES[:voting]
+  STATUS_APPROVED = STATUS_VALUES[:approved]
+  STATUS_REJECTED = STATUS_VALUES[:rejected]
+  STATUS_COMMITTED = STATUS_VALUES[:committed]
+  STATUS_SUCCESSFUL = STATUS_VALUES[:successful]
+  STATUS_FAILED = STATUS_VALUES[:failed]
+  STATUS_INITIALIZED = STATUS_VALUES[:initialized]
+  STATUS_CANCELED = STATUS_VALUES[:canceled]
+  STATUS_EXECUTED = STATUS_VALUES[:executed]
+
   # Status validation
   validates :status, inclusion: { in: STATUS_VALUES.values }
 
