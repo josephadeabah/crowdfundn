@@ -386,7 +386,7 @@ export const contributionService = {
   },
 };
 
-// UPDATED: Club Investments API calls - Equity Investments Only (No Voting)
+// FIXED: Club Investments API calls - All endpoints updated from /club_investments to /investments
 export const investmentService = {
   // Get club investments with pagination
   getInvestments: async (
@@ -396,7 +396,7 @@ export const investmentService = {
     page: number = 1,
     perPage: number = 10,
   ): Promise<{ success: boolean; investments: ClubInvestment[] }> => {
-    const endpoint = `/investment_clubs/${clubId}/club_investments${status ? `?status=${status}` : ''}${status ? '&' : '?'}page=${page}&per_page=${perPage}`;
+    const endpoint = `/investment_clubs/${clubId}/investments${status ? `?status=${status}` : ''}${status ? '&' : '?'}page=${page}&per_page=${perPage}`;
     return apiCall(endpoint, token);
   },
 
@@ -407,7 +407,7 @@ export const investmentService = {
     investmentId: string,
   ): Promise<{ success: boolean; investment: ClubInvestment }> => {
     return apiCall(
-      `/investment_clubs/${clubId}/club_investments/${investmentId}`,
+      `/investment_clubs/${clubId}/investments/${investmentId}`,
       token,
     );
   },
@@ -423,7 +423,7 @@ export const investmentService = {
     authorization_url?: string;
     message?: string;
   }> => {
-    return apiCall(`/investment_clubs/${clubId}/club_investments`, token, {
+    return apiCall(`/investment_clubs/${clubId}/investments`, token, {
       method: 'POST',
       body: JSON.stringify(investmentData),
     });
@@ -436,7 +436,7 @@ export const investmentService = {
     investmentId: string,
   ): Promise<ClubInvestmentExecutionResult> => {
     return apiCall(
-      `/investment_clubs/${clubId}/club_investments/${investmentId}/execute`,
+      `/investment_clubs/${clubId}/investments/${investmentId}/execute`,
       token,
       {
         method: 'POST',
@@ -451,7 +451,7 @@ export const investmentService = {
     investmentId: string,
   ): Promise<ClubInvestmentCertificateStatus> => {
     return apiCall(
-      `/investment_clubs/${clubId}/club_investments/${investmentId}/certificate_status`,
+      `/investment_clubs/${clubId}/investments/${investmentId}/certificate_status`,
       token,
     );
   },
@@ -466,7 +466,7 @@ export const investmentService = {
     certificate_url?: string;
   }> => {
     return apiCall(
-      `/investment_clubs/${clubId}/club_investments/${investmentId}/generate_certificate`,
+      `/investment_clubs/${clubId}/investments/${investmentId}/generate_certificate`,
       token,
       {
         method: 'POST',
@@ -480,7 +480,7 @@ export const investmentService = {
     investmentId: string,
   ): Promise<void> => {
     const response = await fetch(
-      `${API_BASE_URL}/investment_clubs/${clubId}/club_investments/${investmentId}/download_certificate`,
+      `${API_BASE_URL}/investment_clubs/${clubId}/investments/${investmentId}/download_certificate`,
       {
         method: 'GET',
         headers: {
