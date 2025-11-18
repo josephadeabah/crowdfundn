@@ -1,4 +1,3 @@
-// app/account/investor-clubs/clubservice.ts
 import {
   Club,
   Member,
@@ -22,6 +21,7 @@ import {
   ClubInvestmentCertificateStatus,
   ClubInvestmentExecutionResult,
   ClubInvestmentPortfolio,
+  ApprovedCampaign,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -523,6 +523,50 @@ export const portfolioService = {
   // Get member portfolio
   getMemberPortfolio: async (token: string, clubId: string): Promise<any> => {
     return apiCall(`/investment_clubs/${clubId}/member_portfolio`, token);
+  },
+};
+
+// Approved Campaigns API calls - Updated to match the same pattern
+export const approvedCampaignsService = {
+  // Get approved campaigns for a club
+  getApprovedCampaigns: async (
+    token: string,
+    clubId: string,
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<{
+    success: boolean;
+    approved_campaigns: ApprovedCampaign[];
+    pagination?: PaginationData;
+  }> => {
+    const endpoint = `/investment_clubs/${clubId}/approved_campaigns?page=${page}&per_page=${perPage}`;
+    return apiCall(endpoint, token);
+  },
+
+  // Get specific approved campaign
+  getApprovedCampaign: async (
+    token: string,
+    clubId: string,
+    campaignId: string,
+  ): Promise<{ success: boolean; approved_campaign: ApprovedCampaign }> => {
+    return apiCall(
+      `/investment_clubs/${clubId}/approved_campaigns/${campaignId}`,
+      token,
+    );
+  },
+
+  // Alias for fetchApprovedCampaigns to maintain backward compatibility
+  fetchApprovedCampaigns: async (
+    token: string,
+    clubId: string,
+  ): Promise<ApprovedCampaign[]> => {
+    const response = await apiCall(
+      `/investment_clubs/${clubId}/approved_campaigns`,
+      token,
+    );
+    return response.success && Array.isArray(response.approved_campaigns)
+      ? response.approved_campaigns
+      : [];
   },
 };
 

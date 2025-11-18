@@ -1,18 +1,23 @@
-// app/components/club/CreateClubInvestmentModal.tsx
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { Textarea } from '@/app/components/ui/textarea';
-import { investmentService } from '@/app/account/investor-clubs/clubservice';
-import { Club } from '../clubTypes';
-import { EquityCampaignResponseDataType } from '@/app/types/equityCampaigns.types';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
+import { investmentService } from '../clubservice';
+import { ApprovedCampaign, Club } from '../clubTypes';
 import Modal from '@/app/components/modal/Modal';
 
 interface CreateClubInvestmentModalProps {
   club: Club;
-  campaign?: EquityCampaignResponseDataType;
+  approvedCampaigns: ApprovedCampaign[];
   onSuccess?: () => void;
   isOpen?: boolean;
   onClose?: () => void;
@@ -21,13 +26,14 @@ interface CreateClubInvestmentModalProps {
 
 const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   club,
-  campaign,
+  approvedCampaigns = [],
   onSuccess,
   isOpen,
   onClose,
   token,
 }) => {
   const [open, setOpen] = useState(false);
+  const [selectedCampaignId, setSelectedCampaignId] = useState('');
   const [investmentAmount, setInvestmentAmount] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,11 +43,30 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   const modalOpen = isOpen !== undefined ? isOpen : open;
   const setModalOpen = onClose || setOpen;
 
+  // Get selected campaign details
+  const selectedCampaign = approvedCampaigns.find(
+    (campaign) => campaign.campaign.id === selectedCampaignId,
+  );
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!modalOpen) {
+      resetForm();
+    }
+  }, [modalOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!campaign || !club || !token) {
-      setError('Missing required information');
+    if (!selectedCampaignId || !club || !token) {
+      setError(
+        'Please select a campaign and ensure all required information is available',
+      );
+      return;
+    }
+
+    if (!investmentAmount || parseFloat(investmentAmount) <= 0) {
+      setError('Please enter a valid investment amount');
       return;
     }
 
@@ -50,8 +75,9 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
     try {
       const investmentData = {
-        campaign_id: String(campaign.id),
+        campaign_id: selectedCampaignId,
         investment_amount: parseFloat(investmentAmount),
+        notes: notes || undefined,
       };
 
       const result = await investmentService.createInvestment(
@@ -81,6 +107,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   };
 
   const resetForm = () => {
+    setSelectedCampaignId('');
     setInvestmentAmount('');
     setNotes('');
     setError(null);
@@ -103,37 +130,81 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
           <div className="mb-6">
             <h2 className="text-xl font-semibold">Make Club Investment</h2>
             <p className="text-sm text-gray-600 mt-1">
-              {campaign
-                ? `Invest club funds in ${campaign.company_info.name}`
-                : 'Create a new investment for your club'}
+              Invest club funds in an approved campaign
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {campaign && (
+            {/* Campaign Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="campaign">Select Campaign</Label>
+              <Select
+                value={selectedCampaignId}
+                onValueChange={setSelectedCampaignId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose an approved campaign" />
+                </SelectTrigger>
+                <SelectContent>
+                  {approvedCampaigns.length === 0 ? (
+                    <SelectItem value="none" disabled>
+                      No approved campaigns available
+                    </SelectItem>
+                  ) : (
+                    approvedCampaigns.map((campaign) => (
+                      <SelectItem
+                        key={campaign.id}
+                        value={campaign.campaign.id}
+                      >
+                        {campaign.campaign.title}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              {approvedCampaigns.length === 0 && (
+                <p className="text-xs text-gray-500">
+                  No approved campaigns available. Campaigns must be approved by
+                  club members before investment.
+                </p>
+              )}
+            </div>
+
+            {/* Selected Campaign Details */}
+            {selectedCampaign && (
               <div className="bg-gray-50 p-3 rounded-lg">
-                <h4 className="font-medium">{campaign.title}</h4>
+                <h4 className="font-medium">
+                  {selectedCampaign.campaign.title}
+                </h4>
                 <p className="text-sm text-gray-600">
-                  {campaign.company_info.name}
+                  {selectedCampaign.campaign.fundraiser?.name ||
+                    'Unknown fundraiser'}
                 </p>
                 <div className="text-xs mt-1 space-y-1">
                   <div>
-                    Valuation: {campaign.currency_symbol}
-                    {campaign.valuation?.toLocaleString()}
+                    Goal: {selectedCampaign.campaign.currency_symbol}
+                    {selectedCampaign.campaign.goal_amount?.toLocaleString()}
                   </div>
-                  <div>Equity Offered: {campaign.equity_offered}%</div>
-                  {campaign.minimum_investment && (
+                  <div>
+                    Raised: {selectedCampaign.campaign.currency_symbol}
+                    {selectedCampaign.campaign.current_amount?.toLocaleString()}
+                  </div>
+                  <div>Category: {selectedCampaign.campaign.category}</div>
+                  {selectedCampaign.club_investment?.proposed_amount && (
                     <div>
-                      Minimum: {campaign.currency_symbol}
-                      {campaign.minimum_investment}
+                      Proposed: {club.currency_symbol}
+                      {selectedCampaign.club_investment.proposed_amount.toLocaleString()}
                     </div>
                   )}
                 </div>
               </div>
             )}
 
+            {/* Investment Amount */}
             <div className="space-y-2">
-              <Label htmlFor="investmentAmount">Investment Amount</Label>
+              <Label htmlFor="investmentAmount">
+                Investment Amount ({club.currency})
+              </Label>
               <Input
                 id="investmentAmount"
                 type="number"
@@ -141,20 +212,18 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 onChange={(e) => setInvestmentAmount(e.target.value)}
                 placeholder="Enter investment amount"
                 required
-                min={campaign?.minimum_investment || 1}
+                min="1"
                 step="0.01"
                 className="focus:outline-none focus:ring-0 focus:border-gray-50 border-gray-50"
               />
-              {campaign?.minimum_investment && (
-                <p className="text-xs text-gray-500">
-                  Minimum investment: {campaign.currency_symbol}
-                  {campaign.minimum_investment}
-                </p>
-              )}
+              <p className="text-xs text-gray-500">
+                Enter the amount you want to invest from the club's funds
+              </p>
             </div>
 
+            {/* Notes */}
             <div className="space-y-2">
-              <Label htmlFor="notes">Notes (Optional)</Label>
+              <Label htmlFor="notes">Investment Notes (Optional)</Label>
               <Textarea
                 id="notes"
                 value={notes}
@@ -165,12 +234,14 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               />
             </div>
 
+            {/* Error Display */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                 <p className="text-red-800 text-sm">{error}</p>
               </div>
             )}
 
+            {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <Button
                 type="button"
@@ -181,8 +252,17 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading} className="flex-1" variant="success">
-                {loading ? 'Creating...' : 'Invest Now'}
+              <Button
+                type="submit"
+                disabled={
+                  loading ||
+                  !selectedCampaignId ||
+                  approvedCampaigns.length === 0
+                }
+                className="flex-1"
+                variant="success"
+              >
+                {loading ? 'Creating...' : 'Create Investment'}
               </Button>
             </div>
           </form>

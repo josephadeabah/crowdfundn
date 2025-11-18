@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
@@ -12,194 +12,69 @@ import {
 import {
   List,
   RefreshCw,
-  TrendingUp,
-  Users,
-  DollarSign,
-  Target,
-  Vote,
   ChevronDown,
   ChevronUp,
   Calendar,
   User,
   PieChart,
-  AlertCircle,
   ExternalLink,
+  Vote,
 } from 'lucide-react';
-import { Club } from '../../clubTypes';
+import { ApprovedCampaign, Club } from '../../clubTypes';
 
-interface ClubDashboardProps {
+interface ApprovedCampaignsProps {
   club: Club;
+  approvedCampaigns: ApprovedCampaign[];
+  loading?: boolean;
+  onRefresh?: () => void;
 }
 
-interface ClubPortfolioData {
-  approved_campaigns_count: number;
-  pending_investments: number;
-  total_contributions: number;
-  current_balance: number;
-}
+// Safe number formatting helper
+const safeToLocaleString = (
+  value: number | undefined | null,
+  fallback: string = '0',
+): string => {
+  if (value === undefined || value === null) return fallback;
+  return value.toLocaleString();
+};
 
-interface VotingStats {
-  total_votes: number;
-  yes_votes: number;
-  no_votes: number;
-  approval_percentage: number;
-  total_members?: number;
-  all_members_voted?: boolean;
-  threshold_met?: boolean;
-}
+// Safe date formatting helper
+const safeDateToLocaleString = (
+  dateString: string | undefined | null,
+  fallback: string = 'N/A',
+): string => {
+  if (!dateString) return fallback;
+  try {
+    return new Date(dateString).toLocaleDateString();
+  } catch {
+    return fallback;
+  }
+};
 
-interface CampaignDescription {
-  id: number;
-  name: string;
-  body: string;
-  record_type: string;
-  record_id: number;
-  created_at: string;
-  updated_at: string;
-}
+// Safe progress calculation
+const calculateProgressPercentage = (
+  current: number | undefined,
+  goal: number | undefined,
+): number => {
+  if (!current || !goal || goal === 0) return 0;
+  return Math.min(100, (current / goal) * 100);
+};
 
-interface DashboardApprovedCampaign {
-  id: string;
-  campaign: {
-    id: string;
-    title: string;
-    description: CampaignDescription;
-    category: string;
-    goal_amount: number;
-    current_amount: number;
-    currency: string;
-    currency_symbol: string;
-    slug: string;
-    fundraiser: {
-      id: string;
-      name: string;
-    };
-  };
-  club_investment: {
-    id: string;
-    proposed_amount: number;
-    proposed_share_percentage: number;
-    voting_stats: VotingStats;
-  };
-  approved_at: string;
-  voting_stats?: VotingStats;
-}
-
-const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
-  const { token } = useAuth();
-  const [approvedCampaigns, setApprovedCampaigns] = useState<
-    DashboardApprovedCampaign[]
-  >([]);
-  const [portfolioData, setPortfolioData] = useState<ClubPortfolioData | null>(
-    null,
-  );
-  const [loading, setLoading] = useState(true);
-  const [statsLoading, setStatsLoading] = useState(true);
+const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
+  club,
+  approvedCampaigns = [],
+  loading = false,
+  onRefresh,
+}) => {
   const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(
     new Set(),
   );
-
-  // Safe number formatting helper
-  const safeToLocaleString = (
-    value: number | undefined | null,
-    fallback: string = '0',
-  ): string => {
-    if (value === undefined || value === null) return fallback;
-    return value.toLocaleString();
-  };
-
-  // Safe date formatting helper
-  const safeDateToLocaleString = (
-    dateString: string | undefined | null,
-    fallback: string = 'N/A',
-  ): string => {
-    if (!dateString) return fallback;
-    try {
-      return new Date(dateString).toLocaleDateString();
-    } catch {
-      return fallback;
-    }
-  };
-
-  // Safe progress calculation
-  const calculateProgressPercentage = (
-    current: number | undefined,
-    goal: number | undefined,
-  ): number => {
-    if (!current || !goal || goal === 0) return 0;
-    return Math.min(100, (current / goal) * 100);
-  };
 
   // Navigate to campaign
   const handleNavigateToCampaign = (slug: string) => {
     if (slug) {
       window.open(`/campaign/${slug}`, '_blank');
     }
-  };
-
-  // Fetch all dashboard data
-  const fetchDashboardData = async () => {
-    if (!token || !club?.slug) {
-      console.error('Missing token or club slug');
-      setLoading(false);
-      setStatsLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setStatsLoading(true);
-
-      const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-      if (!baseUrl) {
-        throw new Error('Backend base URL not configured');
-      }
-
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
-
-      // Fetch approved campaigns
-      const approvedResponse = await fetch(
-        `${baseUrl}/investment_clubs/${club.slug}/approved_campaigns`,
-        { headers },
-      );
-
-      const [approvedData] = await Promise.all([
-        approvedResponse.ok
-          ? approvedResponse.json()
-          : { success: false, approved_campaigns: [] },
-      ]);
-
-      // Handle approved campaigns data
-      if (approvedData?.success) {
-        setApprovedCampaigns(
-          Array.isArray(approvedData.approved_campaigns)
-            ? approvedData.approved_campaigns
-            : [],
-        );
-      } else {
-        setApprovedCampaigns([]);
-      }
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      setApprovedCampaigns([]);
-      setPortfolioData(null);
-    } finally {
-      setLoading(false);
-      setStatsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (club?.slug && token) {
-      fetchDashboardData();
-    }
-  }, [club?.slug, token]);
-
-  const handleRefresh = () => {
-    fetchDashboardData();
   };
 
   const toggleCampaignExpansion = (campaignId: string) => {
@@ -245,7 +120,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
               </CardDescription>
             </div>
             <Button
-              onClick={handleRefresh}
+              onClick={onRefresh}
               variant="outline"
               size="sm"
               disabled={loading}
@@ -559,4 +434,4 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
   );
 };
 
-export default ClubDashboard;
+export default ApprovedCampaigns;

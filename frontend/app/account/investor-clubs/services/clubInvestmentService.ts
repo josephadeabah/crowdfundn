@@ -24,17 +24,26 @@ export interface ClubInvestment {
   };
 }
 
-export interface ApprovedCampaign {
+export interface ApprovedCampaignType {
   id: string;
   campaign: {
     id: string;
     title: string;
-    description: string;
+    description: {
+      id: number;
+      name: string;
+      body: string;
+      record_type: string;
+      record_id: number;
+      created_at: string;
+      updated_at: string;
+    };
     category: string;
     goal_amount: number;
     current_amount: number;
     currency: string;
     currency_symbol: string;
+    slug: string;
     fundraiser: {
       id: string;
       name: string;
@@ -44,9 +53,26 @@ export interface ApprovedCampaign {
     id: string;
     proposed_amount: number;
     proposed_share_percentage: number;
-    voting_stats: any;
+    voting_stats: {
+      total_votes: number;
+      yes_votes: number;
+      no_votes: number;
+      approval_percentage: number;
+      total_members?: number;
+      all_members_voted?: boolean;
+      threshold_met?: boolean;
+    };
   };
   approved_at: string;
+  voting_stats?: {
+    total_votes: number;
+    yes_votes: number;
+    no_votes: number;
+    approval_percentage: number;
+    total_members?: number;
+    all_members_voted?: boolean;
+    threshold_met?: boolean;
+  };
 }
 
 export interface AIInvestment {
@@ -94,7 +120,7 @@ export const useClubInvestmentService = () => {
 
   const fetchApprovedCampaigns = async (
     clubSlug: string,
-  ): Promise<ApprovedCampaign[]> => {
+  ): Promise<ApprovedCampaignType[]> => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${clubSlug}/approved_campaigns`,
       {

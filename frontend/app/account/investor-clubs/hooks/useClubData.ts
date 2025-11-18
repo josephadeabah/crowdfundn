@@ -1,4 +1,3 @@
-// app/account/investor-clubs/hooks/useClubData.ts
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import {
@@ -8,6 +7,7 @@ import {
   ClubContribution,
   PaginationData,
   ClubInvestmentPortfolio,
+  ApprovedCampaign,
 } from '../clubTypes';
 import {
   clubService,
@@ -15,6 +15,7 @@ import {
   membershipService,
   portfolioService,
   contributionService,
+  approvedCampaignsService,
 } from '../clubservice';
 
 interface ContributionsState {
@@ -55,6 +56,12 @@ export const useClubData = () => {
     },
     loading: false,
   });
+
+  const [approvedCampaigns, setApprovedCampaigns] = useState<
+    ApprovedCampaign[]
+  >([]);
+  const [approvedCampaignsLoading, setApprovedCampaignsLoading] =
+    useState(false);
 
   const loadUserClubs = async () => {
     if (!token || !user) return;
@@ -126,7 +133,7 @@ export const useClubData = () => {
     if (!token) return;
 
     try {
-        console.log('🔄 Loading contributions for:', clubSlug, 'page:', page);
+      console.log('🔄 Loading contributions for:', clubSlug, 'page:', page);
       setContributions((prev) => ({ ...prev, loading: true }));
       const response = await contributionService.getContributions(
         token,
@@ -145,7 +152,33 @@ export const useClubData = () => {
     }
   };
 
-  // Enhanced loadClubDetails that properly refreshes ALL data
+  // Add function to load approved campaigns
+  const loadApprovedCampaigns = async (clubSlug: string) => {
+    if (!token) return;
+
+    try {
+      setApprovedCampaignsLoading(true);
+      const campaigns = await approvedCampaignsService.fetchApprovedCampaigns(
+        token,
+        clubSlug,
+      );
+      setApprovedCampaigns(campaigns);
+    } catch (error) {
+      console.error('Error loading approved campaigns:', error);
+      setApprovedCampaigns([]);
+    } finally {
+      setApprovedCampaignsLoading(false);
+    }
+  };
+
+  // Add refresh function for approved campaigns
+  const refreshApprovedCampaigns = async () => {
+    if (state.selectedClub) {
+      await loadApprovedCampaigns(state.selectedClub.slug);
+    }
+  };
+
+  // Enhanced loadClubDetails that properly refreshes ALL data including approved campaigns
   const loadClubDetails = async (club: Club) => {
     if (!token) return;
 
@@ -166,8 +199,11 @@ export const useClubData = () => {
         clubService.getClub(token, club.slug),
       ]);
 
-      // Load contributions with pagination
-      await loadContributions(club.slug);
+      // Load contributions with pagination and approved campaigns
+      await Promise.all([
+        loadContributions(club.slug),
+        loadApprovedCampaigns(club.slug), // Load approved campaigns
+      ]);
 
       setState((prev) => ({
         ...prev,
@@ -248,11 +284,15 @@ export const useClubData = () => {
     contributions: contributions.data,
     contributionsPagination: contributions.pagination,
     contributionsLoading: contributions.loading,
+    approvedCampaigns,
+    approvedCampaignsLoading,
     token,
     loadUserClubs,
     loadClubDetails,
     loadInvestments, // Export the new function
     loadPortfolio, // Export the new function
+    loadApprovedCampaigns, // Export the new function
+    refreshApprovedCampaigns, // Export the refresh function
     reloadMembershipData,
     setMobileMenuOpen,
     loadContributions,

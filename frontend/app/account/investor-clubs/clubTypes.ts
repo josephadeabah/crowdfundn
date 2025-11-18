@@ -123,9 +123,9 @@ export interface ClubInvestment {
     category?: string;
     goal_amount?: number;
     current_amount?: number;
-    company_info?:{
+    company_info?: {
       name: string;
-    }
+    };
   };
   created_by?: {
     id: string;
@@ -284,5 +284,56 @@ export interface ShareChangesResponse {
     total_changes?: number;
     current_share?: number;
     total_contributed?: number;
+  };
+}
+
+export interface ApprovedCampaign {
+  id: string;
+  campaign: {
+    id: string;
+    title: string;
+    description: {
+      id: number;
+      name: string;
+      body: string;
+      record_type: string;
+      record_id: number;
+      created_at: string;
+      updated_at: string;
+    };
+    category: string;
+    goal_amount: number;
+    current_amount: number;
+    currency: string;
+    currency_symbol: string;
+    slug: string;
+    fundraiser: {
+      id: string;
+      name: string;
+    };
+  };
+  club_investment: {
+    id: string;
+    proposed_amount: number;
+    proposed_share_percentage: number;
+    voting_stats: {
+      total_votes: number;
+      yes_votes: number;
+      no_votes: number;
+      approval_percentage: number;
+      total_members?: number;
+      all_members_voted?: boolean;
+      threshold_met?: boolean;
+    };
+  };
+  approved_at: string;
+  voting_stats?: {
+    total_votes: number;
+    yes_votes: number;
+    no_votes: number;
+    approval_percentage: number;
+    total_members?: number;
+    all_members_voted?: boolean;
+    threshold_met?: boolean;
   };
 }

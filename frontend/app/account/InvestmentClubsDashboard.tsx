@@ -1,4 +1,3 @@
-// app/account/investor-clubs/page.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
@@ -23,7 +22,6 @@ import { RecentContributionsSection } from './investor-clubs/components/Contribu
 import { useAuth } from '../context/auth/AuthContext';
 import { ClubInvestment } from './investor-clubs/clubTypes';
 import { ShareChangesSection } from './investor-clubs/components/ShareChanges/ShareChangesSection';
-import ClubDashboard from './investor-clubs/components/Sidebar/ApprovedCampaigns';
 import TransferClubBalanceModal from './investor-clubs/components/Transfers/TransferClubBalanceModal';
 import {
   FaCheckCircle,
@@ -32,6 +30,7 @@ import {
 } from 'react-icons/fa';
 import CreateClubInvestmentModal from './investor-clubs/components/CreateClubInvestmentModal';
 import MemberInvestmentProposalModal from './investor-clubs/components/VotingPanel/MemberInvestmentProposalModal';
+import ApprovedCampaigns from './investor-clubs/components/Sidebar/ApprovedCampaigns';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const {
@@ -43,6 +42,8 @@ const InvestmentClubsDashboard: React.FC = () => {
     contributionsPagination,
     contributionsLoading,
     portfolio,
+    approvedCampaigns,
+    approvedCampaignsLoading,
     loading,
     mobileMenuOpen,
     token,
@@ -53,6 +54,7 @@ const InvestmentClubsDashboard: React.FC = () => {
     handleContributionPerPageChange,
     loadInvestments,
     loadPortfolio,
+    refreshApprovedCampaigns, // Add this from the updated hook
   } = useClubData();
 
   const { user } = useAuth();
@@ -265,6 +267,7 @@ const InvestmentClubsDashboard: React.FC = () => {
     if (selectedClub) {
       await loadInvestments(selectedClub.id);
       await loadPortfolio(selectedClub.id);
+      await refreshApprovedCampaigns(); // Refresh approved campaigns after investment
       setIsCreateInvestmentModalOpen(false);
     }
   };
@@ -272,14 +275,16 @@ const InvestmentClubsDashboard: React.FC = () => {
   const formatCurrency = (amount: number, currency: string = 'USD'): string => {
     // Handle null/undefined/empty currency
     const safeCurrency = currency || 'USD';
-    
+
     try {
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: safeCurrency,
       }).format(amount);
     } catch (error) {
-      console.warn(`Invalid currency code: ${safeCurrency}, using USD fallback`);
+      console.warn(
+        `Invalid currency code: ${safeCurrency}, using USD fallback`,
+      );
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
@@ -372,7 +377,13 @@ const InvestmentClubsDashboard: React.FC = () => {
                 formatCurrency={formatCurrency}
               />
 
-              <ClubDashboard club={currentClub} />
+              {/* Updated ApprovedCampaigns with props */}
+              <ApprovedCampaigns
+                club={currentClub}
+                approvedCampaigns={approvedCampaigns}
+                loading={approvedCampaignsLoading}
+                onRefresh={refreshApprovedCampaigns}
+              />
 
               <ShareChangesSection
                 club={currentClub}
@@ -446,11 +457,12 @@ const InvestmentClubsDashboard: React.FC = () => {
             showSuccess={true}
           />
 
-          {/* Create Investment Modal */}
+          {/* Updated Create Investment Modal with approved campaigns */}
           <CreateClubInvestmentModal
             isOpen={isCreateInvestmentModalOpen}
             onClose={() => setIsCreateInvestmentModalOpen(false)}
             club={currentClub}
+            approvedCampaigns={approvedCampaigns}
             token={token}
             onSuccess={handleInvestmentCreated}
           />
