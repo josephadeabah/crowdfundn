@@ -128,7 +128,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto max-h-[70vh]">
+        <div className="flex-1 overflow-y-auto">
           <div className="p-6">
             <form id="investment-form" onSubmit={handleSubmit} className="space-y-4">
               {/* Select Campaign */}
@@ -240,37 +240,35 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   <p className="text-red-800 text-sm">{error}</p>
                 </div>
               )}
+
+              {/* Buttons - positioned at the bottom of the scrollable content */}
+              <div className="pt-4 mt-6 border-t border-gray-200">
+                <div className="flex gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleClose}
+                    disabled={loading}
+                    className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button
+                    type="submit"
+                    form="investment-form"
+                    disabled={
+                      loading || !selectedCampaignId || approvedCampaigns.length === 0
+                    }
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
+                  >
+                    {loading ? 'Creating...' : 'Create Investment'}
+                  </Button>
+                </div>
+              </div>
             </form>
           </div>
-
-                    <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={loading}
-              className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </Button>
-
-            <Button
-              type="submit"
-              form="investment-form" // Connect to the form
-              disabled={
-                loading || !selectedCampaignId || approvedCampaigns.length === 0
-              }
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
-            >
-              {loading ? 'Creating...' : 'Create Investment'}
-            </Button>
-          </div>
         </div>
-
-        {/* Fixed Footer with Buttons */}
-        {/* <div className="flex-shrink-0 p-6 border-t border-gray-200 bg-white">
-
-        </div> */}
       </div>
     </Modal>  
   );
