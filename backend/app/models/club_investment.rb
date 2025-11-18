@@ -37,8 +37,8 @@ class ClubInvestment < ApplicationRecord
   STATUS_COMMITTED = 'committed'
   STATUS_CANCELED = 'canceled'
 
-  # Existing voting status enum
-  enum status: {
+  # FIXED: Use investment_status enum but map it to existing status column to avoid conflicts
+  enum :investment_status, {
     pending: 'pending',
     voting: 'voting',
     approved: 'approved',
@@ -49,12 +49,21 @@ class ClubInvestment < ApplicationRecord
     failed: STATUS_FAILED,
     committed: STATUS_COMMITTED,
     canceled: STATUS_CANCELED
-  }
+  }, default: :pending, _prefix: true
 
-  # Add the executed scope
+  # Map the enum to the existing status column
+  def investment_status
+    self[:status]
+  end
+
+  def investment_status=(value)
+    self[:status] = value
+  end
+
+  # Add the executed scope (use status column directly)
   scope :executed, -> { where(status: 'executed') }
   
-  # NEW: Equity investment scopes
+  # NEW: Equity investment scopes (use status column directly)
   scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
   scope :committed, -> { where(status: STATUS_COMMITTED) }
   
@@ -70,25 +79,25 @@ class ClubInvestment < ApplicationRecord
     status == 'approved'
   end
   
-  # NEW: Equity investment status query methods
+  # NEW: Equity investment status query methods (use the prefixed enum methods)
   def pending?
-    status == STATUS_PENDING
+    investment_status_pending?
   end
 
   def successful?
-    status == STATUS_SUCCESSFUL
+    investment_status_successful?
   end
 
   def committed?
-    status == STATUS_COMMITTED
+    investment_status_committed?
   end
 
   def failed?
-    status == STATUS_FAILED
+    investment_status_failed?
   end
 
   def canceled?
-    status == STATUS_CANCELED
+    investment_status_canceled?
   end
 
   # NEW: Equity investment financial calculations
