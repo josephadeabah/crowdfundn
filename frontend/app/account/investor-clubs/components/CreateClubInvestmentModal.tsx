@@ -137,13 +137,13 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             >
               <SelectTrigger
                 className="
-                  w-full 
-                  border-gray-300 
-                  focus:ring-0 focus:ring-offset-0 
-                  focus:border-gray-300 
-                  focus:outline-none
-                  [&>span]:!text-gray-900
-                "
+      w-full border-gray-300 
+      text-gray-900
+      [&>span]:text-gray-900
+      focus:ring-0 focus:border-gray-300
+      focus-visible:ring-0 focus-visible:ring-offset-0
+      focus:outline-none
+    "
               >
                 <SelectValue
                   placeholder="Choose an approved campaign"
@@ -157,13 +157,13 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                     No approved campaigns available
                   </SelectItem>
                 ) : (
-                  approvedCampaigns.map((c) => (
+                  approvedCampaigns.map((campaign) => (
                     <SelectItem
-                      key={c.id}
-                      value={c.campaign.id}
+                      key={campaign.id}
+                      value={campaign.campaign.id}
                       className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100"
                     >
-                      {c.campaign.title}
+                      {campaign.campaign.title}
                     </SelectItem>
                   ))
                 )}
@@ -218,13 +218,12 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               min="1"
               step="0.01"
               className="
-                border-gray-300
-                focus:ring-0 focus:ring-offset-0 
-                focus:border-gray-300
-                focus:outline-none 
-                text-gray-900 
-                placeholder:text-gray-500
-              "
+    border-gray-300 text-gray-900 placeholder:text-gray-500
+    focus:ring-0 focus:ring-offset-0
+    focus-visible:ring-0 focus-visible:ring-offset-0
+    focus:border-gray-300
+    focus:outline-none
+  "
             />
           </div>
 
@@ -237,17 +236,16 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add any additional context..."
+              placeholder="Add any additional context or reasoning for this investment..."
               rows={3}
               className="
-                border-gray-300 
-                focus:ring-0 focus:ring-offset-0 
-                focus:border-gray-300 
-                focus:outline-none 
-                text-gray-900 
-                placeholder:text-gray-500 
-                resize-none
-              "
+    border-gray-300 text-gray-900 placeholder:text-gray-500
+    resize-none
+    focus:ring-0 focus:ring-offset-0
+    focus-visible:ring-0 focus-visible:ring-offset-0
+    focus:border-gray-300
+    focus:outline-none
+  "
             />
           </div>
 
