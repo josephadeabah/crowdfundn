@@ -161,7 +161,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                     <SelectItem
                       key={campaign.id}
                       value={campaign.campaign.id}
-                      className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100"
+                      className="!text-gray-900 hover:bg-gray-100 focus:bg-gray-100"
                     >
                       {campaign.campaign.title}
                     </SelectItem>
