@@ -137,17 +137,22 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Campaign Selection */}
             <div className="space-y-2">
-              <Label htmlFor="campaign">Select Campaign</Label>
+              <Label htmlFor="campaign" className="text-gray-900">
+                Select Campaign
+              </Label>
               <Select
                 value={selectedCampaignId}
                 onValueChange={setSelectedCampaignId}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose an approved campaign" />
+                <SelectTrigger className="w-full border-gray-300 focus:ring-2 focus:ring-gray-500 focus:border-gray-500 focus:outline-none [&>span]:text-gray-900">
+                  <SelectValue 
+                    placeholder="Choose an approved campaign" 
+                    className="text-gray-900 placeholder:text-gray-500"
+                  />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="border-gray-200 bg-white">
                   {approvedCampaigns.length === 0 ? (
-                    <SelectItem value="none" disabled>
+                    <SelectItem value="none" disabled className="text-gray-500">
                       No approved campaigns available
                     </SelectItem>
                   ) : (
@@ -155,6 +160,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                       <SelectItem
                         key={campaign.id}
                         value={campaign.campaign.id}
+                        className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100"
                       >
                         {campaign.campaign.title}
                       </SelectItem>
@@ -172,15 +178,15 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
             {/* Selected Campaign Details */}
             {selectedCampaign && (
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <h4 className="font-medium">
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <h4 className="font-medium text-gray-900">
                   {selectedCampaign.campaign.title}
                 </h4>
                 <p className="text-sm text-gray-600">
                   {selectedCampaign.campaign.fundraiser?.name ||
                     'Unknown fundraiser'}
                 </p>
-                <div className="text-xs mt-1 space-y-1">
+                <div className="text-xs mt-1 space-y-1 text-gray-700">
                   <div>
                     Goal: {selectedCampaign.campaign.currency_symbol}
                     {selectedCampaign.campaign.goal_amount?.toLocaleString()}
@@ -202,7 +208,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
             {/* Investment Amount */}
             <div className="space-y-2">
-              <Label htmlFor="investmentAmount">
+              <Label htmlFor="investmentAmount" className="text-gray-900">
                 Investment Amount ({club.currency})
               </Label>
               <Input
@@ -214,7 +220,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 required
                 min="1"
                 step="0.01"
-                className="focus:outline-none focus:ring-0 focus:border-gray-50 border-gray-50"
+                className="border-gray-300 focus:ring-0 focus:ring-gray-200 focus:border-gray-200 focus:outline-none text-gray-900 placeholder:text-gray-500"
               />
               <p className="text-xs text-gray-500">
                 Enter the amount you want to invest from the club's funds
@@ -223,14 +229,16 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
             {/* Notes */}
             <div className="space-y-2">
-              <Label htmlFor="notes">Investment Notes (Optional)</Label>
+              <Label htmlFor="notes" className="text-gray-900">
+                Investment Notes (Optional)
+              </Label>
               <Textarea
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add any additional context or reasoning for this investment..."
                 rows={3}
-                className="focus:outline-none focus:ring-0 focus:border-gray-50 border-gray-50"
+                className="border-gray-300 focus:ring-0 focus:ring-gray-50 focus:border-gray-50 focus:outline-none text-gray-900 placeholder:text-gray-500 resize-none"
               />
             </div>
 
@@ -248,7 +256,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 variant="outline"
                 onClick={handleClose}
                 disabled={loading}
-                className="flex-1"
+                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Cancel
               </Button>
@@ -259,8 +267,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   !selectedCampaignId ||
                   approvedCampaigns.length === 0
                 }
-                className="flex-1"
-                variant="success"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {loading ? 'Creating...' : 'Create Investment'}
               </Button>
