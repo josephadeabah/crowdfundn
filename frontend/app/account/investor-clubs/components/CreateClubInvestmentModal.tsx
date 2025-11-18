@@ -39,7 +39,6 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [investmentAmount, setInvestmentAmount] = useState('');
-  const [proposedSharePercentage, setProposedSharePercentage] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,11 +62,6 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       const investmentData = {
         campaign_id: String(campaign.id),
         investment_amount: parseFloat(investmentAmount),
-        ...(campaign.type !== 'EquityCampaign' && {
-          proposed_share_percentage: proposedSharePercentage
-            ? parseFloat(proposedSharePercentage)
-            : undefined,
-        }),
       };
 
       const result = await investmentService.createInvestment(
@@ -85,7 +79,6 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
         if (result.authorization_url) {
           window.location.href = result.authorization_url;
         }
-        // For non-equity investments, the onSuccess callback will handle refreshing data
       } else {
         setError(result.message || 'Failed to create investment');
       }
@@ -99,7 +92,6 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
   const resetForm = () => {
     setInvestmentAmount('');
-    setProposedSharePercentage('');
     setNotes('');
     setError(null);
   };
@@ -111,8 +103,6 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     }
   };
 
-  const isEquityCampaign = campaign?.type === 'EquityCampaign';
-
   return (
     <Dialog open={modalOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -120,13 +110,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>
-            {isEquityCampaign ? 'Make Club Investment' : 'Propose Investment'}
-          </DialogTitle>
+          <DialogTitle>Make Club Investment</DialogTitle>
           <DialogDescription>
-            {isEquityCampaign
-              ? `Invest club funds in ${campaign?.company_info.name}`
-              : `Create a voting proposal for ${campaign?.title}`}
+            {campaign
+              ? `Invest club funds in ${campaign.company_info.name}`
+              : 'Create a new investment for your club'}
           </DialogDescription>
         </DialogHeader>
 
@@ -135,25 +123,21 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             <div className="bg-muted p-3 rounded-lg">
               <h4 className="font-medium">{campaign.title}</h4>
               <p className="text-sm text-muted-foreground">
-                {isEquityCampaign
-                  ? campaign.company_info.name
-                  : campaign.category}
+                {campaign.company_info.name}
               </p>
-              {isEquityCampaign && (
-                <div className="text-xs mt-1 space-y-1">
-                  <div>
-                    Valuation: {campaign.currency_symbol}
-                    {campaign.valuation?.toLocaleString()}
-                  </div>
-                  <div>Equity Offered: {campaign.equity_offered}%</div>
-                  {campaign.minimum_investment && (
-                    <div>
-                      Minimum: {campaign.currency_symbol}
-                      {campaign.minimum_investment}
-                    </div>
-                  )}
+              <div className="text-xs mt-1 space-y-1">
+                <div>
+                  Valuation: {campaign.currency_symbol}
+                  {campaign.valuation?.toLocaleString()}
                 </div>
-              )}
+                <div>Equity Offered: {campaign.equity_offered}%</div>
+                {campaign.minimum_investment && (
+                  <div>
+                    Minimum: {campaign.currency_symbol}
+                    {campaign.minimum_investment}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -166,38 +150,16 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               onChange={(e) => setInvestmentAmount(e.target.value)}
               placeholder="Enter investment amount"
               required
-              min={isEquityCampaign ? campaign?.minimum_investment : 1}
+              min={campaign?.minimum_investment || 1}
               step="0.01"
             />
-            {isEquityCampaign && campaign?.minimum_investment && (
+            {campaign?.minimum_investment && (
               <p className="text-xs text-muted-foreground">
                 Minimum investment: {campaign.currency_symbol}
                 {campaign.minimum_investment}
               </p>
             )}
           </div>
-
-          {!isEquityCampaign && (
-            <div className="space-y-2">
-              <Label htmlFor="proposedSharePercentage">
-                Proposed Share Percentage
-              </Label>
-              <Input
-                id="proposedSharePercentage"
-                type="number"
-                value={proposedSharePercentage}
-                onChange={(e) => setProposedSharePercentage(e.target.value)}
-                placeholder="Enter proposed share percentage"
-                min="0.01"
-                max="100"
-                step="0.01"
-              />
-              <p className="text-xs text-muted-foreground">
-                What percentage of club funds should be allocated to this
-                investment?
-              </p>
-            </div>
-          )}
 
           <div className="space-y-2">
             <Label htmlFor="notes">Notes (Optional)</Label>
@@ -226,11 +188,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading
-                ? 'Creating...'
-                : isEquityCampaign
-                  ? 'Invest Now'
-                  : 'Create Proposal'}
+              {loading ? 'Creating...' : 'Invest Now'}
             </Button>
           </DialogFooter>
         </form>

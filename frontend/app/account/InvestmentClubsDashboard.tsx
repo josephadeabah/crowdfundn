@@ -445,9 +445,9 @@ const InvestmentClubsDashboard: React.FC = () => {
           />
 
           <MemberInvestmentProposalModal
-          isOpen={isInvestmentProposalModalOpen}
-          onClose={() => setIsInvestmentProposalModalOpen(false)}
-          club={currentClub}
+            isOpen={isInvestmentProposalModalOpen}
+            onClose={() => setIsInvestmentProposalModalOpen(false)}
+            club={currentClub}
           />
 
           <TransferClubBalanceModal

@@ -31,7 +31,7 @@ export const RecentInvestmentsSection: React.FC<
         );
       case 'committed':
         return (
-          <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+          <span className="px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800">
             Committed
           </span>
         );
@@ -111,7 +111,7 @@ export const RecentInvestmentsSection: React.FC<
                   <h4 className="font-semibold text-sm lg:text-base line-clamp-2 flex-1">
                     {investment.campaign.title}
                   </h4>
-                  <span className="px-2 py-1 rounded-full text-xs bg-blue-50 text-blue-700 border border-blue-200">
+                  <span className="px-2 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Equity
                   </span>
                 </div>
@@ -198,7 +198,7 @@ export const RecentInvestmentsSection: React.FC<
                         onClick={(e) =>
                           handleDownloadCertificate(e, investment)
                         }
-                        className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-1"
+                        className="px-2 py-1 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors flex items-center gap-1"
                         title="Download Certificate"
                       >
                         <FileText size={12} />
