@@ -171,9 +171,6 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               {/* Selected Campaign Details */}
               {selectedCampaign && (
                 <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                  <h4 className="font-medium text-gray-900">
-                    {selectedCampaign.campaign.title}
-                  </h4>
                   <p className="text-sm text-gray-600">
                     {selectedCampaign.campaign.fundraiser?.name ||
                       'Unknown fundraiser'}
