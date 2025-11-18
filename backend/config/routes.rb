@@ -286,7 +286,7 @@ Rails.application.routes.draw do
       end
 
     # Investment Clubs
-      resources :investment_clubs, only: [:index, :create, :show, :update, :destroy] do
+      resources :investment_clubs, only: [:index, :create, :show, :update, :destroy], constraints: { id: /[a-zA-Z0-9\-]+/ } do
         # Membership management
         resources :memberships, only: [:index, :create, :update, :destroy], controller: 'club_memberships' do
           member do
