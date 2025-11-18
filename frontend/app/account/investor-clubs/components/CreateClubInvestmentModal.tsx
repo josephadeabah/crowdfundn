@@ -180,7 +180,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading} className="flex-1">
+              <Button type="submit" disabled={loading} className="flex-1" variant="success">
                 {loading ? 'Creating...' : 'Invest Now'}
               </Button>
             </div>
