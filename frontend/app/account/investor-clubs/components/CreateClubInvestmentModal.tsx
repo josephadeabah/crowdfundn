@@ -46,6 +46,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     (c) => c.campaign.id === selectedCampaignId,
   );
 
+  console.log("Selected Campaign", selectedCampaign);
+
   useEffect(() => {
     if (!modalOpen) resetForm();
   }, [modalOpen]);
