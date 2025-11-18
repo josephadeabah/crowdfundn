@@ -31,6 +31,7 @@ import {
   FaInfoCircle,
 } from 'react-icons/fa';
 import CreateClubInvestmentModal from './investor-clubs/components/CreateClubInvestmentModal';
+import MemberInvestmentProposalModal from './investor-clubs/components/VotingPanel/MemberInvestmentProposalModal';
 
 const InvestmentClubsDashboard: React.FC = () => {
   const {
@@ -58,10 +59,11 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
-  const [isInvestmentModalOpen, setIsInvestmentModalOpen] = useState(false);
   const [isCreateInvestmentModalOpen, setIsCreateInvestmentModalOpen] =
     useState(false);
   const [isTransfersModalOpen, setIsTransfersModalOpen] = useState(false);
+  const [isInvestmentProposalModalOpen, setIsInvestmentProposalModalOpen] =
+    useState(false);
 
   // Alert states
   const [featureAlert, setFeatureAlert] = useState(false);
@@ -178,7 +180,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   };
 
   const handleProposeInvestment = () => {
-    setIsInvestmentModalOpen(true);
+    setIsInvestmentProposalModalOpen(true);
   };
 
   const handleCreateInvestment = () => {
@@ -440,6 +442,12 @@ const InvestmentClubsDashboard: React.FC = () => {
             club={currentClub}
             token={token}
             onSuccess={handleInvestmentCreated}
+          />
+
+          <MemberInvestmentProposalModal
+          isOpen={isInvestmentProposalModalOpen}
+          onClose={() => setIsInvestmentProposalModalOpen(false)}
+          club={currentClub}
           />
 
           <TransferClubBalanceModal
