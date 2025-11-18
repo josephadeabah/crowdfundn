@@ -42,11 +42,13 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   const modalOpen = isOpen !== undefined ? isOpen : open;
   const setModalOpen = onClose || setOpen;
 
+  // FIX: Handle type conversion for campaign ID comparison
   const selectedCampaign = approvedCampaigns.find(
-    (c) => c.campaign.id === selectedCampaignId,
+    (c) => c.campaign.id.toString() === selectedCampaignId,
   );
 
   console.log('Selected Campaign', selectedCampaign);
+  console.log('Selected Campaign ID:', selectedCampaignId);
 
   useEffect(() => {
     if (!modalOpen) resetForm();
@@ -82,14 +84,16 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
     try {
       const investmentData = {
-        campaign_id: selectedCampaignId,
+        campaign_id: selectedCampaignId, // This should be fine as string
         investment_amount: parseFloat(investmentAmount),
         notes: notes || undefined,
       };
 
+      console.log('Sending investment data:', investmentData);
+
       const result = await investmentService.createInvestment(
         token,
-        club.id,
+        club.id, // Make sure this is the correct club identifier
         investmentData,
       );
 
