@@ -98,7 +98,7 @@ module Api
             campaign: campaign,
             investment_amount: params[:investment_amount].to_f,
             proposed_share_percentage: params[:proposed_share_percentage],
-            status: ClubInvestment::STATUS_VALUES[:voting],  # FIX: Use the constant from model
+            status: ClubInvestment::STATUS_VOTING,  # FIX: Use the constant from model
             created_by: @current_user,
             voting_session_id: SecureRandom.uuid
           )
