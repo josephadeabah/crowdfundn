@@ -1,7 +1,7 @@
 # app/models/equity_investment.rb
 class EquityInvestment < ApplicationRecord
   # Associations
-  belongs_to :user
+  belongs_to :user, optional: true  # CHANGED: Make user optional for club investments
   belongs_to :campaign, class_name: 'EquityCampaign'
   belongs_to :reward, optional: true
   has_many :pledges, dependent: :destroy
@@ -43,8 +43,12 @@ class EquityInvestment < ApplicationRecord
   validates :certificate_number, uniqueness: true, allow_nil: true
   validates :transaction_reference, uniqueness: true, allow_nil: true
   validates :email, presence: true
+  validates :full_name, presence: true  # ADDED: Ensure full_name is validated
   validates :phone, presence: false
   validates :status, inclusion: { in: VALID_STATUSES }
+
+  # NEW: Custom validation for club investments
+  validate :validate_investor_presence
 
   # Scopes
   scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
@@ -53,6 +57,10 @@ class EquityInvestment < ApplicationRecord
     where(status: STATUS_COMMITTED)
     .where('cancel_window_expires_at > ?', Time.current)
   }
+
+  # NEW: Scope for club investments
+  scope :club_investments, -> { where("metadata->>'club_investment' = ?", 'true') }
+  scope :individual_investments, -> { where("metadata->>'club_investment' IS NULL OR metadata->>'club_investment' = ?", 'false') }
 
   # Callbacks
   before_validation :calculate_shares_and_percentage, on: :create
@@ -110,6 +118,17 @@ class EquityInvestment < ApplicationRecord
 
   def committed?
     status == STATUS_COMMITTED
+  end
+
+  # NEW: Check if this is a club investment
+  def club_investment?
+    metadata&.dig('club_investment') == true
+  end
+
+  # NEW: Get club information for club investments
+  def club
+    return nil unless club_investment?
+    InvestmentClub.find_by(id: metadata&.dig('club_id'))
   end
 
   # ========== CANCELLATION METHODS ==========
@@ -287,6 +306,10 @@ class EquityInvestment < ApplicationRecord
         full_name: user.full_name,
         email: user.email
       } : nil,
+      club: club_investment? ? {
+        id: metadata&.dig('club_id'),
+        name: metadata&.dig('club_name')
+      } : nil,
       signatures: {
         investor: investor_signature_url,
         issuer: issuer_signature_url
@@ -334,6 +357,13 @@ class EquityInvestment < ApplicationRecord
 
   # ========== PRIVATE METHODS ==========
   private
+
+  # NEW: Custom validation for investor presence
+  def validate_investor_presence
+    if user_id.blank? && (email.blank? || full_name.blank?)
+      errors.add(:base, "Either user or investor contact information (email and full_name) must be present")
+    end
+  end
 
   # Refund Processing Methods
   def process_refund_for_successful_transaction

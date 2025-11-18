@@ -38,6 +38,28 @@ class InvestmentClub < ApplicationRecord
   
   enum status: { active: 'active', inactive: 'inactive', suspended: 'suspended' }
 
+  # NEW: Add contact methods for club investments
+  def contact_email
+    creator.email
+  end
+  
+  def contact_name
+    creator.full_name
+  end
+  
+  def admin_members
+    members.joins(:investment_club_memberships)
+           .where(investment_club_memberships: { 
+             status: 'active', 
+             role: ['admin', 'creator'],
+             investment_club_id: id
+           })
+  end
+  
+  def primary_admin
+    admin_members.first || creator
+  end
+
   def currency_symbol
     case currency&.upcase
     when 'USD' then '$'
@@ -82,23 +104,6 @@ class InvestmentClub < ApplicationRecord
     when 'certified' then 'verified'
     else 'private'
     end
-  end
-
-  # ADD THESE METHODS:
-  def contact_email
-    creator.email
-  end
-  
-  def contact_name
-    creator.full_name
-  end
-  
-  def admin_members
-    investment_club_memberships.where(role: ['admin', 'creator']).map(&:user)
-  end
-  
-  def primary_admin
-    admin_members.first || creator
   end
 
   # FIXED: Consistent financial calculations with transaction safety
@@ -259,15 +264,6 @@ class InvestmentClub < ApplicationRecord
     members.joins(:investment_club_memberships)
            .where(investment_club_memberships: { 
              status: 'active',
-             investment_club_id: id
-           })
-  end
-  
-  def admin_members
-    members.joins(:investment_club_memberships)
-           .where(investment_club_memberships: { 
-             status: 'active', 
-             role: ['admin', 'creator'],
              investment_club_id: id
            })
   end

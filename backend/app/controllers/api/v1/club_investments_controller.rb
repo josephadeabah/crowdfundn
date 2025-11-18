@@ -66,6 +66,14 @@ module Api
           }, status: :unprocessable_entity
         end
         
+        # Check club balance
+        unless @club.can_invest?(params[:investment_amount].to_f)
+          return render json: { 
+            success: false, 
+            error: "Insufficient club balance. Available: #{@club.currency_symbol}#{@club.current_balance.to_f}" 
+          }, status: :unprocessable_entity
+        end
+        
         # NEW: Different flow for equity investments vs regular voting investments
         if campaign.is_a?(EquityCampaign)
           # Direct equity investment flow (no voting required for admins)
@@ -565,22 +573,32 @@ module Api
       def execute_club_investment(club_investment)
         campaign = club_investment.campaign
         
+        Rails.logger.info "Creating equity investment for club #{@club.id}"
+        
         # Create investment using club information instead of user
         investment = campaign.equity_investments.new(
           amount: club_investment.investment_amount,
           email: @club.contact_email,
           full_name: @club.name,
+          # Don't set user_id for club investments - this is the key fix
           metadata: {
             club_investment: true,
             club_id: @club.id,
             club_name: @club.name,
-            created_by_user_id: @current_user.id
+            created_by_user_id: @current_user.id,
+            investor_type: 'club'
           }
         )
 
+        Rails.logger.info "Investment attributes: #{investment.attributes}"
+        Rails.logger.info "Investment valid?: #{investment.valid?}"
+        
         unless investment.save
+          Rails.logger.error "FAILED to create equity investment: #{investment.errors.full_messages}"
           return { success: false, error: investment.errors.full_messages.join(', ') }
         end
+
+        Rails.logger.info "Equity investment created successfully: #{investment.id}"
 
         # Generate callback URL
         secure_random_uuid = SecureRandom.uuid
@@ -638,7 +656,8 @@ module Api
             club_investment: true,
             club_name: @club.name,
             club_slug: @club.slug,
-            created_by: @current_user.full_name
+            created_by: @current_user.full_name,
+            investor_type: 'club'
           }
         }
       end
