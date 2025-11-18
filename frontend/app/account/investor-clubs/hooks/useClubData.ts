@@ -7,6 +7,7 @@ import {
   ClubInvestment,
   ClubContribution,
   PaginationData,
+  ClubInvestmentPortfolio,
 } from '../clubTypes';
 import {
   clubService,
@@ -27,7 +28,7 @@ interface DashboardState {
   selectedClub: Club | null;
   members: Member[];
   investments: ClubInvestment[];
-  portfolio: any;
+  portfolio: ClubInvestmentPortfolio | null;
   loading: boolean;
   mobileMenuOpen: boolean;
 }
@@ -73,6 +74,50 @@ export const useClubData = () => {
     }
   };
 
+  // Function to load investments specifically
+  const loadInvestments = async (clubSlug: string, status?: string) => {
+    if (!token) return;
+
+    try {
+      console.log('🔄 Loading investments for club:', clubSlug);
+      const response = await investmentService.getInvestments(
+        token,
+        clubSlug,
+        status,
+      );
+
+      if (response.success) {
+        setState((prev) => ({
+          ...prev,
+          investments: response.investments || [],
+        }));
+      } else {
+        console.error('Failed to load investments:', response);
+      }
+    } catch (error) {
+      console.error('Failed to load investments:', error);
+    }
+  };
+
+  // Function to load portfolio specifically
+  const loadPortfolio = async (clubSlug: string) => {
+    if (!token) return;
+
+    try {
+      console.log('🔄 Loading portfolio for club:', clubSlug);
+      const portfolioResponse = await portfolioService.getClubPortfolio(
+        token,
+        clubSlug,
+      );
+      setState((prev) => ({
+        ...prev,
+        portfolio: portfolioResponse,
+      }));
+    } catch (error) {
+      console.error('Failed to load portfolio:', error);
+    }
+  };
+
   const loadContributions = async (
     clubSlug: string,
     page: number = 1,
@@ -99,7 +144,7 @@ export const useClubData = () => {
     }
   };
 
-  // CRITICAL FIX: Enhanced loadClubDetails that properly refreshes ALL data
+  // Enhanced loadClubDetails that properly refreshes ALL data
   const loadClubDetails = async (club: Club) => {
     if (!token) return;
 
@@ -112,12 +157,12 @@ export const useClubData = () => {
         membersResponse,
         investmentsResponse,
         portfolioResponse,
-        clubDetailsResponse, // Add this to get fresh club financials
+        clubDetailsResponse,
       ] = await Promise.all([
         membershipService.getMembers(token, club.slug),
         investmentService.getInvestments(token, club.slug),
         portfolioService.getClubPortfolio(token, club.slug),
-        clubService.getClub(token, club.slug), // Get fresh club data with updated financials
+        clubService.getClub(token, club.slug),
       ]);
 
       // Load contributions with pagination
@@ -125,7 +170,7 @@ export const useClubData = () => {
 
       setState((prev) => ({
         ...prev,
-        selectedClub: clubDetailsResponse.club, // Use the fresh club data
+        selectedClub: clubDetailsResponse.club,
         members: membersResponse.members,
         investments: investmentsResponse.investments,
         portfolio: portfolioResponse,
@@ -147,7 +192,7 @@ export const useClubData = () => {
     }
   };
 
-  // NEW: Function to specifically reload membership data
+  // Function to specifically reload membership data
   const reloadMembershipData = async (clubSlug: string) => {
     if (!token) return;
 
@@ -205,7 +250,9 @@ export const useClubData = () => {
     token,
     loadUserClubs,
     loadClubDetails,
-    reloadMembershipData, // Export the new function
+    loadInvestments, // Export the new function
+    loadPortfolio, // Export the new function
+    reloadMembershipData,
     setMobileMenuOpen,
     loadContributions,
     handleContributionPageChange,

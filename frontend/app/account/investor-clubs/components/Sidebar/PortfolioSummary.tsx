@@ -1,9 +1,11 @@
+// app/account/investor-clubs/components/Sidebar/PortfolioSummary.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Users, BarChart3 } from 'lucide-react';
+import { ClubInvestmentPortfolio } from '../../clubTypes';
 
 interface PortfolioSummaryProps {
-  portfolio: any;
+  portfolio: ClubInvestmentPortfolio | null;
   formatCurrency: (amount: number, currency?: string) => string;
 }
 
@@ -23,6 +25,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
         <TrendingUp size={18} className="text-emerald-600" />
         <h3 className="text-lg font-semibold">Portfolio Summary</h3>
       </div>
+
       <div className="space-y-3">
         <div className="flex justify-between items-center">
           <span className="text-gray-600 text-sm lg:text-base">
@@ -32,26 +35,58 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             {formatCurrency(portfolio.total_invested)}
           </span>
         </div>
+
         <div className="flex justify-between items-center">
           <span className="text-gray-600 text-sm lg:text-base">
             Current Value
           </span>
           <span className="font-semibold text-sm lg:text-base">
-            {formatCurrency(portfolio.current_value)}
+            {formatCurrency(portfolio.total_value)}
           </span>
         </div>
+
         <div className="flex justify-between items-center">
           <span className="text-gray-600 text-sm lg:text-base">
             Total Returns
           </span>
           <span
             className={`font-semibold text-sm lg:text-base ${
-              portfolio.total_returns >= 0 ? 'text-green-600' : 'text-red-600'
+              portfolio.total_return >= 0 ? 'text-green-600' : 'text-red-600'
             }`}
           >
-            {formatCurrency(portfolio.total_returns)} (
+            {formatCurrency(portfolio.total_return)} (
             {portfolio.return_percentage}%)
           </span>
+        </div>
+
+        {/* Additional Portfolio Metrics */}
+        <div className="pt-3 border-t border-gray-100 space-y-2">
+          <div className="flex justify-between items-center text-xs text-gray-500">
+            <span className="flex items-center gap-1">
+              <Users size={12} />
+              Active Investments
+            </span>
+            <span>{portfolio.active_investments}</span>
+          </div>
+
+          {portfolio.campaigns_invested && (
+            <div className="flex justify-between items-center text-xs text-gray-500">
+              <span className="flex items-center gap-1">
+                <BarChart3 size={12} />
+                Campaigns
+              </span>
+              <span>{portfolio.campaigns_invested}</span>
+            </div>
+          )}
+
+          {portfolio.successful_count && (
+            <div className="flex justify-between items-center text-xs text-gray-500">
+              <span>Successful</span>
+              <span className="text-green-600">
+                {portfolio.successful_count}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

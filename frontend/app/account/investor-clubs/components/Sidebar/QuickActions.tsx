@@ -1,12 +1,14 @@
+// app/account/investor-clubs/components/Sidebar/QuickActions.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { DollarSign, TrendingUp, BarChart3, Send } from 'lucide-react';
+import { DollarSign, TrendingUp, BarChart3, Send, Plus } from 'lucide-react';
 
 interface QuickActionsProps {
   onMakeContribution: () => void;
   onProposeInvestment: () => void;
   onViewAnalytics: () => void;
   onTransferFunds?: () => void;
+  onCreateInvestment?: () => void;
   isAdmin?: boolean;
 }
 
@@ -15,6 +17,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
   onProposeInvestment,
   onViewAnalytics,
   onTransferFunds,
+  onCreateInvestment,
   isAdmin = false,
 }) => {
   return (
@@ -35,6 +38,14 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         </button>
 
         <button
+          onClick={onCreateInvestment}
+          className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"
+        >
+          <Plus size={16} />
+          Create Investment
+        </button>
+
+        <button
           onClick={onProposeInvestment}
           className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-emerald-400 text-emerald-500 rounded-full hover:bg-emerald-50 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"
         >
@@ -42,7 +53,6 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
           Propose Investment
         </button>
 
-        {/* Transfer Funds Button (Admin Only) */}
         <button
           onClick={onTransferFunds}
           className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-orange-400 text-orange-500 rounded-full hover:bg-orange-50 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"

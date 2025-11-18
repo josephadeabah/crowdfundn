@@ -5,7 +5,6 @@ import {
   Membership,
   ClubContribution,
   ClubInvestment,
-  Vote,
   JoinClubResponse,
   MembershipStatusResponse,
   BaseResponse,
@@ -19,6 +18,10 @@ import {
   PaginationData,
   ContributionsResponse,
   VerifyContributionResponse,
+  ClubInvestmentCreateRequest,
+  ClubInvestmentCertificateStatus,
+  ClubInvestmentExecutionResult,
+  ClubInvestmentPortfolio,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -157,7 +160,6 @@ export const clubService = {
       );
       return response;
     } catch (error: any) {
-      // Enhanced error handling for creator leaving
       if (error.message.includes('transfer ownership')) {
         throw new Error(error.message);
       }
@@ -370,13 +372,12 @@ export const contributionService = {
     });
   },
 
-  // Verify contribution payment - UPDATED RESPONSE TYPE
+  // Verify contribution payment
   verifyContribution: async (
     token: string,
     clubId: string,
     reference: string,
   ): Promise<VerifyContributionResponse> => {
-    // Use the new interface
     const endpoint = `/investment_clubs/${clubId}/contributions/verify`;
     return apiCall(endpoint, token, {
       method: 'POST',
@@ -385,74 +386,57 @@ export const contributionService = {
   },
 };
 
-// Club Investments API calls
+// UPDATED: Club Investments API calls - Equity Investments Only (No Voting)
 export const investmentService = {
   // Get club investments with pagination
   getInvestments: async (
     token: string,
     clubId: string,
+    status?: string,
     page: number = 1,
     perPage: number = 10,
-  ): Promise<{ investments: ClubInvestment[]; pagination: PaginationData }> => {
-    const endpoint = `/investment_clubs/${clubId}/investments?page=${page}&per_page=${perPage}`;
+  ): Promise<{ success: boolean; investments: ClubInvestment[] }> => {
+    const endpoint = `/investment_clubs/${clubId}/club_investments${status ? `?status=${status}` : ''}${status ? '&' : '?'}page=${page}&per_page=${perPage}`;
     return apiCall(endpoint, token);
   },
 
-  // Create investment proposal
-  createInvestment: async (
-    token: string,
-    clubId: string,
-    campaignId: string,
-    investmentAmount: number,
-  ): Promise<{
-    success: boolean;
-    club_investment: ClubInvestment;
-    voting_session_id: string;
-  }> => {
-    return apiCall(`/investment_clubs/${clubId}/investments`, token, {
-      method: 'POST',
-      body: JSON.stringify({
-        campaign_id: campaignId,
-        investment_amount: investmentAmount,
-      }),
-    });
-  },
-
-  // Vote on investment
-  voteOnInvestment: async (
+  // Get specific investment
+  getInvestment: async (
     token: string,
     clubId: string,
     investmentId: string,
-    voteType: string,
-    reason?: string,
-  ): Promise<{
-    success: boolean;
-    vote: Vote;
-    voting_stats: any;
-    approved: boolean;
-  }> => {
+  ): Promise<{ success: boolean; investment: ClubInvestment }> => {
     return apiCall(
-      `/investment_clubs/${clubId}/investments/${investmentId}/vote`,
+      `/investment_clubs/${clubId}/club_investments/${investmentId}`,
       token,
-      {
-        method: 'POST',
-        body: JSON.stringify({ vote_type: voteType, reason }),
-      },
     );
   },
 
-  // Execute approved investment
+  // Create equity investment
+  createInvestment: async (
+    token: string,
+    clubId: string,
+    investmentData: ClubInvestmentCreateRequest,
+  ): Promise<{
+    success: boolean;
+    club_investment: ClubInvestment;
+    authorization_url?: string;
+    message?: string;
+  }> => {
+    return apiCall(`/investment_clubs/${clubId}/club_investments`, token, {
+      method: 'POST',
+      body: JSON.stringify(investmentData),
+    });
+  },
+
+  // Execute equity investment
   executeInvestment: async (
     token: string,
     clubId: string,
     investmentId: string,
-  ): Promise<{
-    success: boolean;
-    club_investment: ClubInvestment;
-    transfer_reference: string;
-  }> => {
+  ): Promise<ClubInvestmentExecutionResult> => {
     return apiCall(
-      `/investment_clubs/${clubId}/investments/${investmentId}/execute`,
+      `/investment_clubs/${clubId}/club_investments/${investmentId}/execute`,
       token,
       {
         method: 'POST',
@@ -460,16 +444,64 @@ export const investmentService = {
     );
   },
 
-  // Get voting insights
-  getVotingInsights: async (
+  // Certificate operations
+  getCertificateStatus: async (
     token: string,
     clubId: string,
     investmentId: string,
-  ): Promise<any> => {
+  ): Promise<ClubInvestmentCertificateStatus> => {
     return apiCall(
-      `/investment_clubs/${clubId}/investments/${investmentId}/voting_insights`,
+      `/investment_clubs/${clubId}/club_investments/${investmentId}/certificate_status`,
       token,
     );
+  },
+
+  generateCertificate: async (
+    token: string,
+    clubId: string,
+    investmentId: string,
+  ): Promise<{
+    success: boolean;
+    message: string;
+    certificate_url?: string;
+  }> => {
+    return apiCall(
+      `/investment_clubs/${clubId}/club_investments/${investmentId}/generate_certificate`,
+      token,
+      {
+        method: 'POST',
+      },
+    );
+  },
+
+  downloadCertificate: async (
+    token: string,
+    clubId: string,
+    investmentId: string,
+  ): Promise<void> => {
+    const response = await fetch(
+      `${API_BASE_URL}/investment_clubs/${clubId}/club_investments/${investmentId}/download_certificate`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to download certificate: ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `club_investment_certificate_${investmentId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   },
 };
 
@@ -479,33 +511,18 @@ export const portfolioService = {
   getClubPortfolio: async (
     token: string,
     clubId: string,
-    page: number = 1,
-    perPage: number = 10,
-  ): Promise<any> => {
-    const endpoint = `/investment_clubs/${clubId}/portfolio?page=${page}&per_page=${perPage}`;
-    return apiCall(endpoint, token);
+  ): Promise<ClubInvestmentPortfolio> => {
+    return apiCall(`/investment_clubs/${clubId}/portfolio`, token);
   },
 
   // Get club analytics
-  getClubAnalytics: async (
-    token: string,
-    clubId: string,
-    page: number = 1,
-    perPage: number = 10,
-  ): Promise<any> => {
-    const endpoint = `/investment_clubs/${clubId}/analytics?page=${page}&per_page=${perPage}`;
-    return apiCall(endpoint, token);
+  getClubAnalytics: async (token: string, clubId: string): Promise<any> => {
+    return apiCall(`/investment_clubs/${clubId}/analytics`, token);
   },
 
   // Get member portfolio
-  getMemberPortfolio: async (
-    token: string,
-    clubId: string,
-    page: number = 1,
-    perPage: number = 10,
-  ): Promise<any> => {
-    const endpoint = `/investment_clubs/${clubId}/member_portfolio?page=${page}&per_page=${perPage}`;
-    return apiCall(endpoint, token);
+  getMemberPortfolio: async (token: string, clubId: string): Promise<any> => {
+    return apiCall(`/investment_clubs/${clubId}/member_portfolio`, token);
   },
 };
 

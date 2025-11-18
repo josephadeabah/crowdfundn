@@ -47,7 +47,7 @@ export interface Member {
   role: 'creator' | 'admin' | 'member';
   status: 'pending' | 'active' | 'inactive';
   total_contributed: number;
-  contributed_share: number; // CHANGED: current_share → contributed_share
+  contributed_share: number;
   joined_at: string;
   can_manage?: boolean;
   can_vote?: boolean;
@@ -65,7 +65,7 @@ export interface Membership {
   role: 'creator' | 'admin' | 'member';
   status: 'pending' | 'active' | 'inactive';
   total_contributed: number;
-  contributed_share: number; // CHANGED: current_share → contributed_share
+  contributed_share: number;
   joined_at: string;
   can_manage: boolean;
   can_vote: boolean;
@@ -91,39 +91,77 @@ export interface ContributionsResponse {
   pagination: PaginationData;
 }
 
+// UPDATED: Club Investment Types - No Voting
 export interface ClubInvestment {
   id: string;
+  investment_amount: number;
+  shares?: number;
+  percentage?: number;
+  status:
+    | 'pending'
+    | 'initialized'
+    | 'successful'
+    | 'failed'
+    | 'committed'
+    | 'canceled';
+  certificate_url?: string;
+  certificate_number?: string;
+  investment_date?: string;
+  current_value?: number;
+  total_returns?: number;
+  roi?: number;
+  currency: string;
+  currency_symbol: string;
   campaign: {
     id: string;
     title: string;
-    category: string;
-    goal_amount: number;
-    current_amount: number;
+    company_name: string;
+    valuation: number;
+    equity_offered: number;
+    currency: string;
+    currency_symbol: string;
+    category?: string;
+    goal_amount?: number;
+    current_amount?: number;
   };
-  investment_amount: number;
-  status:
-    | 'pending'
-    | 'voting'
-    | 'approved'
-    | 'rejected'
-    | 'executed'
-    | 'failed';
-  shares_acquired: number | null;
-  percentage_acquired: number | null;
-  voting_session_id: string;
-  created_at: string;
-  executed_at: string | null;
-}
-
-export interface Vote {
-  id: string;
-  vote_type: 'invest' | 'pass' | 'yes' | 'no';
-  reason: string | null;
-  user: {
+  created_by?: {
     id: string;
     full_name: string;
   };
   created_at: string;
+  updated_at: string;
+  is_equity_investment: boolean;
+  transaction_reference?: string;
+  equity_investment_id?: number;
+}
+
+export interface ClubInvestmentCreateRequest {
+  campaign_id: string;
+  investment_amount: number;
+}
+
+export interface ClubInvestmentCertificateStatus {
+  exists: boolean;
+  url?: string;
+  certificate_number?: string;
+}
+
+export interface ClubInvestmentExecutionResult {
+  success: boolean;
+  investment: ClubInvestment;
+  authorization_url?: string;
+  error?: string;
+}
+
+export interface ClubInvestmentPortfolio {
+  total_invested: number;
+  total_value: number;
+  total_return: number;
+  return_percentage: number;
+  active_investments: number;
+  investments: ClubInvestment[];
+  campaigns_invested?: number;
+  successful_count?: number;
 }
 
 export interface JoinClubResponse {
@@ -140,7 +178,6 @@ export interface MembershipStatusResponse {
   message?: string;
 }
 
-// Add new response interfaces for service methods
 export interface BaseResponse {
   success: boolean;
   message?: string;
@@ -164,7 +201,6 @@ export interface ApproveMemberResponse extends BaseResponse {
   membership?: Member;
 }
 
-// Pagination interfaces
 export interface PaginationData {
   current_page: number;
   total_pages: number;
