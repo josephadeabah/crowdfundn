@@ -226,7 +226,7 @@ export const RecentInvestmentsSection: React.FC<
             {/* Company Info */}
             <div className="mt-2 pt-2 border-t border-gray-100">
               <p className="text-xs text-gray-500">
-                {investment.campaign.company_name}
+                {investment.campaign?.company_info?.name}
               </p>
             </div>
           </div>

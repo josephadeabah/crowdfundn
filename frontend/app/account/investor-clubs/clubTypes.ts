@@ -123,6 +123,9 @@ export interface ClubInvestment {
     category?: string;
     goal_amount?: number;
     current_amount?: number;
+    company_info?:{
+      name: string;
+    }
   };
   created_by?: {
     id: string;
