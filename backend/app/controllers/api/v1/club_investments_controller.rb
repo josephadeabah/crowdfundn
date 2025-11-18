@@ -38,6 +38,11 @@ module Api
       end
       
       def create
+        Rails.logger.info "=== ClubInvestmentsController#create ==="
+        Rails.logger.info "Params: #{params.inspect}"
+        Rails.logger.info "Club: #{@club.inspect}"
+        Rails.logger.info "Current User: #{@current_user.inspect}"
+        
         campaign = Campaign.find_by(id: params[:campaign_id])
         
         unless campaign
@@ -502,8 +507,20 @@ module Api
       end
       
       def set_club
-        @club = InvestmentClub.find_by(slug: params[:investment_club_id])
-        render json: { error: 'Club not found' }, status: :not_found unless @club
+        # The route parameter is :investment_club_id, not :id
+        club_identifier = params[:investment_club_id]
+        
+        # Try to find by slug first, then by ID
+        @club = InvestmentClub.find_by(slug: club_identifier) || 
+                InvestmentClub.find_by(id: club_identifier)
+                
+        unless @club
+          Rails.logger.error "Club not found with identifier: #{club_identifier}"
+          render json: { error: 'Club not found' }, status: :not_found 
+          return
+        end
+        
+        Rails.logger.info "Found club: #{@club.name} (ID: #{@club.id}, Slug: #{@club.slug})"
       end
       
       def verify_membership
