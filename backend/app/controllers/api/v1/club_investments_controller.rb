@@ -48,7 +48,7 @@ module Api
         unless campaign
           return render json: { error: 'Campaign not found' }, status: :not_found
         end
-        
+                
         # Validate investment amount
         validation_result = validate_investment_amount(params[:investment_amount].to_f, campaign)
         unless validation_result[:valid]
@@ -64,7 +64,7 @@ module Api
           club_investment = @club.club_investments.new(
             campaign: campaign,
             investment_amount: params[:investment_amount].to_f,
-            status: ClubInvestment::STATUS_PENDING,  # FIX: Use the constant from model
+            status: ClubInvestment::STATUS_PENDING,
             created_by: @current_user
           )
           
@@ -98,7 +98,7 @@ module Api
             campaign: campaign,
             investment_amount: params[:investment_amount].to_f,
             proposed_share_percentage: params[:proposed_share_percentage],
-            status: ClubInvestment::STATUS_VOTING,  # FIX: Use the constant from model
+            status: ClubInvestment::STATUS_VOTING,
             created_by: @current_user,
             voting_session_id: SecureRandom.uuid
           )

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_15_230215) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_18_203030) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -245,7 +245,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_15_230215) do
     t.string "reference"
     t.index ["campaign_id"], name: "index_club_investments_on_campaign_id"
     t.index ["created_by_id"], name: "index_club_investments_on_created_by_id"
-    t.index ["investment_club_id", "campaign_id"], name: "index_club_investments_on_investment_club_id_and_campaign_id", unique: true
+    t.index ["investment_club_id", "campaign_id"], name: "index_club_investments_on_investment_club_id_and_campaign_id"
     t.index ["investment_club_id"], name: "index_club_investments_on_investment_club_id"
     t.index ["reference"], name: "index_club_investments_on_reference", unique: true
     t.index ["status"], name: "index_club_investments_on_status"
