@@ -27,45 +27,46 @@ class ClubInvestment < ApplicationRecord
   
   validates :investment_amount, numericality: { greater_than: 0 }
   validates :proposed_share_percentage, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, allow_nil: true
-  # Removed shares_acquired validation
-  
-  # NEW: Equity investment status constants
-  STATUS_PENDING = 'pending'
-  STATUS_INITIALIZED = 'initialized'
-  STATUS_SUCCESSFUL = 'successful'
-  STATUS_FAILED = 'failed'
-  STATUS_COMMITTED = 'committed'
-  STATUS_CANCELED = 'canceled'
 
-  # FIXED: Use investment_status enum but map it to existing status column to avoid conflicts
-  enum :investment_status, {
+  # FIXED: Manual status implementation to avoid ActiveRecord enum conflicts
+  STATUS_VALUES = {
     pending: 'pending',
     voting: 'voting',
     approved: 'approved',
     rejected: 'rejected',
-    # NEW: Equity investment statuses
-    initialized: STATUS_INITIALIZED,
-    successful: STATUS_SUCCESSFUL,
-    failed: STATUS_FAILED,
-    committed: STATUS_COMMITTED,
-    canceled: STATUS_CANCELED
-  }, default: :pending, _prefix: true
+    initialized: 'initialized',
+    successful: 'successful',
+    failed: 'failed',
+    committed: 'committed',
+    canceled: 'canceled',
+    executed: 'executed'
+  }.freeze
 
-  # Map the enum to the existing status column
-  def investment_status
-    self[:status]
+  # Status validation
+  validates :status, inclusion: { in: STATUS_VALUES.values }
+
+  # Status query methods
+  STATUS_VALUES.each do |method_name, status_value|
+    define_method("#{method_name}?") do
+      status == status_value
+    end
+
+    define_method("#{method_name}!") do
+      update(status: status_value)
+    end
   end
 
-  def investment_status=(value)
-    self[:status] = value
+  # Scopes for each status
+  STATUS_VALUES.each do |method_name, status_value|
+    scope method_name, -> { where(status: status_value) }
   end
 
-  # Add the executed scope (use status column directly)
+  # Add the executed scope
   scope :executed, -> { where(status: 'executed') }
   
-  # NEW: Equity investment scopes (use status column directly)
-  scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
-  scope :committed, -> { where(status: STATUS_COMMITTED) }
+  # NEW: Equity investment scopes
+  scope :successful, -> { where(status: 'successful') }
+  scope :committed, -> { where(status: 'committed') }
   
   before_create :generate_reference
   before_create :set_voting_session_id
@@ -79,27 +80,10 @@ class ClubInvestment < ApplicationRecord
     status == 'approved'
   end
   
-  # NEW: Equity investment status query methods (use the prefixed enum methods)
-  def pending?
-    investment_status_pending?
-  end
-
-  def successful?
-    investment_status_successful?
-  end
-
-  def committed?
-    investment_status_committed?
-  end
-
-  def failed?
-    investment_status_failed?
-  end
-
-  def canceled?
-    investment_status_canceled?
-  end
-
+  # NEW: Equity investment status query methods (already defined above via meta-programming)
+  # These methods are automatically created:
+  # pending?, voting?, approved?, rejected?, initialized?, successful?, failed?, committed?, canceled?, executed?
+  
   # NEW: Equity investment financial calculations
   def current_value
     return investment_amount unless campaign && campaign.valuation && percentage
@@ -192,6 +176,11 @@ class ClubInvestment < ApplicationRecord
     else
       update(status: 'rejected')
     end
+  end
+  
+  # Class method to get all possible status values
+  def self.statuses
+    STATUS_VALUES.values
   end
   
   private
