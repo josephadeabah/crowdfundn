@@ -396,10 +396,8 @@ const InvestmentClubsDashboard: React.FC = () => {
                 onMakeContribution={handleMakeContribution}
                 onProposeInvestment={handleProposeInvestment}
                 onViewAnalytics={handleViewAnalytics}
-                onTransferFunds={isAdmin ? handleTransferFunds : undefined}
-                onCreateInvestment={
-                  isAdmin ? handleCreateInvestment : undefined
-                }
+                onTransferFunds={handleTransferFunds}
+                onCreateInvestment={handleCreateInvestment}
                 isAdmin={isAdmin}
               />
 
