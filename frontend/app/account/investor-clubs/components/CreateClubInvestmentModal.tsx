@@ -46,7 +46,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     (c) => c.campaign.id === selectedCampaignId,
   );
 
-  console.log("Selected Campaign", selectedCampaign);
+  console.log('Selected Campaign', selectedCampaign);
 
   useEffect(() => {
     if (!modalOpen) resetForm();
@@ -89,7 +89,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
       const result = await investmentService.createInvestment(
         token,
-        club.slug,
+        club.id,
         investmentData,
       );
 
