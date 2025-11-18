@@ -42,7 +42,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
           className="w-full px-3 lg:px-4 py-2 lg:py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 font-medium text-sm lg:text-base text-left flex items-center gap-2 transition-colors duration-200"
         >
           <Plus size={16} />
-          Create Investment
+          Make Investment
         </button>
 
         <button
