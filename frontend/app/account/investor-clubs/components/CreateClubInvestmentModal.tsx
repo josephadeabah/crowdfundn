@@ -65,6 +65,12 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Add admin check
+    if (!club.is_admin) {
+      setError('Only club admins can create investments');
+      return;
+    }
+
     if (!selectedCampaignId || !club || !token) {
       setError('Please select a campaign and ensure all data is available');
       return;
@@ -72,6 +78,12 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
     if (!investmentAmount || parseFloat(investmentAmount) <= 0) {
       setError('Enter a valid investment amount');
+      return;
+    }
+
+    // Check if club has sufficient balance
+    if (parseFloat(investmentAmount) > club.financials.current_balance) {
+      setError(`Insufficient club balance. Available: ${club.currency_symbol}${club.financials.current_balance.toLocaleString()}`);
       return;
     }
 
@@ -94,12 +106,15 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       );
 
       if (result.success) {
-        setModalOpen(false);
-        resetForm();
-        onSuccess?.();
-
-        if (result.authorization_url)
+        if (result.authorization_url) {
+          // Redirect to payment page for equity investments
           window.location.href = result.authorization_url;
+        } else {
+          // For voting investments, just close the modal
+          setModalOpen(false);
+          resetForm();
+          onSuccess?.();
+        }
       } else {
         setError(result.message || 'Failed to create investment');
       }
@@ -212,6 +227,9 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 step="0.01"
                 className="border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none"
               />
+              <p className="text-xs text-gray-500">
+                Available balance: {club.currency_symbol}{club.financials.current_balance.toLocaleString()}
+              </p>
             </div>
 
             {/* Notes */}
@@ -253,12 +271,17 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             <Button
               type="submit"
               form="investment-form"
-              disabled={loading || !selectedCampaignId || approvedCampaigns.length === 0}
+              disabled={loading || !selectedCampaignId || approvedCampaigns.length === 0 || !club.is_admin}
               className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
             >
               {loading ? 'Creating...' : 'Create Investment'}
             </Button>
           </div>
+          {!club.is_admin && (
+            <p className="text-xs text-red-600 mt-2 text-center">
+              Only club admins can create investments
+            </p>
+          )}
         </div>
       </div>
     </Modal>
