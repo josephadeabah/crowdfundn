@@ -13,7 +13,6 @@ import Modal from '@/app/components/modal/Modal';
 interface CreateClubInvestmentModalProps {
   club: Club;
   campaign?: EquityCampaignResponseDataType;
-  trigger?: React.ReactNode;
   onSuccess?: () => void;
   isOpen?: boolean;
   onClose?: () => void;
@@ -23,7 +22,6 @@ interface CreateClubInvestmentModalProps {
 const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   club,
   campaign,
-  trigger,
   onSuccess,
   isOpen,
   onClose,
@@ -95,9 +93,6 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
   return (
     <>
-      {/* Trigger button if provided */}
-      {trigger && <div onClick={() => setModalOpen(true)}>{trigger}</div>}
-
       <Modal
         isOpen={modalOpen}
         onClose={handleClose}
