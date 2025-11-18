@@ -128,7 +128,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto max-h-[70vh]">
           <div className="p-6">
             <form id="investment-form" onSubmit={handleSubmit} className="space-y-4">
               {/* Select Campaign */}
