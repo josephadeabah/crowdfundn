@@ -111,153 +111,157 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     }
   };
 
-return (
-  <Modal
-    isOpen={modalOpen}
-    onClose={handleClose}
-    size="large"
-    closeOnBackdropClick={true}
-  >
-    <div className="flex flex-col h-full">
-      {/* Fixed Header */}
-      <div className="flex-shrink-0 p-6 border-b border-gray-200 bg-white">
-        <h2 className="text-xl font-semibold">Make Club Investment</h2>
-        <p className="text-sm text-gray-600 mt-1">
-          Invest club funds in an approved campaign
-        </p>
-      </div>
+  return (
+    <Modal
+      isOpen={modalOpen}
+      onClose={handleClose}
+      size="large"
+      closeOnBackdropClick={true}
+      customStyles={{
+        display: 'flex',
+        flexDirection: 'column',
+        maxHeight: '90vh', // Reduced from 95vh to ensure everything fits
+      }}
+    >
+      <div className="flex flex-col h-full">
+        {/* Fixed Header */}
+        <div className="flex-shrink-0 p-6 border-b border-gray-200 bg-white">
+          <h2 className="text-xl font-semibold">Make Club Investment</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Invest club funds in an approved campaign
+          </p>
+        </div>
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <form id="investment-form" onSubmit={handleSubmit} className="space-y-4">
-          {/* Your existing form fields (Select Campaign, Investment Amount, Notes, etc.) */}
-          {/* Select Campaign */}
-          <div className="space-y-2">
-            <Label htmlFor="campaign" className="text-gray-900">
-              Select Campaign
-            </Label>
-            <Select
-              value={selectedCampaignId}
-              onValueChange={setSelectedCampaignId}
-            >
-              <SelectTrigger className="w-full border-gray-300 text-gray-900 [&>span]:text-gray-900 focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none">
-                <SelectValue
-                  placeholder="Choose an approved campaign"
-                  className="text-gray-900 placeholder:text-gray-500"
-                />
-              </SelectTrigger>
-              <SelectContent className="border-gray-200 bg-white">
-                {approvedCampaigns.length === 0 ? (
-                  <SelectItem value="none" disabled className="text-gray-500">
-                    No approved campaigns available
-                  </SelectItem>
-                ) : (
-                  approvedCampaigns.map((campaign) => (
-                    <SelectItem
-                      key={campaign.id}
-                      value={campaign.campaign.id.toString()}
-                      className="!text-gray-900 hover:bg-gray-100 focus:bg-gray-100"
-                    >
-                      {campaign.campaign.title}
+        {/* Scrollable Content - with max height constraint */}
+        <div className="flex-1 overflow-y-auto p-6 min-h-0"> {/* Added min-h-0 for proper flex shrinking */}
+          <form id="investment-form" onSubmit={handleSubmit} className="space-y-4">
+            {/* Select Campaign */}
+            <div className="space-y-2">
+              <Label htmlFor="campaign" className="text-gray-900">
+                Select Campaign
+              </Label>
+              <Select
+                value={selectedCampaignId}
+                onValueChange={setSelectedCampaignId}
+              >
+                <SelectTrigger className="w-full border-gray-300 text-gray-900 [&>span]:text-gray-900 focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none">
+                  <SelectValue
+                    placeholder="Choose an approved campaign"
+                    className="text-gray-900 placeholder:text-gray-500"
+                  />
+                </SelectTrigger>
+                <SelectContent className="border-gray-200 bg-white">
+                  {approvedCampaigns.length === 0 ? (
+                    <SelectItem value="none" disabled className="text-gray-500">
+                      No approved campaigns available
                     </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-          </div>
+                  ) : (
+                    approvedCampaigns.map((campaign) => (
+                      <SelectItem
+                        key={campaign.id}
+                        value={campaign.campaign.id.toString()}
+                        className="!text-gray-900 hover:bg-gray-100 focus:bg-gray-100"
+                      >
+                        {campaign.campaign.title}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Selected Campaign Details */}
-          {selectedCampaign && (
-            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-              <p className="text-sm text-gray-600">
-                {selectedCampaign.campaign.fundraiser?.name || 'Unknown fundraiser'}
-              </p>
-              <div className="text-xs mt-1 space-y-1 text-gray-700">
-                <div>
-                  Goal: {selectedCampaign.campaign.currency_symbol || selectedCampaign.campaign.currency}
-                  {selectedCampaign.campaign.goal_amount?.toLocaleString()}
-                </div>
-                <div>
-                  Raised: {selectedCampaign.campaign.currency_symbol || selectedCampaign.campaign.currency}
-                  {selectedCampaign.campaign.current_amount?.toLocaleString()}
-                </div>
-                <div>Category: {selectedCampaign.campaign.category}</div>
-                {selectedCampaign.club_investment?.proposed_amount && (
+            {/* Selected Campaign Details */}
+            {selectedCampaign && (
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-600">
+                  {selectedCampaign.campaign.fundraiser?.name || 'Unknown fundraiser'}
+                </p>
+                <div className="text-xs mt-1 space-y-1 text-gray-700">
                   <div>
-                    Proposed: {club.currency_symbol}
-                    {selectedCampaign.club_investment.proposed_amount.toLocaleString()}
+                    Goal: {selectedCampaign.campaign.currency_symbol || selectedCampaign.campaign.currency}
+                    {selectedCampaign.campaign.goal_amount?.toLocaleString()}
                   </div>
-                )}
+                  <div>
+                    Raised: {selectedCampaign.campaign.currency_symbol || selectedCampaign.campaign.currency}
+                    {selectedCampaign.campaign.current_amount?.toLocaleString()}
+                  </div>
+                  <div>Category: {selectedCampaign.campaign.category}</div>
+                  {selectedCampaign.club_investment?.proposed_amount && (
+                    <div>
+                      Proposed: {club.currency_symbol}
+                      {selectedCampaign.club_investment.proposed_amount.toLocaleString()}
+                    </div>
+                  )}
+                </div>
               </div>
+            )}
+
+            {/* Investment Amount */}
+            <div className="space-y-2">
+              <Label htmlFor="investmentAmount" className="text-gray-900">
+                Investment Amount ({club.currency})
+              </Label>
+              <Input
+                id="investmentAmount"
+                type="number"
+                value={investmentAmount}
+                onChange={(e) => setInvestmentAmount(e.target.value)}
+                placeholder="Enter investment amount"
+                required
+                min="1"
+                step="0.01"
+                className="border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none"
+              />
             </div>
-          )}
 
-          {/* Investment Amount */}
-          <div className="space-y-2">
-            <Label htmlFor="investmentAmount" className="text-gray-900">
-              Investment Amount ({club.currency})
-            </Label>
-            <Input
-              id="investmentAmount"
-              type="number"
-              value={investmentAmount}
-              onChange={(e) => setInvestmentAmount(e.target.value)}
-              placeholder="Enter investment amount"
-              required
-              min="1"
-              step="0.01"
-              className="border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none"
-            />
-          </div>
-
-          {/* Notes */}
-          <div className="space-y-2">
-            <Label htmlFor="notes" className="text-gray-900">
-              Investment Notes (Optional)
-            </Label>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add any additional context or reasoning for this investment..."
-              rows={3}
-              className="border-gray-300 text-gray-900 placeholder:text-gray-500 resize-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none"
-            />
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-800 text-sm">{error}</p>
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label htmlFor="notes" className="text-gray-900">
+                Investment Notes (Optional)
+              </Label>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add any additional context or reasoning for this investment..."
+                rows={3}
+                className="border-gray-300 text-gray-900 placeholder:text-gray-500 resize-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none"
+              />
             </div>
-          )}
-        </form>
-      </div>
 
-      {/* Fixed Buttons - ALWAYS VISIBLE */}
-      <div className="flex-shrink-0 p-6 border-t border-gray-200 bg-white">
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            disabled={loading}
-            className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            form="investment-form"
-            disabled={loading || !selectedCampaignId || approvedCampaigns.length === 0}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
-          >
-            {loading ? 'Creating...' : 'Create Investment'}
-          </Button>
+            {/* Error */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-red-800 text-sm">{error}</p>
+              </div>
+            )}
+          </form>
+        </div>
+
+        {/* Fixed Buttons - ALWAYS VISIBLE */}
+        <div className="flex-shrink-0 p-6 border-t border-gray-200 bg-white">
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              disabled={loading}
+              className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="investment-form"
+              disabled={loading || !selectedCampaignId || approvedCampaigns.length === 0}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
+            >
+              {loading ? 'Creating...' : 'Create Investment'}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
-  </Modal>
+    </Modal>
   );
 };
 
