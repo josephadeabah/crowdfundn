@@ -115,7 +115,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     <Modal
       isOpen={modalOpen}
       onClose={handleClose}
-      size="xlarge"
+      size="large"
       closeOnBackdropClick={true}
     >
       <div className="flex flex-col h-full">
