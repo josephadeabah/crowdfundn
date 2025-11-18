@@ -57,14 +57,19 @@ class ClubInvestment < ApplicationRecord
   # Status validation
   validates :status, inclusion: { in: STATUS_VALUES.values }
 
-  # Status query methods
+  # FIXED: Status query methods - only define methods that don't conflict
   STATUS_VALUES.each do |method_name, status_value|
-    define_method("#{method_name}?") do
-      status == status_value
+    # Only define methods that don't conflict with existing methods
+    unless method_defined?("#{method_name}?")
+      define_method("#{method_name}?") do
+        status == status_value
+      end
     end
 
-    define_method("#{method_name}!") do
-      update(status: status_value)
+    unless method_defined?("#{method_name}!")
+      define_method("#{method_name}!") do
+        update(status: status_value)
+      end
     end
   end
 
@@ -91,10 +96,6 @@ class ClubInvestment < ApplicationRecord
   def approved?
     status == 'approved'
   end
-  
-  # NEW: Equity investment status query methods (already defined above via meta-programming)
-  # These methods are automatically created:
-  # pending?, voting?, approved?, rejected?, initialized?, successful?, failed?, committed?, canceled?, executed?
   
   # NEW: Equity investment financial calculations
   def current_value
