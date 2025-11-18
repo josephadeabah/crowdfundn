@@ -58,6 +58,9 @@ module Api
             elsif metadata[:type] == 'club_contribution'
               Rails.logger.info "Routing to ClubContributionHandler for charge.success"
               PaystackWebhook::Handlers::ClubContributionHandler.new(event[:data]).call
+            elsif metadata[:type] == 'club_equity_investment'
+              Rails.logger.info "Routing to ClubEquityInvestmentHandler for charge.success"
+              PaystackWebhook::Handlers::ClubEquityInvestmentHandler.new(event[:data]).call
             else
               Rails.logger.info "Routing to ChargeSuccessHandler"
               PaystackWebhook::ChargeSuccessHandler.new(event[:data]).call
@@ -67,6 +70,9 @@ module Api
             Rails.logger.info "Processing charge.failed event"
             if metadata[:type] == 'club_contribution'
               PaystackWebhook::Handlers::ClubContributionHandler.new(event[:data]).call
+            elsif metadata[:type] == 'club_equity_investment'
+              Rails.logger.info "Routing to ClubEquityInvestmentHandler for charge.failed"
+              PaystackWebhook::Handlers::ClubEquityInvestmentHandler.new(event[:data]).call
             else
               PaystackWebhook::ChargeFailedHandler.new(event[:data]).call
             end
@@ -107,6 +113,9 @@ module Api
               PaystackWebhook::Handlers::RefundProcessedHandler.new(event[:data]).call
             elsif metadata[:type] == 'club_contribution'
               PaystackWebhook::Handlers::ClubContributionRefundHandler.new(event[:data]).call
+            elsif metadata[:type] == 'club_equity_investment'
+              Rails.logger.info "Routing to ClubEquityInvestmentHandler for refund.processed"
+              PaystackWebhook::Handlers::ClubEquityInvestmentHandler.new(event[:data]).call
             else
               PaystackWebhook::Handlers::DonationRefundHandler.new(event[:data]).call
             end

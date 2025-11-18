@@ -370,6 +370,15 @@ Rails.application.routes.draw do
           get :my_clubs
           get :discover
         end
+        resources :club_investments, only: [:index, :create, :show] do
+          member do
+            post :vote
+            post :execute
+            get :certificate_status
+            post :generate_certificate
+            get :download_certificate
+          end
+        end
       end
     
     # Reusable voting system

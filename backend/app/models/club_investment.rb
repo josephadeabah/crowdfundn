@@ -7,6 +7,7 @@ class ClubInvestment < ApplicationRecord
   has_many :member_investment_shares, dependent: :destroy
   has_many :members, through: :member_investment_shares, source: :user
   has_many :votes, as: :votable, dependent: :destroy
+  has_one_attached :certificate
   
   # Add these missing attributes
   attribute :proposed_share_percentage, :decimal, precision: 5, scale: 2
@@ -15,27 +16,131 @@ class ClubInvestment < ApplicationRecord
   attribute :shares_acquired, :integer, default: 0
   attribute :reference, :string
   
+  # NEW: Equity investment attributes
+  attribute :shares, :decimal, precision: 20, scale: 4
+  attribute :percentage, :decimal, precision: 10, scale: 6
+  attribute :investment_date, :date
+  attribute :certificate_number, :string
+  attribute :transaction_reference, :string
+  attribute :equity_investment_id, :integer
+  attribute :current_value, :decimal, precision: 15, scale: 2
+  
   validates :investment_amount, numericality: { greater_than: 0 }
   validates :proposed_share_percentage, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, allow_nil: true
   # Removed shares_acquired validation
   
+  # NEW: Equity investment status constants
+  STATUS_PENDING = 'pending'
+  STATUS_INITIALIZED = 'initialized'
+  STATUS_SUCCESSFUL = 'successful'
+  STATUS_FAILED = 'failed'
+  STATUS_COMMITTED = 'committed'
+  STATUS_CANCELED = 'canceled'
+
+  # Existing voting status enum
   enum status: {
     pending: 'pending',
     voting: 'voting',
     approved: 'approved',
-    rejected: 'rejected'
+    rejected: 'rejected',
+    # NEW: Equity investment statuses
+    initialized: STATUS_INITIALIZED,
+    successful: STATUS_SUCCESSFUL,
+    failed: STATUS_FAILED,
+    committed: STATUS_COMMITTED,
+    canceled: STATUS_CANCELED
   }
-
 
   # Add the executed scope
   scope :executed, -> { where(status: 'executed') }
   
+  # NEW: Equity investment scopes
+  scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
+  scope :committed, -> { where(status: STATUS_COMMITTED) }
+  
   before_create :generate_reference
   before_create :set_voting_session_id
+  # NEW: Equity investment callbacks
+  before_create :generate_certificate_number
+  before_create :set_investment_date
+  before_create :calculate_shares_and_percentage, if: :is_equity_investment?
   
   # Method to check if investment is approved based on voting
   def approved?
     status == 'approved'
+  end
+  
+  # NEW: Equity investment status query methods
+  def pending?
+    status == STATUS_PENDING
+  end
+
+  def successful?
+    status == STATUS_SUCCESSFUL
+  end
+
+  def committed?
+    status == STATUS_COMMITTED
+  end
+
+  def failed?
+    status == STATUS_FAILED
+  end
+
+  def canceled?
+    status == STATUS_CANCELED
+  end
+
+  # NEW: Equity investment financial calculations
+  def current_value
+    return investment_amount unless campaign && campaign.valuation && percentage
+    
+    (campaign.valuation * percentage / 100).round(2)
+  end
+
+  def total_returns
+    (current_value - investment_amount).round(2)
+  end
+
+  def roi
+    return 0 if investment_amount.zero?
+    ((total_returns / investment_amount) * 100).round(2)
+  end
+
+  # NEW: Certificate methods for equity investments
+  def certificate_url
+    return unless certificate.attached?
+    
+    if Rails.env.production?
+      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{certificate.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(certificate)
+    end
+  rescue => e
+    Rails.logger.error "Failed to generate certificate URL for club investment #{id}: #{e.message}"
+    nil
+  end
+
+  def certificate_present?
+    certificate.attached? && certificate.blob.present?
+  end
+
+  # NEW: Signature methods for equity investments
+  def club_signature_url
+    # Use club's official signature or president's signature
+    club_president = investment_club.admin_members.first
+    club_president&.latest_kyc&.signature_image_url
+  end
+
+  def issuer_signature_url
+    issuer = campaign.fundraiser
+    return nil unless issuer
+    issuer.latest_kyc&.signature_image_url
+  end
+
+  # NEW: Check if this is an equity investment
+  def is_equity_investment?
+    campaign.is_a?(EquityCampaign)
   end
   
   # Method to get voting statistics
@@ -104,5 +209,30 @@ class ClubInvestment < ApplicationRecord
       campaign: campaign,
       club_investment: self
     )
+  end
+
+  # NEW: Equity investment private methods
+  def generate_certificate_number
+    return if certificate_number.present? || !is_equity_investment?
+    self.certificate_number ||= "CLUB-#{SecureRandom.alphanumeric(10).upcase}"
+  end
+
+  def set_investment_date
+    return if investment_date.present? || !is_equity_investment?
+    self.investment_date ||= Date.current
+  end
+
+  def calculate_shares_and_percentage
+    return unless is_equity_investment?
+    return unless campaign && investment_amount.present? && investment_amount.positive?
+
+    if campaign.valuation.to_f <= 0 || campaign.total_shares.to_f <= 0
+      errors.add(:base, "Campaign must have valid valuation and shares")
+      return
+    end
+
+    price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
+    self.shares = (investment_amount / price_per_share).round(4)
+    self.percentage = (shares / campaign.total_shares.to_f) * 100
   end
 end
