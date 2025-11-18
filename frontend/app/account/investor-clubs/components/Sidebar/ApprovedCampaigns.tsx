@@ -274,7 +274,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
             </div>
           ) : (
             <div className="space-y-3">
-              {approvedCampaigns.map((campaign) => {
+              {approvedCampaigns?.map((campaign) => {
                 if (!campaign?.id) return null;
 
                 const isExpanded = expandedCampaigns.has(campaign.id);
@@ -289,7 +289,7 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
 
                 return (
                   <div
-                    key={campaign.id}
+                    key={campaign?.id}
                     className="rounded-sm bg-green-50/50 hover:bg-green-50 transition-colors"
                   >
                     {/* Campaign Header - Always Visible */}
@@ -309,9 +309,9 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ club }) => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
                               <h3 className="font-semibold text-gray-900 truncate">
-                                {campaignData.title || 'Untitled Campaign'}
+                                {campaignData?.title || 'Untitled Campaign'}
                               </h3>
-                              {campaignData.slug && (
+                              {campaignData?.slug && (
                                 <Button
                                   onClick={(e) => {
                                     e.stopPropagation();

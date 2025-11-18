@@ -101,7 +101,7 @@ export const RecentInvestmentsSection: React.FC<
       <div className="bg-white rounded-sm divide-y">
         {investments?.slice(0, 5)?.map((investment) => (
           <div
-            key={investment.id}
+            key={investment?.id}
             className="p-3 lg:p-4 hover:bg-gray-50 cursor-pointer transition-colors"
             onClick={() => handleInvestmentAction(investment)}
           >
@@ -109,7 +109,7 @@ export const RecentInvestmentsSection: React.FC<
               <div className="flex-1 min-w-0">
                 <div className="flex items-start gap-2 mb-2">
                   <h4 className="font-semibold text-sm lg:text-base line-clamp-2 flex-1">
-                    {investment.campaign.title}
+                    {investment?.campaign?.title}
                   </h4>
                   <span className="px-2 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Equity
@@ -119,8 +119,8 @@ export const RecentInvestmentsSection: React.FC<
                 <div className="flex items-center gap-2 mb-2">
                   <p className="text-xs lg:text-sm text-gray-600 font-medium">
                     {formatCurrency(
-                      investment.investment_amount,
-                      investment.currency_symbol,
+                      investment?.investment_amount,
+                      investment?.currency_symbol,
                     )}
                   </p>
                   {getStatusBadge(investment)}
@@ -128,46 +128,46 @@ export const RecentInvestmentsSection: React.FC<
 
                 {/* Investment Details */}
                 <div className="flex flex-wrap gap-3 text-xs text-gray-500">
-                  {investment.shares && (
+                  {investment?.shares && (
                     <div className="flex items-center gap-1">
                       <TrendingUp size={12} />
                       <span>
-                        {investment.shares.toLocaleString()} shares (
-                        {investment.percentage}%)
+                        {investment?.shares.toLocaleString()} shares (
+                        {investment?.percentage}%)
                       </span>
                     </div>
                   )}
 
-                  {investment.current_value && (
+                  {investment?.current_value && (
                     <div className="flex items-center gap-1">
                       <span
                         className={`font-medium ${
-                          investment.total_returns &&
-                          investment.total_returns >= 0
+                          investment?.total_returns &&
+                          investment?.total_returns >= 0
                             ? 'text-green-600'
                             : 'text-red-600'
                         }`}
                       >
                         Current:{' '}
                         {formatCurrency(
-                          investment.current_value,
-                          investment.currency_symbol,
+                          investment?.current_value,
+                          investment?.currency_symbol,
                         )}
                       </span>
                     </div>
                   )}
 
-                  {investment.roi && (
+                  {investment?.roi && (
                     <div className="flex items-center gap-1">
                       <span
                         className={`font-medium ${
-                          investment.roi >= 0
+                          investment?.roi >= 0
                             ? 'text-green-600'
                             : 'text-red-600'
                         }`}
                       >
-                        ROI: {investment.roi >= 0 ? '+' : ''}
-                        {investment.roi}%
+                        ROI: {investment?.roi >= 0 ? '+' : ''}
+                        {investment?.roi}%
                       </span>
                     </div>
                   )}
@@ -193,7 +193,7 @@ export const RecentInvestmentsSection: React.FC<
                   )}
 
                   {investment.status === 'successful' &&
-                    investment.certificate_url && (
+                    investment?.certificate_url && (
                       <button
                         onClick={(e) =>
                           handleDownloadCertificate(e, investment)
