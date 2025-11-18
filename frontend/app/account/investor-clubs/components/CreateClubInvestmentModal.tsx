@@ -242,11 +242,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               )}
             </form>
           </div>
-        </div>
 
-        {/* Fixed Footer with Buttons */}
-        <div className="flex-shrink-0 p-6 border-t border-gray-200 bg-white">
-          <div className="flex gap-3">
+                    <div className="flex gap-3">
             <Button
               type="button"
               variant="outline"
@@ -269,6 +266,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             </Button>
           </div>
         </div>
+
+        {/* Fixed Footer with Buttons */}
+        {/* <div className="flex-shrink-0 p-6 border-t border-gray-200 bg-white">
+
+        </div> */}
       </div>
     </Modal>  
   );
