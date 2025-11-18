@@ -116,177 +116,162 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   };
 
   return (
-    <Modal
-      isOpen={modalOpen}
-      onClose={handleClose}
-      size="medium"
-      closeOnBackdropClick={true}
-    >
-      <div className="p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold">Make Club Investment</h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Invest club funds in an approved campaign
-          </p>
+<Modal
+  isOpen={modalOpen}
+  onClose={handleClose}
+  size="medium"
+  closeOnBackdropClick={true}
+>
+  {/* Fixed Header */}
+  <div className="p-6 border-b border-gray-200 bg-white sticky top-0 z-10">
+    <h2 className="text-xl font-semibold">Make Club Investment</h2>
+    <p className="text-sm text-gray-600 mt-1">
+      Invest club funds in an approved campaign
+    </p>
+  </div>
+
+  {/* Scrollable Content */}
+  <div className="flex-1 overflow-y-auto">
+    <div className="p-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Select Campaign */}
+        <div className="space-y-2">
+          <Label htmlFor="campaign" className="text-gray-900">
+            Select Campaign
+          </Label>
+
+          <Select
+            value={selectedCampaignId}
+            onValueChange={setSelectedCampaignId}
+          >
+            <SelectTrigger className="w-full border-gray-300 text-gray-900 [&>span]:text-gray-900 focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none">
+              <SelectValue
+                placeholder="Choose an approved campaign"
+                className="text-gray-900 placeholder:text-gray-500"
+              />
+            </SelectTrigger>
+
+            <SelectContent className="border-gray-200 bg-white">
+              {approvedCampaigns.length === 0 ? (
+                <SelectItem value="none" disabled className="text-gray-500">
+                  No approved campaigns available
+                </SelectItem>
+              ) : (
+                approvedCampaigns.map((campaign) => (
+                  <SelectItem
+                    key={campaign.id}
+                    value={campaign.campaign.id.toString()} // Ensure string value
+                    className="!text-gray-900 hover:bg-gray-100 focus:bg-gray-100"
+                  >
+                    {campaign.campaign.title}
+                  </SelectItem>
+                ))
+              )}
+            </SelectContent>
+          </Select>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Select Campaign */}
-          <div className="space-y-2">
-            <Label htmlFor="campaign" className="text-gray-900">
-              Select Campaign
-            </Label>
+        {/* Selected Campaign Details */}
+        {selectedCampaign && (
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <h4 className="font-medium text-gray-900">
+              {selectedCampaign.campaign.title}
+            </h4>
+            <p className="text-sm text-gray-600">
+              {selectedCampaign.campaign.fundraiser?.name ||
+                'Unknown fundraiser'}
+            </p>
 
-            <Select
-              value={selectedCampaignId}
-              onValueChange={setSelectedCampaignId}
-            >
-              <SelectTrigger
-                className="
-      w-full border-gray-300 
-      text-gray-900
-      [&>span]:text-gray-900
-      focus:ring-0 focus:border-gray-300
-      focus-visible:ring-0 focus-visible:ring-offset-0
-      focus:outline-none
-    "
-              >
-                <SelectValue
-                  placeholder="Choose an approved campaign"
-                  className="text-gray-900 placeholder:text-gray-500"
-                />
-              </SelectTrigger>
-
-              <SelectContent className="border-gray-200 bg-white">
-                {approvedCampaigns.length === 0 ? (
-                  <SelectItem value="none" disabled className="text-gray-500">
-                    No approved campaigns available
-                  </SelectItem>
-                ) : (
-                  approvedCampaigns.map((campaign) => (
-                    <SelectItem
-                      key={campaign.id}
-                      value={campaign.campaign.id}
-                      className="!text-gray-900 hover:bg-gray-100 focus:bg-gray-100"
-                    >
-                      {campaign.campaign.title}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Selected Campaign Details */}
-          {selectedCampaign && (
-            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-              <h4 className="font-medium text-gray-900">
-                {selectedCampaign.campaign.title}
-              </h4>
-              <p className="text-sm text-gray-600">
-                {selectedCampaign.campaign.fundraiser?.name ||
-                  'Unknown fundraiser'}
-              </p>
-
-              <div className="text-xs mt-1 space-y-1 text-gray-700">
-                <div>
-                  Goal: {selectedCampaign.campaign.currency_symbol}
-                  {selectedCampaign.campaign.goal_amount?.toLocaleString()}
-                </div>
-                <div>
-                  Raised: {selectedCampaign.campaign.currency_symbol}
-                  {selectedCampaign.campaign.current_amount?.toLocaleString()}
-                </div>
-                <div>Category: {selectedCampaign.campaign.category}</div>
-
-                {selectedCampaign.club_investment?.proposed_amount && (
-                  <div>
-                    Proposed: {club.currency_symbol}
-                    {selectedCampaign.club_investment.proposed_amount.toLocaleString()}
-                  </div>
-                )}
+            <div className="text-xs mt-1 space-y-1 text-gray-700">
+              <div>
+                Goal: {selectedCampaign.campaign.currency_symbol || selectedCampaign.campaign.currency}
+                {selectedCampaign.campaign.goal_amount?.toLocaleString()}
               </div>
+              <div>
+                Raised: {selectedCampaign.campaign.currency_symbol || selectedCampaign.campaign.currency}
+                {selectedCampaign.campaign.current_amount?.toLocaleString()}
+              </div>
+              <div>Category: {selectedCampaign.campaign.category}</div>
+
+              {selectedCampaign.club_investment?.proposed_amount && (
+                <div>
+                  Proposed: {club.currency_symbol}
+                  {selectedCampaign.club_investment.proposed_amount.toLocaleString()}
+                </div>
+              )}
             </div>
-          )}
-
-          {/* Investment Amount */}
-          <div className="space-y-2">
-            <Label htmlFor="investmentAmount" className="text-gray-900">
-              Investment Amount ({club.currency})
-            </Label>
-            <Input
-              id="investmentAmount"
-              type="number"
-              value={investmentAmount}
-              onChange={(e) => setInvestmentAmount(e.target.value)}
-              placeholder="Enter investment amount"
-              required
-              min="1"
-              step="0.01"
-              className="
-    border-gray-300 text-gray-900 placeholder:text-gray-500
-    focus:ring-0 focus:ring-offset-0
-    focus-visible:ring-0 focus-visible:ring-offset-0
-    focus:border-gray-300
-    focus:outline-none
-  "
-            />
           </div>
+        )}
 
-          {/* Notes */}
-          <div className="space-y-2">
-            <Label htmlFor="notes" className="text-gray-900">
-              Investment Notes (Optional)
-            </Label>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add any additional context or reasoning for this investment..."
-              rows={3}
-              className="
-    border-gray-300 text-gray-900 placeholder:text-gray-500
-    resize-none
-    focus:ring-0 focus:ring-offset-0
-    focus-visible:ring-0 focus-visible:ring-offset-0
-    focus:border-gray-300
-    focus:outline-none
-  "
-            />
+        {/* Investment Amount */}
+        <div className="space-y-2">
+          <Label htmlFor="investmentAmount" className="text-gray-900">
+            Investment Amount ({club.currency})
+          </Label>
+          <Input
+            id="investmentAmount"
+            type="number"
+            value={investmentAmount}
+            onChange={(e) => setInvestmentAmount(e.target.value)}
+            placeholder="Enter investment amount"
+            required
+            min="1"
+            step="0.01"
+            className="border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none"
+          />
+        </div>
+
+        {/* Notes */}
+        <div className="space-y-2">
+          <Label htmlFor="notes" className="text-gray-900">
+            Investment Notes (Optional)
+          </Label>
+          <Textarea
+            id="notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Add any additional context or reasoning for this investment..."
+            rows={3}
+            className="border-gray-300 text-gray-900 placeholder:text-gray-500 resize-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none"
+          />
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+            <p className="text-red-800 text-sm">{error}</p>
           </div>
+        )}
+      </form>
+    </div>
+  </div>
 
-          {/* Error */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-800 text-sm">{error}</p>
-            </div>
-          )}
+  {/* Fixed Footer with Buttons */}
+  <div className="p-6 border-t border-gray-200 bg-white sticky bottom-0">
+    <div className="flex gap-3">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleClose}
+        disabled={loading}
+        className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+      >
+        Cancel
+      </Button>
 
-          {/* Buttons */}
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={loading}
-              className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </Button>
-
-            <Button
-              type="submit"
-              disabled={
-                loading || !selectedCampaignId || approvedCampaigns.length === 0
-              }
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
-            >
-              {loading ? 'Creating...' : 'Create Investment'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </Modal>
+      <Button
+        type="submit"
+        disabled={
+          loading || !selectedCampaignId || approvedCampaigns.length === 0
+        }
+        className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
+        onClick={handleSubmit} // Add onClick since form is now split
+      >
+        {loading ? 'Creating...' : 'Create Investment'}
+      </Button>
+    </div>
+  </div>
+</Modal>
   );
 };
 
