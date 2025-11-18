@@ -148,6 +148,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 required
                 min={campaign?.minimum_investment || 1}
                 step="0.01"
+                className="focus:outline-none focus:ring-0"
               />
               {campaign?.minimum_investment && (
                 <p className="text-xs text-gray-500">
