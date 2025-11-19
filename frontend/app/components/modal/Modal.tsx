@@ -69,7 +69,7 @@ const Modal: React.FC<ModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[999999] !top-0 !left-0 !right-0 !bottom-0 flex items-start justify-center overflow-y-auto bg-black bg-opacity-50"
+          className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto bg-black bg-opacity-50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -77,7 +77,6 @@ const Modal: React.FC<ModalProps> = ({
           onClick={handleBackdropClick}
           aria-modal="true"
           role="dialog"
-          style={{ position: "fixed", inset: 0 }}
         >
           <motion.div
             ref={modalRef}
