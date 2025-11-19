@@ -565,7 +565,7 @@ const InvestmentClubsDashboard: React.FC = () => {
               />
 
               <ClubStats
-                club={currentClub}
+                club={currentClub || null}
                 investmentsCount={transformedInvestments.length}
                 formatCurrency={formatCurrency}
               />
