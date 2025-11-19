@@ -325,16 +325,16 @@ module Api
           end
 
           # Subaccount validation
-          if result[:valid]
-            subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
-            unless subaccount&.subaccount_code.present?
-              result[:valid] = false
-              result[:message] = 'Fundraiser does not meet requirements for raising funds'
-              result[:errors][:base] = ['Fundraiser does not meet requirements for raising funds']
-              result[:code] = 'MISSING_ACCOUNT_NUMBER'
-              Rails.logger.error "Missing subaccount for fundraiser: #{@campaign.fundraiser_id}"
-            end
-          end
+          # if result[:valid]
+          #   subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
+          #   unless subaccount&.subaccount_code.present?
+          #     result[:valid] = false
+          #     result[:message] = 'Fundraiser does not meet requirements for raising funds'
+          #     result[:errors][:base] = ['Fundraiser does not meet requirements for raising funds']
+          #     result[:code] = 'MISSING_ACCOUNT_NUMBER'
+          #     Rails.logger.error "Missing subaccount for fundraiser: #{@campaign.fundraiser_id}"
+          #   end
+          # end
 
           # Campaign status validation
           if result[:valid] && !@campaign.live?
