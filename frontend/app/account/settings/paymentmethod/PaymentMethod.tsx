@@ -127,25 +127,13 @@ const PaymentMethod = () => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        }
+        },
       );
-      
       const data = await response.json();
-      
-      // Check if the response has the expected structure
-      if (data.status === false || !data.data) {
-        throw new Error(data.message || 'Invalid account number');
-      }
-      
-      // Safely access the account name
-      const accountName = data.data.account_name || data.data.account_name;
-      if (!accountName) {
-        throw new Error('Account name not found in response');
-      }
-      
-      return accountName;
-    } catch (error: any) {
-      showToast('Error', error.message || 'Invalid or unverified account number.', 'error');
+      if (!data.status) throw new Error('Invalid account number');
+      return data.data.account_name;
+    } catch {
+      showToast('Error', 'Invalid or unverified account number.', 'error');
       return null;
     }
   };
@@ -341,11 +329,7 @@ const PaymentMethod = () => {
         )}
 
         {/* Add Modal */}
-        <Modal
-          size="small"
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-        >
+        <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
           <div className="space-y-6 text-gray-900">
             <div className="text-center">
               <div className="mx-auto w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mb-4">
