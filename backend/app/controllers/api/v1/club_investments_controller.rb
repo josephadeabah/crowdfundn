@@ -649,7 +649,7 @@ module Api
           valuation: investment.campaign.valuation,
           equity_offered: investment.campaign.equity_offered,
           investor_name: @club.name,
-          investor_email: @club.contact_email,
+          investor_email: @club.creator.email, # Use club creator's email as fallback
           finalized: false,
           cancellation_window_ended: false,
           metadata: {

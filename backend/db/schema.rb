@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_19_000420) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_19_131734) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -243,8 +243,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_19_000420) do
     t.decimal "proposed_share_percentage", precision: 5, scale: 2
     t.integer "created_by_id"
     t.string "reference"
+    t.decimal "shares", precision: 20, scale: 4
+    t.decimal "percentage", precision: 10, scale: 6
+    t.date "investment_date"
+    t.string "certificate_number"
+    t.string "transaction_reference"
+    t.integer "equity_investment_id"
+    t.decimal "current_value", precision: 15, scale: 2
+    t.text "notes"
     t.index ["campaign_id"], name: "index_club_investments_on_campaign_id"
+    t.index ["certificate_number"], name: "index_club_investments_on_certificate_number", unique: true
     t.index ["created_by_id"], name: "index_club_investments_on_created_by_id"
+    t.index ["equity_investment_id"], name: "index_club_investments_on_equity_investment_id"
     t.index ["investment_club_id", "campaign_id"], name: "index_club_investments_on_investment_club_id_and_campaign_id"
     t.index ["investment_club_id"], name: "index_club_investments_on_investment_club_id"
     t.index ["reference"], name: "index_club_investments_on_reference", unique: true

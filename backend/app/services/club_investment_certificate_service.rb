@@ -1,4 +1,3 @@
-# app/services/club_investment_certificate_service.rb
 class ClubInvestmentCertificateService
   require 'prawn'
   require 'prawn/table'
@@ -16,9 +15,9 @@ class ClubInvestmentCertificateService
       Rails.logger.info "Club Investment ID: #{club_investment.id}"
       Rails.logger.info "Club: #{club_investment.investment_club.name}"
 
-      # Get signatures
-      club_signature_url = club_investment.club_signature_url
-      issuer_signature_url = club_investment.issuer_signature_url
+      # Get signatures with safe fallbacks
+      club_signature_url = get_club_signature_url(club_investment)
+      issuer_signature_url = get_issuer_signature_url(club_investment)
       
       Rails.logger.info "Club signature URL: #{club_signature_url}"
       Rails.logger.info "Issuer signature URL: #{issuer_signature_url}"
@@ -64,6 +63,16 @@ class ClubInvestmentCertificateService
       club = club_investment.investment_club
       campaign = club_investment.campaign
       
+      # FIXED: Safe access to campaign data
+      campaign_title = campaign&.title || 'Unknown Campaign'
+      campaign_company = campaign&.company_name || 'Unknown Company'
+      campaign_currency = campaign&.currency_symbol || '$'
+      campaign_description = campaign&.company_description || 'No description available'
+      campaign_headquarters = campaign&.company_headquarters || 'Not specified'
+      campaign_website = campaign&.company_website || 'Not specified'
+      campaign_valuation = campaign&.valuation&.to_f || 0
+      campaign_equity_offered = campaign&.equity_offered&.to_f || 0
+      
       pdf.text "This is to certify that the investment club", size: 12, align: :center
       pdf.move_down 4
       
@@ -76,7 +85,9 @@ class ClubInvestmentCertificateService
       pdf.move_down 4
       
       pdf.fill_color BRAND_ORANGE
-      pdf.text "#{campaign.currency}#{club_investment.investment_amount.round(2)}", 
+      # FIXED: Safe rounding of investment amount
+      investment_amount = club_investment.investment_amount.to_f.round(2)
+      pdf.text "#{campaign_currency}#{investment_amount}", 
                size: 18, align: :center, style: :bold
       pdf.move_down 8
       
@@ -85,7 +96,7 @@ class ClubInvestmentCertificateService
       pdf.move_down 4
       
       pdf.fill_color BRAND_GREEN
-      pdf.text campaign.company_name.to_s.upcase, size: 14, align: :center, style: :bold
+      pdf.text campaign_company.to_s.upcase, size: 14, align: :center, style: :bold
       pdf.move_down 12
 
       # Company information
@@ -94,12 +105,12 @@ class ClubInvestmentCertificateService
       pdf.move_down 8
 
       company_details = [
-        ['Company:', campaign.company_name],
-        ['Description:', campaign.company_description.to_s.truncate(80)],
-        ['Headquarters:', campaign.company_headquarters],
-        ['Website:', campaign.company_website],
-        ['Valuation:', "#{campaign.currency} #{campaign.valuation.to_f.round(2)}"],
-        ['Equity Offered:', "#{campaign.equity_offered}%"]
+        ['Company:', campaign_company],
+        ['Description:', campaign_description.to_s.truncate(80)],
+        ['Headquarters:', campaign_headquarters],
+        ['Website:', campaign_website],
+        ['Valuation:', "#{campaign_currency} #{campaign_valuation.round(2)}"],
+        ['Equity Offered:', "#{campaign_equity_offered.round(2)}%"]
       ]
 
       pdf.table(company_details, 
@@ -119,7 +130,7 @@ class ClubInvestmentCertificateService
       club_details = [
         ['Club Name:', club.name],
         ['Total Members:', club.current_members_count.to_s],
-        ['Club Type:', club.club_type.humanize],
+        ['Club Type:', club.club_type&.humanize || 'Not specified'],
         ['Investment Focus:', club.investment_focus || 'Diversified']
       ]
 
@@ -138,11 +149,16 @@ class ClubInvestmentCertificateService
       pdf.text 'INVESTMENT DETAILS', size: 14, align: :center, style: :bold
       pdf.move_down 10
 
+      # FIXED: Safe rounding of shares and percentage
+      shares = club_investment.shares&.to_f&.round(4) || 0
+      percentage = club_investment.percentage&.to_f&.round(4) || 0
+      certificate_number = club_investment.certificate_number || "CLUB-#{club_investment.id}"
+
       details = [
-        ['Certificate Number:', { content: club_investment.certificate_number, color: BRAND_GREEN }],
+        ['Certificate Number:', { content: certificate_number, color: BRAND_GREEN }],
         ['Date of Investment:', { content: club_investment.created_at.strftime('%B %d, %Y'), color: '000000' }],
-        ['Shares Acquired:', { content: "#{club_investment.shares.round(4)} shares", color: '000000' }],
-        ['Ownership Percentage:', { content: "#{club_investment.percentage.round(4)}%", color: BRAND_ORANGE }],
+        ['Shares Acquired:', { content: "#{shares} shares", color: '000000' }],
+        ['Ownership Percentage:', { content: "#{percentage}%", color: BRAND_ORANGE }],
         ['Club Investment ID:', { content: club_investment.id.to_s, color: BRAND_GREEN }]
       ]
 
@@ -160,7 +176,7 @@ class ClubInvestmentCertificateService
       end
 
       # Add signatures section
-      add_club_signatures_section(pdf, club_signature_url, issuer_signature_url, club.name, campaign.fundraiser.full_name)
+      add_club_signatures_section(pdf, club_signature_url, issuer_signature_url, club.name, campaign&.fundraiser&.full_name || 'Issuer')
 
       pdf.move_down 15
 
@@ -173,7 +189,7 @@ class ClubInvestmentCertificateService
       pdf.move_down 10
 
       pdf.fill_color '000000'
-      pdf.text "This certificate represents legal ownership stake held by #{club.name} in #{campaign.company_name}", 
+      pdf.text "This certificate represents legal ownership stake held by #{club.name} in #{campaign_company}", 
                size: 8, align: :center
       pdf.text "as per the terms outlined in the investment agreement and governed by the laws of the jurisdiction.", 
                size: 8, align: :center
@@ -201,7 +217,7 @@ class ClubInvestmentCertificateService
                size: 6, align: :center
 
       # Create temp file and attach
-      temp_file = Tempfile.new(["club_certificate_#{club_investment.certificate_number}", ".pdf"], binmode: true)
+      temp_file = Tempfile.new(["club_certificate_#{certificate_number}", ".pdf"], binmode: true)
       pdf.render_file(temp_file.path)
       
       temp_file.close
@@ -213,7 +229,7 @@ class ClubInvestmentCertificateService
 
       club_investment.certificate.attach(
         io: File.open(temp_file.path),
-        filename: "club_investment_certificate_#{club_investment.certificate_number}.pdf",
+        filename: "club_investment_certificate_#{certificate_number}.pdf",
         content_type: 'application/pdf',
         identify: false
       )
@@ -303,6 +319,40 @@ class ClubInvestmentCertificateService
     end
 
     pdf.move_down 30
+  end
+
+  # FIXED: Safe signature URL methods
+  def self.get_club_signature_url(club_investment)
+    club = club_investment.investment_club
+    return nil unless club
+    
+    # Try to get club president's signature
+    club_president = club.admin_members.first
+    return nil unless club_president
+    
+    kyc = club_president.latest_kyc
+    return nil unless kyc
+    
+    kyc.signature_image_url
+  rescue => e
+    Rails.logger.warn "Could not get club signature: #{e.message}"
+    nil
+  end
+
+  def self.get_issuer_signature_url(club_investment)
+    campaign = club_investment.campaign
+    return nil unless campaign
+    
+    issuer = campaign.fundraiser
+    return nil unless issuer
+    
+    kyc = issuer.latest_kyc
+    return nil unless kyc
+    
+    kyc.signature_image_url
+  rescue => e
+    Rails.logger.warn "Could not get issuer signature: #{e.message}"
+    nil
   end
 
   class << self

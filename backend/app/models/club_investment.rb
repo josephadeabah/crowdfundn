@@ -1,4 +1,3 @@
-# app/models/club_investment.rb
 class ClubInvestment < ApplicationRecord
   belongs_to :investment_club
   belongs_to :campaign

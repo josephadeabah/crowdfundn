@@ -1,4 +1,3 @@
-# app/services/club_email_service.rb
 class ClubEmailService
   def self.send_pending_member_notification(admin:, membership:)
     return unless admin && membership
@@ -135,6 +134,34 @@ class ClubEmailService
     
     html_content = build_investment_execution_failed_html(admin, club_investment, club, campaign, error)
     text_content = build_investment_execution_failed_text(admin, club_investment, club, campaign, error)
+
+    send_email(admin.email, admin.full_name, subject, html_content, text_content)
+  end
+
+  # NEW: Add the missing investment confirmation method
+  def self.send_investment_confirmation(user:, club_investment:)
+    return unless user && club_investment
+
+    club = club_investment.investment_club
+    campaign = club_investment.campaign
+    subject = "Club Investment Confirmed: #{campaign.title}"
+    
+    html_content = build_investment_confirmation_html(user, club_investment, club, campaign)
+    text_content = build_investment_confirmation_text(user, club_investment, club, campaign)
+
+    send_email(user.email, user.full_name, subject, html_content, text_content)
+  end
+
+  # NEW: Add investment failure notification
+  def self.send_investment_failure(admin:, club_investment:, error:, metadata: nil)
+    return unless admin && club_investment
+
+    club = club_investment.investment_club
+    campaign = club_investment.campaign
+    subject = "Investment Failed: #{campaign.title}"
+    
+    html_content = build_investment_failure_html(admin, club_investment, club, campaign, error, metadata)
+    text_content = build_investment_failure_text(admin, club_investment, club, campaign, error, metadata)
 
     send_email(admin.email, admin.full_name, subject, html_content, text_content)
   end
@@ -373,6 +400,122 @@ class ClubEmailService
     HTML
   end
 
+  # NEW: Investment confirmation HTML
+  def self.build_investment_confirmation_html(user, club_investment, club, campaign)
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width">
+          <title>Investment Confirmed</title>
+          <style>
+            #{email_styles}
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Investment Confirmed!</h1>
+            </div>
+
+            <div class="content">
+              <p class="greeting">Hello #{user.full_name},</p>
+              
+              <p>Your club <strong>#{club.name}</strong> has successfully invested in:</p>
+              
+              <div class="investment-details">
+                <div class="detail-row">
+                  <span class="detail-label">Campaign:</span>
+                  <span class="detail-value">#{campaign.title}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Company:</span>
+                  <span class="detail-value">#{campaign.company_name}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Investment Amount:</span>
+                  <span class="detail-value">#{campaign.currency_symbol}#{club_investment.investment_amount}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Shares Acquired:</span>
+                  <span class="detail-value">#{club_investment.shares&.round(4) || 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Ownership Percentage:</span>
+                  <span class="detail-value">#{club_investment.percentage&.round(4) || 'N/A'}%</span>
+                </div>
+              </div>
+
+              <div class="action-section">
+                <p>You can view the investment certificate in your club portfolio.</p>
+              </div>
+
+              <p>Best regards,<br>
+              <strong>The Bantuhive Team</strong></p>
+            </div>
+
+            #{email_footer}
+          </div>
+        </body>
+      </html>
+    HTML
+  end
+
+  # NEW: Investment failure HTML
+  def self.build_investment_failure_html(admin, club_investment, club, campaign, error, metadata)
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width">
+          <title>Investment Failed</title>
+          <style>
+            #{email_styles}
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Investment Failed</h1>
+            </div>
+
+            <div class="content">
+              <p class="greeting">Hello #{admin.full_name},</p>
+              
+              <p>Unfortunately, the investment by <strong>#{club.name}</strong> in <strong>#{campaign.title}</strong> has failed.</p>
+              
+              <div class="investment-details">
+                <div class="detail-row">
+                  <span class="detail-label">Campaign:</span>
+                  <span class="detail-value">#{campaign.title}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Investment Amount:</span>
+                  <span class="detail-value">#{campaign.currency_symbol}#{club_investment.investment_amount}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Error:</span>
+                  <span class="detail-value">#{error}</span>
+                </div>
+              </div>
+
+              <div class="action-section">
+                <p>The club balance has been refunded. You can retry the investment if needed.</p>
+              </div>
+
+              <p>Best regards,<br>
+              <strong>The Bantuhive Team</strong></p>
+            </div>
+
+            #{email_footer}
+          </div>
+        </body>
+      </html>
+    HTML
+  end
+
   # Text Content Builders
   def self.build_pending_member_text(admin, membership, club)
     applicant_name = membership.user.full_name
@@ -456,60 +599,345 @@ class ClubEmailService
     TEXT
   end
 
+  # NEW: Investment confirmation text
+  def self.build_investment_confirmation_text(user, club_investment, club, campaign)
+    <<~TEXT
+      Hello #{user.full_name},
+
+      Your club #{club.name} has successfully invested in #{campaign.title}.
+
+      Investment Details:
+      - Campaign: #{campaign.title}
+      - Company: #{campaign.company_name}
+      - Investment Amount: #{campaign.currency_symbol}#{club_investment.investment_amount}
+      - Shares Acquired: #{club_investment.shares&.round(4) || 'N/A'}
+      - Ownership Percentage: #{club_investment.percentage&.round(4) || 'N/A'}%
+
+      You can view the investment certificate in your club portfolio.
+
+      Best regards,
+      The Bantuhive Team
+    TEXT
+  end
+
+  # NEW: Investment failure text
+  def self.build_investment_failure_text(admin, club_investment, club, campaign, error, metadata)
+    <<~TEXT
+      Hello #{admin.full_name},
+
+      Unfortunately, the investment by #{club.name} in #{campaign.title} has failed.
+
+      Investment Details:
+      - Campaign: #{campaign.title}
+      - Investment Amount: #{campaign.currency_symbol}#{club_investment.investment_amount}
+      - Error: #{error}
+
+      The club balance has been refunded. You can retry the investment if needed.
+
+      Best regards,
+      The Bantuhive Team
+    TEXT
+  end
+
   # Additional content builders for other email types
   def self.build_role_changed_html(user, membership, club)
-    # Implementation for role changed email
-    # Similar structure to above methods
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width">
+          <title>Role Updated</title>
+          <style>
+            #{email_styles}
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Role Updated</h1>
+            </div>
+
+            <div class="content">
+              <p class="greeting">Hello #{user.full_name},</p>
+              
+              <p>Your role in <strong>#{club.name}</strong> has been updated.</p>
+              
+              <p>You now have #{membership.role} privileges in the club.</p>
+
+              <p>Best regards,<br>
+              <strong>The Bantuhive Team</strong></p>
+            </div>
+
+            #{email_footer}
+          </div>
+        </body>
+      </html>
+    HTML
   end
 
   def self.build_status_changed_html(user, membership, club)
-    # Implementation for status changed email
-    # Similar structure to above methods
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width">
+          <title>Membership Status Updated</title>
+          <style>
+            #{email_styles}
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Membership Status Updated</h1>
+            </div>
+
+            <div class="content">
+              <p class="greeting">Hello #{user.full_name},</p>
+              
+              <p>Your membership status in <strong>#{club.name}</strong> has been updated to: <strong>#{membership.status}</strong>.</p>
+
+              <p>Best regards,<br>
+              <strong>The Bantuhive Team</strong></p>
+            </div>
+
+            #{email_footer}
+          </div>
+        </body>
+      </html>
+    HTML
   end
 
   def self.build_contribution_confirmation_html(user, contribution, club)
-    # Implementation for contribution confirmation
-    # Similar structure to above methods
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width">
+          <title>Contribution Confirmed</title>
+          <style>
+            #{email_styles}
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Contribution Confirmed</h1>
+            </div>
+
+            <div class="content">
+              <p class="greeting">Hello #{user.full_name},</p>
+              
+              <p>Your contribution of <strong>#{club.currency_symbol}#{contribution.amount}</strong> to <strong>#{club.name}</strong> has been confirmed.</p>
+              
+              <p>Your club share percentage has been updated accordingly.</p>
+
+              <p>Best regards,<br>
+              <strong>The Bantuhive Team</strong></p>
+            </div>
+
+            #{email_footer}
+          </div>
+        </body>
+      </html>
+    HTML
   end
 
   def self.build_contribution_failed_html(user, contribution, club)
-    # Implementation for contribution failed
-    # Similar structure to above methods
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width">
+          <title>Contribution Failed</title>
+          <style>
+            #{email_styles}
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Contribution Failed</h1>
+            </div>
+
+            <div class="content">
+              <p class="greeting">Hello #{user.full_name},</p>
+              
+              <p>Your contribution to <strong>#{club.name}</strong> has failed.</p>
+              
+              <p>Please check your payment method and try again.</p>
+
+              <p>Best regards,<br>
+              <strong>The Bantuhive Team</strong></p>
+            </div>
+
+            #{email_footer}
+          </div>
+        </body>
+      </html>
+    HTML
   end
 
   def self.build_contribution_refunded_html(user, contribution, club)
-    # Implementation for contribution refunded
-    # Similar structure to above methods
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width">
+          <title>Contribution Refunded</title>
+          <style>
+            #{email_styles}
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Contribution Refunded</h1>
+            </div>
+
+            <div class="content">
+              <p class="greeting">Hello #{user.full_name},</p>
+              
+              <p>Your contribution of <strong>#{club.currency_symbol}#{contribution.amount}</strong> to <strong>#{club.name}</strong> has been refunded.</p>
+              
+              <p>If you have any questions, please contact support.</p>
+
+              <p>Best regards,<br>
+              <strong>The Bantuhive Team</strong></p>
+            </div>
+
+            #{email_footer}
+          </div>
+        </body>
+      </html>
+    HTML
   end
 
   def self.build_investment_execution_failed_html(admin, club_investment, club, campaign, error)
-    # Implementation for investment execution failed
-    # Similar structure to above methods
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width">
+          <title>Investment Execution Failed</title>
+          <style>
+            #{email_styles}
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Investment Execution Failed</h1>
+            </div>
+
+            <div class="content">
+              <p class="greeting">Hello #{admin.full_name},</p>
+              
+              <p>The investment execution for <strong>#{campaign.title}</strong> by <strong>#{club.name}</strong> has failed.</p>
+              
+              <div class="investment-details">
+                <div class="detail-row">
+                  <span class="detail-label">Error:</span>
+                  <span class="detail-value">#{error}</span>
+                </div>
+              </div>
+
+              <p>Please review the investment and try again.</p>
+
+              <p>Best regards,<br>
+              <strong>The Bantuhive Team</strong></p>
+            </div>
+
+            #{email_footer}
+          </div>
+        </body>
+      </html>
+    HTML
   end
 
   # Text versions for additional email types
   def self.build_role_changed_text(user, membership, club)
-    # Text implementation
+    <<~TEXT
+      Hello #{user.full_name},
+
+      Your role in #{club.name} has been updated.
+
+      You now have #{membership.role} privileges in the club.
+
+      Best regards,
+      The Bantuhive Team
+    TEXT
   end
 
   def self.build_status_changed_text(user, membership, club)
-    # Text implementation
+    <<~TEXT
+      Hello #{user.full_name},
+
+      Your membership status in #{club.name} has been updated to: #{membership.status}.
+
+      Best regards,
+      The Bantuhive Team
+    TEXT
   end
 
   def self.build_contribution_confirmation_text(user, contribution, club)
-    # Text implementation
+    <<~TEXT
+      Hello #{user.full_name},
+
+      Your contribution of #{club.currency_symbol}#{contribution.amount} to #{club.name} has been confirmed.
+
+      Your club share percentage has been updated accordingly.
+
+      Best regards,
+      The Bantuhive Team
+    TEXT
   end
 
   def self.build_contribution_failed_text(user, contribution, club)
-    # Text implementation
+    <<~TEXT
+      Hello #{user.full_name},
+
+      Your contribution to #{club.name} has failed.
+
+      Please check your payment method and try again.
+
+      Best regards,
+      The Bantuhive Team
+    TEXT
   end
 
   def self.build_contribution_refunded_text(user, contribution, club)
-    # Text implementation
+    <<~TEXT
+      Hello #{user.full_name},
+
+      Your contribution of #{club.currency_symbol}#{contribution.amount} to #{club.name} has been refunded.
+
+      If you have any questions, please contact support.
+
+      Best regards,
+      The Bantuhive Team
+    TEXT
   end
 
   def self.build_investment_execution_failed_text(admin, club_investment, club, campaign, error)
-    # Text implementation
+    <<~TEXT
+      Hello #{admin.full_name},
+
+      The investment execution for #{campaign.title} by #{club.name} has failed.
+
+      Error: #{error}
+
+      Please review the investment and try again.
+
+      Best regards,
+      The Bantuhive Team
+    TEXT
   end
 
   # Common Styles

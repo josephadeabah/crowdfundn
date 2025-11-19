@@ -1,4 +1,3 @@
-# app/services/paystack_webhook/handlers/club_equity_investment_handler.rb
 module PaystackWebhook::Handlers
   class ClubEquityInvestmentHandler
     include PaystackWebhook::JsonHelper
@@ -49,20 +48,29 @@ module PaystackWebhook::Handlers
       end
 
       ActiveRecord::Base.transaction do
-        # Update the equity investment status
+        # Update the equity investment status to SUCCESSFUL
         equity_investment.update!(
           status: EquityInvestment::STATUS_SUCCESSFUL,
           processed: true
         )
 
-        # Update the club investment status
+        # Update the club investment status to SUCCESSFUL
         club_investment.update!(
           status: ClubInvestment::STATUS_SUCCESSFUL,
-          equity_investment_id: equity_investment.id
+          equity_investment_id: equity_investment.id,
+          shares: equity_investment.shares,
+          percentage: equity_investment.percentage,
+          investment_date: equity_investment.investment_date,
+          certificate_number: equity_investment.certificate_number,
+          transaction_reference: equity_investment.transaction_reference
         )
 
         # Generate certificate for club investment
-        ClubInvestmentCertificateService.generate_certificate(club_investment)
+        if ClubInvestmentCertificateService.generate_certificate(club_investment)
+          Rails.logger.info "Certificate generated successfully for club investment #{club_investment.id}"
+        else
+          Rails.logger.error "Failed to generate certificate for club investment #{club_investment.id}"
+        end
 
         # Notify club members
         send_club_investment_confirmation(club_investment, metadata)
@@ -122,9 +130,8 @@ module PaystackWebhook::Handlers
       # Notify all club members about successful investment
       club_investment.investment_club.active_members.each do |member|
         ClubEmailService.send_investment_confirmation(
-          member: member,
-          club_investment: club_investment,
-          metadata: metadata
+          user: member,
+          club_investment: club_investment
         )
       end
     rescue => e
