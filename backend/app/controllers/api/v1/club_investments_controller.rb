@@ -665,9 +665,9 @@ module Api
       def initialize_club_payment(investment, metadata, redirect_url)
         subaccount = Subaccount.find_by(user_id: investment.campaign.fundraiser_id)
 
-        unless subaccount&.subaccount_code.present?
-          return { success: false, error: 'Fundraiser does not meet requirements for raising funds' }
-        end
+        # unless subaccount&.subaccount_code.present?
+        #   return { success: false, error: 'Fundraiser does not meet requirements for raising funds' }
+        # end
 
         paystack_service = PaystackService.new
         response = paystack_service.initialize_transaction(
