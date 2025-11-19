@@ -135,7 +135,7 @@ class ClubPortfolioService
         campaign: {
           id: campaign.id,
           title: campaign.title,
-          description: campaign.description&.to_plain_text&.truncate(200) || 'No description available',
+          description: campaign.description || 'No description available',
           category: campaign.category,
           goal_amount: campaign.goal_amount.to_f,
           current_amount: campaign.current_amount.to_f,
