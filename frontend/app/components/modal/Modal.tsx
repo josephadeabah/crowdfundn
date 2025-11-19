@@ -34,9 +34,7 @@ const Modal: React.FC<ModalProps> = ({
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
+      if (event.key === 'Escape') onClose();
     },
     [onClose],
   );
@@ -49,19 +47,13 @@ const Modal: React.FC<ModalProps> = ({
   }, [handleKeyDown]);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
   }, [isOpen]);
 
   const handleBackdropClick = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
-    if (closeOnBackdropClick && e.target === e.currentTarget) {
-      onClose();
-    }
+    if (closeOnBackdropClick && e.target === e.currentTarget) onClose();
   };
 
   const sizeClasses = {
@@ -70,8 +62,8 @@ const Modal: React.FC<ModalProps> = ({
     large: 'max-w-lg',
     xlarge: 'max-w-xl',
     xxlarge: 'max-w-2xl',
-    xxxlarge: 'max-w-4xl w-[95vw]', // 896px but uses viewport width
-    huge: 'max-w-7xl w-[98vw]', // New: even larger for tables
+    xxxlarge: 'max-w-4xl w-[95vw]',
+    huge: 'max-w-7xl w-[98vw]',
     full: 'max-w-full mx-4 w-[95vw]',
   };
 
@@ -79,7 +71,7 @@ const Modal: React.FC<ModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black bg-opacity-50 py-4"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black bg-opacity-50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -90,7 +82,7 @@ const Modal: React.FC<ModalProps> = ({
         >
           <motion.div
             ref={modalRef}
-            className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-sm shadow-xl modal-scrollbar my-auto`}
+            className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-sm shadow-xl modal-scrollbar mt-6`}
             initial={{ scale: 0.9, opacity: 0, y: -20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: -20 }}
@@ -104,18 +96,19 @@ const Modal: React.FC<ModalProps> = ({
             }}
             style={{
               ...customStyles,
-              maxHeight: 'calc(100vh - 2rem)',
+              maxHeight: '90vh',
               overflowY: 'auto',
             }}
           >
             <div className="p-6">
               <button
-                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors duration-200 z-10"
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                 onClick={onClose}
                 aria-label="Close modal"
               >
                 <FaTimes className="w-6 h-6" />
               </button>
+
               <div className="mt-4">{children}</div>
             </div>
           </motion.div>
