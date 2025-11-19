@@ -22,7 +22,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
     active_investments: 0,
     investments: [],
     campaigns_invested: 0,
-    successful_count: 0
+    successful_count: 0,
   };
 
   if (!portfolio) {
@@ -79,14 +79,17 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
           </span>
           <span
             className={`font-semibold text-sm lg:text-base ${
-              safePortfolio.total_return >= 0 ? 'text-green-600' : 'text-red-600'
+              safePortfolio.total_return >= 0
+                ? 'text-green-600'
+                : 'text-red-600'
             }`}
           >
             {formatCurrency(safePortfolio.total_return)} (
             {/* FIXED: Safe .toFixed() call */}
-            {typeof safePortfolio.return_percentage === 'number' 
-              ? safePortfolio.return_percentage.toFixed(2) 
-              : '0.00'}%)
+            {typeof safePortfolio.return_percentage === 'number'
+              ? safePortfolio.return_percentage.toFixed(2)
+              : '0.00'}
+            %)
           </span>
         </div>
 
