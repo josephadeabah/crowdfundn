@@ -329,7 +329,11 @@ const PaymentMethod = () => {
         )}
 
         {/* Add Modal */}
-        <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
+        <Modal size="small" isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}       customStyles={{
+        display: 'flex',
+        flexDirection: 'column',
+        maxHeight: '90vh', // Reduced from 95vh to ensure everything fits
+      }}>
           <div className="space-y-6 text-gray-900">
             <div className="text-center">
               <div className="mx-auto w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mb-4">
