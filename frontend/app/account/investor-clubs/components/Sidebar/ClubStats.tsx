@@ -15,19 +15,8 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
   investmentsCount,
   formatCurrency,
 }) => {
-  // FIXED: Calculate actual investments count from successful investments
-  const calculateActualInvestmentsCount = (club: Club, rawCount: number) => {
-    // Count only successful/executed investments for meaningful stats
-    if (club.financials?.total_invested > 0) {
-      return Math.max(rawCount, 1); // At least 1 if there's money invested
-    }
-    return rawCount;
-  };
-
-  const actualInvestmentsCount = calculateActualInvestmentsCount(
-    club,
-    investmentsCount,
-  );
+  // FIXED: Use actual investment count from portfolio data
+  const actualInvestmentsCount = investmentsCount;
 
   // Format large numbers with abbreviations
   const formatNumber = (num: number): string => {

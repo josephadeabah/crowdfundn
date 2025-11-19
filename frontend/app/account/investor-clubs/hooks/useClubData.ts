@@ -162,11 +162,20 @@ export const useClubData = () => {
 
     const portfolio = portfolioResponse.portfolio;
 
+    // FIXED: Parse string values to numbers and ensure proper fallbacks
     return {
-      total_invested: portfolio.total_invested || 0,
-      total_value: portfolio.total_value || portfolio.total_invested || 0,
-      total_return: portfolio.total_return || 0,
-      return_percentage: portfolio.return_percentage || 0,
+      total_invested: typeof portfolio.total_invested === 'string' 
+        ? parseFloat(portfolio.total_invested) 
+        : portfolio.total_invested || 0,
+      total_value: typeof portfolio.total_value === 'string'
+        ? parseFloat(portfolio.total_value)
+        : portfolio.total_value || portfolio.total_invested || 0,
+      total_return: typeof portfolio.total_return === 'string'
+        ? parseFloat(portfolio.total_return)
+        : portfolio.total_return || 0,
+      return_percentage: typeof portfolio.return_percentage === 'string'
+        ? parseFloat(portfolio.return_percentage)
+        : portfolio.return_percentage || 0,
       active_investments: portfolio.active_investments || 0,
       investments: portfolio.investments || [],
       campaigns_invested: portfolio.campaigns_invested || 0,
