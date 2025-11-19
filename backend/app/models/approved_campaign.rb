@@ -7,9 +7,7 @@ class ApprovedCampaign < ApplicationRecord
   
   after_create :notify_members
   
-  def self.for_club(club)
-    where(investment_club: club).includes(:campaign, :club_investment)
-  end
+  scope :for_club, ->(club) { where(investment_club: club) }
   
   def voting_stats
     club_investment.voting_stats

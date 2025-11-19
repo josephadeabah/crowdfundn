@@ -98,6 +98,67 @@ class ClubPortfolioService
     }
   end
 
+  def approved_campaigns
+    ApprovedCampaign.for_club(@club).includes(
+      campaign: [:fundraiser],
+      club_investment: [:votes]
+    ).map do |approved_campaign|
+      campaign = approved_campaign.campaign
+      club_investment = approved_campaign.club_investment
+      
+      # Get voting stats if available
+      voting_stats = if club_investment
+        {
+          total_votes: club_investment.votes.count,
+          yes_votes: club_investment.votes.where(vote_type: 'yes').count,
+          no_votes: club_investment.votes.where(vote_type: 'no').count,
+          approval_percentage: club_investment.votes.count > 0 ? 
+            (club_investment.votes.where(vote_type: 'yes').count.to_f / club_investment.votes.count * 100).round(2) : 0,
+          total_members: @club.current_members_count,
+          all_members_voted: club_investment.votes.count >= @club.current_members_count,
+          threshold_met: club_investment.voting_threshold_met?
+        }
+      else
+        {
+          total_votes: 0,
+          yes_votes: 0,
+          no_votes: 0,
+          approval_percentage: 0,
+          total_members: @club.current_members_count,
+          all_members_voted: false,
+          threshold_met: false
+        }
+      end
+
+      {
+        id: approved_campaign.id,
+        campaign: {
+          id: campaign.id,
+          title: campaign.title,
+          description: campaign.description&.to_plain_text&.truncate(200) || 'No description available',
+          category: campaign.category,
+          goal_amount: campaign.goal_amount.to_f,
+          current_amount: campaign.current_amount.to_f,
+          currency: campaign.currency,
+          currency_symbol: campaign.currency_symbol,
+          slug: campaign.slug,
+          fundraiser: {
+            id: campaign.fundraiser.id,
+            name: campaign.fundraiser.full_name
+          }
+        },
+        club_investment: club_investment ? {
+          id: club_investment.id,
+          proposed_amount: club_investment.investment_amount.to_f,
+          proposed_share_percentage: club_investment.proposed_share_percentage.to_f,
+          voting_stats: voting_stats
+        } : nil,
+        approved_at: approved_campaign.created_at,
+        voting_stats: voting_stats
+      }
+    end
+  end
+
   private
 
   def transform_investments_for_portfolio(investments)
@@ -149,7 +210,6 @@ class ClubPortfolioService
     (user_votes.to_f / total_votable_items * 100).round(2)
   end
 
-  # ADD THESE HELPER METHODS FOR ANALYTICS:
   def calculate_sector_performance(investments)
     sectors = investments.group_by do |inv|
       inv.campaign.category || 'Other'
