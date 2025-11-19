@@ -87,7 +87,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             {formatCurrency(safePortfolio.total_return)} (
             {/* FIXED: Safe .toFixed() call */}
             {typeof safePortfolio.return_percentage === 'number'
-              ? safePortfolio.return_percentage.toFixed(2)
+              ? safePortfolio.return_percentage
               : '0.00'}
             %)
           </span>

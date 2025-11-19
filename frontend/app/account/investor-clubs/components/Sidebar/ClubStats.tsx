@@ -5,35 +5,39 @@ import { Club } from '../../clubTypes';
 import InfoTooltip from '@/app/components/tooltip/tooltip';
 
 interface ClubStatsProps {
-  club: Club | null;
+  club: Club;
   investmentsCount: number;
   formatCurrency: (amount: number, currency?: string) => string;
 }
 
-// SUPER SAFE number formatting
-const superSafeFormatNumber = (num: any): string => {
-  try {
-    const safeNum = Number(num) || 0;
+export const ClubStats: React.FC<ClubStatsProps> = ({
+  club,
+  investmentsCount,
+  formatCurrency,
+}) => {
+  // FIXED: Use actual investment count from portfolio data with safe fallback
+  const actualInvestmentsCount = investmentsCount || 0;
+
+  // FIXED: Safe number formatting
+  const formatNumber = (num: number | undefined | null): string => {
+    // Handle undefined, null, or NaN values
+    const safeNum = num || 0;
     
     if (safeNum >= 1000000) {
-      return (safeNum / 1000000).toFixed(1) + 'M';
+      return (safeNum / 1000000) + 'M';
     } else if (safeNum >= 1000) {
-      return (safeNum / 1000).toFixed(1) + 'K';
+      return (safeNum / 1000) + 'K';
     }
     return safeNum.toString();
-  } catch (error) {
-    return '0';
-  }
-};
+  };
 
-// SUPER SAFE currency formatting
-const superSafeFormatCurrencyForDisplay = (
-  amount: any,
-  currency: string,
-  formatCurrency: (amount: number, currency?: string) => string
-): string => {
-  try {
-    const safeAmount = Number(amount) || 0;
+  // FIXED: Safe currency formatting
+  const formatCurrencyForDisplay = (
+    amount: number | undefined | null,
+    currency: string,
+  ): string => {
+    // Handle undefined, null, or NaN values
+    const safeAmount = amount || 0;
     
     if (safeAmount >= 1000000) {
       return formatCurrency(safeAmount / 1000000, currency) + 'M';
@@ -41,67 +45,47 @@ const superSafeFormatCurrencyForDisplay = (
       return formatCurrency(safeAmount / 1000, currency) + 'K';
     }
     return formatCurrency(safeAmount, currency);
-  } catch (error) {
-    return formatCurrency(0, currency);
-  }
-};
-
-export const ClubStats: React.FC<ClubStatsProps> = ({
-  club,
-  investmentsCount,
-  formatCurrency,
-}) => {
-  // SUPER SAFE: Handle all possible undefined cases
-  const safeClub = club || {
-    current_members_count: 0,
-    currency: 'USD',
-    financials: {
-      total_contributions: 0,
-      total_invested: 0,
-      current_balance: 0
-    }
   };
 
-  const safeInvestmentsCount = Number(investmentsCount) || 0;
-  const safeMembersCount = Number(safeClub.current_members_count) || 0;
-  const safeContributions = Number(safeClub.financials?.total_contributions) || 0;
-  const safeInvested = Number(safeClub.financials?.total_invested) || 0;
-  const safeCurrency = safeClub.currency || 'USD';
-
+  // FIXED: Safe stats with proper fallbacks
   const stats = [
     {
       id: 'members-stat',
-      displayValue: superSafeFormatNumber(safeMembersCount),
-      fullValue: safeMembersCount.toLocaleString(),
+      displayValue: formatNumber(club?.current_members_count),
+      fullValue: (club?.current_members_count || 0).toLocaleString(),
       label: 'Members',
       type: 'number',
     },
     {
       id: 'investments-stat',
-      displayValue: superSafeFormatNumber(safeInvestmentsCount),
-      fullValue: safeInvestmentsCount.toLocaleString(),
+      displayValue: formatNumber(actualInvestmentsCount),
+      fullValue: actualInvestmentsCount.toLocaleString(),
       label: 'Investments',
       type: 'number',
     },
     {
       id: 'raised-stat',
-      displayValue: superSafeFormatCurrencyForDisplay(
-        safeContributions,
-        safeCurrency,
-        formatCurrency
+      displayValue: formatCurrencyForDisplay(
+        club?.financials?.total_contributions,
+        club?.currency || 'USD',
       ),
-      fullValue: formatCurrency(safeContributions, safeCurrency),
+      fullValue: formatCurrency(
+        club?.financials?.total_contributions || 0,
+        club?.currency || 'USD',
+      ),
       label: 'Total Raised',
       type: 'currency',
     },
     {
       id: 'invested-stat',
-      displayValue: superSafeFormatCurrencyForDisplay(
-        safeInvested,
-        safeCurrency,
-        formatCurrency
+      displayValue: formatCurrencyForDisplay(
+        club?.financials?.total_invested,
+        club?.currency || 'USD',
       ),
-      fullValue: formatCurrency(safeInvested, safeCurrency),
+      fullValue: formatCurrency(
+        club?.financials?.total_invested || 0,
+        club?.currency || 'USD',
+      ),
       label: 'Total Invested',
       type: 'currency',
     },
@@ -158,7 +142,7 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
       {/* Currency indicator */}
       <div className="mt-3 pt-3 border-t border-gray-200">
         <div className="text-xs text-gray-500 text-center">
-          Currency: {safeCurrency}
+          Currency: {club?.currency || 'USD'}
         </div>
       </div>
     </motion.div>
