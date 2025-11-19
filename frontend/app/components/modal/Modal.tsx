@@ -1,5 +1,5 @@
-'use client';
 import React, { useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 
@@ -40,13 +40,16 @@ const Modal: React.FC<ModalProps> = ({
   );
 
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
-
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
-  }, [isOpen]);
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = 'unset';
+      };
+    }
+  }, [isOpen, handleKeyDown]);
 
   const handleBackdropClick = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -65,11 +68,20 @@ const Modal: React.FC<ModalProps> = ({
     full: 'max-w-full mx-4 w-[95vw]',
   };
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto bg-black bg-opacity-50"
+          className="fixed inset-0 flex items-start justify-center overflow-y-auto bg-black/50 backdrop-blur-sm"
+          style={{
+            zIndex: 999999,
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            isolation: 'isolate',
+          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -80,7 +92,7 @@ const Modal: React.FC<ModalProps> = ({
         >
           <motion.div
             ref={modalRef}
-            className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-sm shadow-xl modal-scrollbar mt-6`}
+            className={`relative w-full ${sizeClasses[size]} bg-background border border-border rounded-lg shadow-2xl mt-6 mb-6`}
             initial={{ scale: 0.9, opacity: 0, y: -20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: -20 }}
@@ -100,7 +112,7 @@ const Modal: React.FC<ModalProps> = ({
           >
             <div className="p-6">
               <button
-                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors duration-200 z-10"
                 onClick={onClose}
                 aria-label="Close modal"
               >
@@ -114,6 +126,11 @@ const Modal: React.FC<ModalProps> = ({
       )}
     </AnimatePresence>
   );
+
+  // Render modal using Portal to escape any stacking context issues
+  return typeof document !== 'undefined'
+    ? createPortal(modalContent, document.body)
+    : null;
 };
 
 export default Modal;
