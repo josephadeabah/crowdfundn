@@ -344,7 +344,7 @@ module Api
             Rails.logger.error "Reward not available: #{reward_id}"
           end
 
-          # Subaccount validation
+          # Subaccount validation - with enhanced checking
           if result[:valid]
             subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
             unless subaccount&.subaccount_code.present?
@@ -353,6 +353,16 @@ module Api
               result[:errors][:base] = ['Fundraiser does not meet requirements for raising funds']
               result[:code] = 'MISSING_ACCOUNT_NUMBER'
               Rails.logger.error "Missing subaccount for fundraiser: #{@campaign.fundraiser_id}"
+            else
+              # Validate subaccount with Paystack
+              subaccount_valid = validate_subaccount_with_paystack(subaccount.subaccount_code)
+              unless subaccount_valid
+                result[:valid] = false
+                result[:message] = 'Fundraiser payment account is not properly configured'
+                result[:errors][:base] = ['Fundraiser payment account is not properly configured']
+                result[:code] = 'INVALID_SUBACCOUNT'
+                Rails.logger.error "Invalid subaccount for fundraiser: #{@campaign.fundraiser_id}, subaccount: #{subaccount.subaccount_code}"
+              end
             end
           end
 
@@ -394,6 +404,20 @@ module Api
 
           Rails.logger.info "Validation result: #{result.inspect}"
           result
+        end
+
+        def validate_subaccount_with_paystack(subaccount_code)
+          return false unless subaccount_code.present?
+          
+          paystack_service = PaystackService.new
+          begin
+            # Try to fetch the subaccount to validate it exists
+            response = paystack_service.fetch_subaccount(subaccount_code)
+            response[:status] == true
+          rescue => e
+            Rails.logger.error "Error validating subaccount #{subaccount_code}: #{e.message}"
+            false
+          end
         end
 
         def build_metadata(investment, redirect_url)
@@ -476,26 +500,34 @@ module Api
                 data: {
                   authorization_url: response[:data][:authorization_url],
                   redirect_url: redirect_url,
+                  reference: response[:data][:reference],
                   investment: EquityInvestmentSerializer.new(investment).as_json,
                   total_investors: @campaign.total_investors
                 }
               }
             else
-              Rails.logger.error "Paystack initialization failed: #{response[:message]}"
+              # Parse the actual error message from Paystack
+              error_message = parse_paystack_error(response)
+              error_code = response.dig(:body, 'code') || response[:data]&.[](:code) || 'PAYMENT_INIT_FAILED'
+              
+              Rails.logger.error "Paystack initialization failed: #{error_message}"
+              
               # Update investment status to failed
               investment.update!(
                 status: EquityInvestment::STATUS_FAILED,
                 metadata: investment.metadata.merge(
-                  'payment_error' => response[:message],
-                  'payment_error_code' => response[:data]&.[](:code),
-                  'payment_failed_at' => Time.current.iso8601
+                  'payment_error' => error_message,
+                  'payment_error_code' => error_code,
+                  'payment_failed_at' => Time.current.iso8601,
+                  'paystack_response' => response
                 )
               )
               
               {
                 success: false, 
-                error: response[:message] || 'Payment initialization failed',
-                code: response[:data]&.[](:code) || 'PAYMENT_INIT_FAILED'
+                error: error_message,
+                code: error_code,
+                details: "Please contact support. Error: #{error_message}"
               }
             end
           rescue => e
@@ -515,6 +547,23 @@ module Api
               code: 'PAYMENT_SERVICE_ERROR'
             }
           end
+        end
+
+        def parse_paystack_error(response)
+          # Try to extract the actual error message from Paystack response
+          if response[:body].is_a?(String)
+            begin
+              parsed_body = JSON.parse(response[:body])
+              return parsed_body['message'] if parsed_body['message']
+            rescue JSON::ParserError
+              # If parsing fails, use the original message
+            end
+          elsif response[:body].is_a?(Hash)
+            return response[:body]['message'] if response[:body]['message']
+          end
+          
+          # Fallback to the general message
+          response[:message] || 'Payment initialization failed'
         end
 
         def set_campaign
