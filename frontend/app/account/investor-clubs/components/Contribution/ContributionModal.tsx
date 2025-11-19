@@ -132,7 +132,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
       closeOnBackdropClick={true}
       customStyles={{ padding: 0 }}
     >
-      <div className="bg-white rounded-xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl w-full">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
