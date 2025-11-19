@@ -333,11 +333,6 @@ const PaymentMethod = () => {
           size="small"
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
-          customStyles={{
-            display: 'flex',
-            flexDirection: 'column',
-            maxHeight: '90vh', // Reduced from 95vh to ensure everything fits
-          }}
         >
           <div className="space-y-6 text-gray-900">
             <div className="text-center">
