@@ -72,7 +72,7 @@ const Modal: React.FC<ModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 flex items-center justify-center overflow-y-auto bg-black/50 backdrop-blur-sm z-[100]"
+          className="fixed inset-0 flex items-center justify-center overflow-y-auto bg-black opacity-50  z-[100]"
           style={{
             position: 'fixed',
             top: 0,
@@ -90,7 +90,7 @@ const Modal: React.FC<ModalProps> = ({
         >
           <motion.div
             ref={modalRef}
-            className={`relative w-full ${sizeClasses[size]} bg-background border border-border rounded-lg shadow-2xl mt-6 mb-6`}
+            className={`relative w-full ${sizeClasses[size]} bg-background border border-border rounded-lg shadow-xl mt-6 mb-6`}
             initial={{ scale: 0.9, opacity: 0, y: -20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: -20 }}
