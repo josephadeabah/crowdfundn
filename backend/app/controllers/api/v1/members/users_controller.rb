@@ -77,7 +77,7 @@ module Api
           # Prepare metadata
           metadata = params[:subaccount][:metadata] || { custom_fields: [] }
 
-          # Add user and campaign details to metadata
+          # Add user details to metadata
           metadata.merge!(
             user_id: user.id,
             email: user.email,
@@ -94,29 +94,35 @@ module Api
                                     end
 
           ActiveRecord::Base.transaction do
-            # Create a new subaccount via Paystack
-            response = PaystackService.new.create_subaccount(
+            # For Ghanaian banks, use the correct parameters
+            subaccount_params = {
               business_name: params[:subaccount][:business_name],
-              settlement_bank: params[:subaccount][:settlement_bank],
+              bank_code: params[:subaccount][:settlement_bank], # Use settlement_bank as bank_code for Ghana
               account_number: params[:subaccount][:account_number],
-              bank_code: params[:subaccount][:bank_code],
-              percentage_charge: params[:subaccount][:percentage_charge],
-              description: params[:subaccount][:description],
-              primary_contact_email: user.email,
-              primary_contact_name: user.full_name,
-              primary_contact_phone: user.phone_number,
-              metadata: metadata
-            )
+              percentage_charge: params[:subaccount][:percentage_charge] || 100
+            }
 
-            raise StandardError, response[:message] unless response[:status] == true
+            # Add Ghana-specific parameters
+            if user.country.downcase == 'ghana'
+              subaccount_params[:currency] = 'GHS'
+              # For Ghana, we need to handle it differently - might need mobile money
+              # Or use the bank account with Ghana-specific parameters
+            end
+
+            # Create a new subaccount via Paystack
+            response = PaystackService.new.create_subaccount(subaccount_params)
+
+            unless response[:status]
+              raise StandardError, response[:message] || 'Failed to create subaccount'
+            end
 
             # Create and associate a new subaccount with the user
             subaccount = Subaccount.create!(
               business_name: response[:data][:business_name],
-              bank_code: response[:data][:bank_code],
+              bank_code: response[:data][:bank][:code], # Extract bank code from response
               account_number: response[:data][:account_number],
               subaccount_code: response[:data][:subaccount_code],
-              subaccount_type: metadata[:custom_fields].first[:type],
+              subaccount_type: 'nuban', # Default type
               percentage_charge: response[:data][:percentage_charge],
               description: response[:data][:description],
               settlement_bank: response[:data][:settlement_bank],
@@ -126,9 +132,9 @@ module Api
 
             # Update user's subaccount_id (maintains backward compatibility)
             user.update_columns(subaccount_id: subaccount.subaccount_code)
-          end
 
-          render json: { success: true, subaccount_code: user.subaccount_id }, status: :ok
+            render json: { success: true, subaccount: subaccount }, status: :ok
+          end
         rescue StandardError => e
           Rails.logger.error "Error during account creation: #{e.message}"
           render json: { success: false, error: e.message }, status: :unprocessable_entity
