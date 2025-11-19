@@ -423,6 +423,27 @@ class EquityCampaign < Campaign
     }
   end
 
+  # Add this method to your EquityCampaign model
+  def create_investment(user, amount, attributes = {})
+    EquityInvestment.transaction do
+      investment = equity_investments.new(
+        user: user,
+        amount: amount,
+        status: EquityInvestment::STATUS_PENDING
+      )
+      
+      # Merge additional attributes
+      investment.assign_attributes(attributes) if attributes.present?
+      
+      if investment.save
+        investment
+      else
+        errors.add(:base, "Failed to create investment: #{investment.errors.full_messages.join(', ')}")
+        nil
+      end
+    end
+  end
+
   # ========== PRIVATE METHODS ==========
   private
 

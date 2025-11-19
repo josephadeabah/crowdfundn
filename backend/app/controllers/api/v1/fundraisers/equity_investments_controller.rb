@@ -36,7 +36,6 @@ module Api
           }, status: :ok
         end
 
-        # In your EquityInvestmentsController
         def create
           Rails.logger.info "EquityInvestment create params: #{params.inspect}"
           
@@ -47,8 +46,8 @@ module Api
 
           Rails.logger.info "Parsed investment: amount=#{amount}, reward_id=#{reward_id}"
 
-          # First validate basic parameters
-          validation_result = validate_investment(amount, reward_id)
+          # First validate basic parameters including required fields
+          validation_result = validate_investment(amount, reward_id, investment_params)
           unless validation_result[:valid]
             Rails.logger.error "Investment validation failed: #{validation_result.inspect}"
             return render json: { 
@@ -59,46 +58,43 @@ module Api
           end
 
           ActiveRecord::Base.transaction do
-            # Use the campaign's create_investment method which handles locking
-            Rails.logger.info "Calling @campaign.create_investment with user=#{@current_user.id}, amount=#{amount}"
-            investment = @campaign.create_investment(@current_user, amount)
-            
-            unless investment
-              # Collect ALL errors from campaign and investment
-              all_errors = {}
-              
-              # Add campaign errors
-              @campaign.errors.each do |error|
-                all_errors[error.attribute] ||= []
-                all_errors[error.attribute] << error.message
-              end
-              
-              # Add investment errors if investment exists but has errors
-              if investment && investment.errors.any?
-                investment.errors.each do |error|
-                  all_errors[error.attribute] ||= []
-                  all_errors[error.attribute] << error.message
-                end
-              end
-              
-              Rails.logger.error "Investment creation failed: campaign_errors=#{@campaign.errors.full_messages}, all_errors=#{all_errors}"
-              
-              return render json: { 
-                success: false, 
-                error: "Failed to create investment: #{@campaign.errors.full_messages.join(', ')}",
-                validationErrors: all_errors
-              }, status: :unprocessable_entity
-            end
+            # Build investment with all required attributes first
+            Rails.logger.info "Creating investment with params: user_id=#{@current_user.id}, amount=#{amount}, " \
+                            "email=#{investment_params[:email]}, full_name=#{investment_params[:full_name]}, " \
+                            "phone=#{investment_params[:phone]}"
 
-            Rails.logger.info "Investment created successfully: #{investment.id}"
-            
-            investment.update!(
+            investment = @campaign.equity_investments.new(
+              user: @current_user,
+              amount: amount,
               reward_id: reward_id,
               email: investment_params[:email],
               phone: investment_params[:phone],
               full_name: investment_params[:full_name],
-              metadata: investment_params[:metadata] || {}
+              metadata: investment_params[:metadata] || {},
+              status: EquityInvestment::STATUS_PENDING
             )
+
+            # Validate the investment
+            unless investment.valid?
+              Rails.logger.error "Investment validation failed: #{investment.errors.full_messages}"
+              return render json: { 
+                success: false, 
+                error: "Investment validation failed: #{investment.errors.full_messages.join(', ')}",
+                validationErrors: investment.errors.messages
+              }, status: :unprocessable_entity
+            end
+
+            # Save the investment
+            unless investment.save
+              Rails.logger.error "Investment save failed: #{investment.errors.full_messages}"
+              return render json: { 
+                success: false, 
+                error: "Failed to create investment: #{investment.errors.full_messages.join(', ')}",
+                validationErrors: investment.errors.messages
+              }, status: :unprocessable_entity
+            end
+
+            Rails.logger.info "Investment created successfully: #{investment.id}"
 
             # Generate callback URL similar to donations
             secure_random_uuid = SecureRandom.uuid
@@ -122,6 +118,13 @@ module Api
             code: 'STALE_OBJECT_ERROR',
             validationErrors: { base: [error_msg] }
           }, status: :conflict
+        rescue ActiveRecord::RecordInvalid => e
+          Rails.logger.error "Record validation failed: #{e.message}"
+          render json: { 
+            success: false, 
+            error: e.message,
+            validationErrors: e.record.errors.messages
+          }, status: :unprocessable_entity
         rescue StandardError => e
           error_msg = "Unexpected error: #{e.message}"
           Rails.logger.error "#{error_msg}\n#{e.backtrace.join("\n")}"
@@ -199,44 +202,43 @@ module Api
           }
         end
 
-      def my_investments
-        # Fetch all campaigns owned by current user
-        equity_campaigns = EquityCampaign.where(fundraiser_id: @current_user.id)
+        def my_investments
+          # Fetch all campaigns owned by current user
+          equity_campaigns = EquityCampaign.where(fundraiser_id: @current_user.id)
 
-        # Fetch all investments made into those campaigns
-        investments = EquityInvestment.where(campaign_id: equity_campaigns.pluck(:id))
-                                      .includes(:campaign, :user)
-                                      .order(created_at: :desc)
-                                      .page(params[:page] || 1)
-                                      .per(params[:per_page] || 10)
+          # Fetch all investments made into those campaigns
+          investments = EquityInvestment.where(campaign_id: equity_campaigns.pluck(:id))
+                                        .includes(:campaign, :user)
+                                        .order(created_at: :desc)
+                                        .page(params[:page] || 1)
+                                        .per(params[:per_page] || 10)
 
-        formatted_investments = investments.map do |investment|
-          {
-            id: investment.id,
-            email: investment.email,
-            full_name: investment.full_name || investment.user&.full_name || 'Anonymous',
-            amount: investment.amount.to_f,
-            created_at: investment.created_at,
-            status: investment.status,
-            campaign: {
-              title: investment.campaign.title,
-              currency: investment.campaign.currency,
-              currency_symbol: investment.campaign.currency_symbol
+          formatted_investments = investments.map do |investment|
+            {
+              id: investment.id,
+              email: investment.email,
+              full_name: investment.full_name || investment.user&.full_name || 'Anonymous',
+              amount: investment.amount.to_f,
+              created_at: investment.created_at,
+              status: investment.status,
+              campaign: {
+                title: investment.campaign.title,
+                currency: investment.campaign.currency,
+                currency_symbol: investment.campaign.currency_symbol
+              }
+            }
+          end
+
+          render json: {
+            investments: formatted_investments,
+            pagination: {
+              current_page: investments.current_page,
+              total_pages: investments.total_pages,
+              per_page: investments.limit_value,
+              total_count: investments.total_count
             }
           }
         end
-
-        render json: {
-          investments: formatted_investments,
-          pagination: {
-            current_page: investments.current_page,
-            total_pages: investments.total_pages,
-            per_page: investments.limit_value,
-            total_count: investments.total_count
-          }
-        }
-      end
-
 
         def show
           render json: {
@@ -272,7 +274,6 @@ module Api
         private
 
         def verify_kyc_requirements
-
           # Check if user has verified KYC as investor
           unless @current_user.verified_investor?
             render json: { 
@@ -297,10 +298,21 @@ module Api
           true
         end
 
-        def validate_investment(amount, reward_id)
+        def validate_investment(amount, reward_id, investment_params)
           Rails.logger.info "Validating investment: amount=#{amount}, reward_id=#{reward_id}"
           
           result = { valid: true, errors: {} }
+          
+          # Check required fields
+          if investment_params[:full_name].blank?
+            result[:valid] = false
+            result[:errors][:full_name] = ["can't be blank"]
+          end
+          
+          if investment_params[:email].blank?
+            result[:valid] = false
+            result[:errors][:email] = ["can't be blank"]
+          end
           
           # Basic validations
           if amount < @campaign.minimum_investment
@@ -363,6 +375,13 @@ module Api
               result[:errors][:amount] = ["Not enough shares available. Maximum: #{@campaign.currency_symbol}#{available_amount}"]
               Rails.logger.error "Shares exceeded: requested=#{requested_shares}, available=#{@campaign.shares_available}"
             end
+          end
+
+          # Build error message from all errors
+          unless result[:valid]
+            result[:message] ||= result[:errors].map { |field, messages| 
+              "#{field.to_s.humanize} #{messages.join(', ')}" 
+            }.join('; ')
           end
 
           Rails.logger.info "Validation result: #{result.inspect}"
@@ -498,39 +517,39 @@ module Api
           render json: { error: 'Investment not found' }, status: :not_found
         end
 
-      def equity_investment_params
-        # Allow both nested and flat structures for backward compatibility
-        if params[:equity_investment].present?
-          params.require(:equity_investment).permit(
-            :amount,
-            :reward_id,
-            :transaction_reference,
-            :shares,
-            :percentage,
-            :email,
-            :phone,
-            :full_name,
-            :ip_address,
-            :country,
-            metadata: {}
-          )
-        else
-          # Fallback to flat structure if equity_investment key is missing
-          params.permit(
-            :amount,
-            :reward_id,
-            :transaction_reference,
-            :shares,
-            :percentage,
-            :email,
-            :phone,
-            :full_name,
-            :ip_address,
-            :country,
-            metadata: {}
-          )
+        def equity_investment_params
+          # Allow both nested and flat structures for backward compatibility
+          if params[:equity_investment].present?
+            params.require(:equity_investment).permit(
+              :amount,
+              :reward_id,
+              :transaction_reference,
+              :shares,
+              :percentage,
+              :email,
+              :phone,
+              :full_name,
+              :ip_address,
+              :country,
+              metadata: {}
+            )
+          else
+            # Fallback to flat structure if equity_investment key is missing
+            params.permit(
+              :amount,
+              :reward_id,
+              :transaction_reference,
+              :shares,
+              :percentage,
+              :email,
+              :phone,
+              :full_name,
+              :ip_address,
+              :country,
+              metadata: {}
+            )
+          end
         end
-      end
 
         def equity_investment_update_params
           params.require(:equity_investment).permit(
