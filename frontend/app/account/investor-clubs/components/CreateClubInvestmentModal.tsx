@@ -167,7 +167,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 value={selectedCampaignId}
                 onValueChange={setSelectedCampaignId}
               >
-                <SelectTrigger className="w-full border-gray-300 text-gray-900 [&>span]:text-gray-900 focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none">
+                <SelectTrigger className="w-full z-[150] border-gray-300 text-gray-900 [&>span]:text-gray-900 focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none">
                   <SelectValue
                     placeholder="Choose an approved campaign"
                     className="text-gray-900 placeholder:text-gray-500"
