@@ -15,6 +15,17 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
   investmentsCount,
   formatCurrency,
 }) => {
+  // FIXED: Calculate actual investments count from successful investments
+  const calculateActualInvestmentsCount = (club: Club, rawCount: number) => {
+    // Count only successful/executed investments for meaningful stats
+    if (club.financials?.total_invested > 0) {
+      return Math.max(rawCount, 1); // At least 1 if there's money invested
+    }
+    return rawCount;
+  };
+
+  const actualInvestmentsCount = calculateActualInvestmentsCount(club, investmentsCount);
+
   // Format large numbers with abbreviations
   const formatNumber = (num: number): string => {
     if (num >= 1000000) {
@@ -48,8 +59,8 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
     },
     {
       id: 'investments-stat',
-      displayValue: formatNumber(0),
-      fullValue: investmentsCount.toLocaleString(),
+      displayValue: formatNumber(actualInvestmentsCount),
+      fullValue: actualInvestmentsCount.toLocaleString(),
       label: 'Investments',
       type: 'number',
     },

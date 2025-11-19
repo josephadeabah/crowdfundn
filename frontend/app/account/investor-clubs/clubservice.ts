@@ -508,10 +508,7 @@ export const investmentService = {
 // Portfolio API calls
 export const portfolioService = {
   // Get club portfolio
-  getClubPortfolio: async (
-    token: string,
-    clubId: string,
-  ): Promise<ClubInvestmentPortfolio> => {
+  getClubPortfolio: async (token: string, clubId: string): Promise<ClubInvestmentPortfolio> => {
     return apiCall(`/investment_clubs/${clubId}/portfolio`, token);
   },
 

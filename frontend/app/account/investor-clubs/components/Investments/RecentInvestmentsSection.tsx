@@ -94,7 +94,9 @@ export const RecentInvestmentsSection: React.FC<
         return 'N/A';
       }
     }
-    return investment.created_at ? new Date(investment.created_at).toLocaleDateString() : 'N/A';
+    return investment.created_at
+      ? new Date(investment.created_at).toLocaleDateString()
+      : 'N/A';
   };
 
   return (
@@ -145,29 +147,31 @@ export const RecentInvestmentsSection: React.FC<
                       <TrendingUp size={12} />
                       <span>
                         {investment?.shares.toLocaleString()} shares
-                        {investment?.percentage && ` (${investment?.percentage}%)`}
+                        {investment?.percentage &&
+                          ` (${investment?.percentage}%)`}
                       </span>
                     </div>
                   )}
 
-                  {investment?.current_value !== undefined && investment.current_value !== null && (
-                    <div className="flex items-center gap-1">
-                      <span
-                        className={`font-medium ${
-                          investment?.total_returns !== undefined && 
-                          investment?.total_returns >= 0
-                            ? 'text-green-600'
-                            : 'text-red-600'
-                        }`}
-                      >
-                        Current:{' '}
-                        {formatCurrency(
-                          investment?.current_value,
-                          investment?.currency_symbol,
-                        )}
-                      </span>
-                    </div>
-                  )}
+                  {investment?.current_value !== undefined &&
+                    investment.current_value !== null && (
+                      <div className="flex items-center gap-1">
+                        <span
+                          className={`font-medium ${
+                            investment?.total_returns !== undefined &&
+                            investment?.total_returns >= 0
+                              ? 'text-green-600'
+                              : 'text-red-600'
+                          }`}
+                        >
+                          Current:{' '}
+                          {formatCurrency(
+                            investment?.current_value,
+                            investment?.currency_symbol,
+                          )}
+                        </span>
+                      </div>
+                    )}
 
                   {investment?.roi !== undefined && investment.roi !== null && (
                     <div className="flex items-center gap-1">
@@ -238,7 +242,9 @@ export const RecentInvestmentsSection: React.FC<
             {/* Company Info */}
             <div className="mt-2 pt-2 border-t border-gray-100">
               <p className="text-xs text-gray-500">
-                {investment.campaign?.company_info?.name || investment.campaign?.company_name || 'Unknown Company'}
+                {investment.campaign?.company_info?.name ||
+                  investment.campaign?.company_name ||
+                  'Unknown Company'}
               </p>
             </div>
           </div>

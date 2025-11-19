@@ -33,15 +33,19 @@ import MemberInvestmentProposalModal from './investor-clubs/components/VotingPan
 import ApprovedCampaigns from './investor-clubs/components/Sidebar/ApprovedCampaigns';
 
 // FIXED: Enhanced formatCurrency function to handle null/undefined values
-const formatCurrency = (amount: number | string | null | undefined, currency: string = 'USD'): string => {
+const formatCurrency = (
+  amount: number | string | null | undefined,
+  currency: string = 'USD',
+): string => {
   // Handle null/undefined amount
   if (amount === null || amount === undefined) {
     return '$0.00';
   }
 
   // Convert string amount to number
-  const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  
+  const numericAmount =
+    typeof amount === 'string' ? parseFloat(amount) : amount;
+
   // Handle NaN after conversion
   if (isNaN(numericAmount)) {
     return '$0.00';
@@ -67,14 +71,16 @@ const formatCurrency = (amount: number | string | null | undefined, currency: st
 // FIXED: Enhanced date formatting function
 const formatDate = (dateString: string | null | undefined): string => {
   if (!dateString) return 'N/A';
-  
+
   try {
     const date = new Date(dateString);
-    return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return isNaN(date.getTime())
+      ? 'N/A'
+      : date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
   } catch (error) {
     return 'N/A';
   }
@@ -86,13 +92,19 @@ const transformInvestmentData = (apiInvestment: any): ClubInvestment => {
     id: apiInvestment.id?.toString() || '',
     investment_amount: parseFloat(apiInvestment.proposed_amount) || 0,
     shares: apiInvestment.shares ? parseFloat(apiInvestment.shares) : undefined,
-    percentage: apiInvestment.percentage ? parseFloat(apiInvestment.percentage) : undefined,
+    percentage: apiInvestment.percentage
+      ? parseFloat(apiInvestment.percentage)
+      : undefined,
     status: apiInvestment.status || 'pending',
     certificate_url: apiInvestment.certificate_url || undefined,
     certificate_number: apiInvestment.certificate_number || undefined,
     investment_date: apiInvestment.investment_date || undefined,
-    current_value: apiInvestment.current_value ? parseFloat(apiInvestment.current_value) : undefined,
-    total_returns: apiInvestment.total_returns ? parseFloat(apiInvestment.total_returns) : undefined,
+    current_value: apiInvestment.current_value
+      ? parseFloat(apiInvestment.current_value)
+      : undefined,
+    total_returns: apiInvestment.total_returns
+      ? parseFloat(apiInvestment.total_returns)
+      : undefined,
     roi: apiInvestment.roi ? parseFloat(apiInvestment.roi) : undefined,
     currency: 'USD', // Default currency since API returns null
     currency_symbol: '$', // Default symbol since API returns null
@@ -105,17 +117,21 @@ const transformInvestmentData = (apiInvestment: any): ClubInvestment => {
       currency: 'USD',
       currency_symbol: '$',
       category: apiInvestment.sector || undefined,
-      goal_amount: apiInvestment.proposed_amount ? parseFloat(apiInvestment.proposed_amount) : undefined,
-      current_amount: apiInvestment.current_value ? parseFloat(apiInvestment.current_value) : undefined,
+      goal_amount: apiInvestment.proposed_amount
+        ? parseFloat(apiInvestment.proposed_amount)
+        : undefined,
+      current_amount: apiInvestment.current_value
+        ? parseFloat(apiInvestment.current_value)
+        : undefined,
       company_info: {
-        name: apiInvestment.company || 'Unknown Company'
-      }
+        name: apiInvestment.company || 'Unknown Company',
+      },
     },
     created_at: apiInvestment.investment_date || new Date().toISOString(),
     updated_at: apiInvestment.investment_date || new Date().toISOString(),
     is_equity_investment: apiInvestment.is_equity_investment || false,
     transaction_reference: undefined,
-    equity_investment_id: apiInvestment.club_investment_id || undefined
+    equity_investment_id: apiInvestment.club_investment_id || undefined,
   };
 };
 
@@ -165,7 +181,9 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [investmentSuccess, setInvestmentSuccess] = useState(false);
 
   // FIXED: Transform investments when they change
-  const [transformedInvestments, setTransformedInvestments] = useState<ClubInvestment[]>([]);
+  const [transformedInvestments, setTransformedInvestments] = useState<
+    ClubInvestment[]
+  >([]);
 
   useEffect(() => {
     if (investments && investments.length > 0) {

@@ -116,13 +116,60 @@ export const useClubData = () => {
         token,
         clubSlug,
       );
+      
+      // Transform portfolio data to match frontend expectations
+      const transformedPortfolio = transformPortfolioData(portfolioResponse);
+      
       setState((prev) => ({
         ...prev,
-        portfolio: portfolioResponse,
+        portfolio: transformedPortfolio,
       }));
     } catch (error) {
       console.error('Failed to load portfolio:', error);
+      // Set empty portfolio on error
+      setState((prev) => ({
+        ...prev,
+        portfolio: {
+          total_invested: 0,
+          total_value: 0,
+          total_return: 0,
+          return_percentage: 0,
+          active_investments: 0,
+          investments: [],
+          campaigns_invested: 0,
+          successful_count: 0
+        }
+      }));
     }
+  };
+
+  // Add portfolio data transformation
+  const transformPortfolioData = (portfolioResponse: any): ClubInvestmentPortfolio => {
+    if (!portfolioResponse || !portfolioResponse.portfolio) {
+      return {
+        total_invested: 0,
+        total_value: 0,
+        total_return: 0,
+        return_percentage: 0,
+        active_investments: 0,
+        investments: [],
+        campaigns_invested: 0,
+        successful_count: 0
+      };
+    }
+
+    const portfolio = portfolioResponse.portfolio;
+    
+    return {
+      total_invested: portfolio.total_invested || 0,
+      total_value: portfolio.total_value || portfolio.total_invested || 0,
+      total_return: portfolio.total_return || 0,
+      return_percentage: portfolio.return_percentage || 0,
+      active_investments: portfolio.active_investments || 0,
+      investments: portfolio.investments || [],
+      campaigns_invested: portfolio.campaigns_invested || 0,
+      successful_count: portfolio.successful_count || 0
+    };
   };
 
   const loadContributions = async (
