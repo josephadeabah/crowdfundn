@@ -406,14 +406,14 @@ module Api
         def initialize_payment(investment, metadata, redirect_url)
           subaccount = Subaccount.find_by(user_id: @campaign.fundraiser_id)
 
-          unless subaccount&.subaccount_code.present?
-            render json: { 
-              success: false, 
-              error: 'Fundraiser does not meet requirements for raising funds',
-              code: 'MISSING_ACCOUNT_NUMBER'
-            }, status: :unprocessable_entity
-            return
-          end
+          # unless subaccount&.subaccount_code.present?
+          #   render json: { 
+          #     success: false, 
+          #     error: 'Fundraiser does not meet requirements for raising funds',
+          #     code: 'MISSING_ACCOUNT_NUMBER'
+          #   }, status: :unprocessable_entity
+          #   return
+          # end
 
           paystack_service = PaystackService.new
           response = paystack_service.initialize_transaction(
