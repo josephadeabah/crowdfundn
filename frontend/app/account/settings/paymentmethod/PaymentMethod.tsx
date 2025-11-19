@@ -127,13 +127,25 @@ const PaymentMethod = () => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        },
+        }
       );
+      
       const data = await response.json();
-      if (!data.status) throw new Error('Invalid account number');
-      return data.data.account_name;
-    } catch {
-      showToast('Error', 'Invalid or unverified account number.', 'error');
+      
+      // Check if the response has the expected structure
+      if (data.status === false || !data.data) {
+        throw new Error(data.message || 'Invalid account number');
+      }
+      
+      // Safely access the account name
+      const accountName = data.data.account_name || data.data.account_name;
+      if (!accountName) {
+        throw new Error('Account name not found in response');
+      }
+      
+      return accountName;
+    } catch (error: any) {
+      showToast('Error', error.message || 'Invalid or unverified account number.', 'error');
       return null;
     }
   };
