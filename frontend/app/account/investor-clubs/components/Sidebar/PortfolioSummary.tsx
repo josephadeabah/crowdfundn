@@ -19,30 +19,41 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
 
     // Calculate values from investments if not provided
     const investments = portfolio.investments || [];
-    const successfulInvestments = investments.filter((inv: any) => 
-      inv.status === 'successful' || inv.status === 'executed'
+    const successfulInvestments = investments.filter(
+      (inv: any) => inv.status === 'successful' || inv.status === 'executed',
     );
-    
-    const totalInvested = successfulInvestments.reduce((sum: number, inv: any) => 
-      sum + (parseFloat(inv.investment_amount) || 0), 0
+
+    const totalInvested = successfulInvestments.reduce(
+      (sum: number, inv: any) => sum + (parseFloat(inv.investment_amount) || 0),
+      0,
     );
-    
-    const totalValue = successfulInvestments.reduce((sum: number, inv: any) => 
-      sum + (parseFloat(inv.current_value) || parseFloat(inv.investment_amount) || 0), 0
+
+    const totalValue = successfulInvestments.reduce(
+      (sum: number, inv: any) =>
+        sum +
+        (parseFloat(inv.current_value) ||
+          parseFloat(inv.investment_amount) ||
+          0),
+      0,
     );
-    
+
     const totalReturn = totalValue - totalInvested;
-    const returnPercentage = totalInvested > 0 ? (totalReturn / totalInvested) * 100 : 0;
+    const returnPercentage =
+      totalInvested > 0 ? (totalReturn / totalInvested) * 100 : 0;
 
     return {
       total_invested: portfolio.total_invested || totalInvested,
       total_value: portfolio.total_value || totalValue,
       total_return: portfolio.total_return || totalReturn,
       return_percentage: portfolio.return_percentage || returnPercentage,
-      active_investments: portfolio.active_investments || successfulInvestments.length,
+      active_investments:
+        portfolio.active_investments || successfulInvestments.length,
       investments: investments,
-      campaigns_invested: portfolio.campaigns_invested || new Set(successfulInvestments.map((inv: any) => inv.campaign_id)).size,
-      successful_count: portfolio.successful_count || successfulInvestments.length
+      campaigns_invested:
+        portfolio.campaigns_invested ||
+        new Set(successfulInvestments.map((inv: any) => inv.campaign_id)).size,
+      successful_count:
+        portfolio.successful_count || successfulInvestments.length,
     };
   };
 
@@ -102,7 +113,9 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
           </span>
           <span
             className={`font-semibold text-sm lg:text-base ${
-              transformedPortfolio.total_return >= 0 ? 'text-green-600' : 'text-red-600'
+              transformedPortfolio.total_return >= 0
+                ? 'text-green-600'
+                : 'text-red-600'
             }`}
           >
             {formatCurrency(transformedPortfolio.total_return)} (

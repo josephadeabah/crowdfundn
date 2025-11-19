@@ -116,10 +116,10 @@ export const useClubData = () => {
         token,
         clubSlug,
       );
-      
+
       // Transform portfolio data to match frontend expectations
       const transformedPortfolio = transformPortfolioData(portfolioResponse);
-      
+
       setState((prev) => ({
         ...prev,
         portfolio: transformedPortfolio,
@@ -137,14 +137,16 @@ export const useClubData = () => {
           active_investments: 0,
           investments: [],
           campaigns_invested: 0,
-          successful_count: 0
-        }
+          successful_count: 0,
+        },
       }));
     }
   };
 
   // Add portfolio data transformation
-  const transformPortfolioData = (portfolioResponse: any): ClubInvestmentPortfolio => {
+  const transformPortfolioData = (
+    portfolioResponse: any,
+  ): ClubInvestmentPortfolio => {
     if (!portfolioResponse || !portfolioResponse.portfolio) {
       return {
         total_invested: 0,
@@ -154,12 +156,12 @@ export const useClubData = () => {
         active_investments: 0,
         investments: [],
         campaigns_invested: 0,
-        successful_count: 0
+        successful_count: 0,
       };
     }
 
     const portfolio = portfolioResponse.portfolio;
-    
+
     return {
       total_invested: portfolio.total_invested || 0,
       total_value: portfolio.total_value || portfolio.total_invested || 0,
@@ -168,7 +170,7 @@ export const useClubData = () => {
       active_investments: portfolio.active_investments || 0,
       investments: portfolio.investments || [],
       campaigns_invested: portfolio.campaigns_invested || 0,
-      successful_count: portfolio.successful_count || 0
+      successful_count: portfolio.successful_count || 0,
     };
   };
 

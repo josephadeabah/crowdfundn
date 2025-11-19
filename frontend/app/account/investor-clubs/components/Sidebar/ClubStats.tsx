@@ -24,7 +24,10 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
     return rawCount;
   };
 
-  const actualInvestmentsCount = calculateActualInvestmentsCount(club, investmentsCount);
+  const actualInvestmentsCount = calculateActualInvestmentsCount(
+    club,
+    investmentsCount,
+  );
 
   // Format large numbers with abbreviations
   const formatNumber = (num: number): string => {
