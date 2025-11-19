@@ -83,7 +83,9 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
     // Check if club has sufficient balance
     if (parseFloat(investmentAmount) > club.financials.current_balance) {
-      setError(`Insufficient club balance. Available: ${club.currency_symbol}${club.financials.current_balance.toLocaleString()}`);
+      setError(
+        `Insufficient club balance. Available: ${club.currency_symbol}${club.financials.current_balance.toLocaleString()}`,
+      );
       return;
     }
 
@@ -148,8 +150,14 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
         </div>
 
         {/* Scrollable Content - with max height constraint */}
-        <div className="flex-1 overflow-y-auto p-6 min-h-0"> {/* Added min-h-0 for proper flex shrinking */}
-          <form id="investment-form" onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex-1 overflow-y-auto p-6 min-h-0">
+          {' '}
+          {/* Added min-h-0 for proper flex shrinking */}
+          <form
+            id="investment-form"
+            onSubmit={handleSubmit}
+            className="space-y-4"
+          >
             {/* Select Campaign */}
             <div className="space-y-2">
               <Label htmlFor="campaign" className="text-gray-900">
@@ -189,15 +197,20 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             {selectedCampaign && (
               <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
                 <p className="text-sm text-gray-600">
-                  {selectedCampaign.campaign.fundraiser?.name || 'Unknown fundraiser'}
+                  {selectedCampaign.campaign.fundraiser?.name ||
+                    'Unknown fundraiser'}
                 </p>
                 <div className="text-xs mt-1 space-y-1 text-gray-700">
                   <div>
-                    Goal: {selectedCampaign.campaign.currency_symbol || selectedCampaign.campaign.currency}
+                    Goal:{' '}
+                    {selectedCampaign.campaign.currency_symbol ||
+                      selectedCampaign.campaign.currency}
                     {selectedCampaign.campaign.goal_amount?.toLocaleString()}
                   </div>
                   <div>
-                    Raised: {selectedCampaign.campaign.currency_symbol || selectedCampaign.campaign.currency}
+                    Raised:{' '}
+                    {selectedCampaign.campaign.currency_symbol ||
+                      selectedCampaign.campaign.currency}
                     {selectedCampaign.campaign.current_amount?.toLocaleString()}
                   </div>
                   <div>Category: {selectedCampaign.campaign.category}</div>
@@ -228,7 +241,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 className="border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none"
               />
               <p className="text-xs text-gray-500">
-                Available balance: {club.currency_symbol}{club.financials.current_balance.toLocaleString()}
+                Available balance: {club.currency_symbol}
+                {club.financials.current_balance.toLocaleString()}
               </p>
             </div>
 
@@ -271,7 +285,12 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             <Button
               type="submit"
               form="investment-form"
-              disabled={loading || !selectedCampaignId || approvedCampaigns.length === 0 || !club.is_admin}
+              disabled={
+                loading ||
+                !selectedCampaignId ||
+                approvedCampaigns.length === 0 ||
+                !club.is_admin
+              }
               className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
             >
               {loading ? 'Creating...' : 'Create Investment'}
