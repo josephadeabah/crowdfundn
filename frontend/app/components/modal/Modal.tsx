@@ -79,7 +79,7 @@ const Modal: React.FC<ModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black bg-opacity-50"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black bg-opacity-50 py-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -90,10 +90,10 @@ const Modal: React.FC<ModalProps> = ({
         >
           <motion.div
             ref={modalRef}
-            className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-sm shadow-xl modal-scrollbar`}
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
+            className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-sm shadow-xl modal-scrollbar my-auto`}
+            initial={{ scale: 0.9, opacity: 0, y: -20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             drag={isDraggable}
             dragConstraints={{
@@ -104,13 +104,13 @@ const Modal: React.FC<ModalProps> = ({
             }}
             style={{
               ...customStyles,
-              maxHeight: '90vh',
+              maxHeight: 'calc(100vh - 2rem)',
               overflowY: 'auto',
             }}
           >
             <div className="p-6">
               <button
-                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors duration-200 z-10"
                 onClick={onClose}
                 aria-label="Close modal"
               >
@@ -126,4 +126,3 @@ const Modal: React.FC<ModalProps> = ({
 };
 
 export default Modal;
-
