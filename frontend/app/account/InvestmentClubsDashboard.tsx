@@ -169,6 +169,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [isTransfersModalOpen, setIsTransfersModalOpen] = useState(false);
   const [isInvestmentProposalModalOpen, setIsInvestmentProposalModalOpen] =
     useState(false);
+    const [error, setError] = useState<string | null>(null);
 
   // Alert states
   const [featureAlert, setFeatureAlert] = useState(false);
@@ -281,6 +282,27 @@ const InvestmentClubsDashboard: React.FC = () => {
 
     checkPaymentStatus();
   }, [selectedClub, token, loadClubDetails]);
+
+  useEffect(() => {
+  const handleError = (error: ErrorEvent) => {
+    console.error('Global error caught:', error);
+    setError(error.message);
+  };
+
+  window.addEventListener('error', handleError);
+  return () => window.removeEventListener('error', handleError);
+}, []);
+
+  // Add debugging for portfolio
+  useEffect(() => {
+    console.log('🔄 Portfolio Data:', {
+      portfolio,
+      hasPortfolio: !!portfolio,
+      totalInvested: portfolio?.total_invested,
+      returnPercentage: portfolio?.return_percentage,
+      typeOfReturnPercentage: typeof portfolio?.return_percentage
+    });
+  }, [portfolio]);
 
   const handleContributionSuccess = async () => {
     if (selectedClub) {
@@ -404,6 +426,24 @@ const InvestmentClubsDashboard: React.FC = () => {
   if (loading) {
     return <LoadingState />;
   }
+
+  // Show error message if there's an error
+if (error) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="bg-white p-6 rounded-lg shadow-md max-w-md">
+        <h2 className="text-xl font-bold text-red-600 mb-4">Error Loading Page</h2>
+        <p className="text-gray-600 mb-4">{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
+        >
+          Reload Page
+        </button>
+      </div>
+    </div>
+  );
+}
 
   if (clubs.length === 0) {
     return (

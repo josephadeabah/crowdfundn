@@ -144,44 +144,44 @@ export const useClubData = () => {
   };
 
   // Add portfolio data transformation
-  const transformPortfolioData = (
-    portfolioResponse: any,
-  ): ClubInvestmentPortfolio => {
-    if (!portfolioResponse || !portfolioResponse.portfolio) {
-      return {
-        total_invested: 0,
-        total_value: 0,
-        total_return: 0,
-        return_percentage: 0,
-        active_investments: 0,
-        investments: [],
-        campaigns_invested: 0,
-        successful_count: 0,
-      };
-    }
-
-    const portfolio = portfolioResponse.portfolio;
-
-    // FIXED: Parse string values to numbers and ensure proper fallbacks
+const transformPortfolioData = (
+  portfolioResponse: any,
+): ClubInvestmentPortfolio => {
+  if (!portfolioResponse || !portfolioResponse.portfolio) {
     return {
-      total_invested: typeof portfolio.total_invested === 'string' 
-        ? parseFloat(portfolio.total_invested) 
-        : portfolio.total_invested || 0,
-      total_value: typeof portfolio.total_value === 'string'
-        ? parseFloat(portfolio.total_value)
-        : portfolio.total_value || portfolio.total_invested || 0,
-      total_return: typeof portfolio.total_return === 'string'
-        ? parseFloat(portfolio.total_return)
-        : portfolio.total_return || 0,
-      return_percentage: typeof portfolio.return_percentage === 'string'
-        ? parseFloat(portfolio.return_percentage)
-        : portfolio.return_percentage || 0,
-      active_investments: portfolio.active_investments || 0,
-      investments: portfolio.investments || [],
-      campaigns_invested: portfolio.campaigns_invested || 0,
-      successful_count: portfolio.successful_count || 0,
+      total_invested: 0,
+      total_value: 0,
+      total_return: 0,
+      return_percentage: 0,
+      active_investments: 0,
+      investments: [],
+      campaigns_invested: 0,
+      successful_count: 0,
     };
+  }
+
+  const portfolio = portfolioResponse.portfolio;
+
+  // FIXED: Ensure all required fields exist with proper defaults
+  return {
+    total_invested: typeof portfolio.total_invested === 'string' 
+      ? parseFloat(portfolio.total_invested) 
+      : (portfolio.total_invested || 0),
+    total_value: typeof portfolio.total_value === 'string'
+      ? parseFloat(portfolio.total_value)
+      : (portfolio.total_value || portfolio.total_invested || 0),
+    total_return: typeof portfolio.total_return === 'string'
+      ? parseFloat(portfolio.total_return)
+      : (portfolio.total_return || 0),
+    return_percentage: typeof portfolio.return_percentage === 'string'
+      ? parseFloat(portfolio.return_percentage)
+      : (portfolio.return_percentage || 0), // FIXED: Ensure this is always a number
+    active_investments: portfolio.active_investments || 0,
+    investments: portfolio.investments || [],
+    campaigns_invested: portfolio.campaigns_invested || 0,
+    successful_count: portfolio.successful_count || 0,
   };
+};
 
   const loadContributions = async (
     clubSlug: string,
