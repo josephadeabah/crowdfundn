@@ -15,37 +15,44 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
   investmentsCount,
   formatCurrency,
 }) => {
-  // FIXED: Use actual investment count from portfolio data
-  const actualInvestmentsCount = investmentsCount;
+  // FIXED: Use actual investment count from portfolio data with safe fallback
+  const actualInvestmentsCount = investmentsCount || 0;
 
-  // Format large numbers with abbreviations
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K';
+  // FIXED: Safe number formatting
+  const formatNumber = (num: number | undefined | null): string => {
+    // Handle undefined, null, or NaN values
+    const safeNum = num || 0;
+    
+    if (safeNum >= 1000000) {
+      return (safeNum / 1000000).toFixed(1) + 'M';
+    } else if (safeNum >= 1000) {
+      return (safeNum / 1000).toFixed(1) + 'K';
     }
-    return num.toString();
+    return safeNum.toString();
   };
 
-  // Format currency for display with proper scaling
+  // FIXED: Safe currency formatting
   const formatCurrencyForDisplay = (
-    amount: number,
+    amount: number | undefined | null,
     currency: string,
   ): string => {
-    if (amount >= 1000000) {
-      return formatCurrency(amount / 1000000, currency) + 'M';
-    } else if (amount >= 1000) {
-      return formatCurrency(amount / 1000, currency) + 'K';
+    // Handle undefined, null, or NaN values
+    const safeAmount = amount || 0;
+    
+    if (safeAmount >= 1000000) {
+      return formatCurrency(safeAmount / 1000000, currency) + 'M';
+    } else if (safeAmount >= 1000) {
+      return formatCurrency(safeAmount / 1000, currency) + 'K';
     }
-    return formatCurrency(amount, currency);
+    return formatCurrency(safeAmount, currency);
   };
 
+  // FIXED: Safe stats with proper fallbacks
   const stats = [
     {
       id: 'members-stat',
-      displayValue: formatNumber(club.current_members_count),
-      fullValue: club.current_members_count.toLocaleString(),
+      displayValue: formatNumber(club?.current_members_count),
+      fullValue: (club?.current_members_count || 0).toLocaleString(),
       label: 'Members',
       type: 'number',
     },
@@ -59,12 +66,12 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
     {
       id: 'raised-stat',
       displayValue: formatCurrencyForDisplay(
-        club.financials.total_contributions,
-        club.currency,
+        club?.financials?.total_contributions,
+        club?.currency || 'USD',
       ),
       fullValue: formatCurrency(
-        club.financials.total_contributions,
-        club.currency,
+        club?.financials?.total_contributions || 0,
+        club?.currency || 'USD',
       ),
       label: 'Total Raised',
       type: 'currency',
@@ -72,10 +79,13 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
     {
       id: 'invested-stat',
       displayValue: formatCurrencyForDisplay(
-        club.financials.total_invested,
-        club.currency,
+        club?.financials?.total_invested,
+        club?.currency || 'USD',
       ),
-      fullValue: formatCurrency(club.financials.total_invested, club.currency),
+      fullValue: formatCurrency(
+        club?.financials?.total_invested || 0,
+        club?.currency || 'USD',
+      ),
       label: 'Total Invested',
       type: 'currency',
     },
@@ -132,7 +142,7 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
       {/* Currency indicator */}
       <div className="mt-3 pt-3 border-t border-gray-200">
         <div className="text-xs text-gray-500 text-center">
-          Currency: {club.currency}
+          Currency: {club?.currency || 'USD'}
         </div>
       </div>
     </motion.div>
