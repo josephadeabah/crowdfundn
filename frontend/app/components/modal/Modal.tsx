@@ -1,5 +1,7 @@
 'use client';
-import React, { useEffect, useRef, useCallback } from 'react';
+
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 
@@ -30,14 +32,19 @@ const Modal: React.FC<ModalProps> = ({
   closeOnBackdropClick = true,
   customStyles = {},
 }) => {
+  const [mounted, setMounted] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     },
-    [onClose],
+    [onClose]
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -48,9 +55,7 @@ const Modal: React.FC<ModalProps> = ({
     document.body.style.overflow = isOpen ? 'hidden' : 'unset';
   }, [isOpen]);
 
-  const handleBackdropClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  ) => {
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (closeOnBackdropClick && e.target === e.currentTarget) onClose();
   };
 
@@ -65,11 +70,16 @@ const Modal: React.FC<ModalProps> = ({
     full: 'max-w-full mx-4 w-[95vw]',
   };
 
-  return (
+  if (!mounted) return null;
+
+  const portalRoot = document.getElementById('modal-root');
+  if (!portalRoot) return null;
+
+  return ReactDOM.createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[999999] !top-0 !left-0 !right-0 !bottom-0 flex items-start justify-center overflow-y-auto bg-black bg-opacity-50"
+          className="fixed inset-0 z-[999999] flex items-start justify-center bg-black bg-opacity-50 overflow-y-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -77,11 +87,10 @@ const Modal: React.FC<ModalProps> = ({
           onClick={handleBackdropClick}
           aria-modal="true"
           role="dialog"
-          style={{ position: "fixed", inset: 0 }}
         >
           <motion.div
             ref={modalRef}
-            className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-sm shadow-xl modal-scrollbar mt-6`}
+            className={`relative mt-6 w-full ${sizeClasses[size]} bg-white dark:bg-neutral-800 rounded-sm shadow-xl modal-scrollbar`}
             initial={{ scale: 0.9, opacity: 0, y: -20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: -20 }}
@@ -113,7 +122,8 @@ const Modal: React.FC<ModalProps> = ({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    portalRoot
   );
 };
 
