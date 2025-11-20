@@ -46,6 +46,10 @@ class InvestmentClub < ApplicationRecord
   def contact_name
     creator.full_name
   end
+
+  def creator_currency
+    creator.currency.upcase || 'GHS'
+  end
   
   def admin_members
     members.joins(:investment_club_memberships)
