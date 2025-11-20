@@ -29,7 +29,7 @@ module Api
             {
               investor_name: investor_name,
               amount: investment.amount,
-              email: investment.email,
+              # email: investment.email,
               date: investment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
               signature_url: investment.user&.latest_kyc&.signature_image_url,
               # ADDED: Include investment type for frontend
@@ -677,7 +677,7 @@ module Api
             equity_remaining: @campaign.percentage_available,
             valuation: @campaign.valuation,
             currency_symbol: @campaign.currency_symbol,
-            issuer_signature_url: @campaign.fundraiser&.latest_kyc&.signature_image_url
+            # issuer_signature_url: @campaign.fundraiser&.latest_kyc&.signature_image_url
           }
         end
 
