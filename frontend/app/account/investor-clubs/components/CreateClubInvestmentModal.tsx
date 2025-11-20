@@ -49,9 +49,9 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     (c) => c.campaign.id.toString() === selectedCampaignId,
   );
 
-  // Calculate fees and total amount
+  // Calculate fees and total amount with processing fee cap
   const calculateFees = (amount: number) => {
-    const processingFee = amount * 0.07; // 7% processing fee
+    const processingFee = Math.min(amount * 0.07, 600); // 7% processing fee, capped at 600
     const platformFee = amount * 0.03; // 3% platform fee
     const totalFees = processingFee + platformFee;
     const totalAmount = amount + totalFees; // Investment amount + all fees
@@ -63,6 +63,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       totalFees,
       totalAmount, // This is what gets deducted from club balance
       netToCampaign,
+      isProcessingFeeCapped: processingFee >= 600,
     };
   };
 
@@ -295,7 +296,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   <div className="flex justify-between">
                     <span className="text-gray-600 flex items-center gap-1">
                       <CreditCard className="w-3 h-3" />
-                      Processing Fee (7%):
+                      Processing Fee{' '}
+                      {fees.isProcessingFeeCapped ? '(Capped at 7%)' : '(7%)'}:
                     </span>
                     <span className="text-red-600 font-medium">
                       +{club.currency_symbol}
@@ -303,6 +305,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
+                      {fees.isProcessingFeeCapped && (
+                        <span className="text-xs text-green-600 ml-1">
+                          (Capped)
+                        </span>
+                      )}
                     </span>
                   </div>
 
@@ -352,10 +359,23 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 <Alert className="mt-3 bg-blue-50 border-blue-200">
                   <InfoIcon className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-700 text-xs">
-                    The platform fee (3%) is deducted from the campaign amount,
-                    while the processing fee (7%) is an additional cost to your
-                    club. The total amount deducted from your club balance
-                    includes both fees added to your investment amount.
+                    {fees.isProcessingFeeCapped ? (
+                      <>
+                        The processing fee is capped at {club.currency_symbol}
+                        600 for large investments. The platform fee (3%) is
+                        deducted from the campaign amount. The total amount
+                        deducted from your club balance includes both fees added
+                        to your investment amount.
+                      </>
+                    ) : (
+                      <>
+                        The platform fee (3%) is deducted from the campaign
+                        amount, while the processing fee (7%) is an additional
+                        cost to your club. The total amount deducted from your
+                        club balance includes both fees added to your investment
+                        amount.
+                      </>
+                    )}
                   </AlertDescription>
                 </Alert>
               </div>
