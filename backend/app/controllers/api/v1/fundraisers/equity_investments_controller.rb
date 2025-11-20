@@ -13,21 +13,33 @@ module Api
         def public_investments
           # This action needs @campaign, which is set by set_campaign
           investments = @campaign.equity_investments.successful
-                              .order(created_at: :desc)
+                                .order(created_at: :desc)
 
           investors = investments.map do |investment|
+            # FIXED: Handle both user investments and club investments
+            investor_name = if investment.user.present?
+                              investment.user.full_name
+                            elsif investment.club_investment?
+                              # For club investments, use the club name or a generic name
+                              investment.metadata&.dig('club_name') || 'Investment Club'
+                            else
+                              investment.full_name || 'Anonymous'
+                            end
+
             {
-              investor_name: investment.user&.full_name || investment.full_name || 'Anonymous',
+              investor_name: investor_name,
               amount: investment.amount,
               email: investment.email,
               date: investment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-              signature_url: investment.user&.latest_kyc&.signature_image_url
+              signature_url: investment.user&.latest_kyc&.signature_image_url,
+              # ADDED: Include investment type for frontend
+              investment_type: investment.club_investment? ? 'club' : 'individual'
             }
           end
 
           paginated_investors = Kaminari.paginate_array(investors)
-                                      .page(params[:page])
-                                      .per(params[:per_page] || 10)
+                                        .page(params[:page])
+                                        .per(params[:per_page] || 10)
 
           render json: {
             investments: paginated_investors,

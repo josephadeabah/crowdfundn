@@ -131,6 +131,36 @@ class EquityInvestment < ApplicationRecord
     InvestmentClub.find_by(id: metadata&.dig('club_id'))
   end
 
+   # NEW: Method to safely access club information
+  def club_info
+    return nil unless club_investment?
+    
+    {
+      name: metadata&.dig('club_name'),
+      id: metadata&.dig('club_id')
+    }
+  end
+
+  # NEW: Method to get display name for public listings
+  def public_investor_name
+    if user.present?
+      user.full_name
+    elsif club_investment?
+      metadata&.dig('club_name') || 'Investment Club'
+    else
+      full_name || 'Anonymous'
+    end
+  end
+
+  # NEW: Method to get display email for public listings
+  def public_investor_email
+    if user.present?
+      user.email
+    else
+      email
+    end
+  end
+
   # ========== CANCELLATION METHODS ==========
   def can_be_cancelled?
     committed? && cancel_window_expires_at > Time.current
