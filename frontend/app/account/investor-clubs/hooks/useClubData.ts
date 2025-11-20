@@ -171,7 +171,7 @@ export const useClubData = () => {
 
     try {
       console.log('🔄 Loading portfolio for club:', clubSlug);
-      const portfolioResponse = await portfolioService.getClubPortfolio(
+      const portfolioResponse: ClubInvestmentPortfolio = await portfolioService.getClubPortfolio(
         token,
         clubSlug,
       );
@@ -181,7 +181,7 @@ export const useClubData = () => {
 
       setState((prev) => ({
         ...prev,
-        portfolio: transformedPortfolio,
+        portfolio: portfolioResponse,
       }));
     } catch (error) {
       console.error('Failed to load portfolio:', error);
