@@ -107,11 +107,15 @@ module PaystackWebhook::Handlers
           return result
         end
 
-        # Generate certificate for club investment
-        if ClubInvestmentCertificateService.generate_certificate(club_investment)
-          Rails.logger.info "Certificate generated successfully for club investment #{club_investment.id}"
-        else
-          Rails.logger.error "Failed to generate certificate for club investment #{club_investment.id}"
+        # Generate certificate for club investment using the job
+        ClubInvestmentCertificateJob.perform_later(club_investment.id)
+        Rails.logger.info "Enqueued certificate generation job for club investment #{club_investment.id}"
+
+        # Generate certificate for the equity investment
+        begin
+          InvestmentCertificateJob.perform_later(equity_investment.id) if equity_investment.successful?
+        rescue => e
+          Rails.logger.info "Failed to enqueue equity investment certificate job: #{e.message}"
         end
 
         # Notify club members
@@ -145,13 +149,6 @@ module PaystackWebhook::Handlers
       }
 
       investment.update!(update_attributes)
-      
-      # Generate certificate for the equity investment
-      begin
-        InvestmentCertificateJob.perform_later(investment.id) if investment.successful?
-      rescue => e
-        Rails.logger.info "Failed to enqueue certificate job: #{e.message}"
-      end
     end
 
     def build_club_metadata(metadata, response, gross_amount, platform_fee, processing_fee)
