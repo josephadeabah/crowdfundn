@@ -37,7 +37,7 @@ export const RecentInvestmentsSection: React.FC<
   currentPage = 1,
   totalPages = 1,
   totalCount = 0,
-  perPage = 10,
+  perPage = 5,
   onPageChange,
   onPerPageChange,
   showPagination = true,

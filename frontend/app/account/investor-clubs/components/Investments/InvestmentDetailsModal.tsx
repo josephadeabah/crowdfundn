@@ -83,12 +83,12 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
     }
   };
 
-  const DetailItem = ({ 
-    icon: Icon, 
-    label, 
-    value, 
-    valueColor = "text-gray-900",
-    showArrow = false 
+  const DetailItem = ({
+    icon: Icon,
+    label,
+    value,
+    valueColor = 'text-gray-900',
+    showArrow = false,
   }: {
     icon: React.ComponentType<any>;
     label: string;
@@ -110,14 +110,18 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
     </div>
   );
 
-  const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  const Section = ({
+    title,
+    children,
+  }: {
+    title: string;
+    children: React.ReactNode;
+  }) => (
     <div className="bg-white border border-gray-200 rounded-lg">
       <div className="px-4 py-3 border-b border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
       </div>
-      <div className="divide-y divide-gray-100">
-        {children}
-      </div>
+      <div className="divide-y divide-gray-100">{children}</div>
     </div>
   );
 
@@ -167,7 +171,7 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                 investment.currency_symbol,
               )}
             />
-            
+
             {investment.current_value !== undefined &&
               investment.current_value !== null && (
                 <DetailItem
@@ -232,7 +236,7 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                   value={`${investment.shares.toLocaleString()} shares`}
                 />
               )}
-              
+
               {investment.percentage && (
                 <DetailItem
                   icon={Percent}
@@ -240,7 +244,7 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                   value={`${investment.percentage}%`}
                 />
               )}
-              
+
               {investment.campaign?.valuation && (
                 <DetailItem
                   icon={DollarSign}
@@ -262,15 +266,17 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
               label="Company"
               value={investment.campaign?.company_name || 'N/A'}
             />
-            
+
             {investment.campaign?.category && (
               <DetailItem
                 icon={BarChart3}
                 label="Sector"
-                value={investment.campaign.category.replace('-', ' ').toUpperCase()}
+                value={investment.campaign.category
+                  .replace('-', ' ')
+                  .toUpperCase()}
               />
             )}
-            
+
             {investment.campaign?.goal_amount && (
               <DetailItem
                 icon={Target}
@@ -282,7 +288,7 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                 )}
               />
             )}
-            
+
             {investment.campaign?.current_amount && (
               <DetailItem
                 icon={TrendingUp}
@@ -303,7 +309,7 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
               label="Investment Date"
               value={formatDate(investment.investment_date)}
             />
-            
+
             <DetailItem
               icon={Clock}
               label="Created Date"
@@ -319,17 +325,21 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                   icon={FileText}
                   label="Certificate Number"
                   value={
-                    <span className="font-mono">{investment.certificate_number}</span>
+                    <span className="font-mono">
+                      {investment.certificate_number}
+                    </span>
                   }
                 />
               )}
-              
+
               <DetailItem
                 icon={FileText}
                 label="Certificate Status"
                 value={
                   investment.certificate_url ? (
-                    <span className="text-green-600 font-medium">Available</span>
+                    <span className="text-green-600 font-medium">
+                      Available
+                    </span>
                   ) : (
                     <span className="text-yellow-600 font-medium">Pending</span>
                   )
@@ -345,28 +355,38 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
               label="Investment ID"
               value={<span className="font-mono">{investment.id}</span>}
             />
-            
+
             {investment.club_investment_id && (
               <DetailItem
                 icon={BarChart3}
                 label="Club Investment ID"
-                value={<span className="font-mono">{investment.club_investment_id}</span>}
+                value={
+                  <span className="font-mono">
+                    {investment.club_investment_id}
+                  </span>
+                }
               />
             )}
-            
+
             {investment.campaign_id && (
               <DetailItem
                 icon={BarChart3}
                 label="Campaign ID"
-                value={<span className="font-mono">{investment.campaign_id}</span>}
+                value={
+                  <span className="font-mono">{investment.campaign_id}</span>
+                }
               />
             )}
-            
+
             {investment.equity_investment_id && (
               <DetailItem
                 icon={BarChart3}
                 label="Equity Investment ID"
-                value={<span className="font-mono">{investment.equity_investment_id}</span>}
+                value={
+                  <span className="font-mono">
+                    {investment.equity_investment_id}
+                  </span>
+                }
               />
             )}
           </Section>
