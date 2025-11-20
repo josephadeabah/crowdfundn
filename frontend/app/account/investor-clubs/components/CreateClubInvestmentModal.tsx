@@ -336,7 +336,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
                     <div className="flex justify-between mt-1">
                       <span className="text-gray-700 font-medium">
-                        Net to Campaign:
+                        Net to Fundraiser:
                       </span>
                       <span className="text-green-700 font-bold">
                         {club.currency_symbol}
