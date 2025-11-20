@@ -72,7 +72,7 @@ const Modal: React.FC<ModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 flex items-center justify-center overflow-y-auto bg-black/30  z-[100]"
+          className="fixed inset-0 flex items-center justify-center overflow-y-auto bg-black/60  z-[100]"
           style={{
             position: 'fixed',
             top: 0,
