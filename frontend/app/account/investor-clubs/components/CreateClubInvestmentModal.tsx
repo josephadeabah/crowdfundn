@@ -15,7 +15,6 @@ import {
 import { investmentService } from '../clubservice';
 import { ApprovedCampaign, Club } from '../clubTypes';
 import Modal from '@/app/components/modal/Modal';
-import { Badge } from '@/app/components/ui/badge';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
 import { InfoIcon, Calculator, TrendingUp, CreditCard } from 'lucide-react';
 
@@ -50,20 +49,20 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     (c) => c.campaign.id.toString() === selectedCampaignId,
   );
 
-  // Calculate fees and net amount
+  // Calculate fees and total amount
   const calculateFees = (amount: number) => {
     const processingFee = amount * 0.07; // 7% processing fee
     const platformFee = amount * 0.03; // 3% platform fee
     const totalFees = processingFee + platformFee;
+    const totalAmount = amount + totalFees; // Investment amount + all fees
     const netToCampaign = amount - platformFee; // Only platform fee is deducted from campaign amount
-    const totalDeduction = processingFee + platformFee; // Total deducted from club balance
 
     return {
       processingFee,
       platformFee,
       totalFees,
+      totalAmount, // This is what gets deducted from club balance
       netToCampaign,
-      totalDeduction,
     };
   };
 
@@ -106,11 +105,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       return;
     }
 
-    // Check if club has sufficient balance (including fees)
-    const totalDeduction = fees?.totalDeduction || parseFloat(investmentAmount);
-    if (totalDeduction > club.financials.current_balance) {
+    // Check if club has sufficient balance (investment amount + fees)
+    const totalAmount = fees?.totalAmount || parseFloat(investmentAmount);
+    if (totalAmount > club.financials.current_balance) {
       setError(
-        `Insufficient club balance. Available: ${club.currency_symbol}${club.financials.current_balance.toLocaleString()}. Required: ${club.currency_symbol}${totalDeduction.toLocaleString()}`,
+        `Insufficient club balance. Available: ${club.currency_symbol}${club.financials.current_balance.toLocaleString()}. Required: ${club.currency_symbol}${totalAmount.toLocaleString()}`,
       );
       return;
     }
@@ -299,7 +298,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                       Processing Fee (7%):
                     </span>
                     <span className="text-red-600 font-medium">
-                      -{club.currency_symbol}
+                      +{club.currency_symbol}
                       {fees.processingFee.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
@@ -313,7 +312,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                       Platform Fee (3%):
                     </span>
                     <span className="text-orange-600 font-medium">
-                      -{club.currency_symbol}
+                      +{club.currency_symbol}
                       {fees.platformFee.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
@@ -328,7 +327,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                       </span>
                       <span className="text-red-700 font-bold">
                         {club.currency_symbol}
-                        {fees.totalDeduction.toLocaleString(undefined, {
+                        {fees.totalAmount.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
@@ -356,19 +355,19 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                     The platform fee (3%) is deducted from the campaign amount,
                     while the processing fee (7%) is an additional cost to your
                     club. The total amount deducted from your club balance
-                    includes both fees.
+                    includes both fees added to your investment amount.
                   </AlertDescription>
                 </Alert>
               </div>
             )}
 
             {/* Balance Check Warning */}
-            {fees && fees.totalDeduction > club.financials.current_balance && (
+            {fees && fees.totalAmount > club.financials.current_balance && (
               <Alert className="bg-red-50 border-red-200">
                 <AlertDescription className="text-red-700 text-sm">
                   <strong>Insufficient Balance:</strong> This investment
                   requires {club.currency_symbol}
-                  {fees.totalDeduction.toLocaleString(undefined, {
+                  {fees.totalAmount.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}{' '}
@@ -423,7 +422,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 approvedCampaigns.length === 0 ||
                 !club.is_admin ||
                 !!(
-                  fees && fees.totalDeduction > club.financials.current_balance
+                  fees && fees.totalAmount > club.financials.current_balance
                 )
               }
               className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
