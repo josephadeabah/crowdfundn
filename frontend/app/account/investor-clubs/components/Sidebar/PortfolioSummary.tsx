@@ -7,11 +7,13 @@ import { ClubInvestmentPortfolio } from '../../clubTypes';
 interface PortfolioSummaryProps {
   portfolio: ClubInvestmentPortfolio | null;
   formatCurrency: (amount: number, currency?: string) => string;
+  clubCurrency?: string; // Add club currency prop
 }
 
 export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
   portfolio,
   formatCurrency,
+  clubCurrency = 'USD', // Default to USD if not provided
 }) => {
   if (!portfolio) {
     return (
@@ -48,7 +50,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             Total Invested
           </span>
           <span className="font-semibold text-sm lg:text-base">
-            {formatCurrency(portfolio.total_invested)}
+            {formatCurrency(portfolio.total_invested, clubCurrency)}
           </span>
         </div>
 
@@ -57,7 +59,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             Current Value
           </span>
           <span className="font-semibold text-sm lg:text-base">
-            {formatCurrency(portfolio.total_value)}
+            {formatCurrency(portfolio.total_value, clubCurrency)}
           </span>
         </div>
 
@@ -70,7 +72,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
               portfolio.total_return >= 0 ? 'text-green-600' : 'text-red-600'
             }`}
           >
-            {formatCurrency(portfolio.total_return)} (
+            {formatCurrency(portfolio.total_return, clubCurrency)} (
             {portfolio.return_percentage}%)
           </span>
         </div>
@@ -103,6 +105,14 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
               </span>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Currency indicator - same as ClubStats */}
+      <div className="mt-3 pt-3 border-t border-gray-200">
+        <div className="text-xs text-gray-500 text-center">
+          Currency: {clubCurrency}
+          <span className="ml-1 text-emerald-600">• Live Portfolio Data</span>
         </div>
       </div>
     </motion.div>

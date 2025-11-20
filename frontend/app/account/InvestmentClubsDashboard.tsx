@@ -479,6 +479,7 @@ const InvestmentClubsDashboard: React.FC = () => {
               <PortfolioSummary
                 portfolio={portfolioData}
                 formatCurrency={formatCurrency}
+                clubCurrency={currentClub?.currency}
               />
 
               <QuickActions
