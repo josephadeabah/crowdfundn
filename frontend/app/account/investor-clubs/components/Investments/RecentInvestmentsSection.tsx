@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/Investments/RecentInvestmentsSection.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ClubInvestment } from '../../clubTypes';
@@ -6,7 +7,7 @@ import Pagination from '@/app/components/pagination/Pagination';
 
 interface RecentInvestmentsSectionProps {
   investments: ClubInvestment[];
-  formatCurrency: (amount: number, currency?: string) => string;
+  formatCurrency: (amount: number | string | null | undefined, currency?: string, currencySymbol?: string) => string;
   onViewInvestment?: (investment: ClubInvestment) => void;
   onExecuteInvestment?: (investmentId: string) => void;
   onDownloadCertificate?: (investment: ClubInvestment) => void;
@@ -78,7 +79,7 @@ export const RecentInvestmentsSection: React.FC<
     }
   };
 
-  const handleInvestmentAction = (investment: ClubInvestment) => {
+  const handleInvestmentClick = (investment: ClubInvestment) => {
     if (onViewInvestment) {
       onViewInvestment(investment);
     }
@@ -133,7 +134,7 @@ export const RecentInvestmentsSection: React.FC<
           <div
             key={investment?.id}
             className="p-3 lg:p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-            onClick={() => handleInvestmentAction(investment)}
+            onClick={() => handleInvestmentClick(investment)}
           >
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
               <div className="flex-1 min-w-0">
@@ -150,6 +151,7 @@ export const RecentInvestmentsSection: React.FC<
                   <p className="text-xs lg:text-sm text-gray-600 font-medium">
                     {formatCurrency(
                       investment?.investment_amount,
+                      investment?.currency,
                       investment?.currency_symbol,
                     )}
                   </p>
@@ -183,6 +185,7 @@ export const RecentInvestmentsSection: React.FC<
                           Current:{' '}
                           {formatCurrency(
                             investment?.current_value,
+                            investment?.currency,
                             investment?.currency_symbol,
                           )}
                         </span>

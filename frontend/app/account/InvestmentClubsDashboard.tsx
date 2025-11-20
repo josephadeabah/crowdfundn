@@ -35,6 +35,7 @@ import {
 import CreateClubInvestmentModal from './investor-clubs/components/CreateClubInvestmentModal';
 import MemberInvestmentProposalModal from './investor-clubs/components/VotingPanel/MemberInvestmentProposalModal';
 import ApprovedCampaigns from './investor-clubs/components/Sidebar/ApprovedCampaigns';
+import { InvestmentDetailsModal } from './investor-clubs/components/Investments/InvestmentDetailsModal';
 
 // Enhanced formatCurrency function to handle null/undefined values and string numbers
 const formatCurrency = (
@@ -144,6 +145,8 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [isTransfersModalOpen, setIsTransfersModalOpen] = useState(false);
   const [isInvestmentProposalModalOpen, setIsInvestmentProposalModalOpen] =
     useState(false);
+  const [isInvestmentDetailsModalOpen, setIsInvestmentDetailsModalOpen] = useState(false);
+  const [selectedInvestment, setSelectedInvestment] = useState<ClubInvestment | null>(null);
 
   // Alert states
   const [featureAlert, setFeatureAlert] = useState(false);
@@ -287,10 +290,8 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   // Investment action handlers
   const handleViewInvestment = (investment: ClubInvestment) => {
-    setFeatureMessage(
-      `Viewing investment details for: ${investment.campaign.title}\nAmount: ${formatCurrency(investment.investment_amount, investment.currency, investment.currency_symbol)}\nStatus: ${investment.status}`,
-    );
-    setFeatureAlert(true);
+    setSelectedInvestment(investment);
+    setIsInvestmentDetailsModalOpen(true);
   };
 
   // Handle executing pending investments
@@ -313,6 +314,7 @@ const InvestmentClubsDashboard: React.FC = () => {
         setInvestmentAlert(true);
         await loadInvestments(selectedClub.slug);
         await loadPortfolio(selectedClub.slug);
+        setIsInvestmentDetailsModalOpen(false);
       } else {
         setInvestmentMessage(result.error || 'Failed to execute investment');
         setInvestmentSuccess(false);
@@ -549,6 +551,19 @@ const InvestmentClubsDashboard: React.FC = () => {
             club={currentClub}
             formatCurrency={formatCurrency}
             onTransferSuccess={handleTransferSuccess}
+          />
+
+          <InvestmentDetailsModal
+            isOpen={isInvestmentDetailsModalOpen}
+            onClose={() => {
+              setIsInvestmentDetailsModalOpen(false);
+              setSelectedInvestment(null);
+            }}
+            investment={selectedInvestment}
+            formatCurrency={formatCurrency}
+            formatDate={formatDate}
+            onExecuteInvestment={handleExecuteInvestment}
+            onDownloadCertificate={handleDownloadCertificate}
           />
         </>
       )}

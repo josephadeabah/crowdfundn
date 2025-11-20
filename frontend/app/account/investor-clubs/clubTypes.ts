@@ -91,7 +91,7 @@ export interface ContributionsResponse {
   pagination: PaginationData;
 }
 
-// UPDATED: Club Investment Types - No Voting
+// UPDATED: Enhanced Club Investment Types with all API fields
 export interface ClubInvestment {
   id: string;
   investment_amount: number;
@@ -136,6 +136,16 @@ export interface ClubInvestment {
   is_equity_investment: boolean;
   transaction_reference?: string;
   equity_investment_id?: number;
+  
+  // ADDED: Missing properties from API response
+  company?: string;
+  description?: string;
+  amount?: string; // Formatted amount like "50.0K", "2.2K"
+  sector?: string;
+  club_investment_id?: number;
+  campaign_id?: number;
+  campaign_slug?: string;
+  proposed_amount?: string;
 }
 
 export interface ClubInvestmentCreateRequest {
@@ -395,4 +405,49 @@ export interface ApiInvestmentResponse {
   total_returns: string;
   roi: string;
   investment_date: string | null;
+}
+
+// Investment Details Modal specific types
+export interface InvestmentDetailsData {
+  id: string;
+  investment_amount: number;
+  shares?: number;
+  percentage?: number;
+  status: string;
+  certificate_url?: string;
+  certificate_number?: string;
+  investment_date?: string;
+  current_value?: number;
+  total_returns?: number;
+  roi?: number;
+  currency: string;
+  currency_symbol: string;
+  campaign: {
+    id: string;
+    title: string;
+    company_name: string;
+    valuation: number;
+    equity_offered: number;
+    currency: string;
+    currency_symbol: string;
+    category?: string;
+    goal_amount?: number;
+    current_amount?: number;
+    company_info?: {
+      name: string;
+    };
+  };
+  created_at: string;
+  updated_at: string;
+  is_equity_investment: boolean;
+  transaction_reference?: string;
+  equity_investment_id?: number;
+  company?: string;
+  description?: string;
+  amount?: string;
+  sector?: string;
+  club_investment_id?: number;
+  campaign_id?: number;
+  campaign_slug?: string;
+  proposed_amount?: string;
 }
