@@ -7,7 +7,11 @@ import Pagination from '@/app/components/pagination/Pagination';
 
 interface RecentInvestmentsSectionProps {
   investments: ClubInvestment[];
-  formatCurrency: (amount: number | string | null | undefined, currency?: string, currencySymbol?: string) => string;
+  formatCurrency: (
+    amount: number | string | null | undefined,
+    currency?: string,
+    currencySymbol?: string,
+  ) => string;
   onViewInvestment?: (investment: ClubInvestment) => void;
   onExecuteInvestment?: (investmentId: string) => void;
   onDownloadCertificate?: (investment: ClubInvestment) => void;

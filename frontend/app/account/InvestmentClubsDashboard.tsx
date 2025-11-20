@@ -145,8 +145,10 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [isTransfersModalOpen, setIsTransfersModalOpen] = useState(false);
   const [isInvestmentProposalModalOpen, setIsInvestmentProposalModalOpen] =
     useState(false);
-  const [isInvestmentDetailsModalOpen, setIsInvestmentDetailsModalOpen] = useState(false);
-  const [selectedInvestment, setSelectedInvestment] = useState<ClubInvestment | null>(null);
+  const [isInvestmentDetailsModalOpen, setIsInvestmentDetailsModalOpen] =
+    useState(false);
+  const [selectedInvestment, setSelectedInvestment] =
+    useState<ClubInvestment | null>(null);
 
   // Alert states
   const [featureAlert, setFeatureAlert] = useState(false);

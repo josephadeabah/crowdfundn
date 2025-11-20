@@ -136,7 +136,7 @@ export interface ClubInvestment {
   is_equity_investment: boolean;
   transaction_reference?: string;
   equity_investment_id?: number;
-  
+
   // ADDED: Missing properties from API response
   company?: string;
   description?: string;
