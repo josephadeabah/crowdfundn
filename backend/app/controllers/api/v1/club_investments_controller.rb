@@ -4,7 +4,7 @@ module Api
       before_action :authenticate_request
       before_action :set_club
       before_action :verify_membership
-      before_action :set_investment, only: [:show, :update, :vote, :execute, :certificate_status, :generate_certificate, :download_certificate]
+      before_action :set_investment, only: [:show, :update, :vote, :execute, :certificate_status, :generate_certificate, :download_certificate, :cancel]
 
       # ADD THESE REQUIRE STATEMENTS
       require Rails.root.join('app/services/ai/club_recommendation_service')
@@ -398,7 +398,81 @@ module Api
         end
       end
 
+      # NEW: Cancel investment endpoint
+      def cancel
+        unless @investment.status == 'committed'
+          return render json: {
+            success: false,
+            error: 'Only committed investments can be cancelled'
+          }, status: :unprocessable_entity
+        end
+
+        # Check if cancellation window is still open
+        if @investment.cancel_window_expires_at && @investment.cancel_window_expires_at < Time.current
+          return render json: {
+            success: false,
+            error: 'Cancellation window has expired'
+          }, status: :unprocessable_entity
+        end
+
+        ActiveRecord::Base.transaction do
+          # Update club investment status
+          @investment.update!(
+            status: ClubInvestment::STATUS_CANCELED,
+            cancellation_reason: params[:reason]
+          )
+
+          # Update the underlying equity investment
+          if @investment.equity_investment
+            @investment.equity_investment.update!(
+              status: EquityInvestment::STATUS_CANCELED,
+              cancellation_reason: params[:reason],
+              cancelled_at: Time.current
+            )
+          end
+
+          # Refund the amount to club balance
+          @club.refund_balance(@investment.investment_amount)
+
+          # Send cancellation notifications
+          send_cancellation_notifications(@investment, params[:reason])
+        end
+
+        render json: {
+          success: true,
+          message: 'Investment cancelled successfully',
+          investment: transform_investment_for_frontend(@investment.reload)
+        }
+      rescue => e
+        Rails.logger.error "Failed to cancel investment: #{e.message}"
+        render json: {
+          success: false,
+          error: 'Failed to cancel investment'
+        }, status: :unprocessable_entity
+      end
+
       private
+
+      # NEW: Send cancellation notifications
+      def send_cancellation_notifications(investment, reason)
+        # Notify club admins
+        @club.admin_members.each do |admin|
+          ClubEmailService.send_investment_cancellation_notification(
+            admin: admin,
+            club_investment: investment,
+            reason: reason
+          )
+        end
+
+        # Notify campaign fundraiser about cancelled investment
+        if investment.campaign.fundraiser
+          CampaignEmailService.send_investment_cancellation_notification(
+            fundraiser: investment.campaign.fundraiser,
+            investment: investment,
+            reason: reason
+          )
+        end
+      end
 
       def transform_investment_for_frontend(investment)
         campaign = investment.campaign
