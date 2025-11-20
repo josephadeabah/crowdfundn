@@ -13,18 +13,6 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
   portfolio,
   formatCurrency,
 }) => {
-  // FIXED: Safe access to portfolio properties
-  // const safePortfolio = portfolio || {
-  //   total_invested: 0,
-  //   total_value: 0,
-  //   total_return: 0,
-  //   return_percentage: 0,
-  //   active_investments: 0,
-  //   investments: [],
-  //   campaigns_invested: 0,
-  //   successful_count: 0,
-  // };
-
   if (!portfolio) {
     return (
       <motion.div
@@ -60,7 +48,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             Total Invested
           </span>
           <span className="font-semibold text-sm lg:text-base">
-            {formatCurrency(portfolio?.total_invested)}
+            {formatCurrency(portfolio.total_invested)}
           </span>
         </div>
 
@@ -69,7 +57,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             Current Value
           </span>
           <span className="font-semibold text-sm lg:text-base">
-            {formatCurrency(portfolio?.total_value)}
+            {formatCurrency(portfolio.total_value)}
           </span>
         </div>
 
@@ -79,17 +67,13 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
           </span>
           <span
             className={`font-semibold text-sm lg:text-base ${
-              portfolio?.total_return >= 0
+              portfolio.total_return >= 0
                 ? 'text-green-600'
                 : 'text-red-600'
             }`}
           >
-            {formatCurrency(portfolio?.total_return)} (
-            {/* FIXED: Safe .toFixed() call */}
-            {typeof portfolio?.return_percentage === 'number'
-              ? portfolio?.return_percentage
-              : '0.00'}
-            %)
+            {formatCurrency(portfolio.total_return)} (
+            {portfolio.return_percentage}%)
           </span>
         </div>
 
@@ -100,24 +84,24 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
               <Users size={12} />
               Active Investments
             </span>
-            <span>{portfolio?.active_investments}</span>
+            <span>{portfolio.active_investments}</span>
           </div>
 
-          {portfolio?.campaigns_invested && (
+          {portfolio.campaigns_invested && portfolio.campaigns_invested > 0 && (
             <div className="flex justify-between items-center text-xs text-gray-500">
               <span className="flex items-center gap-1">
                 <BarChart3 size={12} />
                 Campaigns
               </span>
-              <span>{portfolio?.campaigns_invested}</span>
+              <span>{portfolio.campaigns_invested}</span>
             </div>
           )}
 
-          {portfolio?.successful_count && (
+          {portfolio.successful_count && portfolio.successful_count > 0 && (
             <div className="flex justify-between items-center text-xs text-gray-500">
               <span>Successful</span>
               <span className="text-green-600">
-                {portfolio?.successful_count}
+                {portfolio.successful_count}
               </span>
             </div>
           )}

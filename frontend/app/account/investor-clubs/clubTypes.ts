@@ -156,15 +156,50 @@ export interface ClubInvestmentExecutionResult {
   error?: string;
 }
 
+// UPDATED: Portfolio API Response Types
+export interface PortfolioInvestment {
+  id: number;
+  investment_amount: string | number;
+  current_value: string | number;
+  shares: string | number | null;
+  percentage: string | number | null;
+  status: string;
+  investment_date: string | null;
+  roi: string | number;
+  campaign: {
+    id: number;
+    title: string;
+    company_name: string;
+    valuation: string | number;
+    currency: string;
+    currency_symbol: string | null;
+    category?: string;
+  };
+}
+
 export interface ClubInvestmentPortfolio {
   total_invested: number;
   total_value: number;
   total_return: number;
   return_percentage: number;
   active_investments: number;
-  investments: ClubInvestment[];
+  investments: PortfolioInvestment[];
   campaigns_invested?: number;
   successful_count?: number;
+}
+
+export interface PortfolioApiResponse {
+  success: boolean;
+  portfolio: {
+    total_invested: number | string;
+    total_value: string | number;
+    total_return: string | number;
+    return_percentage: string | number;
+    active_investments: number;
+    investments: PortfolioInvestment[];
+    campaigns_invested?: number;
+    successful_count?: number;
+  };
 }
 
 export interface JoinClubResponse {

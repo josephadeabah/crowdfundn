@@ -1,3 +1,4 @@
+// app/account/investor-clubs/hooks/useClubData.ts
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import {
@@ -8,6 +9,8 @@ import {
   PaginationData,
   ClubInvestmentPortfolio,
   ApprovedCampaign,
+  PortfolioApiResponse,
+  PortfolioInvestment,
 } from '../clubTypes';
 import {
   clubService,
@@ -39,6 +42,47 @@ interface DashboardState {
   loading: boolean;
   mobileMenuOpen: boolean;
 }
+
+// Helper function to safely convert string numbers to numbers
+const safeNumber = (value: string | number | null | undefined): number => {
+  if (value === null || value === undefined) return 0;
+  if (typeof value === 'number') return value;
+  const parsed = parseFloat(value);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
+// Helper to transform portfolio investments to match ClubInvestment type
+const transformPortfolioInvestment = (
+  investment: PortfolioInvestment,
+): ClubInvestment => {
+  return {
+    id: investment.id.toString(),
+    investment_amount: safeNumber(investment.investment_amount),
+    shares: investment.shares ? safeNumber(investment.shares) : undefined,
+    percentage: investment.percentage
+      ? safeNumber(investment.percentage)
+      : undefined,
+    status: investment.status as any,
+    investment_date: investment.investment_date || undefined,
+    current_value: safeNumber(investment.current_value),
+    roi: safeNumber(investment.roi),
+    currency: investment.campaign.currency || 'USD',
+    currency_symbol: investment.campaign.currency_symbol || '$',
+    campaign: {
+      id: investment.campaign.id.toString(),
+      title: investment.campaign.title,
+      company_name: investment.campaign.company_name,
+      valuation: safeNumber(investment.campaign.valuation),
+      equity_offered: 0, // Not provided in portfolio API
+      currency: investment.campaign.currency || 'USD',
+      currency_symbol: investment.campaign.currency_symbol || '$',
+      category: investment.campaign.category,
+    },
+    created_at: investment.investment_date || new Date().toISOString(),
+    updated_at: investment.investment_date || new Date().toISOString(),
+    is_equity_investment: true, // Assume true for portfolio investments
+  };
+};
 
 export const useClubData = () => {
   const { user, token } = useAuth();
@@ -79,6 +123,18 @@ export const useClubData = () => {
   >([]);
   const [approvedCampaignsLoading, setApprovedCampaignsLoading] =
     useState(false);
+
+  // Default empty portfolio
+  const defaultPortfolio: ClubInvestmentPortfolio = {
+    total_invested: 0,
+    total_value: 0,
+    total_return: 0,
+    return_percentage: 0,
+    active_investments: 0,
+    investments: [],
+    campaigns_invested: 0,
+    successful_count: 0,
+  };
 
   const loadUserClubs = async () => {
     if (!token || !user) return;
@@ -171,31 +227,39 @@ export const useClubData = () => {
 
     try {
       console.log('🔄 Loading portfolio for club:', clubSlug);
-      const portfolioResponse = await portfolioService.getClubPortfolio(
+      const response = (await portfolioService.getClubPortfolio(
         token,
         clubSlug,
-      );
+      )) as unknown as PortfolioApiResponse;
 
-      // Set portfolio directly from API response
-      setState((prev) => ({
-        ...prev,
-        portfolio: portfolioResponse,
-      }));
+      // Set portfolio directly from API response with proper type conversion
+      if (response.success && response.portfolio) {
+        const portfolioData: ClubInvestmentPortfolio = {
+          total_invested: safeNumber(response.portfolio.total_invested),
+          total_value: safeNumber(response.portfolio.total_value),
+          total_return: safeNumber(response.portfolio.total_return),
+          return_percentage: safeNumber(response.portfolio.return_percentage),
+          active_investments: response.portfolio.active_investments || 0,
+          investments: response.portfolio.investments || [],
+          campaigns_invested: response.portfolio.campaigns_invested || 0,
+          successful_count: response.portfolio.successful_count || 0,
+        };
+
+        setState((prev) => ({
+          ...prev,
+          portfolio: portfolioData,
+        }));
+      } else {
+        setState((prev) => ({
+          ...prev,
+          portfolio: defaultPortfolio,
+        }));
+      }
     } catch (error) {
       console.error('Failed to load portfolio:', error);
-      // Set empty portfolio on error
       setState((prev) => ({
         ...prev,
-        portfolio: {
-          total_invested: 0,
-          total_value: 0,
-          total_return: 0,
-          return_percentage: 0,
-          active_investments: 0,
-          investments: [],
-          campaigns_invested: 0,
-          successful_count: 0,
-        },
+        portfolio: defaultPortfolio,
       }));
     }
   };
@@ -269,23 +333,50 @@ export const useClubData = () => {
         clubDetailsResponse,
       ] = await Promise.all([
         membershipService.getMembers(token, club.slug),
-        investmentService.getInvestments(token, club.slug, undefined, 1, 10), // Load first page by default
-        portfolioService.getClubPortfolio(token, club.slug),
+        investmentService.getInvestments(token, club.slug, undefined, 1, 10),
+        portfolioService.getClubPortfolio(
+          token,
+          club.slug,
+        ) as unknown as Promise<PortfolioApiResponse>,
         clubService.getClub(token, club.slug),
       ]);
 
       // Load contributions with pagination and approved campaigns
       await Promise.all([
         loadContributions(club.slug),
-        loadApprovedCampaigns(club.slug), // Load approved campaigns
+        loadApprovedCampaigns(club.slug),
       ]);
+
+      // Process portfolio data
+      const portfolioData: ClubInvestmentPortfolio =
+        portfolioResponse.success && portfolioResponse.portfolio
+          ? {
+              total_invested: safeNumber(
+                portfolioResponse.portfolio.total_invested,
+              ),
+              total_value: safeNumber(portfolioResponse.portfolio.total_value),
+              total_return: safeNumber(
+                portfolioResponse.portfolio.total_return,
+              ),
+              return_percentage: safeNumber(
+                portfolioResponse.portfolio.return_percentage,
+              ),
+              active_investments:
+                portfolioResponse.portfolio.active_investments || 0,
+              investments: portfolioResponse.portfolio.investments || [],
+              campaigns_invested:
+                portfolioResponse.portfolio.campaigns_invested || 0,
+              successful_count:
+                portfolioResponse.portfolio.successful_count || 0,
+            }
+          : defaultPortfolio;
 
       setState((prev) => ({
         ...prev,
         selectedClub: clubDetailsResponse.club,
         members: membersResponse.members,
         investments: investmentsResponse.investments || [],
-        portfolio: portfolioResponse,
+        portfolio: portfolioData,
       }));
 
       // Update investments state with pagination
@@ -299,18 +390,6 @@ export const useClubData = () => {
         },
         loading: false,
       });
-
-      // Debug: Log membership data to verify updates
-      const myMember = membersResponse.members.find(
-        (m) => m.user.id === String(user?.id),
-      );
-      if (myMember) {
-        console.log('📊 Current Membership Data After Reload:', {
-          total_contributed: myMember.total_contributed,
-          contributed_share: myMember.contributed_share,
-          memberId: myMember.id,
-        });
-      }
     } catch (error) {
       console.error('Failed to load club details:', error);
     }
@@ -371,7 +450,7 @@ export const useClubData = () => {
     contributions: contributions.data,
     contributionsPagination: contributions.pagination,
     contributionsLoading: contributions.loading,
-    investments: investments.data, // Return paginated investments
+    investments: investments.data,
     investmentsPagination: investments.pagination,
     investmentsLoading: investments.loading,
     approvedCampaigns,
@@ -379,16 +458,16 @@ export const useClubData = () => {
     token,
     loadUserClubs,
     loadClubDetails,
-    loadInvestments, // Export the new function
-    loadPortfolio, // Export the new function
-    loadApprovedCampaigns, // Export the new function
-    refreshApprovedCampaigns, // Export the refresh function
+    loadInvestments,
+    loadPortfolio,
+    loadApprovedCampaigns,
+    refreshApprovedCampaigns,
     reloadMembershipData,
     setMobileMenuOpen,
     loadContributions,
     handleContributionPageChange,
     handleContributionPerPageChange,
-    handleInvestmentPageChange, // Export investment pagination handlers
+    handleInvestmentPageChange,
     handleInvestmentPerPageChange,
   };
 };

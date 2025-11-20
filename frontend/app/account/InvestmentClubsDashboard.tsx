@@ -1,3 +1,4 @@
+// app/account/investor-clubs/page.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
@@ -20,7 +21,10 @@ import { CreateClubCard } from './investor-clubs/components/Sidebar/CreateClubCa
 import ClubDetailsModal from './investor-clubs/club-details/ClubDetailsModal';
 import { RecentContributionsSection } from './investor-clubs/components/Contribution/RecentContributionsSection';
 import { useAuth } from '../context/auth/AuthContext';
-import { ClubInvestment } from './investor-clubs/clubTypes';
+import {
+  ClubInvestment,
+  ClubInvestmentPortfolio,
+} from './investor-clubs/clubTypes';
 import { ShareChangesSection } from './investor-clubs/components/ShareChanges/ShareChangesSection';
 import TransferClubBalanceModal from './investor-clubs/components/Transfers/TransferClubBalanceModal';
 import {
@@ -32,7 +36,7 @@ import CreateClubInvestmentModal from './investor-clubs/components/CreateClubInv
 import MemberInvestmentProposalModal from './investor-clubs/components/VotingPanel/MemberInvestmentProposalModal';
 import ApprovedCampaigns from './investor-clubs/components/Sidebar/ApprovedCampaigns';
 
-// FIXED: Enhanced formatCurrency function to handle null/undefined values
+// Enhanced formatCurrency function to handle null/undefined values and string numbers
 const formatCurrency = (
   amount: number | string | null | undefined,
   currency: string = 'USD',
@@ -68,7 +72,7 @@ const formatCurrency = (
   }
 };
 
-// FIXED: Enhanced date formatting function
+// Enhanced date formatting function
 const formatDate = (dateString: string | null | undefined): string => {
   if (!dateString) return 'N/A';
 
@@ -86,53 +90,16 @@ const formatDate = (dateString: string | null | undefined): string => {
   }
 };
 
-// FIXED: Transform API investment data to match frontend expectations
-const transformInvestmentData = (apiInvestment: any): ClubInvestment => {
-  return {
-    id: apiInvestment.id?.toString() || '',
-    investment_amount: parseFloat(apiInvestment.proposed_amount) || 0,
-    shares: apiInvestment.shares ? parseFloat(apiInvestment.shares) : undefined,
-    percentage: apiInvestment.percentage
-      ? parseFloat(apiInvestment.percentage)
-      : undefined,
-    status: apiInvestment.status || 'pending',
-    certificate_url: apiInvestment.certificate_url || undefined,
-    certificate_number: apiInvestment.certificate_number || undefined,
-    investment_date: apiInvestment.investment_date || undefined,
-    current_value: apiInvestment.current_value
-      ? parseFloat(apiInvestment.current_value)
-      : undefined,
-    total_returns: apiInvestment.total_returns
-      ? parseFloat(apiInvestment.total_returns)
-      : undefined,
-    roi: apiInvestment.roi ? parseFloat(apiInvestment.roi) : undefined,
-    currency: 'USD', // Default currency since API returns null
-    currency_symbol: '$', // Default symbol since API returns null
-    campaign: {
-      id: apiInvestment.campaign_id?.toString() || '',
-      title: apiInvestment.company || 'Unknown Company',
-      company_name: apiInvestment.company || 'Unknown Company',
-      valuation: 0, // Not provided in API
-      equity_offered: 0, // Not provided in API
-      currency: 'USD',
-      currency_symbol: '$',
-      category: apiInvestment.sector || undefined,
-      goal_amount: apiInvestment.proposed_amount
-        ? parseFloat(apiInvestment.proposed_amount)
-        : undefined,
-      current_amount: apiInvestment.current_value
-        ? parseFloat(apiInvestment.current_value)
-        : undefined,
-      company_info: {
-        name: apiInvestment.company || 'Unknown Company',
-      },
-    },
-    created_at: apiInvestment.investment_date || new Date().toISOString(),
-    updated_at: apiInvestment.investment_date || new Date().toISOString(),
-    is_equity_investment: apiInvestment.is_equity_investment || false,
-    transaction_reference: undefined,
-    equity_investment_id: apiInvestment.club_investment_id || undefined,
-  };
+// Default empty portfolio
+const defaultPortfolio: ClubInvestmentPortfolio = {
+  total_invested: 0,
+  total_value: 0,
+  total_return: 0,
+  return_percentage: 0,
+  active_investments: 0,
+  investments: [],
+  campaigns_invested: 0,
+  successful_count: 0,
 };
 
 const InvestmentClubsDashboard: React.FC = () => {
@@ -141,8 +108,8 @@ const InvestmentClubsDashboard: React.FC = () => {
     selectedClub,
     members,
     investments,
-    investmentsPagination, // ADD THIS: Destructure investments pagination
-    investmentsLoading, // ADD THIS: Destructure investments loading state
+    investmentsPagination,
+    investmentsLoading,
     contributions,
     contributionsPagination,
     contributionsLoading,
@@ -160,8 +127,8 @@ const InvestmentClubsDashboard: React.FC = () => {
     loadInvestments,
     loadPortfolio,
     refreshApprovedCampaigns,
-    handleInvestmentPageChange, // ADD THIS: Destructure investment pagination handlers
-    handleInvestmentPerPageChange, // ADD THIS: Destructure investment per page handler
+    handleInvestmentPageChange,
+    handleInvestmentPerPageChange,
   } = useClubData();
 
   const { user } = useAuth();
@@ -184,19 +151,8 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [investmentMessage, setInvestmentMessage] = useState('');
   const [investmentSuccess, setInvestmentSuccess] = useState(false);
 
-  // FIXED: Transform investments when they change
-  const [transformedInvestments, setTransformedInvestments] = useState<
-    ClubInvestment[]
-  >([]);
-
-  useEffect(() => {
-    if (investments && investments.length > 0) {
-      const transformed = investments.map(transformInvestmentData);
-      setTransformedInvestments(transformed);
-    } else {
-      setTransformedInvestments([]);
-    }
-  }, [investments]);
+  // Use portfolio data directly with proper fallback
+  const portfolioData = portfolio || defaultPortfolio;
 
   // Auto-load previously selected club
   useEffect(() => {
@@ -500,9 +456,8 @@ const InvestmentClubsDashboard: React.FC = () => {
                 onPerPageChange={handleContributionPerPageChange}
               />
 
-              {/* FIXED: Use transformed investments with proper data and pagination */}
               <RecentInvestmentsSection
-                investments={transformedInvestments}
+                investments={investments}
                 formatCurrency={formatCurrency}
                 onViewInvestment={handleViewInvestment}
                 onExecuteInvestment={handleExecuteInvestment}
@@ -510,8 +465,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                 currentPage={investmentsPagination?.current_page || 1}
                 totalPages={investmentsPagination?.total_pages || 1}
                 totalCount={
-                  investmentsPagination?.total_count ||
-                  transformedInvestments.length
+                  investmentsPagination?.total_count || investments.length
                 }
                 perPage={investmentsPagination?.per_page || 5}
                 onPageChange={handleInvestmentPageChange}
@@ -523,7 +477,7 @@ const InvestmentClubsDashboard: React.FC = () => {
             {/* Right Column */}
             <div className="space-y-4 lg:space-y-6">
               <PortfolioSummary
-                portfolio={portfolio}
+                portfolio={portfolioData}
                 formatCurrency={formatCurrency}
               />
 
@@ -538,7 +492,7 @@ const InvestmentClubsDashboard: React.FC = () => {
 
               <ClubStats
                 club={currentClub}
-                investmentsCount={transformedInvestments.length}
+                investmentsCount={investments.length}
                 formatCurrency={formatCurrency}
               />
 
