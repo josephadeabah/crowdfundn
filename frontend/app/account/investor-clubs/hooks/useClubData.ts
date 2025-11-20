@@ -51,6 +51,78 @@ const safeNumber = (value: string | number | null | undefined): number => {
   return isNaN(parsed) ? 0 : parsed;
 };
 
+// Enhanced transformation function for investment data
+const transformInvestmentData = (investment: any): ClubInvestment => {
+  // Handle amount conversion - parse "50.0K" to 50000, etc.
+  const parseFormattedAmount = (amount: string): number => {
+    if (!amount) return 0;
+
+    // Remove any non-numeric characters except decimal and K/M
+    const cleanAmount = amount.toString().replace(/[^\d.KM]/g, '');
+
+    if (cleanAmount.includes('K')) {
+      return parseFloat(cleanAmount.replace('K', '')) * 1000;
+    } else if (cleanAmount.includes('M')) {
+      return parseFloat(cleanAmount.replace('M', '')) * 1000000;
+    } else {
+      return parseFloat(cleanAmount) || 0;
+    }
+  };
+
+  // Use proposed_amount as investment_amount if available, otherwise parse the formatted amount
+  const investmentAmount = investment.proposed_amount
+    ? safeNumber(investment.proposed_amount)
+    : parseFormattedAmount(investment.amount);
+
+  const currentValue = safeNumber(investment.current_value) || investmentAmount;
+
+  return {
+    id: investment.id.toString(),
+    investment_amount: investmentAmount,
+    shares: investment.shares ? safeNumber(investment.shares) : undefined,
+    percentage: investment.percentage
+      ? safeNumber(investment.percentage)
+      : undefined,
+    status: investment.status as any,
+    investment_date: investment.investment_date || undefined,
+    current_value: currentValue,
+    total_returns: safeNumber(investment.total_returns),
+    roi: safeNumber(investment.roi),
+    currency: investment.currency || 'USD',
+    currency_symbol: investment.currency_symbol || '$',
+    campaign: {
+      id: investment.campaign_id?.toString() || investment.id.toString(),
+      title:
+        investment.company ||
+        investment.campaign?.title ||
+        'Unknown Investment',
+      company_name:
+        investment.company ||
+        investment.campaign?.company_name ||
+        'Unknown Company',
+      valuation: safeNumber(investment.valuation) || investmentAmount,
+      equity_offered: 0,
+      currency: investment.currency || 'USD',
+      currency_symbol: investment.currency_symbol || '$',
+      category: investment.sector || investment.campaign?.category,
+    },
+    created_at:
+      investment.investment_date ||
+      investment.created_at ||
+      new Date().toISOString(),
+    updated_at:
+      investment.investment_date ||
+      investment.updated_at ||
+      new Date().toISOString(),
+    is_equity_investment:
+      investment.is_equity_investment !== undefined
+        ? investment.is_equity_investment
+        : true,
+    certificate_url: investment.certificate_url,
+    certificate_number: investment.certificate_number,
+  };
+};
+
 // Helper to transform portfolio investments to match ClubInvestment type
 const transformPortfolioInvestment = (
   investment: PortfolioInvestment,
@@ -176,8 +248,23 @@ export const useClubData = () => {
       );
 
       if (response.success) {
+        // Transform the API response to match ClubInvestment type
+        const transformedInvestments = (response.investments || []).map(
+          transformInvestmentData,
+        );
+
+        console.log('Transformed investments:', transformedInvestments);
+        if (transformedInvestments.length > 0) {
+          console.log('First investment details:', {
+            id: transformedInvestments[0]?.id,
+            amount: transformedInvestments[0]?.investment_amount,
+            title: transformedInvestments[0]?.campaign?.title,
+            currency: transformedInvestments[0]?.currency_symbol,
+          });
+        }
+
         setInvestments({
-          data: response.investments || [],
+          data: transformedInvestments,
           pagination: response.pagination || {
             current_page: page,
             total_pages: 1,
@@ -190,7 +277,7 @@ export const useClubData = () => {
         // Also update the state for backward compatibility
         setState((prev) => ({
           ...prev,
-          investments: response.investments || [],
+          investments: transformedInvestments,
         }));
       } else {
         console.error('Failed to load investments:', response);
@@ -347,6 +434,11 @@ export const useClubData = () => {
         loadApprovedCampaigns(club.slug),
       ]);
 
+      // Process investments data with transformation
+      const transformedInvestments = (
+        investmentsResponse.investments || []
+      ).map(transformInvestmentData);
+
       // Process portfolio data
       const portfolioData: ClubInvestmentPortfolio =
         portfolioResponse.success && portfolioResponse.portfolio
@@ -375,13 +467,13 @@ export const useClubData = () => {
         ...prev,
         selectedClub: clubDetailsResponse.club,
         members: membersResponse.members,
-        investments: investmentsResponse.investments || [],
+        investments: transformedInvestments,
         portfolio: portfolioData,
       }));
 
       // Update investments state with pagination
       setInvestments({
-        data: investmentsResponse.investments || [],
+        data: transformedInvestments,
         pagination: investmentsResponse.pagination || {
           current_page: 1,
           total_pages: 1,

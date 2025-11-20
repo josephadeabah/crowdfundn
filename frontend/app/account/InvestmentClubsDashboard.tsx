@@ -40,10 +40,11 @@ import ApprovedCampaigns from './investor-clubs/components/Sidebar/ApprovedCampa
 const formatCurrency = (
   amount: number | string | null | undefined,
   currency: string = 'USD',
+  currencySymbol: string = '$',
 ): string => {
   // Handle null/undefined amount
   if (amount === null || amount === undefined) {
-    return '$0.00';
+    return `${currencySymbol}0.00`;
   }
 
   // Convert string amount to number
@@ -52,11 +53,12 @@ const formatCurrency = (
 
   // Handle NaN after conversion
   if (isNaN(numericAmount)) {
-    return '$0.00';
+    return `${currencySymbol}0.00`;
   }
 
   // Handle null/undefined/empty currency
   const safeCurrency = currency || 'USD';
+  const safeSymbol = currencySymbol || '$';
 
   try {
     return new Intl.NumberFormat('en-US', {
@@ -64,11 +66,13 @@ const formatCurrency = (
       currency: safeCurrency,
     }).format(numericAmount);
   } catch (error) {
-    console.warn(`Invalid currency code: ${safeCurrency}, using USD fallback`);
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(numericAmount);
+    console.warn(
+      `Invalid currency code: ${safeCurrency}, using symbol fallback`,
+    );
+    return `${safeSymbol}${numericAmount.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
   }
 };
 
@@ -284,7 +288,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   // Investment action handlers
   const handleViewInvestment = (investment: ClubInvestment) => {
     setFeatureMessage(
-      `Viewing investment details for: ${investment.campaign.title}\nAmount: ${formatCurrency(investment.investment_amount, investment.currency_symbol)}\nStatus: ${investment.status}`,
+      `Viewing investment details for: ${investment.campaign.title}\nAmount: ${formatCurrency(investment.investment_amount, investment.currency, investment.currency_symbol)}\nStatus: ${investment.status}`,
     );
     setFeatureAlert(true);
   };

@@ -372,3 +372,27 @@ export interface ApprovedCampaign {
     threshold_met?: boolean;
   };
 }
+
+// API Investment Response Type (for the raw API data)
+export interface ApiInvestmentResponse {
+  id: string;
+  company: string;
+  description: string;
+  amount: string; // "50.0K", "2.2K", etc.
+  sector: string;
+  status: string;
+  club_investment_id: number;
+  campaign_id: number;
+  campaign_slug: string;
+  proposed_amount: string;
+  currency_symbol: string | null;
+  is_equity_investment: boolean;
+  shares: string | null;
+  percentage: string | null;
+  certificate_url: string | null;
+  certificate_number: string | null;
+  current_value: string;
+  total_returns: string;
+  roi: string;
+  investment_date: string | null;
+}
