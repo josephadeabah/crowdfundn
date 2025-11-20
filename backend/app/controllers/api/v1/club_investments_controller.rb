@@ -1,4 +1,3 @@
-# app/controllers/api/v1/club_investments_controller.rb
 module Api
   module V1
     class ClubInvestmentsController < ApplicationController
@@ -19,14 +18,23 @@ module Api
           investments = investments.where(status: params[:status])
         end
         
+        # Paginate investments
+        paginated_investments = investments.page(params[:page] || 1).per(params[:per_page] || 5)
+        
         # Transform investments for frontend
-        transformed_investments = investments.map do |investment|
+        transformed_investments = paginated_investments.map do |investment|
           transform_investment_for_frontend(investment)
         end
         
         render json: {
           success: true,
-          investments: transformed_investments
+          investments: transformed_investments,
+          pagination: {
+            current_page: paginated_investments.current_page,
+            total_pages: paginated_investments.total_pages,
+            per_page: paginated_investments.limit_value,
+            total_count: paginated_investments.total_count
+          }
         }
       end
       
