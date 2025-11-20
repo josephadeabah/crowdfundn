@@ -1,4 +1,3 @@
-# app/serializers/investment_club_serializer.rb
 class InvestmentClubSerializer
   def initialize(club, options = {})
     @club = club
@@ -8,12 +7,8 @@ class InvestmentClubSerializer
   def as_json
     membership = @club.membership_for(@current_user) if @current_user
     
-    # FIXED: Use safe financial calculations
-    financials = {
-      total_contributions: @club.total_contributions,
-      total_invested: @club.total_invested,
-      current_balance: @club.current_balance
-    }
+    # FIXED: Use fresh financial calculations
+    financials = @club.fresh_financials
 
     {
       id: @club.id,
@@ -27,6 +22,7 @@ class InvestmentClubSerializer
       max_members: @club.max_members,
       current_members_count: @club.current_members_count,
       currency: @club.currency,
+      currency_symbol: @club.currency_symbol,
       financials: financials,
       creator: {
         id: @club.creator.id,
@@ -42,6 +38,12 @@ class InvestmentClubSerializer
   rescue => e
     Rails.logger.error "Error serializing investment club #{@club&.id}: #{e.message}"
     # Return basic club data without financials if there's an error
+    basic_club_data
+  end
+
+  private
+
+  def basic_club_data
     {
       id: @club.id,
       slug: @club.slug,
@@ -54,6 +56,7 @@ class InvestmentClubSerializer
       max_members: @club.max_members,
       current_members_count: @club.current_members_count,
       currency: @club.currency,
+      currency_symbol: @club.currency_symbol,
       financials: {
         total_contributions: 0,
         total_invested: 0,
