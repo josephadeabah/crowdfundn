@@ -104,8 +104,8 @@ const InvestmentList: React.FC<InvestmentListProps> = ({
                   ).toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {investment.investment_type === 'club' 
-                    ? 'Club Investment' 
+                  {investment.investment_type === 'club'
+                    ? 'Club Investment'
                     : 'Thank you for investing!'}
                 </p>
               </div>
