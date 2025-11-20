@@ -422,7 +422,7 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                 <button
                   onClick={() =>
                     window.open(
-                      `/campaigns/${investment.campaign_slug}`,
+                      `/campaign/${investment.campaign_slug}`,
                       '_blank',
                     )
                   }
