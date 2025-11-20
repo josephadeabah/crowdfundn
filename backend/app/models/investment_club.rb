@@ -50,6 +50,10 @@ class InvestmentClub < ApplicationRecord
   def creator_currency
     creator.currency.upcase || 'GHS'
   end
+
+  def currency_symbol
+    creator.currency_symbol || '₵'
+  end
   
   def admin_members
     members.joins(:investment_club_memberships)
@@ -62,18 +66,6 @@ class InvestmentClub < ApplicationRecord
   
   def primary_admin
     admin_members.first || creator
-  end
-
-  def currency_symbol
-    case currency&.upcase
-    when 'USD' then '$'
-    when 'EUR' then '€'
-    when 'GBP' then '£'
-    when 'NGN' then '₦'
-    when 'GHS' then '₵'
-    when 'KES' then 'KSh'
-    else 'GHS'
-    end
   end
 
   def club_type=(value)
