@@ -14,16 +14,16 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
   formatCurrency,
 }) => {
   // FIXED: Safe access to portfolio properties
-  const safePortfolio = portfolio || {
-    total_invested: 0,
-    total_value: 0,
-    total_return: 0,
-    return_percentage: 0,
-    active_investments: 0,
-    investments: [],
-    campaigns_invested: 0,
-    successful_count: 0,
-  };
+  // const safePortfolio = portfolio || {
+  //   total_invested: 0,
+  //   total_value: 0,
+  //   total_return: 0,
+  //   return_percentage: 0,
+  //   active_investments: 0,
+  //   investments: [],
+  //   campaigns_invested: 0,
+  //   successful_count: 0,
+  // };
 
   if (!portfolio) {
     return (
@@ -60,7 +60,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             Total Invested
           </span>
           <span className="font-semibold text-sm lg:text-base">
-            {formatCurrency(safePortfolio.total_invested)}
+            {formatCurrency(portfolio?.total_invested)}
           </span>
         </div>
 
@@ -69,7 +69,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             Current Value
           </span>
           <span className="font-semibold text-sm lg:text-base">
-            {formatCurrency(safePortfolio.total_value)}
+            {formatCurrency(portfolio?.total_value)}
           </span>
         </div>
 
@@ -79,15 +79,15 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
           </span>
           <span
             className={`font-semibold text-sm lg:text-base ${
-              safePortfolio.total_return >= 0
+              portfolio?.total_return >= 0
                 ? 'text-green-600'
                 : 'text-red-600'
             }`}
           >
-            {formatCurrency(safePortfolio.total_return)} (
+            {formatCurrency(portfolio?.total_return)} (
             {/* FIXED: Safe .toFixed() call */}
-            {typeof safePortfolio.return_percentage === 'number'
-              ? safePortfolio.return_percentage
+            {typeof portfolio?.return_percentage === 'number'
+              ? portfolio?.return_percentage
               : '0.00'}
             %)
           </span>
@@ -100,24 +100,24 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
               <Users size={12} />
               Active Investments
             </span>
-            <span>{safePortfolio.active_investments}</span>
+            <span>{portfolio?.active_investments}</span>
           </div>
 
-          {safePortfolio.campaigns_invested && (
+          {portfolio?.campaigns_invested && (
             <div className="flex justify-between items-center text-xs text-gray-500">
               <span className="flex items-center gap-1">
                 <BarChart3 size={12} />
                 Campaigns
               </span>
-              <span>{safePortfolio.campaigns_invested}</span>
+              <span>{portfolio?.campaigns_invested}</span>
             </div>
           )}
 
-          {safePortfolio.successful_count && (
+          {portfolio?.successful_count && (
             <div className="flex justify-between items-center text-xs text-gray-500">
               <span>Successful</span>
               <span className="text-green-600">
-                {safePortfolio.successful_count}
+                {portfolio?.successful_count}
               </span>
             </div>
           )}
