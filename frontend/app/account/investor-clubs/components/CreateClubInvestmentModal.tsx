@@ -121,7 +121,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     try {
       const investmentData = {
         campaign_id: selectedCampaignId,
-        investment_amount: parseFloat(investmentAmount),
+        investment_amount: fees?.totalAmount || parseFloat(investmentAmount), // Send TOTAL amount including fees
         notes: notes || undefined,
       };
 
@@ -364,16 +364,22 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                         The processing fee is capped at {club.currency_symbol}
                         600 for large investments. The platform fee (3%) is
                         deducted from the campaign amount. The total amount
-                        deducted from your club balance includes both fees added
-                        to your investment amount.
+                        deducted from your club balance ({club.currency_symbol}
+                        {fees.totalAmount.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}) will be sent to the campaign.
                       </>
                     ) : (
                       <>
                         The platform fee (3%) is deducted from the campaign
                         amount, while the processing fee (7%) is an additional
                         cost to your club. The total amount deducted from your
-                        club balance includes both fees added to your investment
-                        amount.
+                        club balance ({club.currency_symbol}
+                        {fees.totalAmount.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}) will be sent to the campaign.
                       </>
                     )}
                   </AlertDescription>
