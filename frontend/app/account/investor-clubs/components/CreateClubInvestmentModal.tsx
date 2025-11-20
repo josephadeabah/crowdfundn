@@ -421,9 +421,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 !selectedCampaignId ||
                 approvedCampaigns.length === 0 ||
                 !club.is_admin ||
-                !!(
-                  fees && fees.totalAmount > club.financials.current_balance
-                )
+                !!(fees && fees.totalAmount > club.financials.current_balance)
               }
               className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
             >
