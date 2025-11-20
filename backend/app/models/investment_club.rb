@@ -170,14 +170,6 @@ class InvestmentClub < ApplicationRecord
     total_contributions.to_f - calculate_total_invested.to_f
   end
 
-  def fresh_financials
-    {
-      total_contributions: total_contributions, # This already calculates fresh
-      total_invested: calculate_total_invested, # Use calculated method
-      current_balance: calculate_current_balance # Use calculated method
-    }
-  end
-
   # FIXED: Update all financials atomically
   def update_financials
     ActiveRecord::Base.transaction do
