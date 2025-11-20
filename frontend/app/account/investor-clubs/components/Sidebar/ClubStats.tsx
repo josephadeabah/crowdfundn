@@ -1,22 +1,28 @@
 // app/account/investor-clubs/components/Sidebar/ClubStats.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Club } from '../../clubTypes';
+import { Club, ClubInvestmentPortfolio } from '../../clubTypes';
 import InfoTooltip from '@/app/components/tooltip/tooltip';
 
 interface ClubStatsProps {
   club: Club;
   investmentsCount: number;
+  portfolio: ClubInvestmentPortfolio | null;
   formatCurrency: (amount: number, currency?: string) => string;
 }
 
 export const ClubStats: React.FC<ClubStatsProps> = ({
   club,
   investmentsCount,
+  portfolio,
   formatCurrency,
 }) => {
   // FIXED: Use actual investment count from portfolio data with safe fallback
   const actualInvestmentsCount = investmentsCount || 0;
+
+  // FIXED: Use portfolio total invested if available, otherwise fallback to club financials
+  const totalInvested =
+    portfolio?.total_invested || club?.financials?.total_invested || 0;
 
   // FIXED: Safe number formatting
   const formatNumber = (num: number | undefined | null): string => {
@@ -24,9 +30,9 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
     const safeNum = num || 0;
 
     if (safeNum >= 1000000) {
-      return safeNum / 1000000 + 'M';
+      return (safeNum / 1000000).toFixed(1) + 'M';
     } else if (safeNum >= 1000) {
-      return safeNum / 1000 + 'K';
+      return (safeNum / 1000).toFixed(1) + 'K';
     }
     return safeNum.toString();
   };
@@ -47,7 +53,7 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
     return formatCurrency(safeAmount, currency);
   };
 
-  // FIXED: Safe stats with proper fallbacks
+  // FIXED: Updated stats with portfolio total invested
   const stats = [
     {
       id: 'members-stat',
@@ -79,15 +85,13 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
     {
       id: 'invested-stat',
       displayValue: formatCurrencyForDisplay(
-        club?.financials?.total_invested,
+        totalInvested,
         club?.currency || 'USD',
       ),
-      fullValue: formatCurrency(
-        club?.financials?.total_invested || 0,
-        club?.currency || 'USD',
-      ),
+      fullValue: formatCurrency(totalInvested, club?.currency || 'USD'),
       label: 'Total Invested',
       type: 'currency',
+      tooltip: portfolio ? 'From portfolio data' : 'From club financials',
     },
   ];
 
@@ -127,7 +131,11 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
               </div>
               <InfoTooltip
                 id={stat.id}
-                content={`Full value: ${stat.fullValue}`}
+                content={
+                  stat.tooltip
+                    ? `Full value: ${stat.fullValue} (${stat.tooltip})`
+                    : `Full value: ${stat.fullValue}`
+                }
                 className="text-gray-400"
                 iconSize={12}
               />
@@ -143,6 +151,9 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
       <div className="mt-3 pt-3 border-t border-gray-200">
         <div className="text-xs text-gray-500 text-center">
           Currency: {club?.currency || 'USD'}
+          {portfolio && (
+            <span className="ml-1 text-emerald-600">• Live Portfolio Data</span>
+          )}
         </div>
       </div>
     </motion.div>

@@ -493,6 +493,7 @@ const InvestmentClubsDashboard: React.FC = () => {
               <ClubStats
                 club={currentClub}
                 investmentsCount={investments.length}
+                portfolio={portfolioData} // Pass the portfolio data here
                 formatCurrency={formatCurrency}
               />
 
