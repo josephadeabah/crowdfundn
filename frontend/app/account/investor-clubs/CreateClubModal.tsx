@@ -132,7 +132,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         closeOnBackdropClick={false}
-        size="xxlarge"
+        size="xlarge"
         customStyles={{ padding: 0 }}
       >
         <motion.div
