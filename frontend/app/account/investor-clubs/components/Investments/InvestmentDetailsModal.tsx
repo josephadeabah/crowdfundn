@@ -159,7 +159,7 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
           </div>
         </div>
 
-        <div className="space-y-4 px-4 pb-6">
+        <div className="space-y-4 px-3 pb-6">
           {/* Financial Details */}
           <Section title="Financial Details">
             <DetailItem
