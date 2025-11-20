@@ -17,8 +17,8 @@ const AboutTab: React.FC<
     }).format(amount);
   };
 
-    const totalInvested =
-      portfolio?.total_invested || club?.financials?.total_invested || 0;
+  const totalInvested =
+    portfolio?.total_invested || club?.financials?.total_invested || 0;
 
   return (
     <div className="space-y-6">

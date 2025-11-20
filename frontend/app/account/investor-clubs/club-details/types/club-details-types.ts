@@ -1,5 +1,10 @@
 // app/account/investor-clubs/club-details/types/club-details-types.ts
-import { Club, ClubInvestmentPortfolio, Member, Membership } from '../../clubTypes';
+import {
+  Club,
+  ClubInvestmentPortfolio,
+  Member,
+  Membership,
+} from '../../clubTypes';
 
 export interface ClubDetailsModalProps {
   isOpen: boolean;
