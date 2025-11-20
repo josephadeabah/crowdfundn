@@ -58,7 +58,7 @@ export const useClubData = () => {
       current_page: 1,
       total_pages: 0,
       total_count: 0,
-      per_page: 6,
+      per_page: 5,
     },
     loading: false,
   });
@@ -69,7 +69,7 @@ export const useClubData = () => {
       current_page: 1,
       total_pages: 0,
       total_count: 0,
-      per_page: 10,
+      per_page: 5,
     },
     loading: false,
   });
@@ -249,7 +249,7 @@ export const useClubData = () => {
   const loadContributions = async (
     clubSlug: string,
     page: number = 1,
-    perPage: number = 6,
+    perPage: number = 5,
   ) => {
     if (!token) return;
 
@@ -341,7 +341,7 @@ export const useClubData = () => {
           current_page: 1,
           total_pages: 1,
           total_count: investmentsResponse.investments?.length || 0,
-          per_page: 10,
+          per_page: 5,
         },
         loading: false,
       });
