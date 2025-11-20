@@ -81,18 +81,26 @@ export type CancellationResponse = {
   error?: string;
 };
 
+// FIXED: Enhanced Investment interface with club investment properties
 export interface Investment {
   investor_name: string;
   amount: number;
   email?: string;
   date: string;
+  // ADDED: Club investment properties
+  investment_type?: 'individual' | 'club';
+  club_info?: {
+    name: string;
+    id?: string | number;
+  };
+  signature_url?: string | null;
 }
 
 export interface EquityInvestment extends Investment {
   id: number;
   amount: number;
-  email: string; // Add this
-  full_name: string; // Add this
+  email: string;
+  full_name: string;
   currency: string;
   currency_symbol: string;
   date: string;
@@ -136,8 +144,8 @@ export interface EquityInvestment extends Investment {
     title: string;
     equity_offered: number;
     valuation: number;
-    currency?: string; // Add this
-    currency_symbol?: string; // Add this
+    currency?: string;
+    currency_symbol?: string;
   };
   current_value?: number;
   campaign: {
@@ -150,14 +158,20 @@ export interface EquityInvestment extends Investment {
     status: string;
     valuation: number;
     equity_offered: number;
-    currency?: string; // Add this
-    currency_symbol?: string; // Add this
+    currency?: string;
+    currency_symbol?: string;
   };
-  cancel_window_expires_at?: string; // New field for cancellation window
-  can_be_cancelled: boolean; // New field to indicate if the investment can be cancelled
+  cancel_window_expires_at?: string;
+  can_be_cancelled: boolean;
   // Add company and team information
   company_info?: CompanyInfo;
   team_members?: CampaignTeamMember[];
+  // ADDED: Club investment properties for EquityInvestment as well
+  investment_type?: 'individual' | 'club';
+  club_info?: {
+    name: string;
+    id?: string | number;
+  };
 }
 
 export interface InvestmentPortfolio {
