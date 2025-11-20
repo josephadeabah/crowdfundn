@@ -91,7 +91,7 @@ export interface ContributionsResponse {
   pagination: PaginationData;
 }
 
-// UPDATED: Enhanced Club Investment Types with all API fields
+// UPDATED: Enhanced Club Investment Types with cancellation support
 export interface ClubInvestment {
   id: string;
   investment_amount: number;
@@ -146,6 +146,13 @@ export interface ClubInvestment {
   campaign_id?: number;
   campaign_slug?: string;
   proposed_amount?: string;
+
+  // NEW: Cancellation properties
+  cancel_window_expires_at?: string | null;
+  can_be_cancelled?: boolean;
+  cancellation_reason?: string | null;
+  cancelled_at?: string | null;
+  committed_at?: string | null;
 }
 
 export interface ClubInvestmentCreateRequest {
@@ -163,6 +170,18 @@ export interface ClubInvestmentExecutionResult {
   success: boolean;
   investment: ClubInvestment;
   authorization_url?: string;
+  error?: string;
+}
+
+// NEW: Cancellation request and response types
+export interface CancelInvestmentRequest {
+  reason?: string;
+}
+
+export interface CancelInvestmentResponse {
+  success: boolean;
+  message?: string;
+  investment?: ClubInvestment;
   error?: string;
 }
 
@@ -185,6 +204,12 @@ export interface PortfolioInvestment {
     currency_symbol: string | null;
     category?: string;
   };
+  // NEW: Cancellation properties for portfolio investments
+  cancel_window_expires_at?: string | null;
+  can_be_cancelled?: boolean;
+  cancellation_reason?: string | null;
+  cancelled_at?: string | null;
+  committed_at?: string | null;
 }
 
 export interface ClubInvestmentPortfolio {
@@ -405,6 +430,12 @@ export interface ApiInvestmentResponse {
   total_returns: string;
   roi: string;
   investment_date: string | null;
+  // NEW: Cancellation properties for API response
+  cancel_window_expires_at?: string | null;
+  can_be_cancelled?: boolean;
+  cancellation_reason?: string | null;
+  cancelled_at?: string | null;
+  committed_at?: string | null;
 }
 
 // Investment Details Modal specific types
@@ -450,4 +481,58 @@ export interface InvestmentDetailsData {
   campaign_id?: number;
   campaign_slug?: string;
   proposed_amount?: string;
+  // NEW: Cancellation properties for details modal
+  cancel_window_expires_at?: string | null;
+  can_be_cancelled?: boolean;
+  cancellation_reason?: string | null;
+  cancelled_at?: string | null;
+  committed_at?: string | null;
 }
+
+// NEW: Enhanced types for cancellation functionality
+export interface CancellableInvestment {
+  id: string;
+  status: 'committed';
+  cancel_window_expires_at: string;
+  can_be_cancelled: boolean;
+  investment_amount: number;
+  campaign: {
+    company_name: string;
+  };
+}
+
+export interface InvestmentCancellationInfo {
+  can_be_cancelled: boolean;
+  time_remaining?: string;
+  expires_at?: string;
+  reason?: string;
+}
+
+// NEW: Fee calculation types for investment preview
+export interface InvestmentFeeBreakdown {
+  investment_amount: number;
+  processing_fee: number; // 7%
+  platform_fee: number; // 3%
+  total_fees: number;
+  net_to_campaign: number;
+  total_deduction: number;
+  currency_symbol: string;
+}
+
+// NEW: Investment creation with fee preview
+export interface InvestmentCreationData {
+  campaign_id: string;
+  investment_amount: number;
+  notes?: string;
+  fee_breakdown?: InvestmentFeeBreakdown;
+}
+
+// NEW: Club investment service types
+// export interface ClubInvestmentService {
+//   createInvestment: (token: string, clubId: string, data: InvestmentCreationData) => Promise<ClubInvestmentExecutionResult>;
+//   executeInvestment: (token: string, clubSlug: string, investmentId: string) => Promise<ClubInvestmentExecutionResult>;
+//   cancelInvestment: (token: string, clubSlug: string, investmentId: string, reason?: string) => Promise<CancelInvestmentResponse>;
+//   downloadCertificate: (token: string, clubSlug: string, investmentId: string) => Promise<BaseResponse>;
+//   getCertificateStatus: (token: string, clubSlug: string, investmentId: string) => Promise<ClubInvestmentCertificateStatus>;
+//   generateCertificate: (token: string, clubSlug: string, investmentId: string) => Promise<BaseResponse>;
+// }

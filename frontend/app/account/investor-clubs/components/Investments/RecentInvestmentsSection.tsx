@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ClubInvestment } from '../../clubTypes';
-import { FileText, TrendingUp, Play } from 'lucide-react';
+import { FileText, TrendingUp, Play, Clock, X } from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
 
 interface RecentInvestmentsSectionProps {
@@ -15,6 +15,7 @@ interface RecentInvestmentsSectionProps {
   onViewInvestment?: (investment: ClubInvestment) => void;
   onExecuteInvestment?: (investmentId: string) => void;
   onDownloadCertificate?: (investment: ClubInvestment) => void;
+  onCancelInvestment?: (investmentId: string, reason?: string) => void;
   // Pagination props
   currentPage?: number;
   totalPages?: number;
@@ -33,6 +34,7 @@ export const RecentInvestmentsSection: React.FC<
   onViewInvestment,
   onExecuteInvestment,
   onDownloadCertificate,
+  onCancelInvestment,
   // Pagination props
   currentPage = 1,
   totalPages = 1,
@@ -83,6 +85,34 @@ export const RecentInvestmentsSection: React.FC<
     }
   };
 
+  // NEW: Check if investment can be cancelled
+  const canBeCancelled = (investment: ClubInvestment): boolean => {
+    if (investment.status !== 'committed') return false;
+    
+    // Check if cancel window exists and is in future
+    if (investment.cancel_window_expires_at) {
+      return new Date(investment.cancel_window_expires_at) > new Date();
+    }
+    
+    return false;
+  };
+
+  // NEW: Get time remaining for cancellation
+  const getTimeRemaining = (investment: ClubInvestment): string => {
+    if (!investment.cancel_window_expires_at) return 'No cancellation window';
+
+    const expiresAt = new Date(investment.cancel_window_expires_at);
+    const now = new Date();
+    const diffMs = expiresAt.getTime() - now.getTime();
+
+    if (diffMs <= 0) return 'Expired';
+
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${diffHours}h ${diffMinutes}m`;
+  };
+
   const handleInvestmentClick = (investment: ClubInvestment) => {
     if (onViewInvestment) {
       onViewInvestment(investment);
@@ -103,6 +133,21 @@ export const RecentInvestmentsSection: React.FC<
     e.stopPropagation();
     if (onDownloadCertificate) {
       onDownloadCertificate(investment);
+    }
+  };
+
+  // NEW: Handle cancellation
+  const handleCancelInvestment = (
+    e: React.MouseEvent,
+    investmentId: string,
+  ) => {
+    e.stopPropagation();
+    if (onCancelInvestment) {
+      // You might want to show a confirmation dialog here
+      const reason = prompt('Please provide a reason for cancellation:');
+      if (reason !== null) {
+        onCancelInvestment(investmentId, reason);
+      }
     }
   };
 
@@ -134,144 +179,169 @@ export const RecentInvestmentsSection: React.FC<
       </div>
 
       <div className="bg-white rounded-sm divide-y">
-        {investments?.map((investment) => (
-          <div
-            key={investment?.id}
-            className="p-3 lg:p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-            onClick={() => handleInvestmentClick(investment)}
-          >
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start gap-2 mb-2">
-                  <h4 className="font-semibold text-sm lg:text-base line-clamp-2 flex-1">
-                    {investment?.campaign?.title || 'Unknown Investment'}
-                  </h4>
-                  <span className="px-2 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    {investment?.is_equity_investment ? 'Equity' : 'Other'}
-                  </span>
-                </div>
+        {investments?.map((investment) => {
+          const isCancellable = canBeCancelled(investment);
+          const timeRemaining = getTimeRemaining(investment);
 
-                <div className="flex items-center gap-2 mb-2">
-                  <p className="text-xs lg:text-sm text-gray-600 font-medium">
-                    {formatCurrency(
-                      investment?.investment_amount,
-                      investment?.currency,
-                      investment?.currency_symbol,
-                    )}
-                  </p>
-                  {getStatusBadge(investment)}
-                </div>
+          return (
+            <div
+              key={investment?.id}
+              className="p-3 lg:p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+              onClick={() => handleInvestmentClick(investment)}
+            >
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start gap-2 mb-2">
+                    <h4 className="font-semibold text-sm lg:text-base line-clamp-2 flex-1">
+                      {investment?.campaign?.title || 'Unknown Investment'}
+                    </h4>
+                    <span className="px-2 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      {investment?.is_equity_investment ? 'Equity' : 'Other'}
+                    </span>
+                  </div>
 
-                {/* Investment Details */}
-                <div className="flex flex-wrap gap-3 text-xs text-gray-500">
-                  {investment?.shares && (
-                    <div className="flex items-center gap-1">
-                      <TrendingUp size={12} />
-                      <span>
-                        {investment?.shares.toLocaleString()} shares
-                        {investment?.percentage &&
-                          ` (${investment?.percentage}%)`}
-                      </span>
+                  <div className="flex items-center gap-2 mb-2">
+                    <p className="text-xs lg:text-sm text-gray-600 font-medium">
+                      {formatCurrency(
+                        investment?.investment_amount,
+                        investment?.currency,
+                        investment?.currency_symbol,
+                      )}
+                    </p>
+                    {getStatusBadge(investment)}
+                  </div>
+
+                  {/* NEW: Cancellation Info */}
+                  {isCancellable && (
+                    <div className="flex items-center gap-1 mb-2 text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                      <Clock className="w-3 h-3" />
+                      <span>Cancel within: {timeRemaining}</span>
                     </div>
                   )}
 
-                  {investment?.current_value !== undefined &&
-                    investment.current_value !== null && (
+                  {/* Investment Details */}
+                  <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+                    {investment?.shares && (
                       <div className="flex items-center gap-1">
-                        <span
-                          className={`font-medium ${
-                            investment?.total_returns !== undefined &&
-                            investment?.total_returns >= 0
-                              ? 'text-green-600'
-                              : 'text-red-600'
-                          }`}
-                        >
-                          Current:{' '}
-                          {formatCurrency(
-                            investment?.current_value,
-                            investment?.currency,
-                            investment?.currency_symbol,
-                          )}
+                        <TrendingUp size={12} />
+                        <span>
+                          {investment?.shares.toLocaleString()} shares
+                          {investment?.percentage &&
+                            ` (${investment?.percentage}%)`}
                         </span>
                       </div>
                     )}
 
-                  {investment?.roi !== undefined && investment.roi !== null && (
-                    <div className="flex items-center gap-1">
-                      <span
-                        className={`font-medium ${
-                          investment?.roi >= 0
-                            ? 'text-green-600'
-                            : 'text-red-600'
-                        }`}
-                      >
-                        ROI: {investment?.roi >= 0 ? '+' : ''}
-                        {investment?.roi}%
-                      </span>
-                    </div>
-                  )}
+                    {investment?.current_value !== undefined &&
+                      investment.current_value !== null && (
+                        <div className="flex items-center gap-1">
+                          <span
+                            className={`font-medium ${
+                              investment?.total_returns !== undefined &&
+                              investment?.total_returns >= 0
+                                ? 'text-green-600'
+                                : 'text-red-600'
+                            }`}
+                          >
+                            Current:{' '}
+                            {formatCurrency(
+                              investment?.current_value,
+                              investment?.currency,
+                              investment?.currency_symbol,
+                            )}
+                          </span>
+                        </div>
+                      )}
+
+                    {investment?.roi !== undefined && investment.roi !== null && (
+                      <div className="flex items-center gap-1">
+                        <span
+                          className={`font-medium ${
+                            investment?.roi >= 0
+                              ? 'text-green-600'
+                              : 'text-red-600'
+                          }`}
+                        >
+                          ROI: {investment?.roi >= 0 ? '+' : ''}
+                          {investment?.roi}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex flex-col items-end gap-2 text-right">
-                <div className="text-xs lg:text-sm text-gray-500 whitespace-nowrap">
-                  {formatInvestmentDate(investment)}
-                </div>
+                <div className="flex flex-col items-end gap-2 text-right">
+                  <div className="text-xs lg:text-sm text-gray-500 whitespace-nowrap">
+                    {formatInvestmentDate(investment)}
+                  </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-1">
-                  {/* Equity Investment Actions */}
-                  {investment.status === 'pending' && (
-                    <button
-                      onClick={(e) => handleExecute(e, investment.id)}
-                      className="px-2 py-1 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors flex items-center gap-1"
-                    >
-                      <Play size={12} />
-                      Invest
-                    </button>
-                  )}
-
-                  {investment.status === 'successful' &&
-                    investment?.certificate_url && (
+                  {/* Action Buttons */}
+                  <div className="flex gap-1">
+                    {/* Equity Investment Actions */}
+                    {investment.status === 'pending' && (
                       <button
-                        onClick={(e) =>
-                          handleDownloadCertificate(e, investment)
-                        }
+                        onClick={(e) => handleExecute(e, investment.id)}
                         className="px-2 py-1 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors flex items-center gap-1"
-                        title="Download Certificate"
                       >
-                        <FileText size={12} />
-                        Certificate
+                        <Play size={12} />
+                        Invest
                       </button>
                     )}
 
-                  {investment.status === 'successful' &&
-                    !investment.certificate_url && (
+                    {/* NEW: Cancel Button */}
+                    {isCancellable && (
                       <button
-                        onClick={(e) =>
-                          handleDownloadCertificate(e, investment)
-                        }
-                        className="px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors flex items-center gap-1"
-                        title="Generate Certificate"
+                        onClick={(e) => handleCancelInvestment(e, investment.id)}
+                        className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex items-center gap-1"
+                        title="Cancel Investment"
                       >
-                        <FileText size={12} />
-                        Generate Cert
+                        <X size={12} />
+                        Cancel
                       </button>
                     )}
+
+                    {investment.status === 'successful' &&
+                      investment?.certificate_url && (
+                        <button
+                          onClick={(e) =>
+                            handleDownloadCertificate(e, investment)
+                          }
+                          className="px-2 py-1 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors flex items-center gap-1"
+                          title="Download Certificate"
+                        >
+                          <FileText size={12} />
+                          Certificate
+                        </button>
+                      )}
+
+                    {investment.status === 'successful' &&
+                      !investment.certificate_url && (
+                        <button
+                          onClick={(e) =>
+                            handleDownloadCertificate(e, investment)
+                          }
+                          className="px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors flex items-center gap-1"
+                          title="Generate Certificate"
+                        >
+                          <FileText size={12} />
+                          Generate Cert
+                        </button>
+                      )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Company Info */}
-            <div className="mt-2 pt-2 border-t border-gray-100">
-              <p className="text-xs text-gray-500">
-                {investment.campaign?.company_info?.name ||
-                  investment.campaign?.company_name ||
-                  'Unknown Company'}
-              </p>
+              {/* Company Info */}
+              <div className="mt-2 pt-2 border-t border-gray-100">
+                <p className="text-xs text-gray-500">
+                  {investment.campaign?.company_info?.name ||
+                    investment.campaign?.company_name ||
+                    'Unknown Company'}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {(!investments || investments.length === 0) && (
           <div className="p-6 text-center text-gray-500">

@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/CreateClubInvestmentModal.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import { Button } from '@/app/components/ui/button';
@@ -14,6 +15,9 @@ import {
 import { investmentService } from '../clubservice';
 import { ApprovedCampaign, Club } from '../clubTypes';
 import Modal from '@/app/components/modal/Modal';
+import { Badge } from '@/app/components/ui/badge';
+import { Alert, AlertDescription } from '@/app/components/ui/alert';
+import { InfoIcon, Calculator, TrendingUp, CreditCard } from 'lucide-react';
 
 interface CreateClubInvestmentModalProps {
   club: Club;
@@ -45,6 +49,25 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   const selectedCampaign = approvedCampaigns.find(
     (c) => c.campaign.id.toString() === selectedCampaignId,
   );
+
+  // Calculate fees and net amount
+  const calculateFees = (amount: number) => {
+    const processingFee = amount * 0.07; // 7% processing fee
+    const platformFee = amount * 0.03; // 3% platform fee
+    const totalFees = processingFee + platformFee;
+    const netToCampaign = amount - platformFee; // Only platform fee is deducted from campaign amount
+    const totalDeduction = processingFee + platformFee; // Total deducted from club balance
+
+    return {
+      processingFee,
+      platformFee,
+      totalFees,
+      netToCampaign,
+      totalDeduction
+    };
+  };
+
+  const fees = investmentAmount ? calculateFees(parseFloat(investmentAmount)) : null;
 
   useEffect(() => {
     if (!modalOpen) resetForm();
@@ -81,10 +104,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       return;
     }
 
-    // Check if club has sufficient balance
-    if (parseFloat(investmentAmount) > club.financials.current_balance) {
+    // Check if club has sufficient balance (including fees)
+    const totalDeduction = fees?.totalDeduction || parseFloat(investmentAmount);
+    if (totalDeduction > club.financials.current_balance) {
       setError(
-        `Insufficient club balance. Available: ${club.currency_symbol}${club.financials.current_balance.toLocaleString()}`,
+        `Insufficient club balance. Available: ${club.currency_symbol}${club.financials.current_balance.toLocaleString()}. Required: ${club.currency_symbol}${totalDeduction.toLocaleString()}`,
       );
       return;
     }
@@ -137,7 +161,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       customStyles={{
         display: 'flex',
         flexDirection: 'column',
-        maxHeight: '90vh', // Reduced from 95vh to ensure everything fits
+        maxHeight: '90vh',
       }}
     >
       <div className="flex flex-col h-full">
@@ -149,14 +173,12 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
           </p>
         </div>
 
-        {/* Scrollable Content - with max height constraint */}
+        {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-6 min-h-0">
-          {' '}
-          {/* Added min-h-0 for proper flex shrinking */}
           <form
             id="investment-form"
             onSubmit={handleSubmit}
-            className="space-y-4"
+            className="space-y-6"
           >
             {/* Select Campaign */}
             <div className="space-y-2">
@@ -195,28 +217,31 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
             {/* Selected Campaign Details */}
             {selectedCampaign && (
-              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                <p className="text-sm text-gray-600">
-                  {selectedCampaign.campaign.fundraiser?.name ||
-                    'Unknown fundraiser'}
-                </p>
-                <div className="text-xs mt-1 space-y-1 text-gray-700">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h4 className="font-medium text-gray-900 mb-2">
+                  {selectedCampaign.campaign.title}
+                </h4>
+                <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
                   <div>
-                    Goal:{' '}
+                    <span className="font-medium">Goal:</span>{' '}
                     {selectedCampaign.campaign.currency_symbol ||
                       selectedCampaign.campaign.currency}
                     {selectedCampaign.campaign.goal_amount?.toLocaleString()}
                   </div>
                   <div>
-                    Raised:{' '}
+                    <span className="font-medium">Raised:</span>{' '}
                     {selectedCampaign.campaign.currency_symbol ||
                       selectedCampaign.campaign.currency}
                     {selectedCampaign.campaign.current_amount?.toLocaleString()}
                   </div>
-                  <div>Category: {selectedCampaign.campaign.category}</div>
+                  <div>
+                    <span className="font-medium">Category:</span>{' '}
+                    {selectedCampaign.campaign.category}
+                  </div>
                   {selectedCampaign.club_investment?.proposed_amount && (
                     <div>
-                      Proposed: {club.currency_symbol}
+                      <span className="font-medium">Proposed:</span>{' '}
+                      {club.currency_symbol}
                       {selectedCampaign.club_investment.proposed_amount.toLocaleString()}
                     </div>
                   )}
@@ -245,6 +270,103 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 {club.financials.current_balance.toLocaleString()}
               </p>
             </div>
+
+            {/* Fee Breakdown */}
+            {fees && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Calculator className="w-4 h-4 text-blue-600" />
+                  <h4 className="font-medium text-blue-900">Fee Breakdown</h4>
+                </div>
+                
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Investment Amount:</span>
+                    <span className="font-medium">
+                      {club.currency_symbol}
+                      {parseFloat(investmentAmount).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 flex items-center gap-1">
+                      <CreditCard className="w-3 h-3" />
+                      Processing Fee (7%):
+                    </span>
+                    <span className="text-red-600 font-medium">
+                      -{club.currency_symbol}
+                      {fees.processingFee.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 flex items-center gap-1">
+                      <TrendingUp className="w-3 h-3" />
+                      Platform Fee (3%):
+                    </span>
+                    <span className="text-orange-600 font-medium">
+                      -{club.currency_symbol}
+                      {fees.platformFee.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                  
+                  <div className="border-t border-blue-200 pt-2 mt-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-700 font-medium">Total Deducted from Club:</span>
+                      <span className="text-red-700 font-bold">
+                        {club.currency_symbol}
+                        {fees.totalDeduction.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                    </div>
+                    
+                    <div className="flex justify-between mt-1">
+                      <span className="text-gray-700 font-medium">Net to Campaign:</span>
+                      <span className="text-green-700 font-bold">
+                        {club.currency_symbol}
+                        {fees.netToCampaign.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <Alert className="mt-3 bg-blue-50 border-blue-200">
+                  <InfoIcon className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-700 text-xs">
+                    The platform fee (3%) is deducted from the campaign amount, while the processing fee (7%) 
+                    is an additional cost to your club. The total amount deducted from your club balance includes both fees.
+                  </AlertDescription>
+                </Alert>
+              </div>
+            )}
+
+            {/* Balance Check Warning */}
+            {fees && fees.totalDeduction > club.financials.current_balance && (
+              <Alert className="bg-red-50 border-red-200">
+                <AlertDescription className="text-red-700 text-sm">
+                  <strong>Insufficient Balance:</strong> This investment requires {club.currency_symbol}
+                  {fees.totalDeduction.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })} but your club only has {club.currency_symbol}
+                  {club.financials.current_balance.toLocaleString()}.
+                </AlertDescription>
+              </Alert>
+            )}
 
             {/* Notes */}
             <div className="space-y-2">
@@ -289,7 +411,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 loading ||
                 !selectedCampaignId ||
                 approvedCampaigns.length === 0 ||
-                !club.is_admin
+                !club.is_admin ||
+                !!(fees && fees.totalDeduction > club.financials.current_balance)
               }
               className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
             >
