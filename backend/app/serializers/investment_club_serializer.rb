@@ -53,7 +53,7 @@ class InvestmentClubSerializer
       minimum_monthly_contribution: @club.minimum_monthly_contribution,
       max_members: @club.max_members,
       current_members_count: @club.current_members_count,
-      currency: @club.currency,
+      currency: @club.creator_currency,
       financials: {
         total_contributions: 0,
         total_invested: 0,
