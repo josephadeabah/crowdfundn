@@ -394,7 +394,7 @@ export const investmentService = {
     clubId: string,
     status?: string,
     page: number = 1,
-    perPage: number = 10,
+    perPage: number = 5,
   ): Promise<{
     success: boolean;
     investments: ClubInvestment[];
