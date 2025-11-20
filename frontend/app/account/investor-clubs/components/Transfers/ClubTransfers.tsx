@@ -326,7 +326,7 @@ export default function ClubTransfers({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex items-center px-3 py-2 bg-emerald-50 text-emerald-700 rounded-full">
+            <div className="flex items-center text-sm px-3 py-2 bg-emerald-50 text-emerald-700 rounded-full">
               <HiShieldCheck className="mr-2 w-4 h-4" />
               Secure Transfers
             </div>
