@@ -293,7 +293,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               }
               className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
             >
-              {loading ? 'Creating...' : 'Create Investment'}
+              {loading ? 'Processing...' : 'Make Investment'}
             </Button>
           </div>
           {!club.is_admin && (
