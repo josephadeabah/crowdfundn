@@ -24,6 +24,12 @@ interface ContributionsState {
   loading: boolean;
 }
 
+interface InvestmentsState {
+  data: ClubInvestment[];
+  pagination: PaginationData;
+  loading: boolean;
+}
+
 interface DashboardState {
   clubs: Club[];
   selectedClub: Club | null;
@@ -57,6 +63,17 @@ export const useClubData = () => {
     loading: false,
   });
 
+  const [investments, setInvestments] = useState<InvestmentsState>({
+    data: [],
+    pagination: {
+      current_page: 1,
+      total_pages: 0,
+      total_count: 0,
+      per_page: 10,
+    },
+    loading: false,
+  });
+
   const [approvedCampaigns, setApprovedCampaigns] = useState<
     ApprovedCampaign[]
   >([]);
@@ -81,28 +98,70 @@ export const useClubData = () => {
     }
   };
 
-  // Function to load investments specifically
-  const loadInvestments = async (clubSlug: string, status?: string) => {
+  // Function to load investments specifically with pagination
+  const loadInvestments = async (
+    clubSlug: string,
+    status?: string,
+    page: number = 1,
+    perPage: number = 5,
+  ) => {
     if (!token) return;
 
     try {
-      console.log('🔄 Loading investments for club:', clubSlug);
+      console.log('🔄 Loading investments for club:', clubSlug, 'page:', page);
+      setInvestments((prev) => ({ ...prev, loading: true }));
+
       const response = await investmentService.getInvestments(
         token,
         clubSlug,
         status,
+        page,
+        perPage,
       );
 
       if (response.success) {
+        setInvestments({
+          data: response.investments || [],
+          pagination: response.pagination || {
+            current_page: page,
+            total_pages: 1,
+            total_count: response.investments?.length || 0,
+            per_page: perPage,
+          },
+          loading: false,
+        });
+
+        // Also update the state for backward compatibility
         setState((prev) => ({
           ...prev,
           investments: response.investments || [],
         }));
       } else {
         console.error('Failed to load investments:', response);
+        setInvestments((prev) => ({ ...prev, loading: false }));
       }
     } catch (error) {
       console.error('Failed to load investments:', error);
+      setInvestments((prev) => ({ ...prev, loading: false }));
+    }
+  };
+
+  // Function to handle investment page change
+  const handleInvestmentPageChange = (page: number) => {
+    if (state.selectedClub) {
+      loadInvestments(
+        state.selectedClub.slug,
+        undefined,
+        page,
+        investments.pagination.per_page,
+      );
+    }
+  };
+
+  // Function to handle investment per page change
+  const handleInvestmentPerPageChange = (perPage: number) => {
+    if (state.selectedClub) {
+      loadInvestments(state.selectedClub.slug, undefined, 1, perPage);
     }
   };
 
@@ -256,7 +315,7 @@ export const useClubData = () => {
         clubDetailsResponse,
       ] = await Promise.all([
         membershipService.getMembers(token, club.slug),
-        investmentService.getInvestments(token, club.slug),
+        investmentService.getInvestments(token, club.slug, undefined, 1, 10), // Load first page by default
         portfolioService.getClubPortfolio(token, club.slug),
         clubService.getClub(token, club.slug),
       ]);
@@ -271,9 +330,21 @@ export const useClubData = () => {
         ...prev,
         selectedClub: clubDetailsResponse.club,
         members: membersResponse.members,
-        investments: investmentsResponse.investments,
+        investments: investmentsResponse.investments || [],
         portfolio: portfolioResponse,
       }));
+
+      // Update investments state with pagination
+      setInvestments({
+        data: investmentsResponse.investments || [],
+        pagination: investmentsResponse.pagination || {
+          current_page: 1,
+          total_pages: 1,
+          total_count: investmentsResponse.investments?.length || 0,
+          per_page: 10,
+        },
+        loading: false,
+      });
 
       // Debug: Log membership data to verify updates
       const myMember = membersResponse.members.find(
@@ -346,6 +417,9 @@ export const useClubData = () => {
     contributions: contributions.data,
     contributionsPagination: contributions.pagination,
     contributionsLoading: contributions.loading,
+    investments: investments.data, // Return paginated investments
+    investmentsPagination: investments.pagination,
+    investmentsLoading: investments.loading,
     approvedCampaigns,
     approvedCampaignsLoading,
     token,
@@ -360,5 +434,7 @@ export const useClubData = () => {
     loadContributions,
     handleContributionPageChange,
     handleContributionPerPageChange,
+    handleInvestmentPageChange, // Export investment pagination handlers
+    handleInvestmentPerPageChange,
   };
 };

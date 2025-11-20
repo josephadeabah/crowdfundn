@@ -141,6 +141,8 @@ const InvestmentClubsDashboard: React.FC = () => {
     selectedClub,
     members,
     investments,
+    investmentsPagination, // ADD THIS: Destructure investments pagination
+    investmentsLoading, // ADD THIS: Destructure investments loading state
     contributions,
     contributionsPagination,
     contributionsLoading,
@@ -158,6 +160,8 @@ const InvestmentClubsDashboard: React.FC = () => {
     loadInvestments,
     loadPortfolio,
     refreshApprovedCampaigns,
+    handleInvestmentPageChange, // ADD THIS: Destructure investment pagination handlers
+    handleInvestmentPerPageChange, // ADD THIS: Destructure investment per page handler
   } = useClubData();
 
   const { user } = useAuth();
@@ -382,8 +386,8 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const handleInvestmentCreated = async () => {
     if (selectedClub) {
-      await loadInvestments(selectedClub.id);
-      await loadPortfolio(selectedClub.id);
+      await loadInvestments(selectedClub.slug);
+      await loadPortfolio(selectedClub.slug);
       await refreshApprovedCampaigns();
       setIsCreateInvestmentModalOpen(false);
     }
@@ -496,13 +500,23 @@ const InvestmentClubsDashboard: React.FC = () => {
                 onPerPageChange={handleContributionPerPageChange}
               />
 
-              {/* FIXED: Use transformed investments with proper data */}
+              {/* FIXED: Use transformed investments with proper data and pagination */}
               <RecentInvestmentsSection
                 investments={transformedInvestments}
                 formatCurrency={formatCurrency}
                 onViewInvestment={handleViewInvestment}
                 onExecuteInvestment={handleExecuteInvestment}
                 onDownloadCertificate={handleDownloadCertificate}
+                currentPage={investmentsPagination?.current_page || 1}
+                totalPages={investmentsPagination?.total_pages || 1}
+                totalCount={
+                  investmentsPagination?.total_count ||
+                  transformedInvestments.length
+                }
+                perPage={investmentsPagination?.per_page || 5}
+                onPageChange={handleInvestmentPageChange}
+                onPerPageChange={handleInvestmentPerPageChange}
+                showPagination={true}
               />
             </div>
 

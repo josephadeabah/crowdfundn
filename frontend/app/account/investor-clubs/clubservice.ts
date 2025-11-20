@@ -395,7 +395,11 @@ export const investmentService = {
     status?: string,
     page: number = 1,
     perPage: number = 10,
-  ): Promise<{ success: boolean; investments: ClubInvestment[] }> => {
+  ): Promise<{
+    success: boolean;
+    investments: ClubInvestment[];
+    pagination?: PaginationData;
+  }> => {
     const endpoint = `/investment_clubs/${clubId}/investments${status ? `?status=${status}` : ''}${status ? '&' : '?'}page=${page}&per_page=${perPage}`;
     return apiCall(endpoint, token);
   },

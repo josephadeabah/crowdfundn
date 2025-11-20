@@ -22,11 +22,11 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
   const formatNumber = (num: number | undefined | null): string => {
     // Handle undefined, null, or NaN values
     const safeNum = num || 0;
-    
+
     if (safeNum >= 1000000) {
-      return (safeNum / 1000000) + 'M';
+      return safeNum / 1000000 + 'M';
     } else if (safeNum >= 1000) {
-      return (safeNum / 1000) + 'K';
+      return safeNum / 1000 + 'K';
     }
     return safeNum.toString();
   };
@@ -38,7 +38,7 @@ export const ClubStats: React.FC<ClubStatsProps> = ({
   ): string => {
     // Handle undefined, null, or NaN values
     const safeAmount = amount || 0;
-    
+
     if (safeAmount >= 1000000) {
       return formatCurrency(safeAmount / 1000000, currency) + 'M';
     } else if (safeAmount >= 1000) {

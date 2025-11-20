@@ -1,8 +1,8 @@
-// app/account/investor-clubs/components/Investments/RecentInvestmentsSection.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ClubInvestment } from '../../clubTypes';
 import { FileText, TrendingUp, Play } from 'lucide-react';
+import Pagination from '@/app/components/pagination/Pagination';
 
 interface RecentInvestmentsSectionProps {
   investments: ClubInvestment[];
@@ -10,6 +10,14 @@ interface RecentInvestmentsSectionProps {
   onViewInvestment?: (investment: ClubInvestment) => void;
   onExecuteInvestment?: (investmentId: string) => void;
   onDownloadCertificate?: (investment: ClubInvestment) => void;
+  // Pagination props
+  currentPage?: number;
+  totalPages?: number;
+  totalCount?: number;
+  perPage?: number;
+  onPageChange?: (page: number) => void;
+  onPerPageChange?: (perPage: number) => void;
+  showPagination?: boolean;
 }
 
 export const RecentInvestmentsSection: React.FC<
@@ -20,6 +28,14 @@ export const RecentInvestmentsSection: React.FC<
   onViewInvestment,
   onExecuteInvestment,
   onDownloadCertificate,
+  // Pagination props
+  currentPage = 1,
+  totalPages = 1,
+  totalCount = 0,
+  perPage = 10,
+  onPageChange,
+  onPerPageChange,
+  showPagination = true,
 }) => {
   const getStatusBadge = (investment: ClubInvestment) => {
     switch (investment.status) {
@@ -108,12 +124,12 @@ export const RecentInvestmentsSection: React.FC<
       <div className="flex items-center justify-between mb-3 lg:mb-4">
         <h3 className="text-lg lg:text-xl font-semibold">Recent Investments</h3>
         <span className="text-xs lg:text-sm text-gray-500">
-          {investments?.length || 0} total
+          {totalCount || investments?.length || 0} total
         </span>
       </div>
 
       <div className="bg-white rounded-sm divide-y">
-        {investments?.slice(0, 5)?.map((investment) => (
+        {investments?.map((investment) => (
           <div
             key={investment?.id}
             className="p-3 lg:p-4 hover:bg-gray-50 cursor-pointer transition-colors"
@@ -260,6 +276,21 @@ export const RecentInvestmentsSection: React.FC<
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {showPagination && onPageChange && totalPages > 1 && (
+        <div className="mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalCount={totalCount}
+            perPage={perPage}
+            onPageChange={onPageChange}
+            onPerPageChange={onPerPageChange}
+            showPerPageSelector={true}
+          />
+        </div>
+      )}
     </motion.div>
   );
 };
