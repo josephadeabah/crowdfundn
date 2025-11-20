@@ -88,12 +88,12 @@ export const RecentInvestmentsSection: React.FC<
   // NEW: Check if investment can be cancelled
   const canBeCancelled = (investment: ClubInvestment): boolean => {
     if (investment.status !== 'committed') return false;
-    
+
     // Check if cancel window exists and is in future
     if (investment.cancel_window_expires_at) {
       return new Date(investment.cancel_window_expires_at) > new Date();
     }
-    
+
     return false;
   };
 
@@ -253,20 +253,21 @@ export const RecentInvestmentsSection: React.FC<
                         </div>
                       )}
 
-                    {investment?.roi !== undefined && investment.roi !== null && (
-                      <div className="flex items-center gap-1">
-                        <span
-                          className={`font-medium ${
-                            investment?.roi >= 0
-                              ? 'text-green-600'
-                              : 'text-red-600'
-                          }`}
-                        >
-                          ROI: {investment?.roi >= 0 ? '+' : ''}
-                          {investment?.roi}%
-                        </span>
-                      </div>
-                    )}
+                    {investment?.roi !== undefined &&
+                      investment.roi !== null && (
+                        <div className="flex items-center gap-1">
+                          <span
+                            className={`font-medium ${
+                              investment?.roi >= 0
+                                ? 'text-green-600'
+                                : 'text-red-600'
+                            }`}
+                          >
+                            ROI: {investment?.roi >= 0 ? '+' : ''}
+                            {investment?.roi}%
+                          </span>
+                        </div>
+                      )}
                   </div>
                 </div>
 
@@ -291,7 +292,9 @@ export const RecentInvestmentsSection: React.FC<
                     {/* NEW: Cancel Button */}
                     {isCancellable && (
                       <button
-                        onClick={(e) => handleCancelInvestment(e, investment.id)}
+                        onClick={(e) =>
+                          handleCancelInvestment(e, investment.id)
+                        }
                         className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex items-center gap-1"
                         title="Cancel Investment"
                       >

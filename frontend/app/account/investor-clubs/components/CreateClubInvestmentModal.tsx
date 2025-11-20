@@ -63,11 +63,13 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       platformFee,
       totalFees,
       netToCampaign,
-      totalDeduction
+      totalDeduction,
     };
   };
 
-  const fees = investmentAmount ? calculateFees(parseFloat(investmentAmount)) : null;
+  const fees = investmentAmount
+    ? calculateFees(parseFloat(investmentAmount))
+    : null;
 
   useEffect(() => {
     if (!modalOpen) resetForm();
@@ -278,7 +280,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   <Calculator className="w-4 h-4 text-blue-600" />
                   <h4 className="font-medium text-blue-900">Fee Breakdown</h4>
                 </div>
-                
+
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Investment Amount:</span>
@@ -290,7 +292,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                       })}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-gray-600 flex items-center gap-1">
                       <CreditCard className="w-3 h-3" />
@@ -304,7 +306,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                       })}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-gray-600 flex items-center gap-1">
                       <TrendingUp className="w-3 h-3" />
@@ -318,10 +320,12 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                       })}
                     </span>
                   </div>
-                  
+
                   <div className="border-t border-blue-200 pt-2 mt-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-700 font-medium">Total Deducted from Club:</span>
+                      <span className="text-gray-700 font-medium">
+                        Total Deducted from Club:
+                      </span>
                       <span className="text-red-700 font-bold">
                         {club.currency_symbol}
                         {fees.totalDeduction.toLocaleString(undefined, {
@@ -330,9 +334,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                         })}
                       </span>
                     </div>
-                    
+
                     <div className="flex justify-between mt-1">
-                      <span className="text-gray-700 font-medium">Net to Campaign:</span>
+                      <span className="text-gray-700 font-medium">
+                        Net to Campaign:
+                      </span>
                       <span className="text-green-700 font-bold">
                         {club.currency_symbol}
                         {fees.netToCampaign.toLocaleString(undefined, {
@@ -347,8 +353,10 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 <Alert className="mt-3 bg-blue-50 border-blue-200">
                   <InfoIcon className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-700 text-xs">
-                    The platform fee (3%) is deducted from the campaign amount, while the processing fee (7%) 
-                    is an additional cost to your club. The total amount deducted from your club balance includes both fees.
+                    The platform fee (3%) is deducted from the campaign amount,
+                    while the processing fee (7%) is an additional cost to your
+                    club. The total amount deducted from your club balance
+                    includes both fees.
                   </AlertDescription>
                 </Alert>
               </div>
@@ -358,11 +366,13 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             {fees && fees.totalDeduction > club.financials.current_balance && (
               <Alert className="bg-red-50 border-red-200">
                 <AlertDescription className="text-red-700 text-sm">
-                  <strong>Insufficient Balance:</strong> This investment requires {club.currency_symbol}
+                  <strong>Insufficient Balance:</strong> This investment
+                  requires {club.currency_symbol}
                   {fees.totalDeduction.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })} but your club only has {club.currency_symbol}
+                  })}{' '}
+                  but your club only has {club.currency_symbol}
                   {club.financials.current_balance.toLocaleString()}.
                 </AlertDescription>
               </Alert>
@@ -412,7 +422,9 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 !selectedCampaignId ||
                 approvedCampaigns.length === 0 ||
                 !club.is_admin ||
-                !!(fees && fees.totalDeduction > club.financials.current_balance)
+                !!(
+                  fees && fees.totalDeduction > club.financials.current_balance
+                )
               }
               className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
             >
