@@ -136,7 +136,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
         customStyles={{ padding: 0 }}
       >
         <motion.div
-          className="bg-white rounded-2xl shadow-sm w-full overflow-hidden max-h-[90vh] flex flex-col"
+          className="bg-white rounded-2xl shadow-md w-full overflow-hidden max-h-[90vh] flex flex-col"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
@@ -150,7 +150,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="flex-1 p-6">
+          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
             <div className="space-y-6">
               {/* Club Name */}
               <div>
