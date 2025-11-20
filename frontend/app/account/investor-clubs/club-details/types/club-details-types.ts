@@ -1,10 +1,11 @@
 // app/account/investor-clubs/club-details/types/club-details-types.ts
-import { Club, Member, Membership } from '../../clubTypes';
+import { Club, ClubInvestmentPortfolio, Member, Membership } from '../../clubTypes';
 
 export interface ClubDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   club: Club;
+  portfolio: ClubInvestmentPortfolio | null;
   members: Member[];
   onMembershipUpdate?: () => void;
 }
@@ -34,6 +35,7 @@ export interface TabComponentProps {
   loading: boolean;
   actionLoading: string | null;
   message: { type: 'success' | 'error'; text: string } | null;
+  portfolio: ClubInvestmentPortfolio | null;
   onMembershipUpdate?: () => void;
   onFeatureClick: (featureName: string) => void;
   onTabChange?: (tab: 'about' | 'members' | 'actions') => void;

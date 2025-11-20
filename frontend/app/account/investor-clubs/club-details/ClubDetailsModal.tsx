@@ -19,6 +19,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   isOpen,
   onClose,
   club,
+  portfolio,
   members,
   onMembershipUpdate,
 }) => {
@@ -77,6 +78,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const renderTabContent = () => {
     const commonProps = {
       club,
+      portfolio,
       members,
       myMembership,
       loading,

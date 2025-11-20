@@ -6,7 +6,7 @@ import { TabComponentProps } from '../types/club-details-types';
 
 const AboutTab: React.FC<
   Omit<TabComponentProps, 'onFeatureClick' | 'onTabChange'>
-> = ({ club }) => {
+> = ({ club, portfolio }) => {
   const formatCurrency = (
     amount: number,
     currency: string = club.currency || 'USD',
@@ -16,6 +16,9 @@ const AboutTab: React.FC<
       currency: currency,
     }).format(amount);
   };
+
+    const totalInvested =
+      portfolio?.total_invested || club?.financials?.total_invested || 0;
 
   return (
     <div className="space-y-6">
@@ -51,7 +54,7 @@ const AboutTab: React.FC<
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="text-sm text-gray-600">Total Invested</div>
           <div className="text-xl font-bold text-gray-900">
-            {formatCurrency(club.financials.total_invested, club.currency)}
+            {formatCurrency(totalInvested, club.currency)}
           </div>
         </div>
       </div>

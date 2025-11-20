@@ -519,6 +519,7 @@ const InvestmentClubsDashboard: React.FC = () => {
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             club={currentClub}
+            portfolio={portfolioData}
             members={members}
           />
 
