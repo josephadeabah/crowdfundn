@@ -341,7 +341,7 @@ Rails.application.routes.draw do
         resources :investments, only: [:index, :create], controller: 'club_investments' do
           member do
             post :vote
-            post :execute
+            post :cancel
             get :ai_recommendation
             get :voting_insights
             post :start_voting
