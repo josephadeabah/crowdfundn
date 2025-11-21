@@ -362,17 +362,49 @@ const InvestmentClubsDashboard: React.FC = () => {
     }
   };
 
+  // FIXED: Enhanced current user share calculation
   const getCurrentUserShare = () => {
     if (!selectedClub || !user || !members.length) return undefined;
+    
+    // Ensure we're comparing numbers by converting to Number
+    const currentUserId = Number(user.id);
+    
+    // Find the current user's membership
     const currentUserMembership = members.find((member) => {
       const memberUserId = Number(member.user.id);
-      const currentUserId = Number(user.id);
       return memberUserId === currentUserId;
     });
-    return currentUserMembership?.contributed_share;
+    
+    if (currentUserMembership) {
+      const share = currentUserMembership.contributed_share;
+      // Validate the share value
+      if (share === null || share === undefined || isNaN(Number(share))) {
+        console.warn('Invalid share value for current user:', share);
+        return 0;
+      }
+      return Number(share);
+    }
+    
+    return 0; // Default to 0 if no membership found
   };
 
   const currentUserShare = getCurrentUserShare();
+
+  // FIXED: Add share validation and debugging
+  useEffect(() => {
+    if (selectedClub && members.length > 0 && currentUserShare !== undefined) {
+      console.log('Share Debug Info:', {
+        club: selectedClub.name,
+        totalContributions: selectedClub.financials?.total_contributions,
+        currentUserShare,
+        allMembers: members.map(m => ({
+          name: m.user.full_name,
+          contributed: m.total_contributed,
+          share: m.contributed_share
+        }))
+      });
+    }
+  }, [selectedClub, members, currentUserShare]);
 
   if (loading) {
     return <LoadingState />;

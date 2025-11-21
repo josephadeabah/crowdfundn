@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Users,
   PieChart,
+  Info,
 } from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
 
@@ -39,19 +40,36 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
   });
   const [expandedChange, setExpandedChange] = useState<string | null>(null);
 
-  // Safe number formatting functions
+  // FIXED: Enhanced safe number formatting with validation
   const safeToFixed = (value: any, decimals: number = 4): string => {
-    if (value === null || value === undefined || isNaN(Number(value))) {
+    if (value === null || value === undefined || value === '' || isNaN(Number(value))) {
       return '0.00';
     }
-    return Number(value).toFixed(decimals);
+    const numValue = Number(value);
+    // Validate the number is finite and reasonable
+    if (!isFinite(numValue) || Math.abs(numValue) > 1000000) {
+      return '0.00';
+    }
+    return numValue.toFixed(decimals);
   };
 
   const safeNumber = (value: any): number => {
-    if (value === null || value === undefined || isNaN(Number(value))) {
+    if (value === null || value === undefined || value === '' || isNaN(Number(value))) {
       return 0;
     }
-    return Number(value);
+    const numValue = Number(value);
+    return isFinite(numValue) ? numValue : 0;
+  };
+
+  // FIXED: Enhanced current user share display with validation
+  const displayCurrentUserShare = () => {
+    if (currentUserShare === undefined || currentUserShare === null) {
+      return '0.00';
+    }
+    const shareValue = safeNumber(currentUserShare);
+    // Validate share is between 0 and 100
+    const validShare = Math.max(0, Math.min(100, shareValue));
+    return safeToFixed(validShare, 2);
   };
 
   const loadShareChanges = async (
@@ -189,18 +207,40 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
           <h3 className="text-lg font-semibold">All Members Share Changes</h3>
         </div>
 
-        {/* NEW: Current User Share Display */}
+        {/* FIXED: Enhanced current user share display */}
         {currentUserShare !== undefined && (
           <div className="flex items-center space-x-2 px-4 py-2 bg-green-50 border border-green-200 rounded-lg">
             <PieChart className="w-4 h-4 text-green-600" />
             <span className="text-sm font-medium text-green-800">
               Your Share:{' '}
               <span className="font-bold text-green-600">
-                {safeToFixed(currentUserShare, 2)}%
+                {displayCurrentUserShare()}%
               </span>
             </span>
           </div>
         )}
+      </div>
+
+      {/* FIXED: Add share calculation explanation */}
+      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex items-start space-x-2">
+          <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+          <div className="text-sm text-blue-800">
+            <p className="font-medium">How shares are calculated:</p>
+            <p className="text-xs mt-1">
+              Your share percentage = (Your Total Contributions ÷ Club Total Contributions) × 100
+              {currentUserShare !== undefined && club?.financials && (
+                <span className="block mt-1">
+                  Your share: {safeToFixed(currentUserShare, 4)}% = 
+                  ({formatCurrency(
+                    club.members?.find((m: any) => Number(m.user.id) === Number(user?.id))?.total_contributed || 0, 
+                    club.currency
+                  )} ÷ {formatCurrency(club.financials.total_contributions, club.currency)}) × 100
+                </span>
+              )}
+            </p>
+          </div>
+        </div>
       </div>
 
       {error && (
