@@ -474,10 +474,15 @@ module Api
         end
       end
 
+      # In your ClubInvestmentsController
       def transform_investment_for_frontend(investment)
         campaign = investment.campaign
         
-        # Ensure we have a campaign object with fallbacks
+        # DEBUG: Log the actual status
+        Rails.logger.info "TRANSFORMING: Investment #{investment.id} status: #{investment.status}"
+        Rails.logger.info "TRANSFORMING: Cancel window: #{investment.cancel_window_expires_at}"
+        Rails.logger.info "TRANSFORMING: Can be cancelled: #{investment.status == 'committed' && (investment.cancel_window_expires_at.nil? || investment.cancel_window_expires_at > Time.current)}"
+        
         campaign_data = if campaign
           {
             title: campaign.title,
@@ -485,7 +490,7 @@ module Api
             category: campaign.category,
             currency_symbol: campaign.currency_symbol,
             id: campaign.id,
-            slug: campaign.slug  # ADD SLUG HERE
+            slug: campaign.slug
           }
         else
           {
@@ -500,7 +505,7 @@ module Api
         
         voting_stats = investment.voting_stats || {}
         
-        # NEW: Include equity investment data if applicable
+        # CRITICAL: Include all cancellation fields
         base_data = {
           id: investment.id.to_s,
           company: campaign_data[:title],
@@ -513,21 +518,17 @@ module Api
           campaign_slug: campaign_data[:slug],
           proposed_amount: investment.investment_amount,
           currency_symbol: campaign_data[:currency_symbol],
-          is_equity_investment: campaign.is_a?(EquityCampaign)
+          is_equity_investment: campaign.is_a?(EquityCampaign),
+          # THESE ARE THE CRITICAL FIELDS FOR CANCELLATION:
+          can_be_cancelled: investment.status == 'committed' && 
+                          (investment.cancel_window_expires_at.nil? || 
+                            investment.cancel_window_expires_at > Time.current),
+          cancel_window_expires_at: investment.cancel_window_expires_at,
+          committed_at: investment.committed_at
         }
 
-        # Add voting data for voting-based investments
-        if !campaign.is_a?(EquityCampaign)
-          base_data.merge!({
-            votes: voting_stats[:yes_votes] || 0,
-            threshold: calculate_voting_threshold,
-            match_score: calculate_match_score(campaign),
-            reasoning: "Investment proposal for #{campaign_data[:title]}",
-            ai_analysis: get_campaign_ai_analysis(campaign),
-            voting_stats: voting_stats
-          })
-        else
-          # Add equity investment data
+        # Add equity investment data
+        if campaign.is_a?(EquityCampaign)
           base_data.merge!({
             shares: investment.shares,
             percentage: investment.percentage,
@@ -537,6 +538,16 @@ module Api
             total_returns: investment.total_returns,
             roi: investment.roi,
             investment_date: investment.investment_date
+          })
+        else
+          # Add voting data for non-equity investments
+          base_data.merge!({
+            votes: voting_stats[:yes_votes] || 0,
+            threshold: calculate_voting_threshold,
+            match_score: calculate_match_score(campaign),
+            reasoning: "Investment proposal for #{campaign_data[:title]}",
+            ai_analysis: get_campaign_ai_analysis(campaign),
+            voting_stats: voting_stats
           })
         end
         

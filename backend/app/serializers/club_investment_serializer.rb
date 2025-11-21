@@ -1,3 +1,4 @@
+# app/serializers/club_investment_serializer.rb
 class ClubInvestmentSerializer
   def initialize(club_investment)
     @investment = club_investment
@@ -25,7 +26,23 @@ class ClubInvestmentSerializer
       in_approved_campaigns: ApprovedCampaign.exists?(
         investment_club: @investment.investment_club,
         campaign: @investment.campaign
-      )
+      ),
+      # ADD THESE CRITICAL FIELDS FOR CANCELLATION
+      can_be_cancelled: @investment.committed? && 
+                       (@investment.cancel_window_expires_at.nil? || 
+                        @investment.cancel_window_expires_at > Time.current),
+      cancel_window_expires_at: @investment.cancel_window_expires_at,
+      committed_at: @investment.committed_at,
+      # Add equity investment specific fields
+      shares: @investment.shares,
+      percentage: @investment.percentage,
+      certificate_url: @investment.certificate_url,
+      certificate_number: @investment.certificate_number,
+      current_value: @investment.current_value,
+      total_returns: @investment.total_returns,
+      roi: @investment.roi,
+      investment_date: @investment.investment_date,
+      is_equity_investment: @investment.campaign.is_a?(EquityCampaign)
     }
   end
   
