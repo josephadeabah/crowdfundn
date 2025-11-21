@@ -297,7 +297,10 @@ const InvestmentClubsDashboard: React.FC = () => {
   };
 
   // NEW: Handle cancelling investments
-  const handleCancelInvestment = async (investmentId: string, reason?: string) => {
+  const handleCancelInvestment = async (
+    investmentId: string,
+    reason?: string,
+  ) => {
     if (!selectedClub || !token) return;
 
     try {
@@ -305,14 +308,16 @@ const InvestmentClubsDashboard: React.FC = () => {
         token,
         selectedClub.slug,
         investmentId,
-        { reason }
+        { reason },
       );
 
       if (result.success) {
-        setInvestmentMessage('Investment cancelled successfully! Amount refunded to club balance.');
+        setInvestmentMessage(
+          'Investment cancelled successfully! Amount refunded to club balance.',
+        );
         setInvestmentSuccess(true);
         setInvestmentAlert(true);
-        
+
         // Refresh investments and portfolio
         await loadInvestments(selectedClub.slug);
         await loadPortfolio(selectedClub.slug);

@@ -16,7 +16,11 @@ interface InvestmentDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   investment: ClubInvestment | null;
-  formatCurrency: (amount: number | string | null | undefined, currency?: string, currencySymbol?: string) => string;
+  formatCurrency: (
+    amount: number | string | null | undefined,
+    currency?: string,
+    currencySymbol?: string,
+  ) => string;
   formatDate: (dateString: string | null | undefined) => string;
   onCancelInvestment?: (investmentId: string, reason?: string) => void;
   onDownloadCertificate: (investment: ClubInvestment) => void;
@@ -239,7 +243,7 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                       {formatCurrency(
                         investment.investment_amount,
                         investment.currency,
-                        investment.currency_symbol
+                        investment.currency_symbol,
                       )}
                     </span>
                   </div>
@@ -276,26 +280,34 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                 <div className="space-y-3">
                   {investment.current_value !== undefined && (
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Current Value:</span>
+                      <span className="text-sm text-gray-600">
+                        Current Value:
+                      </span>
                       <span className="text-sm font-medium">
                         {formatCurrency(
                           investment.current_value,
                           investment.currency,
-                          investment.currency_symbol
+                          investment.currency_symbol,
                         )}
                       </span>
                     </div>
                   )}
                   {investment.total_returns !== undefined && (
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Total Returns:</span>
-                      <span className={`text-sm font-medium ${
-                        investment.total_returns >= 0 ? 'text-green-600' : 'text-red-600'
-                      }`}>
+                      <span className="text-sm text-gray-600">
+                        Total Returns:
+                      </span>
+                      <span
+                        className={`text-sm font-medium ${
+                          investment.total_returns >= 0
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }`}
+                      >
                         {formatCurrency(
                           investment.total_returns,
                           investment.currency,
-                          investment.currency_symbol
+                          investment.currency_symbol,
                         )}
                       </span>
                     </div>
@@ -303,10 +315,15 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                   {investment.roi !== undefined && (
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">ROI:</span>
-                      <span className={`text-sm font-medium ${
-                        investment.roi >= 0 ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {investment.roi >= 0 ? '+' : ''}{investment.roi}%
+                      <span
+                        className={`text-sm font-medium ${
+                          investment.roi >= 0
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }`}
+                      >
+                        {investment.roi >= 0 ? '+' : ''}
+                        {investment.roi}%
                       </span>
                     </div>
                   )}
@@ -328,10 +345,11 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                 </p>
                 {investment.campaign?.valuation && (
                   <p className="text-sm text-gray-600 mt-1">
-                    Valuation: {formatCurrency(
+                    Valuation:{' '}
+                    {formatCurrency(
                       investment.campaign.valuation,
                       investment.campaign.currency,
-                      investment.campaign.currency_symbol
+                      investment.campaign.currency_symbol,
                     )}
                   </p>
                 )}
@@ -348,8 +366,9 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                       48-Hour Cancellation Window
                     </h4>
                     <p className="text-sm text-orange-700 mt-1">
-                      You can cancel this investment within {investment.time_remaining_for_cancellation}. 
-                      The amount will be refunded to the club balance.
+                      You can cancel this investment within{' '}
+                      {investment.time_remaining_for_cancellation}. The amount
+                      will be refunded to the club balance.
                     </p>
                   </div>
                 </div>
@@ -370,25 +389,27 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
               )}
 
               {/* Certificate Buttons */}
-              {investment.status === 'successful' && investment.certificate_url && (
-                <button
-                  onClick={handleDownloadClick}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors flex items-center gap-2"
-                >
-                  <Download className="w-4 h-4" />
-                  Download Certificate
-                </button>
-              )}
+              {investment.status === 'successful' &&
+                investment.certificate_url && (
+                  <button
+                    onClick={handleDownloadClick}
+                    className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download Certificate
+                  </button>
+                )}
 
-              {investment.status === 'successful' && !investment.certificate_url && (
-                <button
-                  onClick={handleDownloadClick}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors flex items-center gap-2"
-                >
-                  <FileText className="w-4 h-4" />
-                  Generate Certificate
-                </button>
-              )}
+              {investment.status === 'successful' &&
+                !investment.certificate_url && (
+                  <button
+                    onClick={handleDownloadClick}
+                    className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors flex items-center gap-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Generate Certificate
+                  </button>
+                )}
 
               <button
                 onClick={onClose}
