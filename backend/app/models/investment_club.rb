@@ -181,18 +181,21 @@ class InvestmentClub < ApplicationRecord
 
   # FIXED: CORRECT METHOD NAME - update_all_member_shares_with_history (without extra 's')
   def update_all_member_shares_with_history(contribution = nil)
-    current_total = total_contributions.to_f
+    # FIXED: Use fresh calculation of total contributions to avoid stale data
+    current_total = investment_club_contributions.completed.sum(:amount).to_f
     
     Rails.logger.info "Calculating shares for club #{id}: Total contributions: #{current_total}"
 
     return if current_total.zero?
 
     ActiveRecord::Base.transaction do
-      active_memberships.find_each do |membership|
+      # FIXED: Use lock to prevent race conditions
+      active_memberships.lock.find_each do |membership|
         update_member_share_with_history(membership, current_total, contribution)
       end
       
-      verify_share_totals
+      # FIXED: Force immediate verification after update
+      verify_share_totals_immediately
     end
     
     Rails.logger.info "Successfully updated shares for all active members in club #{id}"
@@ -201,32 +204,86 @@ class InvestmentClub < ApplicationRecord
     raise
   end
 
-  # FIXED: Method to update shares without history for cases where validation fails
+  # FIXED: Enhanced method to update shares without history
   def update_all_member_shares_without_history
-    current_total = total_contributions.to_f
+    current_total = investment_club_contributions.completed.sum(:amount).to_f
     
     Rails.logger.info "Calculating shares without history for club #{id}: Total contributions: #{current_total}"
 
     return if current_total.zero?
 
-    active_memberships.find_each do |membership|
-      previous_share = membership.contributed_share.to_f
-      new_share = calculate_member_share(membership.total_contributed.to_f, current_total)
-      
-      Rails.logger.info "Member #{membership.user.full_name}: Contributed: #{membership.total_contributed}, Share: #{previous_share}% → #{new_share}%"
+    ActiveRecord::Base.transaction do
+      active_memberships.lock.find_each do |membership|
+        previous_share = membership.contributed_share.to_f
+        new_share = calculate_member_share(membership.total_contributed.to_f, current_total)
+        
+        Rails.logger.info "Member #{membership.user.full_name}: Contributed: #{membership.total_contributed}, Share: #{previous_share}% → #{new_share}%"
 
-      if (previous_share - new_share).abs > 0.0001
-        membership.update_column(:contributed_share, new_share)
-        Rails.logger.info "Updated share for #{membership.user.full_name}: #{previous_share.round(4)}% → #{new_share.round(4)}% (without history)"
-      else
-        Rails.logger.debug "No share change for #{membership.user.full_name}: #{previous_share.round(4)}%"
+        if (previous_share - new_share).abs > 0.0001
+          membership.update_column(:contributed_share, new_share)
+          Rails.logger.info "Updated share for #{membership.user.full_name}: #{previous_share.round(4)}% → #{new_share.round(4)}% (without history)"
+        else
+          Rails.logger.debug "No share change for #{membership.user.full_name}: #{previous_share.round(4)}%"
+        end
       end
+      
+      # FIXED: Force verification
+      verify_share_totals_immediately
     end
-    
-    verify_share_totals
   rescue => e
     Rails.logger.error "Error updating member shares without history for club #{id}: #{e.message}"
     # Don't raise - this is a fallback method
+  end
+
+  def verify_share_totals_immediately
+    current_total = investment_club_memberships.active.sum(:contributed_share)
+    expected_total = 100.0
+    
+    if (current_total - expected_total).abs > 0.01
+      Rails.logger.warn "Share total verification failed: #{current_total}% (expected 100%) - forcing correction"
+      force_correct_share_totals
+      return false
+    else
+      Rails.logger.info "Share total verification passed: #{current_total}%"
+      return true
+    end
+  end
+
+    # FIXED: Improved share correction logic
+  def force_correct_share_totals
+    memberships = investment_club_memberships.active.order(contributed_share: :desc).to_a
+    return if memberships.empty?
+    
+    current_total = memberships.sum(&:contributed_share)
+    difference = (100.0 - current_total).round(4)
+    
+    return if difference.zero?
+    
+    # Distribute the difference proportionally to avoid large jumps
+    if difference.abs > 0.1
+      Rails.logger.warn "Large share discrepancy detected: #{difference}% - redistributing proportionally"
+      redistribute_shares_proportionally(memberships, difference)
+    else
+      # Small difference, adjust the largest member
+      largest_member = memberships.first
+      new_share = (largest_member.contributed_share + difference).round(4)
+      largest_member.update_column(:contributed_share, new_share)
+      Rails.logger.info "Force-corrected shares: Adjusted #{largest_member.user.full_name} by #{difference}%"
+    end
+  end
+
+    # NEW: Proportional redistribution method
+  def redistribute_shares_proportionally(memberships, difference)
+    total_contributions = memberships.sum(&:total_contributed)
+    return if total_contributions.zero?
+    
+    memberships.each do |membership|
+      share_of_difference = (membership.total_contributed / total_contributions) * difference
+      new_share = (membership.contributed_share + share_of_difference).round(4)
+      membership.update_column(:contributed_share, new_share)
+    end
+    
+    Rails.logger.info "Proportionally redistributed #{difference}% across all members"
   end
   
   def roi_metrics
@@ -307,34 +364,6 @@ class InvestmentClub < ApplicationRecord
     errors
   end
 
-  def verify_share_totals
-    current_total = investment_club_memberships.active.sum(:contributed_share)
-    expected_total = 100.0
-    
-    if (current_total - expected_total).abs > 0.01
-      Rails.logger.warn "Share total verification failed: #{current_total}% (expected 100%)"
-      force_correct_share_totals
-      return false
-    else
-      Rails.logger.info "Share total verification passed: #{current_total}%"
-      return true
-    end
-  end
-
-  def force_correct_share_totals
-    memberships = investment_club_memberships.active.order(contributed_share: :desc)
-    current_total = memberships.sum(:contributed_share)
-    difference = (100.0 - current_total).round(4)
-    
-    return if difference.zero?
-    
-    largest_member = memberships.first
-    new_share = (largest_member.contributed_share + difference).round(4)
-    largest_member.update_column(:contributed_share, new_share)
-    
-    Rails.logger.info "Force-corrected shares: Adjusted #{largest_member.user.full_name} by #{difference}%"
-  end
-
   def simulate_share_change(member:, new_contribution:)
     current_shares = investment_club_memberships.active.each_with_object({}) do |m, hash|
       hash[m.id] = {
@@ -403,11 +432,12 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
+  # FIXED: Enhanced member share update with better logging
   def update_member_share_with_history(membership, total_contributions, contribution)
     previous_share = membership.contributed_share.to_f
     new_share = calculate_member_share(membership.total_contributed.to_f, total_contributions)
     
-    Rails.logger.info "Member #{membership.user.full_name}: Contributed: #{membership.total_contributed}, Share: #{previous_share}% → #{new_share}%"
+    Rails.logger.info "Member #{membership.user.full_name}: Contributed: #{membership.total_contributed}, Total Club: #{total_contributions}, Share: #{previous_share}% → #{new_share}%"
 
     if (previous_share - new_share).abs > 0.0001
       create_share_change_history(membership, previous_share, new_share, contribution)
@@ -419,15 +449,24 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
+  # FIXED: More precise share calculation
   def calculate_member_share(member_contribution, total_contributions)
     return 0.0 if total_contributions.zero?
     
     share = (member_contribution / total_contributions) * 100.0
-    share.round(4)
+    # Ensure share is between 0 and 100
+    share = [0.0, share, 100.0].sort[1] # Clamp between 0 and 100
+    share.round(6) # More precision for calculation
   end
 
+  # FIXED: Enhanced share change history creation
   def create_share_change_history(membership, previous_share, new_share, contribution)
     change_amount = (new_share - previous_share).round(4)
+    
+    # Validate the change isn't too extreme (except for initial contributions)
+    if previous_share > 0 && change_amount.abs > 50
+      Rails.logger.warn "Extreme share change detected: #{change_amount}% for #{membership.user.full_name}"
+    end
     
     MemberShareChange.create!(
       investment_club_membership: membership,
@@ -442,6 +481,6 @@ class InvestmentClub < ApplicationRecord
     Rails.logger.info "Created share change record: #{membership.user.full_name} Δ#{change_amount}%"
   rescue => e
     Rails.logger.error "Failed to create share change history for membership #{membership.id}: #{e.message}"
-    raise
+    # Don't raise - share update should continue even if history fails
   end
 end

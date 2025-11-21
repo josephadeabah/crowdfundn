@@ -24,15 +24,50 @@ class InvestmentClubMembership < ApplicationRecord
   scope :admin, -> { where(role: ['admin', 'creator']) }
   scope :pending, -> { where(status: 'pending') }
   
-  # FIXED: Better share percentage calculation with error handling
+  # FIXED: Enhanced share percentage calculation with validation
   def update_share_percentage
-    return if investment_club.total_contributions.zero?
+    club_total = investment_club.total_contributions.to_f
     
-    new_share = (total_contributed / investment_club.total_contributions) * 100
-    update_column(:contributed_share, new_share.round(4))
+    if club_total.zero?
+      Rails.logger.info "Club #{investment_club_id} has zero total contributions, setting share to 0"
+      update_column(:contributed_share, 0.0)
+      return
+    end
+    
+    calculated_share = (total_contributed.to_f / club_total) * 100.0
+    new_share = calculated_share.round(4)
+    
+    # Validate the share is reasonable
+    if new_share > 100.0
+      Rails.logger.warn "Calculated share #{new_share}% exceeds 100% for member #{user_id} in club #{investment_club_id}"
+      new_share = 100.0
+    elsif new_share < 0.0
+      Rails.logger.warn "Calculated share #{new_share}% is negative for member #{user_id} in club #{investment_club_id}"
+      new_share = 0.0
+    end
+    
+    if contributed_share.to_f != new_share
+      update_column(:contributed_share, new_share)
+      Rails.logger.info "Updated share for member #{user.full_name}: #{new_share}% (contributed: #{total_contributed}, club total: #{club_total})"
+    else
+      Rails.logger.debug "No share update needed for member #{user.full_name}: #{new_share}%"
+    end
   rescue => e
     Rails.logger.error "Error updating share percentage for membership #{id}: #{e.message}"
-    # Don't raise error - this shouldn't break the main flow
+    # Set to 0 as fallback
+    update_column(:contributed_share, 0.0) if persisted?
+  end
+
+  # FIXED: Add method to refresh share based on current club state
+  def refresh_share!
+    club_total = investment_club.total_contributions.to_f
+    return if club_total.zero?
+    
+    new_share = (total_contributed.to_f / club_total * 100.0).round(4)
+    if (contributed_share.to_f - new_share).abs > 0.0001
+      update_column(:contributed_share, new_share)
+      Rails.logger.info "Refreshed share for #{user.full_name}: #{new_share}%"
+    end
   end
 
   def update_club_members_count_callback
