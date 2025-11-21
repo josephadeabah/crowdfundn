@@ -210,13 +210,13 @@ const Hero = () => {
               {/* Main Heading */}
               <div className="space-y-4">
                 <h1 className="text-3xl lg:text-4xl font-bold text-gray-700 leading-tight">
-                  The Silicon Valley Experience — 
+                  The Silicon Valley Experience —
                   <span className="block text-orange-500">
                     Engineered for Global Industrial Finance
                   </span>
                 </h1>
                 <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
-                  The innovation methodology that built Silicon Valley, now building the future of global industry.
+                  The Silicon Valley innovation methodology re-engineered to build the future of industrial finance worldwide.
                 </p>
               </div>
 
