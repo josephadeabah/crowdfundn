@@ -215,8 +215,9 @@ const Hero = () => {
                     Engineered for Global Industrial Finance
                   </span>
                 </h1>
-                <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
-                  The Silicon Valley innovation methodology re-engineered to build the future of industrial finance worldwide.
+                <p className="text-base text-gray-800 leading-relaxed max-w-xl">
+                  The Silicon Valley innovation methodology re-engineered to
+                  build the future of industrial finance worldwide.
                 </p>
               </div>
 
