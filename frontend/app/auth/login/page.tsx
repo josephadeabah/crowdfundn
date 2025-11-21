@@ -88,8 +88,7 @@ const LoginPage = () => {
             <div className="animate-fade-up">
               <h1 className="text-4xl font-bold mb-6">Welcome to BantuHive</h1>
               <p className="text-xl mb-8 text-trust-foreground/90">
-                The all-in-one, gamified crowdfunding and micro-investment
-                platform for Africa.
+                The Silicon Valley Experience Tailored To Global Industrial Financial Needs
               </p>
               <div className="space-y-4">
                 <div
