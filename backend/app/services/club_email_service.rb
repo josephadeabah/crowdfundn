@@ -280,6 +280,103 @@ class ClubEmailService
     TEXT
   end
 
+    # NEW: Add investment cancellation notification method
+  def self.send_investment_cancellation_notification(admin:, club_investment:, reason:)
+    return unless admin && club_investment
+
+    club = club_investment.investment_club
+    campaign = club_investment.campaign
+    subject = "Investment Cancelled: #{campaign.title}"
+    
+    html_content = build_investment_cancellation_html(admin, club_investment, club, campaign, reason)
+    text_content = build_investment_cancellation_text(admin, club_investment, club, campaign, reason)
+
+    send_email(admin.email, admin.full_name, subject, html_content, text_content)
+  end
+
+  # NEW: HTML content builder for investment cancellation
+  def self.build_investment_cancellation_html(admin, club_investment, club, campaign, reason)
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width">
+          <title>Investment Cancelled</title>
+          <style>
+            #{email_styles}
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Investment Cancelled</h1>
+            </div>
+
+            <div class="content">
+              <p class="greeting">Hello #{admin.full_name},</p>
+              
+              <p>An investment by <strong>#{club.name}</strong> has been cancelled.</p>
+              
+              <div class="investment-details">
+                <div class="detail-row">
+                  <span class="detail-label">Campaign:</span>
+                  <span class="detail-value">#{campaign.title}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Company:</span>
+                  <span class="detail-value">#{campaign.company_name}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Investment Amount:</span>
+                  <span class="detail-value">#{campaign.currency_symbol}#{club_investment.investment_amount}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Cancellation Reason:</span>
+                  <span class="detail-value">#{reason}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Cancelled At:</span>
+                  <span class="detail-value">#{Time.current.strftime('%B %d, %Y at %H:%M')}</span>
+                </div>
+              </div>
+
+              <div class="action-section">
+                <p>The investment amount has been refunded to the club's balance.</p>
+              </div>
+
+              <p>Best regards,<br>
+              <strong>The Bantuhive Team</strong></p>
+            </div>
+
+            #{email_footer}
+          </div>
+        </body>
+      </html>
+    HTML
+  end
+
+  # NEW: Text content builder for investment cancellation
+  def self.build_investment_cancellation_text(admin, club_investment, club, campaign, reason)
+    <<~TEXT
+      Hello #{admin.full_name},
+
+      An investment by #{club.name} has been cancelled.
+
+      Investment Details:
+      - Campaign: #{campaign.title}
+      - Company: #{campaign.company_name}
+      - Investment Amount: #{campaign.currency_symbol}#{club_investment.investment_amount}
+      - Cancellation Reason: #{reason}
+      - Cancelled At: #{Time.current.strftime('%B %d, %Y at %H:%M')}
+
+      The investment amount has been refunded to the club's balance.
+
+      Best regards,
+      The Bantuhive Team
+    TEXT
+  end
+
   private
 
   # HTML Content Builders
