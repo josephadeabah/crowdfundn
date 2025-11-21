@@ -51,7 +51,7 @@ const safeNumber = (value: string | number | null | undefined): number => {
   return isNaN(parsed) ? 0 : parsed;
 };
 
-// Enhanced transformation function for investment data
+// Enhanced transformation function for investment data - FIXED to preserve cancellation properties
 const transformInvestmentData = (investment: any): ClubInvestment => {
   // Handle amount conversion - parse "50.0K" to 50000, etc.
   const parseFormattedAmount = (amount: string): number => {
@@ -76,7 +76,8 @@ const transformInvestmentData = (investment: any): ClubInvestment => {
 
   const currentValue = safeNumber(investment.current_value) || investmentAmount;
 
-  return {
+  // Create the transformed investment with ALL properties from the API
+  const transformedInvestment: ClubInvestment = {
     id: investment.id.toString(),
     investment_amount: investmentAmount,
     shares: investment.shares ? safeNumber(investment.shares) : undefined,
@@ -120,7 +121,37 @@ const transformInvestmentData = (investment: any): ClubInvestment => {
         : true,
     certificate_url: investment.certificate_url,
     certificate_number: investment.certificate_number,
+    
+    // PRESERVE ALL API PROPERTIES
+    company: investment.company,
+    description: investment.description,
+    amount: investment.amount,
+    sector: investment.sector,
+    club_investment_id: investment.club_investment_id,
+    campaign_id: investment.campaign_id,
+    campaign_slug: investment.campaign_slug,
+    proposed_amount: investment.proposed_amount,
+
+    // CRITICAL: Preserve cancellation properties
+    can_be_cancelled: investment.can_be_cancelled,
+    cancel_window_expires_at: investment.cancel_window_expires_at,
+    committed_at: investment.committed_at,
+    time_remaining_for_cancellation: investment.time_remaining_for_cancellation,
+    cancellation_reason: investment.cancellation_reason,
+    cancelled_at: investment.cancelled_at,
   };
+
+  // Debug log for cancellable investments
+  if (investment.can_be_cancelled) {
+    console.log('🔄 TRANSFORMED CANCELLABLE INVESTMENT:', {
+      id: transformedInvestment.id,
+      status: transformedInvestment.status,
+      can_be_cancelled: transformedInvestment.can_be_cancelled,
+      time_remaining: transformedInvestment.time_remaining_for_cancellation
+    });
+  }
+
+  return transformedInvestment;
 };
 
 // Helper to transform portfolio investments to match ClubInvestment type
@@ -253,15 +284,17 @@ export const useClubData = () => {
           transformInvestmentData,
         );
 
-        console.log('Transformed investments:', transformedInvestments);
-        if (transformedInvestments.length > 0) {
-          console.log('First investment details:', {
-            id: transformedInvestments[0]?.id,
-            amount: transformedInvestments[0]?.investment_amount,
-            title: transformedInvestments[0]?.campaign?.title,
-            currency: transformedInvestments[0]?.currency_symbol,
-          });
-        }
+        console.log('🔄 TRANSFORMED INVESTMENTS WITH CANCELLATION DATA:');
+        transformedInvestments.forEach(inv => {
+          if (inv.can_be_cancelled) {
+            console.log('✅ CANCELLABLE:', {
+              id: inv.id,
+              status: inv.status,
+              can_be_cancelled: inv.can_be_cancelled,
+              time_remaining: inv.time_remaining_for_cancellation
+            });
+          }
+        });
 
         setInvestments({
           data: transformedInvestments,

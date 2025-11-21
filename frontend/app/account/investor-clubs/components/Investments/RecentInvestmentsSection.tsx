@@ -155,6 +155,21 @@ export const RecentInvestmentsSection: React.FC<
   const [selectedInvestment, setSelectedInvestment] =
     useState<ClubInvestment | null>(null);
 
+  // Debug: Log all investments to see what data we have
+  React.useEffect(() => {
+    console.log('🔍 ALL INVESTMENTS DATA:', investments);
+    investments?.forEach(inv => {
+      if (inv.can_be_cancelled) {
+        console.log('✅ FOUND CANCELLABLE INVESTMENT:', {
+          id: inv.id,
+          status: inv.status,
+          can_be_cancelled: inv.can_be_cancelled,
+          time_remaining: inv.time_remaining_for_cancellation
+        });
+      }
+    });
+  }, [investments]);
+
   const getStatusBadge = (investment: ClubInvestment) => {
     switch (investment.status) {
       case 'pending':
@@ -196,12 +211,21 @@ export const RecentInvestmentsSection: React.FC<
     }
   };
 
-  {
-    /* Enhanced cancellation check - use the API-provided flag */
-  }
+  // Enhanced cancellation check - use the API-provided flag
   const canBeCancelled = (investment: ClubInvestment): boolean => {
-    // Use the API-provided flag directly
-    return investment.can_be_cancelled === true;
+    const isCancellable = investment.can_be_cancelled === true;
+    
+    // Debug log
+    if (isCancellable) {
+      console.log('🎯 INVESTMENT IS CANCELLABLE:', {
+        id: investment.id,
+        status: investment.status,
+        can_be_cancelled: investment.can_be_cancelled,
+        time_remaining: investment.time_remaining_for_cancellation
+      });
+    }
+    
+    return isCancellable;
   };
 
   const handleInvestmentClick = (investment: ClubInvestment) => {
@@ -277,16 +301,11 @@ export const RecentInvestmentsSection: React.FC<
     canBeCancelled(investment),
   );
 
-  // Debug function to log investment details
-  const debugInvestment = (investment: ClubInvestment) => {
-    console.log('Investment Debug:', {
-      id: investment.id,
-      status: investment.status,
-      can_be_cancelled: investment.can_be_cancelled,
-      cancel_window_expires_at: investment.cancel_window_expires_at,
-      time_remaining: investment.time_remaining_for_cancellation,
-    });
-  };
+  console.log('📊 CANCELLATION SUMMARY:', {
+    totalInvestments: investments?.length,
+    hasCancellableInvestments,
+    cancellableIds: investments?.filter(inv => canBeCancelled(inv)).map(inv => inv.id)
+  });
 
   return (
     <motion.div
@@ -317,11 +336,11 @@ export const RecentInvestmentsSection: React.FC<
             <Clock className="w-4 h-4 text-orange-600" />
             <div>
               <p className="text-sm font-medium text-orange-800">
-                48-Hour Cancellation Window
+                48-Hour Cancellation Window Active
               </p>
               <p className="text-xs text-orange-700">
-                You can cancel committed investments within 48 hours of
-                commitment.
+                You can cancel committed investments within 48 hours of commitment.
+                Look for the red "Cancel" button below.
               </p>
             </div>
           </div>
@@ -333,11 +352,6 @@ export const RecentInvestmentsSection: React.FC<
           const isCancellable = canBeCancelled(investment);
           const isCancelling = cancellingInvestment === investment.id;
 
-          // Debug each investment
-          if (isCancellable) {
-            debugInvestment(investment);
-          }
-
           return (
             <div
               key={investment?.id}
@@ -348,9 +362,7 @@ export const RecentInvestmentsSection: React.FC<
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start gap-2 mb-2">
                     <h4 className="font-semibold text-sm lg:text-base line-clamp-2 flex-1">
-                      {investment?.campaign?.title ||
-                        investment?.company ||
-                        'Unknown Investment'}
+                      {investment?.campaign?.title || investment?.company || 'Unknown Investment'}
                     </h4>
                     <span className="px-2 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
                       {investment?.is_equity_investment ? 'Equity' : 'Other'}
@@ -360,26 +372,21 @@ export const RecentInvestmentsSection: React.FC<
                   <div className="flex items-center gap-2 mb-2">
                     <p className="text-xs lg:text-sm text-gray-600 font-medium">
                       {formatCurrency(
-                        investment?.investment_amount ||
-                          investment?.proposed_amount,
+                        investment?.investment_amount || investment?.proposed_amount,
                         investment?.currency,
-                        investment?.currency_symbol || '$',
+                        investment?.currency_symbol || '$'
                       )}
                     </p>
                     {getStatusBadge(investment)}
                   </div>
 
                   {/* Cancellation Info */}
-                  {isCancellable &&
-                    investment.time_remaining_for_cancellation && (
-                      <div className="flex items-center gap-1 mb-2 text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
-                        <Clock className="w-3 h-3" />
-                        <span>
-                          Cancel within:{' '}
-                          {investment.time_remaining_for_cancellation}
-                        </span>
-                      </div>
-                    )}
+                  {isCancellable && investment.time_remaining_for_cancellation && (
+                    <div className="flex items-center gap-1 mb-2 text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                      <Clock className="w-3 h-3" />
+                      <span>Cancel within: {investment.time_remaining_for_cancellation}</span>
+                    </div>
+                  )}
 
                   {/* Investment Details */}
                   <div className="flex flex-wrap gap-3 text-xs text-gray-500">
@@ -387,10 +394,7 @@ export const RecentInvestmentsSection: React.FC<
                       <div className="flex items-center gap-1">
                         <TrendingUp size={12} />
                         <span>
-                          {parseFloat(
-                            investment.shares.toString(),
-                          ).toLocaleString()}{' '}
-                          shares
+                          {parseFloat(investment.shares.toString()).toLocaleString()} shares
                           {investment?.percentage &&
                             ` (${parseFloat(investment.percentage.toString())}%)`}
                         </span>
@@ -403,8 +407,7 @@ export const RecentInvestmentsSection: React.FC<
                           <span
                             className={`font-medium ${
                               investment?.total_returns !== undefined &&
-                              parseFloat(investment.total_returns.toString()) >=
-                                0
+                              parseFloat(investment.total_returns.toString()) >= 0
                                 ? 'text-green-600'
                                 : 'text-red-600'
                             }`}
@@ -413,7 +416,7 @@ export const RecentInvestmentsSection: React.FC<
                             {formatCurrency(
                               investment?.current_value,
                               investment?.currency,
-                              investment?.currency_symbol || '$',
+                              investment?.currency_symbol || '$'
                             )}
                           </span>
                         </div>
@@ -429,10 +432,7 @@ export const RecentInvestmentsSection: React.FC<
                                 : 'text-red-600'
                             }`}
                           >
-                            ROI:{' '}
-                            {parseFloat(investment.roi.toString()) >= 0
-                              ? '+'
-                              : ''}
+                            ROI: {parseFloat(investment.roi.toString()) >= 0 ? '+' : ''}
                             {parseFloat(investment.roi.toString())}%
                           </span>
                         </div>
@@ -474,6 +474,20 @@ export const RecentInvestmentsSection: React.FC<
                     {/* Certificate Buttons */}
                     {investment.status === 'successful' &&
                       investment?.certificate_url && (
+                        <button
+                          onClick={(e) =>
+                            handleDownloadCertificate(e, investment)
+                          }
+                          className="px-2 py-1 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors flex items-center gap-1"
+                          title="Download Certificate"
+                        >
+                          <FileText size={12} />
+                          Certificate
+                        </button>
+                      )}
+
+                    {investment.status === 'successful' &&
+                      !investment.certificate_url && (
                         <button
                           onClick={(e) =>
                             handleDownloadCertificate(e, investment)
