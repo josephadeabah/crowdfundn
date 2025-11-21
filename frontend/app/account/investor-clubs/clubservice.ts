@@ -22,6 +22,8 @@ import {
   ClubInvestmentExecutionResult,
   ClubInvestmentPortfolio,
   ApprovedCampaign,
+  CancelInvestmentRequest,
+  CancelInvestmentResponse,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -386,7 +388,7 @@ export const contributionService = {
   },
 };
 
-// FIXED: Club Investments API calls - Use correct endpoint (investments)
+// UPDATED: Club Investments API calls - Remove execute endpoint, add cancel endpoint
 export const investmentService = {
   // Get club investments with pagination
   getInvestments: async (
@@ -433,17 +435,19 @@ export const investmentService = {
     });
   },
 
-  // Execute equity investment - CORRECT ENDPOINT
-  executeInvestment: async (
+  // NEW: Cancel investment endpoint
+  cancelInvestment: async (
     token: string,
     clubId: string,
     investmentId: string,
-  ): Promise<ClubInvestmentExecutionResult> => {
+    cancelData: CancelInvestmentRequest,
+  ): Promise<CancelInvestmentResponse> => {
     return apiCall(
-      `/investment_clubs/${clubId}/investments/${investmentId}/execute`,
+      `/investment_clubs/${clubId}/investments/${investmentId}/cancel`,
       token,
       {
         method: 'POST',
+        body: JSON.stringify(cancelData),
       },
     );
   },

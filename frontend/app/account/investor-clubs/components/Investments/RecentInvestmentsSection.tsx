@@ -1,4 +1,3 @@
-// app/account/investor-clubs/components/Investments/RecentInvestmentsSection.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ClubInvestment } from '../../clubTypes';
@@ -11,7 +10,6 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
-import { EquityInvestment } from '@/app/types/equityCampaigns.types';
 
 interface RecentInvestmentsSectionProps {
   investments: ClubInvestment[];
@@ -33,21 +31,6 @@ interface RecentInvestmentsSectionProps {
   onPerPageChange?: (perPage: number) => void;
   showPagination?: boolean;
 }
-
-const getTimeRemaining = (investment: ClubInvestment): string => {
-  if (!investment.cancel_window_expires_at) return 'No cancellation window';
-
-  const expiresAt = new Date(investment.cancel_window_expires_at);
-  const now = new Date();
-  const diffMs = expiresAt.getTime() - now.getTime();
-
-  if (diffMs <= 0) return 'Expired';
-
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-
-  return `${diffHours}h ${diffMinutes}m`;
-};
 
 // Cancellation Confirmation Modal Component
 const CancellationModal: React.FC<{
@@ -119,7 +102,7 @@ const CancellationModal: React.FC<{
             <div className="flex items-center gap-2 text-yellow-800">
               <Clock className="w-4 h-4" />
               <span className="text-sm font-medium">
-                Time remaining: {getTimeRemaining(investment)}
+                Time remaining: {investment.time_remaining_for_cancellation}
               </span>
             </div>
           </div>
@@ -214,41 +197,7 @@ export const RecentInvestmentsSection: React.FC<
 
   // Enhanced cancellation check
   const canBeCancelled = (investment: ClubInvestment): boolean => {
-    // Only committed investments can be cancelled
-    if (investment.status !== 'committed') return false;
-
-    // Check if explicit flag exists
-    if (investment.can_be_cancelled !== undefined) {
-      return investment.can_be_cancelled;
-    }
-
-    // Check if cancel window exists and is in future
-    if (investment.cancel_window_expires_at) {
-      return new Date(investment.cancel_window_expires_at) > new Date();
-    }
-
-    // Default: allow cancellation for committed investments
-    return true;
-  };
-
-  // Get time remaining for cancellation
-  const getTimeRemaining = (investment: ClubInvestment): string => {
-    if (!investment.cancel_window_expires_at) return '48 hours';
-
-    const expiresAt = new Date(investment.cancel_window_expires_at);
-    const now = new Date();
-    const diffMs = expiresAt.getTime() - now.getTime();
-
-    if (diffMs <= 0) return 'Expired';
-
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (diffHours > 0) {
-      return `${diffHours}h ${diffMinutes}m`;
-    } else {
-      return `${diffMinutes}m`;
-    }
+    return investment.can_be_cancelled || false;
   };
 
   const handleInvestmentClick = (investment: ClubInvestment) => {
@@ -367,7 +316,6 @@ export const RecentInvestmentsSection: React.FC<
       <div className="bg-white rounded-sm divide-y">
         {investments?.map((investment) => {
           const isCancellable = canBeCancelled(investment);
-          const timeRemaining = getTimeRemaining(investment);
           const isCancelling = cancellingInvestment === investment.id;
 
           return (
@@ -402,7 +350,9 @@ export const RecentInvestmentsSection: React.FC<
                   {isCancellable && (
                     <div className="flex items-center gap-1 mb-2 text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
                       <Clock className="w-3 h-3" />
-                      <span>Cancel within: {timeRemaining}</span>
+                      <span>
+                        Cancel within: {investment.time_remaining_for_cancellation}
+                      </span>
                     </div>
                   )}
 

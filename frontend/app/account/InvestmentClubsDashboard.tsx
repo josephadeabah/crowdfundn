@@ -296,38 +296,43 @@ const InvestmentClubsDashboard: React.FC = () => {
     setIsInvestmentDetailsModalOpen(true);
   };
 
-  // Handle executing pending investments
-  const handleExecuteInvestment = async (investmentId: string) => {
+  // NEW: Handle cancelling investments
+  const handleCancelInvestment = async (investmentId: string, reason?: string) => {
     if (!selectedClub || !token) return;
 
     try {
-      const result = await investmentService.executeInvestment(
+      const result = await investmentService.cancelInvestment(
         token,
         selectedClub.slug,
         investmentId,
+        { reason }
       );
 
-      if (result.success && result.authorization_url) {
-        // Redirect to payment page
-        window.location.href = result.authorization_url;
-      } else if (result.success) {
-        setInvestmentMessage('Investment executed successfully!');
+      if (result.success) {
+        setInvestmentMessage('Investment cancelled successfully! Amount refunded to club balance.');
         setInvestmentSuccess(true);
         setInvestmentAlert(true);
+        
+        // Refresh investments and portfolio
         await loadInvestments(selectedClub.slug);
         await loadPortfolio(selectedClub.slug);
-        setIsInvestmentDetailsModalOpen(false);
+        await loadClubDetails(selectedClub); // Refresh club balance
       } else {
-        setInvestmentMessage(result.error || 'Failed to execute investment');
+        setInvestmentMessage(result.error || 'Failed to cancel investment');
         setInvestmentSuccess(false);
         setInvestmentAlert(true);
       }
     } catch (error: any) {
-      setInvestmentMessage(error.message || 'Failed to execute investment');
+      setInvestmentMessage(error.message || 'Failed to cancel investment');
       setInvestmentSuccess(false);
       setInvestmentAlert(true);
     }
   };
+
+  // UPDATED: Remove execute investment handler since it's no longer needed
+  // const handleExecuteInvestment = async (investmentId: string) => {
+  //   // This function is removed as we no longer have separate execution
+  // }
 
   const handleDownloadCertificate = async (investment: ClubInvestment) => {
     if (!selectedClub || !token) return;
@@ -468,7 +473,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                 investments={investments}
                 formatCurrency={formatCurrency}
                 onViewInvestment={handleViewInvestment}
-                onExecuteInvestment={handleExecuteInvestment}
+                onCancelInvestment={handleCancelInvestment} // NEW: Add cancellation handler
                 onDownloadCertificate={handleDownloadCertificate}
                 currentPage={investmentsPagination?.current_page || 1}
                 totalPages={investmentsPagination?.total_pages || 1}
@@ -565,7 +570,7 @@ const InvestmentClubsDashboard: React.FC = () => {
             investment={selectedInvestment}
             formatCurrency={formatCurrency}
             formatDate={formatDate}
-            onExecuteInvestment={handleExecuteInvestment}
+            onCancelInvestment={handleCancelInvestment} // NEW: Add cancellation to details modal
             onDownloadCertificate={handleDownloadCertificate}
           />
         </>

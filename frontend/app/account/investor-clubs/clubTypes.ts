@@ -153,6 +153,19 @@ export interface ClubInvestment {
   cancellation_reason?: string | null;
   cancelled_at?: string | null;
   committed_at?: string | null;
+  time_remaining_for_cancellation?: string;
+}
+
+// NEW: Cancellation request and response types
+export interface CancelInvestmentRequest {
+  reason?: string;
+}
+
+export interface CancelInvestmentResponse {
+  success: boolean;
+  message?: string;
+  investment?: ClubInvestment;
+  error?: string;
 }
 
 export interface ClubInvestmentCreateRequest {
