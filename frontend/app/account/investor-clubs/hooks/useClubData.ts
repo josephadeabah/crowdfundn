@@ -121,7 +121,7 @@ const transformInvestmentData = (investment: any): ClubInvestment => {
         : true,
     certificate_url: investment.certificate_url,
     certificate_number: investment.certificate_number,
-    
+
     // PRESERVE ALL API PROPERTIES
     company: investment.company,
     description: investment.description,
@@ -147,7 +147,7 @@ const transformInvestmentData = (investment: any): ClubInvestment => {
       id: transformedInvestment.id,
       status: transformedInvestment.status,
       can_be_cancelled: transformedInvestment.can_be_cancelled,
-      time_remaining: transformedInvestment.time_remaining_for_cancellation
+      time_remaining: transformedInvestment.time_remaining_for_cancellation,
     });
   }
 
@@ -285,13 +285,13 @@ export const useClubData = () => {
         );
 
         console.log('🔄 TRANSFORMED INVESTMENTS WITH CANCELLATION DATA:');
-        transformedInvestments.forEach(inv => {
+        transformedInvestments.forEach((inv) => {
           if (inv.can_be_cancelled) {
             console.log('✅ CANCELLABLE:', {
               id: inv.id,
               status: inv.status,
               can_be_cancelled: inv.can_be_cancelled,
-              time_remaining: inv.time_remaining_for_cancellation
+              time_remaining: inv.time_remaining_for_cancellation,
             });
           }
         });
