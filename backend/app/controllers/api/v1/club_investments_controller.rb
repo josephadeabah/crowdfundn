@@ -417,15 +417,6 @@ module Api
             reason: reason
           )
         end
-
-        # Notify campaign fundraiser about cancelled investment
-        if investment.campaign.fundraiser
-          CampaignEmailService.send_investment_cancellation_notification(
-            fundraiser: investment.campaign.fundraiser,
-            investment: investment,
-            reason: reason
-          )
-        end
       end
 
       # In your ClubInvestmentsController
