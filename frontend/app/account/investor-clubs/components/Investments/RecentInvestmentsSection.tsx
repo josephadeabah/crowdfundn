@@ -5,7 +5,6 @@ import { ClubInvestment } from '../../clubTypes';
 import {
   FileText,
   TrendingUp,
-  Play,
   Clock,
   X,
   AlertTriangle,
@@ -20,7 +19,6 @@ interface RecentInvestmentsSectionProps {
     currencySymbol?: string,
   ) => string;
   onViewInvestment?: (investment: ClubInvestment) => void;
-  onExecuteInvestment?: (investmentId: string) => void;
   onDownloadCertificate?: (investment: ClubInvestment) => void;
   onCancelInvestment?: (investmentId: string, reason?: string) => void;
   // Pagination props
@@ -136,7 +134,6 @@ export const RecentInvestmentsSection: React.FC<
   investments,
   formatCurrency,
   onViewInvestment,
-  onExecuteInvestment,
   onDownloadCertificate,
   onCancelInvestment,
   // Pagination props
@@ -231,13 +228,6 @@ export const RecentInvestmentsSection: React.FC<
   const handleInvestmentClick = (investment: ClubInvestment) => {
     if (onViewInvestment) {
       onViewInvestment(investment);
-    }
-  };
-
-  const handleExecute = (e: React.MouseEvent, investmentId: string) => {
-    e.stopPropagation();
-    if (onExecuteInvestment) {
-      onExecuteInvestment(investmentId);
     }
   };
 
@@ -447,17 +437,6 @@ export const RecentInvestmentsSection: React.FC<
 
                   {/* Action Buttons */}
                   <div className="flex gap-1">
-                    {/* Execute Investment Button - Only for pending investments */}
-                    {investment.status === 'pending' && (
-                      <button
-                        onClick={(e) => handleExecute(e, investment.id)}
-                        className="px-2 py-1 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors flex items-center gap-1"
-                      >
-                        <Play size={12} />
-                        Invest
-                      </button>
-                    )}
-
                     {/* Cancel Button - Only for cancellable investments */}
                     {isCancellable && (
                       <button
