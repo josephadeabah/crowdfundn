@@ -42,7 +42,12 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
 
   // FIXED: Enhanced safe number formatting with validation
   const safeToFixed = (value: any, decimals: number = 4): string => {
-    if (value === null || value === undefined || value === '' || isNaN(Number(value))) {
+    if (
+      value === null ||
+      value === undefined ||
+      value === '' ||
+      isNaN(Number(value))
+    ) {
       return '0.00';
     }
     const numValue = Number(value);
@@ -54,7 +59,12 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
   };
 
   const safeNumber = (value: any): number => {
-    if (value === null || value === undefined || value === '' || isNaN(Number(value))) {
+    if (
+      value === null ||
+      value === undefined ||
+      value === '' ||
+      isNaN(Number(value))
+    ) {
       return 0;
     }
     const numValue = Number(value);
@@ -228,14 +238,23 @@ export const ShareChangesSection: React.FC<ShareChangesSectionProps> = ({
           <div className="text-sm text-blue-800">
             <p className="font-medium">How shares are calculated:</p>
             <p className="text-xs mt-1">
-              Your share percentage = (Your Total Contributions ÷ Club Total Contributions) × 100
+              Your share percentage = (Your Total Contributions ÷ Club Total
+              Contributions) × 100
               {currentUserShare !== undefined && club?.financials && (
                 <span className="block mt-1">
-                  Your share: {safeToFixed(currentUserShare, 4)}% = 
-                  ({formatCurrency(
-                    club.members?.find((m: any) => Number(m.user.id) === Number(user?.id))?.total_contributed || 0, 
-                    club.currency
-                  )} ÷ {formatCurrency(club.financials.total_contributions, club.currency)}) × 100
+                  Your share: {safeToFixed(currentUserShare, 4)}% = (
+                  {formatCurrency(
+                    club.members?.find(
+                      (m: any) => Number(m.user.id) === Number(user?.id),
+                    )?.total_contributed || 0,
+                    club.currency,
+                  )}{' '}
+                  ÷{' '}
+                  {formatCurrency(
+                    club.financials.total_contributions,
+                    club.currency,
+                  )}
+                  ) × 100
                 </span>
               )}
             </p>

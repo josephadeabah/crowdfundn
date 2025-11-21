@@ -365,16 +365,16 @@ const InvestmentClubsDashboard: React.FC = () => {
   // FIXED: Enhanced current user share calculation
   const getCurrentUserShare = () => {
     if (!selectedClub || !user || !members.length) return undefined;
-    
+
     // Ensure we're comparing numbers by converting to Number
     const currentUserId = Number(user.id);
-    
+
     // Find the current user's membership
     const currentUserMembership = members.find((member) => {
       const memberUserId = Number(member.user.id);
       return memberUserId === currentUserId;
     });
-    
+
     if (currentUserMembership) {
       const share = currentUserMembership.contributed_share;
       // Validate the share value
@@ -384,7 +384,7 @@ const InvestmentClubsDashboard: React.FC = () => {
       }
       return Number(share);
     }
-    
+
     return 0; // Default to 0 if no membership found
   };
 
@@ -397,11 +397,11 @@ const InvestmentClubsDashboard: React.FC = () => {
         club: selectedClub.name,
         totalContributions: selectedClub.financials?.total_contributions,
         currentUserShare,
-        allMembers: members.map(m => ({
+        allMembers: members.map((m) => ({
           name: m.user.full_name,
           contributed: m.total_contributed,
-          share: m.contributed_share
-        }))
+          share: m.contributed_share,
+        })),
       });
     }
   }, [selectedClub, members, currentUserShare]);
