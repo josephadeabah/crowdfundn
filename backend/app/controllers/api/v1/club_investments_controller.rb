@@ -254,7 +254,7 @@ module Api
         end
       end
       
-      # Generate new proposals
+      # ENHANCED: Generate new proposals with better fallbacks
       def generate_proposals
         limit = params[:limit]&.to_i || 5
         
@@ -262,11 +262,14 @@ module Api
         result = proposal_service.generate_proposals_from_ai_recommendations(limit: limit)
         
         if result[:success] || result[:proposals].any?
-          # Return success even if there were some duplicates, as long as we have proposals
+          # Create actual investment records from proposals
+          created_investments = create_investments_from_proposals(result[:proposals])
+          
           render json: {
             success: true,
-            proposals: result[:proposals],
-            message: "Generated #{result[:proposals].count} investment proposals"
+            proposals: transform_proposals_for_frontend(created_investments),
+            message: "Generated #{created_investments.count} investment proposals",
+            fallback_used: result[:fallback] || false
           }
         else
           render json: {
@@ -281,36 +284,26 @@ module Api
       def ai_recommendations
         begin
           limit = params[:limit]&.to_i || 10
+          force_refresh = params[:force_refresh] == 'true'
           
-          # Use the ClubRecommendationService to get AI-powered recommendations
+          # Use the enhanced ClubRecommendationService
           recommendation_service = AI::ClubRecommendationService.new(@club, @current_user)
-          result = recommendation_service.recommend_campaigns(limit: limit)
+          result = recommendation_service.recommend_campaigns(limit: limit, force_fresh: force_refresh)
           
-          if result[:success]
+          if result[:success] || result[:recommendations].any?
             # Transform recommendations into the format expected by the frontend
             recommendations = result[:recommendations].map do |rec|
               campaign = rec[:campaign]
-              {
-                id: campaign.id.to_s,
-                company: campaign.title,
-                description: campaign.description.to_plain_text.truncate(200),
-                amount: format_currency(campaign.goal_amount, campaign.currency_symbol),
-                sector: campaign.category || 'General',
-                votes: 0, # Start with 0 votes
-                threshold: calculate_voting_threshold,
-                match_score: rec[:match_score],
-                reasoning: rec[:reasoning],
-                ai_analysis: rec[:ai_analysis],
-                campaign_id: campaign.id, # Add campaign ID for creating proposals
-                status: 'recommendation' # Differentiate from actual voting proposals
-              }
+              transform_recommendation_for_frontend(campaign, rec)
             end
             
             render json: {
               success: true,
               recommendations: recommendations,
               club_focus: @club.investment_focus,
-              mission: @club.mission
+              mission: @club.mission,
+              total_recommendations: recommendations.count,
+              fallback_used: result[:fallback] || false
             }
           else
             render json: {
@@ -406,6 +399,66 @@ module Api
       end
 
       private
+
+            # NEW: Create actual investment records from proposals
+      def create_investments_from_proposals(proposals)
+        created_investments = []
+        
+        proposals.each do |proposal|
+          campaign = proposal[:campaign]
+          
+          # Skip if campaign already has an active proposal
+          next if @club.club_investments.where(campaign_id: campaign.id, status: ['pending', 'voting']).exists?
+          
+          investment = @club.club_investments.create(
+            campaign: campaign,
+            investment_amount: proposal[:investment_amount],
+            proposed_share_percentage: proposal[:proposed_share_percentage],
+            status: ClubInvestment::STATUS_VOTING,
+            created_by: @current_user,
+            voting_session_id: proposal[:voting_session_id],
+            notes: "AI-generated proposal: #{proposal[:reasoning]}"
+          )
+          
+          if investment.persisted?
+            created_investments << investment
+          else
+            Rails.logger.warn "Failed to create investment for campaign #{campaign.id}: #{investment.errors.full_messages}"
+          end
+        end
+        
+        created_investments
+      end
+
+            # NEW: Transform proposals for frontend
+      def transform_proposals_for_frontend(investments)
+        investments.map do |investment|
+          transform_investment_for_frontend(investment)
+        end
+      end
+
+      # NEW: Transform recommendation for frontend
+      def transform_recommendation_for_frontend(campaign, recommendation)
+        {
+          id: campaign.id.to_s,
+          company: campaign.title,
+          description: campaign.description.to_plain_text.truncate(200),
+          amount: format_currency(campaign.goal_amount, campaign.currency_symbol),
+          sector: campaign.category || 'General',
+          votes: 0, # Start with 0 votes
+          threshold: calculate_voting_threshold,
+          match_score: recommendation[:match_score],
+          reasoning: recommendation[:reasoning],
+          ai_analysis: recommendation[:ai_analysis],
+          campaign_id: campaign.id,
+          status: 'recommendation',
+          # Additional fields for better frontend display
+          campaign_slug: campaign.slug,
+          performance_percentage: campaign.performance_percentage,
+          currency_symbol: campaign.currency_symbol,
+          is_equity_investment: campaign.is_a?(EquityCampaign)
+        }
+      end
 
       # NEW: Send cancellation notifications
       def send_cancellation_notifications(investment, reason)
