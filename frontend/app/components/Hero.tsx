@@ -215,7 +215,7 @@ const Hero = () => {
                     build the future of industrial finance worldwide.
                   </span>
                 </h1>
-                <p className="text-base text-gray-800 leading-relaxed max-w-xl">
+                <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
                   The Ecosystem For Tomorrow's Builders
                 </p>
               </div>
