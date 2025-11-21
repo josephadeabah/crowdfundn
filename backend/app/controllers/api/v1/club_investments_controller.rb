@@ -7,8 +7,8 @@ module Api
       before_action :set_investment, only: [:show, :update, :vote, :certificate_status, :generate_certificate, :download_certificate, :cancel]
 
       # ADD THESE REQUIRE STATEMENTS
-      require Rails.root.join('app/services/ai/club_recommendation_service')
-      require Rails.root.join('app/services/ai/club_investment_proposal_service')
+      # require Rails.root.join('app/services/ai/club_recommendation_service')
+      # require Rails.root.join('app/services/ai/club_investment_proposal_service')
       
       def index
         # Filter by status if provided
@@ -258,7 +258,7 @@ module Api
       def generate_proposals
         limit = params[:limit]&.to_i || 5
         
-        proposal_service = ClubInvestmentProposalService.new(@club, @current_user)
+        proposal_service = AI::ClubInvestmentProposalService.new(@club, @current_user)
         result = proposal_service.generate_proposals_from_ai_recommendations(limit: limit)
         
         if result[:success] || result[:proposals].any?
