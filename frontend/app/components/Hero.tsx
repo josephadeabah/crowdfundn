@@ -209,7 +209,7 @@ const Hero = () => {
 
               {/* Main Heading */}
               <div className="space-y-4">
-                <h1 className="text-3xl lg:text-4xl font-bold text-gray-700 leading-tight">
+                <h1 className="text-2xl font-bold text-gray-700 leading-tight">
                   The Silicon Valley innovation methodology re-engineered to
                   <span className="block text-orange-500">
                     build the future of industrial finance worldwide.
