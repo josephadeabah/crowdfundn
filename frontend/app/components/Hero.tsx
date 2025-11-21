@@ -216,9 +216,7 @@ const Hero = () => {
                   </span>
                 </h1>
                 <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
-                  Connecting visionary entrepreneurs with forward-thinking
-                  investors to drive sustainable economic growth across the
-                  Globe.
+                  The innovation methodology that built Silicon Valley, now building the future of global industry.
                 </p>
               </div>
 
