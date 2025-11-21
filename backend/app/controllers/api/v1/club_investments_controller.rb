@@ -375,7 +375,7 @@ module Api
         end
 
         # Check if cancellation window is still open
-        if @investment.cancel_window_expires_at && @investment.cancel_window_expires_at < Time.current
+        unless @investment.can_be_cancelled?
           return render json: {
             success: false,
             error: 'Cancellation window has expired'

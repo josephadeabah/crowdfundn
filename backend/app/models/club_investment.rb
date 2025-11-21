@@ -8,12 +8,16 @@ class ClubInvestment < ApplicationRecord
   has_many :votes, as: :votable, dependent: :destroy
   has_one_attached :certificate
   
-  # Add these missing attributes
+  # Add these missing attributes - FIXED: use canceled_at (single 'l')
   attribute :proposed_share_percentage, :decimal, precision: 5, scale: 2
   attribute :voting_session_id, :string
   attribute :voting_ends_at, :datetime
   attribute :shares_acquired, :integer, default: 0
   attribute :reference, :string
+  attribute :canceled_at, :datetime
+  attribute :cancellation_reason, :string
+  attribute :cancel_window_expires_at, :datetime
+  attribute :committed_at, :datetime
   
   validates :investment_amount, numericality: { greater_than: 0 }
   validates :proposed_share_percentage, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, allow_nil: true
@@ -28,7 +32,7 @@ class ClubInvestment < ApplicationRecord
     successful: 'successful',
     failed: 'failed',
     committed: 'committed',
-    canceled: 'canceled'
+    canceled: 'canceled'  # Note: American spelling with one 'l'
   }.freeze
 
   # Add these after the STATUS_VALUES definition
@@ -40,7 +44,7 @@ class ClubInvestment < ApplicationRecord
   STATUS_SUCCESSFUL = STATUS_VALUES[:successful]
   STATUS_FAILED = STATUS_VALUES[:failed]
   STATUS_INITIALIZED = STATUS_VALUES[:initialized]
-  STATUS_CANCELED = STATUS_VALUES[:canceled]
+  STATUS_CANCELED = STATUS_VALUES[:canceled]  # American spelling
 
   # Status validation
   validates :status, inclusion: { in: STATUS_VALUES.values }
@@ -77,7 +81,7 @@ class ClubInvestment < ApplicationRecord
   before_create :set_investment_date
   before_create :calculate_shares_and_percentage, if: :is_equity_investment?
   
-  # NEW: Cancellation methods
+  # NEW: Cancellation methods - FIXED VERSION (using canceled_at with one 'l')
   def can_be_cancelled?
     committed? && (cancel_window_expires_at.nil? || cancel_window_expires_at > Time.current)
   end
@@ -98,25 +102,48 @@ class ClubInvestment < ApplicationRecord
     
     ActiveRecord::Base.transaction do
       update!(
-        status: STATUS_CANCELED,
+        status: STATUS_CANCELED,  # American spelling
         cancellation_reason: reason,
-        cancelled_at: Time.current
+        canceled_at: Time.current  # FIXED: Use canceled_at (single 'l')
       )
       
       # Refund the amount to club balance
       investment_club.refund_balance(investment_amount)
       
       # Update related equity investment if exists
-      if equity_investment
-        equity_investment.update!(
-          status: EquityInvestment::STATUS_CANCELED,
-          cancellation_reason: reason,
-          cancelled_at: Time.current
-        )
+      if equity_investment_id
+        begin
+          equity_investment = EquityInvestment.find(equity_investment_id)
+          # Check what column name EquityInvestment uses for cancellation
+          if equity_investment.respond_to?(:canceled_at)
+            equity_investment.update!(
+              status: EquityInvestment::STATUS_CANCELED,
+              cancellation_reason: reason,
+              canceled_at: Time.current  # Use same spelling as column
+            )
+          elsif equity_investment.respond_to?(:cancelled_at)
+            equity_investment.update!(
+              status: EquityInvestment::STATUS_CANCELED,
+              cancellation_reason: reason,
+              cancelled_at: Time.current  # Use alternative spelling if that's what it has
+            )
+          else
+            # If neither column exists, just update status
+            equity_investment.update!(
+              status: EquityInvestment::STATUS_CANCELED,
+              cancellation_reason: reason
+            )
+          end
+        rescue ActiveRecord::RecordNotFound
+          Rails.logger.warn "Equity investment #{equity_investment_id} not found for club investment #{id}"
+        end
       end
     end
     
     true
+  rescue => e
+    Rails.logger.error "Failed to cancel club investment #{id}: #{e.message}"
+    false
   end
   
   # Method to check if investment is approved based on voting
