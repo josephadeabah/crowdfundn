@@ -334,11 +334,6 @@ const InvestmentClubsDashboard: React.FC = () => {
     }
   };
 
-  // UPDATED: Remove execute investment handler since it's no longer needed
-  // const handleExecuteInvestment = async (investmentId: string) => {
-  //   // This function is removed as we no longer have separate execution
-  // }
-
   const handleDownloadCertificate = async (investment: ClubInvestment) => {
     if (!selectedClub || !token) return;
 
