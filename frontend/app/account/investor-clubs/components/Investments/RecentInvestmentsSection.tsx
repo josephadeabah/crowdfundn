@@ -2,7 +2,14 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ClubInvestment } from '../../clubTypes';
-import { FileText, TrendingUp, Play, Clock, X, AlertTriangle } from 'lucide-react';
+import {
+  FileText,
+  TrendingUp,
+  Play,
+  Clock,
+  X,
+  AlertTriangle,
+} from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
 import { EquityInvestment } from '@/app/types/equityCampaigns.types';
 
@@ -27,20 +34,20 @@ interface RecentInvestmentsSectionProps {
   showPagination?: boolean;
 }
 
-  const getTimeRemaining = (investment: ClubInvestment): string => {
-    if (!investment.cancel_window_expires_at) return 'No cancellation window';
+const getTimeRemaining = (investment: ClubInvestment): string => {
+  if (!investment.cancel_window_expires_at) return 'No cancellation window';
 
-    const expiresAt = new Date(investment.cancel_window_expires_at);
-    const now = new Date();
-    const diffMs = expiresAt.getTime() - now.getTime();
+  const expiresAt = new Date(investment.cancel_window_expires_at);
+  const now = new Date();
+  const diffMs = expiresAt.getTime() - now.getTime();
 
-    if (diffMs <= 0) return 'Expired';
+  if (diffMs <= 0) return 'Expired';
 
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
-    return `${diffHours}h ${diffMinutes}m`;
-  };
+  return `${diffHours}h ${diffMinutes}m`;
+};
 
 // Cancellation Confirmation Modal Component
 const CancellationModal: React.FC<{
@@ -77,7 +84,9 @@ const CancellationModal: React.FC<{
             <AlertTriangle className="w-5 h-5 text-red-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Cancel Investment</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Cancel Investment
+            </h3>
             <p className="text-sm text-gray-600">
               {investment?.campaign?.title || 'Unknown Investment'}
             </p>
@@ -85,7 +94,10 @@ const CancellationModal: React.FC<{
         </div>
 
         <div className="mb-4">
-          <label htmlFor="cancellation-reason" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="cancellation-reason"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Reason for cancellation *
           </label>
           <textarea
@@ -134,7 +146,9 @@ const CancellationModal: React.FC<{
   );
 };
 
-export const RecentInvestmentsSection: React.FC<RecentInvestmentsSectionProps> = ({
+export const RecentInvestmentsSection: React.FC<
+  RecentInvestmentsSectionProps
+> = ({
   investments,
   formatCurrency,
   onViewInvestment,
@@ -150,9 +164,12 @@ export const RecentInvestmentsSection: React.FC<RecentInvestmentsSectionProps> =
   onPerPageChange,
   showPagination = true,
 }) => {
-  const [cancellingInvestment, setCancellingInvestment] = useState<string | null>(null);
+  const [cancellingInvestment, setCancellingInvestment] = useState<
+    string | null
+  >(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const [selectedInvestment, setSelectedInvestment] = useState<ClubInvestment | null>(null);
+  const [selectedInvestment, setSelectedInvestment] =
+    useState<ClubInvestment | null>(null);
 
   const getStatusBadge = (investment: ClubInvestment) => {
     switch (investment.status) {
@@ -258,7 +275,10 @@ export const RecentInvestmentsSection: React.FC<RecentInvestmentsSectionProps> =
   };
 
   // Enhanced cancellation handler
-  const handleCancelClick = (e: React.MouseEvent, investment: ClubInvestment) => {
+  const handleCancelClick = (
+    e: React.MouseEvent,
+    investment: ClubInvestment,
+  ) => {
     e.stopPropagation();
     setSelectedInvestment(investment);
     setShowCancelModal(true);
@@ -268,7 +288,7 @@ export const RecentInvestmentsSection: React.FC<RecentInvestmentsSectionProps> =
     if (!selectedInvestment || !onCancelInvestment) return;
 
     setCancellingInvestment(selectedInvestment.id);
-    
+
     try {
       await onCancelInvestment(selectedInvestment.id, reason);
       setShowCancelModal(false);
@@ -300,8 +320,8 @@ export const RecentInvestmentsSection: React.FC<RecentInvestmentsSectionProps> =
   };
 
   // Check if there are any cancellable investments
-  const hasCancellableInvestments = investments?.some(investment => 
-    canBeCancelled(investment)
+  const hasCancellableInvestments = investments?.some((investment) =>
+    canBeCancelled(investment),
   );
 
   return (
@@ -336,7 +356,8 @@ export const RecentInvestmentsSection: React.FC<RecentInvestmentsSectionProps> =
                 48-Hour Cancellation Window
               </p>
               <p className="text-xs text-orange-700">
-                You can cancel committed investments within 48 hours of commitment.
+                You can cancel committed investments within 48 hours of
+                commitment.
               </p>
             </div>
           </div>

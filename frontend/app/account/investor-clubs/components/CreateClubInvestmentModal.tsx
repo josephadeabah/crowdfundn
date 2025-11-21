@@ -368,7 +368,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                         {fees.totalAmount.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                        })}) will be sent to the campaign.
+                        })}
+                        ) will be sent to the campaign.
                       </>
                     ) : (
                       <>
@@ -379,7 +380,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                         {fees.totalAmount.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                        })}) will be sent to the campaign.
+                        })}
+                        ) will be sent to the campaign.
                       </>
                     )}
                   </AlertDescription>
