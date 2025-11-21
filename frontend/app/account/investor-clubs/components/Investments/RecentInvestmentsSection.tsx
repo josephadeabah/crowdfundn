@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ClubInvestment } from '../../clubTypes';
 import { FileText, TrendingUp, Clock, X, AlertTriangle } from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
+import Modal from '@/app/components/modal/Modal';
 
 interface RecentInvestmentsSectionProps {
   investments: ClubInvestment[];
@@ -25,7 +26,7 @@ interface RecentInvestmentsSectionProps {
   showPagination?: boolean;
 }
 
-// Cancellation Confirmation Modal Component
+// Cancellation Confirmation Modal Component (Updated to use custom Modal)
 const CancellationModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
@@ -50,75 +51,76 @@ const CancellationModal: React.FC<{
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[150] p-4">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-            <AlertTriangle className="w-5 h-5 text-red-600" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              Cancel Investment
-            </h3>
-            <p className="text-sm text-gray-600">
-              {investment?.campaign?.title || 'Unknown Investment'}
-            </p>
-          </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="medium"
+      closeOnBackdropClick={true}
+    >
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+          <AlertTriangle className="w-5 h-5 text-red-600" />
         </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="cancellation-reason"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Reason for cancellation *
-          </label>
-          <textarea
-            id="cancellation-reason"
-            value={reason}
-            onChange={(e) => {
-              setReason(e.target.value);
-              setError('');
-            }}
-            placeholder="Please provide a reason for cancelling this investment..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-            rows={4}
-          />
-          {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
-        </div>
-
-        {investment && investment.time_remaining_for_cancellation && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-            <div className="flex items-center gap-2 text-yellow-800">
-              <Clock className="w-4 h-4" />
-              <span className="text-sm font-medium">
-                Time remaining: {investment.time_remaining_for_cancellation}
-              </span>
-            </div>
-          </div>
-        )}
-
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={handleClose}
-            disabled={isLoading}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
-          >
-            Keep Investment
-          </button>
-          <button
-            onClick={handleConfirm}
-            disabled={isLoading || !reason.trim()}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Cancelling...' : 'Cancel Investment'}
-          </button>
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Cancel Investment
+          </h3>
+          <p className="text-sm text-gray-600">
+            {investment?.campaign?.title || 'Unknown Investment'}
+          </p>
         </div>
       </div>
-    </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="cancellation-reason"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Reason for cancellation *
+        </label>
+        <textarea
+          id="cancellation-reason"
+          value={reason}
+          onChange={(e) => {
+            setReason(e.target.value);
+            setError('');
+          }}
+          placeholder="Please provide a reason for cancelling this investment..."
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+          rows={4}
+        />
+        {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+      </div>
+
+      {investment && investment.time_remaining_for_cancellation && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+          <div className="flex items-center gap-2 text-yellow-800">
+            <Clock className="w-4 h-4" />
+            <span className="text-sm font-medium">
+              Time remaining: {investment.time_remaining_for_cancellation}
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={handleClose}
+          disabled={isLoading}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
+        >
+          Keep Investment
+        </button>
+        <button
+          onClick={handleConfirm}
+          disabled={isLoading || !reason.trim()}
+          className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? 'Cancelling...' : 'Cancel Investment'}
+        </button>
+      </div>
+    </Modal>
   );
 };
 
