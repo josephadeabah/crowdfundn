@@ -311,7 +311,9 @@ export const RecentInvestmentsSection: React.FC<
       />
 
       <div className="flex items-center justify-between mb-3 lg:mb-4">
-        <h3 className="text-lg lg:text-xl font-semibold">Recent Investment Events</h3>
+        <h3 className="text-lg lg:text-xl font-semibold">
+          Recent Investment Events
+        </h3>
         <span className="text-xs lg:text-sm text-gray-500">
           {totalCount || investments?.length || 0} total
         </span>
