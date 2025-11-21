@@ -184,7 +184,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     }
   };
 
-  // Fetch investment proposals and approved campaigns
+  // ENHANCED: Fetch investment data with better error handling
   const fetchInvestmentData = async () => {
     try {
       setLoading(true);
@@ -207,27 +207,12 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
         const proposalsData = await proposalsResponse.json();
 
         if (proposalsData.success) {
-          if (proposalsData.investments.length === 0) {
-            // Generate new proposals if none exist
-            const generateResponse = await fetch(
-              `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investment_clubs/${club.slug}/investments/generate_proposals`,
-              {
-                method: 'POST',
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json',
-                },
-              },
-            );
-
-            if (generateResponse.ok) {
-              const generateData = await generateResponse.json();
-              if (generateData.success) {
-                investmentsData = generateData.proposals || [];
-              }
-            }
-          } else {
-            investmentsData = proposalsData.investments || [];
+          investmentsData = proposalsData.investments || [];
+          
+          // ENHANCED: Always generate new proposals if we have less than 3
+          if (investmentsData.length < 3) {
+            await generateProposals();
+            return; // generateProposals will re-fetch data
           }
         }
       }
@@ -301,6 +286,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     }
   };
 
+  // ENHANCED: Generate proposals with better feedback
   const generateProposals = async () => {
     try {
       setLoading(true);
@@ -318,10 +304,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setInvestments(data.proposals || []);
+          // Refresh the data to show new proposals
+          await fetchInvestmentData();
           showToast(
             'Proposals Generated',
-            `Created ${data.proposals.length} new proposals`,
+            `Created ${data.proposals.length} new investment opportunities`,
             'success',
           );
         }
@@ -333,7 +320,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
           setInvestments(errorData.proposals);
           showToast(
             'Proposals Partially Generated',
-            `Some proposals were created, but duplicates were skipped`,
+            `Created ${errorData.proposals.length} new proposals`,
             'warning',
           );
         } else {
@@ -350,7 +337,11 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
       }
     } catch (err) {
       console.error('Error generating proposals:', err);
-      showToast('Error', 'Failed to generate proposals', 'error');
+      showToast(
+        'Error', 
+        'Failed to generate proposals. Please try again.', 
+        'error'
+      );
     } finally {
       setLoading(false);
     }
