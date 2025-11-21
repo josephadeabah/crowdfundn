@@ -280,7 +280,7 @@ module Api
       # Get AI recommendations (existing but updated)
       def ai_recommendations
         begin
-          limit = params[:limit]&.to_i || 100
+          limit = params[:limit]&.to_i || 10
           
           # Use the ClubRecommendationService to get AI-powered recommendations
           recommendation_service = AI::ClubRecommendationService.new(@club, @current_user)
