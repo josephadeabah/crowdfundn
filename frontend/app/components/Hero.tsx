@@ -208,7 +208,7 @@ const Hero = () => {
               </div>
 
               {/* Main Heading */}
-              <div className="space-y-4">
+              <div className="space-y-4 pb-6">
                 <h1 className="text-2xl font-bold text-gray-700 leading-tight">
                   The Silicon Valley innovation methodology re-engineered to
                   <span className="block text-orange-500">
@@ -221,7 +221,7 @@ const Hero = () => {
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-row gap-4">
+              <div className="flex flex-row gap-4 mt-4">
                 <Button
                   variant="outline"
                   size="lg"
