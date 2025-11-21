@@ -18,7 +18,7 @@ class ClubInvestment < ApplicationRecord
   validates :investment_amount, numericality: { greater_than: 0 }
   validates :proposed_share_percentage, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, allow_nil: true
 
-  # FIXED: Manual status implementation to avoid ActiveRecord enum conflicts
+  # UPDATED: Remove executed status and update status flow
   STATUS_VALUES = {
     pending: 'pending',
     voting: 'voting',
@@ -28,8 +28,7 @@ class ClubInvestment < ApplicationRecord
     successful: 'successful',
     failed: 'failed',
     committed: 'committed',
-    canceled: 'canceled',
-    executed: 'executed'
+    canceled: 'canceled'
   }.freeze
 
   # Add these after the STATUS_VALUES definition
@@ -42,7 +41,6 @@ class ClubInvestment < ApplicationRecord
   STATUS_FAILED = STATUS_VALUES[:failed]
   STATUS_INITIALIZED = STATUS_VALUES[:initialized]
   STATUS_CANCELED = STATUS_VALUES[:canceled]
-  STATUS_EXECUTED = STATUS_VALUES[:executed]
 
   # Status validation
   validates :status, inclusion: { in: STATUS_VALUES.values }
@@ -67,9 +65,6 @@ class ClubInvestment < ApplicationRecord
   STATUS_VALUES.each do |method_name, status_value|
     scope method_name, -> { where(status: status_value) }
   end
-
-  # Add the executed scope
-  scope :executed, -> { where(status: 'executed') }
   
   # NEW: Equity investment scopes
   scope :successful, -> { where(status: 'successful') }
@@ -81,6 +76,48 @@ class ClubInvestment < ApplicationRecord
   before_create :generate_certificate_number
   before_create :set_investment_date
   before_create :calculate_shares_and_percentage, if: :is_equity_investment?
+  
+  # NEW: Cancellation methods
+  def can_be_cancelled?
+    committed? && (cancel_window_expires_at.nil? || cancel_window_expires_at > Time.current)
+  end
+
+  def time_remaining_for_cancellation
+    return nil unless cancel_window_expires_at
+    return 'Expired' if cancel_window_expires_at <= Time.current
+    
+    diff_seconds = (cancel_window_expires_at - Time.current).to_i
+    hours = diff_seconds / 3600
+    minutes = (diff_seconds % 3600) / 60
+    
+    "#{hours}h #{minutes}m"
+  end
+
+  def cancel!(reason = nil)
+    return false unless can_be_cancelled?
+    
+    ActiveRecord::Base.transaction do
+      update!(
+        status: STATUS_CANCELED,
+        cancellation_reason: reason,
+        cancelled_at: Time.current
+      )
+      
+      # Refund the amount to club balance
+      investment_club.refund_balance(investment_amount)
+      
+      # Update related equity investment if exists
+      if equity_investment
+        equity_investment.update!(
+          status: EquityInvestment::STATUS_CANCELED,
+          cancellation_reason: reason,
+          cancelled_at: Time.current
+        )
+      end
+    end
+    
+    true
+  end
   
   # Method to check if investment is approved based on voting
   def approved?

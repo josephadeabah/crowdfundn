@@ -1,4 +1,3 @@
-# app/models/investment_club.rb
 class InvestmentClub < ApplicationRecord
   belongs_to :creator, class_name: 'User'
   has_many :investment_club_memberships, dependent: :destroy
@@ -110,7 +109,7 @@ class InvestmentClub < ApplicationRecord
 
   # FIXED: Current balance calculation with proper locking
   def recalc_current_balance!
-    total_invested = club_investments.where(status: 'executed').sum(:investment_amount).to_f
+    total_invested = club_investments.where(status: 'successful').sum(:investment_amount).to_f
     total_withdrawn = club_transfers.where(status: 'success').sum(:amount).to_f
 
     new_balance = total_contributions - total_invested - total_withdrawn
@@ -159,7 +158,7 @@ class InvestmentClub < ApplicationRecord
   end
 
   def calculate_total_invested
-    club_investments.executed.sum(:investment_amount).to_f
+    club_investments.successful.sum(:investment_amount).to_f
   end
 
   def calculate_current_balance

@@ -1,4 +1,3 @@
-# app/services/paystack_webhook/handlers/club_equity_investment_handler.rb
 module PaystackWebhook::Handlers
   class ClubEquityInvestmentHandler
     include PaystackWebhook::JsonHelper
@@ -119,7 +118,7 @@ module PaystackWebhook::Handlers
           # Update the equity investment with proper financial data
           update_equity_investment(equity_investment, response, metadata, gross_amount, net_amount, platform_fee, processing_fee)
           
-          # Set as COMMITTED instead of SUCCESSFUL to allow cancellation (SAME AS REGULAR)
+          # Set as COMMITTED instead of SUCCESSFUL to allow cancellation
           equity_investment.update!(status: EquityInvestment::STATUS_COMMITTED)
           
           # Update the club investment status and link to equity investment
@@ -133,7 +132,7 @@ module PaystackWebhook::Handlers
             transaction_reference: equity_investment.transaction_reference,
             current_value: equity_investment.current_value,
             committed_at: Time.current,
-            cancel_window_expires_at: 48.hours.from_now
+            cancel_window_expires_at: 48.hours.from_now # 48-hour cancellation window
           )
 
           # REMOVED: No campaign updates here - wait until cancellation window expires
@@ -147,12 +146,12 @@ module PaystackWebhook::Handlers
             return result
           end
 
-          # Deduct from club balance only after successful payment (SAME AS REGULAR)
+          # Deduct from club balance only after successful payment
           total_deduction = gross_amount # Total amount including fees
-          if @club.deduct_balance(total_deduction)
-            Rails.logger.info "Successfully deducted #{total_deduction} from club #{@club.id} balance"
+          if club_investment.investment_club.deduct_balance(total_deduction)
+            Rails.logger.info "Successfully deducted #{total_deduction} from club #{club_investment.investment_club.id} balance"
           else
-            Rails.logger.error "Failed to deduct #{total_deduction} from club #{@club.id} balance"
+            Rails.logger.error "Failed to deduct #{total_deduction} from club #{club_investment.investment_club.id} balance"
             # Handle insufficient balance scenario
             handle_insufficient_balance(club_investment, equity_investment, total_deduction)
             return

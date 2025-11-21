@@ -4,7 +4,7 @@ module Api
       before_action :authenticate_request
       before_action :set_club
       before_action :verify_membership
-      before_action :set_investment, only: [:show, :update, :vote, :execute, :certificate_status, :generate_certificate, :download_certificate, :cancel]
+      before_action :set_investment, only: [:show, :update, :vote, :certificate_status, :generate_certificate, :download_certificate, :cancel]
 
       # ADD THESE REQUIRE STATEMENTS
       require Rails.root.join('app/services/ai/club_recommendation_service')
@@ -95,7 +95,7 @@ module Api
           
           if club_investment.save
             # Execute the investment immediately for equity campaigns
-            result = execute_club_investment(club_investment)
+            result = process_club_investment(club_investment)
             
             if result[:success]
               render json: { 
@@ -141,39 +141,6 @@ module Api
               errors: club_investment.errors.full_messages 
             }, status: :unprocessable_entity
           end
-        end
-      end
-      
-      # NEW: Execute equity investment after creation
-      def execute
-        unless @investment.campaign.is_a?(EquityCampaign)
-          return render json: { 
-            success: false, 
-            error: 'This investment type requires voting approval' 
-          }, status: :unprocessable_entity
-        end
-
-        # Check if club has sufficient balance
-        unless @club.can_invest?(@investment.investment_amount)
-          return render json: { 
-            success: false, 
-            error: 'Club does not have sufficient balance for this investment' 
-          }, status: :unprocessable_entity
-        end
-
-        result = execute_club_investment(@investment)
-        
-        if result[:success]
-          render json: { 
-            success: true, 
-            investment: transform_investment_for_frontend(@investment.reload),
-            authorization_url: result[:authorization_url]
-          }
-        else
-          render json: { 
-            success: false, 
-            error: result[:error] 
-          }, status: :unprocessable_entity
         end
       end
 
@@ -400,7 +367,7 @@ module Api
 
       # NEW: Cancel investment endpoint
       def cancel
-        unless @investment.status == 'committed'
+        unless @investment.committed?
           return render json: {
             success: false,
             error: 'Only committed investments can be cancelled'
@@ -415,34 +382,21 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        ActiveRecord::Base.transaction do
-          # Update club investment status
-          @investment.update!(
-            status: ClubInvestment::STATUS_CANCELED,
-            cancellation_reason: params[:reason]
-          )
-
-          # Update the underlying equity investment
-          if @investment.equity_investment
-            @investment.equity_investment.update!(
-              status: EquityInvestment::STATUS_CANCELED,
-              cancellation_reason: params[:reason],
-              cancelled_at: Time.current
-            )
-          end
-
-          # Refund the amount to club balance
-          @club.refund_balance(@investment.investment_amount)
-
+        if @investment.cancel!(params[:reason])
           # Send cancellation notifications
           send_cancellation_notifications(@investment, params[:reason])
+          
+          render json: {
+            success: true,
+            message: 'Investment cancelled successfully',
+            investment: transform_investment_for_frontend(@investment.reload)
+          }
+        else
+          render json: {
+            success: false,
+            error: 'Failed to cancel investment'
+          }, status: :unprocessable_entity
         end
-
-        render json: {
-          success: true,
-          message: 'Investment cancelled successfully',
-          investment: transform_investment_for_frontend(@investment.reload)
-        }
       rescue => e
         Rails.logger.error "Failed to cancel investment: #{e.message}"
         render json: {
@@ -481,7 +435,7 @@ module Api
         # DEBUG: Log the actual status
         Rails.logger.info "TRANSFORMING: Investment #{investment.id} status: #{investment.status}"
         Rails.logger.info "TRANSFORMING: Cancel window: #{investment.cancel_window_expires_at}"
-        Rails.logger.info "TRANSFORMING: Can be cancelled: #{investment.status == 'committed' && (investment.cancel_window_expires_at.nil? || investment.cancel_window_expires_at > Time.current)}"
+        Rails.logger.info "TRANSFORMING: Can be cancelled: #{investment.can_be_cancelled?}"
         
         campaign_data = if campaign
           {
@@ -520,11 +474,10 @@ module Api
           currency_symbol: campaign_data[:currency_symbol],
           is_equity_investment: campaign.is_a?(EquityCampaign),
           # THESE ARE THE CRITICAL FIELDS FOR CANCELLATION:
-          can_be_cancelled: investment.status == 'committed' && 
-                          (investment.cancel_window_expires_at.nil? || 
-                            investment.cancel_window_expires_at > Time.current),
+          can_be_cancelled: investment.can_be_cancelled?,
           cancel_window_expires_at: investment.cancel_window_expires_at,
-          committed_at: investment.committed_at
+          committed_at: investment.committed_at,
+          time_remaining_for_cancellation: investment.time_remaining_for_cancellation
         }
 
         # Add equity investment data
@@ -662,8 +615,8 @@ module Api
         { valid: true }
       end
 
-      # NEW: Execute club equity investment
-      def execute_club_investment(club_investment)
+      # UPDATED: Renamed from execute_club_investment to process_club_investment
+      def process_club_investment(club_investment)
         campaign = club_investment.campaign
         
         Rails.logger.info "Creating equity investment for club #{@club.id}"
