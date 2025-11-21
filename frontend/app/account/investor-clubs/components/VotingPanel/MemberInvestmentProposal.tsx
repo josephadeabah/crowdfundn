@@ -208,7 +208,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
 
         if (proposalsData.success) {
           investmentsData = proposalsData.investments || [];
-          
+
           // ENHANCED: Always generate new proposals if we have less than 3
           if (investmentsData.length < 3) {
             await generateProposals();
@@ -338,9 +338,9 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
     } catch (err) {
       console.error('Error generating proposals:', err);
       showToast(
-        'Error', 
-        'Failed to generate proposals. Please try again.', 
-        'error'
+        'Error',
+        'Failed to generate proposals. Please try again.',
+        'error',
       );
     } finally {
       setLoading(false);
