@@ -1,9 +1,10 @@
 // app/account/investor-clubs/components/Investments/RecentInvestmentsSection.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ClubInvestment } from '../../clubTypes';
-import { FileText, TrendingUp, Play, Clock, X } from 'lucide-react';
+import { FileText, TrendingUp, Play, Clock, X, AlertTriangle } from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
+import { EquityInvestment } from '@/app/types/equityCampaigns.types';
 
 interface RecentInvestmentsSectionProps {
   investments: ClubInvestment[];
@@ -26,9 +27,114 @@ interface RecentInvestmentsSectionProps {
   showPagination?: boolean;
 }
 
-export const RecentInvestmentsSection: React.FC<
-  RecentInvestmentsSectionProps
-> = ({
+  const getTimeRemaining = (investment: ClubInvestment): string => {
+    if (!investment.cancel_window_expires_at) return 'No cancellation window';
+
+    const expiresAt = new Date(investment.cancel_window_expires_at);
+    const now = new Date();
+    const diffMs = expiresAt.getTime() - now.getTime();
+
+    if (diffMs <= 0) return 'Expired';
+
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${diffHours}h ${diffMinutes}m`;
+  };
+
+// Cancellation Confirmation Modal Component
+const CancellationModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (reason: string) => void;
+  investment: ClubInvestment | null;
+  isLoading?: boolean;
+}> = ({ isOpen, onClose, onConfirm, investment, isLoading = false }) => {
+  const [reason, setReason] = useState('');
+  const [error, setError] = useState('');
+
+  const handleConfirm = () => {
+    if (!reason.trim()) {
+      setError('Please provide a reason for cancellation');
+      return;
+    }
+    onConfirm(reason);
+  };
+
+  const handleClose = () => {
+    setReason('');
+    setError('');
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+            <AlertTriangle className="w-5 h-5 text-red-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Cancel Investment</h3>
+            <p className="text-sm text-gray-600">
+              {investment?.campaign?.title || 'Unknown Investment'}
+            </p>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="cancellation-reason" className="block text-sm font-medium text-gray-700 mb-2">
+            Reason for cancellation *
+          </label>
+          <textarea
+            id="cancellation-reason"
+            value={reason}
+            onChange={(e) => {
+              setReason(e.target.value);
+              setError('');
+            }}
+            placeholder="Please provide a reason for cancelling this investment..."
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+            rows={4}
+          />
+          {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+        </div>
+
+        {investment && investment.cancel_window_expires_at && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+            <div className="flex items-center gap-2 text-yellow-800">
+              <Clock className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                Time remaining: {getTimeRemaining(investment)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={handleClose}
+            disabled={isLoading}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
+          >
+            Keep Investment
+          </button>
+          <button
+            onClick={handleConfirm}
+            disabled={isLoading || !reason.trim()}
+            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Cancelling...' : 'Cancel Investment'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const RecentInvestmentsSection: React.FC<RecentInvestmentsSectionProps> = ({
   investments,
   formatCurrency,
   onViewInvestment,
@@ -44,6 +150,10 @@ export const RecentInvestmentsSection: React.FC<
   onPerPageChange,
   showPagination = true,
 }) => {
+  const [cancellingInvestment, setCancellingInvestment] = useState<string | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [selectedInvestment, setSelectedInvestment] = useState<ClubInvestment | null>(null);
+
   const getStatusBadge = (investment: ClubInvestment) => {
     switch (investment.status) {
       case 'pending':
@@ -54,7 +164,7 @@ export const RecentInvestmentsSection: React.FC<
         );
       case 'committed':
         return (
-          <span className="px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800">
+          <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
             Committed
           </span>
         );
@@ -85,21 +195,28 @@ export const RecentInvestmentsSection: React.FC<
     }
   };
 
-  // NEW: Check if investment can be cancelled
+  // Enhanced cancellation check
   const canBeCancelled = (investment: ClubInvestment): boolean => {
+    // Only committed investments can be cancelled
     if (investment.status !== 'committed') return false;
+
+    // Check if explicit flag exists
+    if (investment.can_be_cancelled !== undefined) {
+      return investment.can_be_cancelled;
+    }
 
     // Check if cancel window exists and is in future
     if (investment.cancel_window_expires_at) {
       return new Date(investment.cancel_window_expires_at) > new Date();
     }
 
-    return false;
+    // Default: allow cancellation for committed investments
+    return true;
   };
 
-  // NEW: Get time remaining for cancellation
+  // Get time remaining for cancellation
   const getTimeRemaining = (investment: ClubInvestment): string => {
-    if (!investment.cancel_window_expires_at) return 'No cancellation window';
+    if (!investment.cancel_window_expires_at) return '48 hours';
 
     const expiresAt = new Date(investment.cancel_window_expires_at);
     const now = new Date();
@@ -110,7 +227,11 @@ export const RecentInvestmentsSection: React.FC<
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
-    return `${diffHours}h ${diffMinutes}m`;
+    if (diffHours > 0) {
+      return `${diffHours}h ${diffMinutes}m`;
+    } else {
+      return `${diffMinutes}m`;
+    }
   };
 
   const handleInvestmentClick = (investment: ClubInvestment) => {
@@ -136,22 +257,35 @@ export const RecentInvestmentsSection: React.FC<
     }
   };
 
-  // NEW: Handle cancellation
-  const handleCancelInvestment = (
-    e: React.MouseEvent,
-    investmentId: string,
-  ) => {
+  // Enhanced cancellation handler
+  const handleCancelClick = (e: React.MouseEvent, investment: ClubInvestment) => {
     e.stopPropagation();
-    if (onCancelInvestment) {
-      // You might want to show a confirmation dialog here
-      const reason = prompt('Please provide a reason for cancellation:');
-      if (reason !== null) {
-        onCancelInvestment(investmentId, reason);
-      }
+    setSelectedInvestment(investment);
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancel = async (reason: string) => {
+    if (!selectedInvestment || !onCancelInvestment) return;
+
+    setCancellingInvestment(selectedInvestment.id);
+    
+    try {
+      await onCancelInvestment(selectedInvestment.id, reason);
+      setShowCancelModal(false);
+      setSelectedInvestment(null);
+    } catch (error) {
+      console.error('Failed to cancel investment:', error);
+    } finally {
+      setCancellingInvestment(null);
     }
   };
 
-  // FIXED: Safe date formatting
+  const handleCloseCancelModal = () => {
+    setShowCancelModal(false);
+    setSelectedInvestment(null);
+  };
+
+  // Safe date formatting
   const formatInvestmentDate = (investment: ClubInvestment) => {
     if (investment.investment_date) {
       try {
@@ -165,12 +299,26 @@ export const RecentInvestmentsSection: React.FC<
       : 'N/A';
   };
 
+  // Check if there are any cancellable investments
+  const hasCancellableInvestments = investments?.some(investment => 
+    canBeCancelled(investment)
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
+      {/* Cancellation Modal */}
+      <CancellationModal
+        isOpen={showCancelModal}
+        onClose={handleCloseCancelModal}
+        onConfirm={handleConfirmCancel}
+        investment={selectedInvestment}
+        isLoading={cancellingInvestment !== null}
+      />
+
       <div className="flex items-center justify-between mb-3 lg:mb-4">
         <h3 className="text-lg lg:text-xl font-semibold">Recent Investments</h3>
         <span className="text-xs lg:text-sm text-gray-500">
@@ -178,10 +326,28 @@ export const RecentInvestmentsSection: React.FC<
         </span>
       </div>
 
+      {/* Cancellation Notice Banner */}
+      {hasCancellableInvestments && (
+        <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg p-3 mb-4">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-orange-600" />
+            <div>
+              <p className="text-sm font-medium text-orange-800">
+                48-Hour Cancellation Window
+              </p>
+              <p className="text-xs text-orange-700">
+                You can cancel committed investments within 48 hours of commitment.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-sm divide-y">
         {investments?.map((investment) => {
           const isCancellable = canBeCancelled(investment);
           const timeRemaining = getTimeRemaining(investment);
+          const isCancelling = cancellingInvestment === investment.id;
 
           return (
             <div
@@ -211,7 +377,7 @@ export const RecentInvestmentsSection: React.FC<
                     {getStatusBadge(investment)}
                   </div>
 
-                  {/* NEW: Cancellation Info */}
+                  {/* Cancellation Info */}
                   {isCancellable && (
                     <div className="flex items-center gap-1 mb-2 text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
                       <Clock className="w-3 h-3" />
@@ -278,7 +444,7 @@ export const RecentInvestmentsSection: React.FC<
 
                   {/* Action Buttons */}
                   <div className="flex gap-1">
-                    {/* Equity Investment Actions */}
+                    {/* Execute Investment Button */}
                     {investment.status === 'pending' && (
                       <button
                         onClick={(e) => handleExecute(e, investment.id)}
@@ -289,20 +455,20 @@ export const RecentInvestmentsSection: React.FC<
                       </button>
                     )}
 
-                    {/* NEW: Cancel Button */}
+                    {/* Cancel Button */}
                     {isCancellable && (
                       <button
-                        onClick={(e) =>
-                          handleCancelInvestment(e, investment.id)
-                        }
-                        className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex items-center gap-1"
+                        onClick={(e) => handleCancelClick(e, investment)}
+                        disabled={isCancelling}
+                        className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Cancel Investment"
                       >
                         <X size={12} />
-                        Cancel
+                        {isCancelling ? 'Cancelling...' : 'Cancel'}
                       </button>
                     )}
 
+                    {/* Certificate Buttons */}
                     {investment.status === 'successful' &&
                       investment?.certificate_url && (
                         <button
