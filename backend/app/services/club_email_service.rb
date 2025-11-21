@@ -166,6 +166,120 @@ class ClubEmailService
     send_email(admin.email, admin.full_name, subject, html_content, text_content)
   end
 
+  # Add this method to ClubEmailService class
+  def self.send_investment_finalized_notification(club_investment:, campaign_identifier:, finalized: false, cancellation_window_ended: false)
+    return unless club_investment
+
+    club = club_investment.investment_club
+    campaign = club_investment.campaign
+    
+    # Send to all club members
+    club.active_members.each do |member|
+      subject = "Investment Finalized: #{campaign.title}"
+      
+      html_content = build_investment_finalized_html(member, club_investment, club, campaign, finalized, cancellation_window_ended)
+      text_content = build_investment_finalized_text(member, club_investment, club, campaign, finalized, cancellation_window_ended)
+
+      send_email(member.email, member.full_name, subject, html_content, text_content)
+    end
+  end
+
+  # Add the HTML content builder
+  def self.build_investment_finalized_html(member, club_investment, club, campaign, finalized, cancellation_window_ended)
+    <<~HTML
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width">
+          <title>Investment Finalized</title>
+          <style>
+            #{email_styles}
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Investment Finalized</h1>
+            </div>
+
+            <div class="content">
+              <p class="greeting">Hello #{member.full_name},</p>
+              
+              <p>Great news! The investment by <strong>#{club.name}</strong> in <strong>#{campaign.title}</strong> has been finalized.</p>
+              
+              <div class="investment-details">
+                <div class="detail-row">
+                  <span class="detail-label">Campaign:</span>
+                  <span class="detail-value">#{campaign.title}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Company:</span>
+                  <span class="detail-value">#{campaign.company_name}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Investment Amount:</span>
+                  <span class="detail-value">#{campaign.currency_symbol}#{club_investment.investment_amount}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Shares Acquired:</span>
+                  <span class="detail-value">#{club_investment.shares&.round(4) || 'N/A'}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Ownership Percentage:</span>
+                  <span class="detail-value">#{club_investment.percentage&.round(4) || 'N/A'}%</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Finalization Date:</span>
+                  <span class="detail-value">#{Time.current.strftime('%B %d, %Y')}</span>
+                </div>
+              </div>
+
+              #{if cancellation_window_ended
+                  '<div class="action-section">
+                    <p>The 48-hour cancellation window has ended and this investment is now fully processed.</p>
+                  </div>'
+                end}
+
+              <div class="action-section">
+                <p>You can view the investment certificate in your club portfolio.</p>
+              </div>
+
+              <p>Congratulations on this successful investment!<br>
+              <strong>The Bantuhive Team</strong></p>
+            </div>
+
+            #{email_footer}
+          </div>
+        </body>
+      </html>
+    HTML
+  end
+
+  # Add the text content builder
+  def self.build_investment_finalized_text(member, club_investment, club, campaign, finalized, cancellation_window_ended)
+    <<~TEXT
+      Hello #{member.full_name},
+
+      Great news! The investment by #{club.name} in #{campaign.title} has been finalized.
+
+      Investment Details:
+      - Campaign: #{campaign.title}
+      - Company: #{campaign.company_name}
+      - Investment Amount: #{campaign.currency_symbol}#{club_investment.investment_amount}
+      - Shares Acquired: #{club_investment.shares&.round(4) || 'N/A'}
+      - Ownership Percentage: #{club_investment.percentage&.round(4) || 'N/A'}%
+      - Finalization Date: #{Time.current.strftime('%B %d, %Y')}
+
+      #{"The 48-hour cancellation window has ended and this investment is now fully processed." if cancellation_window_ended}
+
+      You can view the investment certificate in your club portfolio.
+
+      Congratulations on this successful investment!
+      The Bantuhive Team
+    TEXT
+  end
+
   private
 
   # HTML Content Builders

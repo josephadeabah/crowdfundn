@@ -15,16 +15,6 @@ class ClubInvestment < ApplicationRecord
   attribute :shares_acquired, :integer, default: 0
   attribute :reference, :string
   
-  # NEW: Equity investment attributes
-  attribute :shares, :decimal, precision: 20, scale: 4
-  attribute :percentage, :decimal, precision: 10, scale: 6
-  attribute :investment_date, :date
-  attribute :certificate_number, :string
-  attribute :transaction_reference, :string
-  attribute :equity_investment_id, :integer
-  attribute :current_value, :decimal, precision: 15, scale: 2
-  attribute :notes, :text
-  
   validates :investment_amount, numericality: { greater_than: 0 }
   validates :proposed_share_percentage, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, allow_nil: true
 

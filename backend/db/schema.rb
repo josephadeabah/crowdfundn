@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_19_131734) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_21_001738) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -251,10 +251,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_19_131734) do
     t.integer "equity_investment_id"
     t.decimal "current_value", precision: 15, scale: 2
     t.text "notes"
+    t.datetime "committed_at"
+    t.datetime "cancel_window_expires_at"
+    t.text "cancellation_reason"
+    t.datetime "canceled_at"
+    t.datetime "finalized_at"
     t.index ["campaign_id"], name: "index_club_investments_on_campaign_id"
+    t.index ["cancel_window_expires_at"], name: "index_club_investments_on_cancel_window_expires_at"
+    t.index ["canceled_at"], name: "index_club_investments_on_canceled_at"
     t.index ["certificate_number"], name: "index_club_investments_on_certificate_number", unique: true
+    t.index ["committed_at"], name: "index_club_investments_on_committed_at"
     t.index ["created_by_id"], name: "index_club_investments_on_created_by_id"
     t.index ["equity_investment_id"], name: "index_club_investments_on_equity_investment_id"
+    t.index ["finalized_at"], name: "index_club_investments_on_finalized_at"
     t.index ["investment_club_id", "campaign_id"], name: "index_club_investments_on_investment_club_id_and_campaign_id"
     t.index ["investment_club_id"], name: "index_club_investments_on_investment_club_id"
     t.index ["reference"], name: "index_club_investments_on_reference", unique: true

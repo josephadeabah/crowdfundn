@@ -37,6 +37,44 @@ module PaystackWebhook::Handlers
       end
     end
 
+
+    # Add these methods to ClubEquityInvestmentHandler
+    def handle_insufficient_balance(club_investment, equity_investment, total_deduction)
+      # Mark both investments as failed due to insufficient balance
+      club_investment.update!(
+        status: ClubInvestment::STATUS_FAILED
+      )
+      
+      equity_investment.update!(
+        status: EquityInvestment::STATUS_FAILED,
+        metadata: equity_investment.metadata.merge(
+          'failure_reason' => 'insufficient_club_balance',
+          'failure_time' => Time.current.iso8601
+        )
+      )
+      
+      # Send notification about insufficient balance
+      send_insufficient_balance_notification(club_investment, total_deduction)
+    end
+
+    def send_insufficient_balance_notification(club_investment, total_deduction)
+      club_investment.investment_club.admin_members.each do |admin|
+        ClubEmailService.send_insufficient_balance_notification(
+          admin: admin,
+          club_investment: club_investment,
+          required_amount: total_deduction,
+          available_balance: club_investment.investment_club.current_balance
+        )
+      end
+    rescue => e
+      Rails.logger.error "Failed to send insufficient balance notification: #{e.message}"
+    end
+
+    def log_invalid_investment(metadata)
+      Rails.logger.error "Equity investment not found or invalid state: #{metadata[:investment_id]}"
+      raise 'Invalid investment state'
+    end
+
     private
 
     def process_successful_club_transaction(response)
@@ -76,53 +114,72 @@ module PaystackWebhook::Handlers
         raise 'Equity investment not found'
       end
 
-      ActiveRecord::Base.transaction do
-        # Update the equity investment with proper financial data
-        update_equity_investment(equity_investment, response, metadata, gross_amount, net_amount, platform_fee, processing_fee)
-        
-        # Set as COMMITTED instead of SUCCESSFUL to allow cancellation
-        equity_investment.update!(status: EquityInvestment::STATUS_COMMITTED)
-        
-        # Update the club investment status and link to equity investment
-        club_investment.update!(
-          status: ClubInvestment::STATUS_SUCCESSFUL,
-          equity_investment_id: equity_investment.id,
-          shares: equity_investment.shares,
-          percentage: equity_investment.percentage,
-          investment_date: equity_investment.investment_date,
-          certificate_number: equity_investment.certificate_number,
-          transaction_reference: equity_investment.transaction_reference,
-          current_value: equity_investment.current_value
-        )
+      if equity_investment && (equity_investment.pending? || equity_investment.initialized?)
+        ActiveRecord::Base.transaction do
+          # Update the equity investment with proper financial data
+          update_equity_investment(equity_investment, response, metadata, gross_amount, net_amount, platform_fee, processing_fee)
+          
+          # Set as COMMITTED instead of SUCCESSFUL to allow cancellation (SAME AS REGULAR)
+          equity_investment.update!(status: EquityInvestment::STATUS_COMMITTED)
+          
+          # Update the club investment status and link to equity investment
+          club_investment.update!(
+            status: ClubInvestment::STATUS_COMMITTED, # Set to COMMITTED, not SUCCESSFUL
+            equity_investment_id: equity_investment.id,
+            shares: equity_investment.shares,
+            percentage: equity_investment.percentage,
+            investment_date: equity_investment.investment_date,
+            certificate_number: equity_investment.certificate_number,
+            transaction_reference: equity_investment.transaction_reference,
+            current_value: equity_investment.current_value,
+            committed_at: Time.current,
+            cancel_window_expires_at: 48.hours.from_now
+          )
 
-        # Update campaign totals (similar to regular equity investment)
-        update_campaign_totals(equity_investment, net_amount)
+          # REMOVED: No campaign updates here - wait until cancellation window expires
+          # update_campaign_totals(equity_investment, net_amount)  # REMOVE THIS LINE
+          
+          # Create pledges from rewards if any
+          create_pledges_from_rewards(equity_investment, metadata)
+          
+          if equity_limits_exceeded?(equity_investment)
+            result = handle_oversubscription(equity_investment, response, metadata)
+            return result
+          end
 
-        # Create pledges from rewards if any
-        create_pledges_from_rewards(equity_investment, metadata)
+          # Deduct from club balance only after successful payment (SAME AS REGULAR)
+          total_deduction = gross_amount # Total amount including fees
+          if @club.deduct_balance(total_deduction)
+            Rails.logger.info "Successfully deducted #{total_deduction} from club #{@club.id} balance"
+          else
+            Rails.logger.error "Failed to deduct #{total_deduction} from club #{@club.id} balance"
+            # Handle insufficient balance scenario
+            handle_insufficient_balance(club_investment, equity_investment, total_deduction)
+            return
+          end
 
-        # Check for oversubscription
-        if equity_limits_exceeded?(equity_investment)
-          result = handle_oversubscription(equity_investment, response, metadata, total_amount)
-          return result
+          # Generate certificate for club investment using the job
+          ClubInvestmentCertificateJob.perform_later(club_investment.id)
+          Rails.logger.info "Enqueued certificate generation job for club investment #{club_investment.id}"
+
+          # Generate certificate for the equity investment
+          begin
+            InvestmentCertificateJob.perform_later(equity_investment.id) if equity_investment.successful?
+          rescue => e
+            Rails.logger.info "Failed to enqueue equity investment certificate job: #{e.message}"
+          end
+
+          # Notify club members
+          send_club_investment_confirmation(club_investment, equity_investment, metadata)
+          
+          Rails.logger.info "Successfully processed club investment: #{club_investment.id}"
+          Rails.logger.info "Financial breakdown - Gross: #{gross_amount}, Platform Fee: #{platform_fee}, Processing Fee: #{processing_fee}, Net to Campaign: #{net_amount}"
         end
-
-        # Generate certificate for club investment using the job
-        ClubInvestmentCertificateJob.perform_later(club_investment.id)
-        Rails.logger.info "Enqueued certificate generation job for club investment #{club_investment.id}"
-
-        # Generate certificate for the equity investment
-        begin
-          InvestmentCertificateJob.perform_later(equity_investment.id) if equity_investment.successful?
-        rescue => e
-          Rails.logger.info "Failed to enqueue equity investment certificate job: #{e.message}"
-        end
-
-        # Notify club members
-        send_club_investment_confirmation(club_investment, equity_investment, metadata)
-        
-        Rails.logger.info "Successfully processed club investment: #{club_investment.id}"
-        Rails.logger.info "Financial breakdown - Gross: #{gross_amount}, Platform Fee: #{platform_fee}, Processing Fee: #{processing_fee}, Net to Campaign: #{net_amount}"
+      elsif equity_investment && equity_investment.committed?
+        # Handle case where investment is already committed (duplicate webhook)
+        Rails.logger.info "Investment #{equity_investment.id} is already committed, skipping processing"
+      else
+        log_invalid_investment(metadata)
       end
     end
 

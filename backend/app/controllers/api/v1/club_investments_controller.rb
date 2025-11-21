@@ -687,27 +687,24 @@ module Api
         campaign_identifier = campaign.slug || campaign.id
         redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier, host: 'bantuhive.com') + "?#{secure_random_uuid}"
 
-        # Prepare metadata
+        # Prepare metadata - include fee information for webhook
         metadata = build_metadata(investment, redirect_url, club_investment)
 
         # Initialize payment using existing logic
         initialize_payment_result = initialize_club_payment(investment, metadata, redirect_url)
         
         if initialize_payment_result[:success]
-          # Deduct amount from club balance
-          if @club.deduct_balance(club_investment.investment_amount)
-            club_investment.update!(
-              status: ClubInvestment::STATUS_COMMITTED,
-              transaction_reference: investment.transaction_reference,
-              equity_investment_id: investment.id,
-              shares: investment.shares,
-              percentage: investment.percentage
-            )
-            { success: true, authorization_url: initialize_payment_result[:authorization_url] }
-          else
-            investment.update!(status: 'failed')
-            { success: false, error: 'Insufficient club balance' }
-          end
+          # REMOVED: No immediate deduction from club balance
+          # The balance will be deducted in the webhook handler after successful payment
+          
+          club_investment.update!(
+            status: ClubInvestment::STATUS_PENDING, # Set to PENDING, not COMMITTED
+            transaction_reference: investment.transaction_reference,
+            equity_investment_id: investment.id,
+            shares: investment.shares,
+            percentage: investment.percentage
+          )
+          { success: true, authorization_url: initialize_payment_result[:authorization_url] }
         else
           investment.update!(status: 'failed')
           { success: false, error: initialize_payment_result[:error] }
