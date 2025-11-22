@@ -476,34 +476,116 @@ module Api
       def transform_investment_for_frontend(investment)
         campaign = investment.campaign
         
-        # DEBUG: Log the actual status
-        Rails.logger.info "TRANSFORMING: Investment #{investment.id} status: #{investment.status}"
-        Rails.logger.info "TRANSFORMING: Cancel window: #{investment.cancel_window_expires_at}"
-        Rails.logger.info "TRANSFORMING: Can be cancelled: #{investment.can_be_cancelled?}"
-        
+        # Base campaign data structure
         campaign_data = if campaign
-          {
+          base_campaign_data = {
             title: campaign.title,
             description: campaign.description&.to_plain_text&.truncate(200) || 'No description available',
             category: campaign.category,
             currency_symbol: campaign.currency_symbol,
+            currency: campaign.currency,
             id: campaign.id,
-            slug: campaign.slug
+            slug: campaign.slug,
+            valuation: campaign.valuation,
+            equity_offered: campaign.equity_offered,
+            minimum_investment: campaign.minimum_investment,
+            maximum_investment: campaign.maximum_investment
           }
+
+          # Add equity-specific data if it's an equity campaign
+          if campaign.is_a?(EquityCampaign)
+            base_campaign_data.merge!({
+              # Company info from equity campaign
+              company_info: {
+                name: campaign.company_name,
+                description: campaign.company_description,
+                headquarters: campaign.company_headquarters,
+                website: campaign.company_website,
+                contract_term: campaign.contract_term
+              },
+              # Team members from equity campaign
+              team_members: campaign.campaign_team_members.includes(:user).map do |member|
+                {
+                  id: member.id,
+                  name: member.name,
+                  email: member.email,
+                  role: member.role,
+                  title: member.title,
+                  equity_percentage: member.equity_percentage,
+                  description: member.description,
+                  avatar_url: member.avatar_url,
+                  user: if member.user
+                          {
+                            id: member.user.id,
+                            email: member.user.email,
+                            profile: {
+                              first_name: member.user.profile&.first_name,
+                              last_name: member.user.profile&.last_name
+                            }
+                          }
+                        end
+                }
+              end,
+              # Equity offering details
+              equity_offering_details: {
+                minimum_target: campaign.minimum_target,
+                price_per_share: campaign.price_per_share,
+                min_shares: campaign.min_shares,
+                max_shares: campaign.max_shares,
+                shares_offered: campaign.shares_offered,
+                stock_type: campaign.stock_type,
+                stock_type_display: campaign.stock_type_display,
+                funding_round: campaign.funding_round,
+                funding_round_display: campaign.funding_round_display,
+                sec_filing_url: campaign.sec_filing_url,
+                offering_circular_url: campaign.offering_circular_url,
+                offering_memorandum: campaign.offering_memorandum,
+                offering_documents: {
+                  sec_filing: {
+                    present: campaign.sec_filing_url.present?,
+                    url: campaign.sec_filing_url
+                  },
+                  offering_circular: {
+                    present: campaign.offering_circular_url.present?,
+                    url: campaign.offering_circular_url
+                  },
+                  offering_memorandum_document: { 
+                    attached: campaign.offering_memorandum_document.attached?,
+                    url: campaign.offering_memorandum_document_url,
+                    filename: campaign.offering_memorandum_document.attached? ? campaign.offering_memorandum_document.filename.to_s : nil
+                  }
+                }
+              },
+              # Equity status and metrics
+              equity_status: campaign.equity_status,
+              shares_available: campaign.shares_available,
+              shares_issued: campaign.shares_issued,
+              total_equity_shares: campaign.total_shares,
+              percentage_raised: campaign.percentage_raised,
+              total_investors: campaign.total_investors
+            })
+          end
+
+          base_campaign_data
         else
           {
             title: 'Unknown Company',
             description: 'No description available',
             category: 'General',
             currency_symbol: '$',
+            currency: 'USD',
             id: nil,
-            slug: nil
+            slug: nil,
+            valuation: nil,
+            equity_offered: nil,
+            minimum_investment: nil,
+            maximum_investment: nil
           }
         end
         
         voting_stats = investment.voting_stats || {}
         
-        # CRITICAL: Include all cancellation fields
+        # Base investment data
         base_data = {
           id: investment.id.to_s,
           company: campaign_data[:title],
@@ -516,15 +598,21 @@ module Api
           campaign_slug: campaign_data[:slug],
           proposed_amount: investment.investment_amount,
           currency_symbol: campaign_data[:currency_symbol],
+          currency: campaign_data[:currency],
           is_equity_investment: campaign.is_a?(EquityCampaign),
-          # THESE ARE THE CRITICAL FIELDS FOR CANCELLATION:
+          # Critical fields for cancellation
           can_be_cancelled: investment.can_be_cancelled?,
           cancel_window_expires_at: investment.cancel_window_expires_at,
           committed_at: investment.committed_at,
-          time_remaining_for_cancellation: investment.time_remaining_for_cancellation
+          time_remaining_for_cancellation: investment.time_remaining_for_cancellation,
+          # Campaign valuation and equity data
+          campaign_valuation: campaign_data[:valuation],
+          campaign_equity_offered: campaign_data[:equity_offered],
+          campaign_minimum_investment: campaign_data[:minimum_investment],
+          campaign_maximum_investment: campaign_data[:maximum_investment]
         }
 
-        # Add equity investment data
+        # Add equity investment data if it's an equity campaign
         if campaign.is_a?(EquityCampaign)
           base_data.merge!({
             shares: investment.shares,
@@ -534,7 +622,17 @@ module Api
             current_value: investment.current_value,
             total_returns: investment.total_returns,
             roi: investment.roi,
-            investment_date: investment.investment_date
+            investment_date: investment.investment_date,
+            # Include the equity-specific campaign data
+            company_info: campaign_data[:company_info],
+            team_members: campaign_data[:team_members],
+            equity_offering_details: campaign_data[:equity_offering_details],
+            equity_status: campaign_data[:equity_status],
+            shares_available: campaign_data[:shares_available],
+            shares_issued: campaign_data[:shares_issued],
+            total_equity_shares: campaign_data[:total_equity_shares],
+            percentage_raised: campaign_data[:percentage_raised],
+            total_investors: campaign_data[:total_investors]
           })
         else
           # Add voting data for non-equity investments
