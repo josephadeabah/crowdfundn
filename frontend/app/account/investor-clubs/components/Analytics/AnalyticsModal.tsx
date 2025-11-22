@@ -33,10 +33,10 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
     >
       <div className="max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border/50 p-6">
+        <div className="sticky top-0 z-10 bg-white border-b border-border/50 p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl md:text-3xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent font-bold">
-              Investment Club Analytics
+            <h2 className="text-2xl md:text-3xl bg-white text-gray-800 font-bold">
+              Club Name Analytics
             </h2>
           </div>
         </div>

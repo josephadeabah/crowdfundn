@@ -56,13 +56,13 @@ export const MembersOverview = () => {
               className="flex items-center gap-4"
             >
               <Avatar>
-                <AvatarFallback className="bg-primary text-primary-foreground">
+                <AvatarFallback className="bg-emerald-500 text-white">
                   {member.initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <p className="font-medium">{member.name}</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-400">
                   {member.percentage} of total
                 </p>
               </div>
