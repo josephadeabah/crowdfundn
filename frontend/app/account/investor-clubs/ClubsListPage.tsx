@@ -528,7 +528,7 @@ const ClubsListPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto">
         {/* Main Content Area - Integrated header */}
-        <div className="px-4 py-6">
+        <div className="px-2 py-4">
           {/* Page Header - Integrated into content flow */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
