@@ -100,7 +100,7 @@ export const MembersOverview = ({ data }: MembersOverviewProps) => {
                   {member.member_name}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {Number(member.contribution_share).toFixed(1)}% of total
+                  {Number(member?.contribution_share).toFixed(1)}% of total
                 </p>
               </div>
               <div className="text-right">
@@ -121,13 +121,13 @@ export const MembersOverview = ({ data }: MembersOverviewProps) => {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="text-center">
                 <p className="font-medium text-gray-900">
-                  {data.summary_stats.average_share.toFixed(1)}%
+                  {Number(data?.summary_stats.average_share).toFixed(1)}%
                 </p>
                 <p className="text-gray-500">Avg Share</p>
               </div>
               <div className="text-center">
                 <p className="font-medium text-gray-900">
-                  {data.summary_stats.concentration_gini.toFixed(2)}
+                  {Number(data?.summary_stats.concentration_gini).toFixed(2)}
                 </p>
                 <p className="text-gray-500">Concentration</p>
               </div>

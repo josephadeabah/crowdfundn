@@ -59,7 +59,7 @@ export const PortfolioChart = ({ data }: PortfolioChartProps) => {
           <p className="font-medium text-gray-900">{data.name}</p>
           <p className="text-sm text-gray-600">
             ${data.value.toLocaleString()} (
-            {(
+            {Number(
               (data.value /
                 chartData.reduce((sum, item) => sum + item.value, 0)) *
               100

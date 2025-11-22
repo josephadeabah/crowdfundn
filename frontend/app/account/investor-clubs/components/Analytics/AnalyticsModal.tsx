@@ -824,7 +824,7 @@ const ProjectionItem: React.FC<{
           className={`text-sm ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}
         >
           {growth >= 0 ? '+' : ''}
-          {growth.toFixed(1)}%
+          {Number(growth).toFixed(1)}%
         </div>
       </div>
     </div>
