@@ -363,6 +363,10 @@ Rails.application.routes.draw do
           get :portfolio
           get :analytics
           get :member_portfolio
+          get :portfolio_insights
+          get :financial_health
+          get :predictive_analytics
+          get :comprehensive_analytics
           post :join
           post :leave
           post :create_wallet

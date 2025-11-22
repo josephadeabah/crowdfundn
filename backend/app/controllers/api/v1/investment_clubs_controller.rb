@@ -349,6 +349,84 @@ module Api
         end
       end
 
+      # NEW: Portfolio Insights endpoint
+      # GET /api/v1/investment_clubs/:id/portfolio_insights
+      def portfolio_insights
+        if @club && @club.is_member?(@current_user)
+          portfolio_service = ClubPortfolioService.new(@club)
+          insights_data = portfolio_service.portfolio_insights
+          
+          render json: {
+            success: true,
+            insights: insights_data
+          }
+        else
+          render json: { 
+            success: false,
+            error: 'Access denied' 
+          }, status: :forbidden
+        end
+      end
+
+      # NEW: Financial Health endpoint
+      # GET /api/v1/investment_clubs/:id/financial_health
+      def financial_health
+        if @club && @club.is_member?(@current_user)
+          portfolio_service = ClubPortfolioService.new(@club)
+          health_metrics = portfolio_service.financial_health_metrics
+          
+          render json: {
+            success: true,
+            financial_health: health_metrics
+          }
+        else
+          render json: { 
+            success: false,
+            error: 'Access denied' 
+          }, status: :forbidden
+        end
+      end
+
+      # NEW: Predictive Analytics endpoint
+      # GET /api/v1/investment_clubs/:id/predictive_analytics
+      def predictive_analytics
+        if @club && @club.is_member?(@current_user)
+          portfolio_service = ClubPortfolioService.new(@club)
+          predictive_data = portfolio_service.predictive_analytics
+          
+          render json: {
+            success: true,
+            predictive_analytics: predictive_data
+          }
+        else
+          render json: { 
+            success: false,
+            error: 'Access denied' 
+          }, status: :forbidden
+        end
+      end
+
+      # NEW: Comprehensive Analytics endpoint
+      # GET /api/v1/investment_clubs/:id/comprehensive_analytics
+      def comprehensive_analytics
+        if @club && @club.is_member?(@current_user)
+          portfolio_service = ClubPortfolioService.new(@club)
+          
+          comprehensive_data = portfolio_service.comprehensive_analytics
+          
+          render json: {
+            success: true,
+            analytics: comprehensive_data,
+            generated_at: Time.current.iso8601
+          }
+        else
+          render json: { 
+            success: false,
+            error: 'Access denied' 
+          }, status: :forbidden
+        end
+      end
+
       private
       
       def set_club
