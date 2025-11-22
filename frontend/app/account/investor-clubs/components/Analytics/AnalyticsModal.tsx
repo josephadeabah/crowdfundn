@@ -288,7 +288,7 @@ const OverviewTab: React.FC<{
         <StatsCard
           title="Active Investments"
           value={(portfolio.active_investments || 0).toString()}
-          change={`${portfolio.campaigns_invested || 0} campaigns`}
+          change={`${portfolio.campaigns_invested || 0} ventures`}
           changeType="neutral"
           icon={Users}
         />
