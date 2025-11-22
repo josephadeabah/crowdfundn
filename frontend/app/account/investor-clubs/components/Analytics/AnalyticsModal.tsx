@@ -119,7 +119,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
-                {club.name} Analytics Dashboard
+                {club.name} Investment Insights
               </h2>
               <p className="text-gray-600 mt-1">
                 Comprehensive insights and performance metrics
