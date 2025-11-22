@@ -548,7 +548,7 @@ const ClubsListPage: React.FC = () => {
               </button>
             </div>
 
-            {/* Tabs */}
+            {/* Tabs - Fixed to show labels and counts inline on mobile */}
             <div className="flex border-b border-gray-200">
               {[
                 {
@@ -572,15 +572,15 @@ const ClubsListPage: React.FC = () => {
                   onClick={() =>
                     setActiveTab(tab.id as 'all' | 'my_clubs' | 'discover')
                   }
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border-b-2 font-medium text-sm transition-colors ${
+                  className={`flex-1 flex items-center justify-center gap-1 px-2 py-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'border-emerald-500 text-emerald-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                   }`}
                 >
-                  {tab.label}
+                  <span className="text-xs sm:text-sm">{tab.label}</span>
                   <span
-                    className={`px-2 py-1 rounded-full text-xs ${
+                    className={`px-1.5 py-0.5 rounded-full text-xs min-w-[20px] flex items-center justify-center ${
                       activeTab === tab.id
                         ? 'bg-emerald-100 text-emerald-800'
                         : 'bg-gray-100 text-gray-600'
