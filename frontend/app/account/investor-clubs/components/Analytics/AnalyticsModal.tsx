@@ -49,6 +49,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen && token && club) {
@@ -57,18 +58,21 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
   }, [isOpen, token, club]);
 
   const loadAnalytics = async () => {
-    if (!token) return;
+    if (!token || !club) return;
 
     setLoading(true);
+    setError(null);
     try {
+      console.log('Loading analytics for club ID:', club.id);
       const data = await investmentClubService.getComprehensiveAnalytics(
         token,
-        club.id,
+        club.id.toString(), // Ensure it's a string
       );
       setAnalytics(data);
       setLastUpdated(new Date().toLocaleTimeString());
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load analytics:', error);
+      setError('Failed to load analytics. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -125,6 +129,11 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
                   </span>
                 )}
               </p>
+              {error && (
+                <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
             </div>
             <Button
               onClick={loadAnalytics}
@@ -285,7 +294,6 @@ const OverviewTab: React.FC<{
                       analytics.portfolio_insights.performance_insights
                         .best_performing_investment?.campaign ||
                       'Top Performer',
-                    // Convert string values to numbers
                     value: Number(analytics.portfolio_insights.performance_insights.best_performing_investment?.amount || 0),
                     change: Number(analytics.portfolio_insights.performance_insights.best_performing_investment?.roi || 0),
                     isPositive: true,
