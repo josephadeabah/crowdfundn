@@ -406,10 +406,14 @@ module Api
         end
       end
 
-      # NEW: Comprehensive Analytics endpoint
+      # NEW: Comprehensive Analytics endpoint - FIXED VERSION
       # GET /api/v1/investment_clubs/:id/comprehensive_analytics
       def comprehensive_analytics
+        # FIXED: Use club ID instead of slug for lookup
+        @club = InvestmentClub.find_by(id: params[:id])
+        
         unless @club
+          Rails.logger.error "DEBUG: Club not found with ID: #{params[:id]}"
           return render json: { 
             success: false,
             error: 'Club not found' 
@@ -419,6 +423,7 @@ module Api
         # Enhanced membership check with debugging
         membership_status = @club.membership_status_for(@current_user)
         Rails.logger.info "DEBUG: User #{@current_user.id} membership status: #{membership_status}"
+        Rails.logger.info "DEBUG: Club found: #{@club.name} (ID: #{@club.id}, Slug: #{@club.slug})"
         
         unless @club.is_member?(@current_user)
           Rails.logger.warn "DEBUG: Access denied to comprehensive_analytics for user #{@current_user.id} in club #{@club.slug}"
@@ -429,6 +434,7 @@ module Api
             success: false,
             error: 'Access denied. You must be a member of this club to access analytics.',
             details: {
+              club_id: @club.id,
               club_slug: @club.slug,
               user_id: @current_user.id,
               membership_status: membership_status,
@@ -441,13 +447,15 @@ module Api
           portfolio_service = ClubPortfolioService.new(@club)
           comprehensive_data = portfolio_service.comprehensive_analytics
           
+          Rails.logger.info "DEBUG: Successfully generated comprehensive analytics for club #{@club.id}"
+          
           render json: {
             success: true,
             analytics: comprehensive_data,
             generated_at: Time.current.iso8601
           }
         rescue => e
-          Rails.logger.error "Error generating comprehensive analytics: #{e.message}"
+          Rails.logger.error "Error generating comprehensive analytics: #{e.message}\n#{e.backtrace.join("\n")}"
           render json: { 
             success: false,
             error: 'Failed to generate analytics'
@@ -458,14 +466,19 @@ module Api
       private
       
       def set_club
-        @club = InvestmentClub.find_by(slug: params[:id])
+        # FIXED: Try to find by ID first, then by slug for backward compatibility
+        @club = InvestmentClub.find_by(id: params[:id]) || InvestmentClub.find_by(slug: params[:id])
+        
         unless @club
+          Rails.logger.error "DEBUG: Club not found with ID/slug: #{params[:id]}"
           render json: { 
             success: false,
             error: 'Club not found' 
           }, status: :not_found
           return false
         end
+        
+        Rails.logger.info "DEBUG: Club found: #{@club.name} (ID: #{@club.id}, Slug: #{@club.slug})"
       end
 
       def membership_message(membership)
