@@ -409,9 +409,36 @@ module Api
       # NEW: Comprehensive Analytics endpoint
       # GET /api/v1/investment_clubs/:id/comprehensive_analytics
       def comprehensive_analytics
-        if @club && @club.is_member?(@current_user)
-          portfolio_service = ClubPortfolioService.new(@club)
+        unless @club
+          return render json: { 
+            success: false,
+            error: 'Club not found' 
+          }, status: :not_found
+        end
+
+        # Enhanced membership check with debugging
+        membership_status = @club.membership_status_for(@current_user)
+        Rails.logger.info "DEBUG: User #{@current_user.id} membership status: #{membership_status}"
+        
+        unless @club.is_member?(@current_user)
+          Rails.logger.warn "DEBUG: Access denied to comprehensive_analytics for user #{@current_user.id} in club #{@club.slug}"
+          Rails.logger.warn "DEBUG: Membership status: #{membership_status}"
+          Rails.logger.warn "DEBUG: User roles: #{@current_user.roles.pluck(:name) if @current_user.respond_to?(:roles)}"
           
+          return render json: { 
+            success: false,
+            error: 'Access denied. You must be a member of this club to access analytics.',
+            details: {
+              club_slug: @club.slug,
+              user_id: @current_user.id,
+              membership_status: membership_status,
+              is_admin: @current_user.admin? # If you have an admin flag on user
+            }
+          }, status: :forbidden
+        end
+
+        begin
+          portfolio_service = ClubPortfolioService.new(@club)
           comprehensive_data = portfolio_service.comprehensive_analytics
           
           render json: {
@@ -419,11 +446,43 @@ module Api
             analytics: comprehensive_data,
             generated_at: Time.current.iso8601
           }
+        rescue => e
+          Rails.logger.error "Error generating comprehensive analytics: #{e.message}"
+          render json: { 
+            success: false,
+            error: 'Failed to generate analytics'
+          }, status: :internal_server_error
+        end
+      end
+
+      # GET /api/v1/investment_clubs/:id/membership_verification
+      def membership_verification
+        if @club
+          membership = @club.membership_for(@current_user)
+          render json: {
+            success: true,
+            club: { id: @club.id, slug: @club.slug, name: @club.name },
+            user: { id: @current_user.id, admin: @current_user.admin? },
+            membership: membership ? {
+              id: membership.id,
+              role: membership.role,
+              status: membership.status,
+              active: membership.active?,
+              contributed_share: membership.contributed_share
+            } : nil,
+            checks: {
+              club_exists: @club.present?,
+              is_member: @club.is_member?(@current_user),
+              is_admin: @club.is_admin?(@current_user),
+              membership_count: @club.investment_club_memberships.count,
+              active_memberships: @club.investment_club_memberships.active.count
+            }
+          }
         else
           render json: { 
             success: false,
-            error: 'Access denied' 
-          }, status: :forbidden
+            error: 'Club not found' 
+          }, status: :not_found
         end
       end
 

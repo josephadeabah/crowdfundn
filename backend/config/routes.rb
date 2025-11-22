@@ -360,6 +360,7 @@ Rails.application.routes.draw do
         resources :approved_campaigns, only: [:index, :show], controller: 'approved_campaigns'
         
         member do
+          get :membership_verification
           get :portfolio
           get :analytics
           get :member_portfolio
