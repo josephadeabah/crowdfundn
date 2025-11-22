@@ -91,7 +91,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             <div className="flex justify-between items-center text-xs text-gray-500">
               <span className="flex items-center gap-1">
                 <BarChart3 size={12} />
-                Campaigns
+                Ventures
               </span>
               <span>{portfolio.campaigns_invested}</span>
             </div>
