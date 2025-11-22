@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { motion } from 'framer-motion';
+import { Club } from '../../clubTypes';
 
 interface TimeSeriesData {
   period: string;
@@ -20,12 +21,12 @@ interface TimeSeriesData {
 
 interface PerformanceChartProps {
   data?: TimeSeriesData[];
-  currency?: string;
+  club?: Club;
 }
 
 export const PerformanceChart = ({
   data,
-  currency = 'USD',
+  club,
 }: PerformanceChartProps) => {
   // Use real data or generate sample data for demonstration
   const chartData = data || generateSampleData();
@@ -67,7 +68,7 @@ export const PerformanceChart = ({
   const formatTooltipValue = (value: number, name: string) => {
     const formattedValue = new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency,
+      currency: club?.currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);

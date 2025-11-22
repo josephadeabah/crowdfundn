@@ -2,6 +2,7 @@ import { Card } from '@/app/components/ui/card';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
 import { motion } from 'framer-motion';
+import { Club } from '../../clubTypes';
 
 // Update the StatsCard component interface and implementation:
 interface StatsCardProps {
@@ -11,7 +12,7 @@ interface StatsCardProps {
   changeType: 'positive' | 'negative' | 'neutral';
   icon: LucideIcon;
   loading?: boolean;
-  currency?: string; // Add optional currency prop
+  club?: Club; // Add optional currency prop
 }
 
 export const StatsCard = ({
@@ -21,7 +22,7 @@ export const StatsCard = ({
   changeType,
   icon: Icon,
   loading = false,
-  currency = 'USD', // Default to USD
+  club, // Default to USD
 }: StatsCardProps) => {
   // Enhanced format function that supports currency
   const formatValue = (val: string | number, curr: string = 'USD') => {
@@ -36,7 +37,7 @@ export const StatsCard = ({
     return val;
   };
 
-  const formattedValue = formatValue(value, currency);
+  const formattedValue = formatValue(value, club?.currency);
 
   if (loading) {
     return (

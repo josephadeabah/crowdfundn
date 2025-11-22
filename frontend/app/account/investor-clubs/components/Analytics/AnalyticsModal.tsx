@@ -236,7 +236,7 @@ const OverviewTab: React.FC<{
             portfolio.return_percentage >= 0 ? 'positive' : 'negative'
           }
           icon={DollarSign}
-          currency={club.currency} // Add currency prop
+          club={club} // Add currency prop
         />
         <StatsCard
           title="Total Return"
@@ -246,7 +246,7 @@ const OverviewTab: React.FC<{
             portfolio.return_percentage >= 0 ? 'positive' : 'negative'
           }
           icon={TrendingUp}
-          currency={club.currency} // Add currency prop
+          club={club} // Add currency prop
         />
         <StatsCard
           title="Active Investments"
@@ -279,7 +279,7 @@ const OverviewTab: React.FC<{
                 }))
               : []
           }
-          currency={club.currency} // Add currency prop
+          club={club} // Add currency prop
         />
         <PortfolioChart
           data={
@@ -325,7 +325,7 @@ const OverviewTab: React.FC<{
         />
         <MembersOverview
           data={analytics.member_portfolio}
-          currency={club.currency} // Add currency prop
+          club={club} // Add currency prop
         />
       </div>
     </div>

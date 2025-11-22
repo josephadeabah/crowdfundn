@@ -1,6 +1,7 @@
 import { Card } from '@/app/components/ui/card';
 import { Avatar, AvatarFallback } from '@/app/components/ui/avatar';
 import { motion } from 'framer-motion';
+import { Club } from '../../clubTypes';
 
 interface MemberData {
   member_name: string;
@@ -19,12 +20,12 @@ interface MembersOverviewProps {
       top_contributor: MemberData;
     };
   };
-  currency?: string;
+  club?: Club;
 }
 
 export const MembersOverview = ({
   data,
-  currency = 'USD',
+  club,
 }: MembersOverviewProps) => {
   // Use real data or fallback to empty array
   const members = data?.members || [];
@@ -43,7 +44,7 @@ export const MembersOverview = ({
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency,
+      currency: club?.currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -81,7 +82,7 @@ export const MembersOverview = ({
           </h3>
           {data?.summary_stats && (
             <span className="text-sm text-gray-500">
-              {members.length} members
+              {club?.current_members_count} members
             </span>
           )}
         </div>
