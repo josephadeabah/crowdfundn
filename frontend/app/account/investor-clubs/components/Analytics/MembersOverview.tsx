@@ -84,7 +84,7 @@ export const MembersOverview = ({ data, club }: MembersOverviewProps) => {
           )}
         </div>
         <div className="space-y-4">
-          {members.slice(0, 5).map((member, index) => (
+          {members.slice(0,8).map((member, index) => (
             <motion.div
               key={member.member_name}
               initial={{ opacity: 0, x: 10 }}
