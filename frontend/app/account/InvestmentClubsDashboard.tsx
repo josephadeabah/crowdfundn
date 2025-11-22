@@ -1,4 +1,3 @@
-// app/account/investor-clubs/page.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
@@ -36,7 +35,7 @@ import CreateClubInvestmentModal from './investor-clubs/components/CreateClubInv
 import MemberInvestmentProposalModal from './investor-clubs/components/VotingPanel/MemberInvestmentProposalModal';
 import ApprovedCampaigns from './investor-clubs/components/Sidebar/ApprovedCampaigns';
 import { InvestmentDetailsModal } from './investor-clubs/components/Investments/InvestmentDetailsModal';
-
+import { AnalyticsModal } from './investor-clubs/components/Analytics/AnalyticsModal';
 // Enhanced formatCurrency function to handle null/undefined values and string numbers
 const formatCurrency = (
   amount: number | string | null | undefined,
@@ -147,6 +146,7 @@ const InvestmentClubsDashboard: React.FC = () => {
     useState(false);
   const [isInvestmentDetailsModalOpen, setIsInvestmentDetailsModalOpen] =
     useState(false);
+  const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
   const [selectedInvestment, setSelectedInvestment] =
     useState<ClubInvestment | null>(null);
 
@@ -276,10 +276,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   };
 
   const handleViewAnalytics = () => {
-    setFeatureMessage(
-      'View Analytics feature would open here. This would show detailed performance metrics and investment analytics for the club.',
-    );
-    setFeatureAlert(true);
+    setIsAnalyticsModalOpen(true);
   };
 
   const handleClubCreated = () => {
@@ -604,6 +601,11 @@ const InvestmentClubsDashboard: React.FC = () => {
             formatDate={formatDate}
             onCancelInvestment={handleCancelInvestment} // NEW: Add cancellation to details modal
             onDownloadCertificate={handleDownloadCertificate}
+          />
+
+          <AnalyticsModal
+            isOpen={isAnalyticsModalOpen}
+            onClose={() => setIsAnalyticsModalOpen(false)}
           />
         </>
       )}

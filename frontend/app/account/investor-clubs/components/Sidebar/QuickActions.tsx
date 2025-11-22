@@ -1,4 +1,3 @@
-// app/account/investor-clubs/components/Sidebar/QuickActions.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { DollarSign, TrendingUp, BarChart3, Send, Plus } from 'lucide-react';
