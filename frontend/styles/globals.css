@@ -97,6 +97,16 @@ h6 {
   background: #f1f5f9; /* Color of the scrollbar track for Firefox */
 }
 
+/* Add to your global CSS file */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
 @keyframes bubbleAnimation {
   0% {
     transform: translateY(100vh) scale(0.5);
