@@ -216,7 +216,7 @@ const Hero = () => {
                   </span>
                 </h1>
                 <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
-                  The Ecosystem For Tomorrow's Builders
+                  The Ecosystem For Today's Builders of Tomorrow
                 </p>
               </div>
 
