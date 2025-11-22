@@ -297,6 +297,7 @@ Rails.application.routes.draw do
           collection do
             get :pending
             get :my_membership
+            get :verification
           end
         end
 
@@ -360,7 +361,6 @@ Rails.application.routes.draw do
         resources :approved_campaigns, only: [:index, :show], controller: 'approved_campaigns'
         
         member do
-          get :membership_verification
           get :portfolio
           get :analytics
           get :member_portfolio

@@ -455,37 +455,6 @@ module Api
         end
       end
 
-      # GET /api/v1/investment_clubs/:id/membership_verification
-      def membership_verification
-        if @club
-          membership = @club.membership_for(@current_user)
-          render json: {
-            success: true,
-            club: { id: @club.id, slug: @club.slug, name: @club.name },
-            user: { id: @current_user.id, admin: @current_user.admin? },
-            membership: membership ? {
-              id: membership.id,
-              role: membership.role,
-              status: membership.status,
-              active: membership.active?,
-              contributed_share: membership.contributed_share
-            } : nil,
-            checks: {
-              club_exists: @club.present?,
-              is_member: @club.is_member?(@current_user),
-              is_admin: @club.is_admin?(@current_user),
-              membership_count: @club.investment_club_memberships.count,
-              active_memberships: @club.investment_club_memberships.active.count
-            }
-          }
-        else
-          render json: { 
-            success: false,
-            error: 'Club not found' 
-          }, status: :not_found
-        end
-      end
-
       private
       
       def set_club

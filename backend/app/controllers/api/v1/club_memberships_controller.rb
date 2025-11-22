@@ -241,6 +241,52 @@ module Api
         end
       end
 
+      # GET /api/v1/investment_clubs/:investment_club_id/memberships/verification
+      def verification
+        membership = @club.membership_for(@current_user)
+        
+        render json: {
+          success: true,
+          club: { 
+            id: @club.id, 
+            slug: @club.slug, 
+            name: @club.name,
+            status: @club.status,
+            club_type: @club.club_type,
+            public: @club.public?
+          },
+          user: { 
+            id: @current_user.id, 
+            admin: @current_user.admin?,
+            email: @current_user.email,
+            full_name: @current_user.full_name
+          },
+          membership: membership ? {
+            id: membership.id,
+            role: membership.role,
+            status: membership.status,
+            active: membership.active?,
+            contributed_share: membership.contributed_share,
+            total_contributed: membership.total_contributed,
+            created_at: membership.created_at
+          } : nil,
+          checks: {
+            club_exists: @club.present?,
+            is_member: @club.is_member?(@current_user),
+            is_admin: @club.is_admin?(@current_user),
+            membership_count: @club.investment_club_memberships.count,
+            active_memberships: @club.investment_club_memberships.active.count,
+            pending_memberships: @club.investment_club_memberships.pending.count
+          },
+          access_levels: {
+            can_view_analytics: @club.is_member?(@current_user),
+            can_manage_club: @club.is_admin?(@current_user),
+            can_invest: @club.is_member?(@current_user) && membership&.active?,
+            can_vote: @club.is_member?(@current_user) && membership&.active?
+          }
+        }
+      end
+
       private
 
       def set_club
