@@ -242,7 +242,7 @@ const OverviewTab: React.FC<{
           change: roi,
           isPositive: roi >= 0,
           company_info: {
-            name: investment?.campaign?.company_info?.name || 'Unknown',
+            name: investment?.campaign?.company_name || 'Unknown',
             description: investment?.campaign?.title || '',
             headquarters:
               investment?.campaign?.company_info?.headquarters || 'N/A', // You can add this data if available in your API
