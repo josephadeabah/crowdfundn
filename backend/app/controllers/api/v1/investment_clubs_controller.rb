@@ -458,10 +458,25 @@ module Api
           }
         rescue => e
           Rails.logger.error "Error generating comprehensive analytics: #{e.message}\n#{e.backtrace.join("\n")}"
-          render json: { 
-            success: false,
-            error: 'Failed to generate analytics'
-          }, status: :internal_server_error
+          # Return safe fallback data instead of error
+          portfolio_service = ClubPortfolioService.new(@club)
+          fallback_data = {
+            portfolio_overview: portfolio_service.safe_portfolio_overview,
+            performance_analytics: portfolio_service.safe_performance_analytics,
+            portfolio_insights: portfolio_service.safe_portfolio_insights,
+            financial_health: portfolio_service.safe_financial_health,
+            predictive_analytics: portfolio_service.safe_predictive_analytics,
+            member_portfolio: portfolio_service.safe_member_portfolio,
+            generated_at: Time.current.iso8601,
+            note: "Analytics generated with fallback data due to calculation errors"
+          }
+          
+          render json: {
+            success: true,
+            analytics: fallback_data,
+            generated_at: Time.current.iso8601,
+            warning: "Some analytics data may be incomplete"
+          }
         end
       end
 

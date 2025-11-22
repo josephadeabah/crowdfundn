@@ -39,7 +39,6 @@ class ClubPortfolioService
     }
   end
 
-  # ADD THIS MISSING METHOD:
   def performance_analytics
     portfolio = portfolio_overview
     investments = @club.club_investments.includes(:campaign)
@@ -159,7 +158,7 @@ class ClubPortfolioService
     end
   end
 
-    # NEW: Portfolio Insights and Advanced Analytics
+  # NEW: Portfolio Insights and Advanced Analytics
   def portfolio_insights
     portfolio = portfolio_overview
     investments = @club.club_investments.includes(:campaign)
@@ -173,6 +172,9 @@ class ClubPortfolioService
       member_engagement_insights: member_engagement_insights,
       investment_trends: investment_trends(investments)
     }
+  rescue => e
+    Rails.logger.error "Error in portfolio_insights: #{e.message}"
+    safe_portfolio_insights
   end
 
   # NEW: Financial Health Metrics
@@ -206,6 +208,17 @@ class ClubPortfolioService
       predictive_analytics: predictive_analytics,
       member_portfolio: member_portfolio_summary
     }
+  rescue => e
+    Rails.logger.error "Error in comprehensive_analytics: #{e.message}"
+    # Return safe fallback data
+    {
+      portfolio_overview: safe_portfolio_overview,
+      performance_analytics: safe_performance_analytics,
+      portfolio_insights: safe_portfolio_insights,
+      financial_health: safe_financial_health,
+      predictive_analytics: safe_predictive_analytics,
+      member_portfolio: safe_member_portfolio
+    }
   end
 
   private
@@ -237,15 +250,6 @@ class ClubPortfolioService
     end
   end
 
-  def calculate_roi(investment)
-    current_value = investment.current_value || investment.investment_amount
-    investment_amount = investment.investment_amount
-    
-    return 0 if investment_amount.zero?
-    
-    ((current_value - investment_amount) / investment_amount * 100).round(2)
-  end
-
   def calculate_voting_participation(user)
     total_votable_items = @club.club_investments.voting.count
     return 0 if total_votable_items.zero?
@@ -257,27 +261,6 @@ class ClubPortfolioService
     ).count
 
     (user_votes.to_f / total_votable_items * 100).round(2)
-  end
-
-  def calculate_sector_performance(investments)
-    sectors = investments.group_by do |inv|
-      inv.campaign.category || 'Other'
-    end
-    
-    sectors.transform_values do |sector_investments|
-      total_invested = sector_investments.sum(&:investment_amount)
-      total_value = sector_investments.sum { |inv| inv.current_value || inv.investment_amount }
-      total_return = total_value - total_invested
-      roi_percentage = total_invested > 0 ? (total_return / total_invested * 100).round(2) : 0
-      
-      {
-        count: sector_investments.count,
-        total_invested: total_invested,
-        total_value: total_value,
-        total_return: total_return,
-        roi_percentage: roi_percentage
-      }
-    end
   end
 
   def calculate_monthly_performance(investments)
@@ -317,32 +300,36 @@ class ClubPortfolioService
     (successful.to_f / total * 100).round(2)
   end
 
-    # NEW: Advanced Analytics Private Methods
+  # FIXED: Enhanced performance insights with safe defaults
   def performance_insights(portfolio, successful_investments)
-    return {} if successful_investments.empty?
+    return safe_performance_insights if successful_investments.empty?
 
     best_performer = successful_investments.max_by { |inv| calculate_roi(inv) }
     worst_performer = successful_investments.min_by { |inv| calculate_roi(inv) }
     
     {
       best_performing_investment: {
-        campaign: best_performer.campaign.title,
+        campaign: best_performer.campaign&.title || 'Unknown',
         roi: calculate_roi(best_performer),
-        amount: best_performer.investment_amount
+        amount: best_performer.investment_amount.to_f
       },
       worst_performing_investment: {
-        campaign: worst_performer.campaign.title,
+        campaign: worst_performer.campaign&.title || 'Unknown',
         roi: calculate_roi(worst_performer),
-        amount: worst_performer.investment_amount
+        amount: worst_performer.investment_amount.to_f
       },
       average_holding_period: calculate_average_holding_period(successful_investments),
       volatility_estimate: estimate_portfolio_volatility(successful_investments),
       sharpe_ratio: calculate_sharpe_ratio(portfolio, successful_investments)
     }
+  rescue => e
+    Rails.logger.error "Error in performance_insights: #{e.message}"
+    safe_performance_insights
   end
 
+  # FIXED: Enhanced risk analysis with safe defaults
   def risk_analysis(successful_investments)
-    return {} if successful_investments.empty?
+    return safe_risk_analysis if successful_investments.empty?
 
     {
       concentration_risk: calculate_concentration_risk(successful_investments),
@@ -351,10 +338,13 @@ class ClubPortfolioService
       maximum_drawdown: calculate_maximum_drawdown(successful_investments),
       value_at_risk: calculate_value_at_risk(successful_investments)
     }
+  rescue => e
+    Rails.logger.error "Error in risk_analysis: #{e.message}"
+    safe_risk_analysis
   end
 
   def diversification_metrics(successful_investments)
-    return {} if successful_investments.empty?
+    return safe_diversification_metrics if successful_investments.empty?
 
     sector_diversity = calculate_sector_diversity(successful_investments)
     investment_size_diversity = calculate_investment_size_diversity(successful_investments)
@@ -379,7 +369,7 @@ class ClubPortfolioService
 
   def member_engagement_insights
     total_members = @club.active_members.count
-    return {} if total_members.zero?
+    return safe_member_engagement_insights if total_members.zero?
 
     voting_members = Vote.where(
       votable_type: 'ClubInvestment',
@@ -396,6 +386,9 @@ class ClubPortfolioService
       top_contributors: identify_top_contributors,
       engagement_trend: analyze_engagement_trend
     }
+  rescue => e
+    Rails.logger.error "Error in member_engagement_insights: #{e.message}"
+    safe_member_engagement_insights
   end
 
   def investment_trends(investments)
@@ -414,6 +407,9 @@ class ClubPortfolioService
       investment_velocity: calculate_investment_velocity(trend_data),
       seasonality_patterns: identify_seasonality_patterns(trend_data)
     }
+  rescue => e
+    Rails.logger.error "Error in investment_trends: #{e.message}"
+    safe_investment_trends
   end
 
   def liquidity_ratios
@@ -528,6 +524,80 @@ class ClubPortfolioService
         top_contributor: member_summaries.max_by { |m| m[:contribution_share] }
       }
     }
+  rescue => e
+    Rails.logger.error "Error in member_portfolio_summary: #{e.message}"
+    safe_member_portfolio
+  end
+
+  # FIXED: Safe calculation methods with nil checks
+  def calculate_sector_performance(investments)
+    return {} if investments.empty?
+
+    sectors = investments.group_by do |inv|
+      inv.campaign&.category || 'Other'
+    end
+    
+    sectors.transform_values do |sector_investments|
+      total_invested = sector_investments.sum { |inv| inv.investment_amount.to_f }
+      total_value = sector_investments.sum { |inv| inv.current_value.to_f || inv.investment_amount.to_f }
+      total_return = total_value - total_invested
+      roi_percentage = total_invested > 0 ? (total_return / total_invested * 100).round(2) : 0
+      
+      # Calculate percentage of total portfolio
+      total_portfolio_value = investments.sum { |inv| inv.current_value.to_f || inv.investment_amount.to_f }
+      percentage = total_portfolio_value > 0 ? (total_value / total_portfolio_value * 100).round(2) : 0
+      
+      {
+        count: sector_investments.count,
+        total_invested: total_invested,
+        total_value: total_value,
+        total_return: total_return,
+        roi_percentage: roi_percentage,
+        percentage: percentage
+      }
+    end
+  end
+
+  def calculate_sector_risk(successful_investments)
+    return 0 if successful_investments.empty?
+
+    sector_allocations = calculate_sector_performance(successful_investments)
+    return 0 if sector_allocations.empty?
+    
+    # FIXED: Safe calculation with nil checks
+    max_sector_share = sector_allocations.values.map { |v| v[:percentage].to_f }.max
+    (max_sector_share * 100).round(2)
+  end
+
+  # FIXED: Enhanced ROI calculation with safe defaults
+  def calculate_roi(investment)
+    current_value = investment.current_value || investment.investment_amount
+    investment_amount = investment.investment_amount
+    
+    return 0 if investment_amount.to_f.zero?
+    
+    ((current_value.to_f - investment_amount.to_f) / investment_amount.to_f * 100).round(2)
+  end
+
+  # FIXED: Enhanced other calculation methods with safe defaults
+  def calculate_concentration_risk(investments)
+    total_invested = investments.sum { |inv| inv.investment_amount.to_f }
+    return 0 if total_invested.zero?
+    
+    # Herfindahl-Hirschman Index for concentration
+    shares = investments.map { |inv| (inv.investment_amount.to_f / total_invested) ** 2 }
+    (shares.sum * 10000).round(2) # Scale to typical HHI range
+  rescue => e
+    Rails.logger.error "Error in calculate_concentration_risk: #{e.message}"
+    0
+  end
+
+  def calculate_liquidity_risk_score
+    cash_ratio = @club.current_balance.to_f / [@club.total_contributions.to_f, 1].max
+    (100 - (cash_ratio * 100)).clamp(0, 100).round(2)
+  rescue => e
+    Rails.logger.error "Error in calculate_liquidity_risk_score: #{e.message}"
+    0
   end
 
   # Helper methods for calculations
@@ -562,29 +632,6 @@ class ClubPortfolioService
     ((portfolio_return - risk_free_rate) / volatility).round(3)
   end
 
-  def calculate_concentration_risk(investments)
-    total_invested = investments.sum(&:investment_amount)
-    return 0 if total_invested.zero?
-    
-    # Herfindahl-Hirschman Index for concentration
-    shares = investments.map { |inv| (inv.investment_amount / total_invested) ** 2 }
-    (shares.sum * 10000).round(2) # Scale to typical HHI range
-  end
-
-  def calculate_sector_risk(investments)
-    sector_allocations = calculate_sector_performance(investments)
-    return 0 if sector_allocations.empty?
-    
-    # Risk based on sector concentration
-    max_sector_share = sector_allocations.values.map { |v| v[:percentage] }.max
-    (max_sector_share * 100).round(2)
-  end
-
-  def calculate_liquidity_risk_score
-    cash_ratio = @club.current_balance / [@club.total_contributions, 1].max
-    (100 - (cash_ratio * 100)).clamp(0, 100).round(2)
-  end
-
   def calculate_sector_diversity(investments)
     sector_counts = investments.group_by { |inv| inv.campaign.category || 'Other' }
     total_sectors = sector_counts.size
@@ -593,6 +640,191 @@ class ClubPortfolioService
     {
       score: (total_sectors * 10).clamp(0, 100), # Simple diversity score
       top_sectors: sector_counts.map { |sector, invs| { sector: sector, percentage: (invs.size.to_f / investments.size * 100).round(2) } }.sort_by { |s| -s[:percentage] }.first(3)
+    }
+  end
+
+  # Safe fallback methods
+  def safe_portfolio_overview
+    {
+      total_invested: 0,
+      total_value: 0,
+      total_return: 0,
+      return_percentage: 0,
+      active_investments: 0,
+      investments: [],
+      campaigns_invested: 0,
+      successful_count: 0
+    }
+  end
+
+  def safe_performance_analytics
+    {
+      portfolio_summary: safe_portfolio_overview,
+      performance_metrics: {
+        total_members: @club.active_members.count,
+        total_contributions: @club.total_contributions,
+        member_engagement: 0,
+        investment_success_rate: 0,
+        average_investment_size: 0
+      },
+      sector_breakdown: {},
+      time_analysis: {},
+      investment_status_breakdown: {
+        successful: 0,
+        pending: 0,
+        failed: 0,
+        voting: 0
+      }
+    }
+  end
+
+  def safe_portfolio_insights
+    {
+      performance_insights: safe_performance_insights,
+      risk_analysis: safe_risk_analysis,
+      diversification_metrics: safe_diversification_metrics,
+      liquidity_analysis: safe_liquidity_analysis,
+      member_engagement_insights: safe_member_engagement_insights,
+      investment_trends: safe_investment_trends
+    }
+  end
+
+  def safe_performance_insights
+    {
+      best_performing_investment: {
+        campaign: 'No investments',
+        roi: 0,
+        amount: 0
+      },
+      worst_performing_investment: {
+        campaign: 'No investments',
+        roi: 0,
+        amount: 0
+      },
+      average_holding_period: 0,
+      volatility_estimate: 0,
+      sharpe_ratio: 0
+    }
+  end
+
+  def safe_risk_analysis
+    {
+      concentration_risk: 0,
+      sector_risk: 0,
+      liquidity_risk: 0,
+      maximum_drawdown: 0,
+      value_at_risk: 0
+    }
+  end
+
+  def safe_diversification_metrics
+    {
+      sector_diversity_score: 0,
+      top_sectors: [],
+      investment_concentration: 0,
+      herfindahl_index: 0,
+      recommended_diversification: []
+    }
+  end
+
+  def safe_liquidity_analysis
+    {
+      current_ratio: 0,
+      quick_ratio: 0,
+      cash_flow_coverage: 0,
+      emergency_fund_sufficiency: "Insufficient data"
+    }
+  end
+
+  def safe_member_engagement_insights
+    {
+      voting_participation_rate: 0,
+      contribution_participation_rate: 0,
+      engagement_score: 0,
+      top_contributors: [],
+      engagement_trend: "No data"
+    }
+  end
+
+  def safe_investment_trends
+    {
+      monthly_trends: {},
+      investment_velocity: "No data",
+      seasonality_patterns: {}
+    }
+  end
+
+  def safe_financial_health
+    {
+      liquidity_ratios: {
+        current_ratio: 0,
+        cash_ratio: 0,
+        operating_cash_flow_ratio: 0
+      },
+      contribution_health: {
+        contribution_consistency: "No data",
+        average_monthly_contribution: 0,
+        member_contribution_rate: 0,
+        growth_rate: 0
+      },
+      investment_efficiency: {
+        capital_utilization_rate: 0,
+        return_on_contributions: 0,
+        investment_turnover: 0,
+        fee_efficiency: "No data"
+      },
+      growth_metrics: {
+        month_over_month_growth: 0,
+        quarter_over_quarter_growth: 0,
+        annual_growth_rate: 0,
+        member_growth_rate: 0
+      },
+      stability_indicators: {
+        contribution_volatility: 0,
+        investment_consistency: "No data",
+        member_retention_rate: 0,
+        financial_resilience_score: 0
+      }
+    }
+  end
+
+  def safe_predictive_analytics
+    {
+      growth_projections: {
+        short_term_projection: 0,
+        medium_term_projection: 0,
+        long_term_projection: 0,
+        confidence_interval: "No data"
+      },
+      risk_scenarios: {
+        market_downturn: { impact: 0, probability: "No data" },
+        high_inflation: { impact: 0, probability: "No data" },
+        liquidity_crisis: { impact: 0, probability: "No data" },
+        member_withdrawal: { impact: 0, probability: "No data" }
+      },
+      opportunity_analysis: {
+        underrepresented_sectors: [],
+        high_growth_opportunities: [],
+        portfolio_gaps: [],
+        rebalancing_recommendations: []
+      },
+      cash_flow_forecast: {
+        projected_contributions: 0,
+        expected_investments: 0,
+        liquidity_forecast: "No data",
+        funding_gap_analysis: "No data"
+      }
+    }
+  end
+
+  def safe_member_portfolio
+    {
+      members: [],
+      summary_stats: {
+        average_share: 0,
+        concentration_gini: 0,
+        top_contributor: nil
+      }
     }
   end
 
