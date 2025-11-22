@@ -334,7 +334,7 @@ export const RecentInvestmentsSection: React.FC<
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start gap-2 mb-2">
                     <h4 className="font-semibold text-sm lg:text-base line-clamp-2 flex-1">
-                      {investment?.campaign?.company_info?.name ||
+                      {investment?.campaign?.company_name ||
                         investment?.company ||
                         'Unknown Investment'}
                     </h4>
