@@ -34,13 +34,13 @@ import { investmentClubService } from '../../clubservice';
 interface AnalyticsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  clubSlug: string;
+  club: Club;
 }
 
 export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
   isOpen,
   onClose,
-  clubSlug,
+  club,
 }) => {
   const { token } = useAuth();
   const [analytics, setAnalytics] = useState<ComprehensiveAnalytics | null>(
@@ -51,10 +51,10 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
   const [lastUpdated, setLastUpdated] = useState<string>('');
 
   useEffect(() => {
-    if (isOpen && token && clubSlug) {
+    if (isOpen && token && club) {
       loadAnalytics();
     }
-  }, [isOpen, token, clubSlug]);
+  }, [isOpen, token, club]);
 
   const loadAnalytics = async () => {
     if (!token) return;
@@ -63,7 +63,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
     try {
       const data = await investmentClubService.getComprehensiveAnalytics(
         token,
-        clubSlug,
+        club.id,
       );
       setAnalytics(data);
       setLastUpdated(new Date().toLocaleTimeString());

@@ -628,37 +628,54 @@ export const investmentClubService = {
   // Portfolio Insights
   getPortfolioInsights: async (
     token: string,
-    clubId: string,
+    clubId: string, // Now using club ID instead of slug
   ): Promise<PortfolioInsights> => {
-    const response = await clubService.getPortfolioInsights(token, clubId);
+    const response = await apiCall(
+      `/investment_clubs/${clubId}/portfolio_insights`,
+      token,
+    );
     return response.insights;
   },
 
   // Financial Health
   getFinancialHealth: async (
     token: string,
-    clubId: string,
+    clubId: string, // Now using club ID instead of slug
   ): Promise<FinancialHealthMetrics> => {
-    const response = await clubService.getFinancialHealth(token, clubId);
+    const response = await apiCall(
+      `/investment_clubs/${clubId}/financial_health`,
+      token,
+    );
     return response.financial_health;
   },
 
   // Predictive Analytics
   getPredictiveAnalytics: async (
     token: string,
-    clubId: string,
+    clubId: string, // Now using club ID instead of slug
   ): Promise<PredictiveAnalytics> => {
-    const response = await clubService.getPredictiveAnalytics(token, clubId);
+    const response = await apiCall(
+      `/investment_clubs/${clubId}/predictive_analytics`,
+      token,
+    );
     return response.predictive_analytics;
   },
 
-  // Comprehensive Analytics
+  // Comprehensive Analytics - FIXED: Now uses club ID
   getComprehensiveAnalytics: async (
     token: string,
-    clubId: string,
+    clubId: string, // Now using club ID instead of slug
   ): Promise<ComprehensiveAnalytics> => {
-    const response = await clubService.getComprehensiveAnalytics(token, clubId);
+    const response = await apiCall(
+      `/investment_clubs/${clubId}/comprehensive_analytics`,
+      token,
+    );
     return response.analytics;
+  },
+
+  // Get club by ID (for when you need to convert slug to ID)
+  getClub: async (token: string, clubId: string): Promise<any> => {
+    return apiCall(`/investment_clubs/${clubId}`, token);
   },
 };
 

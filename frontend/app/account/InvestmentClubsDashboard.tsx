@@ -606,7 +606,7 @@ const InvestmentClubsDashboard: React.FC = () => {
           <AnalyticsModal
             isOpen={isAnalyticsModalOpen}
             onClose={() => setIsAnalyticsModalOpen(false)}
-            clubSlug={currentClub.slug}
+            club={currentClub}
           />
         </>
       )}
