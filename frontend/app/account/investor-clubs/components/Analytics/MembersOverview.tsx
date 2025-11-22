@@ -100,7 +100,7 @@ export const MembersOverview = ({ data }: MembersOverviewProps) => {
                   {member.member_name}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {member.contribution_share.toFixed(1)}% of total
+                  {Number(member.contribution_share).toFixed(1)}% of total
                 </p>
               </div>
               <div className="text-right">
