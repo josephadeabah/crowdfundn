@@ -207,7 +207,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
 const OverviewTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
-  club: Club; // Add club prop
+  club: Club;
 }> = ({ analytics, loading, club }) => {
   if (loading) {
     return <LoadingSkeleton />;
@@ -219,6 +219,37 @@ const OverviewTab: React.FC<{
 
   const portfolio = analytics.portfolio_overview;
   const performance = analytics.performance_analytics;
+
+  // Transform portfolio investments for TopAssets
+  const transformInvestmentsForTopAssets = () => {
+    if (!portfolio.investments || portfolio.investments.length === 0) {
+      return [];
+    }
+
+    return portfolio.investments
+      .filter((inv) => inv.current_value && Number(inv.current_value) > 0)
+      .sort((a, b) => Number(b.current_value) - Number(a.current_value))
+      .slice(0, 5)
+      .map((investment) => {
+        const currentValue = Number(investment.current_value);
+        const investmentAmount = Number(investment.investment_amount);
+        const roi =
+          ((currentValue - investmentAmount) / (investmentAmount || 1)) * 100;
+
+        return {
+          name: investment?.campaign?.title || 'Unknown',
+          value: currentValue,
+          change: roi,
+          isPositive: roi >= 0,
+          company_info: {
+            name: investment?.campaign?.company_info?.name || 'Unknown',
+            description: investment?.campaign?.title || '',
+            headquarters:
+              investment?.campaign?.company_info?.headquarters || 'N/A', // You can add this data if available in your API
+          },
+        };
+      });
+  };
 
   return (
     <div className="space-y-6">
@@ -236,7 +267,7 @@ const OverviewTab: React.FC<{
             portfolio.return_percentage >= 0 ? 'positive' : 'negative'
           }
           icon={DollarSign}
-          club={club} // Add currency prop
+          club={club}
         />
         <StatsCard
           title="Total Return"
@@ -246,7 +277,7 @@ const OverviewTab: React.FC<{
             portfolio.return_percentage >= 0 ? 'positive' : 'negative'
           }
           icon={TrendingUp}
-          club={club} // Add currency prop
+          club={club}
         />
         <StatsCard
           title="Active Investments"
@@ -279,7 +310,7 @@ const OverviewTab: React.FC<{
                 }))
               : []
           }
-          club={club} // Add currency prop
+          club={club}
         />
         <PortfolioChart
           data={
@@ -293,40 +324,17 @@ const OverviewTab: React.FC<{
                 }))
               : []
           }
-          currency={club.currency} // Add currency prop
+          currency={club.currency}
         />
       </div>
 
       {/* Bottom Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TopAssets
-          data={
-            analytics.portfolio_insights?.performance_insights
-              ? [
-                  {
-                    name:
-                      analytics.portfolio_insights.performance_insights
-                        .best_performing_investment?.campaign ||
-                      'Top Performer',
-                    value: Number(
-                      analytics.portfolio_insights.performance_insights
-                        .best_performing_investment?.amount || 0,
-                    ),
-                    change: Number(
-                      analytics.portfolio_insights.performance_insights
-                        .best_performing_investment?.roi || 0,
-                    ),
-                    isPositive: true,
-                  },
-                ]
-              : []
-          }
-          currency={club.currency} // Add currency prop
+          data={transformInvestmentsForTopAssets()}
+          currency={club.currency}
         />
-        <MembersOverview
-          data={analytics.member_portfolio}
-          club={club} // Add currency prop
-        />
+        <MembersOverview data={analytics.member_portfolio} club={club} />
       </div>
     </div>
   );
@@ -456,9 +464,9 @@ const InsightsTab: React.FC<{
                   title="Best Performer"
                   value={
                     insights.performance_insights.best_performing_investment
-                      ?.campaign
+                      ?.campaign || 'Unknown'
                   }
-                  metric={`+${insights.performance_insights.best_performing_investment?.roi}% ROI`}
+                  metric={`+${insights.performance_insights.best_performing_investment?.roi || 0}% ROI`}
                   type="positive"
                 />
                 <InsightItem
@@ -559,7 +567,9 @@ const HealthTab: React.FC<{
           value={health?.liquidity_ratios?.current_ratio || 0}
           idealRange="> 1.5"
           status={
-            health?.liquidity_ratios?.current_ratio > 1.5 ? 'good' : 'warning'
+            Number(health?.liquidity_ratios?.current_ratio ?? 0) > 1.5
+              ? 'good'
+              : 'warning'
           }
         />
         <HealthMetric
@@ -567,15 +577,19 @@ const HealthTab: React.FC<{
           value={`${health?.contribution_health?.growth_rate || 0}%`}
           idealRange="> 5%"
           status={
-            health?.contribution_health?.growth_rate > 5 ? 'good' : 'warning'
+            Number(health?.contribution_health?.growth_rate ?? 0) > 5
+              ? 'good'
+              : 'warning'
           }
         />
         <HealthMetric
           title="Investment Efficiency"
-          value={`${Math.round((health?.investment_efficiency?.capital_utilization_rate || 0) * 100)}%`}
+          value={`${Math.round(Number(health?.investment_efficiency?.capital_utilization_rate ?? 0) * 100)}%`}
           idealRange="> 80%"
           status={
-            (health?.investment_efficiency?.capital_utilization_rate || 0) > 0.8
+            Number(
+              health?.investment_efficiency?.capital_utilization_rate ?? 0,
+            ) > 0.8
               ? 'good'
               : 'warning'
           }
@@ -624,19 +638,23 @@ const PredictiveTab: React.FC<{
           <div className="space-y-4">
             <ProjectionItem
               period="6 Months"
-              value={predictive?.growth_projections?.short_term_projection || 0}
+              value={Number(
+                predictive?.growth_projections?.short_term_projection || 0,
+              )}
               currentValue={analytics.portfolio_overview.total_value}
             />
             <ProjectionItem
               period="1 Year"
-              value={
-                predictive?.growth_projections?.medium_term_projection || 0
-              }
+              value={Number(
+                predictive?.growth_projections?.medium_term_projection || 0,
+              )}
               currentValue={analytics.portfolio_overview.total_value}
             />
             <ProjectionItem
               period="5 Years"
-              value={predictive?.growth_projections?.long_term_projection || 0}
+              value={Number(
+                predictive?.growth_projections?.long_term_projection || 0,
+              )}
               currentValue={analytics.portfolio_overview.total_value}
             />
           </div>

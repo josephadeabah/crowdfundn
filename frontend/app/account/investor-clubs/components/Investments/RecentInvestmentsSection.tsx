@@ -208,16 +208,6 @@ export const RecentInvestmentsSection: React.FC<
   const canBeCancelled = (investment: ClubInvestment): boolean => {
     const isCancellable = investment.can_be_cancelled === true;
 
-    // Debug log
-    if (isCancellable) {
-      console.log('🎯 INVESTMENT IS CANCELLABLE:', {
-        id: investment.id,
-        status: investment.status,
-        can_be_cancelled: investment.can_be_cancelled,
-        time_remaining: investment.time_remaining_for_cancellation,
-      });
-    }
-
     return isCancellable;
   };
 
@@ -286,14 +276,6 @@ export const RecentInvestmentsSection: React.FC<
   const hasCancellableInvestments = investments?.some((investment) =>
     canBeCancelled(investment),
   );
-
-  console.log('📊 CANCELLATION SUMMARY:', {
-    totalInvestments: investments?.length,
-    hasCancellableInvestments,
-    cancellableIds: investments
-      ?.filter((inv) => canBeCancelled(inv))
-      .map((inv) => inv.id),
-  });
 
   return (
     <motion.div

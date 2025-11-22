@@ -24,10 +24,7 @@ interface PerformanceChartProps {
   club?: Club;
 }
 
-export const PerformanceChart = ({
-  data,
-  club,
-}: PerformanceChartProps) => {
+export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
   // Use real data or generate sample data for demonstration
   const chartData = data || generateSampleData();
 

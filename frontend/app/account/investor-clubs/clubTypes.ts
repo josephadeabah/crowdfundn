@@ -125,6 +125,10 @@ export interface ClubInvestment {
     current_amount?: number;
     company_info?: {
       name: string;
+      description?: string;
+      headquarters?: string;
+      website?: string;
+      contract_term?: string;
     };
   };
   created_by?: {
@@ -154,6 +158,26 @@ export interface ClubInvestment {
   cancelled_at?: string | null;
   committed_at?: string | null;
   time_remaining_for_cancellation?: string;
+}
+
+// NEW: Asset data types for TopAssets component
+export interface AssetData {
+  name: string;
+  ticker?: string;
+  value: number;
+  change: number;
+  isPositive: boolean;
+  company_info?: {
+    name: string;
+    description?: string;
+    headquarters?: string;
+    website?: string;
+  };
+}
+
+export interface TopAssetsData {
+  data?: AssetData[];
+  currency?: string;
 }
 
 // NEW: Cancellation request and response types
@@ -186,18 +210,6 @@ export interface ClubInvestmentExecutionResult {
   error?: string;
 }
 
-// NEW: Cancellation request and response types
-export interface CancelInvestmentRequest {
-  reason?: string;
-}
-
-export interface CancelInvestmentResponse {
-  success: boolean;
-  message?: string;
-  investment?: ClubInvestment;
-  error?: string;
-}
-
 // UPDATED: Portfolio API Response Types
 export interface PortfolioInvestment {
   id: number;
@@ -216,6 +228,12 @@ export interface PortfolioInvestment {
     currency: string;
     currency_symbol: string | null;
     category?: string;
+    company_info?: {
+      name: string;
+      description?: string;
+      headquarters?: string;
+      website?: string;
+    };
   };
   // NEW: Cancellation properties for portfolio investments
   cancel_window_expires_at?: string | null;
@@ -443,6 +461,14 @@ export interface ApiInvestmentResponse {
   total_returns: string;
   roi: string;
   investment_date: string | null;
+  // NEW: Company info for equity investments
+  company_info?: {
+    name: string;
+    description?: string;
+    headquarters?: string;
+    website?: string;
+    contract_term?: string;
+  };
   // NEW: Cancellation properties for API response
   cancel_window_expires_at?: string | null;
   can_be_cancelled?: boolean;
@@ -479,6 +505,10 @@ export interface InvestmentDetailsData {
     current_amount?: number;
     company_info?: {
       name: string;
+      description?: string;
+      headquarters?: string;
+      website?: string;
+      contract_term?: string;
     };
   };
   created_at: string;
@@ -542,35 +572,198 @@ export interface InvestmentCreationData {
 
 // Add these new interfaces for analytics
 export interface PortfolioInsights {
-  performance_insights: any;
-  risk_analysis: any;
-  diversification_metrics: any;
-  liquidity_analysis: any;
-  member_engagement_insights: any;
-  investment_trends: any;
+  performance_insights: {
+    best_performing_investment?: {
+      campaign: string;
+      roi: number;
+      amount: number;
+    };
+    worst_performing_investment?: {
+      campaign: string;
+      roi: number;
+      amount: number;
+    };
+    average_holding_period: number;
+    volatility_estimate: number;
+    sharpe_ratio: number;
+  };
+  risk_analysis: {
+    concentration_risk: number;
+    sector_risk: number;
+    liquidity_risk: number;
+    maximum_drawdown: number;
+    value_at_risk: number;
+  };
+  diversification_metrics: {
+    sector_diversity_score: number;
+    top_sectors: Array<{
+      sector: string;
+      percentage: number;
+    }>;
+    investment_concentration: number;
+    herfindahl_index: number;
+    recommended_diversification: string[];
+  };
+  liquidity_analysis: {
+    current_ratio: string;
+    quick_ratio: string;
+    cash_flow_coverage: number;
+    emergency_fund_sufficiency: string;
+  };
+  member_engagement_insights: {
+    voting_participation_rate: number;
+    contribution_participation_rate: number;
+    engagement_score: number;
+    top_contributors: any[];
+    engagement_trend: string;
+  };
+  investment_trends: {
+    monthly_trends: Record<
+      string,
+      {
+        count: number;
+        total_amount: string;
+        success_rate: number;
+      }
+    >;
+    investment_velocity: string;
+    seasonality_patterns: Record<string, any>;
+  };
 }
 
 export interface FinancialHealthMetrics {
-  liquidity_ratios: any;
-  contribution_health: any;
-  investment_efficiency: any;
-  growth_metrics: any;
-  stability_indicators: any;
+  liquidity_ratios: {
+    current_ratio: string;
+    cash_ratio: string;
+    operating_cash_flow_ratio: number;
+  };
+  contribution_health: {
+    contribution_consistency: string;
+    average_monthly_contribution: string;
+    member_contribution_rate: number;
+    growth_rate: number;
+  };
+  investment_efficiency: {
+    capital_utilization_rate: string;
+    return_on_contributions: string;
+    investment_turnover: number;
+    fee_efficiency: string;
+  };
+  growth_metrics: {
+    month_over_month_growth: number;
+    quarter_over_quarter_growth: number;
+    annual_growth_rate: number;
+    member_growth_rate: number;
+  };
+  stability_indicators: {
+    contribution_volatility: number;
+    investment_consistency: string;
+    member_retention_rate: number;
+    financial_resilience_score: number;
+  };
 }
 
 export interface PredictiveAnalytics {
-  growth_projections: any;
-  risk_scenarios: any;
-  opportunity_analysis: any;
-  cash_flow_forecast: any;
+  growth_projections: {
+    short_term_projection: string;
+    medium_term_projection: string;
+    long_term_projection: string;
+    confidence_interval: string;
+  };
+  risk_scenarios: {
+    market_downturn: {
+      impact: number;
+      probability: string;
+    };
+    high_inflation: {
+      impact: number;
+      probability: string;
+    };
+    liquidity_crisis: {
+      impact: number;
+      probability: string;
+    };
+    member_withdrawal: {
+      impact: number;
+      probability: string;
+    };
+  };
+  opportunity_analysis: {
+    underrepresented_sectors: string[];
+    high_growth_opportunities: string[];
+    portfolio_gaps: string[];
+    rebalancing_recommendations: string[];
+    underserved_sectors: string[];
+  };
+  cash_flow_forecast: {
+    projected_contributions: number;
+    expected_investments: string;
+    liquidity_forecast: string;
+    funding_gap_analysis: string;
+  };
+}
+
+export interface MemberPortfolioData {
+  members: Array<{
+    member_name: string;
+    contribution_share: number;
+    total_contributed: number;
+    estimated_portfolio_value: number;
+    engagement_level: string;
+  }>;
+  summary_stats?: {
+    average_share: number;
+    concentration_gini: number;
+    top_contributor: {
+      member_name: string;
+      contribution_share: number;
+      total_contributed: number;
+      estimated_portfolio_value: number;
+      engagement_level: string;
+    };
+  };
 }
 
 export interface ComprehensiveAnalytics {
   portfolio_overview: ClubInvestmentPortfolio;
-  performance_analytics: any;
+  performance_analytics: {
+    portfolio_summary: ClubInvestmentPortfolio;
+    performance_metrics: {
+      total_members: number;
+      total_contributions: number;
+      member_engagement: number;
+      investment_success_rate: number;
+      average_investment_size: number;
+    };
+    sector_breakdown: Record<
+      string,
+      {
+        count: number;
+        total_invested: number;
+        total_value: number;
+        total_return: number;
+        roi_percentage: number;
+        percentage: number;
+      }
+    >;
+    time_analysis: Record<
+      string,
+      {
+        investments_count: number;
+        total_invested: string;
+        successful_investments: number;
+      }
+    >;
+    investment_status_breakdown: {
+      successful: number;
+      pending: number;
+      failed: number;
+      voting: number;
+    };
+  };
   portfolio_insights: PortfolioInsights;
   financial_health: FinancialHealthMetrics;
   predictive_analytics: PredictiveAnalytics;
-  member_portfolio: any;
+  member_portfolio: MemberPortfolioData;
   generated_at: string;
 }

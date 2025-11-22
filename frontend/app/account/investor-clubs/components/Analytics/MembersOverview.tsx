@@ -23,10 +23,7 @@ interface MembersOverviewProps {
   club?: Club;
 }
 
-export const MembersOverview = ({
-  data,
-  club,
-}: MembersOverviewProps) => {
+export const MembersOverview = ({ data, club }: MembersOverviewProps) => {
   // Use real data or fallback to empty array
   const members = data?.members || [];
 

@@ -6,9 +6,15 @@ import { motion } from 'framer-motion';
 interface AssetData {
   name: string;
   ticker?: string;
-  value: number; // Changed from string to number
-  change: number; // Changed from string to number
+  value: number;
+  change: number;
   isPositive: boolean;
+  company_info?: {
+    name: string;
+    description?: string;
+    headquarters?: string;
+    website?: string;
+  };
 }
 
 interface TopAssetsProps {
@@ -26,37 +32,62 @@ export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {
       {
         name: 'Technology Fund',
         ticker: 'TECH',
-        value: 45230, // Changed to number
-        change: 12.5, // Changed to number
+        value: 45230,
+        change: 12.5,
         isPositive: true,
+        company_info: {
+          name: 'Tech Innovations Inc.',
+          description: 'Leading technology solutions provider',
+          headquarters: 'San Francisco, CA',
+        },
       },
       {
         name: 'Real Estate Trust',
         ticker: 'REIT',
-        value: 38450, // Changed to number
-        change: 8.3, // Changed to number
+        value: 38450,
+        change: 8.3,
         isPositive: true,
+        company_info: {
+          name: 'Premium Properties Ltd.',
+          description: 'Commercial real estate development',
+          headquarters: 'New York, NY',
+        },
       },
       {
         name: 'Healthcare ETF',
         ticker: 'HEAL',
-        value: 32100, // Changed to number
-        change: 15.7, // Changed to number
+        value: 32100,
+        change: 15.7,
         isPositive: true,
+        company_info: {
+          name: 'MedTech Solutions',
+          description: 'Healthcare technology and services',
+          headquarters: 'Boston, MA',
+        },
       },
       {
         name: 'Consumer Index',
         ticker: 'CONS',
-        value: 28900, // Changed to number
-        change: 6.2, // Changed to number
+        value: 28900,
+        change: 6.2,
         isPositive: true,
+        company_info: {
+          name: 'Consumer Brands Group',
+          description: 'Portfolio of consumer product companies',
+          headquarters: 'Chicago, IL',
+        },
       },
       {
         name: 'Energy Sector',
         ticker: 'NRG',
-        value: 25780, // Changed to number
-        change: -2.1, // Changed to number
+        value: 25780,
+        change: -2.1,
         isPositive: false,
+        company_info: {
+          name: 'Clean Energy Corp',
+          description: 'Renewable energy solutions',
+          headquarters: 'Houston, TX',
+        },
       },
     ];
   }
@@ -106,44 +137,54 @@ export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {
           Top Performing Assets
         </h3>
         <div className="space-y-4">
-          {assets.map((asset, index) => (
-            <motion.div
-              key={asset.name}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 + index * 0.1 }}
-              className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0"
-            >
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 truncate">
-                  {asset.name}
-                </p>
-                {asset.ticker && (
-                  <p className="text-sm text-gray-500">{asset.ticker}</p>
-                )}
-              </div>
-              <div className="text-right">
-                <p className="font-semibold text-gray-900">
-                  {formatCurrency(asset.value)}
-                </p>
-                <div className="flex items-center gap-1 justify-end">
-                  {asset.isPositive ? (
-                    <TrendingUp className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <TrendingDown className="h-4 w-4 text-red-500" />
-                  )}
-                  <p
-                    className={cn(
-                      'text-sm font-medium',
-                      asset.isPositive ? 'text-green-600' : 'text-red-600',
-                    )}
-                  >
-                    {formatPercentage(asset.change)}
+          {assets.map((asset, index) => {
+            // Use company_info.name if available, otherwise fall back to asset.name
+            const displayName = asset.company_info?.name || asset.name;
+
+            return (
+              <motion.div
+                key={asset.name}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 + index * 0.1 }}
+                className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-gray-900 truncate">
+                    {displayName}
                   </p>
+                  {asset.ticker && (
+                    <p className="text-sm text-gray-500">{asset.ticker}</p>
+                  )}
+                  {asset.company_info?.description && (
+                    <p className="text-xs text-gray-400 truncate mt-1">
+                      {asset.company_info.description}
+                    </p>
+                  )}
                 </div>
-              </div>
-            </motion.div>
-          ))}
+                <div className="text-right">
+                  <p className="font-semibold text-gray-900">
+                    {formatCurrency(asset.value)}
+                  </p>
+                  <div className="flex items-center gap-1 justify-end">
+                    {asset.isPositive ? (
+                      <TrendingUp className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <TrendingDown className="h-4 w-4 text-red-500" />
+                    )}
+                    <p
+                      className={cn(
+                        'text-sm font-medium',
+                        asset.isPositive ? 'text-green-600' : 'text-red-600',
+                      )}
+                    >
+                      {formatPercentage(asset.change)}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Summary */}
