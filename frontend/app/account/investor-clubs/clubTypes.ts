@@ -540,12 +540,37 @@ export interface InvestmentCreationData {
   fee_breakdown?: InvestmentFeeBreakdown;
 }
 
-// NEW: Club investment service types
-// export interface ClubInvestmentService {
-//   createInvestment: (token: string, clubId: string, data: InvestmentCreationData) => Promise<ClubInvestmentExecutionResult>;
-//   executeInvestment: (token: string, clubSlug: string, investmentId: string) => Promise<ClubInvestmentExecutionResult>;
-//   cancelInvestment: (token: string, clubSlug: string, investmentId: string, reason?: string) => Promise<CancelInvestmentResponse>;
-//   downloadCertificate: (token: string, clubSlug: string, investmentId: string) => Promise<BaseResponse>;
-//   getCertificateStatus: (token: string, clubSlug: string, investmentId: string) => Promise<ClubInvestmentCertificateStatus>;
-//   generateCertificate: (token: string, clubSlug: string, investmentId: string) => Promise<BaseResponse>;
-// }
+// Add these new interfaces for analytics
+export interface PortfolioInsights {
+  performance_insights: any;
+  risk_analysis: any;
+  diversification_metrics: any;
+  liquidity_analysis: any;
+  member_engagement_insights: any;
+  investment_trends: any;
+}
+
+export interface FinancialHealthMetrics {
+  liquidity_ratios: any;
+  contribution_health: any;
+  investment_efficiency: any;
+  growth_metrics: any;
+  stability_indicators: any;
+}
+
+export interface PredictiveAnalytics {
+  growth_projections: any;
+  risk_scenarios: any;
+  opportunity_analysis: any;
+  cash_flow_forecast: any;
+}
+
+export interface ComprehensiveAnalytics {
+  portfolio_overview: ClubInvestmentPortfolio;
+  performance_analytics: any;
+  portfolio_insights: PortfolioInsights;
+  financial_health: FinancialHealthMetrics;
+  predictive_analytics: PredictiveAnalytics;
+  member_portfolio: any;
+  generated_at: string;
+}

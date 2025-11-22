@@ -24,6 +24,10 @@ import {
   ApprovedCampaign,
   CancelInvestmentRequest,
   CancelInvestmentResponse,
+  ComprehensiveAnalytics,
+  PortfolioInsights,
+  FinancialHealthMetrics,
+  PredictiveAnalytics,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -212,6 +216,47 @@ export const clubService = {
       method: 'POST',
       body: JSON.stringify({ new_admin_id: newAdminId }),
     });
+  },
+
+  // NEW: Portfolio Insights
+  getPortfolioInsights: async (
+    token: string,
+    clubId: string,
+  ): Promise<{ success: boolean; insights: PortfolioInsights }> => {
+    return apiCall(`/investment_clubs/${clubId}/portfolio_insights`, token);
+  },
+
+  // NEW: Financial Health
+  getFinancialHealth: async (
+    token: string,
+    clubId: string,
+  ): Promise<{
+    success: boolean;
+    financial_health: FinancialHealthMetrics;
+  }> => {
+    return apiCall(`/investment_clubs/${clubId}/financial_health`, token);
+  },
+
+  // NEW: Predictive Analytics
+  getPredictiveAnalytics: async (
+    token: string,
+    clubId: string,
+  ): Promise<{
+    success: boolean;
+    predictive_analytics: PredictiveAnalytics;
+  }> => {
+    return apiCall(`/investment_clubs/${clubId}/predictive_analytics`, token);
+  },
+
+  // NEW: Comprehensive Analytics
+  getComprehensiveAnalytics: async (
+    token: string,
+    clubId: string,
+  ): Promise<{ success: boolean; analytics: ComprehensiveAnalytics }> => {
+    return apiCall(
+      `/investment_clubs/${clubId}/comprehensive_analytics`,
+      token,
+    );
   },
 };
 
@@ -575,6 +620,45 @@ export const approvedCampaignsService = {
     return response.success && Array.isArray(response.approved_campaigns)
       ? response.approved_campaigns
       : [];
+  },
+};
+
+// Export the main investmentClubService that includes all analytics methods
+export const investmentClubService = {
+  // Portfolio Insights
+  getPortfolioInsights: async (
+    token: string,
+    clubId: string,
+  ): Promise<PortfolioInsights> => {
+    const response = await clubService.getPortfolioInsights(token, clubId);
+    return response.insights;
+  },
+
+  // Financial Health
+  getFinancialHealth: async (
+    token: string,
+    clubId: string,
+  ): Promise<FinancialHealthMetrics> => {
+    const response = await clubService.getFinancialHealth(token, clubId);
+    return response.financial_health;
+  },
+
+  // Predictive Analytics
+  getPredictiveAnalytics: async (
+    token: string,
+    clubId: string,
+  ): Promise<PredictiveAnalytics> => {
+    const response = await clubService.getPredictiveAnalytics(token, clubId);
+    return response.predictive_analytics;
+  },
+
+  // Comprehensive Analytics
+  getComprehensiveAnalytics: async (
+    token: string,
+    clubId: string,
+  ): Promise<ComprehensiveAnalytics> => {
+    const response = await clubService.getComprehensiveAnalytics(token, clubId);
+    return response.analytics;
   },
 };
 

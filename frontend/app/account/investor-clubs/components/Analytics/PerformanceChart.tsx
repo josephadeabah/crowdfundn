@@ -7,26 +7,78 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import { motion } from 'framer-motion';
 
-const data = [
-  { month: 'Jan', portfolio: 125000, contributions: 120000, growth: 5000 },
-  { month: 'Feb', portfolio: 132000, contributions: 125000, growth: 7000 },
-  { month: 'Mar', portfolio: 128000, contributions: 130000, growth: -2000 },
-  { month: 'Apr', portfolio: 145000, contributions: 135000, growth: 10000 },
-  { month: 'May', portfolio: 152000, contributions: 140000, growth: 12000 },
-  { month: 'Jun', portfolio: 168000, contributions: 145000, growth: 23000 },
-  { month: 'Jul', portfolio: 175000, contributions: 150000, growth: 25000 },
-  { month: 'Aug', portfolio: 182000, contributions: 155000, growth: 27000 },
-  { month: 'Sep', portfolio: 178000, contributions: 160000, growth: 18000 },
-  { month: 'Oct', portfolio: 195000, contributions: 165000, growth: 30000 },
-  { month: 'Nov', portfolio: 208000, contributions: 170000, growth: 38000 },
-  { month: 'Dec', portfolio: 224500, contributions: 175000, growth: 49500 },
-];
+interface TimeSeriesData {
+  period: string;
+  portfolio_value: number;
+  contributions?: number;
+  investments?: number;
+  returns?: number;
+}
 
-export const PerformanceChart = () => {
+interface PerformanceChartProps {
+  data?: TimeSeriesData[];
+}
+
+export const PerformanceChart = ({ data }: PerformanceChartProps) => {
+  // Use real data or generate sample data for demonstration
+  const chartData = data || generateSampleData();
+
+  // Function to generate sample data if no real data
+  function generateSampleData() {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    let portfolioValue = 100000;
+
+    return months.map((month, index) => {
+      const growth = Math.random() * 10000 - 2000; // Random growth between -2k and +8k
+      const contributions = Math.random() * 15000 + 5000; // Random contributions between 5k and 20k
+      portfolioValue += contributions + growth;
+
+      return {
+        period: month,
+        portfolio_value: Math.round(portfolioValue),
+        contributions: Math.round(contributions),
+        returns: Math.round(growth),
+      };
+    });
+  }
+
+  // Custom tooltip formatter
+  const formatTooltipValue = (value: number, name: string) => {
+    const formattedValue = `$${value.toLocaleString()}`;
+    const labelMap: { [key: string]: string } = {
+      portfolio_value: 'Portfolio Value',
+      contributions: 'Contributions',
+      returns: 'Returns',
+    };
+    return [formattedValue, labelMap[name] || name];
+  };
+
+  // Format Y-axis values
+  const formatYAxis = (value: number) => {
+    if (value >= 1000000) {
+      return `$${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `$${(value / 1000).toFixed(0)}k`;
+    }
+    return `$${value}`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -38,17 +90,20 @@ export const PerformanceChart = () => {
           Performance Over Time
         </h3>
         <ResponsiveContainer width="100%" height={250} minWidth={0}>
-          <LineChart data={data}>
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
             <XAxis
-              dataKey="month"
+              dataKey="period"
               stroke="#6B7280"
               tick={{ fill: '#6B7280', fontSize: 12 }}
             />
             <YAxis
               stroke="#6B7280"
               tick={{ fill: '#6B7280', fontSize: 12 }}
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              tickFormatter={formatYAxis}
             />
             <Tooltip
               contentStyle={{
@@ -57,32 +112,27 @@ export const PerformanceChart = () => {
                 borderRadius: '6px',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
               }}
-              formatter={(value: number, name: string) => {
-                const formattedValue = `$${value.toLocaleString()}`;
-                const label = name === 'portfolio' ? 'Portfolio Value' : 
-                             name === 'contributions' ? 'Total Contributions' : 
-                             'Growth';
-                return [formattedValue, label];
-              }}
+              formatter={formatTooltipValue}
               labelStyle={{ color: '#374151', fontWeight: 600 }}
             />
             <Line
               type="monotone"
-              dataKey="portfolio"
+              dataKey="portfolio_value"
               stroke="#10B981" // Emerald-500
               strokeWidth={3}
-              dot={{ 
+              dot={{
                 fill: '#10B981',
                 stroke: '#FFFFFF',
                 strokeWidth: 2,
-                r: 4 
+                r: 4,
               }}
-              activeDot={{ 
-                r: 6, 
+              activeDot={{
+                r: 6,
                 fill: '#059669', // Emerald-600
                 stroke: '#FFFFFF',
-                strokeWidth: 2
+                strokeWidth: 2,
               }}
+              name="portfolio_value"
             />
             <Line
               type="monotone"
@@ -90,40 +140,42 @@ export const PerformanceChart = () => {
               stroke="#22C55E" // Green-500
               strokeWidth={2}
               strokeDasharray="5 5"
-              dot={{ 
+              dot={{
                 fill: '#22C55E',
                 stroke: '#FFFFFF',
                 strokeWidth: 2,
-                r: 3 
+                r: 3,
               }}
-              activeDot={{ 
-                r: 5, 
+              activeDot={{
+                r: 5,
                 fill: '#16A34A', // Green-600
                 stroke: '#FFFFFF',
-                strokeWidth: 2
+                strokeWidth: 2,
               }}
+              name="contributions"
             />
             <Line
               type="monotone"
-              dataKey="growth"
+              dataKey="returns"
               stroke="#F97316" // Orange-500
               strokeWidth={2}
-              dot={{ 
+              dot={{
                 fill: '#F97316',
                 stroke: '#FFFFFF',
                 strokeWidth: 2,
-                r: 3 
+                r: 3,
               }}
-              activeDot={{ 
-                r: 5, 
+              activeDot={{
+                r: 5,
                 fill: '#EA580C', // Orange-600
                 stroke: '#FFFFFF',
-                strokeWidth: 2
+                strokeWidth: 2,
               }}
+              name="returns"
             />
           </LineChart>
         </ResponsiveContainer>
-        
+
         {/* Custom Legend */}
         <div className="flex items-center justify-center gap-6 mt-4">
           <div className="flex items-center gap-2">
@@ -136,7 +188,7 @@ export const PerformanceChart = () => {
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-0.5 bg-orange-500"></div>
-            <span className="text-sm text-gray-600">Growth</span>
+            <span className="text-sm text-gray-600">Returns</span>
           </div>
         </div>
       </Card>
