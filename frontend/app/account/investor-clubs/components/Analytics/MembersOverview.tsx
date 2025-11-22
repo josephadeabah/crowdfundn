@@ -19,9 +19,13 @@ interface MembersOverviewProps {
       top_contributor: MemberData;
     };
   };
+  currency?: string;
 }
 
-export const MembersOverview = ({ data }: MembersOverviewProps) => {
+export const MembersOverview = ({
+  data,
+  currency = 'USD',
+}: MembersOverviewProps) => {
   // Use real data or fallback to empty array
   const members = data?.members || [];
 
@@ -39,7 +43,7 @@ export const MembersOverview = ({ data }: MembersOverviewProps) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);

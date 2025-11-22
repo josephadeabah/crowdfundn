@@ -3,6 +3,7 @@ import { LucideIcon } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
 import { motion } from 'framer-motion';
 
+// Update the StatsCard component interface and implementation:
 interface StatsCardProps {
   title: string;
   value: string | number;
@@ -10,6 +11,7 @@ interface StatsCardProps {
   changeType: 'positive' | 'negative' | 'neutral';
   icon: LucideIcon;
   loading?: boolean;
+  currency?: string; // Add optional currency prop
 }
 
 export const StatsCard = ({
@@ -19,17 +21,22 @@ export const StatsCard = ({
   changeType,
   icon: Icon,
   loading = false,
+  currency = 'USD', // Default to USD
 }: StatsCardProps) => {
-  // Format value if it's a number
-  const formattedValue =
-    typeof value === 'number'
-      ? new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        }).format(value)
-      : value;
+  // Enhanced format function that supports currency
+  const formatValue = (val: string | number, curr: string = 'USD') => {
+    if (typeof val === 'number') {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: curr,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(val);
+    }
+    return val;
+  };
+
+  const formattedValue = formatValue(value, currency);
 
   if (loading) {
     return (

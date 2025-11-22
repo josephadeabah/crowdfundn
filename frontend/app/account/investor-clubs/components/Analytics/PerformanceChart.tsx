@@ -20,9 +20,13 @@ interface TimeSeriesData {
 
 interface PerformanceChartProps {
   data?: TimeSeriesData[];
+  currency?: string;
 }
 
-export const PerformanceChart = ({ data }: PerformanceChartProps) => {
+export const PerformanceChart = ({
+  data,
+  currency = 'USD',
+}: PerformanceChartProps) => {
   // Use real data or generate sample data for demonstration
   const chartData = data || generateSampleData();
 
@@ -59,8 +63,15 @@ export const PerformanceChart = ({ data }: PerformanceChartProps) => {
   }
 
   // Custom tooltip formatter
+  // Update tooltip formatter to use currency
   const formatTooltipValue = (value: number, name: string) => {
-    const formattedValue = `$${value.toLocaleString()}`;
+    const formattedValue = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+
     const labelMap: { [key: string]: string } = {
       portfolio_value: 'Portfolio Value',
       contributions: 'Contributions',
@@ -72,11 +83,11 @@ export const PerformanceChart = ({ data }: PerformanceChartProps) => {
   // Format Y-axis values
   const formatYAxis = (value: number) => {
     if (value >= 1000000) {
-      return `$${(value / 1000000).toFixed(1)}M`;
+      return `${(value / 1000000).toFixed(1)}M`;
     } else if (value >= 1000) {
-      return `$${(value / 1000).toFixed(0)}k`;
+      return `${(value / 1000).toFixed(0)}k`;
     }
-    return `$${value}`;
+    return value.toString();
   };
 
   return (

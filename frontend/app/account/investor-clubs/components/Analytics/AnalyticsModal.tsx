@@ -119,7 +119,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
-                Club Analytics Dashboard
+                {club.name} Analytics Dashboard
               </h2>
               <p className="text-gray-600 mt-1">
                 Comprehensive insights and performance metrics
@@ -174,19 +174,27 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
         {/* Content */}
         <div className="p-6">
           {activeTab === 'overview' && (
-            <OverviewTab analytics={analytics} loading={loading} />
+            <OverviewTab analytics={analytics} loading={loading} club={club} />
           )}
           {activeTab === 'performance' && (
-            <PerformanceTab analytics={analytics} loading={loading} />
+            <PerformanceTab
+              analytics={analytics}
+              loading={loading}
+              club={club}
+            />
           )}
           {activeTab === 'insights' && (
-            <InsightsTab analytics={analytics} loading={loading} />
+            <InsightsTab analytics={analytics} loading={loading} club={club} />
           )}
           {activeTab === 'health' && (
-            <HealthTab analytics={analytics} loading={loading} />
+            <HealthTab analytics={analytics} loading={loading} club={club} />
           )}
           {activeTab === 'predictive' && (
-            <PredictiveTab analytics={analytics} loading={loading} />
+            <PredictiveTab
+              analytics={analytics}
+              loading={loading}
+              club={club}
+            />
           )}
         </div>
       </div>
@@ -195,10 +203,12 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
 };
 
 // Tab Components with Loading States
+// In AnalyticsModal.tsx, update the OverviewTab component:
 const OverviewTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
-}> = ({ analytics, loading }) => {
+  club: Club; // Add club prop
+}> = ({ analytics, loading, club }) => {
   if (loading) {
     return <LoadingSkeleton />;
   }
@@ -220,21 +230,23 @@ const OverviewTab: React.FC<{
       >
         <StatsCard
           title="Total Portfolio Value"
-          value={`$${(portfolio.total_value || 0).toLocaleString()}`}
+          value={portfolio.total_value || 0}
           change={`${portfolio.return_percentage >= 0 ? '+' : ''}${portfolio.return_percentage || 0}% return`}
           changeType={
             portfolio.return_percentage >= 0 ? 'positive' : 'negative'
           }
           icon={DollarSign}
+          currency={club.currency} // Add currency prop
         />
         <StatsCard
           title="Total Return"
-          value={`$${(portfolio.total_return || 0).toLocaleString()}`}
+          value={portfolio.total_return || 0}
           change={`${portfolio.return_percentage || 0}% ROI`}
           changeType={
             portfolio.return_percentage >= 0 ? 'positive' : 'negative'
           }
           icon={TrendingUp}
+          currency={club.currency} // Add currency prop
         />
         <StatsCard
           title="Active Investments"
@@ -263,10 +275,11 @@ const OverviewTab: React.FC<{
                   period,
                   portfolio_value: data.total_invested || 0,
                   investments: data.investments_count || 0,
-                  returns: data.total_invested ? data.total_invested * 0.1 : 0, // Simplified returns calculation
+                  returns: data.total_invested ? data.total_invested * 0.1 : 0,
                 }))
               : []
           }
+          currency={club.currency} // Add currency prop
         />
         <PortfolioChart
           data={
@@ -280,6 +293,7 @@ const OverviewTab: React.FC<{
                 }))
               : []
           }
+          currency={club.currency} // Add currency prop
         />
       </div>
 
@@ -294,15 +308,25 @@ const OverviewTab: React.FC<{
                       analytics.portfolio_insights.performance_insights
                         .best_performing_investment?.campaign ||
                       'Top Performer',
-                    value: Number(analytics.portfolio_insights.performance_insights.best_performing_investment?.amount || 0),
-                    change: Number(analytics.portfolio_insights.performance_insights.best_performing_investment?.roi || 0),
+                    value: Number(
+                      analytics.portfolio_insights.performance_insights
+                        .best_performing_investment?.amount || 0,
+                    ),
+                    change: Number(
+                      analytics.portfolio_insights.performance_insights
+                        .best_performing_investment?.roi || 0,
+                    ),
                     isPositive: true,
                   },
                 ]
               : []
           }
+          currency={club.currency} // Add currency prop
         />
-        <MembersOverview data={analytics.member_portfolio} />
+        <MembersOverview
+          data={analytics.member_portfolio}
+          currency={club.currency} // Add currency prop
+        />
       </div>
     </div>
   );
@@ -311,6 +335,7 @@ const OverviewTab: React.FC<{
 const PerformanceTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
+  club: Club;
 }> = ({ analytics, loading }) => {
   if (loading) {
     return <LoadingSkeleton />;
@@ -406,6 +431,7 @@ const PerformanceTab: React.FC<{
 const InsightsTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
+  club: Club;
 }> = ({ analytics, loading }) => {
   if (loading) {
     return <LoadingSkeleton />;
@@ -513,6 +539,7 @@ const InsightsTab: React.FC<{
 const HealthTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
+  club: Club;
 }> = ({ analytics, loading }) => {
   if (loading) {
     return <LoadingSkeleton />;
@@ -577,6 +604,7 @@ const HealthTab: React.FC<{
 const PredictiveTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
+  club: Club;
 }> = ({ analytics, loading }) => {
   if (loading) {
     return <LoadingSkeleton />;

@@ -13,9 +13,10 @@ interface AssetData {
 
 interface TopAssetsProps {
   data?: AssetData[];
+  currency?: string;
 }
 
-export const TopAssets = ({ data }: TopAssetsProps) => {
+export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {
   // Use real data or generate sample data
   const assets = data || generateSampleData();
 
@@ -64,7 +65,7 @@ export const TopAssets = ({ data }: TopAssetsProps) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -144,13 +145,15 @@ export const TopAssets = ({ data }: TopAssetsProps) => {
             </motion.div>
           ))}
         </div>
-        
+
         {/* Summary */}
         <div className="mt-4 pt-4 border-t border-gray-200">
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Total Value</span>
             <span className="font-medium text-gray-900">
-              {formatCurrency(assets.reduce((sum, asset) => sum + asset.value, 0))}
+              {formatCurrency(
+                assets.reduce((sum, asset) => sum + asset.value, 0),
+              )}
             </span>
           </div>
         </div>

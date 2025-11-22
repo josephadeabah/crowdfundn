@@ -8,6 +8,7 @@ import {
   Tooltip,
 } from 'recharts';
 import { motion } from 'framer-motion';
+import { deslugify } from '@/app/utils/helpers/categories';
 
 interface SectorData {
   name: string;
@@ -17,9 +18,13 @@ interface SectorData {
 
 interface PortfolioChartProps {
   data?: SectorData[];
+  currency?: string;
 }
 
-export const PortfolioChart = ({ data }: PortfolioChartProps) => {
+export const PortfolioChart = ({
+  data,
+  currency = 'USD',
+}: PortfolioChartProps) => {
   // Use real data or generate sample data
   const chartData = data || generateSampleData();
 
@@ -54,15 +59,22 @@ export const PortfolioChart = ({ data }: PortfolioChartProps) => {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
+      const formattedValue = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(data.value);
+
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-sm">
           <p className="font-medium text-gray-900">{data.name}</p>
           <p className="text-sm text-gray-600">
-            ${data.value.toLocaleString()} (
+            {formattedValue} (
             {Number(
               (data.value /
                 chartData.reduce((sum, item) => sum + item.value, 0)) *
-              100
+                100,
             ).toFixed(1)}
             %)
           </p>
@@ -91,6 +103,12 @@ export const PortfolioChart = ({ data }: PortfolioChartProps) => {
   };
 
   const totalValue = chartData.reduce((sum, item) => sum + item.value, 0);
+  const formattedTotal = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(totalValue);
 
   return (
     <motion.div
@@ -103,9 +121,7 @@ export const PortfolioChart = ({ data }: PortfolioChartProps) => {
           <h3 className="text-base md:text-lg font-semibold text-gray-800">
             Portfolio Allocation
           </h3>
-          <span className="text-sm text-gray-500">
-            Total: ${totalValue.toLocaleString()}
-          </span>
+          <span className="text-sm text-gray-500">Total: {formattedTotal}</span>
         </div>
         <ResponsiveContainer width="100%" height={250} minWidth={0}>
           <PieChart>
@@ -118,7 +134,7 @@ export const PortfolioChart = ({ data }: PortfolioChartProps) => {
               paddingAngle={2}
               dataKey="value"
               label={({ name, percent }) =>
-                `${name} (${(percent * 100).toFixed(0)}%)`
+                `${deslugify(name)} (${(percent * 100).toFixed(0)}%)`
               }
               labelLine={false}
             >
