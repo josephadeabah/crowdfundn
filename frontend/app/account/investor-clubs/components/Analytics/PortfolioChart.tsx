@@ -68,7 +68,7 @@ export const PortfolioChart = ({
 
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-sm">
-          <p className="font-medium text-gray-900">{data.name}</p>
+          <p className="font-medium text-gray-900">{deslugify(data.name)}</p>
           <p className="text-sm text-gray-600">
             {formattedValue} (
             {Number(
