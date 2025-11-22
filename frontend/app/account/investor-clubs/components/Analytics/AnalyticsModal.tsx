@@ -1,13 +1,19 @@
 import React from 'react';
-import { TrendingUp, DollarSign, Users, Percent, BarChart3 } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  TrendingUp,
+  DollarSign,
+  Users,
+  Percent,
+  BarChart3,
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 import Modal from '@/app/components/modal/Modal';
-import { Button } from "@/app/components/ui/button";
-import { PerformanceChart } from "./PerformanceChart";
-import { TopAssets } from "./TopAssets";
-import { PortfolioChart } from "./PortfolioChart";
-import { MembersOverview } from "./MembersOverview";
-import { StatsCard } from "./StatsCard";
+import { Button } from '@/app/components/ui/button';
+import { PerformanceChart } from './PerformanceChart';
+import { TopAssets } from './TopAssets';
+import { PortfolioChart } from './PortfolioChart';
+import { MembersOverview } from './MembersOverview';
+import { StatsCard } from './StatsCard';
 
 interface AnalyticsModalProps {
   isOpen: boolean;
@@ -34,11 +40,11 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
             </h2>
           </div>
         </div>
-        
+
         {/* Content */}
         <div className="p-4 md:p-6 space-y-6">
           {/* Stats Grid */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"

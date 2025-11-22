@@ -35,27 +35,47 @@ const AboutTab: React.FC<
 
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
-          <div className="text-xs sm:text-sm text-gray-600 truncate">Club Balance</div>
-          <div className="text-lg sm:text-xl font-bold text-emerald-700 truncate" title={formatCurrency(club.financials.current_balance, club.currency)}>
+          <div className="text-xs sm:text-sm text-gray-600 truncate">
+            Club Balance
+          </div>
+          <div
+            className="text-lg sm:text-xl font-bold text-emerald-700 truncate"
+            title={formatCurrency(
+              club.financials.current_balance,
+              club.currency,
+            )}
+          >
             {formatCurrency(club.financials.current_balance, club.currency)}
           </div>
         </div>
         <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
-          <div className="text-xs sm:text-sm text-gray-600 truncate">Min Contribution</div>
-          <div className="text-lg sm:text-xl font-bold text-gray-900 truncate" title={`${formatCurrency(club.minimum_monthly_contribution, club.currency)}/month`}>
+          <div className="text-xs sm:text-sm text-gray-600 truncate">
+            Min Contribution
+          </div>
+          <div
+            className="text-lg sm:text-xl font-bold text-gray-900 truncate"
+            title={`${formatCurrency(club.minimum_monthly_contribution, club.currency)}/month`}
+          >
             {formatCurrency(club.minimum_monthly_contribution, club.currency)}
             <span className="text-sm font-normal">/month</span>
           </div>
         </div>
         <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
-          <div className="text-xs sm:text-sm text-gray-600 truncate">Members</div>
+          <div className="text-xs sm:text-sm text-gray-600 truncate">
+            Members
+          </div>
           <div className="text-lg sm:text-xl font-bold text-gray-900 truncate">
             {club.current_members_count}/{club.max_members}
           </div>
         </div>
         <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
-          <div className="text-xs sm:text-sm text-gray-600 truncate">Total Invested</div>
-          <div className="text-lg sm:text-xl font-bold text-gray-900 truncate" title={formatCurrency(totalInvested, club.currency)}>
+          <div className="text-xs sm:text-sm text-gray-600 truncate">
+            Total Invested
+          </div>
+          <div
+            className="text-lg sm:text-xl font-bold text-gray-900 truncate"
+            title={formatCurrency(totalInvested, club.currency)}
+          >
             {formatCurrency(totalInvested, club.currency)}
           </div>
         </div>
