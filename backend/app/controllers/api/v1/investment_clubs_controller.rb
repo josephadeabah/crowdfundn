@@ -420,8 +420,10 @@ module Api
           }, status: :not_found
         end
 
-        # Enhanced membership check with debugging
-        membership_status = @club.membership_status_for(@current_user)
+        # FIXED: Use existing method instead of non-existent method
+        membership = @club.membership_for(@current_user)
+        membership_status = membership&.status || 'not_member'
+        
         Rails.logger.info "DEBUG: User #{@current_user.id} membership status: #{membership_status}"
         Rails.logger.info "DEBUG: Club found: #{@club.name} (ID: #{@club.id}, Slug: #{@club.slug})"
         

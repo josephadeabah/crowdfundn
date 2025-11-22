@@ -331,6 +331,13 @@ class InvestmentClub < ApplicationRecord
   def membership_for(user)
     investment_club_memberships.find_by(user: user)
   end
+
+  def membership_status_for(user)
+    membership = membership_for(user)
+    return 'not_member' unless membership
+    
+    membership.status
+  end
   
   def can_invest?(amount)
     current_balance >= amount
