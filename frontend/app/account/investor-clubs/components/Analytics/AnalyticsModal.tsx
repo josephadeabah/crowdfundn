@@ -27,7 +27,7 @@ import { TopAssets } from './TopAssets';
 import { PortfolioChart } from './PortfolioChart';
 import { MembersOverview } from './MembersOverview';
 import { StatsCard } from './StatsCard';
-import { ComprehensiveAnalytics } from '../../clubTypes';
+import { Club, ComprehensiveAnalytics } from '../../clubTypes';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { investmentClubService } from '../../clubservice';
 
