@@ -320,23 +320,16 @@ class InvestmentClub < ApplicationRecord
            })
   end
   
-  # In InvestmentClub model
   def is_member?(user)
-    return false unless user
     investment_club_memberships.active.exists?(user: user)
   end
-
+  
   def is_admin?(user)
-    return false unless user
     investment_club_memberships.active.exists?(user: user, role: ['admin', 'creator'])
   end
-
-  # Add a method to check membership status in detail
-  def membership_status_for(user)
-    return 'no_user' unless user
-    membership = investment_club_memberships.find_by(user: user)
-    return 'no_membership' unless membership
-    membership.status
+  
+  def membership_for(user)
+    investment_club_memberships.find_by(user: user)
   end
   
   def can_invest?(amount)
