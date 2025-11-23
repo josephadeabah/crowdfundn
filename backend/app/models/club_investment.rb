@@ -49,6 +49,10 @@ class ClubInvestment < ApplicationRecord
   # Status validation
   validates :status, inclusion: { in: STATUS_VALUES.values }
 
+  # Make sure these scopes exist
+  scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
+  scope :committed, -> { where(status: STATUS_COMMITTED) }
+
   # FIXED: Status query methods - only define methods that don't conflict
   STATUS_VALUES.each do |method_name, status_value|
     # Only define methods that don't conflict with existing methods

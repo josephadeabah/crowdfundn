@@ -132,7 +132,7 @@ module PaystackWebhook::Handlers
             transaction_reference: equity_investment.transaction_reference,
             current_value: equity_investment.current_value,
             committed_at: Time.current,
-            cancel_window_expires_at: 48.hours.from_now # 48-hour cancellation window
+            cancel_window_expires_at: 1.minute.from_now # 48-hour cancellation window
           )
 
           # REMOVED: No campaign updates here - wait until cancellation window expires

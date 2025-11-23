@@ -3,15 +3,18 @@ class ClubInvestmentFinalizationJob < ApplicationJob
   queue_as :club_investments
 
   def perform
-    expired_investments = ClubInvestment.committed
+    # FIXED: Use the correct status and check for committed investments
+    expired_investments = ClubInvestment.where(status: ClubInvestment::STATUS_COMMITTED)
                                        .where('cancel_window_expires_at <= ?', Time.current)
+
+    Rails.logger.info "Found #{expired_investments.count} club investments ready for finalization"
 
     expired_investments.find_each do |club_investment|
       ActiveRecord::Base.transaction do
         # Finalize the club investment
         club_investment.update!(status: ClubInvestment::STATUS_SUCCESSFUL)
         
-        # Update campaign totals (moved from webhook handler)
+        # Update campaign totals (this was missing for club investments)
         if club_investment.equity_investment
           campaign = club_investment.campaign
           campaign.update!(
@@ -24,6 +27,7 @@ class ClubInvestmentFinalizationJob < ApplicationJob
         end
         
         campaign_identifier = club_investment.campaign.slug || club_investment.campaign.id
+        
         # Send final confirmation using existing service
         ClubEmailService.send_investment_finalized_notification(
           club_investment: club_investment,
