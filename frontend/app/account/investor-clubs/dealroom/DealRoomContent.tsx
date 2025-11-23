@@ -71,7 +71,7 @@ const activeDealsMock = [
 
 const DealroomContent: React.FC = () => {
   return (
-    <div className="space-y-6 p-4 md:p-6 max-w-5xl mx-auto">
+    <div className="space-y-6 p-4 md:p-6 max-w-2xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
