@@ -529,8 +529,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 </div>
 
                 <Alert className="mt-3 bg-blue-50 border-blue-200">
-                  <InfoIcon className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-700 text-xs">
+                  <InfoIcon className="h-4 w-4 text-blue-500" />
+                  <AlertDescription className="text-blue-500 text-xs">
                     {fees.isProcessingFeeCapped ? (
                       <>
                         The processing fee is capped at {club.currency_symbol}

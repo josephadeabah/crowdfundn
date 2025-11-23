@@ -677,7 +677,7 @@ const InvestmentClubsDashboard: React.FC = () => {
           investmentSuccess ? (
             <FaCheckCircle className="w-6 h-6 text-green-600" />
           ) : (
-            <FaInfoCircle className="w-6 h-6 text-blue-600" />
+            <FaInfoCircle className="w-6 h-6 text-blue-400" />
           )
         }
         confirmButtonClass={
