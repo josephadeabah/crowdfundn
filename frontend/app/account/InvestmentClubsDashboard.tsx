@@ -683,7 +683,7 @@ const InvestmentClubsDashboard: React.FC = () => {
         confirmButtonClass={
           investmentSuccess
             ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
-            : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+            : 'bg-blue-300 hover:bg-blue-400 focus:ring-blue-500'
         }
       />
 
