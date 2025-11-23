@@ -82,7 +82,6 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
 
   return (
     <article className="bg-white transition-shadow duration-150 overflow-hidden">
-
       {/* Header */}
       <div className="px-4 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-start md:justify-between gap-3">
         <div className="flex items-start gap-4 flex-1 min-w-0">
@@ -216,11 +215,13 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
       {/* META ROW (moved fully to bottom, new section) */}
       <div className="px-4 md:px-6 py-3 mt-2 bg-gray-50 dark:bg-neutral-800 border-t border-gray-100 dark:border-neutral-800">
         <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300 flex-wrap">
-
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-gray-400" />
             <span>
-              <span className="font-semibold text-orange-600">{deal.investorInterest}</span> investors interested
+              <span className="font-semibold text-orange-600">
+                {deal.investorInterest}
+              </span>{' '}
+              investors interested
             </span>
           </div>
 
@@ -229,13 +230,9 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
             <span>Next: {deal.nextMilestone}</span>
           </div>
 
-          <div className="text-gray-400">
-            {deal.lastUpdate}
-          </div>
-
+          <div className="text-gray-400">{deal.lastUpdate}</div>
         </div>
       </div>
-
     </article>
   );
 };
