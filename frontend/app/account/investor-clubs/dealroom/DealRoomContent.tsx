@@ -102,7 +102,7 @@ const DealroomContent: React.FC = () => {
       {/* Cards list */}
       <div className="grid grid-cols-1 gap-4">
         {activeDealsMock.map((deal) => (
-          <div key={deal.id} className="animate-fade-in">
+          <div key={deal.id} className="animate-fade-in border border-gray-200 border-t">
             <DealCard deal={deal} />
           </div>
         ))}
