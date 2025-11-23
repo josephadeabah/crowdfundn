@@ -45,6 +45,10 @@ class ClubInvestmentFinalizationJob < ApplicationJob
           Rails.logger.warn "Club investment #{club_investment.id} has no equity_investment_id"
         end
         
+        # GENERATE CERTIFICATE HERE - after status is successful
+        ClubInvestmentCertificateJob.perform_later(club_investment.id)
+        Rails.logger.info "Enqueued certificate generation for successful club investment #{club_investment.id}"
+        
         campaign_identifier = club_investment.campaign.slug || club_investment.campaign.id
         
         # Send final confirmation using existing service

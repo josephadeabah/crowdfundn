@@ -1,3 +1,4 @@
+# app/services/club_investment_certificate_service.rb
 class ClubInvestmentCertificateService
   require 'prawn'
   require 'prawn/table'
@@ -8,12 +9,29 @@ class ClubInvestmentCertificateService
   BRAND_ORANGE = 'FF8C00'
 
   def self.generate_certificate(club_investment)
-    return false unless club_investment.is_a?(ClubInvestment) && club_investment.successful?
+    # FIXED: Add better validation and logging
+    unless club_investment.is_a?(ClubInvestment)
+      Rails.logger.error "ClubInvestmentCertificateService: Invalid club investment type: #{club_investment.class}"
+      return false
+    end
+
+    unless club_investment.successful?
+      Rails.logger.error "ClubInvestmentCertificateService: Club investment #{club_investment.id} is not successful (status: #{club_investment.status})"
+      return false
+    end
 
     begin
       Rails.logger.info "=== CLUB CERTIFICATE GENERATION STARTED ==="
       Rails.logger.info "Club Investment ID: #{club_investment.id}"
-      Rails.logger.info "Club: #{club_investment.investment_club.name}"
+      Rails.logger.info "Status: #{club_investment.status}"
+      Rails.logger.info "Club: #{club_investment.investment_club&.name}"
+      Rails.logger.info "Campaign: #{club_investment.campaign&.title}"
+
+      # Check if certificate already exists
+      if club_investment.certificate_present?
+        Rails.logger.info "Certificate already exists for club investment #{club_investment.id}"
+        return true
+      end
 
       # Get signatures with safe fallbacks
       club_signature_url = get_club_signature_url(club_investment)
@@ -227,6 +245,7 @@ class ClubInvestmentCertificateService
         raise "Failed to generate PDF file"
       end
 
+      # FIXED: Use update! to ensure the certificate is saved
       club_investment.certificate.attach(
         io: File.open(temp_file.path),
         filename: "club_investment_certificate_#{certificate_number}.pdf",
@@ -234,11 +253,12 @@ class ClubInvestmentCertificateService
         identify: false
       )
 
+      # FIXED: Save the investment to ensure certificate is persisted
+      club_investment.save!
+
       unless club_investment.certificate.attached?
         raise "Failed to attach certificate"
       end
-
-      club_investment.save! if club_investment.changed?
 
       Rails.logger.info "Successfully generated and attached certificate for club investment #{club_investment.id}"
       true

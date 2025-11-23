@@ -152,10 +152,6 @@ module PaystackWebhook::Handlers
             return
           end
 
-          # Generate certificate for club investment using the job
-          ClubInvestmentCertificateJob.perform_later(club_investment.id)
-          Rails.logger.info "Enqueued certificate generation job for club investment #{club_investment.id}"
-
           # Notify club members
           send_club_investment_confirmation(club_investment, equity_investment, metadata)
           
