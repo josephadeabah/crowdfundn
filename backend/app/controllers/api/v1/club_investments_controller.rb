@@ -604,7 +604,9 @@ module Api
           can_be_cancelled: investment.can_be_cancelled?,
           cancel_window_expires_at: investment.cancel_window_expires_at,
           committed_at: investment.committed_at,
-          time_remaining_for_cancellation: investment.time_remaining_for_cancellation,
+          # time_remaining_for_cancellation: investment.time_remaining_for_cancellation,
+          time_remaining_for_cancellation: 1.minute.from_now, # TEMPORARY: For testing purposes
+
           # Campaign valuation and equity data
           campaign_valuation: campaign_data[:valuation],
           campaign_equity_offered: campaign_data[:equity_offered],
