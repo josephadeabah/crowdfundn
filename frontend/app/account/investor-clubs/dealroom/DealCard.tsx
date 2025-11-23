@@ -157,30 +157,6 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
         </div>
       </div>
 
-      {/* Key metrics */}
-      <div className="px-4 md:px-6 py-3">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-          Key Metrics
-        </p>
-
-        <div className="flex flex-wrap gap-2">
-          {deal.keyMetrics.map((metric, idx) => (
-            <div
-              key={idx}
-              className="flex items-center gap-2 bg-white border border-gray-100 px-3 py-2 text-xs"
-            >
-              {getTrendIcon(metric.trend)}
-              <div className="leading-tight">
-                <div className="text-gray-500 text-[11px]">{metric.label}</div>
-                <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
-                  {metric.value}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* BUTTONS (stay where they were) */}
       <div className="px-4 md:px-6 pt-3 border-t border-gray-100 dark:border-neutral-800">
         <div className="flex items-center justify-end gap-2">
