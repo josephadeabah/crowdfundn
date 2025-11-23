@@ -62,9 +62,11 @@ import {
   PiggyBank,
   Code,
   Banknote,
+  Building2,
 } from 'lucide-react';
 import { categoriesWithIcons, deslugify } from '@/app/utils/helpers/categories';
 import ClubDetailsModal from './club-details/ClubDetailsModal';
+import { DealroomContent } from './dealroom/DealRoomContent';
 
 const ClubsListPage: React.FC = () => {
   const { token, user } = useAuth();
@@ -82,9 +84,9 @@ const ClubsListPage: React.FC = () => {
     text: string;
     clubId?: string;
   } | null>(null);
-  const [activeTab, setActiveTab] = useState<'all' | 'my_clubs' | 'discover'>(
-    'all',
-  );
+  const [activeTab, setActiveTab] = useState<
+    'all' | 'my_clubs' | 'discover' | 'dealroom'
+  >('all');
   const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
 
   // Pagination states
@@ -92,21 +94,24 @@ const ClubsListPage: React.FC = () => {
     all: PaginationData;
     my_clubs: PaginationData;
     discover: PaginationData;
+    dealroom: PaginationData;
   }>({
     all: { current_page: 1, total_pages: 1, per_page: 10, total_count: 0 },
     my_clubs: { current_page: 1, total_pages: 1, per_page: 10, total_count: 0 },
     discover: { current_page: 1, total_pages: 1, per_page: 10, total_count: 0 },
+    dealroom: { current_page: 1, total_pages: 1, per_page: 10, total_count: 0 },
   });
 
   const [loadingTabs, setLoadingTabs] = useState({
     all: false,
     my_clubs: false,
     discover: false,
+    dealroom: false,
   });
 
   // Load clubs when tab changes or on initial load
   useEffect(() => {
-    if (token) {
+    if (token && activeTab !== 'dealroom') {
       loadClubs(activeTab, pagination[activeTab].current_page);
     }
   }, [token, activeTab]);
@@ -308,6 +313,8 @@ const ClubsListPage: React.FC = () => {
         return myClubs;
       case 'discover':
         return discoverClubs;
+      case 'dealroom':
+        return []; // Dealroom tab doesn't show clubs list
       default:
         return clubs;
     }
@@ -555,69 +562,90 @@ const ClubsListPage: React.FC = () => {
                   id: 'all',
                   label: 'For You',
                   count: currentPagination.total_count,
+                  icon: TrendingUp,
                 },
                 {
                   id: 'my_clubs',
                   label: 'My Clubs',
                   count: pagination.my_clubs.total_count,
+                  icon: Users,
                 },
                 {
                   id: 'discover',
                   label: 'Discover',
                   count: pagination.discover.total_count,
+                  icon: Globe,
                 },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() =>
-                    setActiveTab(tab.id as 'all' | 'my_clubs' | 'discover')
-                  }
-                  className={`flex-1 flex items-center justify-center gap-1 px-2 py-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'border-emerald-500 text-emerald-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <span className="text-xs sm:text-sm">{tab.label}</span>
-                  <span
-                    className={`px-1.5 py-0.5 rounded-full text-xs min-w-[20px] flex items-center justify-center ${
-                      activeTab === tab.id
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    {tab.count}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {/* Filter Chips */}
-            <div className="px-0 py-3 flex gap-2 overflow-x-auto">
-              {[
-                { id: 'all', label: 'All', icon: Globe },
-                { id: 'public', label: 'Public', icon: Globe },
-                { id: 'private', label: 'Private', icon: Lock },
-              ].map((filterOption) => {
-                const IconComponent = filterOption.icon;
+                {
+                  id: 'dealroom',
+                  label: 'Dealroom',
+                  count: 0,
+                  icon: Building2,
+                },
+              ].map((tab) => {
+                const IconComponent = tab.icon;
                 return (
                   <button
-                    key={filterOption.id}
+                    key={tab.id}
                     onClick={() =>
-                      setFilter(filterOption.id as 'all' | 'public' | 'private')
+                      setActiveTab(
+                        tab.id as 'all' | 'my_clubs' | 'discover' | 'dealroom',
+                      )
                     }
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
-                      filter === filterOption.id
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    className={`flex-1 flex items-center justify-center gap-1 px-2 py-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+                      activeTab === tab.id
+                        ? 'border-emerald-500 text-emerald-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     <IconComponent size={14} />
-                    {filterOption.label}
+                    <span className="text-xs sm:text-sm">{tab.label}</span>
+                    {tab.id !== 'dealroom' && (
+                      <span
+                        className={`px-1.5 py-0.5 rounded-full text-xs min-w-[20px] flex items-center justify-center ${
+                          activeTab === tab.id
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    )}
                   </button>
                 );
               })}
             </div>
+
+            {/* Filter Chips - Only show for club tabs, not dealroom */}
+            {activeTab !== 'dealroom' && (
+              <div className="px-0 py-3 flex gap-2 overflow-x-auto">
+                {[
+                  { id: 'all', label: 'All', icon: Globe },
+                  { id: 'public', label: 'Public', icon: Globe },
+                  { id: 'private', label: 'Private', icon: Lock },
+                ].map((filterOption) => {
+                  const IconComponent = filterOption.icon;
+                  return (
+                    <button
+                      key={filterOption.id}
+                      onClick={() =>
+                        setFilter(
+                          filterOption.id as 'all' | 'public' | 'private',
+                        )
+                      }
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
+                        filter === filterOption.id
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      <IconComponent size={14} />
+                      {filterOption.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Message Alert */}
@@ -635,15 +663,22 @@ const ClubsListPage: React.FC = () => {
             </motion.div>
           )}
 
-          {/* Loading State */}
-          {isLoading && (
+          {/* Dealroom Tab Content */}
+          {activeTab === 'dealroom' && (
+            <div className="bg-white rounded-lg">
+              <DealroomContent />
+            </div>
+          )}
+
+          {/* Loading State for Club Tabs */}
+          {activeTab !== 'dealroom' && isLoading && (
             <div className="flex justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
             </div>
           )}
 
-          {/* Clubs Feed - Your original Twitter/X Style */}
-          {!isLoading && (
+          {/* Clubs Feed - Your original Twitter/X Style (only for club tabs) */}
+          {activeTab !== 'dealroom' && !isLoading && (
             <>
               <div className="divide-y divide-gray-200">
                 {filteredClubs.map((club, index) => {
