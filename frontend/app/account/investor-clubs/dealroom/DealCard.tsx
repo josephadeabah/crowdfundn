@@ -220,7 +220,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-gray-400" />
             <span>
-              <span className="font-semibold text-orange-600">{deal.investorInterest}</span> investors
+              <span className="font-semibold text-orange-600">{deal.investorInterest}</span> investors interested
             </span>
           </div>
 
