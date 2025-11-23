@@ -190,11 +190,14 @@ export interface CancelInvestmentResponse {
   message?: string;
   investment?: ClubInvestment;
   error?: string;
+  validationErrors?: Record<string, string[]>;
+  code?: string;
 }
 
 export interface ClubInvestmentCreateRequest {
   campaign_id: string;
   investment_amount: number;
+  notes?: string;
 }
 
 export interface ClubInvestmentCertificateStatus {
@@ -207,6 +210,17 @@ export interface ClubInvestmentExecutionResult {
   success: boolean;
   investment: ClubInvestment;
   authorization_url?: string;
+  error?: string;
+}
+
+// NEW: Investment creation response with validation errors
+export interface ClubInvestmentCreateResponse {
+  success: boolean;
+  club_investment?: ClubInvestment;
+  authorization_url?: string;
+  message?: string;
+  validationErrors?: Record<string, string[]>;
+  code?: string;
   error?: string;
 }
 
@@ -568,6 +582,19 @@ export interface InvestmentCreationData {
   investment_amount: number;
   notes?: string;
   fee_breakdown?: InvestmentFeeBreakdown;
+}
+
+// NEW: User type with KYC status
+export interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  verified_investor?: boolean;
+  kyc_status?: 'pending' | 'verified' | 'rejected' | 'expired';
+  kyc_status_info?: any;
+  latest_kyc?: {
+    expired?: boolean;
+  };
 }
 
 // Add these new interfaces for analytics

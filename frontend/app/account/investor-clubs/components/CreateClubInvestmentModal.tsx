@@ -1,4 +1,3 @@
-// app/account/investor-clubs/components/CreateClubInvestmentModal.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import { Button } from '@/app/components/ui/button';
@@ -17,6 +16,7 @@ import { ApprovedCampaign, Club } from '../clubTypes';
 import Modal from '@/app/components/modal/Modal';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
 import { InfoIcon, Calculator, TrendingUp, CreditCard } from 'lucide-react';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface CreateClubInvestmentModalProps {
   club: Club;
@@ -27,6 +27,38 @@ interface CreateClubInvestmentModalProps {
   token?: string | null;
 }
 
+interface InvestmentValidationError {
+  field: string;
+  messages: string[];
+  code?: string;
+}
+
+interface KYCStatusInfo {
+  verified: boolean;
+  has_kyc: boolean;
+  status: string;
+  kyc_type: string;
+  verified_at: string | null;
+  expires_at: string | null;
+  is_expired: boolean;
+}
+
+// Helper function to check if user is KYC verified
+const isUserKycVerified = (user: any): boolean => {
+  // Check if user has KYC status info
+  if (user?.kyc_status_info) {
+    return user.kyc_status_info.verified && !user.kyc_status_info.is_expired;
+  }
+
+  // Fallback to user's can_invest property
+  if (user?.can_invest !== undefined) {
+    return user.can_invest;
+  }
+
+  // Final fallback - assume not verified if we can't determine
+  return false;
+};
+
 const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   club,
   approvedCampaigns = [],
@@ -35,12 +67,17 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   onClose,
   token,
 }) => {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState('');
   const [investmentAmount, setInvestmentAmount] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string[]>
+  >({});
+  const [kycStatus, setKycStatus] = useState<KYCStatusInfo | null>(null);
 
   const modalOpen = isOpen !== undefined ? isOpen : open;
   const setModalOpen = onClose || setOpen;
@@ -75,11 +112,48 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     if (!modalOpen) resetForm();
   }, [modalOpen]);
 
+  // Add KYC check on modal open
+  useEffect(() => {
+    if (modalOpen && token) {
+      checkKycStatus();
+    }
+  }, [modalOpen, token]);
+
+  const checkKycStatus = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/users/kyc_status`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setKycStatus(data);
+      } else {
+        // If the endpoint doesn't exist, use the user's KYC status from auth context
+        if (user?.kyc_status_info) {
+          setKycStatus(user.kyc_status_info);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch KYC status:', error);
+      // Fallback to user's KYC status from auth context
+      if (user?.kyc_status_info) {
+        setKycStatus(user.kyc_status_info);
+      }
+    }
+  };
+
   const resetForm = () => {
     setSelectedCampaignId('');
     setInvestmentAmount('');
     setNotes('');
     setError(null);
+    setValidationErrors({});
   };
 
   const handleClose = () => {
@@ -87,12 +161,67 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     resetForm();
   };
 
+  // Enhanced validation function
+  const validateInvestment = (amount: number, campaign: any) => {
+    const errors: Record<string, string[]> = {};
+
+    if (amount <= 0) {
+      errors.amount = ['Investment amount must be greater than 0'];
+    }
+
+    if (campaign.is_equity_investment) {
+      if (amount < campaign.minimum_investment) {
+        errors.amount = [
+          `Minimum investment is ${campaign.currency_symbol}${campaign.minimum_investment}`,
+        ];
+      }
+
+      if (
+        campaign.maximum_investment > 0 &&
+        amount > campaign.maximum_investment
+      ) {
+        errors.amount = [
+          `Maximum investment is ${campaign.currency_symbol}${campaign.maximum_investment}`,
+        ];
+      }
+
+      // Check shares availability
+      const pricePerShare = campaign.valuation / campaign.total_shares;
+      const requestedShares = amount / pricePerShare;
+
+      if (requestedShares > campaign.shares_available) {
+        const availableAmount = Math.floor(
+          campaign.shares_available * pricePerShare,
+        );
+        errors.amount = [
+          `Not enough shares available. Maximum investment possible: ${campaign.currency_symbol}${availableAmount}`,
+        ];
+      }
+    } else {
+      if (amount < campaign.minimum_investment) {
+        errors.amount = [
+          `Minimum investment is ${campaign.currency_symbol}${campaign.minimum_investment}`,
+        ];
+      }
+    }
+
+    return errors;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setValidationErrors({});
 
     // Add admin check
     if (!club.is_admin) {
       setError('Only club admins can create investments');
+      return;
+    }
+
+    // Add KYC check using the helper function
+    if (!isUserKycVerified(user)) {
+      setError('You must complete KYC verification before making investments');
       return;
     }
 
@@ -101,13 +230,33 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       return;
     }
 
-    if (!investmentAmount || parseFloat(investmentAmount) <= 0) {
+    const amount = parseFloat(investmentAmount);
+    if (!investmentAmount || amount <= 0) {
       setError('Enter a valid investment amount');
       return;
     }
 
+    const selectedCampaign = approvedCampaigns.find(
+      (c) => c.campaign.id.toString() === selectedCampaignId,
+    );
+
+    if (!selectedCampaign) {
+      setError('Selected campaign not found');
+      return;
+    }
+
+    // Client-side validation
+    const clientValidationErrors = validateInvestment(
+      amount,
+      selectedCampaign.campaign,
+    );
+    if (Object.keys(clientValidationErrors).length > 0) {
+      setValidationErrors(clientValidationErrors);
+      return;
+    }
+
     // Check if club has sufficient balance (investment amount + fees)
-    const totalAmount = fees?.totalAmount || parseFloat(investmentAmount);
+    const totalAmount = fees?.totalAmount || amount;
     if (totalAmount > club.financials.current_balance) {
       setError(
         `Insufficient club balance. Available: ${club.currency_symbol}${club.financials.current_balance.toLocaleString()}. Required: ${club.currency_symbol}${totalAmount.toLocaleString()}`,
@@ -116,12 +265,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     }
 
     setLoading(true);
-    setError(null);
 
     try {
       const investmentData = {
         campaign_id: selectedCampaignId,
-        investment_amount: fees?.totalAmount || parseFloat(investmentAmount), // Send TOTAL amount including fees
+        investment_amount: fees?.totalAmount || amount,
         notes: notes || undefined,
       };
 
@@ -144,15 +292,71 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
           onSuccess?.();
         }
       } else {
-        setError(result.message || 'Failed to create investment');
+        // Handle backend validation errors
+        if (result.validationErrors) {
+          setValidationErrors(result.validationErrors);
+        } else {
+          setError(result.message || 'Failed to create investment');
+        }
       }
     } catch (err: any) {
       console.error('Failed to create investment:', err);
-      setError(err.message || 'Failed to create investment');
+
+      // Handle structured error response
+      if (err.response?.data) {
+        const errorData = err.response.data;
+        if (errorData.validationErrors) {
+          setValidationErrors(errorData.validationErrors);
+        } else {
+          setError(errorData.error || 'Failed to create investment');
+        }
+      } else {
+        setError(err.message || 'Failed to create investment');
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  // Add validation error display in the form
+  const renderValidationErrors = (field: string) => {
+    if (!validationErrors[field]) return null;
+
+    return (
+      <div className="text-red-600 text-sm mt-1">
+        {validationErrors[field].map((error, index) => (
+          <div key={index}>{error}</div>
+        ))}
+      </div>
+    );
+  };
+
+  // Get KYC status message
+  const getKycStatusMessage = (): string => {
+    if (kycStatus) {
+      if (!kycStatus.verified) {
+        return 'KYC verification pending';
+      }
+      if (kycStatus.is_expired) {
+        return 'KYC verification has expired';
+      }
+      return 'KYC verified';
+    }
+
+    if (user?.kyc_status_info) {
+      if (!user.kyc_status_info.verified) {
+        return 'KYC verification pending';
+      }
+      if (user.kyc_status_info.is_expired) {
+        return 'KYC verification has expired';
+      }
+      return 'KYC verified';
+    }
+
+    return 'KYC status unknown';
+  };
+
+  const isKycVerified = isUserKycVerified(user);
 
   return (
     <Modal
@@ -182,6 +386,27 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             onSubmit={handleSubmit}
             className="space-y-6"
           >
+            {/* KYC Status Warning */}
+            {!isKycVerified && (
+              <Alert className="bg-yellow-50 border-yellow-200">
+                <AlertDescription className="text-yellow-800 text-sm">
+                  <strong>KYC Verification Required:</strong> You must complete
+                  your KYC verification before making investments. Current
+                  status: {getKycStatusMessage()}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* KYC Status Success */}
+            {isKycVerified && (
+              <Alert className="bg-green-50 border-green-200">
+                <AlertDescription className="text-green-800 text-sm">
+                  <strong>KYC Verified:</strong> Your KYC verification is
+                  complete and you can make investments.
+                </AlertDescription>
+              </Alert>
+            )}
+
             {/* Select Campaign */}
             <div className="space-y-2">
               <Label htmlFor="campaign" className="text-gray-900">
@@ -189,9 +414,16 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               </Label>
               <Select
                 value={selectedCampaignId}
-                onValueChange={setSelectedCampaignId}
+                onValueChange={(value) => {
+                  setSelectedCampaignId(value);
+                  setValidationErrors({}); // Clear errors when campaign changes
+                }}
               >
-                <SelectTrigger className="w-full z-[150] border-gray-300 text-gray-900 [&>span]:text-gray-900 focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none">
+                <SelectTrigger
+                  className={`w-full z-[150] border-gray-300 text-gray-900 [&>span]:text-gray-900 focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none ${
+                    validationErrors.campaign ? 'border-red-500' : ''
+                  }`}
+                >
                   <SelectValue
                     placeholder="Choose an approved campaign"
                     className="text-gray-900 placeholder:text-gray-500"
@@ -215,6 +447,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   )}
                 </SelectContent>
               </Select>
+              {renderValidationErrors('campaign')}
             </div>
 
             {/* Selected Campaign Details */}
@@ -251,7 +484,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               </div>
             )}
 
-            {/* Investment Amount */}
+            {/* Investment Amount with Validation */}
             <div className="space-y-2">
               <Label htmlFor="investmentAmount" className="text-gray-900">
                 Investment Amount ({club.currency})
@@ -260,13 +493,25 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 id="investmentAmount"
                 type="number"
                 value={investmentAmount}
-                onChange={(e) => setInvestmentAmount(e.target.value)}
+                onChange={(e) => {
+                  setInvestmentAmount(e.target.value);
+                  // Clear amount errors when user types
+                  if (validationErrors.amount) {
+                    setValidationErrors((prev) => {
+                      const { amount, ...rest } = prev;
+                      return rest;
+                    });
+                  }
+                }}
                 placeholder="Enter investment amount"
                 required
                 min="1"
                 step="0.01"
-                className="border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none"
+                className={`border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none ${
+                  validationErrors.amount ? 'border-red-500' : ''
+                }`}
               />
+              {renderValidationErrors('amount')}
               <p className="text-xs text-gray-500">
                 Available balance: {club.currency_symbol}
                 {club.financials.current_balance.toLocaleString()}
@@ -420,10 +665,26 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               />
             </div>
 
-            {/* Error */}
-            {error && (
+            {/* Display general errors */}
+            {error && !Object.keys(validationErrors).length && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                 <p className="text-red-800 text-sm">{error}</p>
+              </div>
+            )}
+
+            {/* Display validation errors summary */}
+            {Object.keys(validationErrors).length > 0 && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <h4 className="font-medium text-red-800 mb-2">
+                  Please fix the following errors:
+                </h4>
+                <ul className="text-red-700 text-sm list-disc list-inside space-y-1">
+                  {Object.entries(validationErrors).map(([field, errors]) =>
+                    errors.map((error, index) => (
+                      <li key={`${field}-${index}`}>{error}</li>
+                    )),
+                  )}
+                </ul>
               </div>
             )}
           </form>
@@ -449,6 +710,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 !selectedCampaignId ||
                 approvedCampaigns.length === 0 ||
                 !club.is_admin ||
+                !isKycVerified || // Use the computed KYC status
                 !!(fees && fees.totalAmount > club.financials.current_balance)
               }
               className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400"
@@ -456,11 +718,20 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
               {loading ? 'Processing...' : 'Make Investment'}
             </Button>
           </div>
-          {!club.is_admin && (
-            <p className="text-xs text-red-600 mt-2 text-center">
-              Only club admins can create investments
-            </p>
-          )}
+
+          {/* Enhanced permission messages */}
+          <div className="mt-2 space-y-1">
+            {!club.is_admin && (
+              <p className="text-xs text-red-600 text-center">
+                Only club admins can create investments
+              </p>
+            )}
+            {!isKycVerified && (
+              <p className="text-xs text-yellow-600 text-center">
+                KYC verification required to make investments
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </Modal>

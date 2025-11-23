@@ -28,6 +28,7 @@ import {
   PortfolioInsights,
   FinancialHealthMetrics,
   PredictiveAnalytics,
+  ClubInvestmentCreateResponse,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -433,7 +434,7 @@ export const contributionService = {
   },
 };
 
-// UPDATED: Club Investments API calls - Remove execute endpoint, add cancel endpoint
+// UPDATED: Club Investments API calls - Enhanced with validation error handling
 export const investmentService = {
   // Get club investments with pagination
   getInvestments: async (
@@ -463,21 +464,52 @@ export const investmentService = {
     );
   },
 
-  // Create equity investment - CORRECT ENDPOINT
+  // UPDATED: Create equity investment with enhanced error handling
   createInvestment: async (
     token: string,
     clubId: string,
     investmentData: ClubInvestmentCreateRequest,
-  ): Promise<{
-    success: boolean;
-    club_investment: ClubInvestment;
-    authorization_url?: string;
-    message?: string;
-  }> => {
-    return apiCall(`/investment_clubs/${clubId}/investments`, token, {
-      method: 'POST',
-      body: JSON.stringify(investmentData),
-    });
+  ): Promise<ClubInvestmentCreateResponse> => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/investment_clubs/${clubId}/investments`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(investmentData),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Return structured error response
+        return {
+          success: false,
+          message: data.error || 'Failed to create investment',
+          validationErrors: data.validationErrors,
+          code: data.code,
+          error: data.error,
+        };
+      }
+
+      return {
+        success: true,
+        club_investment: data.club_investment,
+        authorization_url: data.authorization_url,
+        message: data.message,
+      };
+    } catch (error: any) {
+      console.error('Investment creation error:', error);
+      return {
+        success: false,
+        message: error.message || 'Failed to create investment',
+        error: error.message,
+      };
+    }
   },
 
   // NEW: Cancel investment endpoint
@@ -487,14 +519,44 @@ export const investmentService = {
     investmentId: string,
     cancelData: CancelInvestmentRequest,
   ): Promise<CancelInvestmentResponse> => {
-    return apiCall(
-      `/investment_clubs/${clubId}/investments/${investmentId}/cancel`,
-      token,
-      {
-        method: 'POST',
-        body: JSON.stringify(cancelData),
-      },
-    );
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/investment_clubs/${clubId}/investments/${investmentId}/cancel`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(cancelData),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.error || 'Failed to cancel investment',
+          validationErrors: data.validationErrors,
+          code: data.code,
+          message: data.error,
+        };
+      }
+
+      return {
+        success: true,
+        message: data.message,
+        investment: data.investment,
+      };
+    } catch (error: any) {
+      console.error('Investment cancellation error:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to cancel investment',
+        message: error.message,
+      };
+    }
   },
 
   // Certificate operations - CORRECT ENDPOINTS
