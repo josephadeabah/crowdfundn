@@ -81,10 +81,10 @@ class ClubInvestmentCertificateService
       club = club_investment.investment_club
       campaign = club_investment.campaign
       
-      # FIXED: Safe access to campaign data
+      # FIXED: Safe access to campaign data with proper currency handling
       campaign_title = campaign&.title || 'Unknown Campaign'
       campaign_company = campaign&.company_name || 'Unknown Company'
-      campaign_currency = campaign&.currency || campaign&.currency_symbol || '$',
+      campaign_currency = clean_currency(campaign&.currency || campaign&.currency_symbol || '$')
       campaign_description = campaign&.company_description || 'No description available'
       campaign_headquarters = campaign&.company_headquarters || 'Not specified'
       campaign_website = campaign&.company_website || 'Not specified'
@@ -105,6 +105,7 @@ class ClubInvestmentCertificateService
       pdf.fill_color BRAND_ORANGE
       # FIXED: Safe rounding of investment amount
       investment_amount = club_investment.investment_amount.to_f.round(2)
+      # FIXED: Proper currency formatting without array display
       pdf.text "#{campaign_currency}#{investment_amount}", 
                size: 18, align: :center, style: :bold
       pdf.move_down 8
@@ -127,7 +128,7 @@ class ClubInvestmentCertificateService
         ['Description:', campaign_description.to_s.truncate(80)],
         ['Headquarters:', campaign_headquarters],
         ['Website:', campaign_website],
-        ['Valuation:', "#{campaign_currency} #{campaign_valuation.round(2)}"],
+        ['Valuation:', "#{campaign_currency}#{campaign_valuation.round(2)}"],
         ['Equity Offered:', "#{campaign_equity_offered.round(2)}%"]
       ]
 
@@ -373,6 +374,17 @@ class ClubInvestmentCertificateService
   rescue => e
     Rails.logger.warn "Could not get issuer signature: #{e.message}"
     nil
+  end
+
+  # NEW: Helper method to clean currency format
+  def self.clean_currency(currency)
+    if currency.is_a?(Array)
+      currency.first.to_s
+    elsif currency.is_a?(String)
+      currency
+    else
+      currency.to_s
+    end
   end
 
   class << self
