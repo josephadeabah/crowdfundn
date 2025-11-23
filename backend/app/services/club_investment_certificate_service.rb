@@ -84,7 +84,7 @@ class ClubInvestmentCertificateService
       # FIXED: Safe access to campaign data
       campaign_title = campaign&.title || 'Unknown Campaign'
       campaign_company = campaign&.company_name || 'Unknown Company'
-      campaign_currency = campaign&.currency_symbol || '$'
+      campaign_currency = campaign&.currency || campaign&.currency_symbol || '$',
       campaign_description = campaign&.company_description || 'No description available'
       campaign_headquarters = campaign&.company_headquarters || 'Not specified'
       campaign_website = campaign&.company_website || 'Not specified'
