@@ -69,41 +69,41 @@ const activeDealsMock = [
 
 export const DealroomContent = () => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       {/* Header Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="deal-card bg-gradient-card">
+        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-emerald-300 transition-colors">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Briefcase className="h-6 w-6 text-primary" />
+            <div className="h-12 w-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+              <Briefcase className="h-6 w-6 text-emerald-600" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Active Deals</p>
-              <p className="text-2xl font-bold text-foreground">7</p>
+              <p className="text-sm text-gray-500">Active Deals</p>
+              <p className="text-2xl font-bold text-gray-900">7</p>
             </div>
           </div>
         </div>
 
-        <div className="deal-card bg-gradient-card">
+        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-emerald-300 transition-colors">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-accent" />
+            <div className="h-12 w-12 rounded-xl bg-orange-100 flex items-center justify-center">
+              <TrendingUp className="h-6 w-6 text-orange-600" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Deal Value</p>
-              <p className="text-2xl font-bold text-foreground">$19M</p>
+              <p className="text-sm text-gray-500">Total Deal Value</p>
+              <p className="text-2xl font-bold text-gray-900">$19M</p>
             </div>
           </div>
         </div>
 
-        <div className="deal-card bg-gradient-card">
+        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-emerald-300 transition-colors">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <div className="h-3 w-3 rounded-full bg-primary animate-pulse-glow"></div>
+            <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center">
+              <div className="h-3 w-3 rounded-full bg-blue-500 animate-pulse"></div>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Avg Match Score</p>
-              <p className="text-2xl font-bold text-foreground">91%</p>
+              <p className="text-sm text-gray-500">Avg Match Score</p>
+              <p className="text-2xl font-bold text-gray-900">91%</p>
             </div>
           </div>
         </div>
@@ -111,12 +111,14 @@ export const DealroomContent = () => {
 
       {/* Active Deals */}
       <div>
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          Active Opportunities
-          <span className="text-sm font-normal text-muted-foreground">
-            ({activeDealsMock.length} deals matched to your criteria)
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-900">
+            Active Opportunities
+          </h2>
+          <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+            {activeDealsMock.length} deals matched
           </span>
-        </h2>
+        </div>
 
         <div className="space-y-4">
           {activeDealsMock.map((deal, index) => (
