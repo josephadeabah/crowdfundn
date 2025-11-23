@@ -230,7 +230,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
           </div>
 
           <div className="text-gray-400">
-            Last updated {deal.lastUpdate}
+            {deal.lastUpdate}
           </div>
 
         </div>
