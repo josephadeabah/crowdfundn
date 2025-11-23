@@ -214,7 +214,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
       </div>
 
       {/* META ROW (moved fully to bottom, new section) */}
-      <div className="px-4 md:px-6 py-3 bg-gray-50 dark:bg-neutral-800 border-t border-gray-100 dark:border-neutral-800">
+      <div className="px-4 md:px-6 py-3 mt-2 bg-gray-50 dark:bg-neutral-800 border-t border-gray-100 dark:border-neutral-800">
         <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300 flex-wrap">
 
           <div className="flex items-center gap-2">
