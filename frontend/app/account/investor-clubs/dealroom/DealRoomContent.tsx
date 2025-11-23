@@ -79,7 +79,7 @@ const DealroomContent: React.FC = () => {
             <Briefcase className="h-5 w-5 text-emerald-600" />
           </div>
           <div>
-            <h2 className="text-lg md:text-2xl font-bold text-orange-600 bg-orange-100 inline-block px-2 py-1 rounded-full">
+            <h2 className="text-sm md:text-xl font-bold text-orange-600 bg-orange-100 inline-block px-2 py-1 rounded-full">
               Dealroom (Coming Soon)
             </h2>
             <p className="text-sm text-gray-500">
