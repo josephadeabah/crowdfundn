@@ -73,7 +73,6 @@ const getTrendIcon = (trend: 'up' | 'down' | 'neutral') => {
 export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
   const statusStyle = statusConfig[deal.status];
 
-  // avatar initials
   const initials = deal.founderName
     .split(' ')
     .map((n) => n[0])
@@ -83,6 +82,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
 
   return (
     <article className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-150 overflow-hidden">
+
       {/* Header */}
       <div className="px-4 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-start md:justify-between gap-3">
         <div className="flex items-start gap-4 flex-1 min-w-0">
@@ -98,14 +98,18 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                 {deal.founderName}
               </h3>
               <span className="text-xs text-gray-400">•</span>
-              <p className="text-xs text-gray-500 truncate">{deal.founderTitle}</p>
+              <p className="text-xs text-gray-500 truncate">
+                {deal.founderTitle}
+              </p>
             </div>
 
             <div className="mt-2 md:mt-3">
               <h4 className="text-sm md:text-lg font-bold text-gray-900 dark:text-gray-100 truncate">
                 {deal.companyName}
               </h4>
-              <p className="text-xs md:text-sm text-gray-500 truncate">{deal.sector}</p>
+              <p className="text-xs md:text-sm text-gray-500 truncate">
+                {deal.sector}
+              </p>
             </div>
           </div>
         </div>
@@ -120,7 +124,9 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
           <div className="flex items-center gap-3">
             <div className="text-right">
               <p className="text-xs text-gray-400">Match</p>
-              <p className="text-lg font-bold text-emerald-600">{deal.matchScore}%</p>
+              <p className="text-lg font-bold text-emerald-600">
+                {deal.matchScore}%
+              </p>
             </div>
           </div>
         </div>
@@ -130,7 +136,9 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
       <div className="px-4 md:px-6 py-3 bg-gray-50 dark:bg-neutral-800 grid grid-cols-2 md:grid-cols-4 gap-4">
         <div>
           <p className="text-xs text-gray-500">Stage</p>
-          <p className="font-medium text-gray-900 dark:text-gray-100">{deal.stage}</p>
+          <p className="font-medium text-gray-900 dark:text-gray-100">
+            {deal.stage}
+          </p>
         </div>
         <div>
           <p className="text-xs text-gray-500">Seeking</p>
@@ -138,17 +146,24 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
         </div>
         <div>
           <p className="text-xs text-gray-500">Valuation</p>
-          <p className="font-medium text-gray-900 dark:text-gray-100">{deal.valuation}</p>
+          <p className="font-medium text-gray-900 dark:text-gray-100">
+            {deal.valuation}
+          </p>
         </div>
         <div>
           <p className="text-xs text-gray-500">Traction</p>
-          <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{deal.traction}</p>
+          <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+            {deal.traction}
+          </p>
         </div>
       </div>
 
       {/* Key metrics */}
       <div className="px-4 md:px-6 py-3">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Key Metrics</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+          Key Metrics
+        </p>
+
         <div className="flex flex-wrap gap-2">
           {deal.keyMetrics.map((metric, idx) => (
             <div
@@ -158,63 +173,69 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
               {getTrendIcon(metric.trend)}
               <div className="leading-tight">
                 <div className="text-gray-500 text-[11px]">{metric.label}</div>
-                <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{metric.value}</div>
+                <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+                  {metric.value}
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Footer / actions */}
-      <div className="px-4 md:px-6 py-3 border-t border-gray-100 dark:border-neutral-800">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          {/* Left meta */}
-          <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300 min-w-0">
-            <div className="flex items-center gap-2 truncate">
-              <Users className="h-4 w-4 text-gray-400" />
-              <span className="truncate text-sm">
-                <span className="font-semibold text-orange-600">{deal.investorInterest}</span> investors
-              </span>
-            </div>
+      {/* BUTTONS (stay where they were) */}
+      <div className="px-4 md:px-6 pt-3 border-t border-gray-100 dark:border-neutral-800">
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 hover:bg-gray-50"
+          >
+            <Eye className="h-4 w-4" />
+            <span className="hidden sm:inline">View</span>
+          </Button>
 
-            <div className="flex items-center gap-2 truncate">
-              <Calendar className="h-4 w-4 text-gray-400" />
-              <span className="truncate text-sm">Next: {deal.nextMilestone}</span>
-            </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 hover:bg-gray-50"
+          >
+            <ThumbsUp className="h-4 w-4" />
+            <span className="hidden sm:inline">Interest</span>
+          </Button>
 
-            <div className="text-sm text-gray-400 truncate">Last updated {deal.lastUpdate}</div>
-          </div>
-
-          {/* Right actions */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 hover:bg-gray-50"
-            >
-              <Eye className="h-4 w-4" />
-              <span className="hidden sm:inline">View</span>
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 hover:bg-gray-50"
-            >
-              <ThumbsUp className="h-4 w-4" />
-              <span className="hidden sm:inline">Interest</span>
-            </Button>
-
-            <Button
-              size="sm"
-              className="flex items-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              <MessageSquare className="h-4 w-4" />
-              <span>Discuss</span>
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            className="flex items-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            <MessageSquare className="h-4 w-4" />
+            <span>Discuss</span>
+          </Button>
         </div>
       </div>
+
+      {/* META ROW (moved fully to bottom, new section) */}
+      <div className="px-4 md:px-6 py-3 bg-gray-50 dark:bg-neutral-800 border-t border-gray-100 dark:border-neutral-800">
+        <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300 flex-wrap">
+
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-gray-400" />
+            <span>
+              <span className="font-semibold text-orange-600">{deal.investorInterest}</span> investors
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-gray-400" />
+            <span>Next: {deal.nextMilestone}</span>
+          </div>
+
+          <div className="text-gray-400">
+            Last updated {deal.lastUpdate}
+          </div>
+
+        </div>
+      </div>
+
     </article>
   );
 };

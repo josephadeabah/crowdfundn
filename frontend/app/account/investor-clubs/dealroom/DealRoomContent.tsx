@@ -82,7 +82,9 @@ const DealroomContent: React.FC = () => {
             <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-gray-100">
               Dealroom
             </h2>
-            <p className="text-sm text-gray-500">Direct access to founders & live deal flow</p>
+            <p className="text-sm text-gray-500">
+              Direct access to founders & live deal flow
+            </p>
           </div>
         </div>
 

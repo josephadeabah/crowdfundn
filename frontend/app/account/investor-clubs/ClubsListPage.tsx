@@ -66,7 +66,7 @@ import {
 } from 'lucide-react';
 import { categoriesWithIcons, deslugify } from '@/app/utils/helpers/categories';
 import ClubDetailsModal from './club-details/ClubDetailsModal';
-import DealroomContent  from './dealroom/DealRoomContent';
+import DealroomContent from './dealroom/DealRoomContent';
 
 const ClubsListPage: React.FC = () => {
   const { token, user } = useAuth();
