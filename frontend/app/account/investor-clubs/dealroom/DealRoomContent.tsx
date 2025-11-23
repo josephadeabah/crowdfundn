@@ -71,7 +71,7 @@ export const DealroomContent = () => {
   return (
     <div className="space-y-6 p-4">
       {/* Header Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-emerald-300 transition-colors">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-xl bg-emerald-100 flex items-center justify-center">
@@ -107,13 +107,13 @@ export const DealroomContent = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Active Deals */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">
-            Active Opportunities
+          <h2 className="text-xl font-bold bg-orange-100 text-gray-900 text-warning">
+            Coming Soon
           </h2>
           <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
             {activeDealsMock.length} deals matched
