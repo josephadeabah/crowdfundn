@@ -81,7 +81,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
     .toUpperCase();
 
   return (
-    <article className="bg-white transition-shadow duration-150 overflow-hidden">
+    <article className="bg-white hover:bg-gray-100 transition-shadow duration-150 overflow-hidden">
       {/* Header */}
       <div className="px-4 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-start md:justify-between gap-3">
         <div className="flex items-start gap-4 flex-1 min-w-0">
