@@ -1,5 +1,4 @@
 import { Button } from '@/app/components/ui/button';
-import { Badge } from '@/app/components/ui/badge';
 import {
   MessageSquare,
   Calendar,
@@ -73,7 +72,7 @@ export const DealCard = ({ deal }: DealCardProps) => {
   const statusStyle = statusConfig[deal.status];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 hover:border-emerald-300 transition-colors">
+    <div className="bg-white border border-gray-200 p-4 hover:border-emerald-300 transition-colors">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
         <div className="flex-1">
@@ -102,7 +101,7 @@ export const DealCard = ({ deal }: DealCardProps) => {
 
         <div className="flex flex-col items-end gap-2">
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}
+            className={`px-2 py-1 text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}
           >
             {statusStyle.label}
           </span>
@@ -118,7 +117,7 @@ export const DealCard = ({ deal }: DealCardProps) => {
       </div>
 
       {/* Deal Details Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 p-4 bg-gray-50">
         <div>
           <p className="text-xs text-gray-500 mb-1">Stage</p>
           <p className="font-semibold text-gray-900">{deal.stage}</p>
@@ -146,7 +145,7 @@ export const DealCard = ({ deal }: DealCardProps) => {
           {deal.keyMetrics.map((metric, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-1 px-2 py-1 bg-white border border-gray-200 rounded-lg text-xs"
+              className="flex items-center gap-1 px-2 py-1 bg-white text-xs"
             >
               {getTrendIcon(metric.trend)}
               <span>
@@ -158,25 +157,23 @@ export const DealCard = ({ deal }: DealCardProps) => {
         </div>
       </div>
 
-      {/* Bottom Info */}
+      {/* Bottom Info - Single line layout */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4 border-t border-gray-200">
-        <div className="space-y-2 flex-1">
-          <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-4 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-gray-500" />
-            <span className="text-gray-600">
+            <span>
               <span className="font-semibold text-orange-600">
                 {deal.investorInterest}
               </span>{' '}
               investors interested
             </span>
           </div>
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-gray-500" />
-            <span className="text-gray-600">
-              Next: {deal.nextMilestone}
-            </span>
+            <span>Next: {deal.nextMilestone}</span>
           </div>
-          <div className="text-xs text-gray-500">
+          <div className="text-gray-500">
             Last updated {deal.lastUpdate}
           </div>
         </div>
