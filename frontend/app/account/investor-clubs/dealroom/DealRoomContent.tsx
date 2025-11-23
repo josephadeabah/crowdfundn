@@ -1,4 +1,6 @@
-import { DealCard } from './DealCard';
+// app/components/DealroomContent.tsx
+import React from 'react';
+import DealCard from './DealCard';
 import { Briefcase, TrendingUp } from 'lucide-react';
 
 const activeDealsMock = [
@@ -67,71 +69,44 @@ const activeDealsMock = [
   },
 ];
 
-export const DealroomContent = () => {
+const DealroomContent: React.FC = () => {
   return (
-    <div className="space-y-6 p-4">
-      {/* Header Stats */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-emerald-300 transition-colors">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <Briefcase className="h-6 w-6 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Active Deals</p>
-              <p className="text-2xl font-bold text-gray-900">7</p>
-            </div>
+    <div className="space-y-6 p-4 md:p-6 max-w-5xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-emerald-50 rounded-lg">
+            <Briefcase className="h-5 w-5 text-emerald-600" />
+          </div>
+          <div>
+            <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-gray-100">
+              Dealroom
+            </h2>
+            <p className="text-sm text-gray-500">Direct access to founders & live deal flow</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-emerald-300 transition-colors">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-orange-100 flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-orange-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Total Deal Value</p>
-              <p className="text-2xl font-bold text-gray-900">$19M</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-emerald-300 transition-colors">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center">
-              <div className="h-3 w-3 rounded-full bg-blue-500 animate-pulse"></div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Avg Match Score</p>
-              <p className="text-2xl font-bold text-gray-900">91%</p>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* Active Deals */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold bg-orange-100 text-gray-900 text-warning">
-            Coming Soon
-          </h2>
-          <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+        <div className="flex items-center gap-3">
+          <div className="text-sm text-gray-500 hidden sm:block">
             {activeDealsMock.length} deals matched
-          </span>
+          </div>
+          <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm">
+            <TrendingUp className="h-4 w-4" />
+            Explore
+          </button>
         </div>
+      </div>
 
-        <div className="space-y-4">
-          {activeDealsMock.map((deal, index) => (
-            <div
-              key={deal.id}
-              className="animate-slide-up"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <DealCard deal={deal} />
-            </div>
-          ))}
-        </div>
+      {/* Cards list */}
+      <div className="grid grid-cols-1 gap-4">
+        {activeDealsMock.map((deal) => (
+          <div key={deal.id} className="animate-fade-in">
+            <DealCard deal={deal} />
+          </div>
+        ))}
       </div>
     </div>
   );
 };
+
+export default DealroomContent;
