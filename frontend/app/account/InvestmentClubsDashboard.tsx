@@ -36,6 +36,7 @@ import MemberInvestmentProposalModal from './investor-clubs/components/VotingPan
 import ApprovedCampaigns from './investor-clubs/components/Sidebar/ApprovedCampaigns';
 import { InvestmentDetailsModal } from './investor-clubs/components/Investments/InvestmentDetailsModal';
 import { AnalyticsModal } from './investor-clubs/components/Analytics/AnalyticsModal';
+import { useKYCStatus } from '@/app/hooks/useKYCStatus';
 
 // Enhanced formatCurrency function to handle null/undefined values and string numbers
 const formatCurrency = (
@@ -107,22 +108,6 @@ const defaultPortfolio: ClubInvestmentPortfolio = {
   successful_count: 0,
 };
 
-// Helper function to check if user is KYC verified
-const isUserKycVerified = (user: any): boolean => {
-  // Check if user has KYC status info
-  if (user?.kyc_status_info) {
-    return user.kyc_status_info.verified && !user.kyc_status_info.is_expired;
-  }
-
-  // Fallback to user's can_invest property
-  if (user?.can_invest !== undefined) {
-    return user.can_invest;
-  }
-
-  // Final fallback - assume not verified if we can't determine
-  return false;
-};
-
 const InvestmentClubsDashboard: React.FC = () => {
   const {
     clubs,
@@ -153,6 +138,7 @@ const InvestmentClubsDashboard: React.FC = () => {
   } = useClubData();
 
   const { user } = useAuth();
+  const { kycStatus, loading: kycLoading } = useKYCStatus();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
@@ -202,10 +188,10 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   // Add KYC status check
   useEffect(() => {
-    if (user && !isUserKycVerified(user)) {
+    if (user && kycStatus && !kycStatus.verified) {
       console.log('User needs KYC verification for investments');
     }
-  }, [user]);
+  }, [user, kycStatus]);
 
   // Check for payment callback on component mount
   useEffect(() => {
@@ -297,7 +283,7 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   // UPDATED: Handle create investment with validation checks
   const handleCreateInvestment = () => {
-    if (!isUserKycVerified(user)) {
+    if (!kycStatus?.verified) {
       setInvestmentMessage(
         'Please complete KYC verification before making investments',
       );

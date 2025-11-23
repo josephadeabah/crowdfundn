@@ -16,7 +16,7 @@ import { ApprovedCampaign, Club } from '../clubTypes';
 import Modal from '@/app/components/modal/Modal';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
 import { InfoIcon, Calculator, TrendingUp, CreditCard } from 'lucide-react';
-import { useAuth } from '@/app/context/auth/AuthContext';
+import { useKYCStatus } from '@/app/hooks/useKYCStatus';
 
 interface CreateClubInvestmentModalProps {
   club: Club;
@@ -33,32 +33,6 @@ interface InvestmentValidationError {
   code?: string;
 }
 
-interface KYCStatusInfo {
-  verified: boolean;
-  has_kyc: boolean;
-  status: string;
-  kyc_type: string;
-  verified_at: string | null;
-  expires_at: string | null;
-  is_expired: boolean;
-}
-
-// Helper function to check if user is KYC verified
-const isUserKycVerified = (user: any): boolean => {
-  // Check if user has KYC status info
-  if (user?.kyc_status_info) {
-    return user.kyc_status_info.verified && !user.kyc_status_info.is_expired;
-  }
-
-  // Fallback to user's can_invest property
-  if (user?.can_invest !== undefined) {
-    return user.can_invest;
-  }
-
-  // Final fallback - assume not verified if we can't determine
-  return false;
-};
-
 const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   club,
   approvedCampaigns = [],
@@ -67,7 +41,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   onClose,
   token,
 }) => {
-  const { user } = useAuth();
+  const { kycStatus, loading: kycLoading } = useKYCStatus();
   const [open, setOpen] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState('');
   const [investmentAmount, setInvestmentAmount] = useState('');
@@ -77,7 +51,6 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
   >({});
-  const [kycStatus, setKycStatus] = useState<KYCStatusInfo | null>(null);
 
   const modalOpen = isOpen !== undefined ? isOpen : open;
   const setModalOpen = onClose || setOpen;
@@ -111,42 +84,6 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   useEffect(() => {
     if (!modalOpen) resetForm();
   }, [modalOpen]);
-
-  // Add KYC check on modal open
-  useEffect(() => {
-    if (modalOpen && token) {
-      checkKycStatus();
-    }
-  }, [modalOpen, token]);
-
-  const checkKycStatus = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/users/kyc_status`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setKycStatus(data);
-      } else {
-        // If the endpoint doesn't exist, use the user's KYC status from auth context
-        if (user?.kyc_status_info) {
-          setKycStatus(user.kyc_status_info);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch KYC status:', error);
-      // Fallback to user's KYC status from auth context
-      if (user?.kyc_status_info) {
-        setKycStatus(user.kyc_status_info);
-      }
-    }
-  };
 
   const resetForm = () => {
     setSelectedCampaignId('');
@@ -198,9 +135,9 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
         ];
       }
     } else {
-      if (amount < campaign.minimum_investment) {
+      if (amount < campaign.minimum_donation) {
         errors.amount = [
-          `Minimum investment is ${campaign.currency_symbol}${campaign.minimum_investment}`,
+          `Minimum investment is ${campaign.currency_symbol}${campaign.minimum_donation}`,
         ];
       }
     }
@@ -219,8 +156,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       return;
     }
 
-    // Add KYC check using the helper function
-    if (!isUserKycVerified(user)) {
+    // Add KYC check using the hook
+    if (!kycStatus?.verified) {
       setError('You must complete KYC verification before making investments');
       return;
     }
@@ -343,20 +280,10 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       return 'KYC verified';
     }
 
-    if (user?.kyc_status_info) {
-      if (!user.kyc_status_info.verified) {
-        return 'KYC verification pending';
-      }
-      if (user.kyc_status_info.is_expired) {
-        return 'KYC verification has expired';
-      }
-      return 'KYC verified';
-    }
-
     return 'KYC status unknown';
   };
 
-  const isKycVerified = isUserKycVerified(user);
+  const isKycVerified = kycStatus?.verified;
 
   return (
     <Modal
