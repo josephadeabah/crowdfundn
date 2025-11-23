@@ -562,58 +562,50 @@ const ClubsListPage: React.FC = () => {
                   id: 'all',
                   label: 'For You',
                   count: currentPagination.total_count,
-                  icon: TrendingUp,
                 },
                 {
                   id: 'my_clubs',
                   label: 'My Clubs',
                   count: pagination.my_clubs.total_count,
-                  icon: Users,
                 },
                 {
                   id: 'discover',
                   label: 'Discover',
                   count: pagination.discover.total_count,
-                  icon: Globe,
                 },
                 {
                   id: 'dealroom',
                   label: 'Dealroom',
                   count: 0,
-                  icon: Building2,
                 },
-              ].map((tab) => {
-                const IconComponent = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() =>
-                      setActiveTab(
-                        tab.id as 'all' | 'my_clubs' | 'discover' | 'dealroom',
-                      )
-                    }
-                    className={`flex-1 flex items-center justify-center gap-1 px-2 py-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                      activeTab === tab.id
-                        ? 'border-emerald-500 text-emerald-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <IconComponent size={14} />
-                    <span className="text-xs sm:text-sm">{tab.label}</span>
-                    {tab.id !== 'dealroom' && (
-                      <span
-                        className={`px-1.5 py-0.5 rounded-full text-xs min-w-[20px] flex items-center justify-center ${
-                          activeTab === tab.id
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() =>
+                    setActiveTab(
+                      tab.id as 'all' | 'my_clubs' | 'discover' | 'dealroom',
+                    )
+                  }
+                  className={`flex-1 flex items-center justify-center gap-1 px-2 py-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? 'border-emerald-500 text-emerald-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <span className="text-xs sm:text-sm">{tab.label}</span>
+                  {tab.id !== 'dealroom' && (
+                    <span
+                      className={`px-1.5 py-0.5 rounded-full text-xs min-w-[20px] flex items-center justify-center ${
+                        activeTab === tab.id
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
 
             {/* Filter Chips - Only show for club tabs, not dealroom */}
