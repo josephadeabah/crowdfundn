@@ -130,7 +130,7 @@ module PaystackWebhook::Handlers
             transaction_reference: equity_investment.transaction_reference,
             current_value: equity_investment.current_value,
             committed_at: Time.current,
-            cancel_window_expires_at: 1.minute.from_now # 1-minute cancellation window for testing
+            cancel_window_expires_at: 48.hours.from_now # 48-hour cancellation window
           )
 
           # Create pledges from rewards if any
@@ -185,7 +185,7 @@ module PaystackWebhook::Handlers
         phone: metadata[:phone] || response.dig(:data, :customer, :phone),
         metadata: build_club_metadata(metadata, response, gross_amount, platform_fee, processing_fee),
         committed_at: Time.current,                 
-        cancel_window_expires_at: 1.minute.from_now # 1-minute cancellation window for testing
+        cancel_window_expires_at: 48.hours.from_now # 48-hour cancellation window
       }
 
       investment.update!(update_attributes)

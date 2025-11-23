@@ -4,6 +4,7 @@ module Api
       before_action :authenticate_request
       before_action :set_club
       before_action :verify_membership
+      before_action :verify_kyc_requirements, only: [:create] # ADDED: KYC verification
       before_action :set_investment, only: [:show, :update, :vote, :certificate_status, :generate_certificate, :download_certificate, :cancel]
 
       # ADD THESE REQUIRE STATEMENTS
@@ -54,23 +55,31 @@ module Api
         campaign = Campaign.find_by(id: params[:campaign_id])
         
         unless campaign
-          return render json: { error: 'Campaign not found' }, status: :not_found
+          return render json: { 
+            success: false,
+            error: 'Campaign not found',
+            code: 'CAMPAIGN_NOT_FOUND'
+          }, status: :not_found
         end
         
         # Validate admin access for investment creation
         unless @club.is_admin?(@current_user)
           return render json: { 
             success: false, 
-            error: 'Only club admins can create investments' 
+            error: 'Only club admins can create investments',
+            code: 'ADMIN_ACCESS_REQUIRED'
           }, status: :forbidden
         end
-                
-        # Validate investment amount
-        validation_result = validate_investment_amount(params[:investment_amount].to_f, campaign)
+
+        # Validate investment amount and campaign requirements
+        validation_result = validate_club_investment(params[:investment_amount].to_f, campaign)
         unless validation_result[:valid]
+          Rails.logger.error "Investment validation failed: #{validation_result.inspect}"
           return render json: { 
             success: false, 
-            error: validation_result[:message] 
+            error: validation_result[:message],
+            validationErrors: validation_result[:errors],
+            code: validation_result[:code]
           }, status: :unprocessable_entity
         end
         
@@ -78,22 +87,43 @@ module Api
         unless @club.can_invest?(params[:investment_amount].to_f)
           return render json: { 
             success: false, 
-            error: "Insufficient club balance. Available: #{@club.currency_symbol}#{@club.current_balance.to_f}" 
+            error: "Insufficient club balance. Available: #{@club.currency_symbol}#{@club.current_balance.to_f}",
+            code: 'INSUFFICIENT_BALANCE'
           }, status: :unprocessable_entity
         end
         
-        # NEW: Different flow for equity investments vs regular voting investments
-        if campaign.is_a?(EquityCampaign)
-          # Direct equity investment flow (no voting required for admins)
-          club_investment = @club.club_investments.new(
-            campaign: campaign,
-            investment_amount: params[:investment_amount].to_f,
-            status: ClubInvestment::STATUS_PENDING,
-            created_by: @current_user,
-            notes: params[:notes]
-          )
-          
-          if club_investment.save
+        ActiveRecord::Base.transaction do
+          # NEW: Different flow for equity investments vs regular voting investments
+          if campaign.is_a?(EquityCampaign)
+            # Direct equity investment flow (no voting required for admins)
+            club_investment = @club.club_investments.new(
+              campaign: campaign,
+              investment_amount: params[:investment_amount].to_f,
+              status: ClubInvestment::STATUS_PENDING,
+              created_by: @current_user,
+              notes: params[:notes]
+            )
+            
+            unless club_investment.valid?
+              Rails.logger.error "Club investment validation failed: #{club_investment.errors.full_messages}"
+              return render json: { 
+                success: false, 
+                error: "Investment validation failed: #{club_investment.errors.full_messages.join(', ')}",
+                validationErrors: club_investment.errors.messages
+              }, status: :unprocessable_entity
+            end
+
+            unless club_investment.save
+              Rails.logger.error "Club investment save failed: #{club_investment.errors.full_messages}"
+              return render json: { 
+                success: false, 
+                error: "Failed to create investment: #{club_investment.errors.full_messages.join(', ')}",
+                validationErrors: club_investment.errors.messages
+              }, status: :unprocessable_entity
+            end
+
+            Rails.logger.info "Club investment created successfully: #{club_investment.id}"
+
             # Execute the investment immediately for equity campaigns
             result = process_club_investment(club_investment)
             
@@ -108,40 +138,62 @@ module Api
               club_investment.update(status: ClubInvestment::STATUS_FAILED)
               render json: { 
                 success: false, 
-                error: result[:error] 
+                error: result[:error],
+                code: result[:code]
               }, status: :unprocessable_entity
             end
           else
-            render json: { 
-              success: false, 
-              errors: club_investment.errors.full_messages 
-            }, status: :unprocessable_entity
-          end
-        else
-          # Regular voting-based investment flow
-          club_investment = @club.club_investments.new(
-            campaign: campaign,
-            investment_amount: params[:investment_amount].to_f,
-            proposed_share_percentage: params[:proposed_share_percentage],
-            status: ClubInvestment::STATUS_VOTING,
-            created_by: @current_user,
-            voting_session_id: SecureRandom.uuid,
-            notes: params[:notes]
-          )
-          
-          if club_investment.save
-            render json: { 
-              success: true, 
-              club_investment: ClubInvestmentSerializer.new(club_investment).as_json,
-              voting_session_id: club_investment.voting_session_id
-            }, status: :created
-          else
-            render json: { 
-              success: false, 
-              errors: club_investment.errors.full_messages 
-            }, status: :unprocessable_entity
+            # Regular voting-based investment flow
+            club_investment = @club.club_investments.new(
+              campaign: campaign,
+              investment_amount: params[:investment_amount].to_f,
+              proposed_share_percentage: params[:proposed_share_percentage],
+              status: ClubInvestment::STATUS_VOTING,
+              created_by: @current_user,
+              voting_session_id: SecureRandom.uuid,
+              notes: params[:notes]
+            )
+            
+            if club_investment.save
+              render json: { 
+                success: true, 
+                club_investment: ClubInvestmentSerializer.new(club_investment).as_json,
+                voting_session_id: club_investment.voting_session_id
+              }, status: :created
+            else
+              render json: { 
+                success: false, 
+                errors: club_investment.errors.full_messages,
+                validationErrors: club_investment.errors.messages
+              }, status: :unprocessable_entity
+            end
           end
         end
+      rescue ActiveRecord::StaleObjectError => e
+        error_msg = 'Campaign was modified by another process. Please try again.'
+        Rails.logger.error "#{error_msg}: #{e.message}"
+        render json: { 
+          success: false, 
+          error: error_msg,
+          code: 'STALE_OBJECT_ERROR',
+          validationErrors: { base: [error_msg] }
+        }, status: :conflict
+      rescue ActiveRecord::RecordInvalid => e
+        Rails.logger.error "Record validation failed: #{e.message}"
+        render json: { 
+          success: false, 
+          error: e.message,
+          validationErrors: e.record.errors.messages
+        }, status: :unprocessable_entity
+      rescue StandardError => e
+        error_msg = "Unexpected error: #{e.message}"
+        Rails.logger.error "#{error_msg}\n#{e.backtrace.join("\n")}"
+        render json: { 
+          success: false, 
+          error: error_msg,
+          code: e.try(:code),
+          validationErrors: { base: [error_msg] }
+        }, status: :unprocessable_entity
       end
 
       # NEW: Certificate endpoints for equity investments
@@ -149,7 +201,8 @@ module Api
         unless @investment.campaign.is_a?(EquityCampaign)
           return render json: { 
             success: false, 
-            error: 'Certificates only available for equity investments' 
+            error: 'Certificates only available for equity investments',
+            code: 'INVALID_CAMPAIGN_TYPE'
           }, status: :unprocessable_entity
         end
 
@@ -164,14 +217,16 @@ module Api
         unless @investment.campaign.is_a?(EquityCampaign)
           return render json: { 
             success: false, 
-            error: 'Certificates only available for equity investments' 
+            error: 'Certificates only available for equity investments',
+            code: 'INVALID_CAMPAIGN_TYPE'
           }, status: :unprocessable_entity
         end
 
         unless @investment.successful?
           render json: { 
             success: false, 
-            error: 'Certificate can only be generated for successful investments' 
+            error: 'Certificate can only be generated for successful investments',
+            code: 'INVALID_INVESTMENT_STATUS'
           }, status: :unprocessable_entity
           return
         end
@@ -195,7 +250,8 @@ module Api
         else
           render json: { 
             success: false, 
-            error: 'Failed to generate certificate' 
+            error: 'Failed to generate certificate',
+            code: 'CERTIFICATE_GENERATION_FAILED'
           }, status: :unprocessable_entity
         end
       end
@@ -204,14 +260,16 @@ module Api
         unless @investment.campaign.is_a?(EquityCampaign)
           return render json: { 
             success: false, 
-            error: 'Certificates only available for equity investments' 
+            error: 'Certificates only available for equity investments',
+            code: 'INVALID_CAMPAIGN_TYPE'
           }, status: :unprocessable_entity
         end
 
         unless @investment.certificate_present?
           render json: { 
             success: false, 
-            error: 'Certificate not found' 
+            error: 'Certificate not found',
+            code: 'CERTIFICATE_NOT_FOUND'
           }, status: :not_found
           return
         end
@@ -230,7 +288,8 @@ module Api
         unless club_investment.voting?
           return render json: { 
             success: false, 
-            error: 'Voting period has ended for this investment' 
+            error: 'Voting period has ended for this investment',
+            code: 'VOTING_PERIOD_ENDED'
           }, status: :unprocessable_entity
         end
         
@@ -249,7 +308,8 @@ module Api
         else
           render json: { 
             success: false, 
-            error: result[:error] 
+            error: result[:error],
+            code: result[:code]
           }, status: :unprocessable_entity
         end
       end
@@ -275,7 +335,8 @@ module Api
           render json: {
             success: false,
             error: result[:error] || 'No proposals could be generated',
-            proposals: []
+            proposals: [],
+            code: 'NO_PROPOSALS_GENERATED'
           }, status: :unprocessable_entity
         end
       end
@@ -309,7 +370,8 @@ module Api
             render json: {
               success: false,
               error: result[:error],
-              recommendations: []
+              recommendations: [],
+              code: 'NO_RECOMMENDATIONS'
             }, status: :unprocessable_entity
           end
           
@@ -318,7 +380,8 @@ module Api
           render json: {
             success: false,
             error: "Failed to generate recommendations",
-            recommendations: []
+            recommendations: [],
+            code: 'RECOMMENDATION_SERVICE_ERROR'
           }, status: :internal_server_error
         end
       end
@@ -363,7 +426,8 @@ module Api
         unless @investment.committed?
           return render json: {
             success: false,
-            error: 'Only committed investments can be cancelled'
+            error: 'Only committed investments can be cancelled',
+            code: 'INVALID_CANCELLATION_STATUS'
           }, status: :unprocessable_entity
         end
 
@@ -371,7 +435,8 @@ module Api
         unless @investment.can_be_cancelled?
           return render json: {
             success: false,
-            error: 'Cancellation window has expired'
+            error: 'Cancellation window has expired',
+            code: 'CANCELLATION_WINDOW_EXPIRED'
           }, status: :unprocessable_entity
         end
 
@@ -387,20 +452,165 @@ module Api
         else
           render json: {
             success: false,
-            error: 'Failed to cancel investment'
+            error: 'Failed to cancel investment',
+            code: 'CANCELLATION_FAILED'
           }, status: :unprocessable_entity
         end
       rescue => e
         Rails.logger.error "Failed to cancel investment: #{e.message}"
         render json: {
           success: false,
-          error: 'Failed to cancel investment'
+          error: 'Failed to cancel investment',
+          code: 'CANCELLATION_ERROR'
         }, status: :unprocessable_entity
       end
 
       private
 
-            # NEW: Create actual investment records from proposals
+      # NEW: KYC verification method (same as EquityInvestmentsController)
+      def verify_kyc_requirements
+        # For club investments, check if the club admin has KYC verification
+        unless @current_user.verified_investor?
+          render json: { 
+            success: false, 
+            error: 'You must complete verification before making investments',
+            code: 'KYC_VERIFICATION_REQUIRED',
+            kyc_status: @current_user.kyc_status_info
+          }, status: :forbidden
+          return false
+        end
+
+        # Additional check: ensure KYC is not expired
+        if @current_user.latest_kyc&.expired?
+          render json: { 
+            success: false, 
+            error: 'Your KYC verification has expired. Please renew your verification.',
+            code: 'KYC_EXPIRED'
+          }, status: :forbidden
+          return false
+        end
+
+        true
+      end
+
+      # NEW: Enhanced validation method (similar to EquityInvestmentsController)
+      def validate_club_investment(amount, campaign)
+        Rails.logger.info "Validating club investment: amount=#{amount}, campaign_id=#{campaign.id}"
+        
+        result = { valid: true, errors: {} }
+        
+        # Basic validations
+        if amount <= 0
+          result[:valid] = false
+          result[:message] = "Investment amount must be greater than 0"
+          result[:errors][:amount] = ["must be greater than 0"]
+          Rails.logger.error "Amount must be positive: #{amount}"
+        end
+        
+        if campaign.is_a?(EquityCampaign)
+          # Equity campaign specific validations
+          if amount < campaign.minimum_investment
+            result[:valid] = false
+            result[:message] = "Minimum investment is #{campaign.currency_symbol}#{campaign.minimum_investment}"
+            result[:errors][:amount] = ["Minimum investment is #{campaign.currency_symbol}#{campaign.minimum_investment}"]
+            Rails.logger.error "Amount below minimum: #{amount} < #{campaign.minimum_investment}"
+          end
+          
+          if campaign.maximum_investment > 0 && amount > campaign.maximum_investment
+            result[:valid] = false
+            result[:message] = "Maximum investment is #{campaign.currency_symbol}#{campaign.maximum_investment}"
+            result[:errors][:amount] = ["Maximum investment is #{campaign.currency_symbol}#{campaign.maximum_investment}"]
+            Rails.logger.error "Amount above maximum: #{amount} > #{campaign.maximum_investment}"
+          end
+          
+          # Subaccount validation - with enhanced checking
+          subaccount = Subaccount.find_by(user_id: campaign.fundraiser_id)
+          unless subaccount&.subaccount_code.present?
+            result[:valid] = false
+            result[:message] = 'Fundraiser does not meet requirements for raising funds'
+            result[:errors][:base] = ['Fundraiser does not meet requirements for raising funds']
+            result[:code] = 'MISSING_ACCOUNT_NUMBER'
+            Rails.logger.error "Missing subaccount for fundraiser: #{campaign.fundraiser_id}"
+          else
+            # Validate subaccount with Paystack
+            subaccount_valid = validate_subaccount_with_paystack(subaccount.subaccount_code)
+            unless subaccount_valid
+              result[:valid] = false
+              result[:message] = 'Fundraiser payment account is not properly configured'
+              result[:errors][:base] = ['Fundraiser payment account is not properly configured']
+              result[:code] = 'INVALID_SUBACCOUNT'
+              Rails.logger.error "Invalid subaccount for fundraiser: #{campaign.fundraiser_id}, subaccount: #{subaccount.subaccount_code}"
+            end
+          end
+
+          # Campaign status validation
+          if result[:valid] && !campaign.live?
+            result[:valid] = false
+            result[:message] = "Campaign is not currently accepting investments"
+            result[:errors][:base] = ["Campaign is not currently accepting investments (status: #{campaign.equity_status})"]
+            result[:code] = 'CAMPAIGN_NOT_LIVE'
+            Rails.logger.error "Campaign not live: status=#{campaign.equity_status}"
+          end
+
+          # Check if investment would exceed available shares (SOURCE OF TRUTH)
+          if result[:valid] && campaign.shares_available <= 0
+            result[:valid] = false
+            result[:message] = "No shares available for investment"
+            result[:errors][:base] = ["No shares available for investment"]
+            result[:code] = 'NO_SHARES_AVAILABLE'
+            Rails.logger.error "No shares available: #{campaign.shares_available}"
+          end
+
+          if result[:valid]
+            price_per_share = campaign.valuation.to_f / campaign.total_shares.to_f
+            requested_shares = (amount / price_per_share).round(4)
+            
+            if requested_shares > campaign.shares_available
+              available_amount = (campaign.shares_available * price_per_share).floor
+              result[:valid] = false
+              result[:message] = "Not enough shares available. Maximum investment possible: #{campaign.currency_symbol}#{available_amount}"
+              result[:errors][:amount] = ["Not enough shares available. Maximum: #{campaign.currency_symbol}#{available_amount}"]
+              result[:code] = 'INSUFFICIENT_SHARES'
+              Rails.logger.error "Shares exceeded: requested=#{requested_shares}, available=#{campaign.shares_available}"
+            end
+          end
+        else
+          # Regular campaign validations
+          if amount < campaign.minimum_donation
+            result[:valid] = false
+            result[:message] = "Minimum investment is #{campaign.currency_symbol}#{campaign.minimum_donation}"
+            result[:errors][:amount] = ["Minimum investment is #{campaign.currency_symbol}#{campaign.minimum_donation}"]
+            Rails.logger.error "Amount below minimum: #{amount} < #{campaign.minimum_donation}"
+          end
+        end
+
+        # Build error message from all errors
+        unless result[:valid]
+          result[:message] ||= result[:errors].map { |field, messages| 
+            "#{field.to_s.humanize} #{messages.join(', ')}" 
+          }.join('; ')
+        end
+
+        Rails.logger.info "Validation result: #{result.inspect}"
+        result
+      end
+
+      # NEW: Subaccount validation (same as EquityInvestmentsController)
+      def validate_subaccount_with_paystack(subaccount_code)
+        return false unless subaccount_code.present?
+        
+        paystack_service = PaystackService.new
+        begin
+          # Try to fetch the subaccount to validate it exists
+          response = paystack_service.fetch_subaccount(subaccount_code)
+          response[:status] == true
+        rescue => e
+          Rails.logger.error "Error validating subaccount #{subaccount_code}: #{e.message}"
+          false
+        end
+      end
+
+      # NEW: Create actual investment records from proposals
       def create_investments_from_proposals(proposals)
         created_investments = []
         
@@ -430,7 +640,7 @@ module Api
         created_investments
       end
 
-            # NEW: Transform proposals for frontend
+      # NEW: Transform proposals for frontend
       def transform_proposals_for_frontend(investments)
         investments.map do |investment|
           transform_investment_for_frontend(investment)
@@ -604,9 +814,7 @@ module Api
           can_be_cancelled: investment.can_be_cancelled?,
           cancel_window_expires_at: investment.cancel_window_expires_at,
           committed_at: investment.committed_at,
-          # time_remaining_for_cancellation: investment.time_remaining_for_cancellation,
-          time_remaining_for_cancellation: 1.minute.from_now, # TEMPORARY: For testing purposes
-
+          time_remaining_for_cancellation: investment.time_remaining_for_cancellation,
           # Campaign valuation and equity data
           campaign_valuation: campaign_data[:valuation],
           campaign_equity_offered: campaign_data[:equity_offered],
@@ -724,7 +932,12 @@ module Api
                 
         unless @club
           Rails.logger.error "Club not found with identifier: #{club_identifier}"
-          render json: { error: 'Club not found' }, status: :not_found 
+          render json: { 
+            success: false,
+            error: 'Club not found',
+            code: 'CLUB_NOT_FOUND',
+            attempted_identifier: club_identifier
+          }, status: :not_found 
           return
         end
         
@@ -732,31 +945,23 @@ module Api
       end
       
       def verify_membership
-        render json: { error: 'Not a club member' }, status: :forbidden unless @club.is_member?(@current_user)
+        unless @club.is_member?(@current_user)
+          render json: { 
+            success: false,
+            error: 'Not a club member',
+            code: 'NOT_CLUB_MEMBER'
+          }, status: :forbidden 
+        end
       end
 
       def set_investment
         @investment = @club.club_investments.find(params[:id])
       rescue ActiveRecord::RecordNotFound
-        render json: { error: 'Investment not found' }, status: :not_found
-      end
-      
-      def validate_investment_amount(amount, campaign)
-        if amount <= 0
-          return { valid: false, message: 'Investment amount must be greater than 0' }
-        end
-        
-        if campaign.is_a?(EquityCampaign)
-          if amount < campaign.minimum_investment
-            return { valid: false, message: "Minimum investment is #{campaign.currency_symbol}#{campaign.minimum_investment}" }
-          end
-          
-          if campaign.maximum_investment > 0 && amount > campaign.maximum_investment
-            return { valid: false, message: "Maximum investment is #{campaign.currency_symbol}#{campaign.maximum_investment}" }
-          end
-        end
-        
-        { valid: true }
+        render json: { 
+          success: false,
+          error: 'Investment not found',
+          code: 'INVESTMENT_NOT_FOUND'
+        }, status: :not_found
       end
 
       # UPDATED: Renamed from execute_club_investment to process_club_investment
@@ -783,9 +988,14 @@ module Api
         Rails.logger.info "Investment attributes: #{investment.attributes}"
         Rails.logger.info "Investment valid?: #{investment.valid?}"
         
+        unless investment.valid?
+          Rails.logger.error "Equity investment validation failed: #{investment.errors.full_messages}"
+          return { success: false, error: investment.errors.full_messages.join(', '), code: 'INVESTMENT_VALIDATION_FAILED' }
+        end
+
         unless investment.save
           Rails.logger.error "FAILED to create equity investment: #{investment.errors.full_messages}"
-          return { success: false, error: investment.errors.full_messages.join(', ') }
+          return { success: false, error: investment.errors.full_messages.join(', '), code: 'INVESTMENT_CREATION_FAILED' }
         end
 
         Rails.logger.info "Equity investment created successfully: #{investment.id}"
@@ -815,7 +1025,7 @@ module Api
           { success: true, authorization_url: initialize_payment_result[:authorization_url] }
         else
           investment.update!(status: 'failed')
-          { success: false, error: initialize_payment_result[:error] }
+          { success: false, error: initialize_payment_result[:error], code: initialize_payment_result[:code] }
         end
       end
 
@@ -852,30 +1062,106 @@ module Api
       def initialize_club_payment(investment, metadata, redirect_url)
         subaccount = Subaccount.find_by(user_id: investment.campaign.fundraiser_id)
 
-        # unless subaccount&.subaccount_code.present?
-        #   return { success: false, error: 'Fundraiser does not meet requirements for raising funds' }
-        # end
+        unless subaccount&.subaccount_code.present?
+          Rails.logger.error "Missing subaccount for fundraiser: #{investment.campaign.fundraiser_id}"
+          return { 
+            success: false, 
+            error: 'Fundraiser does not meet requirements for raising funds',
+            code: 'MISSING_ACCOUNT_NUMBER'
+          }
+        end
 
         paystack_service = PaystackService.new
-        response = paystack_service.initialize_transaction(
-          email: metadata[:investor_email],
-          amount: investment.amount,
-          callback_url: redirect_url,
-          metadata: metadata,
-          subaccount: subaccount.subaccount_code,
-          currency: investment.campaign.currency.upcase
-        )
-
-        if response[:status]
-          investment.update!(
-            transaction_reference: response[:data][:reference],
-            metadata: metadata
+        
+        Rails.logger.info "Initializing Paystack transaction for club investment #{investment.id}:"
+        Rails.logger.info "  Email: #{metadata[:investor_email]}"
+        Rails.logger.info "  Amount: #{investment.amount}"
+        Rails.logger.info "  Currency: #{investment.campaign.currency.upcase}"
+        Rails.logger.info "  Subaccount: #{subaccount.subaccount_code}"
+        Rails.logger.info "  Callback URL: #{redirect_url}"
+        
+        begin
+          response = paystack_service.initialize_transaction(
+            email: metadata[:investor_email],
+            amount: investment.amount,
+            callback_url: redirect_url,
+            metadata: metadata,
+            subaccount: subaccount.subaccount_code,
+            currency: investment.campaign.currency.upcase
           )
 
-          { success: true, authorization_url: response[:data][:authorization_url] }
-        else
-          { success: false, error: response[:message] }
+          Rails.logger.info "Paystack response: #{response.inspect}"
+
+          if response[:status]
+            investment.update!(
+              transaction_reference: response[:data][:reference],
+              metadata: investment.metadata.merge(metadata)
+            )
+
+            Rails.logger.info "Payment initialized successfully for club investment #{investment.id}, reference: #{response[:data][:reference]}"
+
+            {
+              success: true,
+              authorization_url: response[:data][:authorization_url]
+            }
+          else
+            # Parse the actual error message from Paystack
+            error_message = parse_paystack_error(response)
+            error_code = response.dig(:body, 'code') || response[:data]&.[](:code) || 'PAYMENT_INIT_FAILED'
+            
+            Rails.logger.error "Paystack initialization failed: #{error_message}"
+            
+            # Update investment status to failed
+            investment.update!(
+              status: EquityInvestment::STATUS_FAILED,
+              metadata: investment.metadata.merge(
+                'payment_error' => error_message,
+                'payment_error_code' => error_code,
+                'payment_failed_at' => Time.current.iso8601,
+                'paystack_response' => response
+              )
+            )
+            
+            {
+              success: false, 
+              error: error_message,
+              code: error_code
+            }
+          end
+        rescue => e
+          Rails.logger.error "Exception during payment initialization: #{e.message}\n#{e.backtrace.join("\n")}"
+          # Update investment status to failed
+          investment.update!(
+            status: EquityInvestment::STATUS_FAILED,
+            metadata: investment.metadata.merge(
+              'payment_exception' => e.message,
+              'payment_failed_at' => Time.current.iso8601
+            )
+          )
+          
+          {
+            success: false, 
+            error: "Payment service error: #{e.message}",
+            code: 'PAYMENT_SERVICE_ERROR'
+          }
         end
+      end
+
+      def parse_paystack_error(response)
+        # Try to extract the actual error message from Paystack response
+        if response[:body].is_a?(String)
+          begin
+            parsed_body = JSON.parse(response[:body])
+            return parsed_body['message'] if parsed_body['message']
+          rescue JSON::ParserError
+            # If parsing fails, use the original message
+          end
+        elsif response[:body].is_a?(Hash)
+          return response[:body]['message'] if response[:body]['message']
+        end
+        
+        # Fallback to the general message
+        response[:message] || 'Payment initialization failed'
       end
     end
   end
