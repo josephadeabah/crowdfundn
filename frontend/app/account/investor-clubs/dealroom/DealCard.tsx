@@ -158,8 +158,9 @@ export const DealCard = ({ deal }: DealCardProps) => {
       </div>
 
       {/* Bottom Info - Single line layout */}
+      {/* Bottom Info - Single line layout */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4 border-t border-gray-200">
-        <div className="flex items-center gap-4 text-sm text-gray-600">
+        <div className="flex items-center gap-6 text-sm text-gray-600">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-gray-500" />
             <span>
@@ -178,15 +179,15 @@ export const DealCard = ({ deal }: DealCardProps) => {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-2">
+        {/* Action Buttons - Right aligned */}
+        <div className="flex gap-2">
           <Button 
             variant="outline" 
             size="sm" 
             className="gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             <Eye className="h-4 w-4" />
-            <span className="hidden sm:inline">View Details</span>
+            View Details
           </Button>
           <Button 
             variant="outline" 
@@ -194,15 +195,14 @@ export const DealCard = ({ deal }: DealCardProps) => {
             className="gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             <ThumbsUp className="h-4 w-4" />
-            <span className="hidden sm:inline">Express Interest</span>
+            Express Interest
           </Button>
           <Button
             size="sm"
             className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
           >
             <MessageSquare className="h-4 w-4" />
-            <span className="hidden sm:inline">Start Discussion</span>
-            <span className="sm:hidden">Chat</span>
+            Start Discussion
           </Button>
         </div>
       </div>
