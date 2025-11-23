@@ -36,8 +36,6 @@ module PaystackWebhook::Handlers
       end
     end
 
-
-    # Add these methods to ClubEquityInvestmentHandler
     def handle_insufficient_balance(club_investment, equity_investment, total_deduction)
       # Mark both investments as failed due to insufficient balance
       club_investment.update!(
@@ -132,17 +130,14 @@ module PaystackWebhook::Handlers
             transaction_reference: equity_investment.transaction_reference,
             current_value: equity_investment.current_value,
             committed_at: Time.current,
-            cancel_window_expires_at: 1.minute.from_now # 48-hour cancellation window
+            cancel_window_expires_at: 1.minute.from_now # 1-minute cancellation window for testing
           )
 
-          # REMOVED: No campaign updates here - wait until cancellation window expires
-          # update_campaign_totals(equity_investment, net_amount)  # REMOVE THIS LINE
-          
           # Create pledges from rewards if any
           create_pledges_from_rewards(equity_investment, metadata)
           
           if equity_limits_exceeded?(equity_investment)
-            result = handle_oversubscription(equity_investment, response, metadata)
+            result = handle_oversubscription(equity_investment, response, metadata, total_amount)
             return result
           end
 
@@ -160,13 +155,6 @@ module PaystackWebhook::Handlers
           # Generate certificate for club investment using the job
           ClubInvestmentCertificateJob.perform_later(club_investment.id)
           Rails.logger.info "Enqueued certificate generation job for club investment #{club_investment.id}"
-
-          # Generate certificate for the equity investment
-          begin
-            InvestmentCertificateJob.perform_later(equity_investment.id) if equity_investment.successful?
-          rescue => e
-            Rails.logger.info "Failed to enqueue equity investment certificate job: #{e.message}"
-          end
 
           # Notify club members
           send_club_investment_confirmation(club_investment, equity_investment, metadata)
@@ -201,7 +189,7 @@ module PaystackWebhook::Handlers
         phone: metadata[:phone] || response.dig(:data, :customer, :phone),
         metadata: build_club_metadata(metadata, response, gross_amount, platform_fee, processing_fee),
         committed_at: Time.current,                 
-        cancel_window_expires_at: 48.hours.from_now 
+        cancel_window_expires_at: 1.minute.from_now # 1-minute cancellation window for testing
       }
 
       investment.update!(update_attributes)

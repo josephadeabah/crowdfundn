@@ -3,7 +3,6 @@ class ClubInvestmentFinalizationJob < ApplicationJob
   queue_as :club_investments
 
   def perform
-    # FIXED: Use the correct status and check for committed investments
     expired_investments = ClubInvestment.where(status: ClubInvestment::STATUS_COMMITTED)
                                        .where('cancel_window_expires_at <= ?', Time.current)
 
@@ -11,19 +10,39 @@ class ClubInvestmentFinalizationJob < ApplicationJob
 
     expired_investments.find_each do |club_investment|
       ActiveRecord::Base.transaction do
+        Rails.logger.info "Processing club investment #{club_investment.id} with equity_investment_id: #{club_investment.equity_investment_id}"
+        
         # Finalize the club investment
         club_investment.update!(status: ClubInvestment::STATUS_SUCCESSFUL)
         
-        # Update campaign totals (this was missing for club investments)
-        if club_investment.equity_investment
-          campaign = club_investment.campaign
-          campaign.update!(
-            current_amount: campaign.current_amount + club_investment.equity_investment.net_amount,
-            total_successful_donations: campaign.total_successful_donations + club_investment.equity_investment.net_amount,
-            total_equity_invested: campaign.total_equity_invested + club_investment.equity_investment.net_amount
-          )
+        # Update campaign totals if equity investment exists and can be found
+        if club_investment.equity_investment_id.present?
+          begin
+            equity_investment = EquityInvestment.find_by(id: club_investment.equity_investment_id)
+            
+            if equity_investment
+              campaign = club_investment.campaign
+              net_amount = equity_investment.net_amount || equity_investment.amount
+              
+              campaign.update!(
+                current_amount: campaign.current_amount + net_amount,
+                total_successful_donations: campaign.total_successful_donations + net_amount,
+                total_equity_invested: campaign.total_equity_invested + net_amount
+              )
 
-          campaign.update_transferred_amount(club_investment.equity_investment.net_amount)
+              campaign.update_transferred_amount(net_amount)
+              
+              # Also update the equity investment status
+              equity_investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
+              Rails.logger.info "Updated campaign #{campaign.id} and equity investment #{equity_investment.id}"
+            else
+              Rails.logger.warn "Equity investment #{club_investment.equity_investment_id} not found for club investment #{club_investment.id}"
+            end
+          rescue => e
+            Rails.logger.error "Error processing equity investment for club investment #{club_investment.id}: #{e.message}"
+          end
+        else
+          Rails.logger.warn "Club investment #{club_investment.id} has no equity_investment_id"
         end
         
         campaign_identifier = club_investment.campaign.slug || club_investment.campaign.id
@@ -32,7 +51,7 @@ class ClubInvestmentFinalizationJob < ApplicationJob
         ClubEmailService.send_investment_finalized_notification(
           club_investment: club_investment,
           campaign_identifier: campaign_identifier,
-          finalized: true, # Add flag to indicate this is after cancellation window
+          finalized: true,
           cancellation_window_ended: true
         )
         
@@ -40,7 +59,7 @@ class ClubInvestmentFinalizationJob < ApplicationJob
       end
     rescue => e
       Rails.logger.error "Failed to finalize club investment #{club_investment.id}: #{e.message}"
-      # Don't re-raise to allow other investments to process
+      Rails.logger.error e.backtrace.join("\n")
     end
   end
 end
