@@ -296,13 +296,6 @@ const InvestmentClubsDashboard: React.FC = () => {
       return;
     }
 
-    if (!selectedClub?.is_admin) {
-      setInvestmentMessage('Only club admins can create investments');
-      setInvestmentSuccess(false);
-      setInvestmentAlert(true);
-      return;
-    }
-
     setIsCreateInvestmentModalOpen(true);
   };
 
