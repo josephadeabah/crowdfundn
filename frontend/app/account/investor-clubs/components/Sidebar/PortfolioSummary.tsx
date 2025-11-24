@@ -64,17 +64,25 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
         </div>
 
         <div className="flex justify-between items-center">
-          <span className="text-gray-600 text-sm">
+          <span className="text-gray-600 text-sm lg:text-base whitespace-nowrap">
             Total Returns
           </span>
-          <span
-            className={`font-semibold text-xs lg:text-sm ${
-              portfolio.total_return >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}
-          >
-            {formatCurrency(portfolio.total_return, clubCurrency)} (
-            {portfolio.return_percentage}%)
-          </span>
+          <div className="flex items-center gap-1">
+            <span
+              className={`font-semibold text-xs lg:text-sm whitespace-nowrap ${
+                portfolio.total_return >= 0 ? 'text-green-600' : 'text-red-600'
+              }`}
+            >
+              {formatCurrency(portfolio.total_return, clubCurrency)}
+            </span>
+            <span
+              className={`text-xs lg:text-sm whitespace-nowrap ${
+                portfolio.return_percentage >= 0 ? 'text-green-600' : 'text-red-600'
+              }`}
+            >
+              ({portfolio.return_percentage >= 0 ? '+' : ''}{portfolio.return_percentage}%)
+            </span>
+          </div>
         </div>
 
         {/* Additional Portfolio Metrics */}
