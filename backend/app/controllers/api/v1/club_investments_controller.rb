@@ -166,7 +166,7 @@ module Api
 
             club_investment.update!(
               committed_at: Time.current,
-              cancel_window_expires_at: 48.hours.from_now
+              cancel_window_expires_at: 1.minute.from_now
             )
             
             if campaign.is_a?(EquityCampaign)
@@ -463,7 +463,7 @@ module Api
           country: 'GH',
           metadata: build_club_equity_metadata(club_investment, campaign, amount, gross_amount, platform_fee, processing_fee, net_amount),
           committed_at: Time.current,                 
-          cancel_window_expires_at: 48.hours.from_now
+          cancel_window_expires_at: 1.minute.from_now
         )
 
         if equity_investment.valid?
