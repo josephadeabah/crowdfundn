@@ -479,7 +479,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                       );
                       setKycAlert(true);
                     }}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm md:text-base"
+                    className="px-6 py-3 bg-white text-gray-800 rounded-lg hover:bg-gray-100 border border-gray-100 font-medium text-sm md:text-base"
                   >
                     Learn About KYC
                   </button>
