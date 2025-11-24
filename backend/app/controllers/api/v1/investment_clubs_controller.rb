@@ -1,8 +1,8 @@
-# app/controllers/api/v1/investment_clubs_controller.rb
 module Api
   module V1
     class InvestmentClubsController < ApplicationController
       before_action :authenticate_request
+      before_action :verify_kyc_requirements, only: [:create] # ADDED: KYC verification for club creation
       before_action :set_club, only: [:show, :update, :portfolio, :analytics, :member_portfolio, :join, :leave, :my_membership_status, :transfer_ownership, :destroy]
       
       # GET /api/v1/investment_clubs
@@ -55,6 +55,8 @@ module Api
 
       # POST /api/v1/investment_clubs
       def create
+        # KYC verification is handled by before_action :verify_kyc_requirements
+        
         result = InvestmentClubCreationService.new(@current_user, club_params).create
         
         if result[:success]
@@ -481,6 +483,32 @@ module Api
       end
 
       private
+
+      # NEW: KYC verification method for club creation
+      def verify_kyc_requirements
+        # For club creation, check if the user has KYC verification
+        unless @current_user.verified_investor?
+          render json: { 
+            success: false, 
+            error: 'You must complete KYC verification before creating investment clubs',
+            code: 'KYC_VERIFICATION_REQUIRED',
+            kyc_status: @current_user.kyc_status_info
+          }, status: :forbidden
+          return false
+        end
+
+        # Additional check: ensure KYC is not expired
+        if @current_user.latest_kyc&.expired?
+          render json: { 
+            success: false, 
+            error: 'Your KYC verification has expired. Please renew your verification before creating investment clubs.',
+            code: 'KYC_EXPIRED'
+          }, status: :forbidden
+          return false
+        end
+
+        true
+      end
       
       def set_club
         # FIXED: Try to find by ID first, then by slug for backward compatibility
