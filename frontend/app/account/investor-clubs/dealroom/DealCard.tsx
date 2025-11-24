@@ -81,7 +81,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
     .toUpperCase();
 
   return (
-    <article className="bg-white transition-shadow duration-150 overflow-hidden">
+    <article className="bg-white transition-all duration-150 overflow-hidden hover:bg-gray-50 cursor-pointer">
       {/* Header */}
       <div className="px-4 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-start md:justify-between gap-3">
         <div className="flex items-start gap-4 flex-1 min-w-0">
@@ -132,7 +132,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
       </div>
 
       {/* Body grid */}
-      <div className="px-4 md:px-6 py-3 bg-gray-50 dark:bg-neutral-800 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="px-4 md:px-6 py-3 bg-white grid grid-cols-2 md:grid-cols-4 gap-4">
         <div>
           <p className="text-xs text-gray-500">Stage</p>
           <p className="font-medium text-gray-900 dark:text-gray-100">
@@ -157,13 +157,13 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
         </div>
       </div>
 
-      {/* BUTTONS (stay where they were) */}
+      {/* BUTTONS */}
       <div className="px-4 md:px-6 pt-3 border-t border-gray-100 dark:border-neutral-800">
         <div className="flex items-center justify-end gap-2">
           <Button
             variant="ghost"
             size="sm"
-            className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 hover:bg-gray-50"
+            className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 hover:bg-gray-100"
           >
             <Eye className="h-4 w-4" />
             <span className="hidden sm:inline">View</span>
@@ -172,7 +172,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 hover:bg-gray-50"
+            className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 hover:bg-gray-100"
           >
             <ThumbsUp className="h-4 w-4" />
             <span className="hidden sm:inline">Interest</span>
@@ -188,8 +188,8 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
         </div>
       </div>
 
-      {/* META ROW (moved fully to bottom, new section) */}
-      <div className="px-4 md:px-6 py-3 mt-2 bg-gray-50 dark:bg-neutral-800 border-t border-gray-100 dark:border-neutral-800">
+      {/* META ROW */}
+      <div className="px-4 md:px-6 py-3 mt-2 bg-white border-t border-gray-100 dark:border-neutral-800">
         <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300 flex-wrap">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-gray-400" />
