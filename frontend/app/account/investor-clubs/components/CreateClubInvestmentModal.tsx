@@ -101,7 +101,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     const platformFee = amount * 0.03;
     const grossAmount = amount;
     const netAmount = amount - platformFee;
-    
+
     // IMPORTANT: We add investment amount + processing fee + platform fee
     // This total gets deducted from club balance as one bulk amount
     const totalDeduction = grossAmount + processingFee + platformFee;
@@ -253,7 +253,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       console.log('Creating investment with club balance:', {
         ...investmentData,
         calculatedTotalDeduction: fees?.totalAmount,
-        feeBreakdown: fees
+        feeBreakdown: fees,
       });
 
       const result = await investmentService.createInvestment(
@@ -628,9 +628,10 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                       {fees.totalAmount.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      })}) will be deducted from your club balance as one bulk amount. 
-                      The backend will automatically split this into investment amount, 
-                      processing fee, and platform fee.
+                      })}
+                      ) will be deducted from your club balance as one bulk
+                      amount. The backend will automatically split this into
+                      investment amount, processing fee, and platform fee.
                     </AlertDescription>
                   </Alert>
                 </div>
@@ -728,7 +729,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 ) : !isKycVerified ? (
                   'KYC Required'
                 ) : (
-                  `Invest ${club.currency_symbol}${fees?.totalAmount.toLocaleString()}`
+                  `Invest ${club.currency}${fees?.totalAmount.toLocaleString()}`
                 )}
               </Button>
             </div>
