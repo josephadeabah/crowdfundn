@@ -729,7 +729,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 ) : !isKycVerified ? (
                   'KYC Required'
                 ) : (
-                  `Invest ${club.currency}${fees?.totalAmount.toLocaleString()}`
+                  `Invest ${club.currency}${fees?.totalAmount.toLocaleString() || 0}`
                 )}
               </Button>
             </div>
