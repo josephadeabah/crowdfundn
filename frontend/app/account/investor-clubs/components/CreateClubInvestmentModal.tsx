@@ -15,7 +15,16 @@ import { investmentService } from '../clubservice';
 import { ApprovedCampaign, Club } from '../clubTypes';
 import Modal from '@/app/components/modal/Modal';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
-import { InfoIcon, Calculator, TrendingUp, CreditCard, Shield, CheckCircle, XCircle, UserX } from 'lucide-react';
+import {
+  InfoIcon,
+  Calculator,
+  TrendingUp,
+  CreditCard,
+  Shield,
+  CheckCircle,
+  XCircle,
+  UserX,
+} from 'lucide-react';
 import { useKYCStatus } from '@/app/hooks/useKYCStatus';
 
 interface CreateClubInvestmentModalProps {
@@ -271,7 +280,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   // Get KYC status message
   const getKycStatusMessage = (): string => {
     if (kycLoading) return 'Checking KYC status...';
-    
+
     if (kycStatus) {
       if (!kycStatus.verified) {
         return 'KYC verification pending';
@@ -322,7 +331,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 <div className="flex items-center gap-2">
                   <UserX className="w-4 h-4 text-red-600" />
                   <AlertDescription className="text-red-800 text-sm">
-                    <strong>Admin Access Required:</strong> Only club administrators can create investments for the club.
+                    <strong>Admin Access Required:</strong> Only club
+                    administrators can create investments for the club.
                   </AlertDescription>
                 </div>
               </Alert>
@@ -332,9 +342,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Shield className="w-5 h-5 text-green-600" />
-                <h3 className="text-lg font-medium text-gray-900">KYC Verification Status</h3>
+                <h3 className="text-lg font-medium text-gray-900">
+                  KYC Verification Status
+                </h3>
               </div>
-              
+
               {kycLoading ? (
                 <Alert className="bg-green-50 border-green-200">
                   <AlertDescription className="text-green-800 text-sm">
@@ -346,7 +358,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-600" />
                     <AlertDescription className="text-green-800 text-sm">
-                      <strong>KYC Verified:</strong> Your identity has been verified and you can make investments.
+                      <strong>KYC Verified:</strong> Your identity has been
+                      verified and you can make investments.
                     </AlertDescription>
                   </div>
                 </Alert>
@@ -355,7 +368,9 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   <div className="flex items-center gap-2">
                     <XCircle className="w-4 h-4 text-yellow-600" />
                     <AlertDescription className="text-yellow-800 text-sm">
-                      <strong>KYC Verification Required:</strong> You must complete your KYC verification before making investments. Current status: {getKycStatusMessage()}
+                      <strong>KYC Verification Required:</strong> You must
+                      complete your KYC verification before making investments.
+                      Current status: {getKycStatusMessage()}
                     </AlertDescription>
                   </div>
                 </Alert>
@@ -703,10 +718,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
           </div>
 
           {/* Requirements Notice */}
-          {(isAdmin && !isKycVerified) && !kycLoading && (
+          {isAdmin && !isKycVerified && !kycLoading && (
             <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800 text-center">
-                <strong>Requirements:</strong> You have admin access but need to complete KYC verification to make investments.
+                <strong>Requirements:</strong> You have admin access but need to
+                complete KYC verification to make investments.
               </p>
             </div>
           )}
