@@ -318,13 +318,13 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             {/* KYC Status Section */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Shield className="w-5 h-5 text-blue-600" />
+                <Shield className="w-5 h-5 text-green-600" />
                 <h3 className="text-lg font-medium text-gray-900">KYC Verification Status</h3>
               </div>
               
               {kycLoading ? (
-                <Alert className="bg-blue-50 border-blue-200">
-                  <AlertDescription className="text-blue-800 text-sm">
+                <Alert className="bg-green-50 border-green-200">
+                  <AlertDescription className="text-green-800 text-sm">
                     Checking your KYC verification status...
                   </AlertDescription>
                 </Alert>
@@ -464,10 +464,10 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
             {/* Fee Breakdown */}
             {fees && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <Calculator className="w-4 h-4 text-blue-600" />
-                  <h4 className="font-medium text-blue-900">Fee Breakdown</h4>
+                  <Calculator className="w-4 h-4 text-green-600" />
+                  <h4 className="font-medium text-green-900">Fee Breakdown</h4>
                 </div>
 
                 <div className="space-y-2 text-sm">
@@ -516,7 +516,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                     </span>
                   </div>
 
-                  <div className="border-t border-blue-200 pt-2 mt-2">
+                  <div className="border-t border-green-200 pt-2 mt-2">
                     <div className="flex justify-between">
                       <span className="text-gray-700 font-medium">
                         Total Deducted from Club:
@@ -545,9 +545,9 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   </div>
                 </div>
 
-                <Alert className="mt-3 bg-blue-50 border-blue-200">
-                  <InfoIcon className="h-4 w-4 text-blue-500" />
-                  <AlertDescription className="text-blue-500 text-xs">
+                <Alert className="mt-3 bg-green-50 border-green-200">
+                  <InfoIcon className="h-4 w-4 text-green-500" />
+                  <AlertDescription className="text-green-500 text-xs">
                     {fees.isProcessingFeeCapped ? (
                       <>
                         The processing fee is capped at {club.currency_symbol}
@@ -689,8 +689,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
           {/* KYC Requirement Notice */}
           {!isKycVerified && !kycLoading && (
-            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800 text-center">
+            <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-800 text-center">
                 <strong>KYC verification required</strong> to make investments. 
                 Please complete your identity verification in your account settings.
               </p>
