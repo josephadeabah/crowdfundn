@@ -63,20 +63,20 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
           </span>
         </div>
 
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600 text-sm lg:text-base whitespace-nowrap">
+        <div className="flex justify-between items-center gap-0.5">
+          <span className="text-gray-600 text-sm whitespace-nowrap">
             Total Returns
           </span>
           <div className="flex items-center gap-1">
             <span
-              className={`font-semibold text-xs lg:text-sm whitespace-nowrap ${
+              className={`font-semibold text-xs whitespace-nowrap ${
                 portfolio.total_return >= 0 ? 'text-green-600' : 'text-red-600'
               }`}
             >
               {formatCurrency(portfolio.total_return, clubCurrency)}
             </span>
             <span
-              className={`text-xs lg:text-sm whitespace-nowrap ${
+              className={`text-xs whitespace-nowrap ${
                 portfolio.return_percentage >= 0
                   ? 'text-green-600'
                   : 'text-red-600'
