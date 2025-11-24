@@ -132,7 +132,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
       </div>
 
       {/* Body grid */}
-      <div className="px-4 md:px-6 py-3 bg-white grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="px-4 md:px-6 py-3 bg-white hover:bg-gray-50 grid grid-cols-2 md:grid-cols-4 gap-4">
         <div>
           <p className="text-xs text-gray-500">Stage</p>
           <p className="font-medium text-gray-900 dark:text-gray-100">
@@ -189,7 +189,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
       </div>
 
       {/* META ROW */}
-      <div className="px-4 md:px-6 py-3 mt-2 bg-white border-t border-gray-100 dark:border-neutral-800">
+      <div className="px-4 md:px-6 py-3 mt-2 bg-white hover:bg-gray-50 border-t border-gray-100 dark:border-neutral-800">
         <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300 flex-wrap">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-gray-400" />
