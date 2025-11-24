@@ -10,8 +10,13 @@ import {
   DollarSign,
   Clock,
   AlertTriangle,
+  Users,
+  User,
+  Mail,
+  Crown,
 } from 'lucide-react';
-import Modal from '@/app/components/modal/Modal'; // Import your custom Modal
+import Modal from '@/app/components/modal/Modal';
+import Avatar from '@/app/components/avatar/Avatar';
 
 interface InvestmentDetailsModalProps {
   isOpen: boolean;
@@ -27,7 +32,214 @@ interface InvestmentDetailsModalProps {
   onDownloadCertificate: (investment: ClubInvestment) => void;
 }
 
-// Cancellation Modal Component (Updated to use custom Modal)
+// Team Member Stack Component
+const TeamMembersStack: React.FC<{ teamMembers: any[] }> = ({
+  teamMembers,
+}) => {
+  const [expandedMember, setExpandedMember] = useState<number | null>(null);
+
+  const toggleMemberDetails = (id: number) => {
+    setExpandedMember(expandedMember === id ? null : id);
+  };
+
+  // Calculate positions for stack effect
+  const getStackPosition = (index: number) => {
+    const baseOffset = 12; // Base offset in pixels
+    const maxVisible = 4; // Maximum members to show in stack
+    const rotation = -2; // Slight rotation for depth
+
+    if (index >= maxVisible) {
+      return {
+        zIndex: teamMembers.length - index,
+        transform: `translateX(${baseOffset * maxVisible}px) rotate(${rotation}deg)`,
+        opacity: 0.3,
+      };
+    }
+
+    return {
+      zIndex: teamMembers.length - index,
+      transform: `translateX(${baseOffset * index}px) rotate(${index * rotation}deg)`,
+      opacity: 1 - index * 0.1,
+    };
+  };
+
+  return (
+    <div className="mt-6">
+      <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+        <Users className="w-5 h-5 text-blue-600" />
+        Team Members
+      </h3>
+
+      <div className="relative">
+        {/* Stacked Avatars */}
+        <div className="flex items-center mb-6">
+          <div className="relative h-16 mr-20">
+            {teamMembers.slice(0, 5).map((member, index) => (
+              <div
+                key={member.id}
+                className="absolute top-0 transition-all duration-300 ease-in-out hover:z-50 hover:scale-110 cursor-pointer"
+                style={getStackPosition(index)}
+                onClick={() => toggleMemberDetails(member.id)}
+              >
+                <Avatar
+                  name={member.name}
+                  imageUrl={member.avatar_url}
+                  size="md"
+                />
+                {member.role === 'founder' && (
+                  <div className="absolute -top-1 -right-1">
+                    <Crown className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* Overflow indicator */}
+            {teamMembers.length > 5 && (
+              <div
+                className="absolute top-0 transition-all duration-300 ease-in-out"
+                style={getStackPosition(5)}
+              >
+                <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-xs font-semibold text-gray-600 border-2 border-white">
+                  +{teamMembers.length - 5}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="text-sm text-gray-600">
+            <p className="font-medium">{teamMembers.length} team members</p>
+            <p className="text-xs">Click to view details</p>
+          </div>
+        </div>
+
+        {/* Expanded Member Details */}
+        {expandedMember !== null && (
+          <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200 animate-in fade-in duration-300">
+            {teamMembers
+              .filter((member) => member.id === expandedMember)
+              .map((member) => (
+                <div key={member.id} className="flex items-start gap-4">
+                  <Avatar
+                    name={member.name}
+                    imageUrl={member.avatar_url}
+                    size="lg"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h4 className="font-semibold text-gray-900 text-lg">
+                        {member.name}
+                      </h4>
+                      {member.role === 'founder' && (
+                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full flex items-center gap-1">
+                          <Crown className="w-3 h-3" />
+                          Founder
+                        </span>
+                      )}
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                        {member.title}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Mail className="w-4 h-4" />
+                          <span className="truncate">{member.email}</span>
+                        </div>
+                        {member.equity_percentage && (
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Percent className="w-4 h-4" />
+                            <span>Equity: {member.equity_percentage}%</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {member.description && (
+                        <div className="md:col-span-2">
+                          <p className="text-gray-700 leading-relaxed">
+                            {member.description}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setExpandedMember(null)}
+                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+          </div>
+        )}
+
+        {/* All Members List (Collapsible) */}
+        <div className="border-t border-gray-200 pt-4">
+          <details className="group">
+            <summary className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900 list-none">
+              <Users className="w-4 h-4" />
+              View all team members ({teamMembers.length})
+              <span className="ml-auto transform group-open:rotate-180 transition-transform">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </span>
+            </summary>
+
+            <div className="mt-3 space-y-3 max-h-60 overflow-y-auto">
+              {teamMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors cursor-pointer"
+                  onClick={() => toggleMemberDetails(member.id)}
+                >
+                  <Avatar
+                    name={member.name}
+                    imageUrl={member.avatar_url}
+                    size="sm"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-medium text-gray-900 text-sm truncate">
+                        {member.name}
+                      </p>
+                      {member.role === 'founder' && (
+                        <Crown className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-600 truncate">
+                      {member.title}
+                      {member.equity_percentage &&
+                        ` • ${member.equity_percentage}% equity`}
+                    </p>
+                  </div>
+                  <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+                    <User className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Cancellation Modal Component
 const CancellationModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
@@ -204,6 +416,9 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
     onDownloadCertificate(investment);
   };
 
+  // Extract team members from investment data
+  const teamMembers = (investment as any).team_members || [];
+
   return (
     <>
       {/* Main Investment Details Modal */}
@@ -352,8 +567,36 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                   )}
                 </p>
               )}
+              {(investment as any).company_info && (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <p className="text-sm text-gray-600">
+                    <strong>Headquarters:</strong>{' '}
+                    {(investment as any).company_info.headquarters || 'N/A'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Website:</strong>{' '}
+                    {(investment as any).company_info.website ? (
+                      <a
+                        href={(investment as any).company_info.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        {(investment as any).company_info.website}
+                      </a>
+                    ) : (
+                      'N/A'
+                    )}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Team Members Section */}
+          {teamMembers.length > 0 && (
+            <TeamMembersStack teamMembers={teamMembers} />
+          )}
 
           {/* Cancellation Info */}
           {canBeCancelled && (

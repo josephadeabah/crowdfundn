@@ -158,6 +158,21 @@ export interface ClubInvestment {
   cancelled_at?: string | null;
   committed_at?: string | null;
   time_remaining_for_cancellation?: string;
+
+  // NEW: Team members property
+  team_members?: TeamMember[];
+}
+
+export interface TeamMember {
+  id: number;
+  name: string;
+  email: string;
+  role: 'founder' | 'team_member' | 'advisor' | string;
+  title: string;
+  equity_percentage?: string;
+  description?: string;
+  avatar_url?: string;
+  user?: any;
 }
 
 // NEW: Asset data types for TopAssets component

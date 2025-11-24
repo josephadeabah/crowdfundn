@@ -52,6 +52,7 @@ const safeNumber = (value: string | number | null | undefined): number => {
 };
 
 // Enhanced transformation function for investment data - FIXED to preserve cancellation properties
+// Enhanced transformation function for investment data - FIXED to preserve cancellation properties
 const transformInvestmentData = (investment: any): ClubInvestment => {
   // Handle amount conversion - parse "50.0K" to 50000, etc.
   const parseFormattedAmount = (amount: string): number => {
@@ -139,6 +140,9 @@ const transformInvestmentData = (investment: any): ClubInvestment => {
     time_remaining_for_cancellation: investment.time_remaining_for_cancellation,
     cancellation_reason: investment.cancellation_reason,
     cancelled_at: investment.cancelled_at,
+
+    // NEW: Preserve team members
+    team_members: investment.team_members || [],
   };
 
   // Debug log for cancellable investments
@@ -148,6 +152,7 @@ const transformInvestmentData = (investment: any): ClubInvestment => {
       status: transformedInvestment.status,
       can_be_cancelled: transformedInvestment.can_be_cancelled,
       time_remaining: transformedInvestment.time_remaining_for_cancellation,
+      team_members_count: transformedInvestment.team_members?.length || 0,
     });
   }
 
