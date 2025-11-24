@@ -13,6 +13,9 @@ import {
   SelectValue,
 } from '@/app/components/ui/select';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
+import { useKYCStatus } from '@/app/hooks/useKYCStatus';
+import { Alert, AlertDescription } from '@/app/components/ui/alert';
+import { InfoIcon, Shield, CheckCircle, XCircle } from 'lucide-react';
 
 interface CreateClubModalProps {
   isOpen: boolean;
@@ -26,6 +29,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
   onClubCreated,
 }) => {
   const { token } = useAuth();
+  const { kycStatus, loading: kycLoading } = useKYCStatus();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -43,6 +47,13 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
+
+    // Check KYC status before proceeding
+    if (!kycStatus?.verified) {
+      setErrorMessage('You must complete KYC verification before creating investment clubs');
+      setErrorAlert(true);
+      return;
+    }
 
     // Validate form
     const errors = validateForm();
@@ -81,9 +92,17 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
       }
     } catch (error: any) {
       console.error('Failed to create club:', error);
-      setErrorMessage(
-        error.message || 'Failed to create club. Please try again.',
-      );
+      
+      // Handle KYC-specific errors from backend
+      if (error.message?.includes('KYC_VERIFICATION_REQUIRED') || error.message?.includes('KYC_EXPIRED')) {
+        setErrorMessage(
+          'KYC verification required: You must complete KYC verification before creating investment clubs'
+        );
+      } else {
+        setErrorMessage(
+          error.message || 'Failed to create club. Please try again.',
+        );
+      }
       setErrorAlert(true);
     } finally {
       setLoading(false);
@@ -126,6 +145,25 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
     a.label.localeCompare(b.label),
   );
 
+  // Get KYC status message
+  const getKycStatusMessage = (): string => {
+    if (kycLoading) return 'Checking KYC status...';
+    
+    if (kycStatus) {
+      if (!kycStatus.verified) {
+        return 'KYC verification pending';
+      }
+      if (kycStatus.is_expired) {
+        return 'KYC verification has expired';
+      }
+      return 'KYC verified';
+    }
+
+    return 'KYC status unknown';
+  };
+
+  const isKycVerified = kycStatus?.verified && !kycStatus?.is_expired;
+
   return (
     <>
       <Modal
@@ -144,14 +182,53 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Create New Investment Club
-            </h2>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Create New Investment Club
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Start your own investment club to collaborate with other investors
+              </p>
+            </div>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
             <div className="space-y-6">
+              {/* KYC Status Alert */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Shield className="w-5 h-5 text-blue-600" />
+                  <h3 className="text-lg font-medium text-gray-900">KYC Verification</h3>
+                </div>
+                
+                {kycLoading ? (
+                  <Alert className="bg-blue-50 border-blue-200">
+                    <AlertDescription className="text-blue-800 text-sm">
+                      Checking your KYC verification status...
+                    </AlertDescription>
+                  </Alert>
+                ) : isKycVerified ? (
+                  <Alert className="bg-green-50 border-green-200">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <AlertDescription className="text-green-800 text-sm">
+                        <strong>KYC Verified:</strong> Your identity has been verified and you can create investment clubs.
+                      </AlertDescription>
+                    </div>
+                  </Alert>
+                ) : (
+                  <Alert className="bg-yellow-50 border-yellow-200">
+                    <div className="flex items-center gap-2">
+                      <XCircle className="w-4 h-4 text-yellow-600" />
+                      <AlertDescription className="text-yellow-800 text-sm">
+                        <strong>KYC Verification Required:</strong> You must complete your KYC verification before creating investment clubs. Current status: {getKycStatusMessage()}
+                      </AlertDescription>
+                    </div>
+                  </Alert>
+                )}
+              </div>
+
               {/* Club Name */}
               <div>
                 <label
@@ -169,6 +246,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   placeholder="Enter club name"
+                  disabled={!isKycVerified || loading}
                 />
               </div>
 
@@ -189,6 +267,7 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   placeholder="Describe your club's mission and purpose"
+                  disabled={!isKycVerified || loading}
                 />
               </div>
 
@@ -203,8 +282,9 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
                 <Select
                   value={formData.investment_focus}
                   onValueChange={handleInvestmentFocusChange}
+                  disabled={!isKycVerified || loading}
                 >
-                  <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                  <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue placeholder="Select investment focus..." />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
@@ -245,8 +325,9 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
                     step="0.01"
                     value={formData.minimum_monthly_contribution}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="0.00"
+                    disabled={!isKycVerified || loading}
                   />
                 </div>
 
@@ -267,8 +348,9 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
                     max="100"
                     value={formData.max_members}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="50"
+                    disabled={!isKycVerified || loading}
                   />
                 </div>
               </div>
@@ -287,7 +369,8 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
                   required
                   value={formData.club_type}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!isKycVerified || loading}
                 >
                   <option value="public">Public - Anyone can join</option>
                   <option value="private">Private - Requires invitation</option>
@@ -300,19 +383,38 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors disabled:opacity-50"
                 disabled={loading}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={loading}
-                className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading || !isKycVerified}
+                className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                {loading ? 'Creating...' : 'Create Club'}
+                {loading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Creating...
+                  </>
+                ) : !isKycVerified ? (
+                  'KYC Required'
+                ) : (
+                  'Create Club'
+                )}
               </button>
             </div>
+
+            {/* KYC Requirement Notice */}
+            {!isKycVerified && !kycLoading && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800 text-center">
+                  <strong>KYC verification required</strong> to create investment clubs. 
+                  Please complete your identity verification in your account settings.
+                </p>
+              </div>
+            )}
           </form>
         </motion.div>
       </Modal>

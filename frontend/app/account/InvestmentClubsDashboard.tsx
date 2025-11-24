@@ -162,6 +162,8 @@ const InvestmentClubsDashboard: React.FC = () => {
   const [investmentAlert, setInvestmentAlert] = useState(false);
   const [investmentMessage, setInvestmentMessage] = useState('');
   const [investmentSuccess, setInvestmentSuccess] = useState(false);
+  const [kycAlert, setKycAlert] = useState(false);
+  const [kycMessage, setKycMessage] = useState('');
 
   // Use portfolio data directly with proper fallback
   const portfolioData = portfolio || defaultPortfolio;
@@ -186,10 +188,10 @@ const InvestmentClubsDashboard: React.FC = () => {
     }
   }, [selectedClub]);
 
-  // Add KYC status check
+  // Add KYC status check for club creation
   useEffect(() => {
     if (user && kycStatus && !kycStatus.verified) {
-      console.log('User needs KYC verification for investments');
+      console.log('User needs KYC verification for club creation and investments');
     }
   }, [user, kycStatus]);
 
@@ -302,6 +304,17 @@ const InvestmentClubsDashboard: React.FC = () => {
     setIsCreateInvestmentModalOpen(true);
   };
 
+  // NEW: Handle create club with KYC check
+  const handleCreateClub = () => {
+    if (!kycStatus?.verified) {
+      setKycMessage('You must complete KYC verification before creating investment clubs');
+      setKycAlert(true);
+      return;
+    }
+
+    setIsCreateModalOpen(true);
+  };
+
   const handleViewAnalytics = () => {
     setIsAnalyticsModalOpen(true);
   };
@@ -320,7 +333,7 @@ const InvestmentClubsDashboard: React.FC = () => {
     setIsInvestmentDetailsModalOpen(true);
   };
 
-  // NEW: Handle cancelling investments
+  // Handle cancelling investments
   const handleCancelInvestment = async (
     investmentId: string,
     reason?: string,
@@ -447,17 +460,40 @@ const InvestmentClubsDashboard: React.FC = () => {
                 No Investment Clubs Yet
               </h2>
               <p className="text-gray-600 mb-6 md:mb-8 max-w-md mx-auto text-sm md:text-base">
-                Create an investment club to start collaborating with other
-                investors and make collective investment decisions.
+                {kycStatus?.verified 
+                  ? "Create an investment club to start collaborating with other investors and make collective investment decisions."
+                  : "Complete your KYC verification to create investment clubs and start collaborating with other investors."
+                }
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm md:text-base"
+                  onClick={handleCreateClub}
+                  disabled={!kycStatus?.verified}
+                  className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Create Your First Club
+                  {kycStatus?.verified ? 'Create Your First Club' : 'KYC Verification Required'}
                 </button>
+                {!kycStatus?.verified && (
+                  <button
+                    onClick={() => {
+                      setKycMessage('Please complete your KYC verification in your account settings to create investment clubs.');
+                      setKycAlert(true);
+                    }}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm md:text-base"
+                  >
+                    Learn About KYC
+                  </button>
+                )}
               </div>
+              
+              {/* KYC Notice */}
+              {!kycStatus?.verified && !kycLoading && (
+                <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-800">
+                    <strong>KYC verification required:</strong> You must complete identity verification before creating investment clubs. This helps ensure a secure investment environment for all members.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </main>
@@ -483,7 +519,7 @@ const InvestmentClubsDashboard: React.FC = () => {
           mobileMenuOpen={mobileMenuOpen}
           onClubChange={loadClubDetails}
           onOpenClubDetails={() => setIsModalOpen(true)}
-          onCreateClub={() => setIsCreateModalOpen(true)}
+          onCreateClub={handleCreateClub}
           setMobileMenuOpen={setMobileMenuOpen}
         />
 
@@ -529,7 +565,7 @@ const InvestmentClubsDashboard: React.FC = () => {
                 investments={investments}
                 formatCurrency={formatCurrency}
                 onViewInvestment={handleViewInvestment}
-                onCancelInvestment={handleCancelInvestment} // NEW: Add cancellation handler
+                onCancelInvestment={handleCancelInvestment}
                 onDownloadCertificate={handleDownloadCertificate}
                 currentPage={investmentsPagination?.current_page || 1}
                 totalPages={investmentsPagination?.total_pages || 1}
@@ -563,11 +599,11 @@ const InvestmentClubsDashboard: React.FC = () => {
               <ClubStats
                 club={currentClub}
                 investmentsCount={investments.length}
-                portfolio={portfolioData} // Pass the portfolio data here
+                portfolio={portfolioData}
                 formatCurrency={formatCurrency}
               />
 
-              <CreateClubCard onCreateClub={() => setIsCreateModalOpen(true)} />
+              <CreateClubCard onCreateClub={handleCreateClub} />
             </div>
           </div>
         </div>
@@ -626,7 +662,7 @@ const InvestmentClubsDashboard: React.FC = () => {
             investment={selectedInvestment}
             formatCurrency={formatCurrency}
             formatDate={formatDate}
-            onCancelInvestment={handleCancelInvestment} // NEW: Add cancellation to details modal
+            onCancelInvestment={handleCancelInvestment}
             onDownloadCertificate={handleDownloadCertificate}
           />
 
@@ -685,6 +721,17 @@ const InvestmentClubsDashboard: React.FC = () => {
             ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
             : 'bg-blue-300 hover:bg-blue-400 focus:ring-blue-500'
         }
+      />
+
+      <AlertPopup
+        title="KYC Verification Required"
+        message={kycMessage}
+        isOpen={kycAlert}
+        setIsOpen={setKycAlert}
+        onConfirm={() => setKycAlert(false)}
+        confirmText="Got it"
+        icon={<FaInfoCircle className="w-6 h-6 text-yellow-600" />}
+        confirmButtonClass="bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500"
       />
 
       <AlertPopup
