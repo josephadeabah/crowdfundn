@@ -159,15 +159,13 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     setError(null);
     setValidationErrors({});
 
-    // Add admin check - but don't show popup, just return early
+    // Add admin check
     if (!club.is_admin) {
-      // The admin restriction will be shown in the UI via the disabled button and message
       return;
     }
 
     // Add KYC check using the hook
     if (!kycStatus?.verified) {
-      // KYC restriction will be shown in the UI
       return;
     }
 
@@ -215,11 +213,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     try {
       const investmentData = {
         campaign_id: selectedCampaignId,
-        investment_amount: fees?.totalAmount || amount,
+        investment_amount: amount, // Send the base amount, not total with fees
         notes: notes || undefined,
       };
 
-      console.log('Sending investment data:', investmentData);
+      console.log('Creating investment with club balance:', investmentData);
 
       const result = await investmentService.createInvestment(
         token,
@@ -228,14 +226,18 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       );
 
       if (result.success) {
-        if (result.authorization_url) {
-          // Redirect to payment page for equity investments
-          window.location.href = result.authorization_url;
-        } else {
-          // For voting investments, just close the modal
-          setModalOpen(false);
-          resetForm();
-          onSuccess?.();
+        // REMOVED: Payment redirection logic
+        // SUCCESS: Investment created using club balance
+        console.log('Investment created successfully using club balance:', result);
+        
+        setModalOpen(false);
+        resetForm();
+        onSuccess?.();
+        
+        // Show success message
+        if (result.message) {
+          // You might want to show a toast notification here
+          console.log('Success:', result.message);
         }
       } else {
         // Handle backend validation errors
