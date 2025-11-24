@@ -6,9 +6,11 @@ interface CreateClubCardProps {
   onCreateClub: () => void;
 }
 
-export const CreateClubCard: React.FC<CreateClubCardProps> = ({ onCreateClub }) => {
+export const CreateClubCard: React.FC<CreateClubCardProps> = ({
+  onCreateClub,
+}) => {
   const { kycStatus, loading: kycLoading } = useKYCStatus();
-  
+
   const isKycVerified = kycStatus?.verified && !kycStatus?.is_expired;
 
   const handleCreateClick = () => {
@@ -31,21 +33,24 @@ export const CreateClubCard: React.FC<CreateClubCardProps> = ({ onCreateClub }) 
             {isKycVerified ? 'Create New Club' : 'KYC Required'}
           </h3>
           <p className="text-emerald-700 text-xs mb-3">
-            {isKycVerified 
+            {isKycVerified
               ? 'Start a new investment club and invite members'
-              : 'Complete KYC verification to create investment clubs'
-            }
+              : 'Complete KYC verification to create investment clubs'}
           </p>
           <button
             onClick={handleCreateClick}
             disabled={kycLoading}
             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-2 px-3 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {kycLoading ? 'Checking...' : isKycVerified ? 'Create Club' : 'Verify KYC'}
+            {kycLoading
+              ? 'Checking...'
+              : isKycVerified
+                ? 'Create Club'
+                : 'Verify KYC'}
           </button>
         </div>
       </div>
-      
+
       {/* KYC Notice */}
       {!isKycVerified && !kycLoading && (
         <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">

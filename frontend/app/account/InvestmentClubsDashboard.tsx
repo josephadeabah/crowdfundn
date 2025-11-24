@@ -191,7 +191,9 @@ const InvestmentClubsDashboard: React.FC = () => {
   // Add KYC status check for club creation
   useEffect(() => {
     if (user && kycStatus && !kycStatus.verified) {
-      console.log('User needs KYC verification for club creation and investments');
+      console.log(
+        'User needs KYC verification for club creation and investments',
+      );
     }
   }, [user, kycStatus]);
 
@@ -307,7 +309,9 @@ const InvestmentClubsDashboard: React.FC = () => {
   // NEW: Handle create club with KYC check
   const handleCreateClub = () => {
     if (!kycStatus?.verified) {
-      setKycMessage('You must complete KYC verification before creating investment clubs');
+      setKycMessage(
+        'You must complete KYC verification before creating investment clubs',
+      );
       setKycAlert(true);
       return;
     }
@@ -460,10 +464,9 @@ const InvestmentClubsDashboard: React.FC = () => {
                 No Investment Clubs Yet
               </h2>
               <p className="text-gray-600 mb-6 md:mb-8 max-w-md mx-auto text-sm md:text-base">
-                {kycStatus?.verified 
-                  ? "Create an investment club to start collaborating with other investors and make collective investment decisions."
-                  : "Complete your KYC verification to create investment clubs and start collaborating with other investors."
-                }
+                {kycStatus?.verified
+                  ? 'Create an investment club to start collaborating with other investors and make collective investment decisions.'
+                  : 'Complete your KYC verification to create investment clubs and start collaborating with other investors.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button
@@ -471,12 +474,16 @@ const InvestmentClubsDashboard: React.FC = () => {
                   disabled={!kycStatus?.verified}
                   className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {kycStatus?.verified ? 'Create Your First Club' : 'KYC Verification Required'}
+                  {kycStatus?.verified
+                    ? 'Create Your First Club'
+                    : 'KYC Verification Required'}
                 </button>
                 {!kycStatus?.verified && (
                   <button
                     onClick={() => {
-                      setKycMessage('Please complete your KYC verification in your account settings to create investment clubs.');
+                      setKycMessage(
+                        'Please complete your KYC verification in your account settings to create investment clubs.',
+                      );
                       setKycAlert(true);
                     }}
                     className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm md:text-base"
@@ -485,12 +492,15 @@ const InvestmentClubsDashboard: React.FC = () => {
                   </button>
                 )}
               </div>
-              
+
               {/* KYC Notice */}
               {!kycStatus?.verified && !kycLoading && (
                 <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <p className="text-sm text-yellow-800">
-                    <strong>KYC verification required:</strong> You must complete identity verification before creating investment clubs. This helps ensure a secure investment environment for all members.
+                    <strong>KYC verification required:</strong> You must
+                    complete identity verification before creating investment
+                    clubs. This helps ensure a secure investment environment for
+                    all members.
                   </p>
                 </div>
               )}
