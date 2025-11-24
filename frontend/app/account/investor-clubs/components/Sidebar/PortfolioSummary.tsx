@@ -68,7 +68,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             Total Returns
           </span>
           <span
-            className={`font-semibold text-sm lg:text-base ${
+            className={`font-semibold text-xs lg:text-sm ${
               portfolio.total_return >= 0 ? 'text-green-600' : 'text-red-600'
             }`}
           >
