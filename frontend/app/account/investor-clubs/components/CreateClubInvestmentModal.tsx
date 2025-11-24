@@ -15,15 +15,7 @@ import { investmentService } from '../clubservice';
 import { ApprovedCampaign, Club } from '../clubTypes';
 import Modal from '@/app/components/modal/Modal';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
-import {
-  InfoIcon,
-  Calculator,
-  TrendingUp,
-  CreditCard,
-  Shield,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react';
+import { InfoIcon, Calculator, TrendingUp, CreditCard, Shield, CheckCircle, XCircle, UserX } from 'lucide-react';
 import { useKYCStatus } from '@/app/hooks/useKYCStatus';
 
 interface CreateClubInvestmentModalProps {
@@ -158,15 +150,15 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     setError(null);
     setValidationErrors({});
 
-    // Add admin check
+    // Add admin check - but don't show popup, just return early
     if (!club.is_admin) {
-      setError('Only club admins can create investments');
+      // The admin restriction will be shown in the UI via the disabled button and message
       return;
     }
 
-    // Add KYC check using the hook - REMOVED the early return that showed alert
+    // Add KYC check using the hook
     if (!kycStatus?.verified) {
-      setError('You must complete KYC verification before making investments');
+      // KYC restriction will be shown in the UI
       return;
     }
 
@@ -279,7 +271,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   // Get KYC status message
   const getKycStatusMessage = (): string => {
     if (kycLoading) return 'Checking KYC status...';
-
+    
     if (kycStatus) {
       if (!kycStatus.verified) {
         return 'KYC verification pending';
@@ -294,6 +286,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   };
 
   const isKycVerified = kycStatus?.verified && !kycStatus?.is_expired;
+  const isAdmin = club.is_admin;
 
   return (
     <Modal
@@ -323,15 +316,25 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
             onSubmit={handleSubmit}
             className="space-y-6"
           >
+            {/* Admin Access Alert */}
+            {!isAdmin && (
+              <Alert className="bg-red-50 border-red-200">
+                <div className="flex items-center gap-2">
+                  <UserX className="w-4 h-4 text-red-600" />
+                  <AlertDescription className="text-red-800 text-sm">
+                    <strong>Admin Access Required:</strong> Only club administrators can create investments for the club.
+                  </AlertDescription>
+                </div>
+              </Alert>
+            )}
+
             {/* KYC Status Section */}
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Shield className="w-5 h-5 text-green-600" />
-                <h3 className="text-lg font-medium text-gray-900">
-                  KYC Verification Status
-                </h3>
+                <h3 className="text-lg font-medium text-gray-900">KYC Verification Status</h3>
               </div>
-
+              
               {kycLoading ? (
                 <Alert className="bg-green-50 border-green-200">
                   <AlertDescription className="text-green-800 text-sm">
@@ -343,8 +346,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-600" />
                     <AlertDescription className="text-green-800 text-sm">
-                      <strong>KYC Verified:</strong> Your identity has been
-                      verified and you can make investments.
+                      <strong>KYC Verified:</strong> Your identity has been verified and you can make investments.
                     </AlertDescription>
                   </div>
                 </Alert>
@@ -353,9 +355,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   <div className="flex items-center gap-2">
                     <XCircle className="w-4 h-4 text-yellow-600" />
                     <AlertDescription className="text-yellow-800 text-sm">
-                      <strong>KYC Verification Required:</strong> You must
-                      complete your KYC verification before making investments.
-                      Current status: {getKycStatusMessage()}
+                      <strong>KYC Verification Required:</strong> You must complete your KYC verification before making investments. Current status: {getKycStatusMessage()}
                     </AlertDescription>
                   </div>
                 </Alert>
@@ -373,7 +373,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   setSelectedCampaignId(value);
                   setValidationErrors({}); // Clear errors when campaign changes
                 }}
-                disabled={!isKycVerified || loading}
+                disabled={!isAdmin || !isKycVerified || loading}
               >
                 <SelectTrigger
                   className={`w-full z-[150] border-gray-300 text-gray-900 [&>span]:text-gray-900 focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${
@@ -466,7 +466,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 className={`border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${
                   validationErrors.amount ? 'border-red-500' : ''
                 }`}
-                disabled={!isKycVerified || loading}
+                disabled={!isAdmin || !isKycVerified || loading}
               />
               {renderValidationErrors('amount')}
               <p className="text-xs text-gray-500">
@@ -619,7 +619,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 placeholder="Add any additional context or reasoning for this investment..."
                 rows={3}
                 className="border-gray-300 text-gray-900 placeholder:text-gray-500 resize-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-gray-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!isKycVerified || loading}
+                disabled={!isAdmin || !isKycVerified || loading}
               />
             </div>
 
@@ -667,8 +667,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 loading ||
                 !selectedCampaignId ||
                 approvedCampaigns.length === 0 ||
-                !club.is_admin ||
-                !isKycVerified || // Use the computed KYC status
+                !isAdmin ||
+                !isKycVerified ||
                 !!(fees && fees.totalAmount > club.financials.current_balance)
               }
               className="flex-1 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -678,6 +678,8 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Processing...
                 </>
+              ) : !isAdmin ? (
+                'Admin Required'
               ) : !isKycVerified ? (
                 'KYC Required'
               ) : (
@@ -688,25 +690,23 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
           {/* Enhanced permission messages */}
           <div className="mt-2 space-y-1">
-            {!club.is_admin && (
+            {!isAdmin && (
               <p className="text-xs text-red-600 text-center">
-                Only club admins can create investments
+                Only club administrators can create investments
               </p>
             )}
-            {!isKycVerified && (
+            {isAdmin && !isKycVerified && (
               <p className="text-xs text-yellow-600 text-center">
                 Complete KYC verification to make investments
               </p>
             )}
           </div>
 
-          {/* KYC Requirement Notice */}
-          {!isKycVerified && !kycLoading && (
-            <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-sm text-green-800 text-center">
-                <strong>KYC verification required</strong> to make investments.
-                Please complete your identity verification in your account
-                settings.
+          {/* Requirements Notice */}
+          {(isAdmin && !isKycVerified) && !kycLoading && (
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800 text-center">
+                <strong>Requirements:</strong> You have admin access but need to complete KYC verification to make investments.
               </p>
             </div>
           )}
