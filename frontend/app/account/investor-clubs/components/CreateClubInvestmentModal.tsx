@@ -234,7 +234,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     const totalAmount = fees?.totalAmount || amount;
     if (totalAmount > club.financials.current_balance) {
       setError(
-        `Insufficient club balance. Available: ${club.currency_symbol}${club.financials.current_balance.toLocaleString()}. Required: ${club.currency_symbol}${totalAmount.toLocaleString()}`,
+        `Insufficient club balance. Available: ${club.currency}${club.financials.current_balance.toLocaleString()}. Required: ${club.currency}${totalAmount.toLocaleString()}`,
       );
       return;
     }
@@ -273,7 +273,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
         showToast(
           'Investment Successful',
           result.message ||
-            `Successfully invested ${club.currency_symbol}${amount.toLocaleString()} in ${selectedCampaign.campaign.title}. Total deducted from club balance: ${club.currency_symbol}${fees?.totalAmount.toLocaleString()}`,
+            `Successfully invested ${club.currency}${amount.toLocaleString()} in ${selectedCampaign.campaign.title}. Total deducted from club balance: ${club.currency}${fees?.totalAmount.toLocaleString()}`,
           'success',
         );
 
@@ -494,7 +494,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                     {selectedCampaign.club_investment?.proposed_amount && (
                       <div>
                         <span className="font-medium">Proposed:</span>{' '}
-                        {club.currency_symbol}
+                        {club.currency}
                         {selectedCampaign.club_investment.proposed_amount.toLocaleString()}
                       </div>
                     )}
@@ -532,7 +532,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 />
                 {renderValidationErrors('amount')}
                 <p className="text-xs text-gray-500">
-                  Available balance: {club.currency_symbol}
+                  Available balance: {club.currency}
                   {club.financials.current_balance.toLocaleString()}
                 </p>
               </div>
@@ -551,7 +551,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                     <div className="flex justify-between">
                       <span className="text-gray-600">Investment Amount:</span>
                       <span className="font-medium">
-                        {club.currency_symbol}
+                        {club.currency}
                         {fees.investmentAmount.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -565,7 +565,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                         Processing Fee (7%):
                       </span>
                       <span className="text-red-600 font-medium">
-                        +{club.currency_symbol}
+                        +{club.currency}
                         {fees.processingFee.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -584,7 +584,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                         Platform Fee (3%):
                       </span>
                       <span className="text-orange-600 font-medium">
-                        +{club.currency_symbol}
+                        +{club.currency}
                         {fees.platformFee.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -598,7 +598,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                           Total Deducted from Club Balance:
                         </span>
                         <span className="text-blue-700 font-bold">
-                          {club.currency_symbol}
+                          {club.currency}
                           {fees.totalAmount.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
@@ -611,7 +611,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                           Net to Fundraiser:
                         </span>
                         <span className="text-green-700 font-bold">
-                          {club.currency_symbol}
+                          {club.currency}
                           {fees.netToCampaign.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
@@ -624,7 +624,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   <Alert className="mt-3 bg-blue-50 border-blue-200">
                     <InfoIcon className="h-4 w-4 text-blue-500" />
                     <AlertDescription className="text-blue-500 text-xs">
-                      The total amount ({club.currency_symbol}
+                      The total amount ({club.currency}
                       {fees.totalAmount.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
@@ -642,12 +642,12 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 <Alert className="bg-red-50 border-red-200">
                   <AlertDescription className="text-red-700 text-sm">
                     <strong>Insufficient Balance:</strong> This investment
-                    requires {club.currency_symbol}
+                    requires {club.currency}
                     {fees.totalAmount.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}{' '}
-                    but your club only has {club.currency_symbol}
+                    but your club only has {club.currency}
                     {club.financials.current_balance.toLocaleString()}.
                   </AlertDescription>
                 </Alert>
