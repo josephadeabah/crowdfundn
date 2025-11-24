@@ -128,18 +128,27 @@ class InvestmentClub < ApplicationRecord
     end
   end
 
-  # FIXED: Thread-safe balance deductions
-  def deduct_balance(amount)
+  # NEW: Thread-safe balance investment method
+  def invest_from_balance(amount)
     ActiveRecord::Base.transaction do
       lock!
-      new_balance = current_balance.to_f - amount.to_f
-      if new_balance >= 0
-        update_columns(current_balance: new_balance)
+      
+      if current_balance >= amount
+        new_balance = current_balance - amount
+        update_columns(
+          current_balance: new_balance,
+          total_invested: total_invested.to_f + amount
+        )
         true
       else
         false
       end
     end
+  end
+
+  # AND UPDATE THE EXISTING deduct_balance METHOD TO USE THE NEW METHOD:
+  def deduct_balance(amount)
+    invest_from_balance(amount) # Use the new method
   end
 
   # FIXED: Refund with thread safety

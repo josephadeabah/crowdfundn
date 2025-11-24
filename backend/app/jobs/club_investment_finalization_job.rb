@@ -10,7 +10,6 @@ class ClubInvestmentFinalizationJob < ApplicationJob
 
     expired_investments.find_each do |club_investment|
       begin
-        # Process each investment in its own transaction
         process_investment(club_investment)
       rescue => e
         Rails.logger.error "Failed to finalize club investment #{club_investment.id}: #{e.message}"
@@ -24,12 +23,11 @@ class ClubInvestmentFinalizationJob < ApplicationJob
   def process_investment(club_investment)
     Rails.logger.info "Processing club investment #{club_investment.id} with equity_investment_id: #{club_investment.equity_investment_id}"
     
-    # Use a transaction for the database updates
     ActiveRecord::Base.transaction do
       # Finalize the club investment
       club_investment.update!(status: ClubInvestment::STATUS_SUCCESSFUL)
       
-      # Update campaign totals if equity investment exists and can be found
+      # Update campaign totals if equity investment exists
       if club_investment.equity_investment_id.present?
         begin
           equity_investment = EquityInvestment.find_by(id: club_investment.equity_investment_id)
@@ -38,13 +36,21 @@ class ClubInvestmentFinalizationJob < ApplicationJob
             campaign = club_investment.campaign
             net_amount = equity_investment.net_amount || equity_investment.amount
             
+            # UPDATE CAMPAIGN TOTALS HERE (all campaign updates happen here)
             campaign.update!(
               current_amount: campaign.current_amount + net_amount,
               total_successful_donations: campaign.total_successful_donations + net_amount,
               total_equity_invested: campaign.total_equity_invested + net_amount
             )
 
-            campaign.update_transferred_amount(net_amount)
+            campaign.update_transferred_amount(net_amount) if campaign.respond_to?(:update_transferred_amount)
+            
+            # Update shares issued if it's an equity campaign
+            if campaign.is_a?(EquityCampaign) && equity_investment.shares
+              campaign.update!(
+                shares_issued: campaign.shares_issued + equity_investment.shares
+              )
+            end
             
             # Also update the equity investment status
             equity_investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
@@ -61,7 +67,7 @@ class ClubInvestmentFinalizationJob < ApplicationJob
       
       campaign_identifier = club_investment.campaign.slug || club_investment.campaign.id
       
-      # Send final confirmation using existing service
+      # Send final confirmation
       ClubEmailService.send_investment_finalized_notification(
         club_investment: club_investment,
         campaign_identifier: campaign_identifier,
@@ -70,11 +76,12 @@ class ClubInvestmentFinalizationJob < ApplicationJob
       )
       
       Rails.logger.info "Successfully finalized club investment #{club_investment.id}"
-    end # Transaction ends here
+    end
     
-    # NOW enqueue the certificate job AFTER the transaction commits
-    # This ensures the club investment status is "successful" when the certificate job runs
-    ClubInvestmentCertificateJob.perform_later(club_investment.id)
-    Rails.logger.info "Enqueued certificate generation for successful club investment #{club_investment.id}"
+    # Enqueue certificate job for equity investments
+    if club_investment.campaign.is_a?(EquityCampaign)
+      ClubInvestmentCertificateJob.perform_later(club_investment.id)
+      Rails.logger.info "Enqueued certificate generation for successful club investment #{club_investment.id}"
+    end
   end
 end
