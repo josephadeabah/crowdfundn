@@ -77,10 +77,13 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             </span>
             <span
               className={`text-xs lg:text-sm whitespace-nowrap ${
-                portfolio.return_percentage >= 0 ? 'text-green-600' : 'text-red-600'
+                portfolio.return_percentage >= 0
+                  ? 'text-green-600'
+                  : 'text-red-600'
               }`}
             >
-              ({portfolio.return_percentage >= 0 ? '+' : ''}{portfolio.return_percentage}%)
+              ({portfolio.return_percentage >= 0 ? '+' : ''}
+              {portfolio.return_percentage}%)
             </span>
           </div>
         </div>
