@@ -64,7 +64,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
         </div>
 
         <div className="flex justify-between items-center">
-          <span className="text-gray-600 text-sm lg:text-base">
+          <span className="text-gray-600 text-sm">
             Total Returns
           </span>
           <span
