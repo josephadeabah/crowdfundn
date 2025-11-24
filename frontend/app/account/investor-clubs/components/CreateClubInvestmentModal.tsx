@@ -95,21 +95,25 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     });
   };
 
-  // Calculate fees exactly like in the backend
+  // Calculate fees exactly like in the backend - FIXED: Now we add all fees together
   const calculateFees = (amount: number) => {
     const processingFee = amount * 0.07;
     const platformFee = amount * 0.03;
     const grossAmount = amount;
     const netAmount = amount - platformFee;
-    const totalDeduction = grossAmount;
+    
+    // IMPORTANT: We add investment amount + processing fee + platform fee
+    // This total gets deducted from club balance as one bulk amount
+    const totalDeduction = grossAmount + processingFee + platformFee;
 
     return {
       processingFee,
       platformFee,
       totalFees: processingFee + platformFee,
-      totalAmount: totalDeduction,
+      totalAmount: totalDeduction, // This is what gets deducted from club balance
       netToCampaign: netAmount,
       isProcessingFeeCapped: processingFee >= 600,
+      investmentAmount: amount, // Base investment amount
     };
   };
 
@@ -226,7 +230,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
       return;
     }
 
-    // Check if club has sufficient balance (investment amount + fees)
+    // Check if club has sufficient balance (investment amount + ALL fees)
     const totalAmount = fees?.totalAmount || amount;
     if (totalAmount > club.financials.current_balance) {
       setError(
@@ -238,13 +242,19 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     setLoading(true);
 
     try {
+      // IMPORTANT: Send only the base investment amount to backend
+      // Backend will calculate and handle the fee splitting internally
       const investmentData = {
         campaign_id: selectedCampaignId,
-        investment_amount: amount, // Send the base amount, backend handles fees
+        investment_amount: amount, // Base amount only - backend handles fee calculations
         notes: notes || undefined,
       };
 
-      console.log('Creating investment with club balance:', investmentData);
+      console.log('Creating investment with club balance:', {
+        ...investmentData,
+        calculatedTotalDeduction: fees?.totalAmount,
+        feeBreakdown: fees
+      });
 
       const result = await investmentService.createInvestment(
         token,
@@ -259,11 +269,11 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
           result,
         );
 
-        // Show success toast
+        // Show success toast with fee breakdown
         showToast(
           'Investment Successful',
           result.message ||
-            `Successfully invested ${club.currency_symbol}${amount.toLocaleString()} in ${selectedCampaign.campaign.title} using club balance`,
+            `Successfully invested ${club.currency_symbol}${amount.toLocaleString()} in ${selectedCampaign.campaign.title}. Total deducted from club balance: ${club.currency_symbol}${fees?.totalAmount.toLocaleString()}`,
           'success',
         );
 
@@ -527,13 +537,13 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 </p>
               </div>
 
-              {/* Fee Breakdown - Updated for informational purposes */}
+              {/* Fee Breakdown - UPDATED: Show total deduction including all fees */}
               {fees && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Calculator className="w-4 h-4 text-blue-600" />
                     <h4 className="font-medium text-blue-900">
-                      Estimated Fee Breakdown
+                      Total Deduction Breakdown
                     </h4>
                   </div>
 
@@ -542,23 +552,20 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                       <span className="text-gray-600">Investment Amount:</span>
                       <span className="font-medium">
                         {club.currency_symbol}
-                        {parseFloat(investmentAmount).toLocaleString(
-                          undefined,
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )}
+                        {fees.investmentAmount.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </span>
                     </div>
 
                     <div className="flex justify-between">
                       <span className="text-gray-600 flex items-center gap-1">
                         <CreditCard className="w-3 h-3" />
-                        Estimated Processing Fee (7%):
+                        Processing Fee (7%):
                       </span>
-                      <span className="text-gray-600">
-                        ~{club.currency_symbol}
+                      <span className="text-red-600 font-medium">
+                        +{club.currency_symbol}
                         {fees.processingFee.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -574,10 +581,10 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                     <div className="flex justify-between">
                       <span className="text-gray-600 flex items-center gap-1">
                         <TrendingUp className="w-3 h-3" />
-                        Estimated Platform Fee (3%):
+                        Platform Fee (3%):
                       </span>
-                      <span className="text-gray-600">
-                        ~{club.currency_symbol}
+                      <span className="text-orange-600 font-medium">
+                        +{club.currency_symbol}
                         {fees.platformFee.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -588,7 +595,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                     <div className="border-t border-blue-200 pt-2 mt-2">
                       <div className="flex justify-between">
                         <span className="text-gray-700 font-medium">
-                          Total to be deducted from club balance:
+                          Total Deducted from Club Balance:
                         </span>
                         <span className="text-blue-700 font-bold">
                           {club.currency_symbol}
@@ -601,7 +608,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
 
                       <div className="flex justify-between mt-1">
                         <span className="text-gray-700 font-medium">
-                          Estimated net to fundraiser:
+                          Net to Fundraiser:
                         </span>
                         <span className="text-green-700 font-bold">
                           {club.currency_symbol}
@@ -617,10 +624,13 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                   <Alert className="mt-3 bg-blue-50 border-blue-200">
                     <InfoIcon className="h-4 w-4 text-blue-500" />
                     <AlertDescription className="text-blue-500 text-xs">
-                      The investment amount plus applicable fees will be
-                      deducted directly from your club balance. No external
-                      payment required. Fees are calculated automatically by the
-                      system.
+                      The total amount ({club.currency_symbol}
+                      {fees.totalAmount.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}) will be deducted from your club balance as one bulk amount. 
+                      The backend will automatically split this into investment amount, 
+                      processing fee, and platform fee.
                     </AlertDescription>
                   </Alert>
                 </div>
@@ -718,7 +728,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 ) : !isKycVerified ? (
                   'KYC Required'
                 ) : (
-                  'Invest from Club Balance'
+                  `Invest ${club.currency_symbol}${fees?.totalAmount.toLocaleString()}`
                 )}
               </Button>
             </div>
