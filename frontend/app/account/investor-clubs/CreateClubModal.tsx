@@ -204,15 +204,15 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
               {/* KYC Status Alert */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <Shield className="w-5 h-5 text-blue-600" />
+                  <Shield className="w-5 h-5 text-green-600" />
                   <h3 className="text-lg font-medium text-gray-900">
                     KYC Verification
                   </h3>
                 </div>
 
                 {kycLoading ? (
-                  <Alert className="bg-blue-50 border-blue-200">
-                    <AlertDescription className="text-blue-800 text-sm">
+                  <Alert className="bg-green-50 border-green-200">
+                    <AlertDescription className="text-green-800 text-sm">
                       Checking your KYC verification status...
                     </AlertDescription>
                   </Alert>
@@ -420,8 +420,8 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
 
             {/* KYC Requirement Notice */}
             {!isKycVerified && !kycLoading && (
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800 text-center">
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-800 text-center">
                   <strong>KYC verification required</strong> to create
                   investment clubs. Please complete your identity verification
                   in your account settings.
