@@ -95,7 +95,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     });
   };
 
-  // Calculate fees exactly like in the backend - FIXED: Now we add all fees together
+  // Calculate fees exactly like in the backend
   const calculateFees = (amount: number) => {
     const processingFee = amount * 0.07;
     const platformFee = amount * 0.03;
@@ -242,18 +242,19 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
     setLoading(true);
 
     try {
-      // IMPORTANT: Send only the base investment amount to backend
-      // Backend will calculate and handle the fee splitting internally
+      // IMPORTANT: Send the TOTAL DEDUCTION AMOUNT to backend
+      // This includes investment amount + processing fee + platform fee
       const investmentData = {
         campaign_id: selectedCampaignId,
-        investment_amount: amount, // Base amount only - backend handles fee calculations
+        investment_amount: fees?.totalAmount || amount, // Send total amount including all fees
         notes: notes || undefined,
       };
 
       console.log('Creating investment with club balance:', {
         ...investmentData,
-        calculatedTotalDeduction: fees?.totalAmount,
         feeBreakdown: fees,
+        baseInvestment: amount,
+        totalDeduction: fees?.totalAmount,
       });
 
       const result = await investmentService.createInvestment(
@@ -537,7 +538,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                 </p>
               </div>
 
-              {/* Fee Breakdown - UPDATED: Show total deduction including all fees */}
+              {/* Fee Breakdown - Show total deduction including all fees */}
               {fees && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-3">
@@ -629,8 +630,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
-                      ) will be deducted from your club balance as one bulk
-                      amount.
+                      ) will be deducted from your club balance.
                     </AlertDescription>
                   </Alert>
                 </div>
