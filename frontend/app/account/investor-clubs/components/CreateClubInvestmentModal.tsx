@@ -630,8 +630,7 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
                         maximumFractionDigits: 2,
                       })}
                       ) will be deducted from your club balance as one bulk
-                      amount. The backend will automatically split this into
-                      investment amount, processing fee, and platform fee.
+                      amount.
                     </AlertDescription>
                   </Alert>
                 </div>
