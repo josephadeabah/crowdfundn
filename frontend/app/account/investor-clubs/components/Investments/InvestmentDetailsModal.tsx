@@ -66,7 +66,7 @@ const TeamMembersStack: React.FC<{ teamMembers: any[] }> = ({
   return (
     <div className="mt-6">
       <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-        <Users className="w-5 h-5 text-blue-600" />
+        <Users className="w-5 h-5 text-orange-600" />
         Team Members
       </h3>
 
@@ -136,7 +136,7 @@ const TeamMembersStack: React.FC<{ teamMembers: any[] }> = ({
                           Founder
                         </span>
                       )}
-                      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                      <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
                         {member.title}
                       </span>
                     </div>
@@ -203,7 +203,7 @@ const TeamMembersStack: React.FC<{ teamMembers: any[] }> = ({
               {teamMembers.map((member) => (
                 <div
                   key={member.id}
-                  className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors cursor-pointer"
+                  className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-orange-300 transition-colors cursor-pointer"
                   onClick={() => toggleMemberDetails(member.id)}
                 >
                   <Avatar
@@ -361,7 +361,7 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
         );
       case 'committed':
         return (
-          <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 border border-blue-200">
+          <span className="px-3 py-1 rounded-full text-sm bg-orange-100 text-orange-800 border border-orange-200">
             Committed (48h Cancellation Window)
           </span>
         );
@@ -580,7 +580,7 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
                         href={(investment as any).company_info.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-orange-600 hover:text-orange-800"
                       >
                         {(investment as any).company_info.website}
                       </a>
