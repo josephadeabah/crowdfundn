@@ -21,10 +21,10 @@ import {
   Vote,
   Trash2,
 } from 'lucide-react';
-import { ApprovedCampaign, Club } from '../clubTypes';
 import Pagination from '@/app/components/pagination/Pagination';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
-import ToastComponent from '@/app/components/toast/ToastComponent';
+import { ApprovedCampaign, Club } from '../../clubTypes';
+import ToastComponent from '@/app/components/toast/Toast';
 
 interface ApprovedCampaignsProps {
   club: Club;
