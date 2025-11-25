@@ -450,6 +450,7 @@ module Api
         subaccount = Subaccount.find_by(user_id: campaign.fundraiser_id)
         
         equity_investment = campaign.equity_investments.new(
+          club_investment_id: club_investment.id,
           amount: amount,
           email: @club.contact_email,
           full_name: @club.name,

@@ -43,7 +43,7 @@ class ClubInvestmentFinalizationJob < ApplicationJob
               total_equity_invested: campaign.total_equity_invested + net_amount
             )
 
-            campaign.update_transferred_amount(net_amount) if campaign.respond_to?(:update_transferred_amount)
+            campaign.update_transferred_amount(net_amount)
             
             # Update shares issued if it's an equity campaign
             # if campaign.is_a?(EquityCampaign) && equity_investment.shares

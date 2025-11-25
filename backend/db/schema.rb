@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_21_001738) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_25_114603) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -408,9 +408,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_21_001738) do
     t.datetime "cancel_window_expires_at"
     t.text "cancellation_reason"
     t.datetime "cancelled_at"
+    t.bigint "club_investment_id"
     t.index ["campaign_id", "id"], name: "index_equity_investments_on_campaign_id_and_id", where: "((status)::text = 'successful'::text)"
     t.index ["campaign_id", "status"], name: "index_equity_investments_on_campaign_and_successful", where: "((status)::text = 'successful'::text)"
     t.index ["campaign_id"], name: "index_equity_investments_on_campaign_id"
+    t.index ["club_investment_id"], name: "index_equity_investments_on_club_investment_id"
     t.index ["status"], name: "index_equity_investments_on_status"
     t.index ["subaccount_code"], name: "index_equity_investments_on_subaccount_code"
     t.index ["subscription_code"], name: "index_equity_investments_on_subscription_code", unique: true
@@ -977,6 +979,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_21_001738) do
   add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
   add_foreign_key "equity_investments", "campaigns"
+  add_foreign_key "equity_investments", "club_investments"
   add_foreign_key "equity_investments", "users"
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
