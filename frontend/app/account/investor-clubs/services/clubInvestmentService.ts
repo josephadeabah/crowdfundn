@@ -9,6 +9,7 @@ export interface ClubInvestment {
     category: string;
     goal_amount: number;
     current_amount: number;
+    transferred_amount: number;
     currency: string;
     currency_symbol: string;
   };
@@ -41,6 +42,7 @@ export interface ApprovedCampaignType {
     category: string;
     goal_amount: number;
     current_amount: number;
+    transferred_amount: number;
     currency: string;
     currency_symbol: string;
     slug: string;

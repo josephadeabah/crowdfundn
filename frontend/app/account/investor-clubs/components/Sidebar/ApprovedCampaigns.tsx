@@ -158,7 +158,7 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
                 const votingStats = clubInvestment.voting_stats || {};
 
                 const progressPercentage = calculateProgressPercentage(
-                  campaignData.current_amount,
+                  campaignData.transferred_amount,
                   campaignData.goal_amount,
                 );
 
@@ -229,11 +229,11 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
                       <div className="mt-3">
                         <div className="flex justify-between text-sm text-gray-600 mb-1">
                           <span>
-                            Raised: {campaignData.currency_symbol || '$'}
-                            {safeToLocaleString(campaignData.current_amount)}
+                            Raised: {campaignData.currency || '$'}
+                            {safeToLocaleString(campaignData.transferred_amount)}
                           </span>
                           <span>
-                            Goal: {campaignData.currency_symbol || '$'}
+                            Goal: {campaignData.currency || '$'}
                             {safeToLocaleString(campaignData.goal_amount)}
                           </span>
                         </div>
