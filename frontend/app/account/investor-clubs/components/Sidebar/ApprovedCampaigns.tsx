@@ -77,24 +77,29 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(3);
   const [deleteAlert, setDeleteAlert] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState<ApprovedCampaign | null>(null);
+  const [selectedCampaign, setSelectedCampaign] =
+    useState<ApprovedCampaign | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  
+
   // Toast state
   const [toast, setToast] = useState({
     isOpen: false,
     title: '',
     description: '',
-    type: 'success' as 'success' | 'error' | 'warning'
+    type: 'success' as 'success' | 'error' | 'warning',
   });
 
   // Show toast function
-  const showToast = (title: string, description: string, type: 'success' | 'error' | 'warning' = 'success') => {
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning' = 'success',
+  ) => {
     setToast({
       isOpen: true,
       title,
       description,
-      type
+      type,
     });
   };
 
@@ -166,9 +171,9 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
       } else {
         console.error('Failed to delete approved campaign:', data.error);
         showToast(
-          'Error', 
+          'Error',
           `Failed to remove approved campaign: ${data.error || 'Unknown error'}`,
-          'error'
+          'error',
         );
       }
     } catch (error) {
@@ -176,7 +181,7 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
       showToast(
         'Error',
         'Error deleting approved campaign. Please try again.',
-        'error'
+        'error',
       );
     } finally {
       setDeleteLoading(false);
@@ -587,7 +592,7 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
       {/* Toast Component */}
       <ToastComponent
         isOpen={toast.isOpen}
-        onClose={() => setToast(prev => ({ ...prev, isOpen: false }))}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
         title={toast.title}
         description={toast.description}
         type={toast.type}
