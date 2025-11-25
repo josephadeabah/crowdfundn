@@ -468,7 +468,7 @@ const EquityInvestments = () => {
           <Link href="/invest">
             <Button
               variant="outline"
-              className="text-gray-700 rounded-full shadow-sm"
+              className="text-gray-700 rounded-full shadow-none"
             >
               Browse Founders
             </Button>
@@ -496,7 +496,7 @@ const EquityInvestments = () => {
 
           {/* Cancellation Notice Banner */}
           {hasCancellableInvestments(displayInvestments) && (
-            <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-300 rounded-lg p-4 mb-6 shadow-sm">
+            <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-300 rounded-lg p-4 mb-6 shadow-none">
               <div className="flex items-start gap-3">
                 <div className="bg-orange-500 p-2 rounded-full flex-shrink-0 mt-0.5">
                   <FaClock className="text-white text-sm" />
@@ -867,7 +867,7 @@ const EquityInvestments = () => {
       </div>
 
       {/* Recent Activity Section */}
-      <div className="bg-white p-6 rounded-xl shadow-sm mt-8">
+      <div className="bg-white p-6 rounded-xl shadow-none mt-8">
         <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
           <span className="text-pink-500">💫</span> Recent Activity
         </h3>
@@ -907,7 +907,7 @@ const EquityInvestments = () => {
               return (
                 <div
                   key={investment.id}
-                  className="p-4 rounded-xl border border-gray-200 bg-gray-50 shadow-sm hover:shadow-md transition"
+                  className="p-4 rounded-xl border border-gray-200 bg-gray-50 shadow-none hover:shadow-none transition"
                 >
                   <p className="text-sm text-gray-700 mb-3">{actionText}</p>
 
