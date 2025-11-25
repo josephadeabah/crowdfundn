@@ -84,7 +84,7 @@ module Api
         processing_fee = investment_amount * 0.07
         platform_fee = investment_amount * 0.03
         gross_amount = investment_amount
-        net_amount = investment_amount - platform_fee
+        net_amount = investment_amount - (platform_fee + processing_fee)
         total_deduction = gross_amount
 
         unless @club.can_invest?(total_deduction)

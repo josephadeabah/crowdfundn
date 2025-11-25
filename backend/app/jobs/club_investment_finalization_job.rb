@@ -34,7 +34,7 @@ class ClubInvestmentFinalizationJob < ApplicationJob
           
           if equity_investment
             campaign = club_investment.campaign
-            net_amount = equity_investment.net_amount || equity_investment.amount
+            net_amount = equity_investment.net_amount
             
             # UPDATE CAMPAIGN TOTALS HERE (all campaign updates happen here)
             campaign.update!(
@@ -46,11 +46,11 @@ class ClubInvestmentFinalizationJob < ApplicationJob
             campaign.update_transferred_amount(net_amount) if campaign.respond_to?(:update_transferred_amount)
             
             # Update shares issued if it's an equity campaign
-            if campaign.is_a?(EquityCampaign) && equity_investment.shares
-              campaign.update!(
-                shares_issued: campaign.shares_issued + equity_investment.shares
-              )
-            end
+            # if campaign.is_a?(EquityCampaign) && equity_investment.shares
+            #   campaign.update!(
+            #     shares_issued: campaign.shares_issued + equity_investment.shares
+            #   )
+            # end
             
             # Also update the equity investment status
             equity_investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)

@@ -138,6 +138,7 @@ class ClubPortfolioService
           category: campaign.category,
           goal_amount: campaign.goal_amount.to_f,
           current_amount: campaign.current_amount.to_f,
+          transferred_amount: campaign.transferred_amount.to_f,
           currency: campaign.currency,
           currency_symbol: campaign.currency_symbol,
           slug: campaign.slug,
