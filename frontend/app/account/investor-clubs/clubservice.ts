@@ -685,33 +685,33 @@ export const approvedCampaignsService = {
   },
 
   // Delete approved campaign
-deleteApprovedCampaign: async (
-  token: string,
-  clubId: string,
-  campaignId: string,
-): Promise<{ success: boolean; message?: string; error?: string }> => {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/investment_clubs/${clubId}/approved_campaigns/${campaignId}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+  deleteApprovedCampaign: async (
+    token: string,
+    clubId: string,
+    campaignId: string,
+  ): Promise<{ success: boolean; message?: string; error?: string }> => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/investment_clubs/${clubId}/approved_campaigns/${campaignId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         },
-      }
-    );
+      );
 
-    const data = await response.json();
-    return data;
-  } catch (error: any) {
-    console.error('Error deleting approved campaign:', error);
-    return {
-      success: false,
-      error: error.message || 'Failed to delete approved campaign'
-    };
-  }
-},
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      console.error('Error deleting approved campaign:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to delete approved campaign',
+      };
+    }
+  },
 };
 
 // Export the main investmentClubService that includes all analytics methods

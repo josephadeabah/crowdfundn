@@ -76,13 +76,17 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(3);
   const [deleteAlert, setDeleteAlert] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState<ApprovedCampaign | null>(null);
+  const [selectedCampaign, setSelectedCampaign] =
+    useState<ApprovedCampaign | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Calculate paginated campaigns
   const totalPages = Math.ceil(approvedCampaigns.length / perPage);
   const startIndex = (currentPage - 1) * perPage;
-  const paginatedCampaigns = approvedCampaigns.slice(startIndex, startIndex + perPage);
+  const paginatedCampaigns = approvedCampaigns.slice(
+    startIndex,
+    startIndex + perPage,
+  );
 
   // Navigate to campaign
   const handleNavigateToCampaign = (slug: string) => {
@@ -125,7 +129,7 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-        }
+        },
       );
 
       const data = await response.json();
@@ -139,7 +143,10 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
         setSelectedCampaign(null);
       } else {
         console.error('Failed to delete approved campaign:', data.error);
-        alert('Failed to delete approved campaign: ' + (data.error || 'Unknown error'));
+        alert(
+          'Failed to delete approved campaign: ' +
+            (data.error || 'Unknown error'),
+        );
       }
     } catch (error) {
       console.error('Error deleting approved campaign:', error);
@@ -256,7 +263,9 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
                                     <Button
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        handleNavigateToCampaign(campaignData.slug);
+                                        handleNavigateToCampaign(
+                                          campaignData.slug,
+                                        );
                                       }}
                                       variant="ghost"
                                       size="sm"
@@ -309,7 +318,9 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
                           <div className="flex justify-between text-sm text-gray-600 mb-1">
                             <span>
                               Raised: {campaignData.currency || '$'}
-                              {safeToLocaleString(campaignData.transferred_amount)}
+                              {safeToLocaleString(
+                                campaignData.transferred_amount,
+                              )}
                             </span>
                             <span>
                               Goal: {campaignData.currency || '$'}
@@ -360,7 +371,9 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
                                   </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-gray-600">Category:</span>
+                                  <span className="text-gray-600">
+                                    Category:
+                                  </span>
                                   <Badge variant="outline">
                                     {campaignData.category || 'Uncategorized'}
                                   </Badge>
@@ -432,7 +445,9 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
                                         No Votes:
                                       </span>
                                       <span className="font-medium text-red-600">
-                                        {safeToLocaleString(votingStats.no_votes)}
+                                        {safeToLocaleString(
+                                          votingStats.no_votes,
+                                        )}
                                       </span>
                                     </div>
                                     <div className="flex justify-between text-sm">
@@ -470,7 +485,9 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
                                 <div className="pt-2">
                                   <Button
                                     onClick={() =>
-                                      handleNavigateToCampaign(campaignData.slug)
+                                      handleNavigateToCampaign(
+                                        campaignData.slug,
+                                      )
                                     }
                                     variant="outline"
                                     size="sm"
@@ -534,7 +551,7 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
           setDeleteAlert(false);
           setSelectedCampaign(null);
         }}
-        confirmText={deleteLoading ? "Removing..." : "Yes, Remove"}
+        confirmText={deleteLoading ? 'Removing...' : 'Yes, Remove'}
         cancelText="Cancel"
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
         isLoading={deleteLoading}
