@@ -154,7 +154,8 @@ class ClubPortfolioService
           voting_stats: voting_stats
         } : nil,
         approved_at: approved_campaign.created_at,
-        voting_stats: voting_stats
+        voting_stats: voting_stats,
+        can_delete: @club.is_admin?(@current_user) # Add delete permission check
       }
     end
   end

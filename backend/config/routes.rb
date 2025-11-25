@@ -357,8 +357,8 @@ Rails.application.routes.draw do
           end
         end
 
-        # Add approved campaigns routes
-        resources :approved_campaigns, only: [:index, :show], controller: 'approved_campaigns'
+        # UPDATED: Add delete action to approved campaigns routes
+        resources :approved_campaigns, only: [:index, :show, :destroy], controller: 'approved_campaigns'
         
         member do
           get :portfolio
