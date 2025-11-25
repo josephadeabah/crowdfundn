@@ -68,7 +68,7 @@ class CampaignStatisticsService
     EquityCampaign.where(fundraiser_id: user.id)
                   .joins(:equity_investments)
                   .where(equity_investments: { status: EquityInvestment::STATUS_SUCCESSFUL })
-                  .sum('equity_investments.current_amount') || 0
+                  .sum('equity_investments.gross_amount') || 0
   end
 
   def self.unique_backers_count(user)
