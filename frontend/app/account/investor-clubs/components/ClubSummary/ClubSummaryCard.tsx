@@ -63,11 +63,8 @@ export const ClubSummaryCard: React.FC<ClubSummaryCardProps> = ({
             <div className="text-xl lg:text-3xl font-bold text-emerald-700 break-words">
               {formatCurrency(club.financials.current_balance, club.currency)}
             </div>
-            <div className="text-xs text-gray-400 -mb-1">
-              {club.currency}
-            </div>
           </div>
-          <div className="text-xs lg:text-sm text-gray-500">Club Balance</div>
+          <div className="text-xs lg:text-sm text-gray-800">Club Balance</div>
         </div>
       </div>
     </motion.div>
