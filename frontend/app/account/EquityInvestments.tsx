@@ -387,7 +387,7 @@ const EquityInvestments = () => {
   if (!portfolio) {
     return (
       <div className="px-2 py-4">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-none p-6">
           <p className="text-gray-600">No portfolio data available</p>
         </div>
       </div>
@@ -490,7 +490,7 @@ const EquityInvestments = () => {
         currencySymbol={user?.currency_symbol}
       />
 
-      <div className="bg-white rounded-lg shadow overflow-hidden mb-8 mt-8">
+      <div className="bg-white rounded-lg shadow-none overflow-hidden mb-8 mt-8">
         <div className="px-2 py-4">
           <h2 className="text-xl font-semibold mb-4">Your Investments</h2>
 
