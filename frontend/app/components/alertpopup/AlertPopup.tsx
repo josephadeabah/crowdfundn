@@ -12,6 +12,7 @@ interface AlertPopupProps {
   error?: string | null;
   icon?: ReactNode;
   confirmText?: string;
+  cancelText?: string; // ADD THIS LINE
   loading?: boolean;
   confirmDisabled?: boolean;
   confirmButtonClass?: string;
@@ -19,6 +20,7 @@ interface AlertPopupProps {
   showCancelButton?: boolean;
   maxHeight?: string; // Custom max height for content
   expandable?: boolean; // Whether content can be expanded
+  isLoading?: boolean; // ADD THIS LINE for consistency
 }
 
 const AlertPopup: React.FC<AlertPopupProps> = ({
@@ -31,6 +33,7 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
   error,
   icon = <FaExclamationTriangle className="w-6 h-6 text-red-600" />,
   confirmText = 'Confirm',
+  cancelText = 'Cancel', // ADD DEFAULT VALUE
   loading = false,
   confirmDisabled = false,
   confirmButtonClass = 'bg-gray-600 hover:bg-gray-900 focus:ring-gray-500',
@@ -38,6 +41,7 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
   showCancelButton = true,
   maxHeight = 'max-h-96', // Default max height
   expandable = true, // Default to expandable for long content
+  isLoading = false, // ADD DEFAULT VALUE
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -142,6 +146,9 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
     ? 'max-h-[70vh]' // Very large max height when expanded
     : maxHeight;
 
+  // Use isLoading prop for loading state (backward compatibility)
+  const isButtonLoading = isLoading || loading;
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -242,22 +249,22 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
                       type="button"
                       className={`inline-flex justify-center w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${cancelButtonClass}`}
                       onClick={handleCancel}
-                      disabled={loading}
+                      disabled={isButtonLoading}
                     >
-                      Cancel
+                      {cancelText}
                     </button>
                   )}
                   <button
                     type="button"
                     className={`inline-flex justify-center w-full sm:w-auto px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${
-                      confirmDisabled || loading
+                      confirmDisabled || isButtonLoading
                         ? 'bg-gray-400 cursor-not-allowed'
                         : confirmButtonClass
                     }`}
                     onClick={handleConfirm}
-                    disabled={confirmDisabled || loading}
+                    disabled={confirmDisabled || isButtonLoading}
                   >
-                    {loading ? (
+                    {isButtonLoading ? (
                       <div className="flex items-center">
                         <svg
                           className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
