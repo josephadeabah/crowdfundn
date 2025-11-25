@@ -21,9 +21,10 @@ import {
   Vote,
   Trash2,
 } from 'lucide-react';
-import { ApprovedCampaign, Club } from '../../clubTypes';
+import { ApprovedCampaign, Club } from '../clubTypes';
 import Pagination from '@/app/components/pagination/Pagination';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
+import ToastComponent from '@/app/components/toast/ToastComponent';
 
 interface ApprovedCampaignsProps {
   club: Club;
@@ -69,16 +70,33 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
   loading = false,
   onRefresh,
 }) => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(
     new Set(),
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(3);
   const [deleteAlert, setDeleteAlert] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] =
-    useState<ApprovedCampaign | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<ApprovedCampaign | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  
+  // Toast state
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning'
+  });
+
+  // Show toast function
+  const showToast = (title: string, description: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type
+    });
+  };
 
   // Calculate paginated campaigns
   const totalPages = Math.ceil(approvedCampaigns.length / perPage);
@@ -117,7 +135,10 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
   };
 
   const confirmDelete = async () => {
-    if (!selectedCampaign || !club) return;
+    if (!selectedCampaign || !club || !token) {
+      showToast('Error', 'Missing authentication token', 'error');
+      return;
+    }
 
     setDeleteLoading(true);
     try {
@@ -127,7 +148,7 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${token}`,
           },
         },
       );
@@ -135,6 +156,7 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
       const data = await response.json();
 
       if (data.success) {
+        showToast('Success', 'Campaign removed successfully');
         // Refresh the list after successful deletion
         if (onRefresh) {
           onRefresh();
@@ -143,14 +165,19 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
         setSelectedCampaign(null);
       } else {
         console.error('Failed to delete approved campaign:', data.error);
-        alert(
-          'Failed to delete approved campaign: ' +
-            (data.error || 'Unknown error'),
+        showToast(
+          'Error', 
+          `Failed to remove approved campaign: ${data.error || 'Unknown error'}`,
+          'error'
         );
       }
     } catch (error) {
       console.error('Error deleting approved campaign:', error);
-      alert('Error deleting approved campaign. Please try again.');
+      showToast(
+        'Error',
+        'Error deleting approved campaign. Please try again.',
+        'error'
+      );
     } finally {
       setDeleteLoading(false);
     }
@@ -552,9 +579,18 @@ const ApprovedCampaigns: React.FC<ApprovedCampaignsProps> = ({
           setSelectedCampaign(null);
         }}
         confirmText={deleteLoading ? 'Removing...' : 'Yes, Remove'}
-        cancelText="Cancel"
+        cancelText="Nope"
         confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
         isLoading={deleteLoading}
+      />
+
+      {/* Toast Component */}
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast(prev => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
       />
     </div>
   );

@@ -686,7 +686,7 @@ export const approvedCampaignsService = {
 
   // Delete approved campaign
   deleteApprovedCampaign: async (
-    token: string,
+    token: string, // Accept token as parameter
     clubId: string,
     campaignId: string,
   ): Promise<{ success: boolean; message?: string; error?: string }> => {
@@ -697,7 +697,7 @@ export const approvedCampaignsService = {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Use the passed token
           },
         },
       );
