@@ -467,6 +467,8 @@ export interface ApprovedCampaign {
     all_members_voted?: boolean;
     threshold_met?: boolean;
   };
+  // NEW: Delete permission flag
+  can_delete?: boolean;
 }
 
 // API Investment Response Type (for the raw API data)
