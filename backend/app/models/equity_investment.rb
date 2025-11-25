@@ -3,6 +3,7 @@ class EquityInvestment < ApplicationRecord
   # Associations
   belongs_to :user, optional: true  # CHANGED: Make user optional for club investments
   belongs_to :campaign, class_name: 'EquityCampaign'
+  belongs_to :club_investment, optional: true
   belongs_to :reward, optional: true
   has_many :pledges, dependent: :destroy
   has_many :points, dependent: :nullify
