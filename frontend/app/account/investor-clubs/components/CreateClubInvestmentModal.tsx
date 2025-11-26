@@ -96,35 +96,35 @@ const CreateClubInvestmentModal: React.FC<CreateClubInvestmentModalProps> = ({
   };
 
   // Calculate fees exactly like in the backend
-// Calculate fees exactly like in the backend WITH PROCESSING FEE CAP
-const calculateFees = (amount: number) => {
-  // Calculate processing fee with cap of GHS 400
-  let processingFee = amount * 0.07;
-  const isProcessingFeeCapped = processingFee > 400;
-  
-  // Apply cap if processing fee exceeds GHS 400
-  if (isProcessingFeeCapped) {
-    processingFee = 400;
-  }
+  // Calculate fees exactly like in the backend WITH PROCESSING FEE CAP
+  const calculateFees = (amount: number) => {
+    // Calculate processing fee with cap of GHS 400
+    let processingFee = amount * 0.07;
+    const isProcessingFeeCapped = processingFee > 400;
 
-  const platformFee = amount * 0.03;
-  const grossAmount = amount;
-  const netAmount = amount - platformFee;
+    // Apply cap if processing fee exceeds GHS 400
+    if (isProcessingFeeCapped) {
+      processingFee = 400;
+    }
 
-  // IMPORTANT: We add investment amount + processing fee + platform fee
-  // This total gets deducted from club balance as one bulk amount
-  const totalDeduction = grossAmount + processingFee + platformFee;
+    const platformFee = amount * 0.03;
+    const grossAmount = amount;
+    const netAmount = amount - platformFee;
 
-  return {
-    processingFee,
-    platformFee,
-    totalFees: processingFee + platformFee,
-    totalAmount: totalDeduction, // This is what gets deducted from club balance
-    netToCampaign: netAmount,
-    isProcessingFeeCapped, // Now correctly reflects if cap was applied
-    investmentAmount: amount, // Base investment amount
+    // IMPORTANT: We add investment amount + processing fee + platform fee
+    // This total gets deducted from club balance as one bulk amount
+    const totalDeduction = grossAmount + processingFee + platformFee;
+
+    return {
+      processingFee,
+      platformFee,
+      totalFees: processingFee + platformFee,
+      totalAmount: totalDeduction, // This is what gets deducted from club balance
+      netToCampaign: netAmount,
+      isProcessingFeeCapped, // Now correctly reflects if cap was applied
+      investmentAmount: amount, // Base investment amount
+    };
   };
-};
 
   const fees = investmentAmount
     ? calculateFees(parseFloat(investmentAmount))
@@ -513,24 +513,24 @@ const calculateFees = (amount: number) => {
                       </span>
                     </div>
 
-                   <div className="flex justify-between">
-  <span className="text-gray-600 flex items-center gap-1">
-    <CreditCard className="w-3 h-3" />
-    Processing Fee (7%):
-  </span>
-  <span className="text-red-600 font-medium">
-    +{club.currency}
-    {fees.processingFee.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}
-    {fees.isProcessingFeeCapped && (
-      <span className="text-xs text-green-600 ml-1">
-        (Capped at {club.currency}400)
-      </span>
-    )}
-  </span>
-</div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 flex items-center gap-1">
+                        <CreditCard className="w-3 h-3" />
+                        Processing Fee (7%):
+                      </span>
+                      <span className="text-red-600 font-medium">
+                        +{club.currency}
+                        {fees.processingFee.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                        {fees.isProcessingFeeCapped && (
+                          <span className="text-xs text-green-600 ml-1">
+                            (Capped at {club.currency}400)
+                          </span>
+                        )}
+                      </span>
+                    </div>
 
                     <div className="flex justify-between">
                       <span className="text-gray-600 flex items-center gap-1">
