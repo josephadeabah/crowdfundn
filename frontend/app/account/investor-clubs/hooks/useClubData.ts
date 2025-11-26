@@ -41,6 +41,7 @@ interface DashboardState {
   portfolio: ClubInvestmentPortfolio | null;
   loading: boolean;
   mobileMenuOpen: boolean;
+  initialLoadComplete: boolean; // NEW: Track initial load completion
 }
 
 // Helper function to safely convert string numbers to numbers
@@ -168,6 +169,7 @@ export const useClubData = () => {
     portfolio: null,
     loading: true,
     mobileMenuOpen: false,
+    initialLoadComplete: false, // NEW: Track initial load
   });
 
   const [contributions, setContributions] = useState<ContributionsState>({
@@ -210,14 +212,44 @@ export const useClubData = () => {
     successful_count: 0,
   };
 
+  // NEW: Function to get saved club slug from localStorage
+  const getSavedClubSlug = (): string | null => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('selectedClubSlug');
+    }
+    return null;
+  };
+
   const loadUserClubs = async () => {
     if (!token || !user) return;
 
     try {
       setState((prev) => ({ ...prev, loading: true }));
       const response = await clubService.getMyClubs(token);
-      setState((prev) => ({ ...prev, clubs: response.clubs }));
 
+      // Get saved club slug before setting state
+      const savedSlug = getSavedClubSlug();
+
+      setState((prev) => ({
+        ...prev,
+        clubs: response.clubs,
+        initialLoadComplete: true, // Mark initial load as complete
+      }));
+
+      // Load the saved club immediately if it exists in the clubs list
+      if (response.clubs.length > 0 && savedSlug) {
+        const savedClub = response.clubs.find((c) => c.slug === savedSlug);
+        if (savedClub) {
+          console.log(
+            '🔄 Loading saved club from localStorage:',
+            savedClub.name,
+          );
+          await loadClubDetails(savedClub);
+          return; // Exit early since we're loading the saved club
+        }
+      }
+
+      // Fallback to first club if no saved club found
       if (response.clubs.length > 0) {
         await loadClubDetails(response.clubs[0]);
       }
@@ -414,7 +446,16 @@ export const useClubData = () => {
 
     try {
       console.log('🔄 Loading club details for:', club.slug);
-      setState((prev) => ({ ...prev, selectedClub: club }));
+
+      // Immediately update selected club for instant UI response
+      setState((prev) => ({
+        ...prev,
+        selectedClub: club,
+        loading: true,
+      }));
+
+      // Save to localStorage immediately
+      localStorage.setItem('selectedClubSlug', club.slug);
 
       // Load ALL data in parallel to ensure consistency
       const [
@@ -473,6 +514,7 @@ export const useClubData = () => {
         members: membersResponse.members,
         investments: transformedInvestments,
         portfolio: portfolioData,
+        loading: false,
       }));
 
       // Update investments state with pagination
@@ -488,6 +530,10 @@ export const useClubData = () => {
       });
     } catch (error) {
       console.error('Failed to load club details:', error);
+      setState((prev) => ({
+        ...prev,
+        loading: false,
+      }));
     }
   };
 

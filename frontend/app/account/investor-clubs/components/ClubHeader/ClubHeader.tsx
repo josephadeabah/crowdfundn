@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/ClubHeader/ClubHeader.tsx
 import React, { useEffect } from 'react';
 import {
   Select,

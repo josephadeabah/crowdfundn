@@ -21,6 +21,7 @@ import ClubDetailsModal from './investor-clubs/club-details/ClubDetailsModal';
 import { RecentContributionsSection } from './investor-clubs/components/Contribution/RecentContributionsSection';
 import { useAuth } from '../context/auth/AuthContext';
 import {
+  Club,
   ClubInvestment,
   ClubInvestmentPortfolio,
 } from './investor-clubs/clubTypes';
@@ -124,6 +125,7 @@ const InvestmentClubsDashboard: React.FC = () => {
     approvedCampaignsLoading,
     loading,
     mobileMenuOpen,
+    initialLoadComplete, // NEW: Get initial load status
     token,
     loadUserClubs,
     loadClubDetails,
@@ -168,34 +170,30 @@ const InvestmentClubsDashboard: React.FC = () => {
   // Use portfolio data directly with proper fallback
   const portfolioData = portfolio || defaultPortfolio;
 
-  // Auto-load previously selected club
-  useEffect(() => {
-    if (clubs.length > 0) {
-      const savedSlug = localStorage.getItem('selectedClubSlug');
+  // NEW: Get saved club slug for immediate display
+  const getSavedClubSlug = (): string | null => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('selectedClubSlug');
+    }
+    return null;
+  };
+
+  // NEW: Enhanced club selection logic
+  const getCurrentClub = (): Club | null => {
+    // If we have a selected club, use it
+    if (selectedClub) return selectedClub;
+
+    // If clubs are loaded but no selected club yet, try to find the saved one
+    if (clubs.length > 0 && initialLoadComplete) {
+      const savedSlug = getSavedClubSlug();
       const savedClub = clubs.find((c) => c.slug === savedSlug);
-      if (savedClub) {
-        loadClubDetails(savedClub);
-      } else {
-        loadClubDetails(clubs[0]);
-      }
+      return savedClub || clubs[0];
     }
-  }, [clubs]);
 
-  // Save current club selection
-  useEffect(() => {
-    if (selectedClub?.slug) {
-      localStorage.setItem('selectedClubSlug', selectedClub.slug);
-    }
-  }, [selectedClub]);
+    return null;
+  };
 
-  // Add KYC status check for club creation
-  useEffect(() => {
-    if (user && kycStatus && !kycStatus.verified) {
-      console.log(
-        'User needs KYC verification for club creation and investments',
-      );
-    }
-  }, [user, kycStatus]);
+  const currentClub = getCurrentClub();
 
   // Check for payment callback on component mount
   useEffect(() => {
@@ -204,14 +202,14 @@ const InvestmentClubsDashboard: React.FC = () => {
       const reference = urlParams.get('reference');
       const trxref = urlParams.get('trxref');
 
-      if ((reference || trxref) && selectedClub && token) {
+      if ((reference || trxref) && currentClub && token) {
         const paymentRef = (reference || trxref)!;
 
         try {
           const verificationResult =
             await contributionService.verifyContribution(
               token,
-              selectedClub.slug,
+              currentClub.slug,
               paymentRef,
             );
 
@@ -222,7 +220,7 @@ const InvestmentClubsDashboard: React.FC = () => {
             if (verificationResult.membership) {
               const { total_contributed, contributed_share } =
                 verificationResult.membership;
-              successMessage += `\n\nYour total contributions: ${formatCurrency(total_contributed, selectedClub.currency)}\nYour club share: ${contributed_share}%`;
+              successMessage += `\n\nYour total contributions: ${formatCurrency(total_contributed, currentClub.currency)}\nYour club share: ${contributed_share}%`;
             }
 
             if (verificationResult.processed_by_webhook) {
@@ -235,7 +233,7 @@ const InvestmentClubsDashboard: React.FC = () => {
             setPaymentSuccess(true);
             setPaymentAlert(true);
 
-            await loadClubDetails(selectedClub);
+            await loadClubDetails(currentClub);
           } else {
             const errorMsg =
               verificationResult.paystack_error ||
@@ -263,11 +261,11 @@ const InvestmentClubsDashboard: React.FC = () => {
     };
 
     checkPaymentStatus();
-  }, [selectedClub, token, loadClubDetails]);
+  }, [currentClub, token, loadClubDetails]);
 
   const handleContributionSuccess = async () => {
-    if (selectedClub) {
-      await loadClubDetails(selectedClub);
+    if (currentClub) {
+      await loadClubDetails(currentClub);
     }
   };
 
@@ -276,8 +274,8 @@ const InvestmentClubsDashboard: React.FC = () => {
   };
 
   const handleTransferSuccess = async () => {
-    if (selectedClub) {
-      await loadClubDetails(selectedClub);
+    if (currentClub) {
+      await loadClubDetails(currentClub);
     }
   };
 
@@ -335,12 +333,12 @@ const InvestmentClubsDashboard: React.FC = () => {
     investmentId: string,
     reason?: string,
   ) => {
-    if (!selectedClub || !token) return;
+    if (!currentClub || !token) return;
 
     try {
       const result = await investmentService.cancelInvestment(
         token,
-        selectedClub.slug,
+        currentClub.slug,
         investmentId,
         { reason },
       );
@@ -353,9 +351,9 @@ const InvestmentClubsDashboard: React.FC = () => {
         setInvestmentAlert(true);
 
         // Refresh investments and portfolio
-        await loadInvestments(selectedClub.slug);
-        await loadPortfolio(selectedClub.slug);
-        await loadClubDetails(selectedClub); // Refresh club balance
+        await loadInvestments(currentClub.slug);
+        await loadPortfolio(currentClub.slug);
+        await loadClubDetails(currentClub); // Refresh club balance
       } else {
         setInvestmentMessage(result.error || 'Failed to cancel investment');
         setInvestmentSuccess(false);
@@ -369,12 +367,12 @@ const InvestmentClubsDashboard: React.FC = () => {
   };
 
   const handleDownloadCertificate = async (investment: ClubInvestment) => {
-    if (!selectedClub || !token) return;
+    if (!currentClub || !token) return;
 
     try {
       await investmentService.downloadCertificate(
         token,
-        selectedClub.slug,
+        currentClub.slug,
         investment.id,
       );
       setInvestmentMessage('Certificate downloaded successfully!');
@@ -388,9 +386,9 @@ const InvestmentClubsDashboard: React.FC = () => {
   };
 
   const handleInvestmentCreated = async () => {
-    if (selectedClub) {
-      await loadInvestments(selectedClub.slug);
-      await loadPortfolio(selectedClub.slug);
+    if (currentClub) {
+      await loadInvestments(currentClub.slug);
+      await loadPortfolio(currentClub.slug);
       await refreshApprovedCampaigns();
       setIsCreateInvestmentModalOpen(false);
     }
@@ -398,7 +396,7 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   // FIXED: Enhanced current user share calculation
   const getCurrentUserShare = () => {
-    if (!selectedClub || !user || !members.length) return undefined;
+    if (!currentClub || !user || !members.length) return undefined;
 
     // Ensure we're comparing numbers by converting to Number
     const currentUserId = Number(user.id);
@@ -426,10 +424,10 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   // FIXED: Add share validation and debugging
   useEffect(() => {
-    if (selectedClub && members.length > 0 && currentUserShare !== undefined) {
+    if (currentClub && members.length > 0 && currentUserShare !== undefined) {
       console.log('Share Debug Info:', {
-        club: selectedClub.name,
-        totalContributions: selectedClub.financials?.total_contributions,
+        club: currentClub.name,
+        totalContributions: currentClub.financials?.total_contributions,
         currentUserShare,
         allMembers: members.map((m) => ({
           name: m.user.full_name,
@@ -438,7 +436,7 @@ const InvestmentClubsDashboard: React.FC = () => {
         })),
       });
     }
-  }, [selectedClub, members, currentUserShare]);
+  }, [currentClub, members, currentUserShare]);
 
   if (loading) {
     return <LoadingState />;
@@ -510,7 +508,6 @@ const InvestmentClubsDashboard: React.FC = () => {
     );
   }
 
-  const currentClub = selectedClub || clubs[0];
   const isAdmin = currentClub?.is_admin;
 
   return (
@@ -518,7 +515,7 @@ const InvestmentClubsDashboard: React.FC = () => {
       <main className="flex-1 p-4">
         <MobileHeader
           clubs={clubs}
-          currentClub={currentClub}
+          currentClub={currentClub || clubs[0]}
           mobileMenuOpen={mobileMenuOpen}
           onClubChange={loadClubDetails}
           onOpenClubDetails={() => setIsModalOpen(true)}
@@ -529,7 +526,7 @@ const InvestmentClubsDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <ClubHeader
             clubs={clubs}
-            currentClub={currentClub}
+            currentClub={currentClub || clubs[0]}
             onClubChange={loadClubDetails}
             onOpenClubDetails={() => setIsModalOpen(true)}
           />
@@ -538,19 +535,19 @@ const InvestmentClubsDashboard: React.FC = () => {
             {/* Left Column - Club Info and Members */}
             <div className="xl:col-span-2 space-y-4 lg:space-y-6">
               <ClubSummaryCard
-                club={currentClub}
+                club={currentClub || clubs[0]}
                 formatCurrency={formatCurrency}
               />
 
               <ApprovedCampaigns
-                club={currentClub}
+                club={currentClub || clubs[0]}
                 approvedCampaigns={approvedCampaigns}
                 loading={approvedCampaignsLoading}
                 onRefresh={refreshApprovedCampaigns}
               />
 
               <ShareChangesSection
-                club={currentClub}
+                club={currentClub || clubs[0]}
                 formatCurrency={formatCurrency}
                 currentUserShare={currentUserShare}
               />
@@ -600,7 +597,7 @@ const InvestmentClubsDashboard: React.FC = () => {
               />
 
               <ClubStats
-                club={currentClub}
+                club={currentClub || clubs[0]}
                 investmentsCount={investments.length}
                 portfolio={portfolioData}
                 formatCurrency={formatCurrency}
