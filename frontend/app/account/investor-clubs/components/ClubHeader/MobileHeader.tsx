@@ -79,9 +79,14 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
           className="mt-4 bg-white rounded-xl border border-gray-200 p-4 shadow-lg"
         >
           <div className="space-y-3">
-            <Select value={currentClub.slug} onValueChange={handleClubChange}>
+            <Select
+              value={currentClub?.slug || ''}
+              onValueChange={handleClubChange}
+            >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a club" />
+                <SelectValue placeholder="Select a club">
+                  {currentClub?.name || 'Select a club'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {clubs.map((club) => (
