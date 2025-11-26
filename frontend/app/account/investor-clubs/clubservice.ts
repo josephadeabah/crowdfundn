@@ -152,7 +152,17 @@ export const clubService = {
     }
   },
 
-  // Leave club
+  // NEW: Force refresh club data with updated members count
+  refreshClubData: async (
+    token: string,
+    clubSlug: string,
+  ): Promise<{ club: Club }> => {
+    return apiCall(`/investment_clubs/${clubSlug}/refresh`, token, {
+      method: 'POST',
+    });
+  },
+
+  // UPDATED: Leave club with better state management
   leaveClub: async (
     token: string,
     clubId: string,
@@ -165,6 +175,10 @@ export const clubService = {
           method: 'POST',
         },
       );
+
+      // Force a small delay to ensure backend processes the request
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       return response;
     } catch (error: any) {
       if (error.message.includes('transfer ownership')) {
@@ -359,18 +373,24 @@ export const membershipService = {
   },
 
   // Leave club (via membership endpoint)
+  // UPDATED: Leave club via membership endpoint with refresh
   leaveClub: async (
     token: string,
     clubId: string,
     membershipId: string,
   ): Promise<LeaveClubResponse> => {
-    return apiCall(
+    const response = await apiCall(
       `/investment_clubs/${clubId}/memberships/${membershipId}/leave`,
       token,
       {
         method: 'POST',
       },
     );
+
+    // Force refresh to ensure UI consistency
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    return response;
   },
 
   // Cancel membership request (alias for leave for pending members)

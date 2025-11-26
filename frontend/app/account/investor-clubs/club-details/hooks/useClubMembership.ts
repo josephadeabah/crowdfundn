@@ -1,4 +1,3 @@
-// app/account/investor-clubs/club-details/hooks/useClubMembership.ts
 import { useState, useEffect } from 'react';
 import { Club, Member, Membership } from '../../clubTypes';
 import { clubService, membershipService } from '../../clubservice';
@@ -147,8 +146,23 @@ export const useClubMembership = (
           text: response.message || 'Successfully left the club!',
         });
 
+        // FIXED: Enhanced refresh sequence for member count updates
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Force refresh club data to ensure member count is updated
+        try {
+          await clubService.refreshClubData(token, club.slug);
+        } catch (refreshError) {
+          console.log('Refresh endpoint not available, continuing...');
+        }
+
         setMyMembership(null);
         onMembershipUpdate?.();
+
+        // Additional delay to ensure backend processes everything
+        setTimeout(() => {
+          onMembershipUpdate?.();
+        }, 1000);
       } else {
         setMessage({
           type: 'error',
@@ -256,6 +270,8 @@ export const useClubMembership = (
           text: `Membership request for ${memberName} has been rejected`,
         });
 
+        // Refresh data to update member counts
+        await new Promise((resolve) => setTimeout(resolve, 300));
         onMembershipUpdate?.();
         await loadMyMembership();
       } else {
@@ -287,6 +303,9 @@ export const useClubMembership = (
 
       if (response.success) {
         setMessage({ type: 'success', text: 'Member approved successfully' });
+
+        // Refresh data to update member counts
+        await new Promise((resolve) => setTimeout(resolve, 300));
         onMembershipUpdate?.();
         await loadMyMembership();
       } else {

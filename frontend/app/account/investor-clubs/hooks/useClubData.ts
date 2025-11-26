@@ -52,7 +52,6 @@ const safeNumber = (value: string | number | null | undefined): number => {
 };
 
 // Enhanced transformation function for investment data - FIXED to preserve cancellation properties
-// Enhanced transformation function for investment data - FIXED to preserve cancellation properties
 const transformInvestmentData = (investment: any): ClubInvestment => {
   // Handle amount conversion - parse "50.0K" to 50000, etc.
   const parseFormattedAmount = (amount: string): number => {
@@ -157,39 +156,6 @@ const transformInvestmentData = (investment: any): ClubInvestment => {
   }
 
   return transformedInvestment;
-};
-
-// Helper to transform portfolio investments to match ClubInvestment type
-const transformPortfolioInvestment = (
-  investment: PortfolioInvestment,
-): ClubInvestment => {
-  return {
-    id: investment.id.toString(),
-    investment_amount: safeNumber(investment.investment_amount),
-    shares: investment.shares ? safeNumber(investment.shares) : undefined,
-    percentage: investment.percentage
-      ? safeNumber(investment.percentage)
-      : undefined,
-    status: investment.status as any,
-    investment_date: investment.investment_date || undefined,
-    current_value: safeNumber(investment.current_value),
-    roi: safeNumber(investment.roi),
-    currency: investment.campaign.currency || 'USD',
-    currency_symbol: investment.campaign.currency_symbol || '$',
-    campaign: {
-      id: investment.campaign.id.toString(),
-      title: investment.campaign.title,
-      company_name: investment.campaign.company_name,
-      valuation: safeNumber(investment.campaign.valuation),
-      equity_offered: 0, // Not provided in portfolio API
-      currency: investment.campaign.currency || 'USD',
-      currency_symbol: investment.campaign.currency_symbol || '$',
-      category: investment.campaign.category,
-    },
-    created_at: investment.investment_date || new Date().toISOString(),
-    updated_at: investment.investment_date || new Date().toISOString(),
-    is_equity_investment: true, // Assume true for portfolio investments
-  };
 };
 
 export const useClubData = () => {
@@ -526,25 +492,66 @@ export const useClubData = () => {
   };
 
   // Function to specifically reload membership data
+  // UPDATED: Enhanced membership reload with count synchronization
   const reloadMembershipData = async (clubSlug: string) => {
     if (!token) return;
 
     try {
-      console.log('🔄 Specifically reloading membership data');
-      const [membersResponse, clubDetailsResponse] = await Promise.all([
-        membershipService.getMembers(token, clubSlug),
+      console.log('🔄 Specifically reloading membership data with count sync');
+      const [membersResponse, clubDetailsResponse, myClubsResponse] =
+        await Promise.all([
+          membershipService.getMembers(token, clubSlug),
+          clubService.getClub(token, clubSlug),
+          clubService.getMyClubs(token), // Refresh the clubs list too
+        ]);
+
+      // Update all relevant state
+      setState((prev) => ({
+        ...prev,
+        selectedClub: clubDetailsResponse.club,
+        members: membersResponse.members,
+        clubs: myClubsResponse.clubs, // Update the main clubs list
+      }));
+
+      return membersResponse.members;
+    } catch (error) {
+      console.error('Failed to reload membership data:', error);
+      return null;
+    }
+  };
+
+  // NEW: Enhanced method to reload club data with force refresh
+  const reloadClubData = async (clubSlug: string) => {
+    if (!token) return;
+
+    try {
+      console.log('🔄 Force reloading club data:', clubSlug);
+
+      // Refresh club data from backend
+      const [clubDetailsResponse, membersResponse] = await Promise.all([
         clubService.getClub(token, clubSlug),
+        membershipService.getMembers(token, clubSlug),
       ]);
 
+      // Update selected club with fresh data
       setState((prev) => ({
         ...prev,
         selectedClub: clubDetailsResponse.club,
         members: membersResponse.members,
       }));
 
-      return membersResponse.members;
+      // Also update the clubs list to reflect member count changes
+      const updatedClubsResponse = await clubService.getMyClubs(token);
+      setState((prev) => ({
+        ...prev,
+        clubs: updatedClubsResponse.clubs.map((club) =>
+          club.slug === clubSlug ? clubDetailsResponse.club : club,
+        ),
+      }));
+
+      return clubDetailsResponse.club;
     } catch (error) {
-      console.error('Failed to reload membership data:', error);
+      console.error('Failed to reload club data:', error);
       return null;
     }
   };
@@ -592,7 +599,8 @@ export const useClubData = () => {
     loadPortfolio,
     loadApprovedCampaigns,
     refreshApprovedCampaigns,
-    reloadMembershipData,
+    reloadClubData, // Add this to the return object
+    reloadMembershipData, // Keep this
     setMobileMenuOpen,
     loadContributions,
     handleContributionPageChange,
