@@ -64,7 +64,7 @@ export const ClubSummaryCard: React.FC<ClubSummaryCardProps> = ({
               {formatCurrency(club.financials.current_balance, club.currency)}
             </div>
           </div>
-          <div className="text-xs lg:text-sm text-gray-300 font-bold">
+          <div className="text-xs lg:text-sm text-gray-400 font-bold">
             Club Balance
           </div>
         </div>
