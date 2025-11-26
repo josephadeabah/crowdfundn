@@ -237,7 +237,7 @@ module Api
           
           render json: {
             success: true,
-            club: ClubSerializer.new(club).as_json
+            club: InvestmentClubSerializer.new(club).as_json
           }
         else
           render json: {
