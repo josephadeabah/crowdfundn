@@ -35,7 +35,7 @@ module Clockwork
   # ---------------------------------------
 
   # 1️⃣ Send campaign webhooks every 1 hour
-  every(1.hour, 'send_webhook') do
+  every(1.minute, 'send_webhook') do
     Campaign.active.find_each(batch_size: 100) do |campaign|
       SendWebhookJob.perform_later(campaign.id)
     rescue => e
@@ -51,7 +51,7 @@ module Clockwork
   end
 
   # 3️⃣ Finalize committed investments every hour
-  every(1.hour, 'finalize_committed_investments') do
+  every(1.minute, 'finalize_committed_investments') do
     FinalizeCommittedInvestmentsJob.perform_later
   rescue => e
     Rails.logger.error "[Clockwork] Failed to enqueue FinalizeCommittedInvestmentsJob: #{e.message}"
