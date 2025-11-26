@@ -1,6 +1,6 @@
 // app/account/investor-clubs/ClubsListPage.tsx
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import CreateClubModal from './CreateClubModal';
 import Pagination from '@/app/components/pagination/Pagination';
@@ -63,10 +63,12 @@ import {
   Code,
   Banknote,
   Building2,
+  RefreshCw,
 } from 'lucide-react';
 import { categoriesWithIcons, deslugify } from '@/app/utils/helpers/categories';
 import ClubDetailsModal from './club-details/ClubDetailsModal';
 import DealroomContent from './dealroom/DealRoomContent';
+import ToastComponent from '@/app/components/toast/Toast';
 
 const ClubsListPage: React.FC = () => {
   const { token, user } = useAuth();
@@ -79,11 +81,16 @@ const ClubsListPage: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [message, setMessage] = useState<{
-    type: 'success' | 'error';
-    text: string;
-    clubId?: string;
-  } | null>(null);
+  const [refreshing, setRefreshing] = useState<string | null>(null);
+  
+  // Toast state
+  const [toast, setToast] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success' as 'success' | 'error' | 'warning'
+  });
+
   const [activeTab, setActiveTab] = useState<
     'all' | 'my_clubs' | 'discover' | 'dealroom'
   >('all');
@@ -109,6 +116,20 @@ const ClubsListPage: React.FC = () => {
     dealroom: false,
   });
 
+  // Refresh interval in milliseconds (5 minutes)
+  const REFRESH_INTERVAL = 5 * 60 * 1000;
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Show toast function
+  const showToast = (title: string, description: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type
+    });
+  };
+
   // Load clubs when tab changes or on initial load
   useEffect(() => {
     if (token && activeTab !== 'dealroom') {
@@ -116,15 +137,77 @@ const ClubsListPage: React.FC = () => {
     }
   }, [token, activeTab]);
 
+  // Set up automatic refresh interval
+  useEffect(() => {
+    if (token) {
+      // Clear existing interval
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+
+      // Set up new interval
+      refreshIntervalRef.current = setInterval(() => {
+        refreshCurrentTab();
+      }, REFRESH_INTERVAL);
+
+      // Cleanup on unmount
+      return () => {
+        if (refreshIntervalRef.current) {
+          clearInterval(refreshIntervalRef.current);
+        }
+      };
+    }
+  }, [token, activeTab]);
+
+  // Refresh current tab data
+  const refreshCurrentTab = useCallback(async () => {
+    if (!token || activeTab === 'dealroom') return;
+
+    try {
+      console.log(`🔄 Auto-refreshing ${activeTab} tab data`);
+      await loadClubs(activeTab, pagination[activeTab].current_page, true);
+    } catch (error) {
+      console.error(`Failed to auto-refresh ${activeTab} tab:`, error);
+    }
+  }, [token, activeTab, pagination]);
+
+  // Manual refresh function
+  const handleManualRefresh = async () => {
+    if (!token || activeTab === 'dealroom') return;
+
+    setRefreshing(activeTab);
+    try {
+      await loadClubs(activeTab, pagination[activeTab].current_page, true);
+      showToast('Refreshed', 'Club data has been updated', 'success');
+    } catch (error) {
+      console.error('Failed to refresh data:', error);
+      showToast('Error', 'Failed to refresh data', 'error');
+    } finally {
+      setRefreshing(null);
+    }
+  };
+
   const loadClubs = async (
     tab: string,
     page: number = 1,
-    perPage: number = 10,
+    perPageOrIsRefresh: number | boolean = 10,
+    isRefresh: boolean = false
   ) => {
     if (!token) return;
 
+    // Normalize arguments: allow third argument to be either perPage (number) or isRefresh (boolean)
+    let perPage: number;
+    if (typeof perPageOrIsRefresh === 'boolean') {
+      isRefresh = perPageOrIsRefresh;
+      perPage = pagination[tab as keyof typeof pagination]?.per_page ?? 10;
+    } else {
+      perPage = perPageOrIsRefresh ?? pagination[tab as keyof typeof pagination]?.per_page ?? 10;
+    }
+
     try {
-      setLoadingTabs((prev) => ({ ...prev, [tab]: true }));
+      if (!isRefresh) {
+        setLoadingTabs((prev) => ({ ...prev, [tab]: true }));
+      }
 
       // Properly type the response based on the tab
       switch (tab) {
@@ -156,11 +239,21 @@ const ClubsListPage: React.FC = () => {
           break;
         }
       }
+
+      // Update last refreshed timestamp
+      if (isRefresh) {
+        console.log(`✅ ${tab} data refreshed at ${new Date().toLocaleTimeString()}`);
+      }
     } catch (error) {
       console.error(`Failed to load ${tab} clubs:`, error);
+      if (isRefresh) {
+        throw error; // Re-throw for manual refresh to handle
+      }
     } finally {
-      setLoadingTabs((prev) => ({ ...prev, [tab]: false }));
-      setLoading(false);
+      if (!isRefresh) {
+        setLoadingTabs((prev) => ({ ...prev, [tab]: false }));
+        setLoading(false);
+      }
     }
   };
 
@@ -224,7 +317,6 @@ const ClubsListPage: React.FC = () => {
     if (!token) return;
 
     setActionLoading(club.id);
-    setMessage(null);
 
     // OPTIMISTIC UPDATE - Immediately update UI with proper typing
     setClubs((prevClubs) =>
@@ -249,30 +341,30 @@ const ClubsListPage: React.FC = () => {
       const response = await clubService.joinClub(token, club.slug);
 
       if (response.success || response.is_member) {
-        setMessage({
-          type: 'success',
-          text: response.message || 'Membership request sent successfully!',
-          clubId: club.id,
-        });
+        showToast(
+          'Success', 
+          response.message || 'Membership request sent successfully!',
+          'success'
+        );
 
-        // Reload the current tab data to ensure consistency with backend
-        await loadClubs(activeTab, pagination[activeTab].current_page);
+        // Refresh the current tab data to ensure consistency with backend
+        await loadClubs(activeTab, pagination[activeTab].current_page, true);
       } else {
-        setMessage({
-          type: 'error',
-          text: response.message || 'Failed to send membership request',
-          clubId: club.id,
-        });
+        showToast(
+          'Error',
+          response.message || 'Failed to send membership request',
+          'error'
+        );
 
         // Revert optimistic update on error
         revertOptimisticUpdate(club.id);
       }
     } catch (error: any) {
-      setMessage({
-        type: 'error',
-        text: error.message || 'Failed to send membership request',
-        clubId: club.id,
-      });
+      showToast(
+        'Error',
+        error.message || 'Failed to send membership request',
+        'error'
+      );
 
       // Revert optimistic update on error
       revertOptimisticUpdate(club.id);
@@ -300,11 +392,18 @@ const ClubsListPage: React.FC = () => {
   };
 
   const handleClubCreated = () => {
-    loadClubs(activeTab, pagination[activeTab].current_page);
+    // Refresh all relevant tabs when a new club is created
+    loadClubs('all', pagination.all.current_page, true);
+    loadClubs('my_clubs', pagination.my_clubs.current_page, true);
+    loadClubs('discover', pagination.discover.current_page, true);
+    showToast('Success', 'Club created successfully!', 'success');
   };
 
   const handleMembershipUpdate = () => {
-    loadClubs(activeTab, pagination[activeTab].current_page);
+    // Refresh all tabs when membership changes
+    loadClubs('all', pagination.all.current_page, true);
+    loadClubs('my_clubs', pagination.my_clubs.current_page, true);
+    loadClubs('discover', pagination.discover.current_page, true);
   };
 
   const getDisplayClubs = () => {
@@ -547,12 +646,27 @@ const ClubsListPage: React.FC = () => {
                   Collaborate and invest together
                 </p>
               </div>
-              <button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="px-4 py-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-medium text-sm transition-colors"
-              >
-                Create Club
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Refresh Button */}
+                {activeTab !== 'dealroom' && (
+                  <button
+                    onClick={handleManualRefresh}
+                    disabled={!!refreshing}
+                    className="p-2 text-gray-500 hover:text-emerald-600 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Refresh data"
+                  >
+                    <RefreshCw 
+                      className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} 
+                    />
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="px-4 py-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-medium text-sm transition-colors"
+                >
+                  Create Club
+                </button>
+              </div>
             </div>
 
             {/* Tabs - Fixed to show labels and counts inline on mobile */}
@@ -639,21 +753,6 @@ const ClubsListPage: React.FC = () => {
               </div>
             )}
           </div>
-
-          {/* Message Alert */}
-          {message && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`mb-4 p-4 rounded-lg border ${
-                message.type === 'success'
-                  ? 'bg-green-50 text-green-800 border-green-200'
-                  : 'bg-red-50 text-red-800 border-red-200'
-              }`}
-            >
-              {message.text}
-            </motion.div>
-          )}
 
           {/* Dealroom Tab Content */}
           {activeTab === 'dealroom' && (
@@ -865,6 +964,15 @@ const ClubsListPage: React.FC = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onClubCreated={handleClubCreated}
+      />
+
+      {/* Toast Component */}
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={() => setToast(prev => ({ ...prev, isOpen: false }))}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
       />
     </div>
   );
