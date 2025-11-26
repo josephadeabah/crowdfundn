@@ -15,7 +15,7 @@ interface StatsCardProps {
   club?: Club;
 }
 
-// Helper function to format values with proper decimal places
+// Safe helper function to format values with proper decimal places
 const formatValue = (value: any, isCurrency: boolean = false, currency: string = 'USD', decimalPlaces: number = 2): string => {
   try {
     if (value === undefined || value === null || value === '') return 'N/A';

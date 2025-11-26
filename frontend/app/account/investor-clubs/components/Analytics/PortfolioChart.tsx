@@ -22,19 +22,32 @@ interface PortfolioChartProps {
   currency?: string;
 }
 
-// Helper function to format currency values
-const formatCurrency = (amount: number, currency: string = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+// Safe helper function to format currency values
+const formatCurrency = (amount: number, currency: string = 'USD'): string => {
+  try {
+    if (amount === undefined || amount === null || isNaN(amount)) return 'N/A';
+    
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  } catch (error) {
+    console.warn('Currency formatting error:', error, amount);
+    return 'N/A';
+  }
 };
 
-// Helper function to format percentages
+// Safe helper function to format percentages
 const formatPercentage = (value: number, decimalPlaces: number = 1): string => {
-  return `${value.toFixed(decimalPlaces)}%`;
+  try {
+    if (value === undefined || value === null || isNaN(value)) return 'N/A';
+    return `${value.toFixed(decimalPlaces)}%`;
+  } catch (error) {
+    console.warn('Percentage formatting error:', error, value);
+    return 'N/A';
+  }
 };
 
 export const PortfolioChart = ({

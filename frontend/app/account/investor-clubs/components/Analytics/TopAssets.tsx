@@ -23,42 +23,48 @@ interface TopAssetsProps {
   currency?: string;
 }
 
-// Helper function to format currency values
-const formatCurrency = (amount: number, currency: string = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
-
-// Helper function to format percentages
-const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
-  // Handle null/undefined
-  if (value === undefined || value === null) return 'N/A';
-  
-  // Handle empty string
-  if (value === '') return 'N/A';
-  
-  // Convert to number
-  let numValue: number;
-  if (typeof value === 'string') {
-    const cleaned = value.replace(/[^\d.-]/g, '');
-    numValue = parseFloat(cleaned);
-  } else if (typeof value === 'number') {
-    numValue = value;
-  } else {
-    numValue = Number(value);
-  }
-  
-  // Check if we have a valid number
-  if (isNaN(numValue) || !isFinite(numValue)) {
+// Safe helper function to format currency values
+const formatCurrency = (amount: number, currency: string = 'USD'): string => {
+  try {
+    if (amount === undefined || amount === null || isNaN(amount)) return 'N/A';
+    
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  } catch (error) {
+    console.warn('Currency formatting error:', error, amount);
     return 'N/A';
   }
+};
 
-  const formatted = Math.abs(numValue).toFixed(decimalPlaces);
-  return `${numValue >= 0 ? '+' : '-'}${formatted}%`;
+// Safe helper function to format percentages
+const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
+  try {
+    if (value === undefined || value === null || value === '') return 'N/A';
+    
+    let numValue: number;
+    if (typeof value === 'string') {
+      const cleaned = value.replace(/[^\d.-]/g, '');
+      numValue = parseFloat(cleaned);
+    } else if (typeof value === 'number') {
+      numValue = value;
+    } else {
+      numValue = Number(value);
+    }
+    
+    if (isNaN(numValue) || !isFinite(numValue)) {
+      return 'N/A';
+    }
+
+    const formatted = Math.abs(numValue).toFixed(decimalPlaces);
+    return `${numValue >= 0 ? '+' : ''}${formatted}%`;
+  } catch (error) {
+    console.warn('Percentage formatting error:', error, value);
+    return 'N/A';
+  }
 };
 
 export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {

@@ -25,14 +25,21 @@ interface PerformanceChartProps {
   club?: Club;
 }
 
-// Helper function to format currency values
-const formatCurrency = (amount: number, currency: string = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+// Safe helper function to format currency values
+const formatCurrency = (amount: number, currency: string = 'USD'): string => {
+  try {
+    if (amount === undefined || amount === null || isNaN(amount)) return 'N/A';
+    
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  } catch (error) {
+    console.warn('Currency formatting error:', error, amount);
+    return 'N/A';
+  }
 };
 
 export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
