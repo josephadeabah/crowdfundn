@@ -16,13 +16,18 @@ interface StatsCardProps {
 }
 
 // Safe helper function to format values with proper decimal places
-const formatValue = (value: any, isCurrency: boolean = false, currency: string = 'USD', decimalPlaces: number = 2): string => {
+const formatValue = (
+  value: any,
+  isCurrency: boolean = false,
+  currency: string = 'USD',
+  decimalPlaces: number = 2,
+): string => {
   try {
     if (value === undefined || value === null || value === '') return 'N/A';
-    
+
     const num = typeof value === 'string' ? parseFloat(value) : Number(value);
     if (isNaN(num)) return 'N/A';
-    
+
     if (isCurrency) {
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -31,8 +36,10 @@ const formatValue = (value: any, isCurrency: boolean = false, currency: string =
         maximumFractionDigits: decimalPlaces,
       }).format(num);
     }
-    
-    return decimalPlaces === 0 ? Math.round(num).toString() : num.toFixed(decimalPlaces);
+
+    return decimalPlaces === 0
+      ? Math.round(num).toString()
+      : num.toFixed(decimalPlaces);
   } catch (error) {
     console.warn('Formatting error:', error, value);
     return 'N/A';

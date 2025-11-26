@@ -209,13 +209,18 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
 };
 
 // Helper function to format values with proper decimal places
-const formatValue = (value: any, isCurrency: boolean = false, currency: string = 'USD', decimalPlaces: number = 2): string => {
+const formatValue = (
+  value: any,
+  isCurrency: boolean = false,
+  currency: string = 'USD',
+  decimalPlaces: number = 2,
+): string => {
   try {
     if (value === undefined || value === null || value === '') return 'N/A';
-    
+
     const num = typeof value === 'string' ? parseFloat(value) : Number(value);
     if (isNaN(num)) return 'N/A';
-    
+
     if (isCurrency) {
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -224,8 +229,10 @@ const formatValue = (value: any, isCurrency: boolean = false, currency: string =
         maximumFractionDigits: decimalPlaces,
       }).format(num);
     }
-    
-    return decimalPlaces === 0 ? Math.round(num).toString() : num.toFixed(decimalPlaces);
+
+    return decimalPlaces === 0
+      ? Math.round(num).toString()
+      : num.toFixed(decimalPlaces);
   } catch (error) {
     console.warn('Formatting error:', error, value);
     return 'N/A';
@@ -236,10 +243,10 @@ const formatValue = (value: any, isCurrency: boolean = false, currency: string =
 const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
   // Handle null/undefined
   if (value === undefined || value === null) return 'N/A';
-  
+
   // Handle empty string
   if (value === '') return 'N/A';
-  
+
   // Convert to number
   let numValue: number;
   if (typeof value === 'string') {
@@ -250,7 +257,7 @@ const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
   } else {
     numValue = Number(value);
   }
-  
+
   // Check if we have a valid number
   if (isNaN(numValue) || !isFinite(numValue)) {
     return 'N/A';

@@ -29,7 +29,7 @@ interface PerformanceChartProps {
 const formatCurrency = (amount: number, currency: string = 'USD'): string => {
   try {
     if (amount === undefined || amount === null || isNaN(amount)) return 'N/A';
-    
+
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,

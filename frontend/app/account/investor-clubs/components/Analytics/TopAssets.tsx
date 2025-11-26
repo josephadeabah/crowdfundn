@@ -27,7 +27,7 @@ interface TopAssetsProps {
 const formatCurrency = (amount: number, currency: string = 'USD'): string => {
   try {
     if (amount === undefined || amount === null || isNaN(amount)) return 'N/A';
-    
+
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
@@ -44,7 +44,7 @@ const formatCurrency = (amount: number, currency: string = 'USD'): string => {
 const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
   try {
     if (value === undefined || value === null || value === '') return 'N/A';
-    
+
     let numValue: number;
     if (typeof value === 'string') {
       const cleaned = value.replace(/[^\d.-]/g, '');
@@ -54,7 +54,7 @@ const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
     } else {
       numValue = Number(value);
     }
-    
+
     if (isNaN(numValue) || !isFinite(numValue)) {
       return 'N/A';
     }
