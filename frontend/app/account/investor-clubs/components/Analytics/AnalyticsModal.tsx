@@ -208,8 +208,44 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
   );
 };
 
+// Helper function to format values with proper decimal places
+const formatValue = (value: number | string | undefined, isCurrency: boolean = false, currency: string = 'USD', decimalPlaces: number = 2): string => {
+  if (value === undefined || value === null) return 'N/A';
+  
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  
+  if (isNaN(numValue)) return 'N/A';
+
+  if (isCurrency) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: decimalPlaces,
+      maximumFractionDigits: decimalPlaces,
+    }).format(numValue);
+  }
+
+  // For percentages, ensure proper decimal formatting
+  if (decimalPlaces === 0) {
+    return Math.round(numValue).toString();
+  }
+
+  return numValue.toFixed(decimalPlaces);
+};
+
+// Helper function to format percentages
+const formatPercentage = (value: number | string | undefined, decimalPlaces: number = 1): string => {
+  if (value === undefined || value === null) return 'N/A';
+  
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  
+  if (isNaN(numValue)) return 'N/A';
+
+  const formatted = Math.abs(numValue).toFixed(decimalPlaces);
+  return `${numValue >= 0 ? '+' : '-'}${formatted}%`;
+};
+
 // Tab Components with Loading States
-// In AnalyticsModal.tsx, update the OverviewTab component:
 const OverviewTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
@@ -251,11 +287,15 @@ const OverviewTab: React.FC<{
             name: investment?.campaign?.company_name || 'Unknown',
             description: investment?.campaign?.title || '',
             headquarters:
-              investment?.campaign?.company_info?.headquarters || 'N/A', // You can add this data if available in your API
+              investment?.campaign?.company_info?.headquarters || 'N/A',
           },
         };
       });
   };
+
+  const successRate = Math.round(
+    ((portfolio.successful_count || 0) / (portfolio.active_investments || 1)) * 100
+  );
 
   return (
     <div className="space-y-6">
@@ -268,9 +308,9 @@ const OverviewTab: React.FC<{
         <StatsCard
           title="Total Portfolio Value"
           value={portfolio.total_value || 0}
-          change={`${portfolio.return_percentage >= 0 ? '+' : ''}${portfolio.return_percentage || 0}% return`}
+          change={formatPercentage(portfolio.return_percentage, 1)}
           changeType={
-            portfolio.return_percentage >= 0 ? 'positive' : 'negative'
+            (portfolio.return_percentage || 0) >= 0 ? 'positive' : 'negative'
           }
           icon={DollarSign}
           club={club}
@@ -278,9 +318,9 @@ const OverviewTab: React.FC<{
         <StatsCard
           title="Total Return"
           value={portfolio.total_return || 0}
-          change={`${portfolio.return_percentage || 0}% ROI`}
+          change={`${formatValue(portfolio.return_percentage, false, club.currency, 1)}% ROI`}
           changeType={
-            portfolio.return_percentage >= 0 ? 'positive' : 'negative'
+            (portfolio.return_percentage || 0) >= 0 ? 'positive' : 'negative'
           }
           icon={TrendingUp}
           club={club}
@@ -294,7 +334,7 @@ const OverviewTab: React.FC<{
         />
         <StatsCard
           title="Success Rate"
-          value={`${Math.round(((portfolio.successful_count || 0) / (portfolio.active_investments || 1)) * 100)}%`}
+          value={`${successRate}%`}
           change="All time"
           changeType="positive"
           icon={Percent}
@@ -350,7 +390,7 @@ const PerformanceTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
   club: Club;
-}> = ({ analytics, loading }) => {
+}> = ({ analytics, loading, club }) => {
   if (loading) {
     return <LoadingSkeleton />;
   }
@@ -362,6 +402,12 @@ const PerformanceTab: React.FC<{
   const performance = analytics.performance_analytics;
   const insights = analytics.portfolio_insights;
 
+  const bestPerformingROI = insights?.performance_insights?.best_performing_investment?.roi || 0;
+  const memberEngagement = performance?.performance_metrics?.member_engagement || 0;
+  const concentrationRisk = insights?.risk_analysis?.concentration_risk || 0;
+  const volatility = insights?.performance_insights?.volatility_estimate || 0;
+  const diversityScore = insights?.diversification_metrics?.sector_diversity_score || 0;
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -371,17 +417,17 @@ const PerformanceTab: React.FC<{
           <div className="space-y-4">
             <MetricItem
               label="Average ROI"
-              value={`${insights?.performance_insights?.best_performing_investment?.roi || 0}%`}
+              value={formatPercentage(bestPerformingROI, 1)}
               trend="up"
             />
             <MetricItem
               label="Investment Frequency"
-              value={`${performance?.performance_metrics?.average_investment_size ? 'Active' : 'No data'}`}
+              value={performance?.performance_metrics?.average_investment_size ? 'Active' : 'No data'}
               trend="neutral"
             />
             <MetricItem
               label="Member Engagement"
-              value={`${performance?.performance_metrics?.member_engagement || 0}%`}
+              value={`${formatValue(memberEngagement, false, club.currency, 1)}%`}
               trend="up"
             />
           </div>
@@ -393,19 +439,17 @@ const PerformanceTab: React.FC<{
           <div className="space-y-4">
             <MetricItem
               label="Concentration Risk"
-              value={`${insights?.risk_analysis?.concentration_risk || 0}`}
-              trend={
-                insights?.risk_analysis?.concentration_risk > 50 ? 'down' : 'up'
-              }
+              value={formatValue(concentrationRisk, false, club.currency, 1)}
+              trend={concentrationRisk > 50 ? 'down' : 'up'}
             />
             <MetricItem
               label="Portfolio Volatility"
-              value={`${insights?.performance_insights?.volatility_estimate || 0}%`}
+              value={`${formatValue(volatility, false, club.currency, 1)}%`}
               trend="neutral"
             />
             <MetricItem
               label="Diversification Score"
-              value={`${insights?.diversification_metrics?.sector_diversity_score || 0}/100`}
+              value={`${formatValue(diversityScore, false, club.currency, 0)}/100`}
               trend="up"
             />
           </div>
@@ -446,7 +490,7 @@ const InsightsTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
   club: Club;
-}> = ({ analytics, loading }) => {
+}> = ({ analytics, loading, club }) => {
   if (loading) {
     return <LoadingSkeleton />;
   }
@@ -456,6 +500,16 @@ const InsightsTab: React.FC<{
   }
 
   const insights = analytics.portfolio_insights;
+
+  const bestPerformerROI = insights?.performance_insights?.best_performing_investment?.roi || 0;
+  const averageHoldingPeriod = insights?.performance_insights?.average_holding_period || 0;
+  const sharpeRatio = insights?.performance_insights?.sharpe_ratio || 0;
+  const concentrationRisk = insights?.risk_analysis?.concentration_risk || 0;
+  const liquidityRisk = insights?.risk_analysis?.liquidity_risk || 0;
+  const sectorRisk = insights?.risk_analysis?.sector_risk || 0;
+  const votingParticipation = insights?.member_engagement_insights?.voting_participation_rate || 0;
+  const contributionRate = insights?.member_engagement_insights?.contribution_participation_rate || 0;
+  const engagementScore = insights?.member_engagement_insights?.engagement_score || 0;
 
   return (
     <div className="space-y-6">
@@ -472,18 +526,18 @@ const InsightsTab: React.FC<{
                     insights.performance_insights.best_performing_investment
                       ?.campaign || 'Unknown'
                   }
-                  metric={`+${insights.performance_insights.best_performing_investment?.roi || 0}% ROI`}
+                  metric={`${formatPercentage(bestPerformerROI, 1)} ROI`}
                   type="positive"
                 />
                 <InsightItem
                   title="Average Holding Period"
-                  value={`${insights.performance_insights.average_holding_period} days`}
+                  value={`${formatValue(averageHoldingPeriod, false, club.currency, 0)} days`}
                   metric="Portfolio average"
                   type="neutral"
                 />
                 <InsightItem
                   title="Sharpe Ratio"
-                  value={insights.performance_insights.sharpe_ratio}
+                  value={formatValue(sharpeRatio, false, club.currency, 2)}
                   metric="Risk-adjusted return"
                   type="positive"
                 />
@@ -501,23 +555,23 @@ const InsightsTab: React.FC<{
                 <RiskItem
                   factor="Concentration Risk"
                   level={
-                    insights.risk_analysis.concentration_risk > 1500
+                    concentrationRisk > 1500
                       ? 'High'
                       : 'Moderate'
                   }
-                  score={insights.risk_analysis.concentration_risk}
+                  score={formatValue(concentrationRisk, false, club.currency, 1)}
                 />
                 <RiskItem
                   factor="Liquidity Risk"
                   level={
-                    insights.risk_analysis.liquidity_risk > 50 ? 'High' : 'Low'
+                    liquidityRisk > 50 ? 'High' : 'Low'
                   }
-                  score={insights.risk_analysis.liquidity_risk}
+                  score={formatValue(liquidityRisk, false, club.currency, 1)}
                 />
                 <RiskItem
                   factor="Sector Risk"
                   level="Moderate"
-                  score={insights.risk_analysis.sector_risk}
+                  score={formatValue(sectorRisk, false, club.currency, 1)}
                 />
               </>
             )}
@@ -531,17 +585,17 @@ const InsightsTab: React.FC<{
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <EngagementMetric
             title="Voting Participation"
-            value={`${insights?.member_engagement_insights?.voting_participation_rate || 0}%`}
+            value={`${formatValue(votingParticipation, false, club.currency, 1)}%`}
             description="Members who voted recently"
           />
           <EngagementMetric
             title="Contribution Rate"
-            value={`${insights?.member_engagement_insights?.contribution_participation_rate || 0}%`}
+            value={`${formatValue(contributionRate, false, club.currency, 1)}%`}
             description="Active contributors"
           />
           <EngagementMetric
             title="Overall Engagement"
-            value={`${insights?.member_engagement_insights?.engagement_score || 0}%`}
+            value={`${formatValue(engagementScore, false, club.currency, 1)}%`}
             description="Combined engagement score"
           />
         </div>
@@ -554,7 +608,7 @@ const HealthTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
   club: Club;
-}> = ({ analytics, loading }) => {
+}> = ({ analytics, loading, club }) => {
   if (loading) {
     return <LoadingSkeleton />;
   }
@@ -565,37 +619,41 @@ const HealthTab: React.FC<{
 
   const health = analytics.financial_health;
 
+  const currentRatio = health?.liquidity_ratios?.current_ratio || 0;
+  const growthRate = health?.contribution_health?.growth_rate || 0;
+  const capitalUtilization = Number(health?.investment_efficiency?.capital_utilization_rate ?? 0) * 100;
+  const memberRetention = health?.stability_indicators?.member_retention_rate || 0;
+  const resilienceScore = health?.stability_indicators?.financial_resilience_score || 0;
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <HealthMetric
           title="Current Ratio"
-          value={health?.liquidity_ratios?.current_ratio || 0}
+          value={formatValue(currentRatio, false, club.currency, 2)}
           idealRange="> 1.5"
           status={
-            Number(health?.liquidity_ratios?.current_ratio ?? 0) > 1.5
+            Number(currentRatio) > 1.5
               ? 'good'
               : 'warning'
           }
         />
         <HealthMetric
           title="Contribution Growth"
-          value={`${health?.contribution_health?.growth_rate || 0}%`}
+          value={formatPercentage(growthRate, 1)}
           idealRange="> 5%"
           status={
-            Number(health?.contribution_health?.growth_rate ?? 0) > 5
+            growthRate > 5
               ? 'good'
               : 'warning'
           }
         />
         <HealthMetric
           title="Investment Efficiency"
-          value={`${Math.round(Number(health?.investment_efficiency?.capital_utilization_rate ?? 0) * 100)}%`}
+          value={`${formatValue(capitalUtilization, false, club.currency, 1)}%`}
           idealRange="> 80%"
           status={
-            Number(
-              health?.investment_efficiency?.capital_utilization_rate ?? 0,
-            ) > 0.8
+            capitalUtilization > 80
               ? 'good'
               : 'warning'
           }
@@ -607,12 +665,12 @@ const HealthTab: React.FC<{
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <StabilityIndicator
             title="Member Retention"
-            value={`${health?.stability_indicators?.member_retention_rate || 0}%`}
+            value={`${formatValue(memberRetention, false, club.currency, 1)}%`}
             trend="up"
           />
           <StabilityIndicator
             title="Financial Resilience"
-            value={`${health?.stability_indicators?.financial_resilience_score || 0}/100`}
+            value={`${formatValue(resilienceScore, false, club.currency, 0)}/100`}
             trend="stable"
           />
         </div>
@@ -625,7 +683,7 @@ const PredictiveTab: React.FC<{
   analytics: ComprehensiveAnalytics | null;
   loading: boolean;
   club: Club;
-}> = ({ analytics, loading }) => {
+}> = ({ analytics, loading, club }) => {
   if (loading) {
     return <LoadingSkeleton />;
   }
@@ -635,6 +693,14 @@ const PredictiveTab: React.FC<{
   }
 
   const predictive = analytics.predictive_analytics;
+  const currentValue = analytics.portfolio_overview.total_value;
+
+  const shortTermProjection = Number(predictive?.growth_projections?.short_term_projection || 0);
+  const mediumTermProjection = Number(predictive?.growth_projections?.medium_term_projection || 0);
+  const longTermProjection = Number(predictive?.growth_projections?.long_term_projection || 0);
+  const marketDownturnImpact = predictive?.risk_scenarios?.market_downturn?.impact || -15;
+  const highInflationImpact = predictive?.risk_scenarios?.high_inflation?.impact || -8;
+  const liquidityCrisisImpact = predictive?.risk_scenarios?.liquidity_crisis?.impact || -25;
 
   return (
     <div className="space-y-6">
@@ -644,24 +710,21 @@ const PredictiveTab: React.FC<{
           <div className="space-y-4">
             <ProjectionItem
               period="6 Months"
-              value={Number(
-                predictive?.growth_projections?.short_term_projection || 0,
-              )}
-              currentValue={analytics.portfolio_overview.total_value}
+              value={shortTermProjection}
+              currentValue={currentValue}
+              currency={club.currency}
             />
             <ProjectionItem
               period="1 Year"
-              value={Number(
-                predictive?.growth_projections?.medium_term_projection || 0,
-              )}
-              currentValue={analytics.portfolio_overview.total_value}
+              value={mediumTermProjection}
+              currentValue={currentValue}
+              currency={club.currency}
             />
             <ProjectionItem
               period="5 Years"
-              value={Number(
-                predictive?.growth_projections?.long_term_projection || 0,
-              )}
-              currentValue={analytics.portfolio_overview.total_value}
+              value={longTermProjection}
+              currentValue={currentValue}
+              currency={club.currency}
             />
           </div>
         </div>
@@ -671,9 +734,7 @@ const PredictiveTab: React.FC<{
           <div className="space-y-3">
             <ScenarioItem
               scenario="Market Downturn"
-              impact={
-                predictive?.risk_scenarios?.market_downturn?.impact || -15
-              }
+              impact={marketDownturnImpact}
               probability={
                 predictive?.risk_scenarios?.market_downturn?.probability ||
                 'Medium'
@@ -681,16 +742,14 @@ const PredictiveTab: React.FC<{
             />
             <ScenarioItem
               scenario="High Inflation"
-              impact={predictive?.risk_scenarios?.high_inflation?.impact || -8}
+              impact={highInflationImpact}
               probability={
                 predictive?.risk_scenarios?.high_inflation?.probability || 'Low'
               }
             />
             <ScenarioItem
               scenario="Liquidity Crisis"
-              impact={
-                predictive?.risk_scenarios?.liquidity_crisis?.impact || -25
-              }
+              impact={liquidityCrisisImpact}
               probability={
                 predictive?.risk_scenarios?.liquidity_crisis?.probability ||
                 'Very Low'
@@ -776,7 +835,7 @@ const InsightItem: React.FC<{
   </div>
 );
 
-const RiskItem: React.FC<{ factor: string; level: string; score: number }> = ({
+const RiskItem: React.FC<{ factor: string; level: string; score: string }> = ({
   factor,
   level,
   score,
@@ -819,7 +878,7 @@ const EngagementMetric: React.FC<{
 
 const HealthMetric: React.FC<{
   title: string;
-  value: number | string;
+  value: string | number;
   idealRange: string;
   status: 'good' | 'warning' | 'critical';
 }> = ({ title, value, idealRange, status }) => (
@@ -864,19 +923,21 @@ const ProjectionItem: React.FC<{
   period: string;
   value: number;
   currentValue: number;
-}> = ({ period, value, currentValue }) => {
+  currency: string;
+}> = ({ period, value, currentValue, currency }) => {
   const growth = ((value - currentValue) / currentValue) * 100;
 
   return (
     <div className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
       <span className="text-gray-600">{period}</span>
       <div className="text-right">
-        <div className="font-semibold">${value.toLocaleString()}</div>
+        <div className="font-semibold">
+          {formatValue(value, true, currency, 0)}
+        </div>
         <div
           className={`text-sm ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}
         >
-          {growth >= 0 ? '+' : ''}
-          {Number(growth).toFixed(1)}%
+          {formatPercentage(growth, 1)}
         </div>
       </div>
     </div>
@@ -896,7 +957,7 @@ const ScenarioItem: React.FC<{
     <div
       className={`font-semibold ${impact >= 0 ? 'text-green-600' : 'text-red-600'}`}
     >
-      {impact}%
+      {formatValue(impact, false, 'USD', 1)}%
     </div>
   </div>
 );

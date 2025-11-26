@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/Analytics/TopAssets.tsx
 import { Card } from '@/app/components/ui/card';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
@@ -21,6 +22,21 @@ interface TopAssetsProps {
   data?: AssetData[];
   currency?: string;
 }
+
+// Helper function to format currency values
+const formatCurrency = (amount: number, currency: string = 'USD') => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+// Helper function to format percentages
+const formatPercentage = (change: number, decimalPlaces: number = 1): string => {
+  return `${change >= 0 ? '+' : ''}${change.toFixed(decimalPlaces)}%`;
+};
 
 export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {
   // Use real data or generate sample data
@@ -92,21 +108,6 @@ export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {
     ];
   }
 
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  // Format percentage
-  const formatPercentage = (change: number) => {
-    return `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`;
-  };
-
   if (assets.length === 0) {
     return (
       <motion.div
@@ -164,7 +165,7 @@ export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {
                 </div>
                 <div className="text-right">
                   <p className="font-semibold text-gray-900">
-                    {formatCurrency(asset.value)}
+                    {formatCurrency(asset.value, currency)}
                   </p>
                   <div className="flex items-center gap-1 justify-end">
                     {asset.isPositive ? (
@@ -178,7 +179,7 @@ export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {
                         asset.isPositive ? 'text-green-600' : 'text-red-600',
                       )}
                     >
-                      {formatPercentage(asset.change)}
+                      {formatPercentage(asset.change, 1)}
                     </p>
                   </div>
                 </div>
@@ -194,6 +195,7 @@ export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {
             <span className="font-medium text-gray-900">
               {formatCurrency(
                 assets.reduce((sum, asset) => sum + asset.value, 0),
+                currency,
               )}
             </span>
           </div>

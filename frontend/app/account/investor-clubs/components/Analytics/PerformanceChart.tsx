@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/Analytics/PerformanceChart.tsx
 import { Card } from '@/app/components/ui/card';
 import {
   LineChart,
@@ -23,6 +24,16 @@ interface PerformanceChartProps {
   data?: TimeSeriesData[];
   club?: Club;
 }
+
+// Helper function to format currency values
+const formatCurrency = (amount: number, currency: string = 'USD') => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
 
 export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
   // Use real data or generate sample data for demonstration
@@ -61,15 +72,8 @@ export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
   }
 
   // Custom tooltip formatter
-  // Update tooltip formatter to use currency
   const formatTooltipValue = (value: number, name: string) => {
-    const formattedValue = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: club?.currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-
+    const formattedValue = formatCurrency(value, club?.currency);
     const labelMap: { [key: string]: string } = {
       portfolio_value: 'Portfolio Value',
       contributions: 'Contributions',

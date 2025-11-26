@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/Analytics/MembersOverview.tsx
 import { Card } from '@/app/components/ui/card';
 import { Avatar, AvatarFallback } from '@/app/components/ui/avatar';
 import { motion } from 'framer-motion';
@@ -23,6 +24,21 @@ interface MembersOverviewProps {
   club?: Club;
 }
 
+// Helper function to format currency values
+const formatCurrency = (amount: number, currency: string = 'USD') => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+// Helper function to format percentages
+const formatPercentage = (value: number, decimalPlaces: number = 1): string => {
+  return `${value.toFixed(decimalPlaces)}%`;
+};
+
 export const MembersOverview = ({ data, club }: MembersOverviewProps) => {
   // Use real data or fallback to empty array
   const members = data?.members || [];
@@ -35,16 +51,6 @@ export const MembersOverview = ({ data, club }: MembersOverviewProps) => {
       .join('')
       .toUpperCase()
       .slice(0, 2);
-  };
-
-  // Function to format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: club?.currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
   };
 
   if (members.length === 0) {
@@ -102,12 +108,12 @@ export const MembersOverview = ({ data, club }: MembersOverviewProps) => {
                   {member.member_name}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {Number(member?.contribution_share).toFixed(1)}% of total
+                  {formatPercentage(member.contribution_share, 1)} of total
                 </p>
               </div>
               <div className="text-right">
                 <p className="font-semibold text-gray-900">
-                  {formatCurrency(member.total_contributed)}
+                  {formatCurrency(member.total_contributed, club?.currency)}
                 </p>
                 <p className="text-xs text-gray-500">
                   {member.engagement_level}
@@ -123,13 +129,13 @@ export const MembersOverview = ({ data, club }: MembersOverviewProps) => {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="text-center">
                 <p className="font-medium text-gray-900">
-                  {Number(data?.summary_stats.average_share).toFixed(1)}%
+                  {formatPercentage(data.summary_stats.average_share, 1)}
                 </p>
                 <p className="text-gray-500">Avg Share</p>
               </div>
               <div className="text-center">
                 <p className="font-medium text-gray-900">
-                  {Number(data?.summary_stats.concentration_gini).toFixed(2)}
+                  {data.summary_stats.concentration_gini.toFixed(2)}
                 </p>
                 <p className="text-gray-500">Concentration</p>
               </div>

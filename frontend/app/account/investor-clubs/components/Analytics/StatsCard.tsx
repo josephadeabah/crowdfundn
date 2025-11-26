@@ -1,10 +1,10 @@
+// app/account/investor-clubs/components/Analytics/StatsCard.tsx
 import { Card } from '@/app/components/ui/card';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
 import { motion } from 'framer-motion';
 import { Club } from '../../clubTypes';
 
-// Update the StatsCard component interface and implementation:
 interface StatsCardProps {
   title: string;
   value: string | number;
@@ -12,8 +12,33 @@ interface StatsCardProps {
   changeType: 'positive' | 'negative' | 'neutral';
   icon: LucideIcon;
   loading?: boolean;
-  club?: Club; // Add optional currency prop
+  club?: Club;
 }
+
+// Helper function to format values with proper decimal places
+const formatValue = (value: string | number | undefined, isCurrency: boolean = false, currency: string = 'USD', decimalPlaces: number = 2): string => {
+  if (value === undefined || value === null) return 'N/A';
+  
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  
+  if (isNaN(numValue)) return 'N/A';
+
+  if (isCurrency) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: decimalPlaces,
+      maximumFractionDigits: decimalPlaces,
+    }).format(numValue);
+  }
+
+  // For percentages, ensure proper decimal formatting
+  if (decimalPlaces === 0) {
+    return Math.round(numValue).toString();
+  }
+
+  return numValue.toFixed(decimalPlaces);
+};
 
 export const StatsCard = ({
   title,
@@ -22,22 +47,20 @@ export const StatsCard = ({
   changeType,
   icon: Icon,
   loading = false,
-  club, // Default to USD
+  club,
 }: StatsCardProps) => {
-  // Enhanced format function that supports currency
-  const formatValue = (val: string | number, curr: string = 'USD') => {
-    if (typeof val === 'number') {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: curr,
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(val);
-    }
-    return val;
-  };
+  // Determine if the value should be formatted as currency
+  const isCurrencyValue = typeof value === 'number' && (
+    title.toLowerCase().includes('value') || 
+    title.toLowerCase().includes('return') || 
+    title.toLowerCase().includes('amount') ||
+    title.toLowerCase().includes('price') ||
+    title.toLowerCase().includes('cost')
+  );
 
-  const formattedValue = formatValue(value, club?.currency);
+  const formattedValue = isCurrencyValue 
+    ? formatValue(value, true, club?.currency || 'USD', 0)
+    : formatValue(value, false, club?.currency || 'USD', 0);
 
   if (loading) {
     return (

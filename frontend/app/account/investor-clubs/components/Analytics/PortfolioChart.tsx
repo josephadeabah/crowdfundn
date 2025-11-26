@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/Analytics/PortfolioChart.tsx
 import { Card } from '@/app/components/ui/card';
 import {
   PieChart,
@@ -21,6 +22,21 @@ interface PortfolioChartProps {
   currency?: string;
 }
 
+// Helper function to format currency values
+const formatCurrency = (amount: number, currency: string = 'USD') => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+// Helper function to format percentages
+const formatPercentage = (value: number, decimalPlaces: number = 1): string => {
+  return `${value.toFixed(decimalPlaces)}%`;
+};
+
 export const PortfolioChart = ({
   data,
   currency = 'USD',
@@ -31,12 +47,12 @@ export const PortfolioChart = ({
   // Function to generate sample data if no real data
   function generateSampleData(): SectorData[] {
     const sectors = [
-      { name: 'Technology', value: 35 },
-      { name: 'Real Estate', value: 25 },
-      { name: 'Healthcare', value: 15 },
-      { name: 'Consumer', value: 12 },
-      { name: 'Energy', value: 8 },
-      { name: 'Other', value: 5 },
+      { name: 'Technology', value: 45230 },
+      { name: 'Real Estate', value: 38450 },
+      { name: 'Healthcare', value: 32100 },
+      { name: 'Consumer', value: 28900 },
+      { name: 'Energy', value: 25780 },
+      { name: 'Other', value: 15640 },
     ];
 
     // Add colors based on sector
@@ -59,24 +75,14 @@ export const PortfolioChart = ({
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const formattedValue = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency,
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(data.value);
+      const formattedValue = formatCurrency(data.value, currency);
+      const percentage = (data.value / totalValue) * 100;
 
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-sm">
           <p className="font-medium text-gray-900">{deslugify(data.name)}</p>
           <p className="text-sm text-gray-600">
-            {formattedValue} (
-            {Number(
-              (data.value /
-                chartData.reduce((sum, item) => sum + item.value, 0)) *
-                100,
-            ).toFixed(1)}
-            %)
+            {formattedValue} ({formatPercentage(percentage, 1)})
           </p>
         </div>
       );
@@ -103,12 +109,7 @@ export const PortfolioChart = ({
   };
 
   const totalValue = chartData.reduce((sum, item) => sum + item.value, 0);
-  const formattedTotal = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(totalValue);
+  const formattedTotal = formatCurrency(totalValue, currency);
 
   return (
     <motion.div
