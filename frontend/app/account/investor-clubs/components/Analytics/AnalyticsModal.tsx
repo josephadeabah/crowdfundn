@@ -209,18 +209,33 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
 };
 
 // Helper function to format values with proper decimal places
-const formatValue = (
-  value: number | string | undefined,
-  isCurrency: boolean = false,
-  currency: string = 'USD',
-  decimalPlaces: number = 2,
-): string => {
+// Final robust version - use this one
+const formatValue = (value: any, isCurrency: boolean = false, currency: string = 'USD', decimalPlaces: number = 2): string => {
+  // Handle null/undefined
   if (value === undefined || value === null) return 'N/A';
+  
+  // Handle empty string
+  if (value === '') return 'N/A';
+  
+  // Convert to number
+  let numValue: number;
+  if (typeof value === 'string') {
+    // Remove any non-numeric characters except decimal point and minus sign
+    const cleaned = value.replace(/[^\d.-]/g, '');
+    numValue = parseFloat(cleaned);
+  } else if (typeof value === 'number') {
+    numValue = value;
+  } else {
+    // For any other type, try to convert to number
+    numValue = Number(value);
+  }
+  
+  // Check if we have a valid number
+  if (isNaN(numValue) || !isFinite(numValue)) {
+    return 'N/A';
+  }
 
-  const numValue = typeof value === 'string' ? parseFloat(value) : value;
-
-  if (isNaN(numValue)) return 'N/A';
-
+  // Format based on type
   if (isCurrency) {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -230,24 +245,38 @@ const formatValue = (
     }).format(numValue);
   }
 
-  // For percentages, ensure proper decimal formatting
+  // Handle integer values
   if (decimalPlaces === 0) {
     return Math.round(numValue).toString();
   }
 
+  // Handle decimal values
   return numValue.toFixed(decimalPlaces);
 };
 
 // Helper function to format percentages
-const formatPercentage = (
-  value: number | string | undefined,
-  decimalPlaces: number = 1,
-): string => {
+const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
+  // Handle null/undefined
   if (value === undefined || value === null) return 'N/A';
-
-  const numValue = typeof value === 'string' ? parseFloat(value) : value;
-
-  if (isNaN(numValue)) return 'N/A';
+  
+  // Handle empty string
+  if (value === '') return 'N/A';
+  
+  // Convert to number
+  let numValue: number;
+  if (typeof value === 'string') {
+    const cleaned = value.replace(/[^\d.-]/g, '');
+    numValue = parseFloat(cleaned);
+  } else if (typeof value === 'number') {
+    numValue = value;
+  } else {
+    numValue = Number(value);
+  }
+  
+  // Check if we have a valid number
+  if (isNaN(numValue) || !isFinite(numValue)) {
+    return 'N/A';
+  }
 
   const formatted = Math.abs(numValue).toFixed(decimalPlaces);
   return `${numValue >= 0 ? '+' : '-'}${formatted}%`;
