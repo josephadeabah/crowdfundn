@@ -150,23 +150,6 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
     a.label.localeCompare(b.label),
   );
 
-  // Get KYC status message
-  const getKycStatusMessage = (): string => {
-    if (kycLoading) return 'Checking KYC status...';
-
-    if (kycStatus) {
-      if (!kycStatus.verified) {
-        return 'KYC verification pending';
-      }
-      if (kycStatus.is_expired) {
-        return 'KYC verification has expired';
-      }
-      return 'KYC verified';
-    }
-
-    return 'KYC status unknown';
-  };
-
   const isKycVerified = kycStatus?.verified && !kycStatus?.is_expired;
 
   return (
@@ -201,46 +184,6 @@ const CreateClubModal: React.FC<CreateClubModalProps> = ({
           {/* Form */}
           <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
             <div className="space-y-6">
-              {/* KYC Status Alert */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <Shield className="w-5 h-5 text-green-600" />
-                  <h3 className="text-lg font-medium text-gray-900">
-                    KYC Verification
-                  </h3>
-                </div>
-
-                {kycLoading ? (
-                  <Alert className="bg-green-50 border-green-200">
-                    <AlertDescription className="text-green-800 text-sm">
-                      Checking your KYC verification status...
-                    </AlertDescription>
-                  </Alert>
-                ) : isKycVerified ? (
-                  <Alert className="bg-green-50 border-green-200">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                      <AlertDescription className="text-green-800 text-sm">
-                        <strong>KYC Verified:</strong> Your identity has been
-                        verified and you can create investment clubs.
-                      </AlertDescription>
-                    </div>
-                  </Alert>
-                ) : (
-                  <Alert className="bg-yellow-50 border-yellow-200">
-                    <div className="flex items-center gap-2">
-                      <XCircle className="w-4 h-4 text-yellow-600" />
-                      <AlertDescription className="text-yellow-800 text-sm">
-                        <strong>KYC Verification Required:</strong> You must
-                        complete your KYC verification before creating
-                        investment clubs. Current status:{' '}
-                        {getKycStatusMessage()}
-                      </AlertDescription>
-                    </div>
-                  </Alert>
-                )}
-              </div>
-
               {/* Club Name */}
               <div>
                 <label
