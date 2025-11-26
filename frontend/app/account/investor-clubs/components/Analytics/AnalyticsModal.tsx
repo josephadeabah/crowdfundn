@@ -209,49 +209,27 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
 };
 
 // Helper function to format values with proper decimal places
-// Final robust version - use this one
 const formatValue = (value: any, isCurrency: boolean = false, currency: string = 'USD', decimalPlaces: number = 2): string => {
-  // Handle null/undefined
-  if (value === undefined || value === null) return 'N/A';
-  
-  // Handle empty string
-  if (value === '') return 'N/A';
-  
-  // Convert to number
-  let numValue: number;
-  if (typeof value === 'string') {
-    // Remove any non-numeric characters except decimal point and minus sign
-    const cleaned = value.replace(/[^\d.-]/g, '');
-    numValue = parseFloat(cleaned);
-  } else if (typeof value === 'number') {
-    numValue = value;
-  } else {
-    // For any other type, try to convert to number
-    numValue = Number(value);
-  }
-  
-  // Check if we have a valid number
-  if (isNaN(numValue) || !isFinite(numValue)) {
+  try {
+    if (value === undefined || value === null || value === '') return 'N/A';
+    
+    const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+    if (isNaN(num)) return 'N/A';
+    
+    if (isCurrency) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: decimalPlaces,
+        maximumFractionDigits: decimalPlaces,
+      }).format(num);
+    }
+    
+    return decimalPlaces === 0 ? Math.round(num).toString() : num.toFixed(decimalPlaces);
+  } catch (error) {
+    console.warn('Formatting error:', error, value);
     return 'N/A';
   }
-
-  // Format based on type
-  if (isCurrency) {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: decimalPlaces,
-      maximumFractionDigits: decimalPlaces,
-    }).format(numValue);
-  }
-
-  // Handle integer values
-  if (decimalPlaces === 0) {
-    return Math.round(numValue).toString();
-  }
-
-  // Handle decimal values
-  return numValue.toFixed(decimalPlaces);
 };
 
 // Helper function to format percentages

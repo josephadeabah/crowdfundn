@@ -34,11 +34,31 @@ const formatCurrency = (amount: number, currency: string = 'USD') => {
 };
 
 // Helper function to format percentages
-const formatPercentage = (
-  change: number,
-  decimalPlaces: number = 1,
-): string => {
-  return `${change >= 0 ? '+' : ''}${change.toFixed(decimalPlaces)}%`;
+const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
+  // Handle null/undefined
+  if (value === undefined || value === null) return 'N/A';
+  
+  // Handle empty string
+  if (value === '') return 'N/A';
+  
+  // Convert to number
+  let numValue: number;
+  if (typeof value === 'string') {
+    const cleaned = value.replace(/[^\d.-]/g, '');
+    numValue = parseFloat(cleaned);
+  } else if (typeof value === 'number') {
+    numValue = value;
+  } else {
+    numValue = Number(value);
+  }
+  
+  // Check if we have a valid number
+  if (isNaN(numValue) || !isFinite(numValue)) {
+    return 'N/A';
+  }
+
+  const formatted = Math.abs(numValue).toFixed(decimalPlaces);
+  return `${numValue >= 0 ? '+' : '-'}${formatted}%`;
 };
 
 export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {

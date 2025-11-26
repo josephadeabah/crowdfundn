@@ -16,33 +16,27 @@ interface StatsCardProps {
 }
 
 // Helper function to format values with proper decimal places
-const formatValue = (
-  value: string | number | undefined,
-  isCurrency: boolean = false,
-  currency: string = 'USD',
-  decimalPlaces: number = 2,
-): string => {
-  if (value === undefined || value === null) return 'N/A';
-
-  const numValue = typeof value === 'string' ? parseFloat(value) : value;
-
-  if (isNaN(numValue)) return 'N/A';
-
-  if (isCurrency) {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: decimalPlaces,
-      maximumFractionDigits: decimalPlaces,
-    }).format(numValue);
+const formatValue = (value: any, isCurrency: boolean = false, currency: string = 'USD', decimalPlaces: number = 2): string => {
+  try {
+    if (value === undefined || value === null || value === '') return 'N/A';
+    
+    const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+    if (isNaN(num)) return 'N/A';
+    
+    if (isCurrency) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: decimalPlaces,
+        maximumFractionDigits: decimalPlaces,
+      }).format(num);
+    }
+    
+    return decimalPlaces === 0 ? Math.round(num).toString() : num.toFixed(decimalPlaces);
+  } catch (error) {
+    console.warn('Formatting error:', error, value);
+    return 'N/A';
   }
-
-  // For percentages, ensure proper decimal formatting
-  if (decimalPlaces === 0) {
-    return Math.round(numValue).toString();
-  }
-
-  return numValue.toFixed(decimalPlaces);
 };
 
 export const StatsCard = ({
