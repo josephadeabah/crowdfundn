@@ -96,7 +96,9 @@ const ClubsListPage: React.FC = () => {
     text: string;
     clubId?: string;
   } | null>(null);
-  const [activeTab, setActiveTab] = useState<'all' | 'my_clubs' | 'discover' | 'dealroom'>('all');
+  const [activeTab, setActiveTab] = useState<
+    'all' | 'my_clubs' | 'discover' | 'dealroom'
+  >('all');
   const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
 
   // Infinite scroll states with proper typing
@@ -107,71 +109,69 @@ const ClubsListPage: React.FC = () => {
   });
 
   // Load clubs function with infinite scroll support and proper typing
-  const loadClubs = useCallback(async (
-    tab: TabType,
-    page: number = 1,
-    isLoadMore: boolean = false
-  ) => {
-    if (!token) return;
+  const loadClubs = useCallback(
+    async (tab: TabType, page: number = 1, isLoadMore: boolean = false) => {
+      if (!token) return;
 
-    try {
-      setInfiniteScroll(prev => ({
-        ...prev,
-        [tab]: { ...prev[tab], loading: true }
-      }));
+      try {
+        setInfiniteScroll((prev) => ({
+          ...prev,
+          [tab]: { ...prev[tab], loading: true },
+        }));
 
-      let response: ClubsResponse | MyClubsResponse | DiscoverClubsResponse;
-      
-      switch (tab) {
-        case 'my_clubs':
-          response = await clubService.getMyClubs(token, page, 10);
-          if (isLoadMore) {
-            setMyClubs(prev => [...prev, ...response.clubs]);
-          } else {
-            setMyClubs(response.clubs);
-          }
-          break;
-        case 'discover':
-          response = await clubService.getDiscoverClubs(token, page, 10);
-          if (isLoadMore) {
-            setDiscoverClubs(prev => [...prev, ...response.clubs]);
-          } else {
-            setDiscoverClubs(response.clubs);
-          }
-          break;
-        default:
-          response = await clubService.getClubs(token, page, 10);
-          if (isLoadMore) {
-            setClubs(prev => [...prev, ...response.clubs]);
-          } else {
-            setClubs(response.clubs);
-          }
-          break;
-      }
+        let response: ClubsResponse | MyClubsResponse | DiscoverClubsResponse;
 
-      // Update infinite scroll state with proper typing
-      setInfiniteScroll(prev => ({
-        ...prev,
-        [tab]: {
-          loading: false,
-          hasMore: page < response.pagination.total_pages,
-          page: page
+        switch (tab) {
+          case 'my_clubs':
+            response = await clubService.getMyClubs(token, page, 10);
+            if (isLoadMore) {
+              setMyClubs((prev) => [...prev, ...response.clubs]);
+            } else {
+              setMyClubs(response.clubs);
+            }
+            break;
+          case 'discover':
+            response = await clubService.getDiscoverClubs(token, page, 10);
+            if (isLoadMore) {
+              setDiscoverClubs((prev) => [...prev, ...response.clubs]);
+            } else {
+              setDiscoverClubs(response.clubs);
+            }
+            break;
+          default:
+            response = await clubService.getClubs(token, page, 10);
+            if (isLoadMore) {
+              setClubs((prev) => [...prev, ...response.clubs]);
+            } else {
+              setClubs(response.clubs);
+            }
+            break;
         }
-      }));
 
-    } catch (error) {
-      console.error(`Failed to load ${tab} clubs:`, error);
-      setInfiniteScroll(prev => ({
-        ...prev,
-        [tab]: { ...prev[tab], loading: false }
-      }));
-    }
-  }, [token]);
+        // Update infinite scroll state with proper typing
+        setInfiniteScroll((prev) => ({
+          ...prev,
+          [tab]: {
+            loading: false,
+            hasMore: page < response.pagination.total_pages,
+            page: page,
+          },
+        }));
+      } catch (error) {
+        console.error(`Failed to load ${tab} clubs:`, error);
+        setInfiniteScroll((prev) => ({
+          ...prev,
+          [tab]: { ...prev[tab], loading: false },
+        }));
+      }
+    },
+    [token],
+  );
 
   // Load more function with proper typing
   const loadMoreClubs = useCallback(async () => {
     if (activeTab === 'dealroom') return;
-    
+
     const currentState = infiniteScroll[activeTab as TabType];
     if (currentState.loading || !currentState.hasMore) return;
 
@@ -182,17 +182,21 @@ const ClubsListPage: React.FC = () => {
   // Set up infinite scroll observer with proper typing
   const observerRef = useInfiniteScroll(
     loadMoreClubs,
-    activeTab !== 'dealroom' ? infiniteScroll[activeTab as TabType].hasMore : false,
-    activeTab !== 'dealroom' ? infiniteScroll[activeTab as TabType].loading : false
+    activeTab !== 'dealroom'
+      ? infiniteScroll[activeTab as TabType].hasMore
+      : false,
+    activeTab !== 'dealroom'
+      ? infiniteScroll[activeTab as TabType].loading
+      : false,
   );
 
   // Load clubs when tab changes with proper typing
   useEffect(() => {
     if (token && activeTab !== 'dealroom') {
       // Reset and load first page when tab changes
-      setInfiniteScroll(prev => ({
+      setInfiniteScroll((prev) => ({
         ...prev,
-        [activeTab as TabType]: { loading: false, hasMore: true, page: 1 }
+        [activeTab as TabType]: { loading: false, hasMore: true, page: 1 },
       }));
       loadClubs(activeTab as TabType, 1, false);
     }
@@ -539,9 +543,10 @@ const ClubsListPage: React.FC = () => {
   };
 
   // Get current scroll state with proper typing
-  const currentScrollState = activeTab !== 'dealroom' 
-    ? infiniteScroll[activeTab as TabType] 
-    : { loading: false, hasMore: false, page: 1 };
+  const currentScrollState =
+    activeTab !== 'dealroom'
+      ? infiniteScroll[activeTab as TabType]
+      : { loading: false, hasMore: false, page: 1 };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -674,11 +679,13 @@ const ClubsListPage: React.FC = () => {
           )}
 
           {/* Loading State for Initial Load */}
-          {activeTab !== 'dealroom' && currentScrollState.loading && filteredClubs.length === 0 && (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
-            </div>
-          )}
+          {activeTab !== 'dealroom' &&
+            currentScrollState.loading &&
+            filteredClubs.length === 0 && (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+              </div>
+            )}
 
           {/* Clubs Feed with Infinite Scroll */}
           {activeTab !== 'dealroom' && (
@@ -791,76 +798,80 @@ const ClubsListPage: React.FC = () => {
                   </motion.article>
                 );
               })}
-              
+
               {/* Loading indicator for infinite scroll */}
               {currentScrollState.loading && filteredClubs.length > 0 && (
                 <div className="flex justify-center py-6">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
                 </div>
               )}
-              
+
               {/* End of results message */}
               {!currentScrollState.hasMore && filteredClubs.length > 0 && (
                 <div className="text-center py-6 text-gray-500 text-sm">
                   You've reached the end of the list
                 </div>
               )}
-              
+
               {/* Observer element for infinite scroll */}
-              {currentScrollState.hasMore && !currentScrollState.loading && filteredClubs.length > 0 && (
-                <div ref={observerRef} className="h-4" />
-              )}
+              {currentScrollState.hasMore &&
+                !currentScrollState.loading &&
+                filteredClubs.length > 0 && (
+                  <div ref={observerRef} className="h-4" />
+                )}
             </div>
           )}
 
           {/* Empty State */}
-          {filteredClubs.length === 0 && !currentScrollState.loading && activeTab !== 'dealroom' && (
-            <div className="text-center py-12 px-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">
-                  {activeTab === 'my_clubs' ? (
-                    <Users className="w-8 h-8 text-gray-400" />
-                  ) : activeTab === 'discover' ? (
-                    '🔍'
-                  ) : (
-                    '🏢'
-                  )}
-                </span>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {activeTab === 'my_clubs'
-                  ? 'No clubs yet'
-                  : activeTab === 'discover'
-                    ? 'No clubs to discover'
-                    : 'No clubs found'}
-              </h3>
-              <p className="text-gray-600 text-sm mb-6 max-w-md mx-auto">
-                {activeTab === 'my_clubs'
-                  ? "You haven't joined any investment clubs yet. Explore clubs below or create your own."
-                  : activeTab === 'discover'
-                    ? "You've joined all available clubs or there are no clubs matching your criteria."
-                    : filter === 'all'
-                      ? 'There are no investment clubs available at the moment.'
-                      : `No ${filter} clubs match your criteria.`}
-              </p>
-              {activeTab === 'my_clubs' && (
-                <div className="flex gap-3 justify-center">
-                  <button
-                    onClick={() => setActiveTab('discover')}
-                    className="px-4 py-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-medium text-sm"
-                  >
-                    Discover Clubs
-                  </button>
-                  <button
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 font-medium text-sm"
-                  >
-                    Create Club
-                  </button>
+          {filteredClubs.length === 0 &&
+            !currentScrollState.loading &&
+            activeTab !== 'dealroom' && (
+              <div className="text-center py-12 px-4">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">
+                    {activeTab === 'my_clubs' ? (
+                      <Users className="w-8 h-8 text-gray-400" />
+                    ) : activeTab === 'discover' ? (
+                      '🔍'
+                    ) : (
+                      '🏢'
+                    )}
+                  </span>
                 </div>
-              )}
-            </div>
-          )}
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {activeTab === 'my_clubs'
+                    ? 'No clubs yet'
+                    : activeTab === 'discover'
+                      ? 'No clubs to discover'
+                      : 'No clubs found'}
+                </h3>
+                <p className="text-gray-600 text-sm mb-6 max-w-md mx-auto">
+                  {activeTab === 'my_clubs'
+                    ? "You haven't joined any investment clubs yet. Explore clubs below or create your own."
+                    : activeTab === 'discover'
+                      ? "You've joined all available clubs or there are no clubs matching your criteria."
+                      : filter === 'all'
+                        ? 'There are no investment clubs available at the moment.'
+                        : `No ${filter} clubs match your criteria.`}
+                </p>
+                {activeTab === 'my_clubs' && (
+                  <div className="flex gap-3 justify-center">
+                    <button
+                      onClick={() => setActiveTab('discover')}
+                      className="px-4 py-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-medium text-sm"
+                    >
+                      Discover Clubs
+                    </button>
+                    <button
+                      onClick={() => setIsCreateModalOpen(true)}
+                      className="px-4 py-2 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 font-medium text-sm"
+                    >
+                      Create Club
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
         </div>
       </div>
 

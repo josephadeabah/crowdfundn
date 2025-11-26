@@ -1,7 +1,11 @@
 // app/hooks/useInfiniteScroll.ts
 import { useEffect, useRef } from 'react';
 
-export const useInfiniteScroll = (callback: () => void, hasMore: boolean, loading: boolean) => {
+export const useInfiniteScroll = (
+  callback: () => void,
+  hasMore: boolean,
+  loading: boolean,
+) => {
   const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -13,7 +17,7 @@ export const useInfiniteScroll = (callback: () => void, hasMore: boolean, loadin
           callback();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     const currentRef = observerRef.current;
