@@ -108,6 +108,32 @@ const ClubsListPage: React.FC = () => {
     discover: { loading: false, hasMore: true, page: 1 },
   });
 
+  // NEW: Payment verification redirection - Single Source of Truth
+  useEffect(() => {
+    const checkAndRedirectForPayment = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const reference = urlParams.get('reference');
+      const trxref = urlParams.get('trxref');
+      const paymentRef = reference || trxref;
+
+      if (!paymentRef) return;
+
+      // We have a payment reference but we're not on the verification route
+      // Redirect to the single source of truth (Your Clubs route)
+      console.log(
+        'Payment detected on wrong route, redirecting to verification route...',
+      );
+
+      const currentPath = window.location.pathname;
+      const verificationUrl = `${currentPath}?reference=${paymentRef}#Your%20Clubs`;
+
+      console.log('Redirecting to verification route:', verificationUrl);
+      window.location.href = verificationUrl;
+    };
+
+    checkAndRedirectForPayment();
+  }, []);
+
   // Load clubs function with infinite scroll support and proper typing
   const loadClubs = useCallback(
     async (tab: TabType, page: number = 1, isLoadMore: boolean = false) => {

@@ -38,6 +38,7 @@ import ApprovedCampaigns from './investor-clubs/components/Sidebar/ApprovedCampa
 import { InvestmentDetailsModal } from './investor-clubs/components/Investments/InvestmentDetailsModal';
 import { AnalyticsModal } from './investor-clubs/components/Analytics/AnalyticsModal';
 import { useKYCStatus } from '@/app/hooks/useKYCStatus';
+import { useRouter } from 'next/navigation';
 
 // Enhanced formatCurrency function to handle null/undefined values and string numbers
 const formatCurrency = (
@@ -109,6 +110,97 @@ const defaultPortfolio: ClubInvestmentPortfolio = {
   successful_count: 0,
 };
 
+// NEW: Global payment verification hook - Single Source of Truth
+const useGlobalPaymentVerification = (
+  token: string | null,
+  loadClubDetails: (club: Club) => Promise<void>,
+) => {
+  const [paymentAlert, setPaymentAlert] = useState(false);
+  const [paymentMessage, setPaymentMessage] = useState('');
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const router = useRouter();
+
+  // Check if we're on the correct route for payment verification
+  const isOnVerificationRoute = () => {
+    if (typeof window === 'undefined') return false;
+    return window.location.hash === '#Your%20Clubs';
+  };
+
+  // Redirect to the verification route
+  const redirectToVerificationRoute = (paymentRef: string) => {
+    if (typeof window === 'undefined') return;
+
+    const currentPath = window.location.pathname;
+    const verificationUrl = `${currentPath}?reference=${paymentRef}#Your%20Clubs`;
+
+    console.log('Redirecting to verification route:', verificationUrl);
+    window.location.href = verificationUrl;
+  };
+
+  const verifyPayment = async (club: Club, paymentRef: string) => {
+    if (!token) return false;
+
+    try {
+      const verificationResult = await contributionService.verifyContribution(
+        token,
+        club.slug,
+        paymentRef,
+      );
+
+      if (verificationResult.success) {
+        let successMessage =
+          'Your contribution has been processed successfully!';
+
+        if (verificationResult.membership) {
+          const { total_contributed, contributed_share } =
+            verificationResult.membership;
+          successMessage += `\n\nYour total contributions: ${formatCurrency(total_contributed, club.currency)}\nYour club share: ${contributed_share}%`;
+        }
+
+        if (verificationResult.processed_by_webhook) {
+          successMessage += '\n\n✅ Processed Successfully';
+        } else if (verificationResult.already_processed) {
+          successMessage += '\n\n✅ Payment was already processed';
+        }
+
+        setPaymentMessage(successMessage);
+        setPaymentSuccess(true);
+        setPaymentAlert(true);
+
+        await loadClubDetails(club);
+        return true;
+      } else {
+        const errorMsg =
+          verificationResult.paystack_error ||
+          verificationResult.transaction_status ||
+          'Payment verification failed';
+        setPaymentMessage(`Payment verification failed: ${errorMsg}`);
+        setPaymentSuccess(false);
+        setPaymentAlert(true);
+        return false;
+      }
+    } catch (error) {
+      console.error('Payment verification failed:', error);
+      setPaymentMessage(
+        'Payment verification failed. Please check your contributions list.',
+      );
+      setPaymentSuccess(false);
+      setPaymentAlert(true);
+      return false;
+    }
+  };
+
+  return {
+    paymentAlert,
+    paymentMessage,
+    paymentSuccess,
+    setPaymentAlert,
+    verifyPayment,
+    isOnVerificationRoute,
+    redirectToVerificationRoute,
+  };
+};
+
 const InvestmentClubsDashboard: React.FC = () => {
   const {
     clubs,
@@ -125,7 +217,7 @@ const InvestmentClubsDashboard: React.FC = () => {
     approvedCampaignsLoading,
     loading,
     mobileMenuOpen,
-    initialLoadComplete, // NEW: Get initial load status
+    initialLoadComplete,
     token,
     loadUserClubs,
     loadClubDetails,
@@ -158,14 +250,22 @@ const InvestmentClubsDashboard: React.FC = () => {
   // Alert states
   const [featureAlert, setFeatureAlert] = useState(false);
   const [featureMessage, setFeatureMessage] = useState('');
-  const [paymentAlert, setPaymentAlert] = useState(false);
-  const [paymentMessage, setPaymentMessage] = useState('');
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [investmentAlert, setInvestmentAlert] = useState(false);
   const [investmentMessage, setInvestmentMessage] = useState('');
   const [investmentSuccess, setInvestmentSuccess] = useState(false);
   const [kycAlert, setKycAlert] = useState(false);
   const [kycMessage, setKycMessage] = useState('');
+
+  // NEW: Use the global payment verification hook - Single Source of Truth
+  const {
+    paymentAlert,
+    paymentMessage,
+    paymentSuccess,
+    setPaymentAlert,
+    verifyPayment,
+    isOnVerificationRoute,
+    redirectToVerificationRoute,
+  } = useGlobalPaymentVerification(token, loadClubDetails);
 
   // Use portfolio data directly with proper fallback
   const portfolioData = portfolio || defaultPortfolio;
@@ -195,73 +295,63 @@ const InvestmentClubsDashboard: React.FC = () => {
 
   const currentClub = getCurrentClub();
 
-  // Check for payment callback on component mount
+  // NEW: Global Payment Verification - Single Source of Truth
   useEffect(() => {
     const checkPaymentStatus = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const reference = urlParams.get('reference');
       const trxref = urlParams.get('trxref');
+      const paymentRef = reference || trxref;
 
-      if ((reference || trxref) && currentClub && token) {
-        const paymentRef = (reference || trxref)!;
+      if (!paymentRef || !token) return;
 
-        try {
-          const verificationResult =
-            await contributionService.verifyContribution(
-              token,
-              currentClub.slug,
-              paymentRef,
-            );
+      // If we're not on the verification route, redirect to it
+      if (!isOnVerificationRoute()) {
+        console.log('Not on verification route, redirecting...');
+        redirectToVerificationRoute(paymentRef);
+        return;
+      }
 
-          if (verificationResult.success) {
-            let successMessage =
-              'Your contribution has been processed successfully!';
+      // We're on the correct route, proceed with verification
+      console.log('On verification route, processing payment...');
 
-            if (verificationResult.membership) {
-              const { total_contributed, contributed_share } =
-                verificationResult.membership;
-              successMessage += `\n\nYour total contributions: ${formatCurrency(total_contributed, currentClub.currency)}\nYour club share: ${contributed_share}%`;
-            }
+      // Try to get club from localStorage first
+      const savedClubSlug = localStorage.getItem('selectedClubSlug');
+      let clubToUse = currentClub;
 
-            if (verificationResult.processed_by_webhook) {
-              successMessage += '\n\n✅ Processed Successfully';
-            } else if (verificationResult.already_processed) {
-              successMessage += '\n\n✅ Payment was already processed';
-            }
+      // If we don't have a current club but have a saved slug, try to find the club
+      if (!clubToUse && savedClubSlug && clubs.length > 0) {
+        clubToUse = clubs.find((c) => c.slug === savedClubSlug) || clubs[0];
+      }
 
-            setPaymentMessage(successMessage);
-            setPaymentSuccess(true);
-            setPaymentAlert(true);
+      if (!clubToUse) {
+        console.warn('No club available for payment verification');
+        return;
+      }
 
-            await loadClubDetails(currentClub);
-          } else {
-            const errorMsg =
-              verificationResult.paystack_error ||
-              verificationResult.transaction_status ||
-              'Payment verification failed';
-            setPaymentMessage(`Payment verification failed: ${errorMsg}`);
-            setPaymentSuccess(false);
-            setPaymentAlert(true);
-          }
+      console.log('Processing payment verification for club:', clubToUse.name);
 
-          window.history.replaceState(
-            {},
-            document.title,
-            window.location.pathname,
-          );
-        } catch (error) {
-          console.error('Payment verification failed:', error);
-          setPaymentMessage(
-            'Payment verification failed. Please check your contributions list.',
-          );
-          setPaymentSuccess(false);
-          setPaymentAlert(true);
-        }
+      const success = await verifyPayment(clubToUse, paymentRef);
+
+      if (success) {
+        // Clear URL parameters after successful verification but keep the hash
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname + window.location.hash,
+        );
       }
     };
 
     checkPaymentStatus();
-  }, [currentClub, token, loadClubDetails]);
+  }, [
+    token,
+    currentClub,
+    clubs,
+    verifyPayment,
+    isOnVerificationRoute,
+    redirectToVerificationRoute,
+  ]);
 
   const handleContributionSuccess = async () => {
     if (currentClub) {
