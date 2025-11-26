@@ -6,11 +6,11 @@ import Modal from '@/app/components/modal/Modal';
 interface ContributionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onContributionSuccess?: () => void;
+  onContributionSuccess?: () => void; // Make this optional
   club: any;
   token: string | null;
   formatCurrency: (amount: number, currency?: string) => string;
-  showSuccess?: boolean;
+  showSuccess?: boolean; // Add this prop to control success display
 }
 
 export const ContributionModal: React.FC<ContributionModalProps> = ({
@@ -20,7 +20,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
   club,
   token,
   formatCurrency,
-  showSuccess = false,
+  showSuccess = false, // Default to false for other components
 }) => {
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
@@ -98,28 +98,9 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
       }
 
       if (data.success && data.authorization_url) {
-        // Save club context for verification at the single source of truth
-        localStorage.setItem('selectedClubSlug', club.slug);
-
-        // Check if we're already on the verification route
-        const currentHash = window.location.hash;
-        const isOnVerificationRoute = currentHash === '#Your%20Clubs';
-
-        if (isOnVerificationRoute) {
-          // We're already on the correct route, proceed with payment
-          window.location.href = data.authorization_url;
-        } else {
-          // We're not on the verification route, redirect to single source of truth
-          const paymentUrl = new URL(data.authorization_url);
-          const paymentRef =
-            paymentUrl.searchParams.get('reference') ||
-            data.reference ||
-            Math.random().toString(36).substring(7);
-
-          // Redirect to the single source of truth route with payment context
-          const verificationUrl = `${window.location.pathname}?reference=${paymentRef}#Your%20Clubs`;
-          window.location.href = verificationUrl;
-        }
+        // Redirect to Paystack payment page
+        window.location.href = data.authorization_url;
+        // Don't set success state here - let the dashboard handle it after payment
       } else {
         throw new Error('Invalid response from server');
       }
