@@ -227,6 +227,26 @@ module Api
         end
       end
 
+      # POST /api/v1/investment_clubs/:id/refresh
+      def refresh
+        club = InvestmentClub.find_by(slug: params[:id])
+        
+        if club
+          # Force refresh all counts and financials
+          club.refresh_all_counts!
+          
+          render json: {
+            success: true,
+            club: ClubSerializer.new(club).as_json
+          }
+        else
+          render json: {
+            success: false,
+            error: 'Club not found'
+          }, status: :not_found
+        end
+      end
+
       # DELETE /api/v1/investment_clubs/:id
       def destroy
         # SIMPLIFIED: Only check if user is creator

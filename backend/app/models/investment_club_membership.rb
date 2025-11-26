@@ -1,4 +1,3 @@
-# app/models/investment_club_membership.rb
 class InvestmentClubMembership < ApplicationRecord
   belongs_to :user
   belongs_to :investment_club
@@ -19,7 +18,9 @@ class InvestmentClubMembership < ApplicationRecord
   
   before_create :set_initial_share
   
-  after_commit :update_club_members_count_callback
+  # FIXED: Use after_destroy instead of after_commit for more reliable count updates
+  after_destroy :update_club_members_count
+  after_save :update_club_members_count_if_status_changed
   
   scope :admin, -> { where(role: ['admin', 'creator']) }
   scope :pending, -> { where(status: 'pending') }
@@ -70,12 +71,24 @@ class InvestmentClubMembership < ApplicationRecord
     end
   end
 
-  def update_club_members_count_callback
+  # FIXED: More reliable count update method
+  def update_club_members_count
     return if destroyed? || investment_club.destroyed?
     
-    investment_club.update_column(:current_members_count, investment_club.investment_club_memberships.active.count)
+    # Use SQL count for accuracy
+    active_count = investment_club.investment_club_memberships.active.count
+    investment_club.update_column(:current_members_count, active_count)
+    
+    Rails.logger.info "Updated club #{investment_club_id} members count to: #{active_count}"
   rescue => e
     Rails.logger.error "Error updating club members count: #{e.message}"
+  end
+
+  # NEW: Handle status changes that affect active count
+  def update_club_members_count_if_status_changed
+    if saved_change_to_status? && (active? || status_inactive?)
+      update_club_members_count
+    end
   end
   
   def can_manage?

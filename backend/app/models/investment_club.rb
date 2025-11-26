@@ -27,7 +27,8 @@ class InvestmentClub < ApplicationRecord
   after_create :create_creator_membership
   after_initialize :set_default_members_count, if: :new_record?
   
-  after_save :update_members_count_if_needed
+  # FIXED: More reliable count synchronization
+  after_commit :synchronize_members_count, on: [:create, :update, :destroy]
   
   enum access_type: { 
     open: 'open', 
@@ -304,11 +305,31 @@ class InvestmentClub < ApplicationRecord
       pending_investments: club_investments.voting.count
     }
   end
-  
-  def update_members_count
+
+  # NEW: Force synchronization of members count
+  def synchronize_members_count
+    actual_count = investment_club_memberships.active.count
+    if current_members_count != actual_count
+      update_column(:current_members_count, actual_count)
+      Rails.logger.info "Synchronized club #{id} members count: #{actual_count}"
+    end
+  end
+
+  # NEW: Method to force refresh of all counts and financials
+  def refresh_all_counts!
+    ActiveRecord::Base.transaction do
+      synchronize_members_count
+      recalc_total_contributions!
+      recalc_current_balance!
+      update_all_member_shares_without_history
+    end
+  end
+
+    def update_members_count
     active_count = investment_club_memberships.active.count
     if current_members_count != active_count
       update_column(:current_members_count, active_count)
+      Rails.logger.info "Updated club #{id} members count to: #{active_count}"
     end
   end
   
@@ -318,7 +339,8 @@ class InvestmentClub < ApplicationRecord
       role: 'creator',
       status: 'active'
     )
-    update_members_count
+    # Force immediate count update
+    update_column(:current_members_count, 1)
   end
   
   def active_members

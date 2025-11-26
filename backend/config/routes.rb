@@ -373,6 +373,7 @@ Rails.application.routes.draw do
           post :create_wallet
           get :my_membership_status
           post :transfer_ownership
+          post :refresh
         end
 
         collection do
