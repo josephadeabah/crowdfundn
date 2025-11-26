@@ -3,15 +3,15 @@ export default function HeadComponent() {
   return (
     <head>
       <title>
-        Fund and Invest in Ghana's promising Startups and Impact Projects
+        Fund and Invest in Africa's promising Startups and Impact Projects
       </title>
       <meta
         name="description"
-        content="BantuHive: Ghana's all-in-one fundraising platform connecting individual and institutional investors with promising startups and impact projects. Investment opportunities, Crowdfunding and donations"
+        content="BantuHive: World's No.1 all-in-one fundraising platform connecting individual and institutional investors with promising startups and impact projects. Investment opportunities, Crowdfunding and donations"
       />
       <meta
         name="keywords"
-        content="African startups, impact investing, crowdfunding Africa, diaspora funding, African fintech, social impact projects, venture capital Africa"
+        content="African startups, impact investing, crowdfunding Africa, crowdinvesting, diaspora funding, African fintech, social impact projects, venture capital Africa"
       />
       <link rel="canonical" href="https://bantuhive.com" />
 
@@ -23,11 +23,11 @@ export default function HeadComponent() {
       {/* Open Graph / Social Meta Tags */}
       <meta
         property="og:title"
-        content="BantuHive, Fund and Invest in Ghana's Promising Startups"
+        content="BantuHive, Fund and Invest in World's Promising Startups"
       />
       <meta
         property="og:description"
-        content="Ghana's all-in-one fundraising platform connecting investors with promising startups and impact projects."
+        content="World's all-in-one fundraising platform connecting investors with promising startups and impact projects."
       />
       <meta property="og:type" content="website" />
       <meta property="og:url" content="https://bantuhive.com" />
@@ -38,11 +38,11 @@ export default function HeadComponent() {
       <meta name="twitter:card" content="summary_large_image" />
       <meta
         name="twitter:title"
-        content="BantuHive, Fund & Invest in Ghana's Promising Startups"
+        content="BantuHive, Fund & Invest in World's Promising Startups"
       />
       <meta
         name="twitter:description"
-        content="Ghana's premier fundraising platform for startups and impact projects."
+        content="World's premier fundraising platform for startups and impact projects."
       />
       <meta name="twitter:image" content="/bantuhive.svg" />
     </head>
