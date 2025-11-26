@@ -209,11 +209,16 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
 };
 
 // Helper function to format values with proper decimal places
-const formatValue = (value: number | string | undefined, isCurrency: boolean = false, currency: string = 'USD', decimalPlaces: number = 2): string => {
+const formatValue = (
+  value: number | string | undefined,
+  isCurrency: boolean = false,
+  currency: string = 'USD',
+  decimalPlaces: number = 2,
+): string => {
   if (value === undefined || value === null) return 'N/A';
-  
+
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
-  
+
   if (isNaN(numValue)) return 'N/A';
 
   if (isCurrency) {
@@ -234,11 +239,14 @@ const formatValue = (value: number | string | undefined, isCurrency: boolean = f
 };
 
 // Helper function to format percentages
-const formatPercentage = (value: number | string | undefined, decimalPlaces: number = 1): string => {
+const formatPercentage = (
+  value: number | string | undefined,
+  decimalPlaces: number = 1,
+): string => {
   if (value === undefined || value === null) return 'N/A';
-  
+
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
-  
+
   if (isNaN(numValue)) return 'N/A';
 
   const formatted = Math.abs(numValue).toFixed(decimalPlaces);
@@ -294,7 +302,8 @@ const OverviewTab: React.FC<{
   };
 
   const successRate = Math.round(
-    ((portfolio.successful_count || 0) / (portfolio.active_investments || 1)) * 100
+    ((portfolio.successful_count || 0) / (portfolio.active_investments || 1)) *
+      100,
   );
 
   return (
@@ -402,11 +411,14 @@ const PerformanceTab: React.FC<{
   const performance = analytics.performance_analytics;
   const insights = analytics.portfolio_insights;
 
-  const bestPerformingROI = insights?.performance_insights?.best_performing_investment?.roi || 0;
-  const memberEngagement = performance?.performance_metrics?.member_engagement || 0;
+  const bestPerformingROI =
+    insights?.performance_insights?.best_performing_investment?.roi || 0;
+  const memberEngagement =
+    performance?.performance_metrics?.member_engagement || 0;
   const concentrationRisk = insights?.risk_analysis?.concentration_risk || 0;
   const volatility = insights?.performance_insights?.volatility_estimate || 0;
-  const diversityScore = insights?.diversification_metrics?.sector_diversity_score || 0;
+  const diversityScore =
+    insights?.diversification_metrics?.sector_diversity_score || 0;
 
   return (
     <div className="space-y-6">
@@ -422,7 +434,11 @@ const PerformanceTab: React.FC<{
             />
             <MetricItem
               label="Investment Frequency"
-              value={performance?.performance_metrics?.average_investment_size ? 'Active' : 'No data'}
+              value={
+                performance?.performance_metrics?.average_investment_size
+                  ? 'Active'
+                  : 'No data'
+              }
               trend="neutral"
             />
             <MetricItem
@@ -501,15 +517,20 @@ const InsightsTab: React.FC<{
 
   const insights = analytics.portfolio_insights;
 
-  const bestPerformerROI = insights?.performance_insights?.best_performing_investment?.roi || 0;
-  const averageHoldingPeriod = insights?.performance_insights?.average_holding_period || 0;
+  const bestPerformerROI =
+    insights?.performance_insights?.best_performing_investment?.roi || 0;
+  const averageHoldingPeriod =
+    insights?.performance_insights?.average_holding_period || 0;
   const sharpeRatio = insights?.performance_insights?.sharpe_ratio || 0;
   const concentrationRisk = insights?.risk_analysis?.concentration_risk || 0;
   const liquidityRisk = insights?.risk_analysis?.liquidity_risk || 0;
   const sectorRisk = insights?.risk_analysis?.sector_risk || 0;
-  const votingParticipation = insights?.member_engagement_insights?.voting_participation_rate || 0;
-  const contributionRate = insights?.member_engagement_insights?.contribution_participation_rate || 0;
-  const engagementScore = insights?.member_engagement_insights?.engagement_score || 0;
+  const votingParticipation =
+    insights?.member_engagement_insights?.voting_participation_rate || 0;
+  const contributionRate =
+    insights?.member_engagement_insights?.contribution_participation_rate || 0;
+  const engagementScore =
+    insights?.member_engagement_insights?.engagement_score || 0;
 
   return (
     <div className="space-y-6">
@@ -554,18 +575,17 @@ const InsightsTab: React.FC<{
               <>
                 <RiskItem
                   factor="Concentration Risk"
-                  level={
-                    concentrationRisk > 1500
-                      ? 'High'
-                      : 'Moderate'
-                  }
-                  score={formatValue(concentrationRisk, false, club.currency, 1)}
+                  level={concentrationRisk > 1500 ? 'High' : 'Moderate'}
+                  score={formatValue(
+                    concentrationRisk,
+                    false,
+                    club.currency,
+                    1,
+                  )}
                 />
                 <RiskItem
                   factor="Liquidity Risk"
-                  level={
-                    liquidityRisk > 50 ? 'High' : 'Low'
-                  }
+                  level={liquidityRisk > 50 ? 'High' : 'Low'}
                   score={formatValue(liquidityRisk, false, club.currency, 1)}
                 />
                 <RiskItem
@@ -621,9 +641,12 @@ const HealthTab: React.FC<{
 
   const currentRatio = health?.liquidity_ratios?.current_ratio || 0;
   const growthRate = health?.contribution_health?.growth_rate || 0;
-  const capitalUtilization = Number(health?.investment_efficiency?.capital_utilization_rate ?? 0) * 100;
-  const memberRetention = health?.stability_indicators?.member_retention_rate || 0;
-  const resilienceScore = health?.stability_indicators?.financial_resilience_score || 0;
+  const capitalUtilization =
+    Number(health?.investment_efficiency?.capital_utilization_rate ?? 0) * 100;
+  const memberRetention =
+    health?.stability_indicators?.member_retention_rate || 0;
+  const resilienceScore =
+    health?.stability_indicators?.financial_resilience_score || 0;
 
   return (
     <div className="space-y-6">
@@ -632,31 +655,19 @@ const HealthTab: React.FC<{
           title="Current Ratio"
           value={formatValue(currentRatio, false, club.currency, 2)}
           idealRange="> 1.5"
-          status={
-            Number(currentRatio) > 1.5
-              ? 'good'
-              : 'warning'
-          }
+          status={Number(currentRatio) > 1.5 ? 'good' : 'warning'}
         />
         <HealthMetric
           title="Contribution Growth"
           value={formatPercentage(growthRate, 1)}
           idealRange="> 5%"
-          status={
-            growthRate > 5
-              ? 'good'
-              : 'warning'
-          }
+          status={growthRate > 5 ? 'good' : 'warning'}
         />
         <HealthMetric
           title="Investment Efficiency"
           value={`${formatValue(capitalUtilization, false, club.currency, 1)}%`}
           idealRange="> 80%"
-          status={
-            capitalUtilization > 80
-              ? 'good'
-              : 'warning'
-          }
+          status={capitalUtilization > 80 ? 'good' : 'warning'}
         />
       </div>
 
@@ -695,12 +706,21 @@ const PredictiveTab: React.FC<{
   const predictive = analytics.predictive_analytics;
   const currentValue = analytics.portfolio_overview.total_value;
 
-  const shortTermProjection = Number(predictive?.growth_projections?.short_term_projection || 0);
-  const mediumTermProjection = Number(predictive?.growth_projections?.medium_term_projection || 0);
-  const longTermProjection = Number(predictive?.growth_projections?.long_term_projection || 0);
-  const marketDownturnImpact = predictive?.risk_scenarios?.market_downturn?.impact || -15;
-  const highInflationImpact = predictive?.risk_scenarios?.high_inflation?.impact || -8;
-  const liquidityCrisisImpact = predictive?.risk_scenarios?.liquidity_crisis?.impact || -25;
+  const shortTermProjection = Number(
+    predictive?.growth_projections?.short_term_projection || 0,
+  );
+  const mediumTermProjection = Number(
+    predictive?.growth_projections?.medium_term_projection || 0,
+  );
+  const longTermProjection = Number(
+    predictive?.growth_projections?.long_term_projection || 0,
+  );
+  const marketDownturnImpact =
+    predictive?.risk_scenarios?.market_downturn?.impact || -15;
+  const highInflationImpact =
+    predictive?.risk_scenarios?.high_inflation?.impact || -8;
+  const liquidityCrisisImpact =
+    predictive?.risk_scenarios?.liquidity_crisis?.impact || -25;
 
   return (
     <div className="space-y-6">

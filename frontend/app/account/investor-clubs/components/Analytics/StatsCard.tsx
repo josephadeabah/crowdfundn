@@ -16,11 +16,16 @@ interface StatsCardProps {
 }
 
 // Helper function to format values with proper decimal places
-const formatValue = (value: string | number | undefined, isCurrency: boolean = false, currency: string = 'USD', decimalPlaces: number = 2): string => {
+const formatValue = (
+  value: string | number | undefined,
+  isCurrency: boolean = false,
+  currency: string = 'USD',
+  decimalPlaces: number = 2,
+): string => {
   if (value === undefined || value === null) return 'N/A';
-  
+
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
-  
+
   if (isNaN(numValue)) return 'N/A';
 
   if (isCurrency) {
@@ -50,15 +55,15 @@ export const StatsCard = ({
   club,
 }: StatsCardProps) => {
   // Determine if the value should be formatted as currency
-  const isCurrencyValue = typeof value === 'number' && (
-    title.toLowerCase().includes('value') || 
-    title.toLowerCase().includes('return') || 
-    title.toLowerCase().includes('amount') ||
-    title.toLowerCase().includes('price') ||
-    title.toLowerCase().includes('cost')
-  );
+  const isCurrencyValue =
+    typeof value === 'number' &&
+    (title.toLowerCase().includes('value') ||
+      title.toLowerCase().includes('return') ||
+      title.toLowerCase().includes('amount') ||
+      title.toLowerCase().includes('price') ||
+      title.toLowerCase().includes('cost'));
 
-  const formattedValue = isCurrencyValue 
+  const formattedValue = isCurrencyValue
     ? formatValue(value, true, club?.currency || 'USD', 0)
     : formatValue(value, false, club?.currency || 'USD', 0);
 

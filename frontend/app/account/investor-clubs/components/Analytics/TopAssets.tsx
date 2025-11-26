@@ -34,7 +34,10 @@ const formatCurrency = (amount: number, currency: string = 'USD') => {
 };
 
 // Helper function to format percentages
-const formatPercentage = (change: number, decimalPlaces: number = 1): string => {
+const formatPercentage = (
+  change: number,
+  decimalPlaces: number = 1,
+): string => {
   return `${change >= 0 ? '+' : ''}${change.toFixed(decimalPlaces)}%`;
 };
 
