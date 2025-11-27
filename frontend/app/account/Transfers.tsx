@@ -150,7 +150,7 @@ export default function Transfers() {
 
     // For regular campaigns: minimum is 1/2 of goal amount
     const minimumAmount = goalAmount * 0.5;
-    return currentAmount < goalAmount || currentAmount < minimumAmount;
+    return currentAmount < minimumAmount;
   };
 
   const getTransferRestrictionMessage = (
