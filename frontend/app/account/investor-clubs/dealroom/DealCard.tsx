@@ -107,9 +107,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
               <h4 className="text-lg font-bold text-gray-900 mb-1">
                 {deal.companyName}
               </h4>
-              <p className="text-sm text-gray-500">
-                {deal.sector}
-              </p>
+              <p className="text-sm text-gray-500">{deal.sector}</p>
             </div>
           </div>
 
@@ -132,9 +130,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-3 border-y border-gray-100">
           <div>
             <p className="text-xs text-gray-500 mb-1">Stage</p>
-            <p className="font-medium text-gray-900">
-              {deal.stage}
-            </p>
+            <p className="font-medium text-gray-900">{deal.stage}</p>
           </div>
           <div>
             <p className="text-xs text-gray-500 mb-1">Seeking</p>
@@ -142,15 +138,11 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
           </div>
           <div>
             <p className="text-xs text-gray-500 mb-1">Valuation</p>
-            <p className="font-medium text-gray-900">
-              {deal.valuation}
-            </p>
+            <p className="font-medium text-gray-900">{deal.valuation}</p>
           </div>
           <div>
             <p className="text-xs text-gray-500 mb-1">Traction</p>
-            <p className="text-sm font-medium text-gray-800">
-              {deal.traction}
-            </p>
+            <p className="text-sm font-medium text-gray-800">{deal.traction}</p>
           </div>
         </div>
 
