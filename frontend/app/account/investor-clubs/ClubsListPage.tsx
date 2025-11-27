@@ -64,7 +64,6 @@ import {
 } from 'lucide-react';
 import { deslugify } from '@/app/utils/helpers/categories';
 import ClubDetailsModal from './club-details/ClubDetailsModal';
-import DealroomContent from './dealroom/DealRoomContent';
 import { useInfiniteScroll } from './hooks/useInfiniteScroll';
 
 // Define proper types for infinite scroll state
@@ -673,9 +672,9 @@ const ClubsListPage: React.FC = () => {
 
           {/* Dealroom Tab Content */}
           {activeTab === 'dealroom' && (
-            <div className="bg-white rounded-lg">
-              <DealroomContent />
-            </div>
+          <div className="bg-gray-50 rounded-lg flex justify-center items-center text-lg text-gray-500 h-64">
+            <div>Coming Soon</div>
+          </div>
           )}
 
           {/* Loading State for Initial Load */}
