@@ -672,9 +672,9 @@ const ClubsListPage: React.FC = () => {
 
           {/* Dealroom Tab Content */}
           {activeTab === 'dealroom' && (
-          <div className="bg-gray-50 rounded-lg flex justify-center items-center text-lg text-gray-500 h-64">
-            <div>Coming Soon</div>
-          </div>
+            <div className="bg-gray-50 rounded-lg flex justify-center items-center text-lg text-gray-500 h-64">
+              <div>Coming Soon</div>
+            </div>
           )}
 
           {/* Loading State for Initial Load */}
