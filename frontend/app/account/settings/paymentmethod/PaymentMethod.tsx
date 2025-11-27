@@ -67,36 +67,35 @@ const PaymentMethod = () => {
     setToast((prevState) => ({ ...prevState, isOpen: false }));
 
   // Fetch available banks
-  useEffect(() => {
-    const fetchBanks = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=20`,
-        );
-        const data = await response.json();
-        
-        // Remove duplicates based on bank code, keeping the first occurrence
-        const uniqueBanksMap = new Map();
-        
-        data.data.forEach((bank: any) => {
-          if (!uniqueBanksMap.has(bank.code)) {
-            uniqueBanksMap.set(bank.code, {
-              display_name: bank.name,
-              variable_name: bank.slug,
-              value: bank.code,
-              type: bank.type,
-            });
-          }
-        });
-        
-        setBanks(Array.from(uniqueBanksMap.values()));
-        
-      } catch {
-        showToast('Error', 'Failed to load the bank list.', 'error');
-      }
-    };
-    fetchBanks();
-  }, [user]);
+// Fetch available banks
+useEffect(() => {
+  const fetchBanks = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=20`,
+      );
+      const data = await response.json();
+      
+      // Filter to keep only non-USD banks (regular local currency banks)
+      const localBanks = data.data.filter((bank: any) => 
+        !bank.currency || bank.currency !== 'USD'
+      );
+      
+      setBanks(
+        localBanks.map((bank: any) => ({
+          display_name: bank.name,
+          variable_name: bank.slug,
+          value: bank.code,
+          type: bank.type,
+        })),
+      );
+      
+    } catch {
+      showToast('Error', 'Failed to load the bank list.', 'error');
+    }
+  };
+  fetchBanks();
+}, [user]);
 
   // Fetch existing subaccount
   const fetchSubaccount = async () => {
