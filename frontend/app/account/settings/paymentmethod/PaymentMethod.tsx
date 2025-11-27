@@ -355,22 +355,22 @@ const PaymentMethod = () => {
                   Select Bank
                 </label>
                 <Select
-                  value={selectedBank?.value || ''}
+                  value={selectedBank?.value}
                   onValueChange={(value) =>
                     setSelectedBank(
-                      banks.find((bank) => bank.value === value) || null,
+                      banks.find((b) => b.value === value) || null,
                     )
                   }
                 >
-                  <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900 focus:ring-green-500 focus:border-green-500">
-                    <SelectValue placeholder="Choose your bank" />
+                  <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900">
+                    <span>
+                      {selectedBank?.display_name || 'Choose your bank'}
+                    </span>
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200 text-gray-900">
-                    {banks.map((bank, index) => (
-                      <SelectItem
-                        key={`${bank.value}-${index}`}
-                        value={bank.value}
-                      >
+
+                  <SelectContent>
+                    {banks.map((bank) => (
+                      <SelectItem key={bank.value} value={bank.value}>
                         {bank.display_name}
                       </SelectItem>
                     ))}
@@ -445,22 +445,22 @@ const PaymentMethod = () => {
                   Select Bank
                 </label>
                 <Select
-                  value={selectedBank?.value || ''}
+                  value={selectedBank?.value}
                   onValueChange={(value) =>
                     setSelectedBank(
-                      banks.find((bank) => bank.value === value) || null,
+                      banks.find((b) => b.value === value) || null,
                     )
                   }
                 >
-                  <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900 focus:ring-green-500 focus:border-green-500">
-                    <SelectValue placeholder="Choose your bank" />
+                  <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900">
+                    <span>
+                      {selectedBank?.display_name || 'Choose your bank'}
+                    </span>
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200 text-gray-900">
-                    {banks.map((bank, index) => (
-                      <SelectItem
-                        key={`${bank.value}-${index}`}
-                        value={bank.value}
-                      >
+
+                  <SelectContent>
+                    {banks.map((bank) => (
+                      <SelectItem key={bank.value} value={bank.value}>
                         {bank.display_name}
                       </SelectItem>
                     ))}
