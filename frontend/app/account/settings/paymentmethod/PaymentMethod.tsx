@@ -74,14 +74,20 @@ const PaymentMethod = () => {
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=20`,
         );
         const data = await response.json();
-        setBanks(
-          data.data.map((bank: any) => ({
-            display_name: bank.name,
-            variable_name: bank.slug,
-            value: bank.code,
-            type: bank.type,
-          })),
-        );
+          // Remove duplicates using Map
+          const uniqueBanksMap = new Map();
+          data.data.forEach((bank: any) => {
+            if (!uniqueBanksMap.has(bank.code)) {
+              uniqueBanksMap.set(bank.code, {
+                display_name: bank.name,
+                variable_name: bank.slug,
+                value: bank.code,
+                type: bank.type,
+              });
+            }
+          });
+      
+      setBanks(Array.from(uniqueBanksMap.values()));
       } catch {
         showToast('Error', 'Failed to load the bank list.', 'error');
       }
@@ -366,8 +372,11 @@ const PaymentMethod = () => {
                     <SelectValue placeholder="Choose your bank" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200 text-gray-900">
-                    {banks.map((bank) => (
-                      <SelectItem key={bank.value} value={bank.value}>
+                    {banks.map((bank, index) => (
+                      <SelectItem 
+                        key={`${bank.value}-${index}`} 
+                        value={bank.value}
+                      >
                         {bank.display_name}
                       </SelectItem>
                     ))}
@@ -452,9 +461,12 @@ const PaymentMethod = () => {
                   <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900 focus:ring-green-500 focus:border-green-500">
                     <SelectValue placeholder="Choose your bank" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200 text-gray-900">
-                    {banks.map((bank) => (
-                      <SelectItem key={bank.value} value={bank.value}>
+                 <SelectContent className="bg-white border-gray-200 text-gray-900">
+                    {banks.map((bank, index) => (
+                      <SelectItem 
+                        key={`${bank.value}-${index}`} 
+                        value={bank.value}
+                      >
                         {bank.display_name}
                       </SelectItem>
                     ))}
