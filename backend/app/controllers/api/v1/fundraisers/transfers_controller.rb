@@ -433,13 +433,17 @@ module Api
                   # Only create a new record if it doesn't exist
                   next if transfer_record
 
+                  # Check if campaign exists before creating transfer
+                  campaign_id = subaccount.campaign_id
+                  campaign_exists = Campaign.exists?(campaign_id)
+
                   Transfer.create(
                     transfer_code: transfer_data[:transfer_code],
-                    user_id: subaccount.user_id,            # Associate with the logged-in user
-                    campaign_id: subaccount.campaign_id,    # Associate with the campaign
+                    user_id: subaccount.user_id,
+                    campaign_id: campaign_exists ? campaign_id : nil, # Set to nil if campaign doesn't exist
                     bank_name: transfer_data[:recipient][:details][:bank_name],
                     account_number: transfer_data[:recipient][:details][:account_number],
-                    amount: transfer_data[:amount] / 100.0, # Convert amount to naira
+                    amount: transfer_data[:amount] / 100.0,
                     currency: transfer_data[:currency],
                     status: transfer_data[:status],
                     reason: transfer_data[:reason],
@@ -448,45 +452,6 @@ module Api
                     created_at: transfer_data[:createdAt]
                   )
                   Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} created successfully"
-                end
-              # If data is a single transfer object (hash)
-              elsif response[:data].is_a?(Hash)
-                transfer_data = response[:data]
-
-                # Find or initialize the transfer record
-                transfer_record = Transfer.find_by(transfer_code: transfer_data[:transfer_code])
-
-                # Only create a new record if it doesn't exist
-                unless transfer_record
-                  Transfer.create(
-                    transfer_code: transfer_data[:transfer_code],
-                    user_id: subaccount.user_id,            # Associate with the logged-in user
-                    campaign_id: subaccount.campaign_id,    # Associate with the campaign
-                    bank_name: transfer_data[:recipient][:details][:bank_name],
-                    account_number: transfer_data[:recipient][:details][:account_number],
-                    amount: transfer_data[:amount] / 100.0, # Convert amount to naira
-                    currency: transfer_data[:currency],
-                    status: transfer_data[:status],
-                    reason: transfer_data[:reason],
-                    recipient_code: transfer_data[:recipient][:recipient_code],
-                    reference: transfer_data[:reference],
-                    created_at: transfer_data[:createdAt]
-                  )
-                  Rails.logger.info "Transfer with code #{transfer_data[:transfer_code]} created successfully"
-                end
-              else
-                Rails.logger.error "Expected an array or hash but got: #{response[:data].inspect}"
-                render json: { error: 'Unexpected response format' }, status: :unprocessable_entity
-                return
-              end
-            else
-              Rails.logger.error "No transfers found or an error occurred. Response: #{response.inspect}"
-              render json: { error: 'No transfers found or an error occurred' }, status: :unprocessable_entity
-              return
-            end
-          end
-
-          render json: { message: 'Transfers fetched and saved successfully' }, status: :ok
         end
 
 
