@@ -71,18 +71,18 @@ const activeDealsMock = [
 
 const DealroomContent: React.FC = () => {
   return (
-    <div className="space-y-6 p-4 md:p-6 max-w-2xl mx-auto bg-white hover:bg-gray-50 border-t border-gray-100">
+    <div className="space-y-6 p-4 md:p-6 max-w-2xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 p-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-emerald-50 rounded-lg">
             <Briefcase className="h-5 w-5 text-emerald-600" />
           </div>
           <div>
-            <h2 className="text-sm md:text-xl font-bold text-orange-600 bg-orange-100 inline-block px-2 py-1 rounded-full">
+            <h2 className="text-sm md:text-xl font-bold text-orange-600 bg-orange-100 inline-block px-3 py-1 rounded-full">
               Dealroom (Coming Soon)
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mt-1">
               Direct access to founders & live deal flow
             </p>
           </div>
@@ -92,7 +92,7 @@ const DealroomContent: React.FC = () => {
           <div className="text-sm text-gray-500 hidden sm:block">
             {activeDealsMock.length} deals matched
           </div>
-          <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm">
+          <button className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm transition-colors">
             <TrendingUp className="h-4 w-4" />
             Explore
           </button>
@@ -100,9 +100,9 @@ const DealroomContent: React.FC = () => {
       </div>
 
       {/* Cards list */}
-      <div className="grid grid-cols-1 gap-4">
+      <div className="space-y-4">
         {activeDealsMock.map((deal) => (
-          <div key={deal.id} className="animate-fade-in mb-3">
+          <div key={deal.id} className="animate-fade-in">
             <DealCard deal={deal} />
           </div>
         ))}

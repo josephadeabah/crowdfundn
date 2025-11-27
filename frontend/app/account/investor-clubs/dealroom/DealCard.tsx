@@ -81,46 +81,44 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
     .toUpperCase();
 
   return (
-    <article className="bg-white transition-all duration-150 overflow-hidden hover:bg-gray-50 cursor-pointer">
-      {/* Header */}
-      <div className="px-4 py-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-start md:justify-between gap-3">
-        <div className="flex items-start gap-4 flex-1 min-w-0">
-          <div className="flex-shrink-0">
-            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-semibold text-lg">
-              {initials}
-            </div>
-          </div>
-
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
-                {deal.founderName}
-              </h3>
-              <span className="text-xs text-gray-400">•</span>
-              <p className="text-xs text-gray-500 truncate">
-                {deal.founderTitle}
-              </p>
+    <article className="bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:bg-gray-50 hover:border-gray-300 cursor-pointer p-0">
+      {/* Main Content Container - Unified hover area */}
+      <div className="p-4 md:p-6 space-y-4">
+        {/* Header Row */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4 flex-1 min-w-0">
+            <div className="flex-shrink-0">
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-semibold text-lg">
+                {initials}
+              </div>
             </div>
 
-            <div className="mt-2 md:mt-3">
-              <h4 className="text-sm md:text-lg font-bold text-gray-900 dark:text-gray-100 truncate">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-base font-semibold text-gray-900 truncate">
+                  {deal.founderName}
+                </h3>
+                <span className="text-xs text-gray-400">•</span>
+                <p className="text-sm text-gray-500 truncate">
+                  {deal.founderTitle}
+                </p>
+              </div>
+
+              <h4 className="text-lg font-bold text-gray-900 mb-1">
                 {deal.companyName}
               </h4>
-              <p className="text-xs md:text-sm text-gray-500 truncate">
+              <p className="text-sm text-gray-500">
                 {deal.sector}
               </p>
             </div>
           </div>
-        </div>
 
-        <div className="flex-shrink-0 flex flex-col items-end gap-2">
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}
-          >
-            {statusStyle.label}
-          </span>
-
-          <div className="flex items-center gap-3">
+          <div className="flex-shrink-0 flex flex-col items-end gap-2">
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}
+            >
+              {statusStyle.label}
+            </span>
             <div className="text-right">
               <p className="text-xs text-gray-400">Match</p>
               <p className="text-lg font-bold text-emerald-600">
@@ -129,84 +127,77 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Body grid */}
-      <div className="px-4 md:px-6 py-3 bg-white hover:bg-gray-50 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div>
-          <p className="text-xs text-gray-500">Stage</p>
-          <p className="font-medium text-gray-900 dark:text-gray-100">
-            {deal.stage}
-          </p>
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-3 border-y border-gray-100">
+          <div>
+            <p className="text-xs text-gray-500 mb-1">Stage</p>
+            <p className="font-medium text-gray-900">
+              {deal.stage}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 mb-1">Seeking</p>
+            <p className="font-medium text-emerald-600">{deal.seeking}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 mb-1">Valuation</p>
+            <p className="font-medium text-gray-900">
+              {deal.valuation}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 mb-1">Traction</p>
+            <p className="text-sm font-medium text-gray-800">
+              {deal.traction}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-xs text-gray-500">Seeking</p>
-          <p className="font-medium text-emerald-600">{deal.seeking}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500">Valuation</p>
-          <p className="font-medium text-gray-900 dark:text-gray-100">
-            {deal.valuation}
-          </p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500">Traction</p>
-          <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-            {deal.traction}
-          </p>
-        </div>
-      </div>
 
-      {/* BUTTONS */}
-      <div className="px-4 md:px-6 pt-3 border-t border-gray-100 dark:border-neutral-800">
-        <div className="flex items-center justify-end gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 hover:bg-gray-100"
-          >
-            <Eye className="h-4 w-4" />
-            <span className="hidden sm:inline">View</span>
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-200 hover:bg-gray-100"
-          >
-            <ThumbsUp className="h-4 w-4" />
-            <span className="hidden sm:inline">Interest</span>
-          </Button>
-
-          <Button
-            size="sm"
-            className="flex items-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-          >
-            <MessageSquare className="h-4 w-4" />
-            <span>Discuss</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* META ROW */}
-      <div className="px-4 md:px-6 py-3 mt-2 bg-white hover:bg-gray-50 border-t border-gray-100 dark:border-neutral-800">
-        <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-300 flex-wrap">
-          <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-gray-400" />
-            <span>
-              <span className="font-semibold text-orange-600">
-                {deal.investorInterest}
-              </span>{' '}
-              investors interested
-            </span>
+        {/* Action Buttons */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-gray-400" />
+              <span>
+                <span className="font-semibold text-orange-600">
+                  {deal.investorInterest}
+                </span>{' '}
+                interested
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-gray-400" />
+              <span>Next: {deal.nextMilestone}</span>
+            </div>
+            <div className="text-gray-400 text-sm">{deal.lastUpdate}</div>
           </div>
 
           <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-gray-400" />
-            <span>Next: {deal.nextMilestone}</span>
-          </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 rounded-full"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
 
-          <div className="text-gray-400">{deal.lastUpdate}</div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 rounded-full"
+            >
+              <ThumbsUp className="h-4 w-4" />
+            </Button>
+
+            <Button
+              size="sm"
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full"
+            >
+              <MessageSquare className="h-4 w-4" />
+              <span>Discuss</span>
+            </Button>
+          </div>
         </div>
       </div>
     </article>
