@@ -67,35 +67,27 @@ const PaymentMethod = () => {
     setToast((prevState) => ({ ...prevState, isOpen: false }));
 
   // Fetch available banks
-// Fetch available banks
-useEffect(() => {
-  const fetchBanks = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=20`,
-      );
-      const data = await response.json();
-      
-      // Filter to keep only non-USD banks (regular local currency banks)
-      const localBanks = data.data.filter((bank: any) => 
-        !bank.currency || bank.currency !== 'USD'
-      );
-      
-      setBanks(
-        localBanks.map((bank: any) => ({
-          display_name: bank.name,
-          variable_name: bank.slug,
-          value: bank.code,
-          type: bank.type,
-        })),
-      );
-      
-    } catch {
-      showToast('Error', 'Failed to load the bank list.', 'error');
-    }
-  };
-  fetchBanks();
-}, [user]);
+  useEffect(() => {
+    const fetchBanks = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=20`,
+        );
+        const data = await response.json();
+        setBanks(
+          data.data.map((bank: any) => ({
+            display_name: bank.name,
+            variable_name: bank.slug,
+            value: bank.code,
+            type: bank.type,
+          })),
+        );
+      } catch {
+        showToast('Error', 'Failed to load the bank list.', 'error');
+      }
+    };
+    fetchBanks();
+  }, [user]);
 
   // Fetch existing subaccount
   const fetchSubaccount = async () => {
@@ -375,8 +367,8 @@ useEffect(() => {
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200 text-gray-900">
                     {banks.map((bank, index) => (
-                      <SelectItem 
-                        key={`${bank.value}-${index}`} 
+                      <SelectItem
+                        key={`${bank.value}-${index}`}
                         value={bank.value}
                       >
                         {bank.display_name}
@@ -463,10 +455,10 @@ useEffect(() => {
                   <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900 focus:ring-green-500 focus:border-green-500">
                     <SelectValue placeholder="Choose your bank" />
                   </SelectTrigger>
-                 <SelectContent className="bg-white border-gray-200 text-gray-900">
+                  <SelectContent className="bg-white border-gray-200 text-gray-900">
                     {banks.map((bank, index) => (
-                      <SelectItem 
-                        key={`${bank.value}-${index}`} 
+                      <SelectItem
+                        key={`${bank.value}-${index}`}
                         value={bank.value}
                       >
                         {bank.display_name}
