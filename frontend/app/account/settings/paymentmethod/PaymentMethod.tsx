@@ -74,26 +74,23 @@ const PaymentMethod = () => {
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=20`,
         );
         const data = await response.json();
-      
-      // Log the raw data to see if there are duplicates
-      console.log('Raw bank data:', data.data);
-      
-      // Remove duplicates based on bank code
-      const uniqueBanks = data.data.reduce((acc: Bank[], bank: any) => {
-        // compare incoming bank.code with our Bank.value (which stores the settlement bank code)
-        const existingBank = acc.find(b => b.value === bank.code);
-        if (!existingBank) {
-          acc.push({
-            display_name: bank.name,
-            variable_name: bank.slug,
-            value: bank.code,
-            type: bank.type,
-          });
-        }
-        return acc;
-      }, []);
-      
-      setBanks(uniqueBanks);
+        
+        // Remove duplicates based on bank code, keeping the first occurrence
+        const uniqueBanksMap = new Map();
+        
+        data.data.forEach((bank: any) => {
+          if (!uniqueBanksMap.has(bank.code)) {
+            uniqueBanksMap.set(bank.code, {
+              display_name: bank.name,
+              variable_name: bank.slug,
+              value: bank.code,
+              type: bank.type,
+            });
+          }
+        });
+        
+        setBanks(Array.from(uniqueBanksMap.values()));
+        
       } catch {
         showToast('Error', 'Failed to load the bank list.', 'error');
       }
