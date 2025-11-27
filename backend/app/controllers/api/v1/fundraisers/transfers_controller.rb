@@ -83,7 +83,6 @@ module Api
           end
 
             metadata       = subaccount.metadata
-            Rails.logger.info "Subaccount metadata: #{metadata.inspect}"
             custom_fields  = metadata['custom_fields']
 
             if custom_fields.blank?
