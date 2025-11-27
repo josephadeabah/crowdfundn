@@ -38,7 +38,7 @@ if ENV['RAILS_ENV'] == 'production'
 end
 
 # Basic settings
-port ENV.fetch('PORT', 3000)
+port ENV['PORT']
 environment ENV.fetch('RAILS_ENV', 'development')
 pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
 
@@ -46,7 +46,7 @@ pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
 plugin :tmp_restart
 
 # Optimize for Kubernetes/container environments
-bind 'tcp://0.0.0.0:3000'
+bind "tcp://0.0.0.0:#{ENV['PORT']}"
 
 # For better performance with reverse proxies
 persistent_timeout 20  # Default is 20 seconds
