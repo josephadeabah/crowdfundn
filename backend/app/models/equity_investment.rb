@@ -164,7 +164,19 @@ class EquityInvestment < ApplicationRecord
 
   # ========== CANCELLATION METHODS ==========
   def can_be_cancelled?
-    committed? && cancel_window_expires_at > Time.current
+    committed? && (cancel_window_expires_at.nil? || cancel_window_expires_at > Time.current)
+  end
+
+  # NEW: Added time_remaining_for_cancellation method for countdown timer
+  def time_remaining_for_cancellation
+    return nil unless cancel_window_expires_at
+    return 'Expired' if cancel_window_expires_at <= Time.current
+    
+    diff_seconds = (cancel_window_expires_at - Time.current).to_i
+    hours = diff_seconds / 3600
+    minutes = (diff_seconds % 3600) / 60
+    
+    "#{hours}h #{minutes}m"
   end
 
   def cancel!(reason = nil)
@@ -319,6 +331,10 @@ class EquityInvestment < ApplicationRecord
       roi: roi,
       currency: campaign.currency,
       currency_symbol: campaign.currency_symbol,
+      # NEW: Add cancellation-related fields for frontend
+      can_be_cancelled: can_be_cancelled?,
+      cancel_window_expires_at: cancel_window_expires_at,
+      time_remaining_for_cancellation: time_remaining_for_cancellation,
       campaign: {
         id: campaign.id,
         title: campaign.title,

@@ -13,6 +13,8 @@ class EquityInvestmentSerializer
       status: @investment.status,
       created_at: @investment.created_at,
       current_value: @investment.current_value,
+      total_returns: @investment.total_returns,
+      roi: @investment.roi,
       # Add currency information to the investment
       currency: @investment.campaign.currency,
       currency_symbol: @investment.campaign.currency_symbol,
@@ -20,6 +22,7 @@ class EquityInvestmentSerializer
       can_be_cancelled: @investment.can_be_cancelled?,
       cancel_window_expires_at: @investment.cancel_window_expires_at,
       committed_at: @investment.committed_at,
+      time_remaining_for_cancellation: @investment.time_remaining_for_cancellation, # NEW: Added for countdown timer
       campaign: {
         id: @investment.campaign.id,
         title: @investment.campaign.title,
