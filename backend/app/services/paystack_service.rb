@@ -1,3 +1,4 @@
+# app/services/paystack_service.rb
 require 'net/http'
 require 'uri'
 require 'json'
@@ -13,7 +14,6 @@ class PaystackService
     'GBP' => 100,  # British Pound (100 Pence)
     'KES' => 100,  # Kenyan Shilling (100 Cents)
     'GHS' => 100 # Ghanaian Cedi (100 Pesewa)
-    # Add more currencies here as necessary
   }
 
   def initialize
@@ -32,48 +32,44 @@ class PaystackService
   end
 
   def verify_paystack_signature(payload, signature)
-    # Ensure the secret key and signature are available
     if @secret_key.nil? || signature.nil? || payload.blank?
       Rails.logger.error('Missing secret key, signature, or payload.')
       return false
     end
 
-    # Create the hash to verify the signature
     expected_signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha512'), @secret_key, payload)
-
-    # Compare the signatures
     Rack::Utils.secure_compare(expected_signature, signature)
   end
 
   # Fetch a subaccount's details from Paystack
-    def fetch_subaccount(subaccount_code)
-      uri = URI("#{PAYSTACK_BASE_URL}/subaccount/#{subaccount_code}")
-      response = make_get_request(uri)
-      
-      parsed_response = parse_response(response)
-      
-      # Standardize the response format
-      if parsed_response[:status] == true
-        {
-          status: true,
-          data: parsed_response[:data],
-          message: parsed_response[:message] || 'Subaccount retrieved successfully'
-        }
-      else
-        {
-          status: false,
-          message: parsed_response[:message] || 'Failed to fetch subaccount',
-          code: response.code
-        }
-      end
-    rescue => e
-      Rails.logger.error "Error fetching subaccount: #{e.message}"
+  def fetch_subaccount(subaccount_code)
+    uri = URI("#{PAYSTACK_BASE_URL}/subaccount/#{subaccount_code}")
+    response = make_get_request(uri)
+    
+    parsed_response = parse_response(response)
+    
+    if parsed_response[:status] == true
+      {
+        status: true,
+        data: parsed_response[:data],
+        message: parsed_response[:message] || 'Subaccount retrieved successfully'
+      }
+    else
       {
         status: false,
-        message: "Error fetching subaccount: #{e.message}",
-        error: e
+        message: parsed_response[:message] || 'Failed to fetch subaccount',
+        code: response.code
       }
     end
+  rescue => e
+    Rails.logger.error "Error fetching subaccount: #{e.message}"
+    {
+      status: false,
+      message: "Error fetching subaccount: #{e.message}",
+      error: e
+    }
+  end
+
   # Create a subaccount
   def create_subaccount(
     business_name: nil,
@@ -99,7 +95,7 @@ class PaystackService
       primary_contact_name: primary_contact_name,
       primary_contact_phone: primary_contact_phone,
       metadata: metadata
-    }.compact.to_json # Remove nil values
+    }.compact.to_json
 
     response = make_post_request(uri, body)
     parse_response(response)
@@ -124,13 +120,13 @@ class PaystackService
       primary_contact_phone: primary_contact_phone,
       metadata: metadata,
       subaccount_type: subaccount_type
-    }.compact.to_json # Remove nil values
+    }.compact.to_json
 
     response = make_put_request(uri, body)
     parse_response(response)
   end
 
-  # 3. Initialize Transaction with Split Code
+  # Initialize Transaction with Split Code
   def initialize_transaction(email:, amount:, callback_url:, metadata:, currency:, subaccount: nil, plan: nil)
     return { status: 'error', message: 'Email address is required' } if email.blank?
 
@@ -147,13 +143,11 @@ class PaystackService
       currency: currency
     }
     
-    # Only add subaccount if provided
     body[:subaccount] = subaccount if subaccount.present?
     
     response = make_post_request(uri, body.to_json)
     parse_response(response)
   end
-
 
   def verify_transaction(reference)
     uri = URI("#{PAYSTACK_BASE_URL}/transaction/verify/#{reference}")
@@ -164,7 +158,6 @@ class PaystackService
   def initiate_refund(transaction:, amount: nil, currency: nil, customer_note: nil, merchant_note: nil)
     uri = URI("#{PAYSTACK_BASE_URL}/refund")
     
-    # Convert amount to smallest unit if provided
     converted_amount = if amount && currency
       convert_to_smallest_unit(amount: amount, currency: currency)
     end
@@ -179,14 +172,12 @@ class PaystackService
 
     response = make_post_request(uri, body)
     
-    # Log the full response for debugging
     Rails.logger.info "Paystack refund response: #{response.body}"
     
     parse_response(response)
   end
 
   def cancel_authorized_payment(transaction_reference, amount = nil, currency = nil, reason = "Investment cancelled")
-    # For Paystack, we use refunds to cancel authorized payments
     initiate_refund(
       transaction: transaction_reference,
       amount: amount,
@@ -200,13 +191,13 @@ class PaystackService
     valid_intervals = %w[daily weekly monthly quarterly biannually annually]
 
     return { status: 'error', message: 'Invalid interval' } unless valid_intervals.include?(interval.to_s)
-    return { status: 'error', message: 'Amount must be at least 50' } if amount.to_f < 0.5 # Minimum ₦0.5/GHS0.5
+    return { status: 'error', message: 'Amount must be at least 50' } if amount.to_f < 0.5
 
     uri = URI("#{PAYSTACK_BASE_URL}/plan")
     body = {
       name: name,
       interval: interval,
-      amount: (amount.to_f * 100).to_i, # Convert to kobo/pesewa
+      amount: (amount.to_f * 100).to_i,
       currency: currency
     }.to_json
 
@@ -219,7 +210,7 @@ class PaystackService
     body = {
       code: code,
       token: token
-    }.compact.to_json # Remove nil values
+    }.compact.to_json
 
     response = make_post_request(uri, body)
     parse_response(response)
@@ -252,7 +243,6 @@ class PaystackService
     type: nil,
     currency: nil
   )
-    # Build query parameters
     query_params = {
       country: country,
       use_cursor: use_cursor,
@@ -265,26 +255,28 @@ class PaystackService
       gateway: gateway,
       type: type,
       currency: currency
-    }.compact # Remove nil values
+    }.compact
 
-    # Build URI with query parameters
     uri = URI("#{PAYSTACK_BASE_URL}/bank")
     uri.query = URI.encode_www_form(query_params)
 
-    # Make GET request
     response = make_get_request(uri)
     parse_response(response)
   end
 
-  # verifies validity of an account number for users in ghana & nigeria
-  # In your PaystackService class, update the resolve_account_details method:
+  # FIXED: Resolve account details with proper error handling
   def resolve_account_details(account_number:, bank_code:)
     uri = URI("#{PAYSTACK_BASE_URL}/bank/resolve")
     uri.query = URI.encode_www_form(account_number: account_number, bank_code: bank_code)
+    
+    Rails.logger.info "Paystack resolve account request: #{uri}"
     response = make_get_request(uri)
     
-    # Parse the response
+    Rails.logger.info "Paystack raw response code: #{response.code}"
+    Rails.logger.info "Paystack raw response body: #{response.body}"
+    
     parsed_response = parse_response(response)
+    Rails.logger.info "Paystack parsed response: #{parsed_response.inspect}"
     
     # Ensure consistent response format
     if parsed_response[:status] == true
@@ -297,10 +289,11 @@ class PaystackService
       {
         status: false,
         message: parsed_response[:message] || 'Failed to resolve account',
-        body: parsed_response # Return the parsed response for error handling
+        body: parsed_response
       }
     end
   rescue StandardError => e
+    Rails.logger.error "Error in resolve_account_details: #{e.message}"
     {
       status: false,
       message: e.message,
@@ -319,7 +312,7 @@ class PaystackService
       currency: currency,
       description: description,
       metadata: metadata
-    }.compact.to_json # Removes nil values from the hash
+    }.compact.to_json
 
     response = make_post_request(uri, body)
     parse_response(response)
@@ -332,7 +325,7 @@ class PaystackService
     body = {
       name: name,
       email: email
-    }.compact.to_json # Remove nil values
+    }.compact.to_json
 
     response = make_put_request(uri, body)
     parse_response(response)
@@ -377,7 +370,7 @@ class PaystackService
   def sufficient_balance?(amount)
     balance_response = check_balance
     if balance_response[:status]
-      available_balance = balance_response[:data].first[:balance] / 100.0 # Convert from kobo to your currency
+      available_balance = balance_response[:data].first[:balance] / 100.0
       available_balance >= amount
     else
       Rails.logger.error("Failed to retrieve balance: #{balance_response[:message]}")
@@ -386,18 +379,15 @@ class PaystackService
   end
 
   def convert_to_smallest_unit(amount:, currency:)
-    # Get the multiplier for the given currency
     multiplier = CURRENCY_UNIT_MULTIPLIERS[currency.upcase]
     raise "Unsupported currency: #{currency}" if multiplier.nil?
 
-    # Convert the amount to the smallest unit (e.g., cents or kobo)
     (amount.to_f * multiplier).to_i
   end
 
   # Initiate a transfer
   def initiate_transfer(amount:, recipient:, reason:, currency:)
     amount_in_smallest_unit = convert_to_smallest_unit(amount: amount, currency: currency)
-    # Generate a unique transfer reference (UUID)
     transfer_reference = SecureRandom.uuid
 
     uri = URI("#{PAYSTACK_BASE_URL}/transfer")
@@ -407,7 +397,7 @@ class PaystackService
       recipient: recipient,
       reason: reason,
       currency: currency,
-      reference: transfer_reference # Add the generated reference to the body
+      reference: transfer_reference
     }.compact.to_json
 
     response = make_post_request(uri, body)
@@ -430,9 +420,6 @@ class PaystackService
         break unless result['message'].include?('invalid OTP')
 
         puts 'The OTP is invalid. Please try again.'
-
-        # Exit loop for other errors
-
       end
     end
     nil
@@ -478,18 +465,15 @@ class PaystackService
 
   # Fetch Settlements with optional query parameters
   def fetch_settlements(page: 1, per_page: 50, subaccount: nil)
-    # Build query parameters
     query_params = {
       perPage: per_page,
       page: page,
       subaccount: subaccount
-    }.compact # Remove nil values
+    }.compact
 
-    # Build the URI with query parameters
     uri = URI("#{PAYSTACK_BASE_URL}/settlement")
     uri.query = URI.encode_www_form(query_params)
 
-    # Make GET request to fetch settlements
     response = make_get_request(uri)
     parse_response(response)
   end
@@ -507,9 +491,8 @@ class PaystackService
     @http.request(request)
   end
 
-  # Make PUT request
   def make_put_request(uri, body)
-    request = Net::HTTP::Put.new(uri, headers) # Use PUT method
+    request = Net::HTTP::Put.new(uri, headers)
     request.body = body
     @http.request(request)
   end
@@ -522,11 +505,30 @@ class PaystackService
   def parse_response(response)
     case response
     when Net::HTTPSuccess
-      JSON.parse(response.body, symbolize_names: true)
+      begin
+        JSON.parse(response.body, symbolize_names: true)
+      rescue JSON::ParserError => e
+        { 
+          status: false, 
+          message: "Invalid JSON response from Paystack: #{e.message}",
+          body: response.body 
+        }
+      end
     else
-      { status: false, message: "HTTP #{response.code}: #{response.message}", body: response.body }
+      begin
+        error_body = JSON.parse(response.body, symbolize_names: true)
+        { 
+          status: false, 
+          message: "HTTP #{response.code}: #{response.message}",
+          body: error_body 
+        }
+      rescue JSON::ParserError
+        { 
+          status: false, 
+          message: "HTTP #{response.code}: #{response.message}",
+          body: response.body 
+        }
+      end
     end
-  rescue JSON::ParserError
-    { status: false, message: 'Invalid JSON response from Paystack' }
   end
 end

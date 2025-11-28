@@ -47,6 +47,7 @@ module Api
             
             # Safe way to extract meta info
             meta_info = if response[:body].is_a?(Hash)
+                          # Try to get nextStep from the error response
                           response[:body][:meta]&.dig(:nextStep) || 
                           response[:body]['meta']&.dig('nextStep') || 
                           'Please double-check the details and try again.'

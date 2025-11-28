@@ -153,7 +153,6 @@ module Api
           user = User.find(params[:user_id])
           raise 'User not found' unless user
 
-          # Use the has_one association instead of searching by subaccount_code
           subaccount = user.subaccount
           if subaccount.nil?
             render json: { success: false, error: 'Subaccount not found' }, status: :not_found
@@ -238,10 +237,10 @@ module Api
                   raise StandardError, response[:message] || 'Paystack update failed'
                 end
 
-                # Check if account details changed and clear recipient code if they did
+                # Check if account details changed - the before_save callback will handle recipient deletion
                 account_changed = (old_account_number != params[:account_number]) ||
-                                 (old_bank_code != params[:bank_code]) ||
-                                 (old_settlement_bank != params[:settlement_bank])
+                                (old_bank_code != params[:bank_code]) ||
+                                (old_settlement_bank != params[:settlement_bank])
 
                 update_attributes = {
                   business_name: params[:business_name],
@@ -255,10 +254,17 @@ module Api
                   user_id: user.id
                 }
 
-                # Clear recipient code if account details changed
-                if account_changed && subaccount.recipient_code.present?
-                  update_attributes[:recipient_code] = nil
-                  Rails.logger.info "Account details changed - clearing recipient code"
+                # If account changed, recipient code will be cleared by the before_save callback
+                # If account didn't change but we want to ensure recipient matches, we can keep existing recipient
+                unless account_changed
+                  # Verify the existing recipient still matches current account details
+                  if subaccount.recipient_code.present?
+                    recipient_response = PaystackService.new.fetch_transfer_recipient(subaccount.recipient_code)
+                    unless recipient_response[:status]
+                      # Recipient is invalid, clear it so a new one gets created
+                      update_attributes[:recipient_code] = nil
+                    end
+                  end
                 end
 
                 subaccount.update!(update_attributes)
