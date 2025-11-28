@@ -11,6 +11,7 @@ import {
   User,
   Edit3,
   CheckCircle,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import {
@@ -25,7 +26,7 @@ type Bank = {
   display_name: string;
   variable_name: string;
   value: string; // Settlement bank code
-  type: string; // nuban or ghipss
+  type: string; // nuban or ghipss or mobile_money
 };
 
 // Utility to mask account numbers
@@ -38,11 +39,15 @@ const maskAccountNumber = (accountNumber: string): string => {
   return `${maskedPart}${visiblePart}`;
 };
 
+// List of mobile money bank codes (not supported for subaccounts)
+const MOBILE_MONEY_BANKS = ['MTN', 'VOD', 'TGO']; // MTN, Vodafone, AirtelTigo
+
 const PaymentMethod = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [banks, setBanks] = useState<Bank[]>([]);
+  const [supportedBanks, setSupportedBanks] = useState<Bank[]>([]);
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [accountNumber, setAccountNumber] = useState('');
   const [subaccountData, setSubaccountData] = useState<any>(null);
@@ -75,14 +80,20 @@ const PaymentMethod = () => {
         );
         const data = await response.json();
         if (data.status) {
-          setBanks(
-            data.data.map((bank: any) => ({
-              display_name: bank.name,
-              variable_name: bank.slug,
-              value: bank.code,
-              type: bank.type,
-            })),
+          const allBanks = data.data.map((bank: any) => ({
+            display_name: bank.name,
+            variable_name: bank.slug,
+            value: bank.code,
+            type: bank.type,
+          }));
+          
+          setBanks(allBanks);
+          
+          // Filter out mobile money banks for subaccounts
+          const supported = allBanks.filter((bank: Bank) => 
+            !MOBILE_MONEY_BANKS.includes(bank.value)
           );
+          setSupportedBanks(supported);
         } else {
           showToast('Error', 'Failed to load the bank list.', 'error');
         }
@@ -175,6 +186,16 @@ const PaymentMethod = () => {
 
     if (!accountNumber) {
       showToast('Error', 'Please enter account number.', 'error');
+      return;
+    }
+
+    // Check if this is a mobile money account (not supported)
+    if (MOBILE_MONEY_BANKS.includes(selectedBank.value)) {
+      showToast(
+        'Unsupported Account Type', 
+        'Mobile money accounts cannot be used for receiving payments. Please select a bank account instead.', 
+        'error'
+      );
       return;
     }
 
@@ -311,6 +332,21 @@ const PaymentMethod = () => {
             <CheckCircle className="h-4 w-4" />
             You'll receive your payout through this account
           </p>
+          
+          {/* Information Alert */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-blue-800 text-sm">
+                  Important Note
+                </h3>
+                <p className="text-blue-700 text-sm mt-1">
+                  Only bank accounts are supported for receiving payments. Mobile money accounts (MTN, Vodafone, AirtelTigo) cannot be used at this time.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {isLoading ? (
@@ -392,6 +428,15 @@ const PaymentMethod = () => {
               </p>
             </div>
 
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                <p className="text-yellow-700 text-sm">
+                  Only bank accounts are supported. Mobile money accounts will not work.
+                </p>
+              </div>
+            </div>
+
             <form
               onSubmit={(e) => handleSubmitSubaccount(e, false)}
               className="space-y-4"
@@ -407,7 +452,7 @@ const PaymentMethod = () => {
                   value={selectedBank?.value}
                   onValueChange={(value) =>
                     setSelectedBank(
-                      banks.find((b) => b.value === value) || null,
+                      supportedBanks.find((b) => b.value === value) || null,
                     )
                   }
                 >
@@ -416,13 +461,16 @@ const PaymentMethod = () => {
                   </SelectTrigger>
 
                   <SelectContent>
-                    {banks.map((bank) => (
+                    {supportedBanks.map((bank) => (
                       <SelectItem key={bank.value} value={bank.value}>
                         {bank.display_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-gray-500">
+                  Mobile money providers are not shown as they are not supported for payouts.
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -482,6 +530,15 @@ const PaymentMethod = () => {
               <p className="text-gray-600">Modify your bank details</p>
             </div>
 
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                <p className="text-yellow-700 text-sm">
+                  Only bank accounts are supported. Mobile money accounts will not work.
+                </p>
+              </div>
+            </div>
+
             <form
               onSubmit={(e) => handleSubmitSubaccount(e, true)}
               className="space-y-4"
@@ -497,7 +554,7 @@ const PaymentMethod = () => {
                   value={selectedBank?.value}
                   onValueChange={(value) =>
                     setSelectedBank(
-                      banks.find((b) => b.value === value) || null,
+                      supportedBanks.find((b) => b.value === value) || null,
                     )
                   }
                 >
@@ -506,13 +563,16 @@ const PaymentMethod = () => {
                   </SelectTrigger>
 
                   <SelectContent>
-                    {banks.map((bank) => (
+                    {supportedBanks.map((bank) => (
                       <SelectItem key={bank.value} value={bank.value}>
                         {bank.display_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-gray-500">
+                  Mobile money providers are not shown as they are not supported for payouts.
+                </p>
               </div>
 
               <div className="space-y-2">
