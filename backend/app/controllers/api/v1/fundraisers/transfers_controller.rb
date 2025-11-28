@@ -1,3 +1,4 @@
+# app/controllers/api/v1/fundraisers/transfers_controller.rb
 module Api
   module V1
     module Fundraisers
@@ -82,60 +83,58 @@ module Api
             return
           end
 
-            metadata       = subaccount.metadata
-            custom_fields  = metadata['custom_fields']
+          # Always use the current subaccount details to create recipient
+          metadata = subaccount.metadata || {}
+          custom_fields = metadata['custom_fields'] || []
 
-            if custom_fields.blank?
-              render json: { error: 'No custom fields provided for this subaccount' }, status: :unprocessable_entity
-              return
-            end
-
-           bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
-                              custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value')
+          bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
+                            custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value') ||
+                            subaccount.bank_code
 
           if bank_code_value.blank?
             render json: { error: 'No valid bank code or mobile money details provided' }, status: :unprocessable_entity
             return
           end
 
-          # If no recipient_code exists, proceed to create one
-          if subaccount.recipient_code.blank?
-            # Merge existing metadata with new fields
-            {
-              user_id: @fundraiser.id,
-              campaign_id: campaign.id,
-              email: @fundraiser.email,
-              user_name: @fundraiser.full_name,
-              metadata: metadata
-            }
-            # recipient_type = subaccount.subaccount_type
-            response = @paystack_service.create_transfer_recipient(
-              type: bank_code_value,
-              name: subaccount.business_name,
-              account_number: subaccount.account_number,
-              bank_code: bank_code_value,
-              currency: campaign.currency.upcase,
-              description: 'Transfer recipient for campaign payouts',
-              metadata: {
-                user_id: @fundraiser.id,
-                campaign_id: campaign.id,
-                email: @fundraiser.email,
-                user_name: @fundraiser.full_name,
-                metadata: metadata
-              }
-            )
+          # Always create a new recipient code to ensure it matches current subaccount details
+          # This handles cases where subaccount was updated but recipient code wasn't
+          recipient_type = subaccount.subaccount_type || 'nuban'
 
-            if response[:status] == true
-              subaccount.update!(recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id)
-              render json: { message: 'Recipient created successfully.', recipient_code: response.dig(:data, :recipient_code), campaign_id: campaign.id },
-                     status: :ok
-            else
-              render json: { error: 'Provide valid data' }, status: :unprocessable_entity
-            end
+          # Merge existing metadata with new fields
+          recipient_metadata = {
+            user_id: @fundraiser.id,
+            campaign_id: campaign.id,
+            email: @fundraiser.email,
+            user_name: @fundraiser.full_name,
+            subaccount_code: subaccount.subaccount_code,
+            metadata: metadata
+          }
+
+          response = @paystack_service.create_transfer_recipient(
+            type: recipient_type,
+            name: subaccount.business_name,
+            account_number: subaccount.account_number,
+            bank_code: bank_code_value,
+            currency: campaign.currency.upcase,
+            description: "Transfer recipient for #{campaign.title}",
+            metadata: recipient_metadata
+          )
+
+          if response[:status] == true
+            # Update subaccount with new recipient code
+            subaccount.update!(
+              recipient_code: response.dig(:data, :recipient_code), 
+              campaign_id: campaign.id
+            )
+            render json: { 
+              message: 'Recipient created successfully.', 
+              recipient_code: response.dig(:data, :recipient_code), 
+              campaign_id: campaign.id,
+              account_number: subaccount.account_number,
+              bank_name: custom_fields.first&.dig('display_name')
+            }, status: :ok
           else
-            # If recipient_code already exists, return it
-            render json: { recipient_code: subaccount.recipient_code, message: 'Recipient code already exists.' },
-                   status: :ok
+            render json: { error: 'Failed to create recipient: Provide valid data' }, status: :unprocessable_entity
           end
         rescue ActiveRecord::RecordInvalid => e
           render json: { error: "Failed to save recipient code: #{e.message}" }, status: :internal_server_error
@@ -221,10 +220,20 @@ module Api
 
           if transfer_response[:status]
             transfer_data = transfer_response[:data]
-            subaccount.update!(
-              reference: transfer_data[:reference],
+            
+            # Create transfer record with current subaccount details
+            Transfer.create!(
               transfer_code: transfer_data[:transfer_code],
-              amount: customer_balance
+              user_id: subaccount.user_id,
+              campaign_id: campaign_id,
+              bank_name: subaccount.metadata&.dig('custom_fields')&.first&.dig('display_name') || 'N/A',
+              account_number: subaccount.account_number,
+              amount: customer_balance,
+              currency: currency,
+              status: transfer_data[:status],
+              reason: "Payout for campaign: #{campaign_title}",
+              recipient_code: recipient_account,
+              reference: transfer_data[:reference]
             )
 
             update_customer_balance(campaign_id, 0) # Reset current_amount
@@ -232,7 +241,9 @@ module Api
             render json: {
               transfer_code: transfer_data[:transfer_code],
               reference: transfer_data[:reference],
-              message: 'Transfer initiated successfully.'
+              message: 'Transfer initiated successfully.',
+              account_number: subaccount.account_number,
+              bank_name: subaccount.metadata&.dig('custom_fields')&.first&.dig('display_name')
             }, status: :ok
           else
             # Parse the body to get the specific message about insufficient balance
@@ -273,11 +284,9 @@ module Api
 
           @fundraiser = @campaign.fundraiser
           subaccount = Subaccount.find_by(subaccount_code: @fundraiser.subaccount_id)
-          subaccount.reload if subaccount.present?
-          recipient_code = params[:recipient_code]
-
-          raise 'You do not have a account number added.' unless subaccount
-          raise 'Recipient code not found for this fundraiser' unless recipient_code.present?
+          
+          raise 'You do not have a bank account added.' unless subaccount
+          raise 'Account number not found for this fundraiser' unless subaccount.account_number.present?
 
           total_donations = @campaign.current_amount
           raise 'You have no funds available for payout.' if total_donations <= 0.0
@@ -297,6 +306,18 @@ module Api
             render json: { error: 'Insufficient balance on our side. Kindly try again later.' },
                    status: :unprocessable_entity
             return
+          end
+
+          # Use the current recipient code or create a new one
+          recipient_code = subaccount.recipient_code
+          if recipient_code.blank?
+            # Create recipient on the fly using current subaccount details
+            recipient_response = create_transfer_recipient_for_transfer(subaccount, @campaign)
+            if recipient_response[:error]
+              render json: { error: recipient_response[:error] }, status: :unprocessable_entity
+              return
+            end
+            recipient_code = recipient_response[:recipient_code]
           end
 
           process_transfer(@campaign.id, subaccount, recipient_code, @campaign.title, currency)
@@ -395,7 +416,7 @@ module Api
 
           # Define pagination parameters
           page = params[:page] || 1
-          page_size = params[:pageSize] || 8
+          page_size = params[:page_size] || 8
 
           # Query the database for transfers belonging to the current user with pagination and order by created_at
           @transfers = @fundraiser.transfers.includes(:campaign).order(created_at: :desc).page(page).per(page_size)
@@ -489,8 +510,46 @@ module Api
           render json: { message: 'Transfers fetched and saved successfully' }, status: :ok
         end
 
-
         private
+
+        def create_transfer_recipient_for_transfer(subaccount, campaign)
+          metadata = subaccount.metadata || {}
+          custom_fields = metadata['custom_fields'] || []
+
+          bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
+                            custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value') ||
+                            subaccount.bank_code
+
+          return { error: 'No valid bank code provided' } if bank_code_value.blank?
+
+          recipient_type = subaccount.subaccount_type || 'nuban'
+
+          recipient_metadata = {
+            user_id: subaccount.user_id,
+            campaign_id: campaign.id,
+            email: subaccount.user.email,
+            user_name: subaccount.user.full_name,
+            subaccount_code: subaccount.subaccount_code,
+            metadata: metadata
+          }
+
+          response = @paystack_service.create_transfer_recipient(
+            type: recipient_type,
+            name: subaccount.business_name,
+            account_number: subaccount.account_number,
+            bank_code: bank_code_value,
+            currency: campaign.currency.upcase,
+            description: "Transfer recipient for #{campaign.title}",
+            metadata: recipient_metadata
+          )
+
+          if response[:status] == true
+            subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
+            { recipient_code: response.dig(:data, :recipient_code) }
+          else
+            { error: "Failed to create recipient: #{response[:message]}" }
+          end
+        end
 
         def filter_bank_params
           params.permit(:country, :use_cursor, :per_page, :next, :previous).except(:format)
