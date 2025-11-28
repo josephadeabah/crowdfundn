@@ -71,22 +71,29 @@ const PaymentMethod = () => {
     const fetchBanks = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=20`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=100`,
         );
         const data = await response.json();
-        setBanks(
-          data.data.map((bank: any) => ({
-            display_name: bank.name,
-            variable_name: bank.slug,
-            value: bank.code,
-            type: bank.type,
-          })),
-        );
+        if (data.status) {
+          setBanks(
+            data.data.map((bank: any) => ({
+              display_name: bank.name,
+              variable_name: bank.slug,
+              value: bank.code,
+              type: bank.type,
+            })),
+          );
+        } else {
+          showToast('Error', 'Failed to load the bank list.', 'error');
+        }
       } catch {
         showToast('Error', 'Failed to load the bank list.', 'error');
       }
     };
-    fetchBanks();
+    
+    if (user?.country) {
+      fetchBanks();
+    }
   }, [user]);
 
   // Fetch existing subaccount
@@ -102,8 +109,13 @@ const PaymentMethod = () => {
           },
         },
       );
-      const data = await response.json();
-      setSubaccountData(data.error ? null : data);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSubaccountData(data.error ? null : data);
+      } else {
+        setSubaccountData(null);
+      }
     } catch {
       showToast('Error', 'Failed to fetch account details.', 'error');
     } finally {
@@ -119,9 +131,14 @@ const PaymentMethod = () => {
 
   // Verify account number
   const verifyAccountNumber = async () => {
+    if (!selectedBank || !accountNumber) {
+      showToast('Error', 'Please select a bank and enter account number.', 'error');
+      return null;
+    }
+
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/resolve_account_details?account_number=${accountNumber}&bank_code=${selectedBank?.value}&country=${user?.country.toLowerCase()}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/resolve_account_details?account_number=${accountNumber}&bank_code=${selectedBank.value}&country=${user?.country.toLowerCase()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -129,11 +146,17 @@ const PaymentMethod = () => {
           },
         },
       );
+      
       const data = await response.json();
-      if (!data.status) throw new Error('Invalid account number');
-      return data.data.account_name;
-    } catch {
-      showToast('Error', 'Invalid or unverified account number.', 'error');
+      
+      if (data.status && data.data) {
+        return data.data.account_name;
+      } else {
+        showToast('Error', data.message || 'Invalid or unverified account number.', 'error');
+        return null;
+      }
+    } catch (error: any) {
+      showToast('Error', 'Failed to verify account number.', 'error');
       return null;
     }
   };
@@ -150,35 +173,44 @@ const PaymentMethod = () => {
       return;
     }
 
+    if (!accountNumber) {
+      showToast('Error', 'Please enter account number.', 'error');
+      return;
+    }
+
     setIsLoading(true);
+    
+    // Verify account first
     const accountName = await verifyAccountNumber();
     if (!accountName) {
       setIsLoading(false);
       return;
     }
 
+    // For Ghanaian banks, we need to handle GHIPSS type differently
+    const isGhanaGhipss = user?.country?.toLowerCase() === 'ghana' && selectedBank.type === 'ghipss';
+
     const payload = isUpdate
       ? {
-          subaccount_code: subaccountData?.subaccount_code || '',
-          business_name: user?.full_name,
+          business_name: user?.full_name || accountName,
           settlement_bank: selectedBank.value,
           account_number: accountNumber,
           percentage_charge: 100,
-          description: subaccountData?.description || '',
+          description: `Bank account for ${user?.full_name}`,
           metadata: {
             custom_fields: [
               {
                 display_name: selectedBank.display_name,
                 variable_name: selectedBank.variable_name,
                 value: selectedBank.value,
-                type: selectedBank.type,
+                type: isGhanaGhipss ? 'ghipss' : 'nuban',
               },
             ],
           },
         }
       : {
           subaccount: {
-            business_name: user?.full_name,
+            business_name: user?.full_name || accountName,
             settlement_bank: selectedBank.value,
             account_number: accountNumber,
             percentage_charge: 100,
@@ -188,7 +220,7 @@ const PaymentMethod = () => {
                   display_name: selectedBank.display_name,
                   variable_name: selectedBank.variable_name,
                   value: selectedBank.value,
-                  type: selectedBank.type,
+                  type: isGhanaGhipss ? 'ghipss' : 'nuban',
                 },
               ],
             },
@@ -212,10 +244,13 @@ const PaymentMethod = () => {
       });
 
       const data = await response.json();
-      if ((data && data.success === false) || (data && data.error)) {
-        showToast('Error', data.error, 'error');
+      
+      if (!response.ok || (data && data.success === false) || (data && data.error)) {
+        const errorMessage = data.error || data.message || 'Failed to process account';
+        showToast('Error', errorMessage, 'error');
         return;
       }
+      
       if (data) {
         setSubaccountData(data);
         fetchSubaccount();
@@ -237,7 +272,21 @@ const PaymentMethod = () => {
       setIsLoading(false);
       setIsAddModalOpen(false);
       setIsUpdateModalOpen(false);
+      setAccountNumber('');
+      setSelectedBank(null);
     }
+  };
+
+  const handleAddModalClose = () => {
+    setIsAddModalOpen(false);
+    setAccountNumber('');
+    setSelectedBank(null);
+  };
+
+  const handleUpdateModalClose = () => {
+    setIsUpdateModalOpen(false);
+    setAccountNumber('');
+    setSelectedBank(null);
   };
 
   return (
@@ -304,7 +353,7 @@ const PaymentMethod = () => {
                     <span className="font-medium text-gray-600">Bank</span>
                   </div>
                   <span className="font-semibold text-gray-900">
-                    {subaccountData.metadata?.custom_fields?.[0]?.display_name}
+                    {subaccountData.metadata?.custom_fields?.[0]?.display_name || subaccountData.settlement_bank}
                   </span>
                 </div>
               </div>
@@ -329,7 +378,7 @@ const PaymentMethod = () => {
         )}
 
         {/* Add Modal */}
-        <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
+        <Modal isOpen={isAddModalOpen} onClose={handleAddModalClose}>
           <div className="space-y-6 text-gray-900">
             <div className="text-center">
               <div className="mx-auto w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mb-4">
@@ -363,9 +412,7 @@ const PaymentMethod = () => {
                   }
                 >
                   <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900">
-                    <span>
-                      {selectedBank?.display_name || 'Choose your bank'}
-                    </span>
+                    <SelectValue placeholder="Choose your bank" />
                   </SelectTrigger>
 
                   <SelectContent>
@@ -390,15 +437,17 @@ const PaymentMethod = () => {
                   type="text"
                   placeholder="Enter your account number"
                   value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
+                  onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
                   required
+                  minLength={10}
+                  maxLength={16}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 text-gray-900 placeholder-gray-400 font-mono transition-all duration-200"
                 />
               </div>
 
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !selectedBank || !accountNumber}
                 className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
               >
                 {isLoading ? (
@@ -420,7 +469,7 @@ const PaymentMethod = () => {
         {/* Update Modal */}
         <Modal
           isOpen={isUpdateModalOpen}
-          onClose={() => setIsUpdateModalOpen(false)}
+          onClose={handleUpdateModalClose}
         >
           <div className="space-y-6 text-gray-900">
             <div className="text-center">
@@ -453,9 +502,7 @@ const PaymentMethod = () => {
                   }
                 >
                   <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900">
-                    <span>
-                      {selectedBank?.display_name || 'Choose your bank'}
-                    </span>
+                    <SelectValue placeholder="Choose your bank" />
                   </SelectTrigger>
 
                   <SelectContent>
@@ -480,15 +527,17 @@ const PaymentMethod = () => {
                   type="text"
                   placeholder="Enter your account number"
                   value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
+                  onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
                   required
+                  minLength={10}
+                  maxLength={16}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 text-gray-900 placeholder-gray-400 font-mono transition-all duration-200"
                 />
               </div>
 
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !selectedBank || !accountNumber}
                 className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
               >
                 {isLoading ? (
