@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_25_114603) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_28_150750) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -870,8 +870,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_25_114603) do
     t.string "currency"
     t.string "email"
     t.string "user_name"
+    t.bigint "subaccount_id"
     t.index ["campaign_id"], name: "index_transfers_on_campaign_id"
     t.index ["status"], name: "index_transfers_on_status"
+    t.index ["subaccount_id"], name: "index_transfers_on_subaccount_id"
     t.index ["user_id"], name: "index_transfers_on_user_id"
   end
 
@@ -1014,6 +1016,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_25_114603) do
   add_foreign_key "subscriptions", "campaigns"
   add_foreign_key "subscriptions", "users"
   add_foreign_key "transfers", "campaigns"
+  add_foreign_key "transfers", "subaccounts"
   add_foreign_key "transfers", "users"
   add_foreign_key "updates", "campaigns"
   add_foreign_key "user_roles", "roles"

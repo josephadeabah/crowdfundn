@@ -1,7 +1,6 @@
 # app/models/subaccount.rb
 class Subaccount < ApplicationRecord
   belongs_to :user, optional: true
-  has_many :transfers, dependent: :nullify
 
   validates :business_name, presence: true
   validates :account_number, presence: true
@@ -35,8 +34,6 @@ class Subaccount < ApplicationRecord
       # Clear recipient code
       self.recipient_code = nil
       
-      # Also clear any pending transfers' recipient codes
-      # transfers.where(recipient_code: old_recipient_code).update_all(recipient_code: nil)
     end
   end
 
