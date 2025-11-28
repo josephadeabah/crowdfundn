@@ -40,26 +40,6 @@ module Api
           render json: @current_user.as_json(include: %i[profile roles]), status: :ok
         end
 
-        # In your subscriptions_controller or payment processor
-        def create
-          # Process payment...
-          if payment_successful?
-            subscription = @current_user.subscriptions.create!(
-              plan_id: params[:plan_id],
-              starts_at: Time.current,
-              expires_at: 1.month.from_now,
-              status: 'active'
-            )
-
-            # Update user's premium access
-            @current_user.update(premium_access: true)
-
-            render json: { success: true, subscription: subscription }
-          else
-            render json: { success: false, error: 'Payment failed' }, status: :unprocessable_entity
-          end
-        end
-
         def show_by_id
           render json: @user.as_json(include: %i[profile roles]), status: :ok
         end
@@ -67,6 +47,15 @@ module Api
         def create_subaccount
           user = User.find(params[:user_id])
           raise 'User not found' unless user
+
+          # Validate if this is a mobile money account (not supported for subaccounts)
+          if mobile_money_account?(params[:subaccount][:settlement_bank])
+            render json: { 
+              success: false, 
+              error: 'Mobile money accounts are not supported for receiving payments. Please use a bank account instead.' 
+            }, status: :unprocessable_entity
+            return
+          end
 
           # Prepare metadata
           metadata = params[:subaccount][:metadata] || { custom_fields: [] }
@@ -148,6 +137,15 @@ module Api
           end
 
           begin
+            # Validate if this is a mobile money account (not supported for subaccounts)
+            if mobile_money_account?(params[:settlement_bank])
+              render json: { 
+                success: false, 
+                error: 'Mobile money accounts are not supported for receiving payments. Please use a bank account instead.' 
+              }, status: :unprocessable_entity
+              return
+            end
+
             ActiveRecord::Base.transaction do
               # Store old account details to check if recipient code needs to be cleared
               old_account_number = subaccount.account_number
@@ -393,6 +391,12 @@ module Api
         end
 
         private
+
+        # Check if the bank code is for mobile money (not supported for subaccounts)
+        def mobile_money_account?(bank_code)
+          mobile_money_codes = ['MTN', 'VOD', 'TGO'] # MTN, Vodafone, AirtelTigo
+          mobile_money_codes.include?(bank_code)
+        end
 
         def create_fresh_subaccount(user, metadata)
           # Extract bank code from metadata for Ghanaian banks
