@@ -34,7 +34,6 @@ module Api
         end
       end
 
-      # In app/controllers/api/v1/club_transfers_controller.rb
       def resolve_account_details
         response = @paystack_service.resolve_account_details(
           account_number: params[:account_number],
@@ -46,9 +45,11 @@ module Api
         else
           error_message = response[:message]
           
-          # Safe error handling
+          # Safe way to extract meta info
           meta_info = if response[:body].is_a?(Hash)
-                        response[:body][:meta]&.dig(:nextStep) || response[:body]['meta']&.dig('nextStep')
+                        response[:body][:meta]&.dig(:nextStep) || 
+                        response[:body]['meta']&.dig('nextStep') || 
+                        'Please double-check the details and try again.'
                       else
                         'Please double-check the details and try again.'
                       end

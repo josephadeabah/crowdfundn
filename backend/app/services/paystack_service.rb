@@ -277,11 +277,35 @@ class PaystackService
   end
 
   # verifies validity of an account number for users in ghana & nigeria
+  # In your PaystackService class, update the resolve_account_details method:
   def resolve_account_details(account_number:, bank_code:)
     uri = URI("#{PAYSTACK_BASE_URL}/bank/resolve")
     uri.query = URI.encode_www_form(account_number: account_number, bank_code: bank_code)
     response = make_get_request(uri)
-    parse_response(response)
+    
+    # Parse the response
+    parsed_response = parse_response(response)
+    
+    # Ensure consistent response format
+    if parsed_response[:status] == true
+      {
+        status: true,
+        data: parsed_response[:data],
+        message: parsed_response[:message] || 'Account resolved successfully'
+      }
+    else
+      {
+        status: false,
+        message: parsed_response[:message] || 'Failed to resolve account',
+        body: parsed_response # Return the parsed response for error handling
+      }
+    end
+  rescue StandardError => e
+    {
+      status: false,
+      message: e.message,
+      body: nil
+    }
   end
 
   # Create a single transfer recipient
