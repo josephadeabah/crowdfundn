@@ -148,6 +148,8 @@ export interface EquityInvestment extends Investment {
     currency_symbol?: string;
   };
   current_value?: number;
+  total_returns?: number; // NEW: Added for financial calculations
+  roi?: number; // NEW: Added for financial calculations
   campaign: {
     id: number;
     company_name?: string;
@@ -161,16 +163,35 @@ export interface EquityInvestment extends Investment {
     currency?: string;
     currency_symbol?: string;
   };
+
+  // CANCELLATION FIELDS - NEW: Added for countdown timer functionality
   cancel_window_expires_at?: string;
+  committed_at?: string;
   can_be_cancelled: boolean;
+  time_remaining_for_cancellation?: string; // NEW: Added for countdown timer
+
   // Add company and team information
   company_info?: CompanyInfo;
   team_members?: CampaignTeamMember[];
+
   // ADDED: Club investment properties for EquityInvestment as well
   investment_type?: 'individual' | 'club';
   club_info?: {
     name: string;
     id?: string | number;
+  };
+
+  // ADDED: Signature information
+  signatures?: {
+    investor?: string | null;
+    issuer?: string | null;
+  };
+
+  // ADDED: Investor information in nested format
+  investor?: {
+    id?: number;
+    name: string;
+    email: string;
   };
 }
 

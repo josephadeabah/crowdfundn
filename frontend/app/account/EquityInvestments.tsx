@@ -30,6 +30,7 @@ import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { Textarea } from '@/app/components/ui/textarea';
 import Modal from '../components/modal/Modal';
+import { CountdownTimer } from '../components/countdowntimer/CountdonwTimer';
 
 const EquityInvestments = () => {
   const {
@@ -149,22 +150,6 @@ const EquityInvestments = () => {
     }
 
     return false;
-  };
-
-  // Helper function to get time remaining for cancellation
-  const getTimeRemaining = (investment: EquityInvestment): string => {
-    if (!investment.cancel_window_expires_at) return 'No cancellation window';
-
-    const expiresAt = new Date(investment.cancel_window_expires_at);
-    const now = new Date();
-    const diffMs = expiresAt.getTime() - now.getTime();
-
-    if (diffMs <= 0) return 'Expired';
-
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-
-    return `${diffHours}h ${diffMinutes}m`;
   };
 
   // Include committed investments in display
@@ -396,7 +381,7 @@ const EquityInvestments = () => {
 
   return (
     <div className="px-2 py-4">
-      {/* Cancellation Modal - Replaced Dialog with Modal */}
+      {/* Cancellation Modal - UPDATED with CountdownTimer */}
       <Modal
         isOpen={showCancelDialog}
         onClose={closeCancelDialog}
@@ -428,16 +413,27 @@ const EquityInvestments = () => {
                 className="mt-1"
               />
             </div>
-            {selectedInvestment && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <div className="flex items-center gap-2 text-yellow-800">
-                  <FaClock className="flex-shrink-0" />
-                  <span className="text-sm font-medium">
-                    Time remaining: {getTimeRemaining(selectedInvestment)}
-                  </span>
+            {selectedInvestment &&
+              selectedInvestment.time_remaining_for_cancellation && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2 text-yellow-800">
+                    <FaClock className="flex-shrink-0" />
+                    <span className="text-sm font-medium mr-2">
+                      Time remaining:
+                    </span>
+                    <CountdownTimer
+                      timeString={
+                        selectedInvestment.time_remaining_for_cancellation
+                      }
+                      className="text-sm font-mono"
+                      onComplete={() => {
+                        // Close modal when time runs out
+                        closeCancelDialog();
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
 
           <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2">
@@ -595,7 +591,6 @@ const EquityInvestments = () => {
                         investment.status,
                       );
                       const isCancellable = canBeCancelled(investment);
-                      const timeRemaining = getTimeRemaining(investment);
 
                       return (
                         <>
@@ -620,12 +615,27 @@ const EquityInvestments = () => {
                                     `Campaign ${investment.campaign_id}`}
                                 </div>
                               </div>
-                              {isCancellable && (
-                                <div className="flex items-center gap-1 mt-1 text-xs text-orange-600">
-                                  <FaClock className="flex-shrink-0 text-xs" />
-                                  <span>Cancel within: {timeRemaining}</span>
-                                </div>
-                              )}
+                              {isCancellable &&
+                                investment.time_remaining_for_cancellation && (
+                                  <div className="flex items-center gap-1 mt-1 text-xs text-orange-600">
+                                    <FaClock className="flex-shrink-0 text-xs" />
+                                    <span className="font-medium mr-1">
+                                      Cancel within:
+                                    </span>
+                                    <CountdownTimer
+                                      timeString={
+                                        investment.time_remaining_for_cancellation
+                                      }
+                                      className="text-xs font-mono"
+                                      onComplete={() => {
+                                        // Handle countdown completion - you might want to refresh the list
+                                        console.log(
+                                          `Countdown completed for investment ${investment.id}`,
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               {formatCurrency(
