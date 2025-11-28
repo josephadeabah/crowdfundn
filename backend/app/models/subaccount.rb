@@ -36,7 +36,7 @@ class Subaccount < ApplicationRecord
       self.recipient_code = nil
       
       # Also clear any pending transfers' recipient codes
-      transfers.where(recipient_code: old_recipient_code).update_all(recipient_code: nil)
+      # transfers.where(recipient_code: old_recipient_code).update_all(recipient_code: nil)
     end
   end
 
