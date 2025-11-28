@@ -11,7 +11,6 @@ import {
   User,
   Edit3,
   CheckCircle,
-  AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import {
@@ -26,7 +25,7 @@ type Bank = {
   display_name: string;
   variable_name: string;
   value: string; // Settlement bank code
-  type: string; // nuban or ghipss or mobile_money
+  type: string; // nuban or ghipss
 };
 
 // Utility to mask account numbers
@@ -39,15 +38,11 @@ const maskAccountNumber = (accountNumber: string): string => {
   return `${maskedPart}${visiblePart}`;
 };
 
-// List of mobile money bank codes (not supported for subaccounts)
-const MOBILE_MONEY_BANKS = ['MTN', 'VOD', 'TGO']; // MTN, Vodafone, AirtelTigo
-
 const PaymentMethod = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [banks, setBanks] = useState<Bank[]>([]);
-  const [supportedBanks, setSupportedBanks] = useState<Bank[]>([]);
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [accountNumber, setAccountNumber] = useState('');
   const [subaccountData, setSubaccountData] = useState<any>(null);
@@ -76,35 +71,22 @@ const PaymentMethod = () => {
     const fetchBanks = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=100`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/get_bank_list?country=${user?.country.toLowerCase()}&per_page=20`,
         );
         const data = await response.json();
-        if (data.status) {
-          const allBanks = data.data.map((bank: any) => ({
+        setBanks(
+          data.data.map((bank: any) => ({
             display_name: bank.name,
             variable_name: bank.slug,
             value: bank.code,
             type: bank.type,
-          }));
-          
-          setBanks(allBanks);
-          
-          // Filter out mobile money banks for subaccounts
-          const supported = allBanks.filter((bank: Bank) => 
-            !MOBILE_MONEY_BANKS.includes(bank.value)
-          );
-          setSupportedBanks(supported);
-        } else {
-          showToast('Error', 'Failed to load the bank list.', 'error');
-        }
+          })),
+        );
       } catch {
         showToast('Error', 'Failed to load the bank list.', 'error');
       }
     };
-    
-    if (user?.country) {
-      fetchBanks();
-    }
+    fetchBanks();
   }, [user]);
 
   // Fetch existing subaccount
@@ -120,13 +102,8 @@ const PaymentMethod = () => {
           },
         },
       );
-      
-      if (response.ok) {
-        const data = await response.json();
-        setSubaccountData(data.error ? null : data);
-      } else {
-        setSubaccountData(null);
-      }
+      const data = await response.json();
+      setSubaccountData(data.error ? null : data);
     } catch {
       showToast('Error', 'Failed to fetch account details.', 'error');
     } finally {
@@ -142,14 +119,9 @@ const PaymentMethod = () => {
 
   // Verify account number
   const verifyAccountNumber = async () => {
-    if (!selectedBank || !accountNumber) {
-      showToast('Error', 'Please select a bank and enter account number.', 'error');
-      return null;
-    }
-
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/resolve_account_details?account_number=${accountNumber}&bank_code=${selectedBank.value}&country=${user?.country.toLowerCase()}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/transfers/resolve_account_details?account_number=${accountNumber}&bank_code=${selectedBank?.value}&country=${user?.country.toLowerCase()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -157,17 +129,11 @@ const PaymentMethod = () => {
           },
         },
       );
-      
       const data = await response.json();
-      
-      if (data.status && data.data) {
-        return data.data.account_name;
-      } else {
-        showToast('Error', data.message || 'Invalid or unverified account number.', 'error');
-        return null;
-      }
-    } catch (error: any) {
-      showToast('Error', 'Failed to verify account number.', 'error');
+      if (!data.status) throw new Error('Invalid account number');
+      return data.data.account_name;
+    } catch {
+      showToast('Error', 'Invalid or unverified account number.', 'error');
       return null;
     }
   };
@@ -184,54 +150,35 @@ const PaymentMethod = () => {
       return;
     }
 
-    if (!accountNumber) {
-      showToast('Error', 'Please enter account number.', 'error');
-      return;
-    }
-
-    // Check if this is a mobile money account (not supported)
-    if (MOBILE_MONEY_BANKS.includes(selectedBank.value)) {
-      showToast(
-        'Unsupported Account Type', 
-        'Mobile money accounts cannot be used for receiving payments. Please select a bank account instead.', 
-        'error'
-      );
-      return;
-    }
-
     setIsLoading(true);
-    
-    // Verify account first
     const accountName = await verifyAccountNumber();
     if (!accountName) {
       setIsLoading(false);
       return;
     }
 
-    // For Ghanaian banks, we need to handle GHIPSS type differently
-    const isGhanaGhipss = user?.country?.toLowerCase() === 'ghana' && selectedBank.type === 'ghipss';
-
     const payload = isUpdate
       ? {
-          business_name: user?.full_name || accountName,
+          subaccount_code: subaccountData?.subaccount_code || '',
+          business_name: user?.full_name,
           settlement_bank: selectedBank.value,
           account_number: accountNumber,
           percentage_charge: 100,
-          description: `Bank account for ${user?.full_name}`,
+          description: subaccountData?.description || '',
           metadata: {
             custom_fields: [
               {
                 display_name: selectedBank.display_name,
                 variable_name: selectedBank.variable_name,
                 value: selectedBank.value,
-                type: isGhanaGhipss ? 'ghipss' : 'nuban',
+                type: selectedBank.type,
               },
             ],
           },
         }
       : {
           subaccount: {
-            business_name: user?.full_name || accountName,
+            business_name: user?.full_name,
             settlement_bank: selectedBank.value,
             account_number: accountNumber,
             percentage_charge: 100,
@@ -241,7 +188,7 @@ const PaymentMethod = () => {
                   display_name: selectedBank.display_name,
                   variable_name: selectedBank.variable_name,
                   value: selectedBank.value,
-                  type: isGhanaGhipss ? 'ghipss' : 'nuban',
+                  type: selectedBank.type,
                 },
               ],
             },
@@ -265,13 +212,10 @@ const PaymentMethod = () => {
       });
 
       const data = await response.json();
-      
-      if (!response.ok || (data && data.success === false) || (data && data.error)) {
-        const errorMessage = data.error || data.message || 'Failed to process account';
-        showToast('Error', errorMessage, 'error');
+      if ((data && data.success === false) || (data && data.error)) {
+        showToast('Error', data.error, 'error');
         return;
       }
-      
       if (data) {
         setSubaccountData(data);
         fetchSubaccount();
@@ -293,21 +237,7 @@ const PaymentMethod = () => {
       setIsLoading(false);
       setIsAddModalOpen(false);
       setIsUpdateModalOpen(false);
-      setAccountNumber('');
-      setSelectedBank(null);
     }
-  };
-
-  const handleAddModalClose = () => {
-    setIsAddModalOpen(false);
-    setAccountNumber('');
-    setSelectedBank(null);
-  };
-
-  const handleUpdateModalClose = () => {
-    setIsUpdateModalOpen(false);
-    setAccountNumber('');
-    setSelectedBank(null);
   };
 
   return (
@@ -332,21 +262,6 @@ const PaymentMethod = () => {
             <CheckCircle className="h-4 w-4" />
             You'll receive your payout through this account
           </p>
-          
-          {/* Information Alert */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-blue-800 text-sm">
-                  Important Note
-                </h3>
-                <p className="text-blue-700 text-sm mt-1">
-                  Only bank accounts are supported for receiving payments. Mobile money accounts (MTN, Vodafone, AirtelTigo) cannot be used at this time.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {isLoading ? (
@@ -389,7 +304,7 @@ const PaymentMethod = () => {
                     <span className="font-medium text-gray-600">Bank</span>
                   </div>
                   <span className="font-semibold text-gray-900">
-                    {subaccountData.metadata?.custom_fields?.[0]?.display_name || subaccountData.settlement_bank}
+                    {subaccountData.metadata?.custom_fields?.[0]?.display_name}
                   </span>
                 </div>
               </div>
@@ -414,7 +329,7 @@ const PaymentMethod = () => {
         )}
 
         {/* Add Modal */}
-        <Modal isOpen={isAddModalOpen} onClose={handleAddModalClose}>
+        <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
           <div className="space-y-6 text-gray-900">
             <div className="text-center">
               <div className="mx-auto w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mb-4">
@@ -426,15 +341,6 @@ const PaymentMethod = () => {
               <p className="text-gray-600">
                 Enter your bank details to receive payments
               </p>
-            </div>
-
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
-                <p className="text-yellow-700 text-sm">
-                  Only bank accounts are supported. Mobile money accounts will not work.
-                </p>
-              </div>
             </div>
 
             <form
@@ -452,25 +358,24 @@ const PaymentMethod = () => {
                   value={selectedBank?.value}
                   onValueChange={(value) =>
                     setSelectedBank(
-                      supportedBanks.find((b) => b.value === value) || null,
+                      banks.find((b) => b.value === value) || null,
                     )
                   }
                 >
                   <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900">
-                    <SelectValue placeholder="Choose your bank" />
+                    <span>
+                      {selectedBank?.display_name || 'Choose your bank'}
+                    </span>
                   </SelectTrigger>
 
                   <SelectContent>
-                    {supportedBanks.map((bank) => (
+                    {banks.map((bank) => (
                       <SelectItem key={bank.value} value={bank.value}>
                         {bank.display_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-500">
-                  Mobile money providers are not shown as they are not supported for payouts.
-                </p>
               </div>
 
               <div className="space-y-2">
@@ -485,17 +390,15 @@ const PaymentMethod = () => {
                   type="text"
                   placeholder="Enter your account number"
                   value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => setAccountNumber(e.target.value)}
                   required
-                  minLength={10}
-                  maxLength={16}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 text-gray-900 placeholder-gray-400 font-mono transition-all duration-200"
                 />
               </div>
 
               <Button
                 type="submit"
-                disabled={isLoading || !selectedBank || !accountNumber}
+                disabled={isLoading}
                 className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
               >
                 {isLoading ? (
@@ -517,7 +420,7 @@ const PaymentMethod = () => {
         {/* Update Modal */}
         <Modal
           isOpen={isUpdateModalOpen}
-          onClose={handleUpdateModalClose}
+          onClose={() => setIsUpdateModalOpen(false)}
         >
           <div className="space-y-6 text-gray-900">
             <div className="text-center">
@@ -528,15 +431,6 @@ const PaymentMethod = () => {
                 Update Bank Account
               </h2>
               <p className="text-gray-600">Modify your bank details</p>
-            </div>
-
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
-                <p className="text-yellow-700 text-sm">
-                  Only bank accounts are supported. Mobile money accounts will not work.
-                </p>
-              </div>
             </div>
 
             <form
@@ -554,25 +448,24 @@ const PaymentMethod = () => {
                   value={selectedBank?.value}
                   onValueChange={(value) =>
                     setSelectedBank(
-                      supportedBanks.find((b) => b.value === value) || null,
+                      banks.find((b) => b.value === value) || null,
                     )
                   }
                 >
                   <SelectTrigger className="w-full bg-white border-gray-300 text-gray-900">
-                    <SelectValue placeholder="Choose your bank" />
+                    <span>
+                      {selectedBank?.display_name || 'Choose your bank'}
+                    </span>
                   </SelectTrigger>
 
                   <SelectContent>
-                    {supportedBanks.map((bank) => (
+                    {banks.map((bank) => (
                       <SelectItem key={bank.value} value={bank.value}>
                         {bank.display_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-500">
-                  Mobile money providers are not shown as they are not supported for payouts.
-                </p>
               </div>
 
               <div className="space-y-2">
@@ -587,17 +480,15 @@ const PaymentMethod = () => {
                   type="text"
                   placeholder="Enter your account number"
                   value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => setAccountNumber(e.target.value)}
                   required
-                  minLength={10}
-                  maxLength={16}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 text-gray-900 placeholder-gray-400 font-mono transition-all duration-200"
                 />
               </div>
 
               <Button
                 type="submit"
-                disabled={isLoading || !selectedBank || !accountNumber}
+                disabled={isLoading}
                 className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-2"
               >
                 {isLoading ? (
