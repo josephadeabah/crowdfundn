@@ -90,62 +90,54 @@ module Api
           return
         end
 
-        metadata       = subaccount.metadata
-        custom_fields  = metadata['custom_fields']
-
-        if custom_fields.blank?
-          render json: { error: 'No custom fields provided for this subaccount' }, status: :unprocessable_entity
-          return
-        end
+        metadata = subaccount.metadata || {}
+        custom_fields = metadata['custom_fields'] || []
 
         bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
-                          custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value')
+                          custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value') ||
+                          subaccount.bank_code
 
         if bank_code_value.blank?
           render json: { error: 'No valid bank code or mobile money details provided' }, status: :unprocessable_entity
           return
         end
 
-        # If no recipient_code exists, proceed to create one
-        if subaccount.recipient_code.blank?
-          # ALIGNED WITH FUNDRAISER: Use the same metadata structure
-          recipient_metadata = {
-            user_id: admin_user.id,
-            club_id: @club.id,
-            email: admin_user.email,
-            user_name: admin_user.full_name,
-            metadata: metadata
-          }
+        # Always create a new recipient code to ensure it matches current subaccount details
+        recipient_type = subaccount.subaccount_type || 'nuban'
 
-          response = @paystack_service.create_transfer_recipient(
-            type: bank_code_value,
-            name: subaccount.business_name,
-            account_number: subaccount.account_number,
-            bank_code: bank_code_value,
-            currency: @club.currency.upcase,
-            description: "Transfer recipient for #{@club.name} club payouts",
-            metadata: recipient_metadata  # This metadata will be in the webhook
-          )
+        recipient_metadata = {
+          user_id: admin_user.id,
+          club_id: @club.id,
+          email: admin_user.email,
+          user_name: admin_user.full_name,
+          subaccount_code: subaccount.subaccount_code,
+          metadata: metadata
+        }
 
-          if response[:status] == true
-            subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
-            render json: { 
-              message: 'Recipient created successfully.', 
-              recipient_code: response.dig(:data, :recipient_code),
-              club_id: @club.id 
-            }, status: :ok
-          else
-            # ALIGNED: Better error handling
-            render json: { 
-              error: "Failed to create recipient: #{response[:message] || 'Unknown error'}" 
-            }, status: :unprocessable_entity
-          end
-        else
-          # If recipient_code already exists, return it
+        response = @paystack_service.create_transfer_recipient(
+          type: recipient_type,
+          name: subaccount.business_name,
+          account_number: subaccount.account_number,
+          bank_code: bank_code_value,
+          currency: @club.currency.upcase,
+          description: "Transfer recipient for #{@club.name} club payouts",
+          metadata: recipient_metadata
+        )
+
+        if response[:status] == true
+          # Update subaccount with new recipient code
+          subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
           render json: { 
-            recipient_code: subaccount.recipient_code, 
-            message: 'Recipient code already exists.' 
+            message: 'Recipient created successfully.', 
+            recipient_code: response.dig(:data, :recipient_code),
+            club_id: @club.id,
+            account_number: subaccount.account_number,
+            bank_name: custom_fields.first&.dig('display_name')
           }, status: :ok
+        else
+          render json: { 
+            error: "Failed to create recipient: #{response[:message] || 'Unknown error'}" 
+          }, status: :unprocessable_entity
         end
       rescue ActiveRecord::RecordInvalid => e
         render json: { error: "Failed to save recipient code: #{e.message}" }, status: :internal_server_error
@@ -211,7 +203,7 @@ module Api
         if transfer_response[:status]
           transfer_data = transfer_response[:data]
           
-          # FIXED: Create club transfer record with proper error handling
+          # FIXED: Create club transfer record with current subaccount details
           club_transfer = ClubTransfer.create!(
             investment_club: @club,
             user: @current_user,
@@ -221,18 +213,19 @@ module Api
             reason: "Payout for #{@club.name} investment club",
             recipient_code: recipient_account,
             reference: transfer_data[:reference],
-            transfer_code: transfer_data[:transfer_code]
+            transfer_code: transfer_data[:transfer_code],
+            bank_name: subaccount.metadata&.dig('custom_fields')&.first&.dig('display_name') || 'N/A',
+            account_number: subaccount.account_number
           )
-
-          # FIXED: Balance was already deducted above using thread-safe method
-          # No need to call deduct_transfer_amount again
 
           render json: {
             transfer_code: transfer_data[:transfer_code],
             reference: transfer_data[:reference],
             message: 'Transfer initiated successfully.',
             club_balance: @club.reload.current_balance,
-            transferred_amount: transfer_amount
+            transferred_amount: transfer_amount,
+            account_number: subaccount.account_number,
+            bank_name: subaccount.metadata&.dig('custom_fields')&.first&.dig('display_name')
           }, status: :ok
         else
           # FIXED: Refund the balance if transfer initiation fails
@@ -261,7 +254,7 @@ module Api
         render json: { error: "Transfer processing error: #{e.message}" }, status: :unprocessable_entity
       end
 
-      # FIXED: Initialize a transfer for club with better error handling
+      # FIXED: Initialize a transfer for club with better error handling and subaccount sync
       def initialize_transfer
         # Check if transfers are locked for the admin user
         unless @current_user.can_make_transfers?
@@ -282,16 +275,9 @@ module Api
 
         admin_user = admin_membership.user
         subaccount = Subaccount.find_by(subaccount_code: admin_user.subaccount_id)
-        subaccount.reload if subaccount.present?
-        recipient_code = params[:recipient_code]
-
+        
         unless subaccount
           render json: { error: 'Club admin does not have an account number added.' }, status: :unprocessable_entity
-          return
-        end
-        
-        unless recipient_code.present?
-          render json: { error: 'Recipient code not found for this club' }, status: :unprocessable_entity
           return
         end
 
@@ -299,23 +285,6 @@ module Api
         club_balance = @club.calculate_current_balance
         if club_balance <= 0.0
           render json: { error: 'Club has no funds available for payout.' }, status: :unprocessable_entity
-          return
-        end
-
-        # ALIGNED: Add recipient verification before transfer
-        recipient_response = @paystack_service.fetch_transfer_recipient(recipient_code)
-        unless recipient_response[:status]
-          render json: { 
-            error: "Invalid recipient: #{recipient_response[:message] || 'Recipient not found'}" 
-          }, status: :unprocessable_entity
-          return
-        end
-
-        balance_response = @paystack_service.check_balance
-
-        unless balance_response[:status]
-          render json: { error: 'Unable to perform transaction at this time. Please try again later.' },
-                status: :unprocessable_entity
           return
         end
 
@@ -329,6 +298,38 @@ module Api
         # FIXED: Validate against fresh balance calculation
         if transfer_amount > club_balance
           render json: { error: "Transfer amount exceeds available club balance of #{club_balance}" }, 
+                status: :unprocessable_entity
+          return
+        end
+
+        # Use the current recipient code or create a new one
+        recipient_code = subaccount.recipient_code
+        if recipient_code.blank?
+          # Create recipient on the fly using current subaccount details
+          recipient_response = create_transfer_recipient_for_club(subaccount, @club)
+          if recipient_response[:error]
+            render json: { error: recipient_response[:error] }, status: :unprocessable_entity
+            return
+          end
+          recipient_code = recipient_response[:recipient_code]
+        else
+          # Verify the existing recipient code still matches current subaccount details
+          recipient_response = @paystack_service.fetch_transfer_recipient(recipient_code)
+          unless recipient_response[:status]
+            # Recipient is invalid, create a new one
+            recipient_response = create_transfer_recipient_for_club(subaccount, @club)
+            if recipient_response[:error]
+              render json: { error: recipient_response[:error] }, status: :unprocessable_entity
+              return
+            end
+            recipient_code = recipient_response[:recipient_code]
+          end
+        end
+
+        balance_response = @paystack_service.check_balance
+
+        unless balance_response[:status]
+          render json: { error: 'Unable to perform transaction at this time. Please try again later.' },
                 status: :unprocessable_entity
           return
         end
@@ -542,6 +543,45 @@ module Api
       end
 
       private
+
+      def create_transfer_recipient_for_club(subaccount, club)
+        metadata = subaccount.metadata || {}
+        custom_fields = metadata['custom_fields'] || []
+
+        bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
+                          custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value') ||
+                          subaccount.bank_code
+
+        return { error: 'No valid bank code provided' } if bank_code_value.blank?
+
+        recipient_type = subaccount.subaccount_type || 'nuban'
+
+        recipient_metadata = {
+          user_id: subaccount.user_id,
+          club_id: club.id,
+          email: subaccount.user.email,
+          user_name: subaccount.user.full_name,
+          subaccount_code: subaccount.subaccount_code,
+          metadata: metadata
+        }
+
+        response = @paystack_service.create_transfer_recipient(
+          type: recipient_type,
+          name: subaccount.business_name,
+          account_number: subaccount.account_number,
+          bank_code: bank_code_value,
+          currency: club.currency.upcase,
+          description: "Transfer recipient for #{club.name} club",
+          metadata: recipient_metadata
+        )
+
+        if response[:status] == true
+          subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
+          { recipient_code: response.dig(:data, :recipient_code) }
+        else
+          { error: "Failed to create recipient: #{response[:message]}" }
+        end
+      end
 
       def set_club
         @club = InvestmentClub.find_by(slug: params[:investment_club_id])
