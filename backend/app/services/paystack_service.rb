@@ -84,20 +84,30 @@ class PaystackService
     metadata: nil
   )
     uri = URI("#{PAYSTACK_BASE_URL}/subaccount")
+    
+    # For Ghanaian banks, ensure we're using the correct parameters
     body = {
       business_name: business_name,
       settlement_bank: settlement_bank,
       account_number: account_number,
-      bank_code: bank_code,
       percentage_charge: percentage_charge,
       description: description,
       primary_contact_email: primary_contact_email,
       primary_contact_name: primary_contact_name,
       primary_contact_phone: primary_contact_phone,
       metadata: metadata
-    }.compact.to_json
-
-    response = make_post_request(uri, body)
+    }.compact
+    
+    # Only include bank_code if it's provided and not the same as settlement_bank
+    # For Ghanaian GHIPSS banks, we don't need bank_code parameter
+    body[:bank_code] = bank_code if bank_code.present? && bank_code != settlement_bank
+    
+    Rails.logger.info "Paystack subaccount creation payload: #{body.to_json}"
+    
+    response = make_post_request(uri, body.to_json)
+    
+    Rails.logger.info "Paystack subaccount creation response: #{response.code} - #{response.body}"
+    
     parse_response(response)
   end
 
