@@ -29,6 +29,7 @@ import {
   FinancialHealthMetrics,
   PredictiveAnalytics,
   ClubInvestmentCreateResponse,
+  MemberPortfolioData,
 } from './clubTypes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -234,44 +235,73 @@ export const clubService = {
   },
 
   // NEW: Portfolio Insights
+  // Portfolio Insights
   getPortfolioInsights: async (
     token: string,
     clubId: string,
-  ): Promise<{ success: boolean; insights: PortfolioInsights }> => {
-    return apiCall(`/investment_clubs/${clubId}/portfolio_insights`, token);
+  ): Promise<PortfolioInsights> => {
+    const response = await apiCall(
+      `/investment_clubs/${clubId}/portfolio_insights`,
+      token,
+    );
+    return response.insights;
   },
 
-  // NEW: Financial Health
+  // Financial Health
   getFinancialHealth: async (
     token: string,
     clubId: string,
-  ): Promise<{
-    success: boolean;
-    financial_health: FinancialHealthMetrics;
-  }> => {
-    return apiCall(`/investment_clubs/${clubId}/financial_health`, token);
+  ): Promise<FinancialHealthMetrics> => {
+    const response = await apiCall(
+      `/investment_clubs/${clubId}/financial_health`,
+      token,
+    );
+    return response.financial_health;
   },
 
-  // NEW: Predictive Analytics
+  // Predictive Analytics
   getPredictiveAnalytics: async (
     token: string,
     clubId: string,
-  ): Promise<{
-    success: boolean;
-    predictive_analytics: PredictiveAnalytics;
-  }> => {
-    return apiCall(`/investment_clubs/${clubId}/predictive_analytics`, token);
+  ): Promise<PredictiveAnalytics> => {
+    const response = await apiCall(
+      `/investment_clubs/${clubId}/predictive_analytics`,
+      token,
+    );
+    return response.predictive_analytics;
   },
 
-  // NEW: Comprehensive Analytics
+  // Comprehensive Analytics - FIXED: Now uses club ID
   getComprehensiveAnalytics: async (
     token: string,
     clubId: string,
-  ): Promise<{ success: boolean; analytics: ComprehensiveAnalytics }> => {
-    return apiCall(
+  ): Promise<ComprehensiveAnalytics> => {
+    const response = await apiCall(
       `/investment_clubs/${clubId}/comprehensive_analytics`,
       token,
     );
+    return response.analytics;
+  },
+
+  // Member Portfolio Analytics
+  getMemberPortfolioAnalytics: async (
+    token: string,
+    clubId: string,
+  ): Promise<MemberPortfolioData> => {
+    const response = await apiCall(
+      `/investment_clubs/${clubId}/member_portfolio_analytics`,
+      token,
+    );
+    return response.member_portfolio;
+  },
+
+  // Sector Performance Analytics
+  getSectorAnalytics: async (token: string, clubId: string): Promise<any> => {
+    const response = await apiCall(
+      `/investment_clubs/${clubId}/sector_analytics`,
+      token,
+    );
+    return response.sector_analytics;
   },
 };
 
