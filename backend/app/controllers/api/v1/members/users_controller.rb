@@ -127,6 +127,9 @@ module Api
 
             # Update user's subaccount_id (maintains backward compatibility)
             user.update_columns(subaccount_id: subaccount.subaccount_code)
+
+            # Create transfer recipient immediately after subaccount creation
+            create_recipient_for_new_subaccount(subaccount, user)
           end
 
           render json: { success: true, subaccount_code: user.subaccount_id }, status: :ok
@@ -406,6 +409,44 @@ module Api
 
         private
 
+        def create_recipient_for_new_subaccount(subaccount, user)
+          metadata = subaccount.metadata || {}
+          custom_fields = metadata['custom_fields'] || []
+
+          bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
+                            custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value') ||
+                            subaccount.bank_code
+
+          return if bank_code_value.blank?
+
+          recipient_type = subaccount.subaccount_type || 'nuban'
+
+          recipient_metadata = {
+            user_id: user.id,
+            email: user.email,
+            user_name: user.full_name,
+            subaccount_code: subaccount.subaccount_code,
+            metadata: metadata
+          }
+
+          response = PaystackService.new.create_transfer_recipient(
+            type: recipient_type,
+            name: subaccount.business_name,
+            account_number: subaccount.account_number,
+            bank_code: bank_code_value,
+            currency: user.currency.upcase,
+            description: "Recipient for #{subaccount.business_name}",
+            metadata: recipient_metadata
+          )
+
+          if response[:status] == true
+            subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
+            Rails.logger.info "Recipient created for new subaccount: #{response.dig(:data, :recipient_code)}"
+          else
+            Rails.logger.error "Failed to create recipient for new subaccount: #{response[:message]}"
+          end
+        end
+
         def update_existing_subaccount(user, existing_subaccount)
           # Prepare metadata for update
           metadata = params[:subaccount][:metadata] || { custom_fields: [] }
@@ -424,77 +465,103 @@ module Api
                                     end
 
           ActiveRecord::Base.transaction do
-            # Store old account details
-            old_account_number = existing_subaccount.account_number
-            old_bank_code = existing_subaccount.bank_code
-            old_settlement_bank = existing_subaccount.settlement_bank
+            # Check if subaccount exists on Paystack before trying to update
+            paystack_subaccount = PaystackService.new.fetch_subaccount(existing_subaccount.subaccount_code)
+            
+            if paystack_subaccount.nil? || paystack_subaccount[:status] == false
+              # Subaccount doesn't exist on Paystack - recreate it
+              Rails.logger.info "Subaccount not found on Paystack, recreating..."
+              
+              create_response = PaystackService.new.create_subaccount(
+                business_name: params[:subaccount][:business_name],
+                settlement_bank: params[:subaccount][:settlement_bank],
+                account_number: params[:subaccount][:account_number],
+                bank_code: params[:subaccount][:bank_code] || params[:subaccount][:settlement_bank],
+                percentage_charge: params[:subaccount][:percentage_charge],
+                description: params[:subaccount][:description],
+                primary_contact_email: user.email,
+                primary_contact_name: user.full_name,
+                primary_contact_phone: user.phone_number,
+                metadata: metadata
+              )
 
-            # Update the existing subaccount on Paystack
-            response = PaystackService.new.update_subaccount(
-              subaccount_code: existing_subaccount.subaccount_code,
-              business_name: params[:subaccount][:business_name],
-              settlement_bank: params[:subaccount][:settlement_bank],
-              account_number: params[:subaccount][:account_number],
-              bank_code: params[:subaccount][:bank_code] || params[:subaccount][:settlement_bank],
-              percentage_charge: params[:subaccount][:percentage_charge],
-              description: params[:subaccount][:description],
-              primary_contact_email: user.email,
-              primary_contact_name: user.full_name,
-              primary_contact_phone: user.phone_number,
-              metadata: metadata
-            )
+              unless create_response[:status]
+                raise StandardError, "Failed to recreate subaccount: #{create_response[:message]}"
+              end
 
-            unless response[:status] || response[:message] == 'Subaccount updated'
-              raise StandardError, response[:message] || 'Paystack update failed'
+              # Update local record with new subaccount code
+              existing_subaccount.update!(
+                subaccount_code: create_response[:data][:subaccount_code],
+                business_name: params[:subaccount][:business_name],
+                bank_code: params[:subaccount][:bank_code],
+                account_number: params[:subaccount][:account_number],
+                percentage_charge: params[:subaccount][:percentage_charge],
+                description: params[:subaccount][:description],
+                settlement_bank: params[:subaccount][:settlement_bank],
+                metadata: metadata,
+                subaccount_type: metadata[:custom_fields].first[:type],
+                recipient_code: nil # Clear recipient code since we're creating new subaccount
+              )
+              
+              # Update user's subaccount_id for backward compatibility
+              user.update_columns(subaccount_id: create_response[:data][:subaccount_code])
+            else
+              # Subaccount exists - proceed with normal update
+              response = PaystackService.new.update_subaccount(
+                subaccount_code: existing_subaccount.subaccount_code,
+                business_name: params[:subaccount][:business_name],
+                settlement_bank: params[:subaccount][:settlement_bank],
+                account_number: params[:subaccount][:account_number],
+                bank_code: params[:subaccount][:bank_code] || params[:subaccount][:settlement_bank],
+                percentage_charge: params[:subaccount][:percentage_charge],
+                description: params[:subaccount][:description],
+                primary_contact_email: user.email,
+                primary_contact_name: user.full_name,
+                primary_contact_phone: user.phone_number,
+                metadata: metadata
+              )
+
+              unless response[:status] || response[:message] == 'Subaccount updated'
+                raise StandardError, response[:message] || 'Paystack update failed'
+              end
+
+              # Store old account details
+              old_account_number = existing_subaccount.account_number
+              old_bank_code = existing_subaccount.bank_code
+              old_settlement_bank = existing_subaccount.settlement_bank
+
+              # Check if account details changed and clear recipient code if they did
+              account_changed = (old_account_number != params[:subaccount][:account_number]) ||
+                              (old_bank_code != params[:subaccount][:bank_code]) ||
+                              (old_settlement_bank != params[:subaccount][:settlement_bank])
+
+              update_attributes = {
+                business_name: params[:subaccount][:business_name],
+                bank_code: params[:subaccount][:bank_code],
+                account_number: params[:subaccount][:account_number],
+                percentage_charge: params[:subaccount][:percentage_charge],
+                description: params[:subaccount][:description],
+                settlement_bank: params[:subaccount][:settlement_bank],
+                metadata: metadata,
+                subaccount_type: metadata[:custom_fields].first[:type]
+              }
+
+              # Clear recipient code if account details changed
+              if account_changed && existing_subaccount.recipient_code.present?
+                update_attributes[:recipient_code] = nil
+                Rails.logger.info "Account details changed - clearing recipient code"
+              end
+
+              # Update the local subaccount record
+              existing_subaccount.update!(update_attributes)
             end
-
-            # Check if account details changed and clear recipient code if they did
-            account_changed = (old_account_number != params[:subaccount][:account_number]) ||
-                             (old_bank_code != params[:subaccount][:bank_code]) ||
-                             (old_settlement_bank != params[:subaccount][:settlement_bank])
-
-            update_attributes = {
-              business_name: params[:subaccount][:business_name],
-              bank_code: params[:subaccount][:bank_code],
-              account_number: params[:subaccount][:account_number],
-              percentage_charge: params[:subaccount][:percentage_charge],
-              description: params[:subaccount][:description],
-              settlement_bank: params[:subaccount][:settlement_bank],
-              metadata: metadata,
-              subaccount_type: metadata[:custom_fields].first[:type]
-            }
-
-            # Clear recipient code if account details changed
-            if account_changed && existing_subaccount.recipient_code.present?
-              update_attributes[:recipient_code] = nil
-              Rails.logger.info "Account details changed - clearing recipient code"
-            end
-
-            # Update the local subaccount record
-            existing_subaccount.update!(update_attributes)
 
             # Ensure user's subaccount_id is still set correctly (for backward compatibility)
             user.update_columns(subaccount_id: existing_subaccount.subaccount_code) if user.subaccount_id != existing_subaccount.subaccount_code
 
-            # Create new recipient code if it was cleared
+            # Create new recipient code if it was cleared or doesn't exist
             if existing_subaccount.recipient_code.blank?
-              recipient_type = metadata[:custom_fields].first[:type] rescue 'nuban'
-              
-              create_response = PaystackService.new.create_transfer_recipient(
-                type: recipient_type,
-                name: params[:subaccount][:business_name],
-                account_number: params[:subaccount][:account_number],
-                bank_code: params[:subaccount][:settlement_bank],
-                currency: user.currency.upcase,
-                description: "Recipient for #{params[:subaccount][:business_name]}",
-                metadata: metadata
-              )
-
-              if create_response[:status] == true
-                existing_subaccount.update!(recipient_code: create_response[:data][:recipient_code])
-              else
-                raise StandardError, "Recipient creation failed: #{create_response[:message]}"
-              end
+              create_recipient_for_existing_subaccount(existing_subaccount, user)
             end
           end
 
@@ -507,6 +574,44 @@ module Api
         rescue StandardError => e
           Rails.logger.error "Error during subaccount update: #{e.message}"
           render json: { success: false, error: e.message }, status: :unprocessable_entity
+        end
+
+        def create_recipient_for_existing_subaccount(subaccount, user)
+          metadata = subaccount.metadata || {}
+          custom_fields = metadata['custom_fields'] || []
+
+          bank_code_value = custom_fields.find { |f| f['type'] == 'ghipss' }&.dig('value') ||
+                            custom_fields.find { |f| f['type'] == 'mobile_money' }&.dig('value') ||
+                            subaccount.bank_code
+
+          return if bank_code_value.blank?
+
+          recipient_type = subaccount.subaccount_type || 'nuban'
+
+          recipient_metadata = {
+            user_id: user.id,
+            email: user.email,
+            user_name: user.full_name,
+            subaccount_code: subaccount.subaccount_code,
+            metadata: metadata
+          }
+
+          response = PaystackService.new.create_transfer_recipient(
+            type: recipient_type,
+            name: subaccount.business_name,
+            account_number: subaccount.account_number,
+            bank_code: bank_code_value,
+            currency: user.currency.upcase,
+            description: "Recipient for #{subaccount.business_name}",
+            metadata: recipient_metadata
+          )
+
+          if response[:status] == true
+            subaccount.update!(recipient_code: response.dig(:data, :recipient_code))
+            Rails.logger.info "New recipient code created for existing subaccount: #{response.dig(:data, :recipient_code)}"
+          else
+            raise StandardError, "Recipient creation failed: #{response[:message]}"
+          end
         end
 
         def record_not_found
