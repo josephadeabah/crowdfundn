@@ -34,16 +34,25 @@ module Api
         end
       end
 
+      # In app/controllers/api/v1/club_transfers_controller.rb
       def resolve_account_details
         response = @paystack_service.resolve_account_details(
           account_number: params[:account_number],
           bank_code: params[:bank_code]
         )
+        
         if response[:status]
           render json: response, status: :ok
         else
           error_message = response[:message]
-          meta_info = response.dig(:body, :meta, :nextStep) || 'Please double-check the details and try again.'
+          
+          # Safe error handling
+          meta_info = if response[:body].is_a?(Hash)
+                        response[:body][:meta]&.dig(:nextStep) || response[:body]['meta']&.dig('nextStep')
+                      else
+                        'Please double-check the details and try again.'
+                      end
+          
           render json: {
             error: "Account resolution failed: #{error_message}. #{meta_info}"
           }, status: :unprocessable_entity
