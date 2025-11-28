@@ -5,6 +5,7 @@ import { ClubInvestment } from '../../clubTypes';
 import { FileText, TrendingUp, Clock, X, AlertTriangle } from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
 import Modal from '@/app/components/modal/Modal';
+import { CountdownTimer } from '@/app/components/countdowntimer/CountdonwTimer';
 
 interface RecentInvestmentsSectionProps {
   investments: ClubInvestment[];
@@ -97,9 +98,15 @@ const CancellationModal: React.FC<{
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
           <div className="flex items-center gap-2 text-yellow-800">
             <Clock className="w-4 h-4" />
-            <span className="text-sm font-medium">
-              Time remaining: {investment.time_remaining_for_cancellation}
-            </span>
+            <span className="text-sm font-medium mr-2">Time remaining:</span>
+            <CountdownTimer
+              timeString={investment.time_remaining_for_cancellation}
+              className="text-sm"
+              onComplete={() => {
+                // Close modal when time runs out
+                onClose();
+              }}
+            />
           </div>
         </div>
       )}
@@ -355,15 +362,28 @@ export const RecentInvestmentsSection: React.FC<
                     {getStatusBadge(investment)}
                   </div>
 
-                  {/* Cancellation Info */}
+                  {/* Updated Cancellation Info with CountdownTimer */}
                   {isCancellable &&
                     investment.time_remaining_for_cancellation && (
-                      <div className="flex items-center gap-1 mb-2 text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
-                        <Clock className="w-3 h-3" />
-                        <span>
-                          Cancel within:{' '}
-                          {investment.time_remaining_for_cancellation}
+                      <div className="flex items-center gap-2 mb-2 text-xs text-orange-600 bg-orange-50 px-3 py-2 rounded border border-orange-200">
+                        <Clock className="w-3 h-3 flex-shrink-0" />
+                        <span className="font-medium whitespace-nowrap">
+                          Cancel within:
                         </span>
+                        <CountdownTimer
+                          timeString={
+                            investment.time_remaining_for_cancellation
+                          }
+                          className="text-xs font-mono"
+                          onComplete={() => {
+                            // Handle countdown completion
+                            console.log(
+                              `Countdown completed for investment ${investment.id}`,
+                            );
+                            // You could add logic to refresh the investments list
+                            // or update the specific investment's status
+                          }}
+                        />
                       </div>
                     )}
 

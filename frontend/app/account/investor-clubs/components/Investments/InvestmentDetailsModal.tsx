@@ -1,3 +1,4 @@
+// app/account/investor-clubs/components/Investments/InvestmentDetailsModal.tsx
 import React, { useState } from 'react';
 import { ClubInvestment } from '../../clubTypes';
 import {
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 import Modal from '@/app/components/modal/Modal';
 import Avatar from '@/app/components/avatar/Avatar';
+import { CountdownTimer } from '@/app/components/countdowntimer/CountdonwTimer';
 
 interface InvestmentDetailsModalProps {
   isOpen: boolean;
@@ -310,9 +312,15 @@ const CancellationModal: React.FC<{
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
           <div className="flex items-center gap-2 text-yellow-800">
             <Clock className="w-4 h-4" />
-            <span className="text-sm font-medium">
-              Time remaining: {investment.time_remaining_for_cancellation}
-            </span>
+            <span className="text-sm font-medium mr-2">Time remaining:</span>
+            <CountdownTimer
+              timeString={String(investment.time_remaining_for_cancellation)}
+              className="text-sm"
+              onComplete={() => {
+                // Close modal when time runs out
+                onClose();
+              }}
+            />
           </div>
         </div>
       )}
@@ -598,19 +606,35 @@ export const InvestmentDetailsModal: React.FC<InvestmentDetailsModalProps> = ({
             <TeamMembersStack teamMembers={teamMembers} />
           )}
 
-          {/* Cancellation Info */}
-          {canBeCancelled && (
+          {/* Updated Cancellation Info with CountdownTimer */}
+          {canBeCancelled && investment.time_remaining_for_cancellation && (
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-orange-600" />
-                <div>
+                <div className="flex-1">
                   <h4 className="font-medium text-orange-800">
                     48-Hour Cancellation Window
                   </h4>
-                  <p className="text-sm text-orange-700 mt-1">
-                    You can cancel this investment within{' '}
-                    {investment.time_remaining_for_cancellation}. The amount
-                    will be refunded to the club balance.
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-sm text-orange-700">
+                      Cancel within:
+                    </span>
+                    <CountdownTimer
+                      timeString={investment.time_remaining_for_cancellation}
+                      className="text-sm font-mono"
+                      onComplete={() => {
+                        // Handle countdown completion
+                        console.log(
+                          `Countdown completed for investment ${investment.id}`,
+                        );
+                        // You could add logic to refresh the investment details
+                        // or update the UI when the cancellation window expires
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-orange-600 mt-2">
+                    The amount will be refunded to the club balance if cancelled
+                    within this period.
                   </p>
                 </div>
               </div>
