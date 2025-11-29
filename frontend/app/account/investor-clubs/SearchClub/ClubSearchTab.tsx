@@ -538,7 +538,7 @@ const ClubSearchTab: React.FC = () => {
                       <SelectTrigger className="w-full rounded-none">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="w-full rounded-none">
                         <SelectItem value="recent">Most Recent</SelectItem>
                         <SelectItem value="members">Most Members</SelectItem>
                         <SelectItem value="balance">Highest Balance</SelectItem>
