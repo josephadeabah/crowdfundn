@@ -494,7 +494,7 @@ const ClubSearchTab: React.FC = () => {
                       formatValue={(value: number | number[]) =>
                         `${Array.isArray(value) ? value[0] : value} members`
                       }
-                      variant="default"
+                      variant="minimal"
                     />
                   </div>
 
