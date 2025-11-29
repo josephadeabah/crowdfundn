@@ -281,7 +281,7 @@ const EquityInvestments = () => {
       case 'successful':
         return 'Successful';
       case 'committed':
-        return 'Committed • Cancel Available';
+        return 'Committed';
       case 'pending':
         return 'Pending';
       case 'processing':
