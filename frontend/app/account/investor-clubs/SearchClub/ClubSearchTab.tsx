@@ -16,8 +16,8 @@ import {
   Clock,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
-import { Club } from '../clubTypes';
-import { clubService } from '../clubservice';
+import { Club, Member } from '../clubTypes';
+import { clubService, membershipService } from '../clubservice';
 import ClubDetailsModal from '../club-details/ClubDetailsModal';
 import { AdvancedSlider } from '../components/advanced-slider/AdvancedSlider';
 import {
@@ -80,6 +80,7 @@ const ClubSearchTab: React.FC = () => {
 
   const [showFilters, setShowFilters] = useState(false);
   const [allClubs, setAllClubs] = useState<Club[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -118,6 +119,18 @@ const ClubSearchTab: React.FC = () => {
 
     loadAllClubs();
   }, [token]);
+
+    const loadClubMembers = async (club: Club) => {
+      if (!token) return;
+  
+      try {
+        const response = await membershipService.getMembers(token, club.slug);
+        setMembers(response.members);
+      } catch (error) {
+        console.error('Failed to load club members:', error);
+        setMembers([]);
+      }
+    };
 
   // Update ranges when max values change
   useEffect(() => {
@@ -269,8 +282,9 @@ const ClubSearchTab: React.FC = () => {
     handleFilterChange('clubType', newTypes);
   };
 
-  const handleClubClick = (club: Club) => {
+  const handleClubClick = async (club: Club) => {
     setSelectedClub(club);
+    await loadClubMembers(club);
     setIsModalOpen(true);
   };
 
@@ -696,7 +710,7 @@ const ClubSearchTab: React.FC = () => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           club={selectedClub}
-          members={[]}
+          members={members}
           onMembershipUpdate={() => {}}
         />
       )}
