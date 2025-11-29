@@ -423,6 +423,388 @@ const GeneralDashboard = () => {
         </div>
       </div>
 
+      {/* NEW: Contribution Statistics Section */}
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900">
+          Contribution Statistics
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Total Contributions</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.contribution_statistics?.total_contributions || 0}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Total Amount</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {formatValue(
+                metrics?.contribution_statistics?.total_amount || 0,
+                'currency',
+              )}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Average Contribution</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {formatValue(
+                metrics?.contribution_statistics?.average_contribution || 0,
+                'currency',
+              )}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Size Distribution</h3>
+            <div className="text-sm">
+              <p>
+                Small:{' '}
+                {metrics?.contribution_statistics
+                  ?.contribution_size_distribution?.small || 0}
+              </p>
+              <p>
+                Medium:{' '}
+                {metrics?.contribution_statistics
+                  ?.contribution_size_distribution?.medium || 0}
+              </p>
+              <p>
+                Large:{' '}
+                {metrics?.contribution_statistics
+                  ?.contribution_size_distribution?.large || 0}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* NEW: Investment Clubs Statistics Section */}
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900">
+          Investment Clubs Statistics
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Total Clubs</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.investment_clubs_statistics?.total_clubs || 0}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Active Clubs</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.investment_clubs_statistics?.active_clubs || 0}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Total Members</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.investment_clubs_statistics?.total_members || 0}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Avg Members/Club</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.investment_clubs_statistics?.average_members_per_club ||
+                0}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Financial Overview</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Total Contributions:</span>
+                <span className="font-semibold">
+                  {formatValue(
+                    metrics?.investment_clubs_statistics
+                      ?.total_club_contributions || 0,
+                    'currency',
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Balance:</span>
+                <span className="font-semibold">
+                  {formatValue(
+                    metrics?.investment_clubs_statistics?.total_club_balance ||
+                      0,
+                    'currency',
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Invested:</span>
+                <span className="font-semibold">
+                  {formatValue(
+                    metrics?.investment_clubs_statistics?.total_club_invested ||
+                      0,
+                    'currency',
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Investment Ratio:</span>
+                <span className="font-semibold">
+                  {metrics?.investment_clubs_statistics?.financial_metrics
+                    ?.investment_ratio || 0}
+                  %
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Club Type Distribution</h3>
+            <div className="space-y-2">
+              {metrics?.investment_clubs_statistics?.club_type_distribution &&
+                Object.entries(
+                  metrics.investment_clubs_statistics.club_type_distribution,
+                ).map(([type, count]) => (
+                  <div key={type} className="flex justify-between">
+                    <span className="text-gray-600">{type}</span>
+                    <span className="font-semibold">{count}</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* NEW: Club Investment Statistics Section */}
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900">
+          Club Investment Statistics
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Total Investments</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.club_investment_statistics?.total_investments || 0}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Total Amount</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {formatValue(
+                metrics?.club_investment_statistics?.total_investment_amount ||
+                  0,
+                'currency',
+              )}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Average Investment</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {formatValue(
+                metrics?.club_investment_statistics?.average_investment || 0,
+                'currency',
+              )}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Equity ROI</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.club_investment_statistics?.equity_investments
+                ?.average_roi || 0}
+              %
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Equity Investments</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Total Invested:</span>
+                <span className="font-semibold">
+                  {formatValue(
+                    metrics?.club_investment_statistics?.equity_investments
+                      ?.total_equity_invested || 0,
+                    'currency',
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Current Value:</span>
+                <span className="font-semibold">
+                  {formatValue(
+                    metrics?.club_investment_statistics?.equity_investments
+                      ?.total_current_value || 0,
+                    'currency',
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Returns:</span>
+                <span className="font-semibold">
+                  {formatValue(
+                    metrics?.club_investment_statistics?.equity_investments
+                      ?.total_returns || 0,
+                    'currency',
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Investment Count:</span>
+                <span className="font-semibold">
+                  {metrics?.club_investment_statistics?.equity_investments
+                    ?.investment_count || 0}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Investment Size Distribution</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Small (&lt; GHS1,000):</span>
+                <span className="font-semibold">
+                  {metrics?.club_investment_statistics
+                    ?.investment_size_distribution?.small || 0}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Medium (GHS1,000-10,000):</span>
+                <span className="font-semibold">
+                  {metrics?.club_investment_statistics
+                    ?.investment_size_distribution?.medium || 0}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Large (&ge; GHS10,000):</span>
+                <span className="font-semibold">
+                  {metrics?.club_investment_statistics
+                    ?.investment_size_distribution?.large || 0}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* NEW: Voting Statistics Section */}
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900">
+          Voting Statistics
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Total Votes</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.voting_statistics?.total_votes || 0}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Club Investment Votes</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.voting_statistics?.club_investment_votes || 0}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Avg Votes/Investment</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.voting_statistics?.average_votes_per_investment || 0}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* NEW: Member Share Statistics Section */}
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900">
+          Member Share Statistics
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Total Members</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.member_share_statistics?.total_members || 0}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Average Share</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.member_share_statistics?.statistical_analysis
+                ?.average_share || 0}
+              %
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Median Share</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.member_share_statistics?.statistical_analysis
+                ?.median_share || 0}
+              %
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Gini Coefficient</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {metrics?.member_share_statistics?.share_concentration
+                ?.gini_coefficient || 0}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Share Distribution</h3>
+            <div className="space-y-2">
+              {metrics?.member_share_statistics?.share_distribution &&
+                Object.entries(
+                  metrics.member_share_statistics.share_distribution,
+                ).map(([range, count]) => (
+                  <div key={range} className="flex justify-between">
+                    <span className="text-gray-600">{range}</span>
+                    <span className="font-semibold">{count}</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Share Concentration</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Top 10% Hold:</span>
+                <span className="font-semibold">
+                  {metrics?.member_share_statistics?.share_concentration
+                    ?.top_10_percent_share || 0}
+                  %
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Top 20% Hold:</span>
+                <span className="font-semibold">
+                  {metrics?.member_share_statistics?.share_concentration
+                    ?.top_20_percent_share || 0}
+                  %
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Max Share:</span>
+                <span className="font-semibold">
+                  {metrics?.member_share_statistics?.statistical_analysis
+                    ?.maximum_share || 0}
+                  %
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Min Share:</span>
+                <span className="font-semibold">
+                  {metrics?.member_share_statistics?.statistical_analysis
+                    ?.minimum_share || 0}
+                  %
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Additional Sections */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         {/* User Engagement */}

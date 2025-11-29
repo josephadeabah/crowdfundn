@@ -101,6 +101,167 @@ export interface Metrics {
       large: number;
     };
   };
+
+  // NEW: Contribution statistics
+  contribution_statistics: {
+    total_contributions: number;
+    total_amount: number;
+    average_contribution: number;
+    contributions_over_time: Record<string, number>;
+    monthly_contributions: Record<string, number>;
+    status_distribution: Record<string, number>;
+    top_contributors: TopContributor[];
+    contribution_size_distribution: {
+      small: number;
+      medium: number;
+      large: number;
+    };
+    recent_contributions: RecentContribution[];
+  };
+
+  // NEW: Investment clubs statistics
+  investment_clubs_statistics: {
+    total_clubs: number;
+    active_clubs: number;
+    total_members: number;
+    average_members_per_club: number;
+    total_club_contributions: number;
+    total_club_balance: number;
+    total_club_invested: number;
+    club_type_distribution: Record<string, number>;
+    membership_role_distribution: Record<string, number>;
+    top_clubs_by_contributions: TopClub[];
+    clubs_created_over_time: Record<string, number>;
+    financial_metrics: {
+      average_contribution_per_club: number;
+      average_balance_per_club: number;
+      average_invested_per_club: number;
+      investment_ratio: number;
+    };
+  };
+
+  // NEW: Club investment statistics
+  club_investment_statistics: {
+    total_investments: number;
+    total_investment_amount: number;
+    average_investment: number;
+    investments_over_time: Record<string, number>;
+    status_distribution: Record<string, number>;
+    top_investments: ClubInvestment[];
+    investment_by_club_type: Record<string, number>;
+    equity_investments: {
+      total_equity_invested: number;
+      total_current_value: number;
+      average_roi: number;
+      total_returns: number;
+      investment_count: number;
+    };
+    investment_size_distribution: {
+      small: number;
+      medium: number;
+      large: number;
+    };
+  };
+
+  // NEW: Voting statistics
+  voting_statistics: {
+    total_votes: number;
+    club_investment_votes: number;
+    vote_type_distribution: Record<string, number>;
+    voting_participation_by_club: VotingParticipation[];
+    recent_votes: RecentVote[];
+    average_votes_per_investment: number;
+  };
+
+  // NEW: Member share statistics
+  member_share_statistics: {
+    total_members: number;
+    share_distribution: Record<string, number>;
+    top_members_by_share: TopMemberByShare[];
+    recent_share_changes: RecentShareChange[];
+    statistical_analysis: {
+      average_share: number;
+      median_share: number;
+      maximum_share: number;
+      minimum_share: number;
+      standard_deviation: number;
+    };
+    share_concentration: {
+      top_10_percent_share: number;
+      top_20_percent_share: number;
+      gini_coefficient: number;
+    };
+  };
+}
+
+// NEW: Additional interfaces for the new statistics
+interface TopContributor {
+  id: number;
+  name: string;
+  contribution_count: number;
+  total_contributed: number;
+}
+
+interface RecentContribution {
+  id: number;
+  amount: number;
+  user_name: string;
+  club_name: string;
+  created_at: string;
+}
+
+interface TopClub {
+  id: number;
+  name: string;
+  total_contributions: number;
+  current_balance: number;
+  total_invested: number;
+  member_count: number;
+  club_type: string;
+}
+
+interface ClubInvestment {
+  id: number;
+  club_name: string;
+  campaign_name: string;
+  investment_amount: number;
+  status: string;
+  created_at: string;
+}
+
+interface VotingParticipation {
+  club_name: string;
+  unique_voters: number;
+  total_members: number;
+  participation_rate: number;
+}
+
+interface RecentVote {
+  id: number;
+  user_name: string;
+  votable_type: string;
+  vote_type: string;
+  created_at: string;
+}
+
+interface TopMemberByShare {
+  id: number;
+  user_name: string;
+  club_name: string;
+  contributed_share: number;
+  total_contributed: number;
+  role: string;
+}
+
+interface RecentShareChange {
+  id: number;
+  user_name: string;
+  club_name: string;
+  previous_share: number;
+  new_share: number;
+  change_amount: number;
+  change_reason: string;
+  created_at: string;
 }
 
 interface Campaign {
