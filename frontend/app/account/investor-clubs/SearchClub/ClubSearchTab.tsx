@@ -333,7 +333,7 @@ const ClubSearchTab: React.FC = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="bg-white border border-gray-300 p-4 mb-6">
+        <div className="bg-white border border-gray-100 p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-3">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -342,7 +342,7 @@ const ClubSearchTab: React.FC = () => {
                 placeholder="Search clubs by name, mission, or investment focus..."
                 value={state.query}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 focus:border-emerald-500 outline-none transition-colors"
+                className="w-full pl-10 pr-4 py-2 border border-gray-100 focus:border-emerald-500 outline-none transition-colors"
               />
             </div>
             <button
@@ -350,7 +350,7 @@ const ClubSearchTab: React.FC = () => {
               className={`px-4 py-2 border font-medium flex items-center gap-2 transition-colors ${
                 showFilters
                   ? 'bg-emerald-600 text-white border-emerald-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  : 'bg-white text-gray-700 border-gray-100 hover:bg-gray-50'
               }`}
             >
               <Filter className="w-4 h-4" />
@@ -406,7 +406,7 @@ const ClubSearchTab: React.FC = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-white border border-gray-300 p-4 mb-6 overflow-hidden"
+              className="bg-white border border-gray-100 p-4 mb-6 overflow-hidden"
             >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-base font-semibold text-gray-900">
@@ -439,7 +439,7 @@ const ClubSearchTab: React.FC = () => {
                             focus,
                           )}
                           onChange={() => toggleInvestmentFocus(focus)}
-                          className="border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                          className="border-gray-100 text-emerald-600 focus:ring-emerald-500"
                         />
                         <span className="text-sm text-gray-700">{focus}</span>
                       </label>
@@ -462,7 +462,7 @@ const ClubSearchTab: React.FC = () => {
                           type="checkbox"
                           checked={state.filters.clubType.includes(type)}
                           onChange={() => toggleClubType(type)}
-                          className="border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                          className="border-gray-100 text-emerald-600 focus:ring-emerald-500"
                         />
                         <span className="text-sm text-gray-700 capitalize">
                           {type}
@@ -537,7 +537,7 @@ const ClubSearchTab: React.FC = () => {
                     onChange={(e) =>
                       handleFilterChange('sortBy', e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 text-sm focus:border-emerald-500 outline-none"
+                    className="w-full px-3 py-2 border border-gray-100 text-sm focus:border-emerald-500 outline-none"
                   >
                     <option value="recent">Most Recent</option>
                     <option value="members">Most Members</option>
@@ -580,7 +580,7 @@ const ClubSearchTab: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white border border-gray-300 hover:border-emerald-500 transition-colors cursor-pointer"
+                  className="bg-white border border-gray-100 hover:border-emerald-500 transition-colors cursor-pointer"
                   onClick={() => handleClubClick(club)}
                 >
                   {/* Club Header */}
