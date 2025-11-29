@@ -428,7 +428,7 @@ const ClubSearchTab: React.FC = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Investment Focus */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -532,28 +532,28 @@ const ClubSearchTab: React.FC = () => {
                       variant="default"
                     />
                   </div>
-                                  {/* Sort By */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Sort By
-                  </label>
-                  <Select
-                    value={state.filters.sortBy}
-                    onValueChange={(
-                      value: 'recent' | 'members' | 'balance' | 'name',
-                    ) => handleFilterChange('sortBy', value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="recent">Most Recent</SelectItem>
-                      <SelectItem value="members">Most Members</SelectItem>
-                      <SelectItem value="balance">Highest Balance</SelectItem>
-                      <SelectItem value="name">Alphabetical</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  {/* Sort By */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Sort By
+                    </label>
+                    <Select
+                      value={state.filters.sortBy}
+                      onValueChange={(
+                        value: 'recent' | 'members' | 'balance' | 'name',
+                      ) => handleFilterChange('sortBy', value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="recent">Most Recent</SelectItem>
+                        <SelectItem value="members">Most Members</SelectItem>
+                        <SelectItem value="balance">Highest Balance</SelectItem>
+                        <SelectItem value="name">Alphabetical</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
             </motion.div>
