@@ -19,14 +19,13 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 import { Club } from '../clubTypes';
 import { clubService } from '../clubservice';
 import ClubDetailsModal from '../club-details/ClubDetailsModal';
+import { AdvancedSlider } from '../components/advanced-slider/AdvancedSlider';
 
 interface SearchFilters {
   investmentFocus: string[];
   clubType: string[];
-  minMembers: number | null;
-  maxMembers: number | null;
-  minMonthlyContribution: number | null;
-  maxMonthlyContribution: number | null;
+  membersRange: [number, number];
+  monthlyContributionRange: [number, number];
   sortBy: 'recent' | 'members' | 'balance' | 'name';
 }
 
@@ -63,10 +62,8 @@ const ClubSearchTab: React.FC = () => {
     filters: {
       investmentFocus: [],
       clubType: [],
-      minMembers: null,
-      maxMembers: null,
-      minMonthlyContribution: null,
-      maxMonthlyContribution: null,
+      membersRange: [1, 50],
+      monthlyContributionRange: [0, 1000],
       sortBy: 'recent',
     },
     results: [],
@@ -78,6 +75,19 @@ const ClubSearchTab: React.FC = () => {
   const [allClubs, setAllClubs] = useState<Club[]>([]);
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Calculate max values from actual club data
+  const maxValues = useMemo(() => {
+    if (allClubs.length === 0) return { maxMembers: 50, maxContribution: 1000 };
+    
+    const maxMembers = Math.max(...allClubs.map(club => club.current_members_count));
+    const maxContribution = Math.max(...allClubs.map(club => club.minimum_monthly_contribution));
+    
+    return {
+      maxMembers: Math.ceil(maxMembers / 10) * 10, // Round up to nearest 10
+      maxContribution: Math.ceil(maxContribution / 100) * 100, // Round up to nearest 100
+    };
+  }, [allClubs]);
 
   // Load all clubs on component mount
   useEffect(() => {
@@ -97,6 +107,18 @@ const ClubSearchTab: React.FC = () => {
 
     loadAllClubs();
   }, [token]);
+
+  // Update ranges when max values change
+  useEffect(() => {
+    setState(prev => ({
+      ...prev,
+      filters: {
+        ...prev.filters,
+        membersRange: [1, Math.max(prev.filters.membersRange[1], maxValues.maxMembers)],
+        monthlyContributionRange: [0, Math.max(prev.filters.monthlyContributionRange[1], maxValues.maxContribution)]
+      }
+    }));
+  }, [maxValues]);
 
   // Perform search when query or filters change
   useEffect(() => {
@@ -129,31 +151,23 @@ const ClubSearchTab: React.FC = () => {
             state.filters.clubType.includes(club.club_type);
 
           // Members count filter
-          const matchesMinMembers =
-            !state.filters.minMembers ||
-            club.current_members_count >= state.filters.minMembers;
-          const matchesMaxMembers =
-            !state.filters.maxMembers ||
-            club.current_members_count <= state.filters.maxMembers;
+          const [minMembers, maxMembers] = state.filters.membersRange;
+          const matchesMembers =
+            club.current_members_count >= minMembers &&
+            club.current_members_count <= maxMembers;
 
           // Monthly contribution filter
-          const matchesMinContribution =
-            !state.filters.minMonthlyContribution ||
-            club.minimum_monthly_contribution >=
-              state.filters.minMonthlyContribution;
-          const matchesMaxContribution =
-            !state.filters.maxMonthlyContribution ||
-            club.minimum_monthly_contribution <=
-              state.filters.maxMonthlyContribution;
+          const [minContribution, maxContribution] = state.filters.monthlyContributionRange;
+          const matchesContribution =
+            club.minimum_monthly_contribution >= minContribution &&
+            club.minimum_monthly_contribution <= maxContribution;
 
           return (
             matchesQuery &&
             matchesFocus &&
             matchesType &&
-            matchesMinMembers &&
-            matchesMaxMembers &&
-            matchesMinContribution &&
-            matchesMaxContribution
+            matchesMembers &&
+            matchesContribution
           );
         });
 
@@ -209,10 +223,8 @@ const ClubSearchTab: React.FC = () => {
       filters: {
         investmentFocus: [],
         clubType: [],
-        minMembers: null,
-        maxMembers: null,
-        minMonthlyContribution: null,
-        maxMonthlyContribution: null,
+        membersRange: [1, maxValues.maxMembers],
+        monthlyContributionRange: [0, maxValues.maxContribution],
         sortBy: 'recent',
       },
     }));
@@ -332,7 +344,8 @@ const ClubSearchTab: React.FC = () => {
               {Object.values(state.filters).some((filter) =>
                 Array.isArray(filter)
                   ? filter.length > 0
-                  : filter !== null && filter !== '' && filter !== 'recent',
+                  : filter !== 'recent' && 
+                    (Array.isArray(filter) ? filter.some(val => val !== 0 && val !== 1 && val !== 50 && val !== 1000) : true)
               ) && (
                 <span className="bg-emerald-500 text-white w-4 h-4 text-xs flex items-center justify-center">
                   !
@@ -384,13 +397,13 @@ const ClubSearchTab: React.FC = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Investment Focus */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
                     Investment Focus
                   </label>
-                  <div className="space-y-1 max-h-32 overflow-y-auto">
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
                     {investmentFocusOptions.map((focus) => (
                       <label
                         key={focus}
@@ -412,10 +425,10 @@ const ClubSearchTab: React.FC = () => {
 
                 {/* Club Type */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
                     Club Type
                   </label>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     {['public', 'private'].map((type) => (
                       <label
                         key={type}
@@ -435,42 +448,59 @@ const ClubSearchTab: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Members Range */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Members Range
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      placeholder="Min"
-                      value={state.filters.minMembers || ''}
-                      onChange={(e) =>
-                        handleFilterChange(
-                          'minMembers',
-                          e.target.value ? parseInt(e.target.value) : null,
-                        )
+                {/* Stacked Range Filters */}
+                <div className="space-y-6">
+                  {/* Members Range Slider */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Members Range
+                    </label>
+                    <AdvancedSlider
+                      value={state.filters.membersRange}
+                      onValueChange={(value: number[]) =>
+                        handleFilterChange('membersRange', value as [number, number])
                       }
-                      className="flex-1 px-2 py-1 border border-gray-300 text-sm focus:border-emerald-500 outline-none"
+                      min={1}
+                      max={maxValues.maxMembers}
+                      step={1}
+                      showValue={true}
+                      showMinMax={true}
+                      formatValue={(value: number | number[]) =>
+                        `${Array.isArray(value) ? value[0] : value} members`
+                      }
+                      variant="default"
                     />
-                    <input
-                      type="number"
-                      placeholder="Max"
-                      value={state.filters.maxMembers || ''}
-                      onChange={(e) =>
+                  </div>
+
+                  {/* Monthly Contribution Slider */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Monthly Contribution
+                    </label>
+                    <AdvancedSlider
+                      value={state.filters.monthlyContributionRange}
+                      onValueChange={(value: number | number[]) =>
                         handleFilterChange(
-                          'maxMembers',
-                          e.target.value ? parseInt(e.target.value) : null,
+                          'monthlyContributionRange',
+                          Array.isArray(value) ? (value as [number, number]) : [value, value],
                         )
                       }
-                      className="flex-1 px-2 py-1 border border-gray-300 text-sm focus:border-emerald-500 outline-none"
+                      min={0}
+                      max={maxValues.maxContribution}
+                      step={10}
+                      showValue={true}
+                      showMinMax={true}
+                      formatValue={(value: number | number[]) =>
+                        formatCurrency(Array.isArray(value) ? value[0] : value)
+                      }
+                      variant="default"
                     />
                   </div>
                 </div>
 
                 {/* Sort By */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
                     Sort By
                   </label>
                   <select
@@ -478,7 +508,7 @@ const ClubSearchTab: React.FC = () => {
                     onChange={(e) =>
                       handleFilterChange('sortBy', e.target.value)
                     }
-                    className="w-full px-2 py-1 border border-gray-300 text-sm focus:border-emerald-500 outline-none"
+                    className="w-full px-3 py-2 border border-gray-300 text-sm focus:border-emerald-500 outline-none"
                   >
                     <option value="recent">Most Recent</option>
                     <option value="members">Most Members</option>
