@@ -308,6 +308,8 @@ class InvestmentClub < ApplicationRecord
 
   # NEW: Force synchronization of members count
   def synchronize_members_count
+    return if destroyed? # FIXED: Don't run on destroyed records
+    
     actual_count = investment_club_memberships.active.count
     if current_members_count != actual_count
       update_column(:current_members_count, actual_count)

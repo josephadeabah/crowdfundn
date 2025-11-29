@@ -249,8 +249,7 @@ module Api
 
       # DELETE /api/v1/investment_clubs/:id
       def destroy
-        # SIMPLIFIED: Only check if user is creator
-        unless @club.deletion_errors?(@current_user)
+        unless @club.is_creator?(@current_user)
           return render json: { 
             success: false,
             error: 'Only club creator can delete the club' 
