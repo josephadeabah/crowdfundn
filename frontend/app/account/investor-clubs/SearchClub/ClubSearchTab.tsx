@@ -535,7 +535,7 @@ const ClubSearchTab: React.FC = () => {
                         value: 'recent' | 'members' | 'balance' | 'name',
                       ) => handleFilterChange('sortBy', value)}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full rounded-none">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
