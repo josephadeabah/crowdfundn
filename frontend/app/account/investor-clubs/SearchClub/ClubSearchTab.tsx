@@ -79,10 +79,14 @@ const ClubSearchTab: React.FC = () => {
   // Calculate max values from actual club data
   const maxValues = useMemo(() => {
     if (allClubs.length === 0) return { maxMembers: 50, maxContribution: 1000 };
-    
-    const maxMembers = Math.max(...allClubs.map(club => club.current_members_count));
-    const maxContribution = Math.max(...allClubs.map(club => club.minimum_monthly_contribution));
-    
+
+    const maxMembers = Math.max(
+      ...allClubs.map((club) => club.current_members_count),
+    );
+    const maxContribution = Math.max(
+      ...allClubs.map((club) => club.minimum_monthly_contribution),
+    );
+
     return {
       maxMembers: Math.ceil(maxMembers / 10) * 10, // Round up to nearest 10
       maxContribution: Math.ceil(maxContribution / 100) * 100, // Round up to nearest 100
@@ -110,13 +114,22 @@ const ClubSearchTab: React.FC = () => {
 
   // Update ranges when max values change
   useEffect(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       filters: {
         ...prev.filters,
-        membersRange: [1, Math.max(prev.filters.membersRange[1], maxValues.maxMembers)],
-        monthlyContributionRange: [0, Math.max(prev.filters.monthlyContributionRange[1], maxValues.maxContribution)]
-      }
+        membersRange: [
+          1,
+          Math.max(prev.filters.membersRange[1], maxValues.maxMembers),
+        ],
+        monthlyContributionRange: [
+          0,
+          Math.max(
+            prev.filters.monthlyContributionRange[1],
+            maxValues.maxContribution,
+          ),
+        ],
+      },
     }));
   }, [maxValues]);
 
@@ -157,7 +170,8 @@ const ClubSearchTab: React.FC = () => {
             club.current_members_count <= maxMembers;
 
           // Monthly contribution filter
-          const [minContribution, maxContribution] = state.filters.monthlyContributionRange;
+          const [minContribution, maxContribution] =
+            state.filters.monthlyContributionRange;
           const matchesContribution =
             club.minimum_monthly_contribution >= minContribution &&
             club.minimum_monthly_contribution <= maxContribution;
@@ -344,8 +358,16 @@ const ClubSearchTab: React.FC = () => {
               {Object.values(state.filters).some((filter) =>
                 Array.isArray(filter)
                   ? filter.length > 0
-                  : filter !== 'recent' && 
-                    (Array.isArray(filter) ? filter.some(val => val !== 0 && val !== 1 && val !== 50 && val !== 1000) : true)
+                  : filter !== 'recent' &&
+                    (Array.isArray(filter)
+                      ? filter.some(
+                          (val) =>
+                            val !== 0 &&
+                            val !== 1 &&
+                            val !== 50 &&
+                            val !== 1000,
+                        )
+                      : true),
               ) && (
                 <span className="bg-emerald-500 text-white w-4 h-4 text-xs flex items-center justify-center">
                   !
@@ -387,7 +409,9 @@ const ClubSearchTab: React.FC = () => {
               className="bg-white border border-gray-300 p-4 mb-6 overflow-hidden"
             >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-base font-semibold text-gray-900">Filters</h3>
+                <h3 className="text-base font-semibold text-gray-900">
+                  Filters
+                </h3>
                 <button
                   onClick={clearFilters}
                   className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
@@ -458,7 +482,10 @@ const ClubSearchTab: React.FC = () => {
                     <AdvancedSlider
                       value={state.filters.membersRange}
                       onValueChange={(value: number[]) =>
-                        handleFilterChange('membersRange', value as [number, number])
+                        handleFilterChange(
+                          'membersRange',
+                          value as [number, number],
+                        )
                       }
                       min={1}
                       max={maxValues.maxMembers}
@@ -482,7 +509,9 @@ const ClubSearchTab: React.FC = () => {
                       onValueChange={(value: number | number[]) =>
                         handleFilterChange(
                           'monthlyContributionRange',
-                          Array.isArray(value) ? (value as [number, number]) : [value, value],
+                          Array.isArray(value)
+                            ? (value as [number, number])
+                            : [value, value],
                         )
                       }
                       min={0}
@@ -529,7 +558,8 @@ const ClubSearchTab: React.FC = () => {
               {state.hasSearched ? 'Search Results' : 'All Clubs'}
             </h2>
             <p className="text-sm text-gray-600">
-              {state.results.length} {state.results.length === 1 ? 'club' : 'clubs'} found
+              {state.results.length}{' '}
+              {state.results.length === 1 ? 'club' : 'clubs'} found
               {state.query && ` for "${state.query}"`}
             </p>
           </div>

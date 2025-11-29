@@ -1,6 +1,6 @@
-import * as React from "react";
-import * as SliderPrimitive from "@radix-ui/react-slider";
-import { cn } from "@/app/lib/utils";
+import * as React from 'react';
+import * as SliderPrimitive from '@radix-ui/react-slider';
+import { cn } from '@/app/lib/utils';
 
 export interface AdvancedSliderProps
   extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
@@ -8,7 +8,7 @@ export interface AdvancedSliderProps
   showMinMax?: boolean;
   showSteps?: boolean;
   formatValue?: (value: number) => string;
-  variant?: "default" | "glow" | "minimal";
+  variant?: 'default' | 'glow' | 'minimal';
 }
 
 const AdvancedSlider = React.forwardRef<
@@ -22,7 +22,7 @@ const AdvancedSlider = React.forwardRef<
       showMinMax = false,
       showSteps = false,
       formatValue = (val) => val.toString(),
-      variant = "default",
+      variant = 'default',
       min = 0,
       max = 100,
       step = 1,
@@ -30,10 +30,10 @@ const AdvancedSlider = React.forwardRef<
       defaultValue,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [currentValue, setCurrentValue] = React.useState<number[]>(
-      value || defaultValue || [min]
+      value || defaultValue || [min],
     );
 
     React.useEffect(() => {
@@ -51,7 +51,7 @@ const AdvancedSlider = React.forwardRef<
     const steps = showSteps
       ? Array.from(
           { length: Math.floor((max - min) / step) + 1 },
-          (_, i) => min + i * step
+          (_, i) => min + i * step,
         )
       : [];
 
@@ -70,8 +70,8 @@ const AdvancedSlider = React.forwardRef<
           <SliderPrimitive.Root
             ref={ref}
             className={cn(
-              "relative flex w-full touch-none select-none items-center",
-              className
+              'relative flex w-full touch-none select-none items-center',
+              className,
             )}
             value={currentValue}
             onValueChange={handleValueChange}
@@ -82,15 +82,17 @@ const AdvancedSlider = React.forwardRef<
           >
             <SliderPrimitive.Track
               className={cn(
-                "relative h-2 w-full grow overflow-hidden rounded-full bg-slider-track transition-all",
-                variant === "glow" && "shadow-[0_0_10px_hsl(var(--slider-track))]"
+                'relative h-2 w-full grow overflow-hidden rounded-full bg-slider-track transition-all',
+                variant === 'glow' &&
+                  'shadow-[0_0_10px_hsl(var(--slider-track))]',
               )}
             >
               <SliderPrimitive.Range
                 className={cn(
-                  "absolute h-full bg-slider-range transition-all",
-                  variant === "glow" && "shadow-[0_0_15px_hsl(var(--slider-range))]",
-                  variant === "minimal" && "bg-primary"
+                  'absolute h-full bg-slider-range transition-all',
+                  variant === 'glow' &&
+                    'shadow-[0_0_15px_hsl(var(--slider-range))]',
+                  variant === 'minimal' && 'bg-primary',
                 )}
               />
             </SliderPrimitive.Track>
@@ -101,15 +103,18 @@ const AdvancedSlider = React.forwardRef<
                 {steps.map((stepValue) => {
                   const percentage = ((stepValue - min) / (max - min)) * 100;
                   const isInRange = isRange
-                    ? stepValue >= currentValue[0] && stepValue <= currentValue[1]
+                    ? stepValue >= currentValue[0] &&
+                      stepValue <= currentValue[1]
                     : stepValue <= currentValue[0];
 
                   return (
                     <div
                       key={stepValue}
                       className={cn(
-                        "w-1 h-1 rounded-full transition-all duration-300",
-                        isInRange ? "bg-primary-foreground/80" : "bg-muted-foreground/30"
+                        'w-1 h-1 rounded-full transition-all duration-300',
+                        isInRange
+                          ? 'bg-primary-foreground/80'
+                          : 'bg-muted-foreground/30',
                       )}
                       style={{ left: `${percentage}%` }}
                     />
@@ -122,23 +127,25 @@ const AdvancedSlider = React.forwardRef<
               <SliderPrimitive.Thumb
                 key={index}
                 className={cn(
-                  "relative block h-5 w-5 rounded-full border-2 border-slider-thumb bg-background ring-offset-background transition-all duration-300",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                  "disabled:pointer-events-none disabled:opacity-50",
-                  "hover:scale-110 hover:border-slider-thumb-hover active:scale-95",
-                  variant === "glow" &&
-                    "shadow-[0_0_15px_hsl(var(--slider-thumb-shadow))] hover:shadow-[0_0_25px_hsl(var(--slider-thumb-shadow))]",
-                  variant === "default" && "shadow-md hover:shadow-lg",
-                  variant === "minimal" && "border-primary hover:border-primary-glow"
+                  'relative block h-5 w-5 rounded-full border-2 border-slider-thumb bg-background ring-offset-background transition-all duration-300',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                  'disabled:pointer-events-none disabled:opacity-50',
+                  'hover:scale-110 hover:border-slider-thumb-hover active:scale-95',
+                  variant === 'glow' &&
+                    'shadow-[0_0_15px_hsl(var(--slider-thumb-shadow))] hover:shadow-[0_0_25px_hsl(var(--slider-thumb-shadow))]',
+                  variant === 'default' && 'shadow-md hover:shadow-lg',
+                  variant === 'minimal' &&
+                    'border-primary hover:border-primary-glow',
                 )}
               >
                 {showValue && (
                   <div
                     className={cn(
-                      "absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all duration-200",
-                      "bg-primary text-primary-foreground shadow-lg",
-                      "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100",
-                      variant === "glow" && "shadow-[0_0_15px_hsl(var(--primary-glow))]"
+                      'absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all duration-200',
+                      'bg-primary text-primary-foreground shadow-lg',
+                      'opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100',
+                      variant === 'glow' &&
+                        'shadow-[0_0_15px_hsl(var(--primary-glow))]',
                     )}
                   >
                     {formatValue(val)}
@@ -154,20 +161,26 @@ const AdvancedSlider = React.forwardRef<
           <div className="flex justify-center gap-4 text-sm font-medium text-foreground">
             {isRange ? (
               <>
-                <span className="text-primary">{formatValue(currentValue[0])}</span>
+                <span className="text-primary">
+                  {formatValue(currentValue[0])}
+                </span>
                 <span className="text-muted-foreground">—</span>
-                <span className="text-primary">{formatValue(currentValue[1])}</span>
+                <span className="text-primary">
+                  {formatValue(currentValue[1])}
+                </span>
               </>
             ) : (
-              <span className="text-primary">{formatValue(currentValue[0])}</span>
+              <span className="text-primary">
+                {formatValue(currentValue[0])}
+              </span>
             )}
           </div>
         )}
       </div>
     );
-  }
+  },
 );
 
-AdvancedSlider.displayName = "AdvancedSlider";
+AdvancedSlider.displayName = 'AdvancedSlider';
 
 export { AdvancedSlider };
