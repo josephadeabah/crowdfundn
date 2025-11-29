@@ -20,6 +20,13 @@ import { Club } from '../clubTypes';
 import { clubService } from '../clubservice';
 import ClubDetailsModal from '../club-details/ClubDetailsModal';
 import { AdvancedSlider } from '../components/advanced-slider/AdvancedSlider';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
 
 interface SearchFilters {
   investmentFocus: string[];
@@ -532,18 +539,22 @@ const ClubSearchTab: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Sort By
                   </label>
-                  <select
+                  <Select
                     value={state.filters.sortBy}
-                    onChange={(e) =>
-                      handleFilterChange('sortBy', e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-100 text-sm focus:border-emerald-500 outline-none"
+                    onValueChange={(
+                      value: 'recent' | 'members' | 'balance' | 'name',
+                    ) => handleFilterChange('sortBy', value)}
                   >
-                    <option value="recent">Most Recent</option>
-                    <option value="members">Most Members</option>
-                    <option value="balance">Highest Balance</option>
-                    <option value="name">Alphabetical</option>
-                  </select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="recent">Most Recent</SelectItem>
+                      <SelectItem value="members">Most Members</SelectItem>
+                      <SelectItem value="balance">Highest Balance</SelectItem>
+                      <SelectItem value="name">Alphabetical</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </motion.div>
