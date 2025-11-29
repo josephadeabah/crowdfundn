@@ -521,7 +521,7 @@ const ClubSearchTab: React.FC = () => {
                       formatValue={(value: number | number[]) =>
                         formatCurrency(Array.isArray(value) ? value[0] : value)
                       }
-                      variant="default"
+                      variant="minimal"
                     />
                   </div>
                   {/* Sort By */}
