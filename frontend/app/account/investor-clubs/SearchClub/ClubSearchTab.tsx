@@ -9,18 +9,16 @@ import {
   Users,
   DollarSign,
   TrendingUp,
-  MapPin,
-  Calendar,
-  Star,
-  Building2,
   Target,
   Zap,
   Globe,
   Lock,
+  Clock,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { Club } from '../clubTypes';
 import { clubService } from '../clubservice';
+import ClubDetailsModal from '../club-details/ClubDetailsModal';
 
 interface SearchFilters {
   investmentFocus: string[];
@@ -29,7 +27,6 @@ interface SearchFilters {
   maxMembers: number | null;
   minMonthlyContribution: number | null;
   maxMonthlyContribution: number | null;
-  location: string;
   sortBy: 'recent' | 'members' | 'balance' | 'name';
 }
 
@@ -70,7 +67,6 @@ const ClubSearchTab: React.FC = () => {
       maxMembers: null,
       minMonthlyContribution: null,
       maxMonthlyContribution: null,
-      location: '',
       sortBy: 'recent',
     },
     results: [],
@@ -80,6 +76,8 @@ const ClubSearchTab: React.FC = () => {
 
   const [showFilters, setShowFilters] = useState(false);
   const [allClubs, setAllClubs] = useState<Club[]>([]);
+  const [selectedClub, setSelectedClub] = useState<Club | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Load all clubs on component mount
   useEffect(() => {
@@ -88,7 +86,7 @@ const ClubSearchTab: React.FC = () => {
 
       try {
         setState((prev) => ({ ...prev, loading: true }));
-        const response = await clubService.getClubs(token, 1, 100); // Load more clubs for search
+        const response = await clubService.getClubs(token, 1, 100);
         setAllClubs(response.clubs);
       } catch (error) {
         console.error('Failed to load clubs:', error);
@@ -107,7 +105,6 @@ const ClubSearchTab: React.FC = () => {
     const performSearch = () => {
       setState((prev) => ({ ...prev, loading: true }));
 
-      // Simulate API delay for better UX
       setTimeout(() => {
         const filteredClubs = allClubs.filter((club) => {
           // Text search
@@ -216,7 +213,6 @@ const ClubSearchTab: React.FC = () => {
         maxMembers: null,
         minMonthlyContribution: null,
         maxMonthlyContribution: null,
-        location: '',
         sortBy: 'recent',
       },
     }));
@@ -240,6 +236,11 @@ const ClubSearchTab: React.FC = () => {
     handleFilterChange('clubType', newTypes);
   };
 
+  const handleClubClick = (club: Club) => {
+    setSelectedClub(club);
+    setIsModalOpen(true);
+  };
+
   // Memoized statistics
   const searchStats = useMemo(() => {
     return {
@@ -256,15 +257,6 @@ const ClubSearchTab: React.FC = () => {
             0,
           ) / allClubs.length,
         ) || 0,
-      popularFocus: investmentFocusOptions.reduce(
-        (popular, focus) => {
-          const count = allClubs.filter((club) =>
-            club.investment_focus.toLowerCase().includes(focus.toLowerCase()),
-          ).length;
-          return count > popular.count ? { focus, count } : popular;
-        },
-        { focus: 'Technology', count: 0 },
-      ),
     };
   }, [allClubs]);
 
@@ -277,18 +269,28 @@ const ClubSearchTab: React.FC = () => {
     }).format(amount);
   };
 
-  const getClubTypeIcon = (clubType: string) => {
-    return clubType === 'public' ? (
-      <Globe className="w-4 h-4" />
-    ) : (
-      <Lock className="w-4 h-4" />
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
     );
+
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    return date.toLocaleDateString();
   };
 
-  const getClubTypeColor = (clubType: string) => {
-    return clubType === 'public'
-      ? 'text-blue-600 bg-blue-50'
-      : 'text-orange-600 bg-orange-50';
+  const getClubIcon = (club: Club) => {
+    const focus = club.investment_focus?.toLowerCase();
+    if (focus?.includes('tech') || focus?.includes('software')) {
+      return <TrendingUp className="w-4 h-4" />;
+    }
+    if (focus?.includes('real estate') || focus?.includes('property')) {
+      return <Target className="w-4 h-4" />;
+    }
+    return <TrendingUp className="w-4 h-4" />;
   };
 
   return (
@@ -296,31 +298,30 @@ const ClubSearchTab: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Discover Investment Clubs
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Find the perfect investment club to join. Search by focus, size,
-            contribution level, and more.
+          <p className="text-gray-600">
+            Find the perfect investment club to join
           </p>
         </div>
 
         {/* Search Bar */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
+        <div className="bg-white border border-gray-300 p-4 mb-6">
+          <div className="flex flex-col lg:flex-row gap-3">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
                 placeholder="Search clubs by name, mission, or investment focus..."
                 value={state.query}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 focus:border-emerald-500 outline-none transition-colors"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`px-6 py-3 border rounded-lg font-medium flex items-center gap-2 transition-colors ${
+              className={`px-4 py-2 border font-medium flex items-center gap-2 transition-colors ${
                 showFilters
                   ? 'bg-emerald-600 text-white border-emerald-600'
                   : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
@@ -333,7 +334,7 @@ const ClubSearchTab: React.FC = () => {
                   ? filter.length > 0
                   : filter !== null && filter !== '' && filter !== 'recent',
               ) && (
-                <span className="bg-emerald-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                <span className="bg-emerald-500 text-white w-4 h-4 text-xs flex items-center justify-center">
                   !
                 </span>
               )}
@@ -341,24 +342,24 @@ const ClubSearchTab: React.FC = () => {
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-100">
+          <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-lg font-bold text-gray-900">
                 {searchStats.totalClubs}
               </div>
-              <div className="text-sm text-gray-600">Total Clubs</div>
+              <div className="text-xs text-gray-600">Total Clubs</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-lg font-bold text-gray-900">
                 {searchStats.averageMembers}
               </div>
-              <div className="text-sm text-gray-600">Avg Members</div>
+              <div className="text-xs text-gray-600">Avg Members</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-lg font-bold text-gray-900">
                 {formatCurrency(searchStats.averageBalance)}
               </div>
-              <div className="text-sm text-gray-600">Avg Balance</div>
+              <div className="text-xs text-gray-600">Avg Balance</div>
             </div>
           </div>
         </div>
@@ -370,10 +371,10 @@ const ClubSearchTab: React.FC = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-white rounded-lg border border-gray-200 p-6 mb-6 overflow-hidden"
+              className="bg-white border border-gray-300 p-4 mb-6 overflow-hidden"
             >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+                <h3 className="text-base font-semibold text-gray-900">Filters</h3>
                 <button
                   onClick={clearFilters}
                   className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
@@ -383,13 +384,13 @@ const ClubSearchTab: React.FC = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Investment Focus */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Investment Focus
                   </label>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                  <div className="space-y-1 max-h-32 overflow-y-auto">
                     {investmentFocusOptions.map((focus) => (
                       <label
                         key={focus}
@@ -401,7 +402,7 @@ const ClubSearchTab: React.FC = () => {
                             focus,
                           )}
                           onChange={() => toggleInvestmentFocus(focus)}
-                          className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                          className="border-gray-300 text-emerald-600 focus:ring-emerald-500"
                         />
                         <span className="text-sm text-gray-700">{focus}</span>
                       </label>
@@ -411,10 +412,10 @@ const ClubSearchTab: React.FC = () => {
 
                 {/* Club Type */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Club Type
                   </label>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     {['public', 'private'].map((type) => (
                       <label
                         key={type}
@@ -424,7 +425,7 @@ const ClubSearchTab: React.FC = () => {
                           type="checkbox"
                           checked={state.filters.clubType.includes(type)}
                           onChange={() => toggleClubType(type)}
-                          className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                          className="border-gray-300 text-emerald-600 focus:ring-emerald-500"
                         />
                         <span className="text-sm text-gray-700 capitalize">
                           {type}
@@ -436,7 +437,7 @@ const ClubSearchTab: React.FC = () => {
 
                 {/* Members Range */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Members Range
                   </label>
                   <div className="flex gap-2">
@@ -450,7 +451,7 @@ const ClubSearchTab: React.FC = () => {
                           e.target.value ? parseInt(e.target.value) : null,
                         )
                       }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                      className="flex-1 px-2 py-1 border border-gray-300 text-sm focus:border-emerald-500 outline-none"
                     />
                     <input
                       type="number"
@@ -462,47 +463,14 @@ const ClubSearchTab: React.FC = () => {
                           e.target.value ? parseInt(e.target.value) : null,
                         )
                       }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Monthly Contribution */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Monthly Contribution
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      placeholder="Min"
-                      value={state.filters.minMonthlyContribution || ''}
-                      onChange={(e) =>
-                        handleFilterChange(
-                          'minMonthlyContribution',
-                          e.target.value ? parseInt(e.target.value) : null,
-                        )
-                      }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Max"
-                      value={state.filters.maxMonthlyContribution || ''}
-                      onChange={(e) =>
-                        handleFilterChange(
-                          'maxMonthlyContribution',
-                          e.target.value ? parseInt(e.target.value) : null,
-                        )
-                      }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                      className="flex-1 px-2 py-1 border border-gray-300 text-sm focus:border-emerald-500 outline-none"
                     />
                   </div>
                 </div>
 
                 {/* Sort By */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Sort By
                   </label>
                   <select
@@ -510,7 +478,7 @@ const ClubSearchTab: React.FC = () => {
                     onChange={(e) =>
                       handleFilterChange('sortBy', e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                    className="w-full px-2 py-1 border border-gray-300 text-sm focus:border-emerald-500 outline-none"
                   >
                     <option value="recent">Most Recent</option>
                     <option value="members">Most Members</option>
@@ -526,17 +494,14 @@ const ClubSearchTab: React.FC = () => {
         {/* Results */}
         <div>
           {/* Results Header */}
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                {state.hasSearched ? 'Search Results' : 'All Clubs'}
-              </h2>
-              <p className="text-sm text-gray-600">
-                {state.results.length}{' '}
-                {state.results.length === 1 ? 'club' : 'clubs'} found
-                {state.query && ` for "${state.query}"`}
-              </p>
-            </div>
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">
+              {state.hasSearched ? 'Search Results' : 'All Clubs'}
+            </h2>
+            <p className="text-sm text-gray-600">
+              {state.results.length} {state.results.length === 1 ? 'club' : 'clubs'} found
+              {state.query && ` for "${state.query}"`}
+            </p>
           </div>
 
           {/* Loading State */}
@@ -546,43 +511,42 @@ const ClubSearchTab: React.FC = () => {
             </div>
           )}
 
-          {/* Results Grid */}
+          {/* Results Grid - 2 cards per row */}
           {!state.loading && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {state.results.map((club, index) => (
                 <motion.div
                   key={club.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-all cursor-pointer"
+                  className="bg-white border border-gray-300 hover:border-emerald-500 transition-colors cursor-pointer"
+                  onClick={() => handleClubClick(club)}
                 >
                   {/* Club Header */}
-                  <div className="p-4 border-b border-gray-100">
+                  <div className="p-4 border-b border-gray-200">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold text-gray-900 text-lg leading-tight">
+                      <h3 className="font-semibold text-gray-900 text-base leading-tight">
                         {club.name}
                       </h3>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium capitalize flex items-center gap-1 ${getClubTypeColor(club.club_type)}`}
-                      >
-                        {getClubTypeIcon(club.club_type)}
-                        {club.club_type}
-                      </span>
+                      <div className="flex items-center gap-1 text-gray-500 text-xs">
+                        <Clock className="w-3 h-3" />
+                        <span>{formatTimeAgo(club.created_at)}</span>
+                      </div>
                     </div>
-                    <p className="text-gray-600 text-sm line-clamp-2">
+                    <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
                       {club.mission}
                     </p>
                   </div>
 
                   {/* Club Stats */}
-                  <div className="p-4 space-y-3">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
+                  <div className="p-4">
+                    <div className="grid grid-cols-2 gap-4 mb-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Users className="w-4 h-4" />
                         <span>{club.current_members_count} members</span>
                       </div>
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
                         <DollarSign className="w-4 h-4" />
                         <span>
                           {formatCurrency(
@@ -594,8 +558,8 @@ const ClubSearchTab: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center">
-                      <div className="text-sm font-medium text-emerald-700">
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="text-base font-bold text-emerald-700">
                         {formatCurrency(
                           club.financials.current_balance,
                           club.currency,
@@ -604,18 +568,29 @@ const ClubSearchTab: React.FC = () => {
                       <div className="text-xs text-gray-500">Club Balance</div>
                     </div>
 
-                    {/* Investment Focus */}
-                    <div className="flex items-center gap-1 text-sm text-gray-600">
-                      <Target className="w-4 h-4" />
-                      <span className="capitalize">
-                        {club.investment_focus}
+                    {/* Investment Focus and Type */}
+                    <div className="flex justify-between items-center text-sm">
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <Target className="w-4 h-4" />
+                        <span className="capitalize">
+                          {club.investment_focus}
+                        </span>
+                      </div>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium capitalize flex items-center gap-1 ${
+                          club.club_type === 'public'
+                            ? 'text-blue-600 bg-blue-50'
+                            : 'text-orange-600 bg-orange-50'
+                        }`}
+                      >
+                        {club.club_type === 'public' ? (
+                          <Globe className="w-3 h-3" />
+                        ) : (
+                          <Lock className="w-3 h-3" />
+                        )}
+                        {club.club_type}
                       </span>
                     </div>
-
-                    {/* Action Button */}
-                    <button className="w-full mt-3 px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors text-sm">
-                      View Club Details
-                    </button>
                   </div>
                 </motion.div>
               ))}
@@ -627,7 +602,7 @@ const ClubSearchTab: React.FC = () => {
             state.results.length === 0 &&
             state.hasSearched && (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-gray-100 flex items-center justify-center mx-auto mb-4">
                   <Search className="w-8 h-8 text-gray-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -640,7 +615,7 @@ const ClubSearchTab: React.FC = () => {
                 </p>
                 <button
                   onClick={clearFilters}
-                  className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium"
+                  className="px-6 py-2 bg-emerald-600 text-white hover:bg-emerald-700 font-medium"
                 >
                   Clear All Filters
                 </button>
@@ -652,7 +627,7 @@ const ClubSearchTab: React.FC = () => {
             !state.hasSearched &&
             state.results.length === 0 && (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-emerald-100 flex items-center justify-center mx-auto mb-4">
                   <Zap className="w-8 h-8 text-emerald-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -660,13 +635,23 @@ const ClubSearchTab: React.FC = () => {
                 </h3>
                 <p className="text-gray-600 max-w-md mx-auto">
                   Use the search bar above to find investment clubs that match
-                  your interests and criteria. You can filter by investment
-                  focus, club size, contribution level, and more.
+                  your interests and criteria.
                 </p>
               </div>
             )}
         </div>
       </div>
+
+      {/* Club Details Modal */}
+      {selectedClub && (
+        <ClubDetailsModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          club={selectedClub}
+          members={[]}
+          onMembershipUpdate={() => {}}
+        />
+      )}
     </div>
   );
 };
