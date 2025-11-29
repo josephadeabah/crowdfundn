@@ -120,17 +120,17 @@ const ClubSearchTab: React.FC = () => {
     loadAllClubs();
   }, [token]);
 
-    const loadClubMembers = async (club: Club) => {
-      if (!token) return;
-  
-      try {
-        const response = await membershipService.getMembers(token, club.slug);
-        setMembers(response.members);
-      } catch (error) {
-        console.error('Failed to load club members:', error);
-        setMembers([]);
-      }
-    };
+  const loadClubMembers = async (club: Club) => {
+    if (!token) return;
+
+    try {
+      const response = await membershipService.getMembers(token, club.slug);
+      setMembers(response.members);
+    } catch (error) {
+      console.error('Failed to load club members:', error);
+      setMembers([]);
+    }
+  };
 
   // Update ranges when max values change
   useEffect(() => {
