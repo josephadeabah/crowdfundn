@@ -27,6 +27,21 @@ module Api
           # Calculate premium subscription metrics
           premium_metrics = calculate_premium_metrics
 
+          # NEW: Calculate contribution statistics
+          contribution_stats = calculate_contribution_statistics
+
+          # NEW: Calculate investment clubs statistics
+          investment_clubs_stats = calculate_investment_clubs_statistics
+
+          # NEW: Calculate club investment statistics
+          club_investment_stats = calculate_club_investment_statistics
+
+          # NEW: Calculate voting statistics
+          voting_stats = calculate_voting_statistics
+
+          # NEW: Calculate member share statistics
+          member_share_stats = calculate_member_share_statistics
+
           metrics = {
             users: {
               total: User.count,
@@ -75,13 +90,387 @@ module Api
               success_rate: calculate_subaccount_success_rate
             },
             equity_campaigns: equity_campaign_metrics,
-            investments: investment_metrics
+            investments: investment_metrics,
+            # NEW: Contribution statistics
+            contribution_statistics: contribution_stats,
+            # NEW: Investment clubs statistics
+            investment_clubs_statistics: investment_clubs_stats,
+            # NEW: Club investment statistics
+            club_investment_statistics: club_investment_stats,
+            # NEW: Voting statistics
+            voting_statistics: voting_stats,
+            # NEW: Member share statistics
+            member_share_statistics: member_share_stats
           }
 
           render json: metrics, status: :ok
         end
 
         private
+
+        # NEW: Calculate comprehensive contribution statistics
+        def calculate_contribution_statistics
+          contributions = InvestmentClubContribution.all
+          completed_contributions = contributions.completed
+          
+          total_amount = completed_contributions.sum(:amount) || 0
+          total_count = completed_contributions.count
+          average_contribution = total_count > 0 ? (total_amount / total_count).round(2) : 0
+
+          # Contribution trends over time
+          contributions_over_time = completed_contributions
+            .group_by_week(:created_at, format: '%Y-%m-%d')
+            .sum(:amount)
+
+          # Top contributors
+          top_contributors = User.joins(:investment_club_contributions)
+                                .where(investment_club_contributions: { status: 'completed' })
+                                .group('users.id')
+                                .select('users.id, users.full_name, COUNT(investment_club_contributions.id) as contribution_count, SUM(investment_club_contributions.amount) as total_contributed')
+                                .order('total_contributed DESC')
+                                .limit(10)
+                                .map do |user|
+                                  {
+                                    id: user.id,
+                                    name: user.full_name,
+                                    contribution_count: user.contribution_count,
+                                    total_contributed: user.total_contributed.to_f.round(2)
+                                  }
+                                end
+
+          # Contribution status distribution
+          status_distribution = contributions.group(:status).count
+
+          # Monthly contribution trends
+          monthly_contributions = completed_contributions
+            .group_by_month(:created_at, format: '%Y-%m')
+            .sum(:amount)
+
+          {
+            total_contributions: total_count,
+            total_amount: total_amount.to_f.round(2),
+            average_contribution: average_contribution,
+            contributions_over_time: contributions_over_time,
+            monthly_contributions: monthly_contributions,
+            status_distribution: status_distribution,
+            top_contributors: top_contributors,
+            contribution_size_distribution: {
+              small: completed_contributions.where('amount < ?', 100).count,
+              medium: completed_contributions.where('amount >= ? AND amount < ?', 100, 1000).count,
+              large: completed_contributions.where('amount >= ?', 1000).count
+            },
+            recent_contributions: completed_contributions
+                                  .order(created_at: :desc)
+                                  .limit(10)
+                                  .map do |contribution|
+                                    {
+                                      id: contribution.id,
+                                      amount: contribution.amount.to_f.round(2),
+                                      user_name: contribution.user.full_name,
+                                      club_name: contribution.investment_club.name,
+                                      created_at: contribution.created_at
+                                    }
+                                  end
+          }
+        end
+
+        # NEW: Calculate investment clubs statistics
+        def calculate_investment_clubs_statistics
+          clubs = InvestmentClub.all
+          active_clubs = clubs.active
+          
+          total_members = InvestmentClubMembership.active.count
+          average_members_per_club = clubs.count > 0 ? (total_members.to_f / clubs.count).round(2) : 0
+
+          # Club financial metrics
+          total_club_contributions = clubs.sum(:total_contributions) || 0
+          total_club_balance = clubs.sum(:current_balance) || 0
+          total_club_invested = clubs.sum(:total_invested) || 0
+
+          # Club type distribution
+          club_type_distribution = clubs.group(:access_type).count
+
+          # Member activity metrics
+          active_memberships = InvestmentClubMembership.active
+          membership_role_distribution = active_memberships.group(:role).count
+
+          # Top clubs by contributions
+          top_clubs_by_contributions = clubs
+            .order(total_contributions: :desc)
+            .limit(10)
+            .map do |club|
+              {
+                id: club.id,
+                name: club.name,
+                total_contributions: club.total_contributions.to_f.round(2),
+                current_balance: club.current_balance.to_f.round(2),
+                total_invested: club.total_invested.to_f.round(2),
+                member_count: club.current_members_count,
+                club_type: club.club_type
+              }
+            end
+
+          # Club growth trends
+          clubs_created_over_time = clubs.group_by_week(:created_at, format: '%Y-%m-%d').count
+
+          {
+            total_clubs: clubs.count,
+            active_clubs: active_clubs.count,
+            total_members: total_members,
+            average_members_per_club: average_members_per_club,
+            total_club_contributions: total_club_contributions.to_f.round(2),
+            total_club_balance: total_club_balance.to_f.round(2),
+            total_club_invested: total_club_invested.to_f.round(2),
+            club_type_distribution: club_type_distribution,
+            membership_role_distribution: membership_role_distribution,
+            top_clubs_by_contributions: top_clubs_by_contributions,
+            clubs_created_over_time: clubs_created_over_time,
+            financial_metrics: {
+              average_contribution_per_club: clubs.count > 0 ? (total_club_contributions / clubs.count).round(2) : 0,
+              average_balance_per_club: clubs.count > 0 ? (total_club_balance / clubs.count).round(2) : 0,
+              average_invested_per_club: clubs.count > 0 ? (total_club_invested / clubs.count).round(2) : 0,
+              investment_ratio: total_club_contributions > 0 ? ((total_club_invested / total_club_contributions) * 100).round(2) : 0
+            }
+          }
+        end
+
+        # NEW: Calculate club investment statistics
+        def calculate_club_investment_statistics
+          club_investments = ClubInvestment.all
+          successful_investments = club_investments.successful
+          
+          total_investment_amount = successful_investments.sum(:investment_amount) || 0
+          total_investment_count = successful_investments.count
+          average_investment = total_investment_count > 0 ? (total_investment_amount / total_investment_count).round(2) : 0
+
+          # Investment trends
+          investments_over_time = successful_investments
+            .group_by_week(:created_at, format: '%Y-%m-%d')
+            .sum(:investment_amount)
+
+          # Status distribution
+          status_distribution = club_investments.group(:status).count
+
+          # Top club investments
+          top_investments = successful_investments
+            .order(investment_amount: :desc)
+            .limit(10)
+            .map do |investment|
+              {
+                id: investment.id,
+                club_name: investment.investment_club.name,
+                campaign_name: investment.campaign.title,
+                investment_amount: investment.investment_amount.to_f.round(2),
+                status: investment.status,
+                created_at: investment.created_at
+              }
+            end
+
+          # Investment by club type
+          investment_by_club_type = ClubInvestment.joins(:investment_club)
+                                                 .group('investment_clubs.access_type')
+                                                 .sum(:investment_amount)
+
+          # ROI metrics for equity investments
+          equity_investments = successful_investments.joins(:campaign).where(campaigns: { type: 'EquityCampaign' })
+          total_equity_invested = equity_investments.sum(:investment_amount) || 0
+          
+          # Calculate current value for equity investments
+          equity_investments_with_value = equity_investments.map do |inv|
+            {
+              investment_amount: inv.investment_amount,
+              current_value: inv.current_value || inv.investment_amount,
+              roi: inv.roi || 0
+            }
+          end
+
+          total_current_value = equity_investments_with_value.sum { |inv| inv[:current_value] }
+          average_roi = equity_investments_with_value.any? ? (equity_investments_with_value.sum { |inv| inv[:roi] } / equity_investments_with_value.size).round(2) : 0
+
+          {
+            total_investments: total_investment_count,
+            total_investment_amount: total_investment_amount.to_f.round(2),
+            average_investment: average_investment,
+            investments_over_time: investments_over_time,
+            status_distribution: status_distribution,
+            top_investments: top_investments,
+            investment_by_club_type: investment_by_club_type.transform_values { |v| v.to_f.round(2) },
+            equity_investments: {
+              total_equity_invested: total_equity_invested.to_f.round(2),
+              total_current_value: total_current_value.round(2),
+              average_roi: average_roi,
+              total_returns: (total_current_value - total_equity_invested).round(2),
+              investment_count: equity_investments.count
+            },
+            investment_size_distribution: {
+              small: successful_investments.where('investment_amount < ?', 1000).count,
+              medium: successful_investments.where('investment_amount >= ? AND investment_amount < ?', 1000, 10000).count,
+              large: successful_investments.where('investment_amount >= ?', 10000).count
+            }
+          }
+        end
+
+        # NEW: Calculate voting statistics
+        def calculate_voting_statistics
+          votes = Vote.all
+          club_investment_votes = votes.where(votable_type: 'ClubInvestment')
+          
+          total_votes = votes.count
+          club_investment_vote_count = club_investment_votes.count
+
+          # Vote type distribution
+          vote_type_distribution = votes.group(:vote_type).count
+
+          # Voting participation by club
+          voting_participation_by_club = ClubInvestment.joins(:votes)
+                                                      .group('investment_clubs.name')
+                                                      .select('investment_clubs.name, COUNT(DISTINCT votes.user_id) as unique_voters, investment_clubs.current_members_count')
+                                                      .map do |result|
+                                                        participation_rate = result.current_members_count > 0 ? 
+                                                                              ((result.unique_voters.to_f / result.current_members_count) * 100).round(2) : 0
+                                                        {
+                                                          club_name: result.name,
+                                                          unique_voters: result.unique_voters,
+                                                          total_members: result.current_members_count,
+                                                          participation_rate: participation_rate
+                                                        }
+                                                      end
+
+          # Recent voting activity
+          recent_votes = votes.order(created_at: :desc)
+                             .limit(20)
+                             .map do |vote|
+                               {
+                                 id: vote.id,
+                                 user_name: vote.user.full_name,
+                                 votable_type: vote.votable_type,
+                                 vote_type: vote.vote_type,
+                                 created_at: vote.created_at
+                               }
+                             end
+
+          {
+            total_votes: total_votes,
+            club_investment_votes: club_investment_vote_count,
+            vote_type_distribution: vote_type_distribution,
+            voting_participation_by_club: voting_participation_by_club,
+            recent_votes: recent_votes,
+            average_votes_per_investment: club_investment_votes.count > 0 ? (club_investment_vote_count.to_f / ClubInvestment.count).round(2) : 0
+          }
+        end
+
+        # NEW: Calculate member share statistics
+        def calculate_member_share_statistics
+          memberships = InvestmentClubMembership.active
+          total_members = memberships.count
+          
+          return {} if total_members.zero?
+
+          # Share distribution analysis
+          share_ranges = {
+            '0-1%': memberships.where('contributed_share <= 1').count,
+            '1-5%': memberships.where('contributed_share > 1 AND contributed_share <= 5').count,
+            '5-10%': memberships.where('contributed_share > 5 AND contributed_share <= 10').count,
+            '10-20%': memberships.where('contributed_share > 10 AND contributed_share <= 20').count,
+            '20-50%': memberships.where('contributed_share > 20 AND contributed_share <= 50').count,
+            '50-100%': memberships.where('contributed_share > 50').count
+          }
+
+          # Top members by share
+          top_members_by_share = memberships
+            .order(contributed_share: :desc)
+            .limit(15)
+            .map do |membership|
+              {
+                id: membership.id,
+                user_name: membership.user.full_name,
+                club_name: membership.investment_club.name,
+                contributed_share: membership.contributed_share.to_f.round(4),
+                total_contributed: membership.total_contributed.to_f.round(2),
+                role: membership.role
+              }
+            end
+
+          # Share change history
+          recent_share_changes = MemberShareChange
+            .order(created_at: :desc)
+            .limit(20)
+            .map do |change|
+              {
+                id: change.id,
+                user_name: change.investment_club_membership.user.full_name,
+                club_name: change.investment_club_membership.investment_club.name,
+                previous_share: change.previous_share.to_f.round(4),
+                new_share: change.new_share.to_f.round(4),
+                change_amount: change.change_amount.to_f.round(4),
+                change_reason: change.change_reason,
+                created_at: change.created_at
+              }
+            end
+
+          # Statistical analysis
+          shares = memberships.pluck(:contributed_share).map(&:to_f)
+          average_share = shares.sum / shares.size
+          median_share = calculate_median(shares)
+          max_share = shares.max
+          min_share = shares.min
+
+          {
+            total_members: total_members,
+            share_distribution: share_ranges,
+            top_members_by_share: top_members_by_share,
+            recent_share_changes: recent_share_changes,
+            statistical_analysis: {
+              average_share: average_share.round(4),
+              median_share: median_share.round(4),
+              maximum_share: max_share.round(4),
+              minimum_share: min_share.round(4),
+              standard_deviation: calculate_standard_deviation(shares).round(4)
+            },
+            share_concentration: {
+              top_10_percent_share: calculate_top_percent_share(shares, 10),
+              top_20_percent_share: calculate_top_percent_share(shares, 20),
+              gini_coefficient: calculate_gini_coefficient(shares).round(4)
+            }
+          }
+        end
+
+        # NEW: Helper method to calculate median
+        def calculate_median(array)
+          return 0 if array.empty?
+          sorted = array.sort
+          len = sorted.length
+          (sorted[(len - 1) / 2] + sorted[len / 2]) / 2.0
+        end
+
+        # NEW: Helper method to calculate standard deviation
+        def calculate_standard_deviation(array)
+          return 0 if array.empty?
+          mean = array.sum / array.size
+          variance = array.sum { |x| (x - mean) ** 2 } / array.size
+          Math.sqrt(variance)
+        end
+
+        # NEW: Helper method to calculate top percent share
+        def calculate_top_percent_share(shares, percent)
+          return 0 if shares.empty?
+          sorted = shares.sort.reverse
+          top_count = [(shares.size * percent / 100.0).ceil, shares.size].min
+          top_shares = sorted.first(top_count)
+          (top_shares.sum / shares.sum * 100).round(2)
+        end
+
+        # NEW: Helper method to calculate Gini coefficient
+        def calculate_gini_coefficient(shares)
+          return 0 if shares.empty?
+          sorted = shares.sort
+          n = sorted.size
+          sum = sorted.sum
+          return 0 if sum.zero?
+          
+          gini_sum = sorted.each_with_index.sum { |x, i| (2 * i - n + 1) * x }
+          gini_sum.to_f / (n * sum)
+        end
 
         # NEW: Calculate premium subscription metrics
         def calculate_premium_metrics
