@@ -89,7 +89,8 @@ const AdvancedSlider = React.forwardRef<
               <SliderPrimitive.Range
                 className={cn(
                   'absolute h-full bg-emerald-500 transition-all',
-                  variant === 'glow' && 'shadow-[0_0_15px_rgba(16,185,129,0.5)]',
+                  variant === 'glow' &&
+                    'shadow-[0_0_15px_rgba(16,185,129,0.5)]',
                   variant === 'minimal' && 'bg-emerald-600',
                 )}
               />
@@ -110,9 +111,7 @@ const AdvancedSlider = React.forwardRef<
                       key={stepValue}
                       className={cn(
                         'w-1 h-1 rounded-full transition-all duration-300',
-                        isInRange
-                          ? 'bg-white/80'
-                          : 'bg-gray-400/30',
+                        isInRange ? 'bg-white/80' : 'bg-gray-400/30',
                       )}
                       style={{ left: `${percentage}%` }}
                     />

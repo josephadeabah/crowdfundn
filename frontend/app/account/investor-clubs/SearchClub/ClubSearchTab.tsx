@@ -346,7 +346,8 @@ const ClubSearchTab: React.FC = () => {
             Discover Investment Clubs
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Find the perfect investment club that matches your financial goals and interests
+            Find the perfect investment club that matches your financial goals
+            and interests
           </p>
         </div>
 
@@ -387,19 +388,25 @@ const ClubSearchTab: React.FC = () => {
               <div className="text-2xl font-bold text-emerald-600">
                 {searchStats.totalClubs}
               </div>
-              <div className="text-sm text-gray-600 font-medium">Total Clubs</div>
+              <div className="text-sm text-gray-600 font-medium">
+                Total Clubs
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-emerald-600">
                 {searchStats.averageMembers}
               </div>
-              <div className="text-sm text-gray-600 font-medium">Avg Members</div>
+              <div className="text-sm text-gray-600 font-medium">
+                Avg Members
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-emerald-600">
                 {formatCurrency(searchStats.averageBalance)}
               </div>
-              <div className="text-sm text-gray-600 font-medium">Avg Balance</div>
+              <div className="text-sm text-gray-600 font-medium">
+                Avg Balance
+              </div>
             </div>
           </div>
         </div>
@@ -435,7 +442,9 @@ const ClubSearchTab: React.FC = () => {
                     onClick={() => toggleFilterSection('investment')}
                     className="w-full flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <span className="font-medium text-gray-900">Investment Focus</span>
+                    <span className="font-medium text-gray-900">
+                      Investment Focus
+                    </span>
                     {expandedFilter === 'investment' ? (
                       <ChevronUp className="w-5 h-5 text-gray-500" />
                     ) : (
@@ -464,7 +473,9 @@ const ClubSearchTab: React.FC = () => {
                                 onChange={() => toggleInvestmentFocus(focus)}
                                 className="w-4 h-4 border-gray-300 text-emerald-600 focus:ring-emerald-500 rounded"
                               />
-                              <span className="text-sm text-gray-700 font-medium">{focus}</span>
+                              <span className="text-sm text-gray-700 font-medium">
+                                {focus}
+                              </span>
                             </label>
                           ))}
                         </div>
@@ -492,7 +503,9 @@ const ClubSearchTab: React.FC = () => {
                           onChange={() => toggleInvestmentFocus(focus)}
                           className="w-4 h-4 border-gray-300 text-emerald-600 focus:ring-emerald-500 rounded"
                         />
-                        <span className="text-sm text-gray-700 font-medium">{focus}</span>
+                        <span className="text-sm text-gray-700 font-medium">
+                          {focus}
+                        </span>
                       </label>
                     ))}
                   </div>
@@ -574,7 +587,9 @@ const ClubSearchTab: React.FC = () => {
                         showValue={true}
                         showMinMax={true}
                         formatValue={(value: number | number[]) =>
-                          formatCurrency(Array.isArray(value) ? value[0] : value)
+                          formatCurrency(
+                            Array.isArray(value) ? value[0] : value,
+                          )
                         }
                         variant="default"
                         className="px-2"
@@ -620,7 +635,8 @@ const ClubSearchTab: React.FC = () => {
                   {state.results.length === 1 ? 'club' : 'clubs'} found
                   {state.query && (
                     <span className="text-emerald-600 font-medium">
-                      {' '}for "{state.query}"
+                      {' '}
+                      for "{state.query}"
                     </span>
                   )}
                 </p>
@@ -677,7 +693,9 @@ const ClubSearchTab: React.FC = () => {
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div className="flex items-center gap-3 text-sm text-gray-600">
                         <Users className="w-5 h-5 text-emerald-600" />
-                        <span className="font-medium">{club.current_members_count} members</span>
+                        <span className="font-medium">
+                          {club.current_members_count} members
+                        </span>
                       </div>
                       <div className="flex items-center gap-3 text-sm text-gray-600">
                         <DollarSign className="w-5 h-5 text-emerald-600" />
@@ -698,7 +716,9 @@ const ClubSearchTab: React.FC = () => {
                           club.currency,
                         )}
                       </div>
-                      <div className="text-xs text-gray-500 font-medium">Club Balance</div>
+                      <div className="text-xs text-gray-500 font-medium">
+                        Club Balance
+                      </div>
                     </div>
 
                     {/* Investment Focus and Type */}
