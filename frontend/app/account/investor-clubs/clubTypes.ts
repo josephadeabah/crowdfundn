@@ -615,7 +615,7 @@ export interface User {
   };
 }
 
-// Enhanced analytics interfaces to match your API response
+// Add these new interfaces for analytics
 export interface PortfolioInsights {
   performance_insights: {
     best_performing_investment?: {

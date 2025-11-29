@@ -18,16 +18,6 @@ import {
   AlertTriangle,
   CheckCircle,
   TrendingDown,
-  Building,
-  ChartBar,
-  Cpu,
-  Zap,
-  Target as TargetIcon,
-  Clock,
-  Award,
-  Crosshair,
-  BarChart4,
-  LineChart as LineChartIcon,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Modal from '@/app/components/modal/Modal';
@@ -76,7 +66,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
       console.log('Loading analytics for club ID:', club.id);
       const data = await investmentClubService.getComprehensiveAnalytics(
         token,
-        club.id.toString(),
+        club.id.toString(), // Ensure it's a string
       );
       setAnalytics(data);
       setLastUpdated(new Date().toLocaleTimeString());
@@ -94,8 +84,6 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
     { id: 'insights', label: 'Insights', icon: Sparkles },
     { id: 'health', label: 'Financial Health', icon: Activity },
     { id: 'predictive', label: 'Predictive', icon: Target },
-    { id: 'members', label: 'Members', icon: Users },
-    { id: 'sectors', label: 'Sectors', icon: Building },
   ];
 
   if (loading && !analytics) {
@@ -161,7 +149,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
             </Button>
           </div>
 
-          {/* Tab Navigation */}
+          {/* Tab Navigation - Made horizontally scrollable */}
           <div className="mt-6">
             <div className="relative">
               <div className="flex space-x-1 overflow-x-auto pb-2 hide-scrollbar">
@@ -183,6 +171,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
                   );
                 })}
               </div>
+              {/* Gradient fade effect for scroll indication */}
               <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none" />
             </div>
           </div>
@@ -212,12 +201,6 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
               loading={loading}
               club={club}
             />
-          )}
-          {activeTab === 'members' && (
-            <MembersTab analytics={analytics} loading={loading} club={club} />
-          )}
-          {activeTab === 'sectors' && (
-            <SectorsTab analytics={analytics} loading={loading} club={club} />
           )}
         </div>
       </div>
@@ -258,9 +241,13 @@ const formatValue = (
 
 // Helper function to format percentages
 const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
+  // Handle null/undefined
   if (value === undefined || value === null) return 'N/A';
+
+  // Handle empty string
   if (value === '') return 'N/A';
 
+  // Convert to number
   let numValue: number;
   if (typeof value === 'string') {
     const cleaned = value.replace(/[^\d.-]/g, '');
@@ -271,12 +258,13 @@ const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
     numValue = Number(value);
   }
 
+  // Check if we have a valid number
   if (isNaN(numValue) || !isFinite(numValue)) {
     return 'N/A';
   }
 
   const formatted = Math.abs(numValue).toFixed(decimalPlaces);
-  return `${numValue >= 0 ? '+' : ''}${formatted}%`;
+  return `${numValue >= 0 ? '+' : '-'}${formatted}%`;
 };
 
 // Tab Components with Loading States
@@ -820,211 +808,7 @@ const PredictiveTab: React.FC<{
   );
 };
 
-const MembersTab: React.FC<{
-  analytics: ComprehensiveAnalytics | null;
-  loading: boolean;
-  club: Club;
-}> = ({ analytics, loading, club }) => {
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
-
-  if (!analytics) {
-    return <EmptyState message="No member data available" />;
-  }
-
-  const memberPortfolio = analytics.member_portfolio;
-
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Member Contributions */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4">Member Contributions</h3>
-          <div className="space-y-4">
-            {memberPortfolio.members.slice(0, 10).map((member, index) => (
-              <MemberContributionItem key={index} member={member} club={club} />
-            ))}
-          </div>
-        </div>
-
-        {/* Member Summary */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4">Member Summary</h3>
-          {memberPortfolio.summary_stats && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <SummaryStat
-                  label="Average Share"
-                  value={`${formatValue(
-                    memberPortfolio.summary_stats.average_share,
-                    false,
-                    club.currency,
-                    1,
-                  )}%`}
-                />
-                <SummaryStat
-                  label="Concentration Gini"
-                  value={formatValue(
-                    memberPortfolio.summary_stats.concentration_gini,
-                    false,
-                    club.currency,
-                    2,
-                  )}
-                />
-              </div>
-              {memberPortfolio.summary_stats.top_contributor && (
-                <div className="border-t pt-4">
-                  <h4 className="font-medium mb-2">Top Contributor</h4>
-                  <MemberContributionItem
-                    member={memberPortfolio.summary_stats.top_contributor}
-                    club={club}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const SectorsTab: React.FC<{
-  analytics: ComprehensiveAnalytics | null;
-  loading: boolean;
-  club: Club;
-}> = ({ analytics, loading, club }) => {
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
-
-  if (!analytics) {
-    return <EmptyState message="No sector data available" />;
-  }
-
-  const sectorBreakdown = analytics.performance_analytics.sector_breakdown;
-
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Sector Performance */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4">Sector Performance</h3>
-          <div className="space-y-4">
-            {Object.entries(sectorBreakdown).map(([sector, data], index) => (
-              <SectorPerformanceItem
-                key={sector}
-                sector={sector}
-                data={data}
-                club={club}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Sector Allocation */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4">Sector Allocation</h3>
-          <div className="space-y-3">
-            {Object.entries(sectorBreakdown).map(([sector, data], index) => (
-              <SectorAllocationItem key={sector} sector={sector} data={data} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// New Helper Components for Additional Tabs
-const MemberContributionItem: React.FC<{
-  member: any;
-  club: Club;
-}> = ({ member, club }) => (
-  <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-    <div className="flex-1">
-      <div className="font-medium text-gray-900">{member.member_name}</div>
-      <div className="text-sm text-gray-600">
-        {formatValue(member.contribution_share, false, club.currency, 1)}% share
-      </div>
-    </div>
-    <div className="text-right">
-      <div className="font-semibold">
-        {formatValue(member.total_contributed, true, club.currency, 0)}
-      </div>
-      <div className="text-sm text-gray-600">{member.engagement_level}</div>
-    </div>
-  </div>
-);
-
-const SummaryStat: React.FC<{
-  label: string;
-  value: string;
-}> = ({ label, value }) => (
-  <div className="text-center p-3 bg-gray-50 rounded-lg">
-    <div className="text-lg font-bold text-emerald-600">{value}</div>
-    <div className="text-sm text-gray-600">{label}</div>
-  </div>
-);
-
-const SectorPerformanceItem: React.FC<{
-  sector: string;
-  data: any;
-  club: Club;
-}> = ({ sector, data, club }) => (
-  <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-    <div className="flex-1">
-      <div className="font-medium text-gray-900 capitalize">
-        {sector.replace(/-/g, ' ')}
-      </div>
-      <div className="text-sm text-gray-600">
-        {data.count} investments •{' '}
-        {formatValue(data.percentage, false, club.currency, 1)}% of portfolio
-      </div>
-    </div>
-    <div className="text-right">
-      <div
-        className={`font-semibold ${
-          data.roi_percentage >= 0 ? 'text-green-600' : 'text-red-600'
-        }`}
-      >
-        {formatPercentage(data.roi_percentage, 1)}
-      </div>
-      <div className="text-sm text-gray-600">
-        {formatValue(data.total_invested, true, club.currency, 0)}
-      </div>
-    </div>
-  </div>
-);
-
-const SectorAllocationItem: React.FC<{
-  sector: string;
-  data: any;
-}> = ({ sector, data }) => {
-  const percentage = data.percentage || 0;
-
-  return (
-    <div className="space-y-2">
-      <div className="flex justify-between text-sm">
-        <span className="capitalize text-gray-700">
-          {sector.replace(/-/g, ' ')}
-        </span>
-        <span className="font-medium text-gray-900">
-          {formatValue(percentage, false, 'USD', 1)}%
-        </span>
-      </div>
-      <div className="w-full bg-gray-200 rounded-full h-2">
-        <div
-          className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
-          style={{ width: `${percentage}%` }}
-        ></div>
-      </div>
-    </div>
-  );
-};
-
-// Existing Helper Components (keep all the existing ones from previous implementation)
+// Helper Components
 const MetricItem: React.FC<{
   label: string;
   value: string;

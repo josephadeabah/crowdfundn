@@ -8,8 +8,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Area,
-  AreaChart,
 } from 'recharts';
 import { motion } from 'framer-motion';
 import { Club } from '../../clubTypes';
@@ -20,9 +18,6 @@ interface TimeSeriesData {
   contributions?: number;
   investments?: number;
   returns?: number;
-  total_invested?: number;
-  investments_count?: number;
-  successful_investments?: number;
 }
 
 interface PerformanceChartProps {
@@ -48,8 +43,40 @@ const formatCurrency = (amount: number, currency: string = 'USD'): string => {
 };
 
 export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
-  // Use real data from props
-  const chartData = data || [];
+  // Use real data or generate sample data for demonstration
+  const chartData = data || generateSampleData();
+
+  // Function to generate sample data if no real data
+  function generateSampleData() {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    let portfolioValue = 100000;
+
+    return months.map((month, index) => {
+      const growth = Math.random() * 10000 - 2000; // Random growth between -2k and +8k
+      const contributions = Math.random() * 15000 + 5000; // Random contributions between 5k and 20k
+      portfolioValue += contributions + growth;
+
+      return {
+        period: month,
+        portfolio_value: Math.round(portfolioValue),
+        contributions: Math.round(contributions),
+        returns: Math.round(growth),
+      };
+    });
+  }
 
   // Custom tooltip formatter
   const formatTooltipValue = (value: number, name: string) => {
@@ -58,9 +85,6 @@ export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
       portfolio_value: 'Portfolio Value',
       contributions: 'Contributions',
       returns: 'Returns',
-      total_invested: 'Total Invested',
-      investments_count: 'Investments Count',
-      successful_investments: 'Successful Investments',
     };
     return [formattedValue, labelMap[name] || name];
   };
@@ -75,28 +99,6 @@ export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
     return value.toString();
   };
 
-  if (chartData.length === 0) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <Card className="p-4 md:p-6 border border-gray-200">
-          <h3 className="text-base md:text-lg font-semibold mb-4 text-gray-800">
-            Performance Over Time
-          </h3>
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center text-gray-500">
-              <p>No performance data available</p>
-              <p className="text-sm mt-2">Performance data will appear as investments grow</p>
-            </div>
-          </div>
-        </Card>
-      </motion.div>
-    );
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -108,7 +110,7 @@ export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
           Performance Over Time
         </h3>
         <ResponsiveContainer width="100%" height={250} minWidth={0}>
-          <AreaChart
+          <LineChart
             data={chartData}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
@@ -133,47 +135,82 @@ export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
               formatter={formatTooltipValue}
               labelStyle={{ color: '#374151', fontWeight: 600 }}
             />
-            <Area
+            <Line
               type="monotone"
               dataKey="portfolio_value"
-              stroke="#10B981"
-              fill="url(#portfolioGradient)"
+              stroke="#10B981" // Emerald-500
               strokeWidth={3}
-              fillOpacity={0.3}
+              dot={{
+                fill: '#10B981',
+                stroke: '#FFFFFF',
+                strokeWidth: 2,
+                r: 4,
+              }}
+              activeDot={{
+                r: 6,
+                fill: '#059669', // Emerald-600
+                stroke: '#FFFFFF',
+                strokeWidth: 2,
+              }}
               name="portfolio_value"
             />
-            <defs>
-              <linearGradient
-                id="portfolioGradient"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="5%" stopColor="#10B981" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#10B981" stopOpacity={0.1} />
-              </linearGradient>
-            </defs>
-          </AreaChart>
+            <Line
+              type="monotone"
+              dataKey="contributions"
+              stroke="#22C55E" // Green-500
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              dot={{
+                fill: '#22C55E',
+                stroke: '#FFFFFF',
+                strokeWidth: 2,
+                r: 3,
+              }}
+              activeDot={{
+                r: 5,
+                fill: '#16A34A', // Green-600
+                stroke: '#FFFFFF',
+                strokeWidth: 2,
+              }}
+              name="contributions"
+            />
+            <Line
+              type="monotone"
+              dataKey="returns"
+              stroke="#F97316" // Orange-500
+              strokeWidth={2}
+              dot={{
+                fill: '#F97316',
+                stroke: '#FFFFFF',
+                strokeWidth: 2,
+                r: 3,
+              }}
+              activeDot={{
+                r: 5,
+                fill: '#EA580C', // Orange-600
+                stroke: '#FFFFFF',
+                strokeWidth: 2,
+              }}
+              name="returns"
+            />
+          </LineChart>
         </ResponsiveContainer>
 
-        {/* Additional Metrics */}
-        {chartData.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
-            <div className="text-center">
-              <div className="font-semibold text-gray-900">
-                {chartData[chartData.length - 1].investments_count || 0}
-              </div>
-              <div className="text-gray-500">Total Investments</div>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold text-gray-900">
-                {chartData[chartData.length - 1].successful_investments || 0}
-              </div>
-              <div className="text-gray-500">Successful</div>
-            </div>
+        {/* Custom Legend */}
+        <div className="flex items-center justify-center gap-6 mt-4">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-0.5 bg-emerald-500"></div>
+            <span className="text-sm text-gray-600">Portfolio Value</span>
           </div>
-        )}
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-0.5 bg-green-500 border border-green-500 border-dashed"></div>
+            <span className="text-sm text-gray-600">Contributions</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-0.5 bg-orange-500"></div>
+            <span className="text-sm text-gray-600">Returns</span>
+          </div>
+        </div>
       </Card>
     </motion.div>
   );

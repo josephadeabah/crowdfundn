@@ -94,9 +94,6 @@ export const MembersOverview = ({ data, club }: MembersOverviewProps) => {
           </h3>
           <div className="text-center py-8">
             <p className="text-gray-500">No member data available</p>
-            <p className="text-sm text-gray-400 mt-2">
-              Member contributions will appear as members join and contribute
-            </p>
           </div>
         </Card>
       </motion.div>
