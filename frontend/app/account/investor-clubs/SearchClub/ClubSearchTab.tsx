@@ -532,9 +532,7 @@ const ClubSearchTab: React.FC = () => {
                       variant="default"
                     />
                   </div>
-                </div>
-
-                {/* Sort By */}
+                                  {/* Sort By */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Sort By
@@ -555,6 +553,7 @@ const ClubSearchTab: React.FC = () => {
                       <SelectItem value="name">Alphabetical</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
                 </div>
               </div>
             </motion.div>
