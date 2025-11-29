@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/components/ui/select';
+import { deslugify } from '@/app/utils/helpers/categories';
 
 interface SearchFilters {
   investmentFocus: string[];
@@ -192,7 +193,7 @@ const investmentFocusOptions = [
   'Sustainability',
   'Artificial Intelligence',
   'Blockchain',
-  'Biotechnology'
+  'Biotechnology',
 ];
 
 const ClubSearchTab: React.FC = () => {
@@ -768,7 +769,7 @@ const ClubSearchTab: React.FC = () => {
                       <div className="flex items-center gap-1 text-gray-600">
                         <Target className="w-4 h-4" />
                         <span className="capitalize">
-                          {club.investment_focus}
+                          {deslugify(club.investment_focus)}
                         </span>
                       </div>
                       <span
