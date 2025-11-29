@@ -382,28 +382,6 @@ const ClubSearchTab: React.FC = () => {
               )}
             </button>
           </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200">
-            <div className="text-center">
-              <div className="text-lg font-bold text-gray-900">
-                {searchStats.totalClubs}
-              </div>
-              <div className="text-xs text-gray-600">Total Clubs</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-gray-900">
-                {searchStats.averageMembers}
-              </div>
-              <div className="text-xs text-gray-600">Avg Members</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-gray-900">
-                {formatCurrency(searchStats.averageBalance)}
-              </div>
-              <div className="text-xs text-gray-600">Avg Balance</div>
-            </div>
-          </div>
         </div>
 
         {/* Filters Panel */}
