@@ -775,7 +775,7 @@ const ClubSearchTab: React.FC = () => {
                       <span
                         className={`px-2 py-1 text-xs font-medium capitalize flex items-center gap-1 ${
                           club.club_type === 'public'
-                            ? 'text-blue-600 bg-blue-50'
+                            ? 'text-green-600 bg-green-50'
                             : 'text-orange-600 bg-orange-50'
                         }`}
                       >
