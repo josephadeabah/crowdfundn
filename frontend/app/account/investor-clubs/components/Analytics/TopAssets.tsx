@@ -68,74 +68,8 @@ const formatPercentage = (value: any, decimalPlaces: number = 1): string => {
 };
 
 export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {
-  // Use real data or generate sample data
-  const assets = data || generateSampleData();
-
-  // Function to generate sample data if no real data
-  function generateSampleData(): AssetData[] {
-    return [
-      {
-        name: 'Technology Fund',
-        ticker: 'TECH',
-        value: 45230,
-        change: 12.5,
-        isPositive: true,
-        company_info: {
-          name: 'Tech Innovations Inc.',
-          description: 'Leading technology solutions provider',
-          headquarters: 'San Francisco, CA',
-        },
-      },
-      {
-        name: 'Real Estate Trust',
-        ticker: 'REIT',
-        value: 38450,
-        change: 8.3,
-        isPositive: true,
-        company_info: {
-          name: 'Premium Properties Ltd.',
-          description: 'Commercial real estate development',
-          headquarters: 'New York, NY',
-        },
-      },
-      {
-        name: 'Healthcare ETF',
-        ticker: 'HEAL',
-        value: 32100,
-        change: 15.7,
-        isPositive: true,
-        company_info: {
-          name: 'MedTech Solutions',
-          description: 'Healthcare technology and services',
-          headquarters: 'Boston, MA',
-        },
-      },
-      {
-        name: 'Consumer Index',
-        ticker: 'CONS',
-        value: 28900,
-        change: 6.2,
-        isPositive: true,
-        company_info: {
-          name: 'Consumer Brands Group',
-          description: 'Portfolio of consumer product companies',
-          headquarters: 'Chicago, IL',
-        },
-      },
-      {
-        name: 'Energy Sector',
-        ticker: 'NRG',
-        value: 25780,
-        change: -2.1,
-        isPositive: false,
-        company_info: {
-          name: 'Clean Energy Corp',
-          description: 'Renewable energy solutions',
-          headquarters: 'Houston, TX',
-        },
-      },
-    ];
-  }
+  // Use real data from props
+  const assets = data || [];
 
   if (assets.length === 0) {
     return (
@@ -150,6 +84,9 @@ export const TopAssets = ({ data, currency = 'USD' }: TopAssetsProps) => {
           </h3>
           <div className="text-center py-8">
             <p className="text-gray-500">No asset data available</p>
+            <p className="text-sm text-gray-400 mt-2">
+              Asset performance will appear as investments grow
+            </p>
           </div>
         </Card>
       </motion.div>

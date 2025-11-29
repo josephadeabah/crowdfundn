@@ -48,42 +48,8 @@ const formatCurrency = (amount: number, currency: string = 'USD'): string => {
 };
 
 export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
-  // Use real data or generate sample data for demonstration
-  const chartData = data || generateSampleData();
-
-  // Function to generate sample data if no real data
-  function generateSampleData() {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    let portfolioValue = 100000;
-
-    return months.map((month, index) => {
-      const growth = Math.random() * 10000 - 2000;
-      const contributions = Math.random() * 15000 + 5000;
-      portfolioValue += contributions + growth;
-
-      return {
-        period: month,
-        portfolio_value: Math.round(portfolioValue),
-        contributions: Math.round(contributions),
-        returns: Math.round(growth),
-        investments_count: Math.floor(Math.random() * 10) + 1,
-        successful_investments: Math.floor(Math.random() * 8) + 1,
-      };
-    });
-  }
+  // Use real data from props
+  const chartData = data || [];
 
   // Custom tooltip formatter
   const formatTooltipValue = (value: number, name: string) => {
@@ -108,6 +74,28 @@ export const PerformanceChart = ({ data, club }: PerformanceChartProps) => {
     }
     return value.toString();
   };
+
+  if (chartData.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <Card className="p-4 md:p-6 border border-gray-200">
+          <h3 className="text-base md:text-lg font-semibold mb-4 text-gray-800">
+            Performance Over Time
+          </h3>
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center text-gray-500">
+              <p>No performance data available</p>
+              <p className="text-sm mt-2">Performance data will appear as investments grow</p>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
