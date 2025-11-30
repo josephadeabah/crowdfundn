@@ -193,7 +193,7 @@ export default function Navigation({
           <div className="lg:hidden">
             {/* Backdrop */}
             <div
-              className="fixed inset-0 bg-white z-30"
+              className="fixed inset-0 bg-white text-gray-800 z-30"
               onClick={() => setMobileMenuOpen(false)}
             />
 
