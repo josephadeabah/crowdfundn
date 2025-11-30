@@ -1,6 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Rocket, FileText, Award, Users, Eye, Menu, X } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Rocket,
+  FileText,
+  Award,
+  Users,
+  Eye,
+  Menu,
+  X,
+} from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { cn } from '@/app/lib/utils';
 
@@ -25,11 +34,11 @@ interface NavigationProps {
   onSectionChange: (sectionId: string) => void;
 }
 
-export default function Navigation({ 
-  showAll, 
-  activeSection, 
-  onToggleShowAll, 
-  onSectionChange 
+export default function Navigation({
+  showAll,
+  activeSection,
+  onToggleShowAll,
+  onSectionChange,
 }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -37,7 +46,7 @@ export default function Navigation({
   useEffect(() => {
     const handleScroll = () => {
       if (!showAll) return;
-      
+
       const sections = navItems.map((item) => document.getElementById(item.id));
       const scrollPosition = window.scrollY + 100;
 
@@ -60,7 +69,7 @@ export default function Navigation({
   const handleSectionClick = (id: string) => {
     onSectionChange(id);
     setMobileMenuOpen(false);
-    
+
     if (showAll) {
       const element = document.getElementById(id);
       if (element) {
@@ -83,7 +92,7 @@ export default function Navigation({
         className={cn(
           'sticky top-0 z-40 w-full transition-all duration-300',
           'bg-white/80 backdrop-blur-md border-b border-gray-50/60',
-          isScrolled && 'bg-white/95 shadow-sm'
+          isScrolled && 'bg-white/95 shadow-sm',
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -104,9 +113,9 @@ export default function Navigation({
                         'flex items-center gap-1.5 px-3 py-1.5 rounded-none transition-all duration-200',
                         'text-xs font-medium whitespace-nowrap',
                         'hover:bg-gray-50 hover:text-gray-900',
-                        isActive 
-                          ? 'bg-gray-50 text-gray-800 border border-gray-50 shadow-xs' 
-                          : 'text-gray-600'
+                        isActive
+                          ? 'bg-gray-50 text-gray-800 border border-gray-50 shadow-xs'
+                          : 'text-gray-600',
                       )}
                     >
                       <Icon className="w-3 h-3 flex-shrink-0" />
@@ -127,7 +136,7 @@ export default function Navigation({
                   'gap-1.5 transition-all rounded-none text-xs',
                   showAll
                     ? 'bg-emerald-600 hover:bg-emerald-700 shadow-xs text-white'
-                    : 'border-gray-50 text-gray-700 hover:bg-gray-50'
+                    : 'border-gray-50 text-gray-700 hover:bg-gray-50',
                 )}
               >
                 <Eye className="w-3 h-3" />
@@ -144,13 +153,18 @@ export default function Navigation({
               className="p-2 rounded-none text-gray-600 hover:bg-gray-100 transition-colors"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </button>
 
             {/* Mobile Title */}
             <div className="flex-1 text-center">
               <span className="text-sm font-medium text-gray-700">
-                {navItems.find(item => item.id === activeSection)?.label || 'Navigation'}
+                {navItems.find((item) => item.id === activeSection)?.label ||
+                  'Navigation'}
               </span>
             </div>
 
@@ -163,11 +177,13 @@ export default function Navigation({
                 'gap-1 px-3 transition-all text-xs',
                 showAll
                   ? 'bg-gray-800 hover:bg-gray-900 shadow-xs text-white'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50',
               )}
             >
               <Eye className="w-3 h-3" />
-              <span className="sr-only lg:not-sr-only">{showAll ? 'All' : 'View'}</span>
+              <span className="sr-only lg:not-sr-only">
+                {showAll ? 'All' : 'View'}
+              </span>
             </Button>
           </div>
         </div>
@@ -176,11 +192,11 @@ export default function Navigation({
         {mobileMenuOpen && (
           <div className="lg:hidden">
             {/* Backdrop */}
-            <div 
+            <div
               className="fixed inset-0 bg-black/20 z-30"
               onClick={() => setMobileMenuOpen(false)}
             />
-            
+
             {/* Mobile Menu Panel */}
             <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-50 shadow-lg z-40">
               <div className="p-4 space-y-2">
@@ -196,9 +212,9 @@ export default function Navigation({
                         'w-full flex items-center gap-2 px-4 py-2.5 rounded-none transition-all duration-200',
                         'text-xs font-medium',
                         'hover:bg-gray-50 hover:text-gray-900',
-                        isActive 
-                          ? 'bg-gray-100 text-gray-800 border border-gray-50' 
-                          : 'text-gray-600'
+                        isActive
+                          ? 'bg-gray-100 text-gray-800 border border-gray-50'
+                          : 'text-gray-600',
                       )}
                     >
                       <Icon className="w-3.5 h-3.5 flex-shrink-0" />

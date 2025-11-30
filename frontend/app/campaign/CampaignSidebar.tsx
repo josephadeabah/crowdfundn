@@ -26,8 +26,7 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
     : campaign?.total_donors || 0;
 
   const progressPercentage = Math.round(
-    (Number(campaign?.current_amount) /
-      Number(campaign?.goal_amount || 1)) *
+    (Number(campaign?.current_amount) / Number(campaign?.goal_amount || 1)) *
       100,
   );
 

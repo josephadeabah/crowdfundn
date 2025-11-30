@@ -34,10 +34,10 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation at the top */}
-      <Navigation 
-        showAll={showAll} 
+      <Navigation
+        showAll={showAll}
         activeSection={activeSection}
-        onToggleShowAll={() => setShowAll(!showAll)} 
+        onToggleShowAll={() => setShowAll(!showAll)}
         onSectionChange={setActiveSection}
       />
 
@@ -52,7 +52,7 @@ const HomePage = () => {
               'scroll-mt-16', // Adjusted for horizontal nav height
               'transition-opacity duration-300',
               // Hide sections that shouldn't be visible
-              !showAll && item.id !== activeSection && 'hidden'
+              !showAll && item.id !== activeSection && 'hidden',
             )}
           >
             {renderSection(item.id)}
