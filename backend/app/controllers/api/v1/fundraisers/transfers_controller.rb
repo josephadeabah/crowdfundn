@@ -201,7 +201,7 @@ module Api
         def update_customer_balance(customer_id, new_balance)
           campaign = Campaign.find(customer_id)
           if campaign
-            campaign.update(current_amount: new_balance)
+            campaign.update(transferred_amount: new_balance)
           else
             puts "Failed to update balance: Customer with ID #{customer_id} not found."
           end
