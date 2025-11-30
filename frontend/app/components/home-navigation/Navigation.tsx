@@ -88,10 +88,10 @@ export default function Navigation({
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Desktop Layout */}
-          <div className="hidden lg:flex items-center justify-between h-16">
-            {/* Centered Navigation Items */}
-            <div className="flex items-center justify-center flex-1">
-              <div className="flex items-center space-x-0 bg-white rounded-none p-1 border border-gray-50/60">
+          <div className="hidden lg:flex items-center h-16">
+            {/* Centered Navigation Container */}
+            <div className="flex-1 flex items-center justify-center">
+              <div className="flex items-center space-x-0 bg-white rounded-none p-1 border border-gray-200">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
@@ -101,9 +101,9 @@ export default function Navigation({
                       key={item.id}
                       onClick={() => handleSectionClick(item.id)}
                       className={cn(
-                        'flex items-center gap-1 px-3 py-2 rounded-none transition-all duration-200',
+                        'flex items-center gap-1.5 px-3 py-1.5 rounded-none transition-all duration-200',
                         'text-xs font-medium whitespace-nowrap',
-                        'hover:bg-gray-50 hover:text-gray-900 hover:shadow-sm',
+                        'hover:bg-gray-50 hover:text-gray-900',
                         isActive 
                           ? 'bg-gray-100 text-gray-800 border border-gray-200 shadow-xs' 
                           : 'text-gray-600'
@@ -117,16 +117,16 @@ export default function Navigation({
               </div>
             </div>
 
-            {/* View All Sections Toggle */}
-            <div className="flex items-center justify-end flex-1">
+            {/* View All Sections Toggle - Now part of the centered group */}
+            <div className="flex items-center justify-center ml-4">
               <Button
                 onClick={onToggleShowAll}
                 variant={showAll ? 'default' : 'outline'}
                 size="sm"
                 className={cn(
-                  'gap-1 transition-all rounded-none text-xs',
+                  'gap-1.5 transition-all rounded-none text-xs',
                   showAll
-                    ? 'bg-gray-600 hover:bg-gray-700 shadow-xs text-white'
+                    ? 'bg-gray-800 hover:bg-gray-900 shadow-xs text-white'
                     : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                 )}
               >
@@ -149,7 +149,7 @@ export default function Navigation({
 
             {/* Mobile Title */}
             <div className="flex-1 text-center">
-              <span className="text-xs font-medium text-gray-700">
+              <span className="text-sm font-medium text-gray-700">
                 {navItems.find(item => item.id === activeSection)?.label || 'Navigation'}
               </span>
             </div>
@@ -160,9 +160,9 @@ export default function Navigation({
               variant={showAll ? 'default' : 'outline'}
               size="sm"
               className={cn(
-                'gap-1 px-2 transition-all text-xs',
+                'gap-1 px-3 transition-all text-xs',
                 showAll
-                  ? 'bg-gray-600 hover:bg-gray-700 shadow-xs text-white'
+                  ? 'bg-gray-800 hover:bg-gray-900 shadow-xs text-white'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
               )}
             >
@@ -183,7 +183,7 @@ export default function Navigation({
             
             {/* Mobile Menu Panel */}
             <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-50 shadow-lg z-40">
-              <div className="p-2 space-y-1">
+              <div className="p-4 space-y-2">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
@@ -193,7 +193,7 @@ export default function Navigation({
                       key={item.id}
                       onClick={() => handleSectionClick(item.id)}
                       className={cn(
-                        'w-full flex items-center gap-2 px-3 py-2 rounded-none transition-all duration-200',
+                        'w-full flex items-center gap-2 px-4 py-2.5 rounded-none transition-all duration-200',
                         'text-xs font-medium',
                         'hover:bg-gray-50 hover:text-gray-900',
                         isActive 
@@ -201,7 +201,7 @@ export default function Navigation({
                           : 'text-gray-600'
                       )}
                     >
-                      <Icon className="w-3 h-3 flex-shrink-0" />
+                      <Icon className="w-3.5 h-3.5 flex-shrink-0" />
                       <span>{item.label}</span>
                     </button>
                   );
