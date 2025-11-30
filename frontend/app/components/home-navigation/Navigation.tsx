@@ -12,9 +12,9 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: 'hero', label: 'Hero', icon: LayoutDashboard },
-  { id: 'campaigns', label: 'Featured Campaigns', icon: Rocket },
-  { id: 'contracts', label: 'Investment Contracts', icon: FileText },
-  { id: 'brand', label: 'Brand Identity', icon: Award },
+  { id: 'campaigns', label: 'Featured', icon: Rocket },
+  { id: 'contracts', label: 'Contracts', icon: FileText },
+  { id: 'brand', label: 'Brand', icon: Award },
   { id: 'partners', label: 'Partners', icon: Users },
 ];
 
