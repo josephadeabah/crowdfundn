@@ -82,7 +82,7 @@ export default function Navigation({
       <nav
         className={cn(
           'sticky top-0 z-40 w-full transition-all duration-300',
-          'bg-white/80 backdrop-blur-md border-b border-gray-200/60',
+          'bg-white/80 backdrop-blur-md border-b border-gray-50/60',
           isScrolled && 'bg-white/95 shadow-sm'
         )}
       >
@@ -91,7 +91,7 @@ export default function Navigation({
           <div className="hidden lg:flex items-center justify-between h-16">
             {/* Centered Navigation Items */}
             <div className="flex-1 flex items-center justify-center">
-              <div className="flex items-center space-x-1 bg-gray-50/80 rounded-2xl p-1 border border-gray-200/60">
+              <div className="flex items-center space-x-1 bg-gray-50/80 rounded-none p-1 border border-gray-50/60">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
@@ -101,11 +101,11 @@ export default function Navigation({
                       key={item.id}
                       onClick={() => handleSectionClick(item.id)}
                       className={cn(
-                        'flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200',
+                        'flex items-center gap-2 px-4 py-2 rounded-none transition-all duration-200',
                         'text-sm font-medium whitespace-nowrap',
                         'hover:bg-white hover:text-gray-900 hover:shadow-sm',
                         isActive 
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs' 
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-50 shadow-xs' 
                           : 'text-gray-600'
                       )}
                     >
@@ -182,7 +182,7 @@ export default function Navigation({
             />
             
             {/* Mobile Menu Panel */}
-            <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg z-40">
+            <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-50 shadow-lg z-40">
               <div className="p-4 space-y-2">
                 {navItems.map((item) => {
                   const Icon = item.icon;
@@ -193,11 +193,11 @@ export default function Navigation({
                       key={item.id}
                       onClick={() => handleSectionClick(item.id)}
                       className={cn(
-                        'w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200',
+                        'w-full flex items-center gap-3 px-4 py-3 rounded-none transition-all duration-200',
                         'text-sm font-medium',
                         'hover:bg-gray-50 hover:text-gray-900',
                         isActive 
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-50' 
                           : 'text-gray-600'
                       )}
                     >
