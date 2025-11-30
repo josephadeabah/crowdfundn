@@ -131,7 +131,7 @@ export default function Navigation({
                 variant={showAll ? 'default' : 'outline'}
                 size="sm"
                 className={cn(
-                  'gap-1.5 transition-all rounded-none text-xs',
+                  'gap-1.5 transition-all rounded-none text-xs bg-white',
                   showAll
                     ? 'bg-green-700/50 hover:bg-green-100/50 shadow-xs text-white'
                     : 'border-gray-50 text-gray-700 hover:bg-gray-50',
