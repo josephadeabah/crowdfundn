@@ -90,8 +90,8 @@ export default function Navigation({
           {/* Desktop Layout */}
           <div className="hidden lg:flex items-center justify-between h-16">
             {/* Centered Navigation Items */}
-            <div className="flex-1 flex items-center justify-center">
-              <div className="flex items-center space-x-1 bg-white rounded-none p-1 border border-gray-50/60">
+            <div className="flex items-center justify-center flex-1">
+              <div className="flex items-center space-x-0 bg-white rounded-none p-1 border border-gray-50/60">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
@@ -101,15 +101,15 @@ export default function Navigation({
                       key={item.id}
                       onClick={() => handleSectionClick(item.id)}
                       className={cn(
-                        'flex items-center gap-2 px-4 py-2 rounded-none transition-all duration-200',
-                        'text-sm font-medium whitespace-nowrap',
-                        'hover:bg-white hover:text-gray-900 hover:shadow-sm',
+                        'flex items-center gap-1 px-3 py-2 rounded-none transition-all duration-200',
+                        'text-xs font-medium whitespace-nowrap',
+                        'hover:bg-gray-50 hover:text-gray-900 hover:shadow-sm',
                         isActive 
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-50 shadow-xs' 
+                          ? 'bg-gray-100 text-gray-800 border border-gray-200 shadow-xs' 
                           : 'text-gray-600'
                       )}
                     >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <Icon className="w-3 h-3 flex-shrink-0" />
                       <span>{item.label}</span>
                     </button>
                   );
@@ -118,19 +118,19 @@ export default function Navigation({
             </div>
 
             {/* View All Sections Toggle */}
-            <div className="flex-1 flex items-center justify-end">
+            <div className="flex items-center justify-end flex-1">
               <Button
                 onClick={onToggleShowAll}
                 variant={showAll ? 'default' : 'outline'}
                 size="sm"
                 className={cn(
-                  'gap-2 transition-all rounded-none',
+                  'gap-1 transition-all rounded-none text-xs',
                   showAll
-                    ? 'bg-emerald-600 hover:bg-emerald-700 shadow-xs'
+                    ? 'bg-gray-600 hover:bg-gray-700 shadow-xs text-white'
                     : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                 )}
               >
-                <Eye className="w-4 h-4" />
+                <Eye className="w-3 h-3" />
                 {showAll ? 'Showing All' : 'View All'}
               </Button>
             </div>
@@ -144,12 +144,12 @@ export default function Navigation({
               className="p-2 rounded-none text-gray-600 hover:bg-gray-100 transition-colors"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
             {/* Mobile Title */}
             <div className="flex-1 text-center">
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-xs font-medium text-gray-700">
                 {navItems.find(item => item.id === activeSection)?.label || 'Navigation'}
               </span>
             </div>
@@ -160,9 +160,9 @@ export default function Navigation({
               variant={showAll ? 'default' : 'outline'}
               size="sm"
               className={cn(
-                'gap-1 px-3 transition-all',
+                'gap-1 px-2 transition-all text-xs',
                 showAll
-                  ? 'bg-emerald-600 hover:bg-emerald-700 shadow-xs'
+                  ? 'bg-gray-600 hover:bg-gray-700 shadow-xs text-white'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
               )}
             >
@@ -183,7 +183,7 @@ export default function Navigation({
             
             {/* Mobile Menu Panel */}
             <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-50 shadow-lg z-40">
-              <div className="p-4 space-y-2">
+              <div className="p-2 space-y-1">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
@@ -193,15 +193,15 @@ export default function Navigation({
                       key={item.id}
                       onClick={() => handleSectionClick(item.id)}
                       className={cn(
-                        'w-full flex items-center gap-3 px-4 py-3 rounded-none transition-all duration-200',
-                        'text-sm font-medium',
+                        'w-full flex items-center gap-2 px-3 py-2 rounded-none transition-all duration-200',
+                        'text-xs font-medium',
                         'hover:bg-gray-50 hover:text-gray-900',
                         isActive 
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-50' 
+                          ? 'bg-gray-100 text-gray-800 border border-gray-200' 
                           : 'text-gray-600'
                       )}
                     >
-                      <Icon className="w-5 h-5 flex-shrink-0" />
+                      <Icon className="w-3 h-3 flex-shrink-0" />
                       <span>{item.label}</span>
                     </button>
                   );
