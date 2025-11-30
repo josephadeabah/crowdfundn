@@ -226,7 +226,7 @@ const Hero = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="group flex-1 sm:flex-initial"
+                  className="group flex-1 sm:flex-initial bg-white text-gray-800 border border-gray-50 shadow-none rounded-none"
                   onClick={() =>
                     (window.location.href = user
                       ? '/account#Favorites'
@@ -239,7 +239,7 @@ const Hero = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="flex-1 sm:flex-initial"
+                  className="flex-1 sm:flex-initial bg-white text-gray-800 border border-gray-50 shadow-none rounded-none"
                   onClick={() =>
                     (window.location.href = user
                       ? '/account#Campaigns'
