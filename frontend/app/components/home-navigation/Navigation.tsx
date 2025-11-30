@@ -20,7 +20,7 @@ interface NavItem {
 }
 
 export const navItems: NavItem[] = [
-  { id: 'hero', label: 'Hero', icon: LayoutDashboard },
+  { id: 'hero', label: 'Us', icon: LayoutDashboard },
   { id: 'campaigns', label: 'Featured', icon: Rocket },
   { id: 'contracts', label: 'Contracts', icon: FileText },
   { id: 'brand', label: 'Brand', icon: Award },
