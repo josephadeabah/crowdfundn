@@ -124,9 +124,7 @@ export default function Navigation({
                   );
                 })}
               </div>
-            </div>
-
-            {/* View All Sections Toggle - Now part of the centered group */}
+                          {/* View All Sections Toggle - Now part of the centered group */}
             <div className="flex items-center justify-center ml-4">
               <Button
                 onClick={onToggleShowAll}
@@ -143,6 +141,9 @@ export default function Navigation({
                 {showAll ? 'Showing All' : 'View All'}
               </Button>
             </div>
+            </div>
+
+
           </div>
 
           {/* Mobile Layout */}
