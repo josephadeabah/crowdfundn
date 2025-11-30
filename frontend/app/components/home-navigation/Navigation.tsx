@@ -91,7 +91,7 @@ export default function Navigation({
           <div className="hidden lg:flex items-center h-16">
             {/* Centered Navigation Container */}
             <div className="flex-1 flex items-center justify-center">
-              <div className="flex items-center space-x-0 bg-white rounded-none p-1 border border-gray-200">
+              <div className="flex items-center space-x-0 bg-white rounded-none p-1 border border-gray-50">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
@@ -105,7 +105,7 @@ export default function Navigation({
                         'text-xs font-medium whitespace-nowrap',
                         'hover:bg-gray-50 hover:text-gray-900',
                         isActive 
-                          ? 'bg-gray-100 text-gray-800 border border-gray-200 shadow-xs' 
+                          ? 'bg-gray-50 text-gray-800 border border-gray-50 shadow-xs' 
                           : 'text-gray-600'
                       )}
                     >
@@ -126,8 +126,8 @@ export default function Navigation({
                 className={cn(
                   'gap-1.5 transition-all rounded-none text-xs',
                   showAll
-                    ? 'bg-gray-800 hover:bg-gray-900 shadow-xs text-white'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'bg-emerald-600 hover:bg-emerald-700 shadow-xs text-white'
+                    : 'border-gray-50 text-gray-700 hover:bg-gray-50'
                 )}
               >
                 <Eye className="w-3 h-3" />
@@ -197,7 +197,7 @@ export default function Navigation({
                         'text-xs font-medium',
                         'hover:bg-gray-50 hover:text-gray-900',
                         isActive 
-                          ? 'bg-gray-100 text-gray-800 border border-gray-200' 
+                          ? 'bg-gray-100 text-gray-800 border border-gray-50' 
                           : 'text-gray-600'
                       )}
                     >
