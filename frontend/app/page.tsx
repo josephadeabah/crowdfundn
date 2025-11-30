@@ -2,64 +2,55 @@
 
 import FeaturedCampaigns from './components/campaigns/FeaturedCampaigns';
 import Hero from './components/Hero';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PartnersCarousel from './molecules/PartnersCarousel';
 import BrandIdentity from './molecules/BrandIdentity';
 import InvestmentContracts from './investment-contracts/page';
 import { usePiwikPro } from '@piwikpro/next-piwik-pro';
+import Navigation from './components/home-navigation/Navigation';
 
 const HomePage = () => {
-  const { PageViews } = usePiwikPro(); // ✅ Initialize PageViews
-  useEffect(() => {
-    // Track page view
-    PageViews.trackPageView('Homepage');
-    // Initialize intersection observer for scroll animations
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate-fade-up');
-            // Once the animation is triggered, we don't need to observe this element anymore
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 },
-    );
-
-    // Select all elements with animate-on-scroll class
-    const animatedElements = document.querySelectorAll('.animate-on-scroll');
-    animatedElements.forEach((el) => observer.observe(el));
-
-    // Cleanup the observer
-    return () => {
-      animatedElements.forEach((el) => observer.unobserve(el));
-    };
-  }, []);
+ const [showAll, setShowAll] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col w-full">
-      <main className="w-full">
-        <div className="w-full">
-          <Hero />
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <Navigation showAll={showAll} onToggleShowAll={() => setShowAll(!showAll)} />
+
+          <main className="flex-1 space-y-12 lg:space-y-16">
+            <div id="hero" className={showAll ? '' : 'min-h-[600px]'}>
+              <Hero />
+            </div>
+
+            {showAll && (
+              <>
+                <div id="campaigns" className="scroll-mt-20">
+                  <FeaturedCampaigns />
+                </div>
+
+                <div id="contracts" className="scroll-mt-20">
+                  <InvestmentContracts />
+                </div>
+
+                <div id="brand" className="scroll-mt-20">
+                  <BrandIdentity />
+                </div>
+
+                <div id="partners" className="scroll-mt-20">
+                  <PartnersCarousel />
+                </div>
+              </>
+            )}
+
+            {!showAll && (
+              <div className="text-center py-12 text-gray-500">
+                <p>Use the navigation menu to explore other divs or click "View All divs"</p>
+              </div>
+            )}
+          </main>
         </div>
-        <div className="w-full bg-white">
-          <FeaturedCampaigns />
-        </div>
-        <div className="w-full bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <InvestmentContracts />
-          </div>
-        </div>
-        <div className="">
-          <BrandIdentity />
-        </div>
-        <div className="w-full bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <PartnersCarousel />
-          </div>
-        </div>
-      </main>
+      </div>
     </div>
   );
 };
