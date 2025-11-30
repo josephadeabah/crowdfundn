@@ -91,7 +91,7 @@ export default function Navigation({
           <div className="hidden lg:flex items-center justify-between h-16">
             {/* Centered Navigation Items */}
             <div className="flex-1 flex items-center justify-center">
-              <div className="flex items-center space-x-1 bg-gray-50/80 rounded-none p-1 border border-gray-50/60">
+              <div className="flex items-center space-x-1 bg-white rounded-none p-1 border border-gray-50/60">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
@@ -124,7 +124,7 @@ export default function Navigation({
                 variant={showAll ? 'default' : 'outline'}
                 size="sm"
                 className={cn(
-                  'gap-2 transition-all',
+                  'gap-2 transition-all rounded-none',
                   showAll
                     ? 'bg-emerald-600 hover:bg-emerald-700 shadow-xs'
                     : 'border-gray-300 text-gray-700 hover:bg-gray-50'
@@ -141,7 +141,7 @@ export default function Navigation({
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-none text-gray-600 hover:bg-gray-100 transition-colors"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
