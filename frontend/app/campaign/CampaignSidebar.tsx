@@ -130,7 +130,7 @@ const CampaignSidebar: React.FC<CampaignSidebarProps> = ({ campaign }) => {
                         {fundraiserCurrency}
                       </span>
                       {parseFloat(
-                        (campaign?.transferred_amount ?? '0').toString(),
+                        (campaign?.current_amount ?? '0').toString(),
                       ).toLocaleString()}
                     </div>
                     <div className="text-sm text-gray-600 mt-1">Raised</div>
