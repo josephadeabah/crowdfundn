@@ -10,7 +10,7 @@ interface NavItem {
   icon: typeof LayoutDashboard;
 }
 
-const navItems: NavItem[] = [
+export const navItems: NavItem[] = [
   { id: 'hero', label: 'Hero', icon: LayoutDashboard },
   { id: 'campaigns', label: 'Featured', icon: Rocket },
   { id: 'contracts', label: 'Contracts', icon: FileText },
@@ -20,22 +20,30 @@ const navItems: NavItem[] = [
 
 interface NavigationProps {
   showAll: boolean;
+  activeSection: string;
   onToggleShowAll: () => void;
+  onSectionChange: (sectionId: string) => void;
 }
 
-export default function Navigation({ showAll, onToggleShowAll }: NavigationProps) {
-  const [activeSection, setActiveSection] = useState('hero');
+export default function Navigation({ 
+  showAll, 
+  activeSection, 
+  onToggleShowAll, 
+  onSectionChange 
+}: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
+      if (!showAll) return; // Only auto-detect section when showing all
+      
       const sections = navItems.map((item) => document.getElementById(item.id));
       const scrollPosition = window.scrollY + 200;
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
         if (section && section.offsetTop <= scrollPosition) {
-          setActiveSection(navItems[i].id);
+          onSectionChange(navItems[i].id);
           break;
         }
       }
@@ -43,21 +51,27 @@ export default function Navigation({ showAll, onToggleShowAll }: NavigationProps
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [showAll, onSectionChange]);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+  const handleSectionClick = (id: string) => {
+    onSectionChange(id);
+    
+    if (showAll) {
+      // Scroll to section when showing all sections
+      const element = document.getElementById(id);
+      if (element) {
+        const offset = 80;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-      setMobileMenuOpen(false);
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth',
+        });
+      }
     }
+    
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -103,7 +117,7 @@ export default function Navigation({ showAll, onToggleShowAll }: NavigationProps
               return (
                 <button
                   key={item.id}
-                  onClick={() => scrollToSection(item.id)}
+                  onClick={() => handleSectionClick(item.id)}
                   className={cn(
                     'w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
                     'hover:bg-sidebar-foreground/10 hover:translate-x-1',

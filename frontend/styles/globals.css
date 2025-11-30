@@ -15,6 +15,21 @@ body {
   height: 100%;
   margin: 0;
   font-family: var(--font-roboto);
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Ensure sections don't cause overflow */
+section, div {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
 
 /* body {
