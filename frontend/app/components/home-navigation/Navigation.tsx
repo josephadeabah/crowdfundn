@@ -135,7 +135,7 @@ export default function Navigation({
                 className={cn(
                   'gap-1.5 transition-all rounded-none text-xs',
                   showAll
-                    ? 'bg-emerald-600 hover:bg-emerald-700 shadow-xs text-white'
+                    ? 'bg-green-700/50 hover:bg-green-100/50 shadow-xs text-white'
                     : 'border-gray-50 text-gray-700 hover:bg-gray-50',
                 )}
               >
