@@ -32,47 +32,43 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <Navigation 
-            showAll={showAll} 
-            activeSection={activeSection}
-            onToggleShowAll={() => setShowAll(!showAll)} 
-            onSectionChange={setActiveSection}
-          />
+    <div className="min-h-screen bg-white">
+      {/* Navigation at the top */}
+      <Navigation 
+        showAll={showAll} 
+        activeSection={activeSection}
+        onToggleShowAll={() => setShowAll(!showAll)} 
+        onSectionChange={setActiveSection}
+      />
 
-          <main className="flex-1 space-y-12 lg:space-y-16">
-            {/* Always render all sections but control visibility */}
-            {navItems.map((item) => (
-              <div
-                key={item.id}
-                id={item.id}
-                className={cn(
-                  'scroll-mt-20 transition-all duration-300',
-                  // Prevent overflow for full-screen sections
-                  item.id === 'hero' && 'min-h-[80vh] flex items-center',
-                  // Hide sections that shouldn't be visible
-                  !showAll && item.id !== activeSection && 'hidden'
-                )}
-                style={{
-                  // Ensure sections don't cause horizontal overflow
-                  maxWidth: '100vw',
-                  boxSizing: 'border-box'
-                }}
-              >
-                {renderSection(item.id)}
-              </div>
-            ))}
-
-            {!showAll && activeSection !== 'hero' && (
-              <div className="text-center py-12 text-gray-500">
-                <p>Use the navigation menu to explore other sections or click "View All Sections"</p>
-              </div>
+      {/* Main content - full width without sidebar constraints */}
+      <main className="w-full">
+        {/* Always render all sections but control visibility */}
+        {navItems.map((item) => (
+          <section
+            key={item.id}
+            id={item.id}
+            className={cn(
+              'scroll-mt-16', // Adjusted for horizontal nav height
+              'transition-opacity duration-300',
+              // Hide sections that shouldn't be visible
+              !showAll && item.id !== activeSection && 'hidden'
             )}
-          </main>
-        </div>
-      </div>
+          >
+            {renderSection(item.id)}
+          </section>
+        ))}
+
+        {/* Empty state when not showing all sections */}
+        {!showAll && activeSection !== 'hero' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="text-center py-12 text-gray-500 border-2 border-dashed border-gray-200 rounded-lg">
+              <p className="text-lg">Use the navigation menu above to explore other sections</p>
+              <p className="text-sm mt-2">or click "View All Sections" to see everything at once</p>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 };
