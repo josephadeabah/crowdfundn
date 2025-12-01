@@ -7,8 +7,6 @@ import {
   Award,
   Users,
   Eye,
-  Menu,
-  X,
 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { cn } from '@/app/lib/utils';
@@ -41,24 +39,20 @@ export default function Navigation({
   onSectionChange,
 }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       if (!showAll) return;
 
-      const sections = navItems.map((item) => document.getElementById(item.id));
       const scrollPosition = window.scrollY + 100;
 
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = sections[i];
+      for (let i = navItems.length - 1; i >= 0; i--) {
+        const section = document.getElementById(navItems[i].id);
         if (section && section.offsetTop <= scrollPosition) {
           onSectionChange(navItems[i].id);
           break;
         }
       }
-
-      // Check if page is scrolled for styling
       setIsScrolled(window.scrollY > 50);
     };
 
@@ -68,166 +62,97 @@ export default function Navigation({
 
   const handleSectionClick = (id: string) => {
     onSectionChange(id);
-    setMobileMenuOpen(false);
-
     if (showAll) {
-      const element = document.getElementById(id);
-      if (element) {
+      const el = document.getElementById(id);
+      if (el) {
         const offset = 80;
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth',
-        });
+        const pos = el.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: pos, behavior: 'smooth' });
       }
     }
   };
 
   return (
-    <>
-      {/* Horizontal Navigation Bar */}
-      <nav
-        className={cn(
-          'sticky top-0 z-40 w-full transition-all duration-300',
-          'bg-white/80 backdrop-blur-md border-b border-gray-50/60',
-          isScrolled && 'bg-white/95 shadow-sm',
-        )}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Desktop Layout */}
-          <div className="hidden lg:flex items-center h-16">
-            {/* Centered Navigation Container */}
-            <div className="flex-1 flex items-center justify-center">
-              <div className="flex items-center space-x-0 bg-white rounded-none p-1 border border-gray-50">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activeSection === item.id;
+    <nav
+      className={cn(
+        'sticky top-0 z-40 w-full backdrop-blur-md border-b transition-all duration-300',
+        'bg-white/80 border-gray-100',
+        isScrolled && 'bg-white/95 shadow-sm'
+      )}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleSectionClick(item.id)}
-                      className={cn(
-                        'flex items-center gap-1.5 px-3 py-1.5 rounded-none transition-all duration-200',
-                        'text-xs font-medium whitespace-nowrap',
-                        'hover:bg-gray-50 hover:text-gray-900',
-                        isActive
-                          ? 'bg-gray-50 text-gray-800 border border-gray-50 shadow-xs'
-                          : 'text-gray-600',
-                      )}
-                    >
-                      <Icon className="w-3 h-3 flex-shrink-0" />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-                          {/* View All Sections Toggle - Now part of the centered group */}
-            <div className="flex items-center justify-center ml-4">
-              <Button
-                onClick={onToggleShowAll}
-                variant={showAll ? 'default' : 'outline'}
-                size="sm"
-                className={cn(
-                  'gap-1.5 transition-all rounded-none text-xs bg-white',
-                  showAll
-                    ? 'bg-green-700/50 hover:bg-green-100/50 shadow-xs text-white'
-                    : 'border-none text-gray-700 hover:bg-gray-50',
-                )}
-              >
-                <Eye className="w-3 h-3" />
-                {showAll ? 'Showing All' : 'View All'}
-              </Button>
-            </div>
-            </div>
+        {/* DESKTOP — Labels only */}
+        <div className="hidden lg:flex items-center justify-center h-16">
+          <div className="flex items-center space-x-0 border border-gray-100 bg-white p-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleSectionClick(item.id)}
+                  className={cn(
+                    'px-4 py-1.5 rounded-none text-sm font-medium transition-all whitespace-nowrap',
+                    'hover:bg-gray-50 hover:text-gray-900',
+                    active
+                      ? 'bg-gray-50 text-gray-800 border border-gray-100'
+                      : 'text-gray-600'
+                  )}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
 
-
-          </div>
-
-          {/* Mobile Layout */}
-          <div className="lg:hidden flex items-center justify-between h-16">
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-none text-gray-600 hover:bg-gray-100 transition-colors"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <X className="w-5 h-5 text-gray-800" />
-              ) : (
-                <Menu className="w-5 h-5 text-gray-800" />
-              )}
-            </button>
-
-            {/* Mobile Title */}
-            <div className="flex-1 text-center">
-              <span className="text-sm font-medium text-gray-700">
-                {navItems.find((item) => item.id === activeSection)?.label ||
-                  'Navigation'}
-              </span>
-            </div>
-
-            {/* Mobile View All Toggle */}
+            {/* View All Button — stays in same group */}
             <Button
               onClick={onToggleShowAll}
-              variant={showAll ? 'default' : 'outline'}
               size="sm"
               className={cn(
-                'gap-1 px-3 transition-all text-xs',
+                'rounded-none text-sm',
                 showAll
-                  ? 'bg-gray-800 hover:bg-gray-900 shadow-xs text-white'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50',
+                  ? 'bg-green-700 text-white hover:bg-green-800 shadow-xs'
+                  : 'bg-white border-none text-gray-700 hover:bg-gray-50'
               )}
             >
               <Eye className="w-3 h-3" />
-              <span className="sr-only lg:not-sr-only">
-                {showAll ? 'All' : 'View'}
-              </span>
+              {showAll ? 'Showing All' : 'View All'}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Menu Overlay */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden">
-            {/* Backdrop */}
-            <div
-              className="fixed inset-0 bg-gray-50 z-30"
-              onClick={() => setMobileMenuOpen(false)}
-            />
+        {/* MOBILE — Icons only */}
+        <div className="lg:hidden flex justify-center items-center h-16 gap-6">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleSectionClick(item.id)}
+                className={cn(
+                  'flex flex-col items-center justify-center transition-all',
+                  active ? 'text-green-700' : 'text-gray-500'
+                )}
+              >
+                <Icon className="w-5 h-5" />
+              </button>
+            );
+          })}
 
-            {/* Mobile Menu Panel */}
-            <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-50 shadow-lg z-40">
-              <div className="p-4 space-y-2">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activeSection === item.id;
-
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleSectionClick(item.id)}
-                      className={cn(
-                        'w-full flex items-center gap-2 px-4 py-2.5 rounded-none transition-all duration-200',
-                        'text-xs font-medium',
-                        'hover:bg-gray-50 hover:text-gray-900',
-                        isActive
-                          ? 'bg-gray-100 text-gray-800 border border-gray-50'
-                          : 'text-gray-600',
-                      )}
-                    >
-                      <Icon className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
-    </>
+          {/* View All Button — AFTER icons */}
+          <button
+            onClick={onToggleShowAll}
+            className={cn(
+              'flex flex-col items-center justify-center transition-all',
+              showAll ? 'text-green-700' : 'text-gray-500'
+            )}
+          >
+            <Eye className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </nav>
   );
 }

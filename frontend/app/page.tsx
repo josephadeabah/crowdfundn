@@ -12,28 +12,18 @@ const HomePage = () => {
   const [showAll, setShowAll] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
 
-  const renderSection = (sectionId: string) => {
-    if (!showAll && sectionId !== activeSection) return null;
-
-    switch (sectionId) {
-      case 'hero':
-        return <Hero />;
-      case 'campaigns':
-        return <FeaturedCampaigns />;
-      case 'contracts':
-        return <InvestmentContracts />;
-      case 'brand':
-        return <BrandIdentity />;
-      case 'partners':
-        return <PartnersCarousel />;
-      default:
-        return null;
-    }
-  };
+  const renderSection = (id: string) =>
+    !showAll && id !== activeSection ? null :
+    ({
+      hero: <Hero />,
+      campaigns: <FeaturedCampaigns />,
+      contracts: <InvestmentContracts />,
+      brand: <BrandIdentity />,
+      partners: <PartnersCarousel />,
+    } as any)[id];
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation at the top */}
       <Navigation
         showAll={showAll}
         activeSection={activeSection}
@@ -41,18 +31,14 @@ const HomePage = () => {
         onSectionChange={setActiveSection}
       />
 
-      {/* Main content - full width without sidebar constraints */}
       <main className="w-full">
-        {/* Always render all sections but control visibility */}
         {navItems.map((item) => (
           <div
             key={item.id}
             id={item.id}
             className={cn(
-              'scroll-mt-16', // Adjusted for horizontal nav height
-              'transition-opacity duration-300',
-              // Hide sections that shouldn't be visible
-              !showAll && item.id !== activeSection && 'hidden',
+              'scroll-mt-16 transition-opacity duration-300',
+              !showAll && item.id !== activeSection && 'hidden'
             )}
           >
             {renderSection(item.id)}
