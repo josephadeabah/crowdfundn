@@ -191,7 +191,7 @@ module Api
         # Fetch customer balance from your database or system
         def get_customer_balance(customer_id)
           # Fetch customer record and return balance
-          Campaign.find(customer_id).current_amount
+          Campaign.find(customer_id).transferred_amount
         rescue ActiveRecord::RecordNotFound
           puts "Customer with ID #{customer_id} not found."
           nil
