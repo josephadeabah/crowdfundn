@@ -77,14 +77,14 @@ export default function Navigation({
     <nav
       className={cn(
         'sticky top-0 z-40 w-full backdrop-blur-md border-b transition-all duration-300',
-        'bg-green-100/50 border-green-100',
+        'bg-green-100/50 border-green-100/50',
         isScrolled && 'bg-white/95 shadow-sm',
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* DESKTOP — Labels only */}
         <div className="hidden lg:flex items-center justify-center h-16">
-          <div className="flex items-center space-x-0 border border-gray-100 bg-green-100/50 p-1">
+          <div className="flex items-center space-x-0 border border-green-100/50 bg-green-100/60 p-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = activeSection === item.id;
