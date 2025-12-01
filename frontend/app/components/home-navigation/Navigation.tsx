@@ -84,7 +84,7 @@ export default function Navigation({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* DESKTOP — Labels only */}
         <div className="hidden lg:flex items-center justify-center h-16">
-          <div className="flex items-center space-x-0 border border-gray-100 bg-white p-1">
+          <div className="flex items-center space-x-0 border border-gray-100 bg-green-700/50 p-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = activeSection === item.id;

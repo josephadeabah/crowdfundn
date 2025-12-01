@@ -26,7 +26,7 @@ const HomePage = () => {
         )[id];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-green-100/50">
       <Navigation
         showAll={showAll}
         activeSection={activeSection}
