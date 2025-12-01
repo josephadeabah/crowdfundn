@@ -77,7 +77,7 @@ export default function Navigation({
     <nav
       className={cn(
         'sticky top-0 z-40 w-full backdrop-blur-md border-b transition-all duration-300',
-        'bg-white/80 border-gray-100',
+        'bg-green-100/50 border-gray-100',
         isScrolled && 'bg-white/95 shadow-sm',
       )}
     >
