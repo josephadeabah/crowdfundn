@@ -66,7 +66,8 @@ export default function Navigation({
       const el = document.getElementById(id);
       if (el) {
         const offset = 80;
-        const pos = el.getBoundingClientRect().top + window.pageYOffset - offset;
+        const pos =
+          el.getBoundingClientRect().top + window.pageYOffset - offset;
         window.scrollTo({ top: pos, behavior: 'smooth' });
       }
     }
@@ -77,11 +78,10 @@ export default function Navigation({
       className={cn(
         'sticky top-0 z-40 w-full backdrop-blur-md border-b transition-all duration-300',
         'bg-white/80 border-gray-100',
-        isScrolled && 'bg-white/95 shadow-sm'
+        isScrolled && 'bg-white/95 shadow-sm',
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* DESKTOP — Labels only */}
         <div className="hidden lg:flex items-center justify-center h-16">
           <div className="flex items-center space-x-0 border border-gray-100 bg-white p-1">
@@ -97,7 +97,7 @@ export default function Navigation({
                     'hover:bg-gray-50 hover:text-gray-900',
                     active
                       ? 'bg-gray-50 text-gray-800 border border-gray-100'
-                      : 'text-gray-600'
+                      : 'text-gray-600',
                   )}
                 >
                   {item.label}
@@ -113,7 +113,7 @@ export default function Navigation({
                 'rounded-none text-sm',
                 showAll
                   ? 'bg-green-700 text-white hover:bg-green-800 shadow-xs'
-                  : 'bg-white border-none text-gray-700 hover:bg-gray-50'
+                  : 'bg-white border-none text-gray-700 hover:bg-gray-50',
               )}
             >
               <Eye className="w-3 h-3" />
@@ -133,7 +133,7 @@ export default function Navigation({
                 onClick={() => handleSectionClick(item.id)}
                 className={cn(
                   'flex flex-col items-center justify-center transition-all',
-                  active ? 'text-green-700' : 'text-gray-500'
+                  active ? 'text-green-700' : 'text-gray-500',
                 )}
               >
                 <Icon className="w-5 h-5" />
@@ -146,7 +146,7 @@ export default function Navigation({
             onClick={onToggleShowAll}
             className={cn(
               'flex flex-col items-center justify-center transition-all',
-              showAll ? 'text-green-700' : 'text-gray-500'
+              showAll ? 'text-green-700' : 'text-gray-500',
             )}
           >
             <Eye className="w-5 h-5" />

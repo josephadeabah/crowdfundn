@@ -13,14 +13,17 @@ const HomePage = () => {
   const [activeSection, setActiveSection] = useState('hero');
 
   const renderSection = (id: string) =>
-    !showAll && id !== activeSection ? null :
-    ({
-      hero: <Hero />,
-      campaigns: <FeaturedCampaigns />,
-      contracts: <InvestmentContracts />,
-      brand: <BrandIdentity />,
-      partners: <PartnersCarousel />,
-    } as any)[id];
+    !showAll && id !== activeSection
+      ? null
+      : (
+          {
+            hero: <Hero />,
+            campaigns: <FeaturedCampaigns />,
+            contracts: <InvestmentContracts />,
+            brand: <BrandIdentity />,
+            partners: <PartnersCarousel />,
+          } as any
+        )[id];
 
   return (
     <div className="min-h-screen bg-white">
@@ -38,7 +41,7 @@ const HomePage = () => {
             id={item.id}
             className={cn(
               'scroll-mt-16 transition-opacity duration-300',
-              !showAll && item.id !== activeSection && 'hidden'
+              !showAll && item.id !== activeSection && 'hidden',
             )}
           >
             {renderSection(item.id)}

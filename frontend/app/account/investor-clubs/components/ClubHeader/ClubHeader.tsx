@@ -51,7 +51,7 @@ export const ClubHeader: React.FC<ClubHeaderProps> = ({
           <SelectTrigger className="w-[180px] lg:w-[200px] border-0 focus:ring-0 focus:ring-offset-0 focus:outline-none shadow-none">
             <SelectValue placeholder="Select a club" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-60">
             {clubs.map((club) => (
               <SelectItem key={club.slug} value={club.slug}>
                 {club.name}
