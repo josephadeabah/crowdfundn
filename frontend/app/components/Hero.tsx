@@ -210,7 +210,7 @@ const Hero = () => {
               {/* Main Heading */}
               <div className="space-y-4 pb-6">
                 <h1 className="text-3xl font-bold text-gray-700 leading-tight">
-                  Where SMEs Meet Investors:&nbsp;
+                  Where Startups & SMEs Meet Investors:&nbsp;
                   <span className="text-orange-500">
                     A Collaborative Platform For Raising Capital
                   </span>
