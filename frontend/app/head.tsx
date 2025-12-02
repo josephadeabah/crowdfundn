@@ -7,7 +7,7 @@ export default function HeadComponent() {
       </title>
       <meta
         name="description"
-        content="BantuHive: World's No.1 all-in-one fundraising platform connecting individual and institutional investors with promising startups and impact projects. Investment opportunities, Crowdfunding and donations"
+        content="BantuHive: Africa's No.1 all-in-one fundraising platform connecting investors with promising startups and impact projects. Investment opportunities, Crowdfunding and donations"
       />
       <meta
         name="keywords"
@@ -23,11 +23,11 @@ export default function HeadComponent() {
       {/* Open Graph / Social Meta Tags */}
       <meta
         property="og:title"
-        content="BantuHive, Fund and Invest in World's Promising Startups"
+        content="BantuHive, Fund and Invest in Africa's Promising Startups"
       />
       <meta
         property="og:description"
-        content="World's all-in-one fundraising platform connecting investors with promising startups and impact projects."
+        content="Africa's all-in-one fundraising platform connecting investors with promising startups and impact projects."
       />
       <meta property="og:type" content="website" />
       <meta property="og:url" content="https://bantuhive.com" />
@@ -38,11 +38,11 @@ export default function HeadComponent() {
       <meta name="twitter:card" content="summary_large_image" />
       <meta
         name="twitter:title"
-        content="BantuHive, Fund & Invest in World's Promising Startups"
+        content="BantuHive, Fund & Invest in Africa's Promising Startups"
       />
       <meta
         name="twitter:description"
-        content="World's premier fundraising platform for startups and impact projects."
+        content="Africa's premier fundraising platform for startups and impact projects."
       />
       <meta name="twitter:image" content="/bantuhive.svg" />
     </head>
