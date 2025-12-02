@@ -20,6 +20,7 @@ import Avatar from './avatar/Avatar';
 import { getVerifiedBadge } from '../utils/helpers/get.level.trophy';
 import { VideoPlayer } from './videoplayer/videoplayar';
 import { Button } from './ui/button';
+import HeroPitch from '../molecules/HeroPitch';
 
 const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -364,6 +365,7 @@ const Hero = () => {
           </div>
         </div>
       </div>
+      <HeroPitch/>
     </div>
   );
 };
