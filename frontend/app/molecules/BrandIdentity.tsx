@@ -65,10 +65,10 @@ const BrandIdentity = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <button className="px-8 py-4 bg-green-700/50 text-white font-semibold rounded-lg hover:bg-emerald-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <button className="px-8 py-4 bg-green-700/50 text-white font-semibold rounded-none hover:bg-emerald-700 transition duration-300 shadow-none hover:shadow-none transform hover:-translate-y-1">
               Start Investing →
             </button>
-            <button className="px-8 py-4 bg-white text-emerald-600 font-semibold rounded-lg border-2 border-emerald-600 hover:bg-emerald-50 transition duration-300 shadow-lg hover:shadow-xl">
+            <button className="px-8 py-4 bg-white text-emerald-600 font-semibold rounded-none border-2 border-emerald-600 hover:bg-emerald-50 transition duration-300 shadow-none hover:shadow-none">
               Raise Capital
             </button>
           </div>
@@ -79,7 +79,7 @@ const BrandIdentity = () => {
           {valueProps.map((prop, index) => (
             <div 
               key={index}
-              className={`${prop.bgColor} p-8 rounded-2xl border border-gray-200 hover:border-${prop.color.split('-')[1]}-300 transition duration-300 hover:shadow-xl`}
+              className={`${prop.bgColor} p-8 rounded-none border border-gray-200 hover:border-${prop.color.split('-')[1]}-300 transition duration-300 hover:shadow-none`}
             >
               <div className={`${prop.color} mb-4`}>
                 {prop.icon}
@@ -91,7 +91,7 @@ const BrandIdentity = () => {
         </div>
 
         {/* Impact Stats */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100">
+        <div className="bg-white rounded-none shadow-none p-8 md:p-12 border border-gray-100">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">
               Powering Africa's Economic Engine
