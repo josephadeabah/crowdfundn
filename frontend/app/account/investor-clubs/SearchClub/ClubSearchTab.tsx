@@ -476,7 +476,7 @@ const ClubSearchTab: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-full mx-auto px-3 py-3">
+      <div className="max-w-full mx-auto px-2 py-2 md:px-3 md:py-3">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
