@@ -11,10 +11,12 @@
     "dev": "next dev",
     "build": "next build",
     "postbuild": "next-sitemap",
+    "sitemap": "next-sitemap",
     "start": "next start",
     "format": "prettier --write .",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "generate-sitemaps": "yarn run sitemap"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",

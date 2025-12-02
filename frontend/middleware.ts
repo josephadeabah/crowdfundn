@@ -42,6 +42,17 @@ export default function middleware(req: NextRequest) {
   const cookies = parseCookies(req.headers.get('cookie') ?? undefined);
   const { token, roles } = cookies;
 
+  // ALLOW PUBLIC ACCESS TO SITEMAP FILES AND ROBOTS.TXT WITHOUT AUTH
+  // These should be accessible without any authentication checks
+  if (
+    path === '/robots.txt' ||
+    path === '/sitemap-campaigns.xml' ||
+    (path.startsWith('/sitemap-') && path.endsWith('.xml')) ||
+    path === '/api/sitemap/campaigns'
+  ) {
+    return NextResponse.next();
+  }
+
   // Redirect unauthenticated users to login if accessing a protected route
   if ((isProtectedRoute || isAdminRoute) && !token) {
     return NextResponse.redirect(new URL('/auth/login', req.nextUrl));

@@ -1,30 +1,52 @@
+/** @type {import('next-sitemap').IConfig} */
 const config = {
-  siteUrl: 'https://bantuhive.com', // Replace with your domain
-  generateRobotsTxt: true, // (Optional) Generate a robots.txt file
+  siteUrl: 'https://bantuhive.com',
+  generateRobotsTxt: true,
+
+  // Don't transform during build if API might fail
   transform: async (config, path) => {
+    // Skip individual campaign pages as they're in a separate sitemap
+    if (path.startsWith('/campaign/')) {
+      return null;
+    }
+
     return {
-      loc: path, // The URL
+      loc: path,
       changefreq: 'weekly',
-      priority: path === '/' ? 1.0 : 0.7, // Prioritize the homepage
-      lastmod: new Date().toISOString(), // Last modified date
+      priority: path === '/' ? 1.0 : 0.7,
+      lastmod: new Date().toISOString(),
     };
   },
-  sitemapSize: 5000, // Split sitemap into multiple files if it exceeds 5000 URLs
-  changefreq: 'daily', // Suggested update frequency for your pages
-  priority: 0.7, // Default priority for pages
-  exclude: ['/admin/*', '/account', '/account/*', '/thank-you'], // Exclude specific pages or routes
+
+  sitemapSize: 5000,
+  changefreq: 'daily',
+  priority: 0.7,
+  exclude: [
+    '/admin/*',
+    '/account',
+    '/account/*',
+    '/thank-you',
+    '/campaign/*',
+    '/api/sitemap/*', // Exclude sitemap API from main sitemap
+  ],
+
   robotsTxtOptions: {
     policies: [
       {
         userAgent: '*',
         allow: '/',
+        disallow: ['/admin', '/account', '/api'],
       },
       {
         userAgent: 'Googlebot',
         allow: '/',
+        disallow: ['/admin', '/account', '/api'],
       },
     ],
-    additionalSitemaps: ['https://bantuhive.com/sitemap-0.xml'],
+    additionalSitemaps: [
+      'https://bantuhive.com/api/sitemap/campaigns',
+      'https://bantuhive.com/sitemap-0.xml',
+    ],
   },
 };
 
