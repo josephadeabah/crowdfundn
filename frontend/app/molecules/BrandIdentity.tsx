@@ -45,18 +45,18 @@ const BrandIdentity = () => {
   ];
 
   return (
-    <div className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="py-20 bg-gradient-to-br from-gray-50 to-emerald-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
             <Globe className="h-4 w-4" />
             Made for Africa's Growth
           </div>
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
             Join the Movement Funding<br className="hidden lg:block" />
-            <span className="text-blue-600">Africa's Backbone</span>
+            <span className="text-emerald-600">Africa's Backbone</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-10 leading-relaxed">
@@ -65,10 +65,10 @@ const BrandIdentity = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <button className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <button className="px-8 py-4 bg-green-700/50 text-white font-semibold rounded-lg hover:bg-emerald-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
               Start Investing →
             </button>
-            <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition duration-300 shadow-lg hover:shadow-xl">
+            <button className="px-8 py-4 bg-white text-emerald-600 font-semibold rounded-lg border-2 border-emerald-600 hover:bg-emerald-50 transition duration-300 shadow-lg hover:shadow-xl">
               Raise Capital
             </button>
           </div>
