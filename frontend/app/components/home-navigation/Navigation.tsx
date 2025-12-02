@@ -21,7 +21,7 @@ export const navItems: NavItem[] = [
   { id: 'hero', label: 'Us', icon: LayoutDashboard },
   { id: 'campaigns', label: 'Featured', icon: Rocket },
   { id: 'contracts', label: 'Contracts', icon: FileText },
-  { id: 'brand', label: 'Brand', icon: Award },
+  { id: 'brand', label: 'Pitch', icon: Award },
   { id: 'partners', label: 'Partners', icon: Users },
 ];
 
