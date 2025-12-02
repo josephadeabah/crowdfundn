@@ -1,101 +1,48 @@
 import { NextResponse } from 'next/server';
 
-// Don't pre-render this route during build
+// Increase timeout if possible
+export const maxDuration = 30; // 30 seconds maximum (Pro plan: 60s, Hobby: 10s)
+
 export const dynamic = 'force-dynamic';
-export const revalidate = 3600;
+export const revalidate = 3600; // Revalidate every hour
 
-async function fetchAllCampaigns() {
-  let allCampaigns = [];
-  let currentPage = 1;
-  let totalPages = 1;
-
+async function fetchCampaigns() {
   try {
-    // Add timeout to prevent hanging during build
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    // Fetch only first page with reasonable limit
+    // Your API should handle filtering server-side
+    const response = await fetch(
+      'https://api.bantuhive.com/api/v1/fundraisers/campaigns?per_page=50&status=active&is_public=true',
+      {
+        headers: { Accept: 'application/json' },
+        // Add timeout to prevent hanging
+        signal: AbortSignal.timeout(8000), // 8 second timeout
+      },
+    );
 
-    while (currentPage <= totalPages) {
-      const response = await fetch(
-        `https://api.bantuhive.com/api/v1/fundraisers/campaigns?page=${currentPage}`,
-        {
-          headers: {
-            Accept: 'application/json',
-          },
-          signal: controller.signal,
-          // Don't cache during build
-          cache: 'no-store',
-        },
-      );
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        console.error(
-          `Failed to fetch campaigns page ${currentPage}:`,
-          response.status,
-        );
-        // Return empty array instead of breaking
-        return [];
-      }
-
-      const data = await response.json();
-
-      // Filter only active, public campaigns that should appear in search results
-      const filteredCampaigns =
-        data.campaigns?.filter(
-          (campaign) =>
-            campaign?.status === 'active' &&
-            campaign?.is_public === true &&
-            campaign?.appear_in_search_results === true &&
-            campaign?.slug,
-        ) || [];
-
-      allCampaigns = [...allCampaigns, ...filteredCampaigns];
-      totalPages = data.total_pages || 1;
-      currentPage++;
-
-      // Add a small delay between requests to avoid rate limiting
-      if (currentPage <= totalPages) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
+    if (!response.ok) {
+      console.error('API response error:', response.status);
+      return [];
     }
 
-    console.log(`Fetched ${allCampaigns.length} campaigns for sitemap`);
-    return allCampaigns;
-  } catch (error) {
-    console.error(
-      'Error fetching campaigns:',
-      error.name === 'AbortError' ? 'Request timed out' : error.message,
+    const data = await response.json();
+
+    // Filter for campaigns that should appear
+    return (data.campaigns || []).filter(
+      (campaign) =>
+        campaign.slug && campaign.appear_in_search_results !== false,
     );
+  } catch (error) {
+    console.error('Error fetching campaigns:', error.name, error.message);
     return [];
   }
 }
 
 export async function GET() {
   try {
-    // Check if we're in build mode
-    const isBuild = process.env.NEXT_PHASE === 'phase-production-build';
-
-    if (isBuild) {
-      // Return empty sitemap during build to prevent failures
-      console.log('Build mode detected - returning empty sitemap');
-      const emptyXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-</urlset>`;
-
-      return new NextResponse(emptyXml, {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/xml',
-          'Cache-Control': 'public, s-maxage=3600',
-        },
-      });
-    }
-
+    const campaigns = await fetchCampaigns();
     const baseUrl = 'https://www.bantuhive.com';
-    const campaigns = await fetchAllCampaigns();
 
-    // Generate XML sitemap
+    // Generate XML - keep it simple
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -106,36 +53,30 @@ export async function GET() {
       const slug = campaign.slug;
       const lastmod = campaign.updated_at
         ? new Date(campaign.updated_at).toISOString().split('T')[0]
-        : new Date(campaign.created_at).toISOString().split('T')[0];
-
-      let priority = 0.8;
-      const daysOld =
-        (Date.now() - new Date(campaign.created_at).getTime()) /
-        (1000 * 3600 * 24);
-      if (daysOld < 30) priority = 0.9;
+        : new Date().toISOString().split('T')[0];
 
       return `
   <url>
-    <loc>${baseUrl}/campaign/${slug}</loc>
+    <loc>${baseUrl}/campaign/${encodeURIComponent(slug)}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>daily</changefreq>
-    <priority>${priority}</priority>
+    <priority>0.8</priority>
   </url>`;
     })
     .join('')}
 </urlset>`;
 
     return new NextResponse(xml, {
-      status: 200,
       headers: {
-        'Content-Type': 'application/xml',
-        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+        'X-Robots-Tag': 'noindex, follow',
       },
     });
   } catch (error) {
-    console.error('Error generating campaigns sitemap:', error);
+    console.error('Sitemap generation error:', error);
 
-    // Return empty sitemap on error
+    // Return minimal valid sitemap on error
     const errorXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </urlset>`;
@@ -143,7 +84,7 @@ export async function GET() {
     return new NextResponse(errorXml, {
       status: 200,
       headers: {
-        'Content-Type': 'application/xml',
+        'Content-Type': 'application/xml; charset=utf-8',
         'Cache-Control': 'no-cache',
       },
     });
