@@ -120,7 +120,7 @@ const BrandIdentity = () => {
           <div className="text-center mt-10 pt-8 border-t border-gray-100">
             <div className="inline-flex items-center gap-3 text-gray-700">
               <Users className="h-5 w-5" />
-              <span className="font-medium">Join 500+ investors and 1,200+ SMEs already building with us</span>
+              <span className="font-medium">Join 300+ investors and 200+ SMEs already building with us</span>
             </div>
           </div>
         </div>
