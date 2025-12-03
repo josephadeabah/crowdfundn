@@ -5,43 +5,46 @@ const BrandIdentity = () => {
   const valueProps = [
     {
       icon: <Target className="h-6 w-6" />,
-      title: "For Investors",
-      description: "Be more than a bank. Become a partner in growth with direct access to curated deals.",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50"
+      title: 'For Investors',
+      description:
+        'Be more than a bank. Become a partner in growth with direct access to curated deals.',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
     },
     {
       icon: <Zap className="h-6 w-6" />,
-      title: "For Founders",
-      description: "Move beyond traditional loans. Raise capital from a network that offers mentorship and market access.",
-      color: "text-green-600",
-      bgColor: "bg-green-50"
+      title: 'For Founders',
+      description:
+        'Move beyond traditional loans. Raise capital from a network that offers mentorship and market access.',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
     },
     {
       icon: <Award className="h-6 w-6" />,
-      title: "Our Promise",
-      description: "A secure, transparent, and community-driven ecosystem built for African growth.",
-      color: "text-purple-600",
-      bgColor: "bg-purple-50"
-    }
+      title: 'Our Promise',
+      description:
+        'A secure, transparent, and community-driven ecosystem built for African growth.',
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+    },
   ];
 
   const impactStats = [
     {
-      value: "90%",
-      label: "of African businesses",
-      description: "are SMEs - the backbone of the economy"
+      value: '90%',
+      label: 'of African businesses',
+      description: 'are SMEs - the backbone of the economy',
     },
     {
-      value: "$330B",
-      label: "funding gap",
-      description: "for African SMEs we're helping to close"
+      value: '$330B',
+      label: 'funding gap',
+      description: "for African SMEs we're helping to close",
     },
     {
-      value: "80%",
-      label: "of employment",
-      description: "comes from the SME sector"
-    }
+      value: '80%',
+      label: 'of employment',
+      description: 'comes from the SME sector',
+    },
   ];
 
   return (
@@ -53,17 +56,19 @@ const BrandIdentity = () => {
             <Globe className="h-4 w-4" />
             Made for Africa's Growth
           </div>
-          
+
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-            Join the Movement Funding<br className="hidden lg:block" />
+            Join the Movement Funding
+            <br className="hidden lg:block" />
             <span className="text-emerald-600">Africa's Backbone</span>
           </h1>
-          
+
           <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-10 leading-relaxed">
-            We connect the continent's most promising SMEs with a global community of investors. 
-            Together, we're closing the $330 billion funding gap and building the future from the ground up.
+            We connect the continent's most promising SMEs with a global
+            community of investors. Together, we're closing the $330 billion
+            funding gap and building the future from the ground up.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <button className="px-8 py-4 bg-green-700/50 text-white font-semibold rounded-none hover:bg-emerald-700 transition duration-300 shadow-none hover:shadow-none transform hover:-translate-y-1">
               Start Investing →
@@ -77,14 +82,14 @@ const BrandIdentity = () => {
         {/* Value Propositions */}
         <div className="grid md:grid-cols-3 gap-8 mb-20">
           {valueProps.map((prop, index) => (
-            <div 
+            <div
               key={index}
               className={`${prop.bgColor} p-8 rounded-none border border-gray-200 hover:border-${prop.color.split('-')[1]}-300 transition duration-300 hover:shadow-none`}
             >
-              <div className={`${prop.color} mb-4`}>
-                {prop.icon}
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">{prop.title}</h3>
+              <div className={`${prop.color} mb-4`}>{prop.icon}</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                {prop.title}
+              </h3>
               <p className="text-gray-700">{prop.description}</p>
             </div>
           ))}
@@ -96,11 +101,9 @@ const BrandIdentity = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-3">
               Powering Africa's Economic Engine
             </h2>
-            <p className="text-gray-600">
-              The numbers that drive our mission
-            </p>
+            <p className="text-gray-600">The numbers that drive our mission</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {impactStats.map((stat, index) => (
               <div key={index} className="text-center">
@@ -110,17 +113,17 @@ const BrandIdentity = () => {
                 <div className="text-lg font-semibold text-gray-800 mb-2">
                   {stat.label}
                 </div>
-                <div className="text-gray-600 text-sm">
-                  {stat.description}
-                </div>
+                <div className="text-gray-600 text-sm">{stat.description}</div>
               </div>
             ))}
           </div>
-          
+
           <div className="text-center mt-10 pt-8 border-t border-gray-100">
             <div className="inline-flex items-center gap-3 text-gray-700">
               <Users className="h-5 w-5" />
-              <span className="font-medium">Join 300+ investors and 200+ SMEs already building with us</span>
+              <span className="font-medium">
+                Join 300+ investors and 200+ SMEs already building with us
+              </span>
             </div>
           </div>
         </div>

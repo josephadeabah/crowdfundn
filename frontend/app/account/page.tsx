@@ -57,6 +57,7 @@ import {
   TrendingUp,
   Shield,
 } from 'lucide-react';
+import { DealRoom } from '../components/deal-room/DealRoom';
 
 // Define proper TypeScript interfaces
 interface Tab {
@@ -182,6 +183,15 @@ const ProfileTabs = () => {
             'Discover and join investment clubs to collaborate with other investors.',
           badge: 'New',
           badgeColor: 'bg-green-100 text-green-800',
+        },
+        {
+          label: 'Deal Room',
+          icon: <Handshake className="w-4 h-4" />,
+          component: <DealRoom />,
+          description:
+            'Access exclusive investment opportunities and connect with founders.',
+          badge: 'Soon',
+          badgeColor: 'bg-yellow-100 text-yellow-800',
         },
       ],
     },
