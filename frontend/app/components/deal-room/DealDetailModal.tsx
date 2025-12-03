@@ -89,7 +89,12 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                 <p className="text-gray-600">{deal.tagline}</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose} className="bg-white hover:bg-gray-100">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="bg-white hover:bg-gray-100"
+            >
               <X className="w-5 h-5" />
             </Button>
           </div>
@@ -104,9 +109,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
               <div className="bg-gray-50 p-5">
                 <div className="flex justify-between items-end mb-4">
                   <div>
-                    <p className="text-sm text-gray-600">
-                      Amount Raised
-                    </p>
+                    <p className="text-sm text-gray-600">Amount Raised</p>
                     <p className="text-3xl font-bold text-emerald-600">
                       {formatCurrency(deal.currentRaise)}
                     </p>
@@ -118,9 +121,12 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                     </p>
                   </div>
                 </div>
-                <Progress value={progressPercent} className="h-3 mb-3 bg-gray-200">
-                  <div 
-                    className="h-full bg-emerald-600" 
+                <Progress
+                  value={progressPercent}
+                  className="h-3 mb-3 bg-gray-200"
+                >
+                  <div
+                    className="h-full bg-emerald-600"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </Progress>
@@ -137,9 +143,24 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
               {/* Tabs */}
               <Tabs defaultValue="overview" className="w-full">
                 <TabsList className="w-full grid grid-cols-3 bg-gray-100">
-                  <TabsTrigger value="overview" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">Overview</TabsTrigger>
-                  <TabsTrigger value="documents" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">Documents</TabsTrigger>
-                  <TabsTrigger value="activity" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">Activity</TabsTrigger>
+                  <TabsTrigger
+                    value="overview"
+                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                  >
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="documents"
+                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                  >
+                    Documents
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="activity"
+                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                  >
+                    Activity
+                  </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="mt-4 space-y-6">
@@ -162,9 +183,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                       {deal.highlights.map((highlight, index) => (
                         <li key={index} className="flex items-start gap-3">
                           <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span className="text-gray-700">
-                            {highlight}
-                          </span>
+                          <span className="text-gray-700">{highlight}</span>
                         </li>
                       ))}
                     </ul>
@@ -192,9 +211,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                             <p className="text-lg font-bold text-emerald-600">
                               +{deal.metrics.growth}%
                             </p>
-                            <p className="text-xs text-gray-600">
-                              YoY Growth
-                            </p>
+                            <p className="text-xs text-gray-600">YoY Growth</p>
                           </div>
                         )}
                         {deal.metrics.users && (
@@ -308,9 +325,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">
-                      Min Investment
-                    </span>
+                    <span className="text-gray-600">Min Investment</span>
                     <span className="font-medium text-gray-900">
                       {formatCurrency(deal.minInvestment)}
                     </span>
@@ -343,9 +358,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                     <p className="font-medium text-gray-900">
                       {deal.founderName}
                     </p>
-                    <p className="text-sm text-gray-600">
-                      {deal.founderTitle}
-                    </p>
+                    <p className="text-sm text-gray-600">{deal.founderTitle}</p>
                   </div>
                 </div>
                 <div className="space-y-2">

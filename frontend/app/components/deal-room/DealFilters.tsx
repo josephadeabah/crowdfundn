@@ -70,9 +70,7 @@ export function DealFilters({
             </SelectContent>
           </Select>
 
-          <Button
-            className="bg-white border border-gray-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-600"
-          >
+          <Button className="bg-white border border-gray-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-600">
             <SlidersHorizontal className="w-4 h-4" />
           </Button>
         </div>
@@ -124,9 +122,7 @@ export function DealFilters({
           </div>
 
           <div className="shrink-0">
-            <Button
-              className="bg-white border border-gray-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-600"
-            >
+            <Button className="bg-white border border-gray-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-600">
               <SlidersHorizontal className="w-4 h-4" />
             </Button>
           </div>

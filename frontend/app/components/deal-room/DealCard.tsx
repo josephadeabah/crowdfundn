@@ -85,8 +85,8 @@ export function DealCard({ deal, onViewDetails }: DealCardProps) {
             </span>
           </div>
           <Progress value={progressPercent} className="h-2 bg-gray-200">
-            <div 
-              className="h-full bg-emerald-600" 
+            <div
+              className="h-full bg-emerald-600"
               style={{ width: `${progressPercent}%` }}
             />
           </Progress>

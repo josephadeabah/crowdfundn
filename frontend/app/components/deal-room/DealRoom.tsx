@@ -105,16 +105,39 @@ export function DealRoom() {
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="bg-gray-100">
-              <TabsTrigger value="all" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+              <TabsTrigger
+                value="all"
+                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+              >
                 All Deals
                 <Badge className="ml-2 bg-emerald-100 text-emerald-600">
                   {deals.length}
                 </Badge>
               </TabsTrigger>
-              <TabsTrigger value="active" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">Active</TabsTrigger>
-              <TabsTrigger value="closing" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">Closing Soon</TabsTrigger>
-              <TabsTrigger value="new" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">New</TabsTrigger>
-              <TabsTrigger value="funded" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">Funded</TabsTrigger>
+              <TabsTrigger
+                value="active"
+                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+              >
+                Active
+              </TabsTrigger>
+              <TabsTrigger
+                value="closing"
+                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+              >
+                Closing Soon
+              </TabsTrigger>
+              <TabsTrigger
+                value="new"
+                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+              >
+                New
+              </TabsTrigger>
+              <TabsTrigger
+                value="funded"
+                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+              >
+                Funded
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -124,9 +147,7 @@ export function DealRoom() {
           {filteredDeals.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredDeals.map((deal, index) => (
-                <div
-                  key={deal.id}
-                >
+                <div key={deal.id}>
                   <DealCard deal={deal} onViewDetails={setSelectedDeal} />
                 </div>
               ))}
