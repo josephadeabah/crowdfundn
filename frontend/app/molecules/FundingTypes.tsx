@@ -48,7 +48,7 @@ const FundingTypes: React.FC = () => {
           alt="background3"
           className="w-1/3 object-cover h-full"
         />
-        <div className="absolute inset-0 bg-green-700/50" />
+        <div className="absolute inset-0 bg-green-600/70" />
       </div>
 
       {/* Content */}
