@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { Briefcase, TrendingUp, Sparkles } from 'lucide-react';
-import { StatsOverview } from './StatsOverview';
 import { DealFilters } from './DealFilters';
 import { DealCard } from './DealCard';
 import { DealDetailModal } from './DealDetailModal';
@@ -68,11 +67,6 @@ export function DealRoom() {
 
       {/* Main Content */}
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
-        {/* Stats */}
-        <div>
-          <StatsOverview />
-        </div>
-
         {/* Filters & Tabs */}
         <div className="space-y-6">
           <DealFilters
