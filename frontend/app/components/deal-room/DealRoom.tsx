@@ -207,7 +207,7 @@ export function DealRoom() {
         {/* Deal Grid - 2 cards per row */}
         <div>
           {filteredDeals.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredDeals.map((deal) => (
                 <div key={deal.id}>
                   <DealCard deal={deal} onViewDetails={setSelectedDeal} />
