@@ -54,7 +54,7 @@ export function DealRoom() {
           <div className="flex flex-col gap-2">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
-                Deal Room
+                Private Deal Room
               </h1>
               <p className="text-lg text-gray-700">
                 Connect directly with vetted founders, explore investment
