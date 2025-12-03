@@ -60,7 +60,7 @@ const BrandIdentity = () => {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
             Join the Movement Funding
             <br className="hidden lg:block" />
-            <span className="text-emerald-600">Africa's Backbone</span>
+            <span className="text-emerald-600">&nbsp; Africa's Backbone</span>
           </h1>
 
           <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-10 leading-relaxed">
