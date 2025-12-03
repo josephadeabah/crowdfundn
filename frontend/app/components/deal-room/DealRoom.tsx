@@ -48,10 +48,10 @@ export function DealRoom() {
   }, [searchQuery, selectedIndustry, selectedStage, activeTab]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-emerald-100/30">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-600/10 via-transparent to-transparent" />
+      <div className="relative overflow-hidden bg-gray-50">
+        <div className="absolute inset-0 bg-white" />
         <div className="relative container mx-auto px-4 py-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
@@ -103,43 +103,131 @@ export function DealRoom() {
             onStageChange={setSelectedStage}
           />
 
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="bg-gray-100">
-              <TabsTrigger
-                value="all"
-                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-              >
-                All Deals
-                <Badge className="ml-2 bg-emerald-100 text-emerald-600">
-                  {deals.length}
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger
-                value="active"
-                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-              >
-                Active
-              </TabsTrigger>
-              <TabsTrigger
-                value="closing"
-                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-              >
-                Closing Soon
-              </TabsTrigger>
-              <TabsTrigger
-                value="new"
-                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-              >
-                New
-              </TabsTrigger>
-              <TabsTrigger
-                value="funded"
-                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-              >
-                Funded
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          {/* Horizontally Scrollable Tabs for Mobile */}
+          <div className="w-full">
+            {/* Desktop Tabs */}
+            <div className="hidden md:block">
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="bg-gray-100">
+                  <TabsTrigger
+                    value="all"
+                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                  >
+                    All Deals
+                    <Badge className="ml-2 bg-emerald-100 text-emerald-600">
+                      {deals.length}
+                    </Badge>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="active"
+                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                  >
+                    Active
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="closing"
+                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                  >
+                    Closing Soon
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="new"
+                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                  >
+                    New
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="funded"
+                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                  >
+                    Funded
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
+            {/* Mobile Tabs - Horizontally Scrollable */}
+            <div className="md:hidden w-full">
+              <div className="relative">
+                {/* Scroll Container */}
+                <div className="flex gap-1 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                  {/* Hide scrollbar visually but keep functionality */}
+                  <style jsx>{`
+                    .scrollbar-hide {
+                      -ms-overflow-style: none;
+                      scrollbar-width: none;
+                    }
+                    .scrollbar-hide::-webkit-scrollbar {
+                      display: none;
+                    }
+                  `}</style>
+
+                  <button
+                    onClick={() => setActiveTab('all')}
+                    className={`shrink-0 px-4 py-2 font-medium ${
+                      activeTab === 'all'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    All Deals
+                    <Badge
+                      className={`ml-2 ${activeTab === 'all' ? 'bg-emerald-700 text-white' : 'bg-emerald-100 text-emerald-600'}`}
+                    >
+                      {deals.length}
+                    </Badge>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('active')}
+                    className={`shrink-0 px-4 py-2 font-medium ${
+                      activeTab === 'active'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Active
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('closing')}
+                    className={`shrink-0 px-4 py-2 font-medium ${
+                      activeTab === 'closing'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Closing Soon
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('new')}
+                    className={`shrink-0 px-4 py-2 font-medium ${
+                      activeTab === 'new'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    New
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('funded')}
+                    className={`shrink-0 px-4 py-2 font-medium ${
+                      activeTab === 'funded'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Funded
+                  </button>
+                </div>
+
+                {/* Gradient fade effect for scroll indication */}
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Deal Grid */}
