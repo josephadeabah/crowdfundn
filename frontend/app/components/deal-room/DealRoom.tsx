@@ -53,17 +53,8 @@ export function DealRoom() {
       <div className="relative overflow-hidden bg-gray-50">
         <div className="absolute inset-0 bg-white" />
         <div className="relative container mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex flex-col gap-2">
             <div>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 bg-emerald-100 shadow">
-                  <Briefcase className="w-6 h-6 text-emerald-600" />
-                </div>
-                <Badge className="bg-emerald-100 text-emerald-600">
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  Live Deals
-                </Badge>
-              </div>
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
                 Deal Room
               </h1>
@@ -72,15 +63,7 @@ export function DealRoom() {
                 opportunities, and close deals — all in one place.
               </p>
             </div>
-            <div className="flex gap-3">
-              <Button className="bg-white hover:bg-gray-100 text-gray-900 border border-gray-300">
-                <TrendingUp className="w-4 h-4 mr-2" />
-                My Investments
-              </Button>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow">
-                Submit Your Deal
-              </Button>
-            </div>
+            
           </div>
         </div>
       </div>
