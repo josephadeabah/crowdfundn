@@ -106,11 +106,10 @@ export default function Navigation({
             })}
 
             {/* View All Button — stays in same group */}
-            <Button
+            <button
               onClick={onToggleShowAll}
-              size="sm"
               className={cn(
-                'rounded-none text-sm',
+                'rounded-none text-sm px-3 py-1.5 transition-all whitespace-nowrap',
                 showAll
                   ? 'bg-green-700 text-white hover:bg-green-800 shadow-xs'
                   : 'border-none text-gray-700 hover:bg-gray-50',
@@ -118,7 +117,7 @@ export default function Navigation({
             >
               {/* <Eye className="w-3 h-3" /> */}
               {showAll ? 'Showing All' : 'View All'}
-            </Button>
+            </button>
           </div>
         </div>
 
