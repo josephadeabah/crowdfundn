@@ -36,7 +36,7 @@ export function DealCard({ deal, onViewDetails }: DealCardProps) {
   );
 
   return (
-    <div className="bg-white shadow hover:shadow-lg transition-all duration-300 overflow-hidden group">
+    <div className="bg-white shadow-none hover:shadow-sm transition-all duration-300 overflow-hidden group">
       {/* Header */}
       <div className="p-5 pb-4">
         <div className="flex items-start justify-between mb-3">
