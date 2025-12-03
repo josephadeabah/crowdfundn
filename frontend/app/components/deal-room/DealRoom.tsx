@@ -48,39 +48,36 @@ export function DealRoom() {
   }, [searchQuery, selectedIndustry, selectedStage, activeTab]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600/5 via-background to-emerald-100/20 border-b border-border/50">
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-emerald-100/30">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-600/10 via-transparent to-transparent" />
         <div className="relative container mx-auto px-4 py-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 rounded-xl gradient-emerald shadow-glow">
+                <div className="p-3 bg-emerald-100 shadow">
                   <Briefcase className="w-6 h-6 text-emerald-600" />
                 </div>
-                <Badge
-                  variant="secondary"
-                  className="bg-emerald-600/10 text-emerald-600 border-emerald-600/20"
-                >
+                <Badge className="bg-emerald-100 text-emerald-600">
                   <Sparkles className="w-3 h-3 mr-1" />
                   Live Deals
                 </Badge>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
                 Deal Room
               </h1>
-              <p className="text-lg text-muted-foreground max-w-xl">
+              <p className="text-lg text-gray-700 max-w-xl">
                 Connect directly with vetted founders, explore investment
                 opportunities, and close deals — all in one place.
               </p>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" className="bg-card">
+              <Button className="bg-white hover:bg-gray-100 text-gray-900 border border-gray-300">
                 <TrendingUp className="w-4 h-4 mr-2" />
                 My Investments
               </Button>
-              <Button className="gradient-emerald text-emerald-600 shadow-glow">
+              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow">
                 Submit Your Deal
               </Button>
             </div>
@@ -91,15 +88,12 @@ export function DealRoom() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Stats */}
-        <div className="animate-slide-up">
+        <div>
           <StatsOverview />
         </div>
 
         {/* Filters & Tabs */}
-        <div
-          className="space-y-6 animate-slide-up"
-          style={{ animationDelay: '100ms' }}
-        >
+        <div className="space-y-6">
           <DealFilters
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -110,36 +104,28 @@ export function DealRoom() {
           />
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="bg-muted/50">
-              <TabsTrigger value="all">
+            <TabsList className="bg-gray-100">
+              <TabsTrigger value="all" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
                 All Deals
-                <Badge
-                  variant="secondary"
-                  className="ml-2 bg-emerald-600/10 text-emerald-600"
-                >
+                <Badge className="ml-2 bg-emerald-100 text-emerald-600">
                   {deals.length}
                 </Badge>
               </TabsTrigger>
-              <TabsTrigger value="active">Active</TabsTrigger>
-              <TabsTrigger value="closing">Closing Soon</TabsTrigger>
-              <TabsTrigger value="new">New</TabsTrigger>
-              <TabsTrigger value="funded">Funded</TabsTrigger>
+              <TabsTrigger value="active" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">Active</TabsTrigger>
+              <TabsTrigger value="closing" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">Closing Soon</TabsTrigger>
+              <TabsTrigger value="new" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">New</TabsTrigger>
+              <TabsTrigger value="funded" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">Funded</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
         {/* Deal Grid */}
-        <div
-          className="animate-slide-up"
-          style={{ animationDelay: '200ms' }}
-        >
+        <div>
           {filteredDeals.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredDeals.map((deal, index) => (
                 <div
                   key={deal.id}
-                  className="animate-slide-up"
-                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <DealCard deal={deal} onViewDetails={setSelectedDeal} />
                 </div>
@@ -147,13 +133,13 @@ export function DealRoom() {
             </div>
           ) : (
             <div className="text-center py-16">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                <Briefcase className="w-8 h-8 text-muted-foreground" />
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 flex items-center justify-center">
+                <Briefcase className="w-8 h-8 text-gray-600" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 No deals found
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-gray-700">
                 Try adjusting your filters or search query
               </p>
             </div>

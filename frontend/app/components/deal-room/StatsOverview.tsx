@@ -63,19 +63,18 @@ export function StatsOverview() {
       {statItems.map((stat, index) => (
         <div
           key={stat.label}
-          className="bg-card rounded-xl p-4 shadow-card hover:shadow-card-hover transition-all duration-300 border border-border/50 group"
-          style={{ animationDelay: `${index * 50}ms` }}
+          className="bg-white p-4 shadow hover:shadow-lg transition-all duration-300 group"
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-lg bg-emerald-600/10 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-emerald-600 transition-colors duration-300">
+            <div className="p-2 bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
               <stat.icon className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-foreground">
+          <p className="text-2xl font-bold text-gray-900">
             {stat.isFormatted ? stat.value : stat.value}
             {stat.suffix}
           </p>
-          <p className="text-sm text-muted-foreground">{stat.label}</p>
+          <p className="text-sm text-gray-600">{stat.label}</p>
         </div>
       ))}
     </div>
