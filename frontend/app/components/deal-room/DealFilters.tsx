@@ -50,7 +50,11 @@ export function DealFilters({
             </SelectTrigger>
             <SelectContent className="rounded-none">
               {industries.map((industry) => (
-                <SelectItem key={industry} value={industry} className="rounded-none">
+                <SelectItem
+                  key={industry}
+                  value={industry}
+                  className="rounded-none"
+                >
                   {industry}
                 </SelectItem>
               ))}
@@ -98,7 +102,11 @@ export function DealFilters({
               </SelectTrigger>
               <SelectContent className="rounded-none">
                 {industries.map((industry) => (
-                  <SelectItem key={industry} value={industry} className="rounded-none">
+                  <SelectItem
+                    key={industry}
+                    value={industry}
+                    className="rounded-none"
+                  >
                     {industry}
                   </SelectItem>
                 ))}
@@ -113,7 +121,11 @@ export function DealFilters({
               </SelectTrigger>
               <SelectContent className="rounded-none">
                 {stages.map((stage) => (
-                  <SelectItem key={stage} value={stage} className="rounded-none">
+                  <SelectItem
+                    key={stage}
+                    value={stage}
+                    className="rounded-none"
+                  >
                     {stage}
                   </SelectItem>
                 ))}
