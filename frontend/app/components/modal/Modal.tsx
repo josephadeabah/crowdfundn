@@ -90,7 +90,7 @@ const Modal: React.FC<ModalProps> = ({
         >
           <motion.div
             ref={modalRef}
-            className={`relative w-full ${sizeClasses[size]} bg-background border border-border rounded-lg shadow-xl mt-6 mb-6`}
+            className={`relative w-full ${sizeClasses[size]} bg-white border border-border rounded-none shadow-none mt-6 mb-6`}
             initial={{ scale: 0.9, opacity: 0, y: -20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: -20 }}
