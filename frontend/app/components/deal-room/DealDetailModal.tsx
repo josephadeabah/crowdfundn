@@ -208,9 +208,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                           <p className="text-lg font-bold text-gray-900">
                             {formatNumber(deal.metrics.users)}
                           </p>
-                          <p className="text-xs text-gray-600">
-                            Active Users
-                          </p>
+                          <p className="text-xs text-gray-600">Active Users</p>
                         </div>
                       )}
                       {deal.metrics.revenue && (
