@@ -91,12 +91,12 @@ export function DealRoom() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Stats */}
-        <section className="animate-slide-up">
+        <div className="animate-slide-up">
           <StatsOverview />
-        </section>
+        </div>
 
         {/* Filters & Tabs */}
-        <section
+        <div
           className="space-y-6 animate-slide-up"
           style={{ animationDelay: '100ms' }}
         >
@@ -126,10 +126,10 @@ export function DealRoom() {
               <TabsTrigger value="funded">Funded</TabsTrigger>
             </TabsList>
           </Tabs>
-        </section>
+        </div>
 
         {/* Deal Grid */}
-        <section
+        <div
           className="animate-slide-up"
           style={{ animationDelay: '200ms' }}
         >
@@ -158,7 +158,7 @@ export function DealRoom() {
               </p>
             </div>
           )}
-        </section>
+        </div>
       </div>
 
       {/* Deal Detail Modal */}
