@@ -38,19 +38,19 @@ export function DealFilters({
             placeholder="Search deals, companies, founders..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-white border border-gray-300 focus:border-emerald-600"
+            className="pl-10 bg-white border border-gray-300 focus:border-emerald-600 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-transparent rounded-none"
           />
         </div>
 
         {/* Filters */}
         <div className="flex gap-3">
           <Select value={selectedIndustry} onValueChange={onIndustryChange}>
-            <SelectTrigger className="w-[160px] bg-white border border-gray-300">
+            <SelectTrigger className="w-[160px] bg-white border border-gray-300 rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
               <SelectValue placeholder="Industry" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-none">
               {industries.map((industry) => (
-                <SelectItem key={industry} value={industry}>
+                <SelectItem key={industry} value={industry} className="rounded-none">
                   {industry}
                 </SelectItem>
               ))}
@@ -58,19 +58,19 @@ export function DealFilters({
           </Select>
 
           <Select value={selectedStage} onValueChange={onStageChange}>
-            <SelectTrigger className="w-[140px] bg-white border border-gray-300">
+            <SelectTrigger className="w-[140px] bg-white border border-gray-300 rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
               <SelectValue placeholder="Stage" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-none">
               {stages.map((stage) => (
-                <SelectItem key={stage} value={stage}>
+                <SelectItem key={stage} value={stage} className="rounded-none">
                   {stage}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <Button className="bg-white border border-gray-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-600">
+          <Button className="bg-emerald-600 border border-emerald-600 hover:bg-emerald-500 hover:border-emerald-500 text-white rounded-none">
             <SlidersHorizontal className="w-4 h-4" />
           </Button>
         </div>
@@ -85,7 +85,7 @@ export function DealFilters({
             placeholder="Search deals, companies, founders..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-white border border-gray-300 focus:border-emerald-600"
+            className="pl-10 bg-white border border-gray-300 focus:border-emerald-600 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
           />
         </div>
 
@@ -93,12 +93,12 @@ export function DealFilters({
         <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
           <div className="shrink-0">
             <Select value={selectedIndustry} onValueChange={onIndustryChange}>
-              <SelectTrigger className="w-[140px] bg-white border border-gray-300">
+              <SelectTrigger className="w-[140px] bg-white border border-gray-300 rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
                 <SelectValue placeholder="Industry" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-none">
                 {industries.map((industry) => (
-                  <SelectItem key={industry} value={industry}>
+                  <SelectItem key={industry} value={industry} className="rounded-none">
                     {industry}
                   </SelectItem>
                 ))}
@@ -108,12 +108,12 @@ export function DealFilters({
 
           <div className="shrink-0">
             <Select value={selectedStage} onValueChange={onStageChange}>
-              <SelectTrigger className="w-[120px] bg-white border border-gray-300">
+              <SelectTrigger className="w-[120px] bg-white border border-gray-300 rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
                 <SelectValue placeholder="Stage" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-none">
                 {stages.map((stage) => (
-                  <SelectItem key={stage} value={stage}>
+                  <SelectItem key={stage} value={stage} className="rounded-none">
                     {stage}
                   </SelectItem>
                 ))}
@@ -121,8 +121,8 @@ export function DealFilters({
             </Select>
           </div>
 
-          <div className="shrink-0 bg-emerald-600">
-            <Button className="bg-emerald-600 border border-gray-300 hover:bg-emerald-500 hover:text-white hover:border-emerald-600">
+          <div className="shrink-0">
+            <Button className="bg-emerald-600 border border-emerald-600 hover:bg-emerald-500 hover:border-emerald-500 text-white rounded-none">
               <SlidersHorizontal className="w-4 h-4" />
             </Button>
           </div>
