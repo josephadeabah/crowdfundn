@@ -50,18 +50,18 @@ export function DealRoom() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-emerald-100/20 border-b border-border/50">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600/5 via-background to-emerald-100/20 border-b border-border/50">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-600/10 via-transparent to-transparent" />
         <div className="relative container mx-auto px-4 py-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-3 rounded-xl gradient-emerald shadow-glow">
-                  <Briefcase className="w-6 h-6 text-primary-foreground" />
+                  <Briefcase className="w-6 h-6 text-emerald-600" />
                 </div>
                 <Badge
                   variant="secondary"
-                  className="bg-primary/10 text-primary border-primary/20"
+                  className="bg-emerald-600/10 text-emerald-600 border-emerald-600/20"
                 >
                   <Sparkles className="w-3 h-3 mr-1" />
                   Live Deals
@@ -80,7 +80,7 @@ export function DealRoom() {
                 <TrendingUp className="w-4 h-4 mr-2" />
                 My Investments
               </Button>
-              <Button className="gradient-emerald text-primary-foreground shadow-glow">
+              <Button className="gradient-emerald text-emerald-600 shadow-glow">
                 Submit Your Deal
               </Button>
             </div>
@@ -115,7 +115,7 @@ export function DealRoom() {
                 All Deals
                 <Badge
                   variant="secondary"
-                  className="ml-2 bg-primary/10 text-primary"
+                  className="ml-2 bg-emerald-600/10 text-emerald-600"
                 >
                   {deals.length}
                 </Badge>

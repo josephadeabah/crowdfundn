@@ -36,7 +36,7 @@ export function DealFilters({
           placeholder="Search deals, companies, founders..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10 bg-card border-border/50 focus:border-primary"
+          className="pl-10 bg-card border-border/50 focus:broder-emerald-500"
         />
       </div>
 
@@ -71,7 +71,7 @@ export function DealFilters({
         <Button
           variant="outline"
           size="icon"
-          className="bg-card border-border/50 hover:bg-primary hover:text-primary-foreground hover:border-primary"
+          className="bg-card border-border/50 hover:bg-emerald-600 hover:text-emerald-600 hover:broder-emerald-500"
         >
           <SlidersHorizontal className="w-4 h-4" />
         </Button>

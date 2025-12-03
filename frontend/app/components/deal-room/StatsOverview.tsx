@@ -67,7 +67,7 @@ export function StatsOverview() {
           style={{ animationDelay: `${index * 50}ms` }}
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+            <div className="p-2 rounded-lg bg-emerald-600/10 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-emerald-600 transition-colors duration-300">
               <stat.icon className="w-4 h-4" />
             </div>
           </div>

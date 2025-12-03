@@ -66,7 +66,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
         <div className="sticky top-0 z-10 bg-card border-b border-border/50 px-6 py-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-3xl">
+              <div className="w-16 h-16 rounded-xl bg-emerald-600/10 flex items-center justify-center text-3xl">
                 {deal.logo}
               </div>
               <div>
@@ -107,7 +107,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                     <p className="text-sm text-muted-foreground">
                       Amount Raised
                     </p>
-                    <p className="text-3xl font-bold text-primary">
+                    <p className="text-3xl font-bold text-emerald-600">
                       {formatCurrency(deal.currentRaise)}
                     </p>
                   </div>
@@ -120,7 +120,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                 </div>
                 <Progress value={progressPercent} className="h-3 mb-3" />
                 <div className="flex justify-between text-sm">
-                  <span className="text-primary font-medium">
+                  <span className="text-emerald-600 font-medium">
                     {progressPercent.toFixed(0)}% funded
                   </span>
                   <span className="text-muted-foreground">
@@ -156,7 +156,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                     <ul className="space-y-2">
                       {deal.highlights.map((highlight, index) => (
                         <li key={index} className="flex items-start gap-3">
-                          <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                           <span className="text-muted-foreground">
                             {highlight}
                           </span>
@@ -184,7 +184,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                         )}
                         {deal.metrics.growth && (
                           <div className="bg-muted/30 rounded-lg p-3 text-center">
-                            <p className="text-lg font-bold text-primary">
+                            <p className="text-lg font-bold text-emerald-600">
                               +{deal.metrics.growth}%
                             </p>
                             <p className="text-xs text-muted-foreground">
@@ -222,11 +222,11 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                     {deal.documents.map((doc, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border/30 hover:border-primary/30 transition-colors cursor-pointer group"
+                        className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border/30 hover:border-emerald-600/30 transition-colors cursor-pointer group"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-primary" />
+                          <div className="w-10 h-10 rounded-lg bg-emerald-600/10 flex items-center justify-center">
+                            <FileText className="w-5 h-5 text-emerald-600" />
                           </div>
                           <div>
                             <p className="font-medium text-foreground">
@@ -253,8 +253,8 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                 <TabsContent value="activity" className="mt-4">
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
-                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                        <Users className="w-5 h-5 text-primary" />
+                      <div className="w-10 h-10 rounded-full bg-emerald-600/20 flex items-center justify-center">
+                        <Users className="w-5 h-5 text-emerald-600" />
                       </div>
                       <div>
                         <p className="font-medium text-foreground">
@@ -266,8 +266,8 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg">
-                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-primary" />
+                      <div className="w-10 h-10 rounded-full bg-emerald-600/20 flex items-center justify-center">
+                        <Calendar className="w-5 h-5 text-emerald-600" />
                       </div>
                       <div>
                         <p className="font-medium text-foreground">
@@ -331,7 +331,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                   Meet the Founder
                 </h3>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-sm font-medium text-primary">
+                  <div className="w-12 h-12 rounded-full bg-emerald-600/20 flex items-center justify-center text-sm font-medium text-emerald-600">
                     {deal.founderImage}
                   </div>
                   <div>
@@ -358,7 +358,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
               {/* CTA */}
               <div className="space-y-3">
                 <Button
-                  className="w-full gradient-emerald text-primary-foreground"
+                  className="w-full gradient-emerald text-emerald-600-foreground"
                   size="lg"
                   disabled={deal.status === 'Funded'}
                 >
