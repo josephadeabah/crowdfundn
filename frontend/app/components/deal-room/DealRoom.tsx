@@ -5,7 +5,6 @@ import { DealFilters } from './DealFilters';
 import { DealCard } from './DealCard';
 import { DealDetailModal } from './DealDetailModal';
 import { Badge } from '@/app/components/ui/badge';
-import { Button } from '@/app/components/ui/button';
 import {
   Tabs,
   TabsContent,
@@ -52,13 +51,13 @@ export function DealRoom() {
       {/* Hero Header */}
       <div className="relative overflow-hidden bg-gray-50">
         <div className="absolute inset-0 bg-white" />
-        <div className="relative container mx-auto px-4 py-12">
+        <div className="relative max-w-2xl mx-auto px-4 py-12">
           <div className="flex flex-col gap-2">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
                 Deal Room
               </h1>
-              <p className="text-lg text-gray-700 max-w-xl">
+              <p className="text-lg text-gray-700">
                 Connect directly with vetted founders, explore investment
                 opportunities, and close deals — all in one place.
               </p>
@@ -68,7 +67,7 @@ export function DealRoom() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
         {/* Stats */}
         <div>
           <StatsOverview />
@@ -133,7 +132,6 @@ export function DealRoom() {
               <div className="relative">
                 {/* Scroll Container */}
                 <div className="flex gap-1 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-                  {/* Hide scrollbar visually but keep functionality */}
                   <style jsx>{`
                     .scrollbar-hide {
                       -ms-overflow-style: none;
@@ -212,11 +210,11 @@ export function DealRoom() {
           </div>
         </div>
 
-        {/* Deal Grid */}
+        {/* Deal Grid - 2 cards per row */}
         <div>
           {filteredDeals.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredDeals.map((deal, index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredDeals.map((deal) => (
                 <div key={deal.id}>
                   <DealCard deal={deal} onViewDetails={setSelectedDeal} />
                 </div>
