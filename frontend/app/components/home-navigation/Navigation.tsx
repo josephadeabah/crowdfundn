@@ -111,7 +111,7 @@ export default function Navigation({
               className={cn(
                 'rounded-none text-sm px-3 py-1.5 transition-all whitespace-nowrap',
                 showAll
-                  ? 'bg-green-700 text-white hover:bg-green-800 shadow-xs'
+                  ? 'bg-gray-50 text-gray-800 border border-gray-50'
                   : 'border-none text-gray-700 hover:bg-gray-50',
               )}
             >
