@@ -96,7 +96,7 @@ export default function Navigation({
                     'px-4 py-1.5 rounded-none text-sm font-medium transition-all whitespace-nowrap',
                     'hover:bg-gray-50 hover:text-gray-900',
                     active
-                      ? 'bg-gray-50 text-gray-800 border border-gray-100'
+                      ? 'bg-gray-50 text-gray-800 border border-gray-50'
                       : 'text-gray-600',
                   )}
                 >
@@ -113,10 +113,10 @@ export default function Navigation({
                 'rounded-none text-sm',
                 showAll
                   ? 'bg-green-700 text-white hover:bg-green-800 shadow-xs'
-                  : 'bg-white border-none text-gray-700 hover:bg-gray-50',
+                  : 'border-none text-gray-700 hover:bg-gray-50',
               )}
             >
-              <Eye className="w-3 h-3" />
+              {/* <Eye className="w-3 h-3" /> */}
               {showAll ? 'Showing All' : 'View All'}
             </Button>
           </div>
