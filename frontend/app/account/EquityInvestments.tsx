@@ -68,13 +68,30 @@ const EquityInvestments = () => {
     fetchPortfolio(currentPage, itemsPerPage);
   }, [fetchPortfolio, currentPage, itemsPerPage]);
 
+  // FIXED: Helper function to parse numbers safely
   const parseNumber = (
     value: string | number | undefined,
     fallback = 0,
   ): number => {
+    if (value === null || value === undefined) return fallback;
     if (typeof value === 'number') return value;
-    if (typeof value === 'string') return parseFloat(value) || fallback;
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? fallback : parsed;
+    }
     return fallback;
+  };
+
+  // FIXED: Get portfolio totals safely from backend-calculated data
+  const portfolioTotals = portfolio?.portfolio || {
+    total_invested: 0,
+    total_value: 0,
+    total_return: 0,
+    return_percentage: 0,
+    active_investments: 0,
+    campaigns_invested: 0,
+    currency: user?.currency || 'GHS',
+    currency_symbol: user?.currency_symbol || '₵'
   };
 
   const toggleInvestmentDetails = (investmentId: number) => {
@@ -152,25 +169,22 @@ const EquityInvestments = () => {
     return false;
   };
 
-  // Include committed investments in display
+  // FIXED: Only include successful and committed investments in portfolio calculations
   const filterDisplayInvestments = (investments: EquityInvestment[]) => {
     return investments.filter(
       (investment) =>
-        investment.status === 'successful' ||
-        investment.status === 'committed' ||
-        investment.status === 'pending' ||
-        investment.status === 'processing',
+        investment.status === 'successful' || investment.status === 'committed'
     );
   };
 
   // Use the correct filtered investments
   const displayInvestments = filterDisplayInvestments(
-    portfolio?.investments || [],
+    portfolio?.investments || []
   );
 
   // For charts, only use successful investments
   const successfulInvestmentsForCharts = displayInvestments.filter(
-    (inv) => inv.status === 'successful',
+    (inv) => inv.status === 'successful'
   );
 
   const handleDownloadCertificate = async (investmentId: string) => {
@@ -472,9 +486,18 @@ const EquityInvestments = () => {
         </div>
       </div>
 
-      {/* Use the backend-calculated portfolio summary */}
+      {/* FIXED: Use the backend-calculated portfolio summary directly */}
       <PortfolioSummary
-        portfolio={portfolio?.portfolio}
+        portfolio={{
+          total_invested: parseNumber(portfolioTotals.total_invested),
+          total_value: parseNumber(portfolioTotals.total_value),
+          total_return: parseNumber(portfolioTotals.total_return),
+          return_percentage: parseNumber(portfolioTotals.return_percentage),
+          active_investments: parseNumber(portfolioTotals.active_investments),
+          campaigns_invested: parseNumber(portfolioTotals.campaigns_invested),
+          currency: portfolioTotals.currency,
+          currency_symbol: portfolioTotals.currency_symbol
+        }}
         currency={user?.currency}
         currencySymbol={user?.currency_symbol}
       />

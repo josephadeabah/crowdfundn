@@ -198,17 +198,16 @@ export interface EquityInvestment extends Investment {
 export interface InvestmentPortfolio {
   portfolio: {
     total_invested: number;
-    total_shares?: number;
-    total_value?: number;
+    total_value: number;
+    total_return: number;
+    return_percentage: number;
     active_investments: number;
-    total_invested_count?: number;
     campaigns_invested: number;
-    total_return?: number;
-    return_percentage?: number | string | null;
     currency?: string;
     currency_symbol?: string;
   };
   investments?: EquityInvestment[];
+  all_investments?: EquityInvestment[]; // FIXED: Added to separate all investments from portfolio ones
   currency?: string;
   currencySymbol?: string;
 }
