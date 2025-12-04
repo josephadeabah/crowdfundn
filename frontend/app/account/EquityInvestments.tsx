@@ -18,15 +18,8 @@ import { PerformanceCharts } from '../components/investchart/PerformanceCharts';
 import { PortfolioSummary } from '../components/investchart/PortfolioSummary';
 import { Badge } from '../components/ui/badge';
 import { formatCurrency } from '../utils/helpers/calculate.days';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/app/components/ui/accordion';
 import Avatar from '../components/avatar/Avatar';
 import { FaInfoCircle, FaTimes, FaClock } from 'react-icons/fa';
-import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { Textarea } from '@/app/components/ui/textarea';
 import Modal from '../components/modal/Modal';
@@ -91,7 +84,7 @@ const EquityInvestments = () => {
     active_investments: 0,
     campaigns_invested: 0,
     currency: user?.currency || 'GHS',
-    currency_symbol: user?.currency_symbol || '₵'
+    currency_symbol: user?.currency_symbol || '₵',
   };
 
   const toggleInvestmentDetails = (investmentId: number) => {
@@ -173,18 +166,18 @@ const EquityInvestments = () => {
   const filterDisplayInvestments = (investments: EquityInvestment[]) => {
     return investments.filter(
       (investment) =>
-        investment.status === 'successful' || investment.status === 'committed'
+        investment.status === 'successful' || investment.status === 'committed',
     );
   };
 
   // Use the correct filtered investments
   const displayInvestments = filterDisplayInvestments(
-    portfolio?.investments || []
+    portfolio?.investments || [],
   );
 
   // For charts, only use successful investments
   const successfulInvestmentsForCharts = displayInvestments.filter(
-    (inv) => inv.status === 'successful'
+    (inv) => inv.status === 'successful',
   );
 
   const handleDownloadCertificate = async (investmentId: string) => {
@@ -496,7 +489,7 @@ const EquityInvestments = () => {
           active_investments: parseNumber(portfolioTotals.active_investments),
           campaigns_invested: parseNumber(portfolioTotals.campaigns_invested),
           currency: portfolioTotals.currency,
-          currency_symbol: portfolioTotals.currency_symbol
+          currency_symbol: portfolioTotals.currency_symbol,
         }}
         currency={user?.currency}
         currencySymbol={user?.currency_symbol}

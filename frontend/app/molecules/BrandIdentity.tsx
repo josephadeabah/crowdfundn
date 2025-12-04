@@ -64,9 +64,9 @@ const BrandIdentity = () => {
           </h1>
 
           <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-10 leading-relaxed">
-            We connect the continent's most promising startups & SMEs with a global
-            community of investors. Together, we're closing the $330 billion
-            funding gap and building the future from the ground up.
+            We connect the continent's most promising startups & SMEs with a
+            global community of investors. Together, we're closing the $330
+            billion funding gap and building the future from the ground up.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
