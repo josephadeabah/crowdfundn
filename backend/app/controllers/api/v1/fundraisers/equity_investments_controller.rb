@@ -1,3 +1,4 @@
+
 module Api
   module V1
     module Fundraisers
@@ -157,17 +158,25 @@ module Api
         end
 
         def portfolio
+          # FIXED: Get portfolio data with proper calculations
           portfolio_data = EquityInvestment.portfolio_for(@current_user)
           
-          # Calculate return percentage safely
+          # FIXED: Use the return_percentage already calculated in the model
           total_invested = portfolio_data[:total_invested].to_f
           total_value = portfolio_data[:total_value].to_f
-          total_return = total_value - total_invested
-          return_percentage = total_invested > 0 ? (total_return / total_invested * 100).round(2) : 0
+          total_return = portfolio_data[:total_return].to_f
+          return_percentage = portfolio_data[:return_percentage] || 0
           
-          # Enhance investments with company and team information
+          # FIXED: Format investments with proper serialization
           enhanced_investments = portfolio_data[:investments].map do |investment|
             investment_data = EquityInvestmentSerializer.new(investment).as_json
+            
+            # FIXED: Check if investment should be included in portfolio calculations
+            is_portfolio_investment = investment.successful? || investment.committed?
+            
+            # Add portfolio-specific flags
+            investment_data[:is_portfolio_investment] = is_portfolio_investment
+            investment_data[:can_be_cancelled] = investment.can_be_cancelled?
             
             # Add company information from the campaign
             if investment.campaign
@@ -207,6 +216,11 @@ module Api
             investment_data
           end
           
+          # FIXED: Filter investments for the portfolio section
+          portfolio_investments = enhanced_investments.select do |inv|
+            inv[:is_portfolio_investment]
+          end
+          
           render json: {
             portfolio: {
               total_invested: total_invested,
@@ -218,7 +232,8 @@ module Api
               currency: @current_user.currency.upcase,
               currency_symbol: @current_user.currency_symbol
             },
-            investments: enhanced_investments
+            investments: portfolio_investments,  # FIXED: Only include portfolio investments
+            all_investments: enhanced_investments # FIXED: Include all for reference
           }
         end
 

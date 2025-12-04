@@ -372,21 +372,37 @@ class EquityInvestment < ApplicationRecord
   end
 
   def self.portfolio_for(user)
+    # FIXED: Include only successful and committed investments for portfolio calculations
     investments = user.equity_investments.includes(campaign: [:campaign_team_members])
     
-    # Filter out pending investments for portfolio calculations
-    successful_investments = investments.successful
+    # Filter investments that should be included in portfolio calculations
+    portfolio_investments = investments.where(status: [STATUS_SUCCESSFUL, STATUS_COMMITTED])
     
-    # Calculate unique campaigns from successful investments only
-    successful_campaign_ids = successful_investments.pluck(:campaign_id).uniq
+    # FIXED: Calculate total invested by summing only from portfolio investments
+    total_invested = portfolio_investments.sum(:amount)
+    
+    # FIXED: Calculate current value based on actual successful investments only
+    successful_investments = portfolio_investments.where(status: STATUS_SUCCESSFUL)
+    total_current_value = successful_investments.sum { |i| i.current_value || 0 }
+    
+    # FIXED: Calculate returns based on successful investments only
+    total_returns = total_current_value - successful_investments.sum(:amount)
+    
+    # FIXED: Calculate unique campaigns from portfolio investments
+    portfolio_campaign_ids = portfolio_investments.pluck(:campaign_id).uniq
     
     {
-      total_invested: successful_investments.sum(:amount),
-      total_value: successful_investments.sum { |i| i.current_value },
-      total_return: successful_investments.sum { |i| i.total_returns },
+      # FIXED: Use the correctly calculated totals
+      total_invested: total_invested,
+      total_value: total_current_value,
+      total_return: total_returns,
+      # FIXED: Return all investments for display, but portfolio calculations use filtered ones
       investments: investments,
+      # FIXED: Count only portfolio investments
       successful_count: successful_investments.count,
-      campaigns_invested: successful_campaign_ids.count
+      campaigns_invested: portfolio_campaign_ids.count,
+      # FIXED: Calculate ROI based on actual invested amount
+      return_percentage: total_invested > 0 ? (total_returns / total_invested * 100).round(2) : 0
     }
   end
 
@@ -509,16 +525,24 @@ class EquityInvestment < ApplicationRecord
     campaign.update_fundraiser_leaderboard if successful?
   end
 
+  # FIXED: Added transaction to prevent race conditions
   def update_campaign_shares
-    campaign.with_lock do
-      campaign.update!(
-        current_amount: campaign.current_amount + amount,
-        total_successful_donations: campaign.total_successful_donations + amount,
-        total_equity_invested: campaign.total_equity_invested + amount
-      )
+    ActiveRecord::Base.transaction do
+      campaign.with_lock do
+        # FIXED: Use increment! to avoid race conditions
+        campaign.increment!(:current_amount, amount)
+        campaign.increment!(:total_successful_donations, amount)
+        campaign.increment!(:total_equity_invested, amount)
+        
+        # FIXED: Also update shares allocated
+        campaign.decrement!(:shares_available, shares)
+      end
     end
   rescue ActiveRecord::StaleObjectError => e
     Rails.logger.error "Failed to update campaign shares for investment #{id}: #{e.message}"
     retry if (retries ||= 0) && (retries += 1) < 3
+  rescue => e
+    Rails.logger.error "Error updating campaign shares: #{e.message}"
+    raise
   end
 end
