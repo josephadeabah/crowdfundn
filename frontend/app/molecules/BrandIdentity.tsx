@@ -38,7 +38,7 @@ const BrandIdentity = () => {
     {
       value: '$330B',
       label: 'funding gap',
-      description: "for African SMEs we're helping to close",
+      description: "for African startups & SMEs we're helping to close",
     },
     {
       value: '80%',
