@@ -7,6 +7,9 @@ class PremiumPlan < ApplicationRecord
   validates :price, numericality: { greater_than: 0 }
   
   scope :active, -> { where(active: true) }
+
+  # Add this association
+  has_many :users
   
   def display_price
     "#{currency} #{price}"
