@@ -64,7 +64,6 @@ import {
   XCircle,
   Calendar,
   BarChart3,
-  Filter,
   RefreshCw,
   AlertTriangle,
 } from 'lucide-react';
@@ -512,7 +511,7 @@ const PremiumUsers = () => {
                       <SelectValue placeholder="Plan" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Plans</SelectItem>
+                      <SelectItem value="all-plans">All Plans</SelectItem>
                       {premiumPlans.map((plan) => (
                         <SelectItem key={plan.id} value={plan.id.toString()}>
                           {plan.name}
@@ -578,7 +577,7 @@ const PremiumUsers = () => {
                             No premium users found
                           </h3>
                           <p className="text-sm">
-                            {searchTerm || statusFilter !== 'all' || planFilter
+                            {searchTerm || statusFilter !== 'all' || planFilter !== 'all-plans'
                               ? 'Try changing your filters'
                               : 'No users have premium subscriptions yet'}
                           </p>
