@@ -7,11 +7,23 @@ Rails.application.routes.draw do
       namespace :members do
         # Premium subscription routes - UPDATED with cleaner structure
         resources :premium_plans, only: [:index]
+        
         resources :premium_subscriptions, only: [:create] do
           collection do
             get :current, to: 'premium_subscriptions#show'  # GET /premium_subscriptions/current
             post :verify, to: 'premium_subscriptions#verify'
             delete :cancel
+          end
+        end
+        
+        # Premium Users Admin Routes
+        resources :premium_users, only: [:index, :show] do
+          collection do
+            get 'stats'
+          end
+          member do
+            post 'manually_extend'
+            post 'revoke_premium'
           end
         end
         
@@ -150,13 +162,13 @@ Rails.application.routes.draw do
           resources :donations, only: [:create]
           namespace :documents do
             resources :investor_documents, only: [:index, :show, :create, :update, :destroy]
-               resources :investment_certificates, only: [] do
-                member do
-                  get :status
-                  post :generate
-                  get :download
-                end
+            resources :investment_certificates, only: [] do
+              member do
+                get :status
+                post :generate
+                get :download
               end
+            end
           end
         end
 
@@ -173,7 +185,8 @@ Rails.application.routes.draw do
             end
           end
         end
-          # Collection routes (don't need specific campaign)
+        
+        # Collection routes (don't need specific campaign)
         resources :equity_investments, only: [] do
           collection do
             get :portfolio
@@ -285,7 +298,7 @@ Rails.application.routes.draw do
         end
       end
 
-    # Investment Clubs
+      # Investment Clubs
       resources :investment_clubs, only: [:index, :create, :show, :update, :destroy], constraints: { id: /[a-zA-Z0-9\-]+/ } do
         # Membership management
         resources :memberships, only: [:index, :create, :update, :destroy], controller: 'club_memberships' do
@@ -315,7 +328,6 @@ Rails.application.routes.draw do
             post :verify
           end
         end
-
 
         # Add club transfers routes
         resources :transfers, only: [], controller: 'club_transfers' do
@@ -382,11 +394,10 @@ Rails.application.routes.draw do
         end
       end
     
-    # Reusable voting system
-    post 'votes/:votable_type/:votable_id', to: 'votes#create'
-    get 'votes/:votable_type/:votable_id', to: 'votes#index'
-    delete 'votes/:votable_type/:votable_id', to: 'votes#destroy'
-
+      # Reusable voting system
+      post 'votes/:votable_type/:votable_id', to: 'votes#create'
+      get 'votes/:votable_type/:votable_id', to: 'votes#index'
+      delete 'votes/:votable_type/:votable_id', to: 'votes#destroy'
     end
   end
 
