@@ -784,7 +784,7 @@ const PremiumUsers = () => {
                             {stats.overview.total_users.toLocaleString()}
                           </h3>
                         </div>
-                        <Users className="h-8 w-8 text-blue-500" />
+                        <Users className="h-8 w-8 text-emerald-500" />
                       </div>
                     </CardContent>
                   </Card>
