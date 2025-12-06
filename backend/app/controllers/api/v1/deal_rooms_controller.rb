@@ -25,6 +25,14 @@ module Api
         begin
           page = params[:page].to_i || 1
           per_page = params[:per_page].to_i || 12
+
+          # Debug: Check what we're querying
+          Rails.logger.info "Querying public deals..."
+          Rails.logger.info "EquityCampaign.live.count: #{EquityCampaign.live.count}"
+          Rails.logger.info "EquityCampaign.live.where(equity_status: :live).count: #{EquityCampaign.live.where(equity_status: :live).count}"
+          Rails.logger.info "DealRoom.public_deals.count: #{DealRoom.public_deals.count}"
+          Rails.logger.info "DealRoom.all.map(&:room_type): #{DealRoom.all.map(&:room_type)}"
+          Rails.logger.info "DealRoom.all.map(&:public?): #{DealRoom.all.map(&:public?)}"
           
           # Fix: Query DealRoom directly instead of EquityCampaign
           @deal_rooms = DealRoom.public_deals
