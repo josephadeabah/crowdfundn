@@ -26,18 +26,44 @@ module Api
           page = params[:page].to_i || 1
           per_page = params[:per_page].to_i || 12
           
-          # Fix: Query DealRoom directly instead of EquityCampaign
-          @deal_rooms = DealRoom.public_deals
-                                .includes(campaign: [:fundraiser, :equity_investments])
-                                .page(page)
-                                .per(per_page)
+          # Debug: Check what DealRooms exist
+          Rails.logger.info "=== DEBUG: Searching for public deal rooms ==="
+          
+          # Option 1: Try querying EquityCampaigns directly (your original approach)
+          @campaigns = EquityCampaign.live
+                                    .includes(:fundraiser, :equity_investments, :deal_room)
+                                    .where(equity_status: [:approved, :live])
+                                    .where.not(deal_room_id: nil)
+                                    .page(page)
+                                    .per(per_page)
+          
+          Rails.logger.info "Found #{@campaigns.count} campaigns with deal rooms"
+          
+          # If no campaigns found with deal rooms, try to find any campaigns that should have deal rooms
+          if @campaigns.empty?
+            Rails.logger.info "Looking for campaigns that might need deal rooms created..."
+            
+            # Find campaigns without deal rooms that should have them
+            campaigns_without_deal_rooms = EquityCampaign.live
+                                                        .where(equity_status: [:approved, :live])
+                                                        .where(deal_room_id: nil)
+                                                        .limit(5)
+            
+            Rails.logger.info "Found #{campaigns_without_deal_rooms.count} campaigns without deal rooms"
+            
+            # Create deal rooms for these campaigns if they don't exist
+            campaigns_without_deal_rooms.each do |campaign|
+              Rails.logger.info "Campaign #{campaign.id} (#{campaign.company_name}) needs a deal room"
+            end
+          end
           
           render json: {
-            deals: @deal_rooms.map { |dr| campaign_deal_json(dr.campaign) },
-            current_page: @deal_rooms.current_page,
-            total_pages: @deal_rooms.total_pages,
-            total_count: @deal_rooms.total_count
+            deals: @campaigns.map { |c| campaign_deal_json(c) },
+            current_page: @campaigns.current_page,
+            total_pages: @campaigns.total_pages,
+            total_count: @campaigns.total_count
           }, status: :ok
+          
         rescue => e
           Rails.logger.error "Error in public_deals: #{e.message}\n#{e.backtrace.first(10).join("\n")}"
           render json: {
@@ -289,6 +315,9 @@ module Api
           end
         end
         
+        # Get the deal room if it exists
+        deal_room = campaign.deal_room
+        
         {
           id: campaign.id.to_s,
           companyName: campaign.company_name.to_s,
@@ -322,8 +351,18 @@ module Api
             }
           end,
           interested: campaign.subscriptions.count.to_i,
-          meetings: campaign.deal_room&.deal_room_meetings&.count.to_i || 0,
-          status: campaign_status_for_deal_room(campaign)
+          meetings: deal_room&.deal_room_meetings&.count.to_i || 0,
+          status: campaign_status_for_deal_room(campaign),
+          campaign: {
+            id: campaign.id.to_s,
+            deal_room: deal_room ? {
+              id: deal_room.id.to_s,
+              name: deal_room.name.to_s,
+              member_count: deal_room.member_count.to_i,
+              is_member: deal_room.members.include?(@current_user) if @current_user,
+              can_join: deal_room.public? && (!@current_user || !deal_room.members.include?(@current_user))
+            } : nil
+          }
         }
       end
       
