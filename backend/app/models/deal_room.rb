@@ -11,10 +11,11 @@ class DealRoom < ApplicationRecord
   has_many :deal_room_meetings, dependent: :destroy
   
   enum :room_type, {
-    private: 'private',
-    public: 'public',
+    private_room: 'private',
+    public_room: 'public',
     syndicate: 'syndicate'
   }
+
   
   enum :status, {
     draft: 'draft',
