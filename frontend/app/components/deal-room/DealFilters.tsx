@@ -38,7 +38,7 @@ export function DealFilters({
       {/* Desktop Filters */}
       <div className="hidden md:flex flex-col md:flex-row gap-4 items-stretch md:items-center">
         {/* Search */}
-        <div className="relative flex-1 max-w-md">
+        <div className="relative flex-1 max-w-3xl mx-auto">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           <Input
             placeholder="Search deals, companies, founders..."
@@ -73,7 +73,7 @@ export function DealFilters({
             onValueChange={onStageChange}
             disabled={isLoading}
           >
-            <SelectTrigger className="w-[140px] bg-white border border-gray-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+            <SelectTrigger className="w-[140px] bg-white border border-gray-50 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
               <SelectValue placeholder="Stage" />
             </SelectTrigger>
             <SelectContent>
@@ -103,7 +103,7 @@ export function DealFilters({
             placeholder="Search deals, companies, founders..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-white border border-gray-300 focus:border-emerald-600 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="pl-10 bg-white border border-gray-50 focus:border-emerald-600 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             disabled={isLoading}
           />
         </div>
@@ -116,7 +116,7 @@ export function DealFilters({
               onValueChange={onIndustryChange}
               disabled={isLoading}
             >
-              <SelectTrigger className="w-[140px] bg-white border border-gray-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+              <SelectTrigger className="w-[140px] bg-white border border-gray-50 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
                 <SelectValue placeholder="Industry" />
               </SelectTrigger>
               <SelectContent>
@@ -135,7 +135,7 @@ export function DealFilters({
               onValueChange={onStageChange}
               disabled={isLoading}
             >
-              <SelectTrigger className="w-[120px] bg-white border border-gray-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+              <SelectTrigger className="w-[120px] bg-white border border-gray-50 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
                 <SelectValue placeholder="Stage" />
               </SelectTrigger>
               <SelectContent>
