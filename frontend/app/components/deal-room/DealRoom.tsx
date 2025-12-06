@@ -119,7 +119,7 @@ export function DealRoom() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white">
+      <div className="relative overflow-hidden bg-white">
         <div className="absolute inset-0 bg-white" />
         <div className="relative max-w-3xl mx-auto px-4 py-4">
           <div className="flex flex-col gap-6">
