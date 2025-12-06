@@ -71,6 +71,7 @@ class EquityCampaign < Campaign
   after_initialize :run_initial_calculations, if: :new_record?
   after_update :update_investments_valuation, if: -> { saved_change_to_valuation? || saved_change_to_total_shares? }
   after_save :update_shares_available_from_investments, if: -> { saved_change_to_shares_available? }
+  after_create :create_deal_room_if_needed
 
   # ========== STATUS TRANSITION METHODS ==========
   def submit_for_approval
@@ -631,5 +632,18 @@ class EquityCampaign < Campaign
     if shares_available < 0
       errors.add(:shares_available, "cannot be negative. Current: #{shares_available}")
     end
+  end
+
+  def create_deal_room_if_needed
+    return if deal_room.present?
+    
+    DealRoom.create!(
+      campaign: self,
+      user: fundraiser,
+      name: "#{company_name} Deal Room",
+      description: "Investment deal room for #{company_name}",
+      room_type: :public_access, # This will save as 'public' in database
+      status: :active
+    )
   end
 end
