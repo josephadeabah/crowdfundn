@@ -121,7 +121,7 @@ export function DealRoom() {
       {/* Hero Header */}
       <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white">
         <div className="absolute inset-0 bg-gray-50" />
-        <div className="relative max-w-3xl mx-auto px-4 py-12 md:py-20">
+        <div className="relative max-w-3xl mx-auto px-4 py-4">
           <div className="flex flex-col gap-6">
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
