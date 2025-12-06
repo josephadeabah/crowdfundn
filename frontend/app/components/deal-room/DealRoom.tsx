@@ -136,25 +136,25 @@ export function DealRoom() {
             {/* Stats */}
             {!isStatsLoading && stats && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="bg-white p-4">
                   <p className="text-sm text-gray-600">Total Deals</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {stats.totalDeals}
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="bg-white p-4">
                   <p className="text-sm text-gray-600">Active Deals</p>
                   <p className="text-2xl font-bold text-emerald-600">
                     {stats.activeDeals}
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="bg-white p-4">
                   <p className="text-sm text-gray-600">Total Raised</p>
                   <p className="text-2xl font-bold text-gray-900">
                     ${(stats.totalRaised / 1000000).toFixed(1)}M
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow-sm border">
+                <div className="bg-white p-4">
                   <p className="text-sm text-gray-600">Success Rate</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {stats.successRate}%
@@ -174,7 +174,7 @@ export function DealRoom() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         {/* Filters & Tabs */}
         <div className="space-y-6">
           <div className="flex justify-between items-center">
@@ -221,7 +221,7 @@ export function DealRoom() {
                   <button
                     key={tab}
                     onClick={() => handleTabChange(tab)}
-                    className={`shrink-0 px-4 py-2 font-medium rounded-lg ${
+                    className={`shrink-0 px-4 py-2 font-medium ${
                       activeTab === tab
                         ? 'bg-emerald-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -284,7 +284,7 @@ export function DealRoom() {
             </>
           ) : (
             <div className="text-center py-16">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 flex items-center justify-center rounded-full">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 flex items-center justify-center">
                 <Briefcase className="w-8 h-8 text-gray-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
