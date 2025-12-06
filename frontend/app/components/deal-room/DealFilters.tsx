@@ -44,7 +44,7 @@ export function DealFilters({
             placeholder="Search deals, companies, founders..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-white border border-gray-300 focus:border-emerald-600 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-transparent"
+            className="pl-10 bg-white border border-gray-50 focus:border-emerald-600 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-transparent"
             disabled={isLoading}
           />
         </div>
