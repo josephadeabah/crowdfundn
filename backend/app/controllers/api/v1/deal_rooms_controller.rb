@@ -271,6 +271,7 @@ module Api
         }
       end
       
+      
       def campaign_deal_json(campaign)
         return nil unless campaign.present?
         
@@ -287,6 +288,18 @@ module Api
           else
             "$#{amount_int}"
           end
+        end
+        
+        # Get investor documents with file metadata
+        documents = Array(campaign.investor_documents).map do |doc|
+          {
+            id: doc.id.to_s,
+            name: doc.display_name.to_s,
+            type: doc.document_type.to_s,
+            files: doc.file_metadata,  # ADD THIS LINE - includes file URLs and metadata
+            required: doc.required_document?,
+            uploaded_at: doc.created_at
+          }
         end
         
         {
@@ -315,12 +328,7 @@ module Api
             revenue: campaign.current_amount.to_f,
             growth: campaign.percentage_raised.to_i
           },
-          documents: Array(campaign.investor_documents).map do |doc|
-            {
-              name: doc.display_name.to_s,
-              type: doc.document_type.to_s
-            }
-          end,
+          documents: documents,  # Use the updated documents array
           interested: campaign.subscriptions.count.to_i,
           meetings: campaign.deal_room&.deal_room_meetings&.count.to_i || 0,
           status: campaign_status_for_deal_room(campaign)
