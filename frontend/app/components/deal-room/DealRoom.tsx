@@ -1,16 +1,14 @@
-import { useState, useMemo } from 'react';
-import { Briefcase, TrendingUp, Sparkles } from 'lucide-react';
+// app/components/deal-room/DealRoom.tsx
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Briefcase, TrendingUp, Sparkles, Loader2 } from 'lucide-react';
 import { DealFilters } from './DealFilters';
 import { DealCard } from './DealCard';
 import { DealDetailModal } from './DealDetailModal';
 import { Badge } from '@/app/components/ui/badge';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/app/components/ui/tabs';
-import { Deal, deals } from './dealRoomData';
+import { Button } from '@/app/components/ui/button';
+import { Deal } from './services/dealRoomApi';
+import { toast } from 'sonner';
+import { useDealRoomApi } from './hooks/useDealRoom';
 
 export function DealRoom() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,21 +17,39 @@ export function DealRoom() {
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [activeTab, setActiveTab] = useState('all');
 
+  const {
+    deals,
+    stats,
+    industries,
+    stages,
+    isLoading,
+    isStatsLoading,
+    error,
+    page,
+    totalPages,
+    totalCount,
+    loadDeals,
+    setPage,
+  } = useDealRoomApi();
+
+  // Load deals when filters change
+  useEffect(() => {
+    loadDealsWithFilters();
+  }, [page, selectedIndustry, selectedStage, searchQuery]);
+
+  const loadDealsWithFilters = useCallback(() => {
+    const filters = {
+      industry:
+        selectedIndustry !== 'All Industries' ? selectedIndustry : undefined,
+      stage: selectedStage !== 'All Stages' ? selectedStage : undefined,
+      search: searchQuery || undefined,
+    };
+
+    loadDeals(page, filters);
+  }, [page, selectedIndustry, selectedStage, searchQuery, loadDeals]);
+
   const filteredDeals = useMemo(() => {
     return deals.filter((deal) => {
-      const matchesSearch =
-        deal.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        deal.tagline.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        deal.founderName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        deal.industry.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesIndustry =
-        selectedIndustry === 'All Industries' ||
-        deal.industry === selectedIndustry;
-
-      const matchesStage =
-        selectedStage === 'All Stages' || deal.stage === selectedStage;
-
       const matchesTab =
         activeTab === 'all' ||
         (activeTab === 'active' && deal.status === 'Active') ||
@@ -41,190 +57,273 @@ export function DealRoom() {
         (activeTab === 'new' && deal.status === 'New') ||
         (activeTab === 'funded' && deal.status === 'Funded');
 
-      return matchesSearch && matchesIndustry && matchesStage && matchesTab;
+      return matchesTab;
     });
-  }, [searchQuery, selectedIndustry, selectedStage, activeTab]);
+  }, [deals, activeTab]);
+
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+      setPage(1);
+    },
+    [setPage],
+  );
+
+  const handleIndustryChange = useCallback(
+    (value: string) => {
+      setSelectedIndustry(value);
+      setPage(1);
+    },
+    [setPage],
+  );
+
+  const handleStageChange = useCallback(
+    (value: string) => {
+      setSelectedStage(value);
+      setPage(1);
+    },
+    [setPage],
+  );
+
+  const handleTabChange = useCallback(
+    (value: string) => {
+      setActiveTab(value);
+      setPage(1);
+    },
+    [setPage],
+  );
+
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
+
+  const handleRefresh = () => {
+    loadDealsWithFilters();
+  };
+
+  // Show error toast
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gray-50">
-        <div className="absolute inset-0 bg-white" />
-        <div className="relative max-w-2xl mx-auto px-4 py-12">
-          <div className="flex flex-col gap-2">
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white">
+        <div className="absolute inset-0 bg-grid-emerald-100/50" />
+        <div className="relative max-w-7xl mx-auto px-4 py-12 md:py-20">
+          <div className="flex flex-col gap-6">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-emerald-100 rounded-lg">
+                  <Briefcase className="w-6 h-6 text-emerald-600" />
+                </div>
+                <Badge
+                  variant="outline"
+                  className="bg-emerald-50 text-emerald-700"
+                >
+                  Private Access
+                </Badge>
+              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
                 Private Deal Room
               </h1>
-              <p className="text-lg text-gray-700">
+              <p className="text-lg md:text-xl text-gray-700 max-w-3xl">
                 Connect directly with vetted founders, explore investment
                 opportunities, and close deals — all in one place.
               </p>
             </div>
+
+            {/* Stats */}
+            {!isStatsLoading && stats && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                <div className="bg-white p-4 rounded-lg shadow-sm border">
+                  <p className="text-sm text-gray-600">Total Deals</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.totalDeals}
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-sm border">
+                  <p className="text-sm text-gray-600">Active Deals</p>
+                  <p className="text-2xl font-bold text-emerald-600">
+                    {stats.activeDeals}
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-sm border">
+                  <p className="text-sm text-gray-600">Total Raised</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    ${(stats.totalRaised / 1000000).toFixed(1)}M
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-sm border">
+                  <p className="text-sm text-gray-600">Success Rate</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.successRate}%
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {isStatsLoading && (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-emerald-600 mr-2" />
+                <p className="text-gray-600">Loading stats...</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* Filters & Tabs */}
         <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Available Deals
+            </h2>
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={isLoading}
+            >
+              <Loader2
+                className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
+              />
+              Refresh
+            </Button>
+          </div>
+
           <DealFilters
             searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
+            onSearchChange={handleSearch}
             selectedIndustry={selectedIndustry}
-            onIndustryChange={setSelectedIndustry}
+            onIndustryChange={handleIndustryChange}
             selectedStage={selectedStage}
-            onStageChange={setSelectedStage}
+            onStageChange={handleStageChange}
+            industries={industries}
+            stages={stages}
+            isLoading={isLoading}
           />
 
-          {/* Horizontally Scrollable Tabs for Mobile */}
+          {/* Tabs */}
           <div className="w-full">
-            {/* Desktop Tabs */}
-            <div className="hidden md:block">
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="bg-gray-100">
-                  <TabsTrigger
-                    value="all"
-                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-                  >
-                    All Deals
-                    <Badge className="ml-2 bg-emerald-100 text-emerald-600">
-                      {deals.length}
-                    </Badge>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="active"
-                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-                  >
-                    Active
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="closing"
-                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-                  >
-                    Closing Soon
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="new"
-                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-                  >
-                    New
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="funded"
-                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-                  >
-                    Funded
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
+            <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+              {['all', 'active', 'closing', 'new', 'funded'].map((tab) => {
+                const tabLabels = {
+                  all: 'All Deals',
+                  active: 'Active',
+                  closing: 'Closing Soon',
+                  new: 'New',
+                  funded: 'Funded',
+                };
 
-            {/* Mobile Tabs - Horizontally Scrollable */}
-            <div className="md:hidden w-full">
-              <div className="relative">
-                {/* Scroll Container */}
-                <div className="flex gap-1 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-                  <style jsx>{`
-                    .scrollbar-hide {
-                      -ms-overflow-style: none;
-                      scrollbar-width: none;
-                    }
-                    .scrollbar-hide::-webkit-scrollbar {
-                      display: none;
-                    }
-                  `}</style>
-
+                return (
                   <button
-                    onClick={() => setActiveTab('all')}
-                    className={`shrink-0 px-4 py-2 font-medium ${
-                      activeTab === 'all'
+                    key={tab}
+                    onClick={() => handleTabChange(tab)}
+                    className={`shrink-0 px-4 py-2 font-medium rounded-lg ${
+                      activeTab === tab
                         ? 'bg-emerald-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    All Deals
-                    <Badge
-                      className={`ml-2 ${activeTab === 'all' ? 'bg-emerald-700 text-white' : 'bg-emerald-100 text-emerald-600'}`}
-                    >
-                      {deals.length}
-                    </Badge>
+                    {tabLabels[tab as keyof typeof tabLabels]}
+                    {tab === 'all' && (
+                      <Badge
+                        className={`ml-2 ${activeTab === 'all' ? 'bg-emerald-700 text-white' : 'bg-emerald-100 text-emerald-600'}`}
+                      >
+                        {totalCount}
+                      </Badge>
+                    )}
                   </button>
-
-                  <button
-                    onClick={() => setActiveTab('active')}
-                    className={`shrink-0 px-4 py-2 font-medium ${
-                      activeTab === 'active'
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    Active
-                  </button>
-
-                  <button
-                    onClick={() => setActiveTab('closing')}
-                    className={`shrink-0 px-4 py-2 font-medium ${
-                      activeTab === 'closing'
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    Closing Soon
-                  </button>
-
-                  <button
-                    onClick={() => setActiveTab('new')}
-                    className={`shrink-0 px-4 py-2 font-medium ${
-                      activeTab === 'new'
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    New
-                  </button>
-
-                  <button
-                    onClick={() => setActiveTab('funded')}
-                    className={`shrink-0 px-4 py-2 font-medium ${
-                      activeTab === 'funded'
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    Funded
-                  </button>
-                </div>
-
-                {/* Gradient fade effect for scroll indication */}
-                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none" />
-              </div>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Deal Grid - 2 cards per row */}
+        {/* Deal Grid */}
         <div>
-          {filteredDeals.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredDeals.map((deal) => (
-                <div key={deal.id}>
-                  <DealCard deal={deal} onViewDetails={setSelectedDeal} />
-                </div>
-              ))}
+          {isLoading ? (
+            <div className="text-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading deals...</p>
             </div>
+          ) : filteredDeals.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredDeals.map((deal) => (
+                  <div key={deal.id}>
+                    <DealCard deal={deal} onViewDetails={setSelectedDeal} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-4 mt-8">
+                  <Button
+                    variant="outline"
+                    onClick={handlePrevPage}
+                    disabled={page === 1 || isLoading}
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-sm text-gray-600">
+                    Page {page} of {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    onClick={handleNextPage}
+                    disabled={page === totalPages || isLoading}
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-16">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 flex items-center justify-center rounded-full">
                 <Briefcase className="w-8 h-8 text-gray-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 No deals found
               </h3>
               <p className="text-gray-700">
-                Try adjusting your filters or search query
+                {searchQuery ||
+                selectedIndustry !== 'All Industries' ||
+                selectedStage !== 'All Stages'
+                  ? 'Try adjusting your filters or search query'
+                  : 'No deals available at the moment. Check back soon!'}
               </p>
+              {(searchQuery ||
+                selectedIndustry !== 'All Industries' ||
+                selectedStage !== 'All Stages') && (
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedIndustry('All Industries');
+                    setSelectedStage('All Stages');
+                    setPage(1);
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -234,6 +333,7 @@ export function DealRoom() {
       <DealDetailModal
         deal={selectedDeal}
         onClose={() => setSelectedDeal(null)}
+        onDealUpdate={handleRefresh}
       />
     </div>
   );

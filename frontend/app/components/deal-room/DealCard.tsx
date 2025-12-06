@@ -1,8 +1,9 @@
-import { Clock, Users, TrendingUp, ArrowRight } from 'lucide-react';
+// app/components/deal-room/DealCard.tsx
+import { Clock, Users, ArrowRight } from 'lucide-react';
 import { Badge } from '@/app/components/ui/badge';
 import { Progress } from '@/app/components/ui/progress';
 import { Button } from '@/app/components/ui/button';
-import { Deal } from './dealRoomData';
+import { Deal } from './services/dealRoomApi';
 
 interface DealCardProps {
   deal: Deal;
@@ -13,7 +14,10 @@ const formatCurrency = (value: number) => {
   if (value >= 1000000) {
     return `$${(value / 1000000).toFixed(1)}M`;
   }
-  return `$${(value / 1000).toFixed(0)}K`;
+  if (value >= 1000) {
+    return `$${(value / 1000).toFixed(0)}K`;
+  }
+  return `$${value}`;
 };
 
 const getStatusVariant = (status: Deal['status']) => {
@@ -41,8 +45,8 @@ export function DealCard({ deal, onViewDetails }: DealCardProps) {
       <div className="p-5 pb-4">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gray-100 flex items-center justify-center text-2xl">
-              {deal.logo}
+            <div className="w-12 h-12 bg-emerald-100 flex items-center justify-center text-2xl">
+              {deal.logo || deal.companyName.substring(0, 2).toUpperCase()}
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 group-hover:text-gray-800 transition-colors">
@@ -100,8 +104,9 @@ export function DealCard({ deal, onViewDetails }: DealCardProps) {
       {/* Footer */}
       <div className="px-5 py-4 bg-gray-50 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-800">
-            {deal.founderImage}
+          <div className="w-8 h-8 bg-emerald-100 flex items-center justify-center text-xs font-medium text-emerald-600">
+            {deal.founderImage ||
+              deal.founderName.substring(0, 2).toUpperCase()}
           </div>
           <div className="text-sm">
             <p className="font-medium text-gray-900">{deal.founderName}</p>

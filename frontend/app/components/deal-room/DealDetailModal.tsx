@@ -1,13 +1,15 @@
+// app/components/deal-room/DealDetailModal.tsx
 import {
   Users,
   Clock,
-  TrendingUp,
   FileText,
   MessageCircle,
   Calendar,
   CheckCircle2,
   Download,
   Share2,
+  ExternalLink,
+  AlertCircle,
 } from 'lucide-react';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
@@ -20,18 +22,26 @@ import {
   TabsTrigger,
 } from '@/app/components/ui/tabs';
 import Modal from '@/app/components/modal/Modal';
-import { Deal } from './dealRoomData';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { useAuth } from '@/app/context/auth/AuthContext';
+import { useDealRoomApi } from './hooks/useDealRoom';
+import { Deal } from './services/dealRoomApi';
 
 interface DealDetailModalProps {
   deal: Deal | null;
   onClose: () => void;
+  onDealUpdate?: () => void;
 }
 
 const formatCurrency = (value: number) => {
   if (value >= 1000000) {
     return `$${(value / 1000000).toFixed(1)}M`;
   }
-  return `$${(value / 1000).toFixed(0)}K`;
+  if (value >= 1000) {
+    return `$${(value / 1000).toFixed(0)}K`;
+  }
+  return `$${value}`;
 };
 
 const formatNumber = (value: number) => {
@@ -44,7 +54,142 @@ const formatNumber = (value: number) => {
   return value.toString();
 };
 
-export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
+export function DealDetailModal({
+  deal,
+  onClose,
+  onDealUpdate,
+}: DealDetailModalProps) {
+  const { token } = useAuth();
+  const {
+    getDealDocuments,
+    getDealConversations,
+    getDealMeetings,
+    showInterest,
+    joinDealRoom,
+    createConversation,
+  } = useDealRoomApi();
+
+  const [documents, setDocuments] = useState<any[]>([]);
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [meetings, setMeetings] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [isInterested, setIsInterested] = useState(false);
+  const [isMember, setIsMember] = useState(false);
+
+  useEffect(() => {
+    if (deal) {
+      loadAdditionalData();
+      setIsInterested(deal.interested > 0);
+      setIsMember(deal.campaign?.deal_room?.is_member || false);
+    }
+  }, [deal]);
+
+  const loadAdditionalData = async () => {
+    if (!deal) return;
+
+    setIsLoading(true);
+    try {
+      const [docs, convs, meets] = await Promise.all([
+        getDealDocuments(deal.id),
+        getDealConversations(deal.id),
+        getDealMeetings(deal.id),
+      ]);
+
+      setDocuments(docs);
+      setConversations(convs);
+      setMeetings(meets);
+    } catch (error) {
+      console.error('Failed to load additional data:', error);
+      toast.error('Failed to load deal details');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleShowInterest = async () => {
+    if (!deal || !token) {
+      toast.error('Please login to show interest');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await showInterest(deal.id);
+      setIsInterested(true);
+      toast.success('Interest shown successfully!');
+      if (onDealUpdate) onDealUpdate();
+    } catch (error) {
+      console.error('Failed to show interest:', error);
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to show interest',
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleJoinDealRoom = async () => {
+    if (!deal || !token) {
+      toast.error('Please login to join deal room');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await joinDealRoom(deal.id);
+      setIsMember(true);
+      toast.success('Successfully joined deal room!');
+      if (onDealUpdate) onDealUpdate();
+    } catch (error) {
+      console.error('Failed to join deal room:', error);
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to join deal room',
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleStartConversation = async () => {
+    if (!deal || !token) {
+      toast.error('Please login to start a conversation');
+      return;
+    }
+
+    try {
+      const title = prompt('Enter conversation title:');
+      if (!title) return;
+
+      setIsLoading(true);
+      await createConversation(deal.id, title);
+      toast.success('Conversation created successfully!');
+      loadAdditionalData(); // Refresh conversations
+    } catch (error) {
+      console.error('Failed to create conversation:', error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to create conversation',
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleShareDeal = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: deal?.companyName,
+        text: `Check out ${deal?.companyName} on our deal room!`,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Link copied to clipboard!');
+    }
+  };
+
   if (!deal) return null;
 
   const progressPercent = Math.min(
@@ -52,19 +197,22 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
     100,
   );
 
+  const canJoin = deal.campaign?.deal_room?.can_join;
+  const dealRoomMemberCount = deal.campaign?.deal_room?.member_count || 0;
+
   return (
     <Modal
       isOpen={!!deal}
       onClose={onClose}
-      size="xxxlarge" // Using xxxlarge for max-w-4xl equivalent
+      size="xxxlarge"
       closeOnBackdropClick={true}
     >
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white px-6 py-4 -mx-6 -mt-6">
+      <div className="sticky top-0 z-10 bg-white px-6 py-4 -mx-6 -mt-6 border-b">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-emerald-100 flex items-center justify-center text-3xl">
-              {deal.logo}
+            <div className="w-16 h-16 bg-emerald-100 flex items-center justify-center text-3xl rounded-lg">
+              {deal.logo || deal.companyName.substring(0, 2).toUpperCase()}
             </div>
             <div>
               <div className="flex items-center gap-3">
@@ -86,16 +234,36 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
               <p className="text-gray-600">{deal.tagline}</p>
             </div>
           </div>
+          <div className="flex gap-2">
+            {canJoin && !isMember && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleJoinDealRoom}
+                disabled={isLoading}
+              >
+                Join Deal Room
+              </Button>
+            )}
+            {isMember && (
+              <Badge
+                variant="outline"
+                className="bg-emerald-50 text-emerald-700"
+              >
+                Member
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="overflow-y-auto max-h-[calc(80vh-100px)]">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Funding Progress Card */}
-            <div className="bg-gray-50 p-5">
+            <div className="bg-gray-50 p-5 rounded-lg">
               <div className="flex justify-between items-end mb-4">
                 <div>
                   <p className="text-sm text-gray-600">Amount Raised</p>
@@ -130,8 +298,12 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
             </div>
 
             {/* Tabs */}
-            <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="w-full grid grid-cols-3 bg-gray-100">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <TabsList className="w-full grid grid-cols-4 bg-gray-100">
                 <TabsTrigger
                   value="overview"
                   className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
@@ -145,10 +317,16 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                   Documents
                 </TabsTrigger>
                 <TabsTrigger
-                  value="activity"
+                  value="conversations"
                   className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
                 >
-                  Activity
+                  Conversations
+                </TabsTrigger>
+                <TabsTrigger
+                  value="meetings"
+                  className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                >
+                  Meetings
                 </TabsTrigger>
               </TabsList>
 
@@ -158,7 +336,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                   <h3 className="font-semibold text-gray-900 mb-2">
                     About {deal.companyName}
                   </h3>
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                     {deal.description}
                   </p>
                 </div>
@@ -169,7 +347,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                     Investment Highlights
                   </h3>
                   <ul className="space-y-2">
-                    {deal.highlights.map((highlight, index) => (
+                    {deal.highlights?.map((highlight, index) => (
                       <li key={index} className="flex items-start gap-3">
                         <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                         <span className="text-gray-700">{highlight}</span>
@@ -185,39 +363,39 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                       Key Metrics
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {deal.metrics.mrr && (
-                        <div className="bg-gray-50 p-3 text-center">
+                      {deal.metrics.revenue !== undefined && (
+                        <div className="bg-gray-50 p-3 text-center rounded-lg">
                           <p className="text-lg font-bold text-gray-900">
-                            {formatCurrency(deal.metrics.mrr)}
+                            {formatCurrency(deal.metrics.revenue)}
                           </p>
                           <p className="text-xs text-gray-600">
-                            Monthly Revenue
+                            Annual Revenue
                           </p>
                         </div>
                       )}
-                      {deal.metrics.growth && (
-                        <div className="bg-gray-50 p-3 text-center">
+                      {deal.metrics.growth !== undefined && (
+                        <div className="bg-gray-50 p-3 text-center rounded-lg">
                           <p className="text-lg font-bold text-emerald-600">
                             +{deal.metrics.growth}%
                           </p>
                           <p className="text-xs text-gray-600">YoY Growth</p>
                         </div>
                       )}
-                      {deal.metrics.users && (
-                        <div className="bg-gray-50 p-3 text-center">
+                      {deal.metrics.users !== undefined && (
+                        <div className="bg-gray-50 p-3 text-center rounded-lg">
                           <p className="text-lg font-bold text-gray-900">
                             {formatNumber(deal.metrics.users)}
                           </p>
                           <p className="text-xs text-gray-600">Active Users</p>
                         </div>
                       )}
-                      {deal.metrics.revenue && (
-                        <div className="bg-gray-50 p-3 text-center">
+                      {deal.metrics.mrr !== undefined && (
+                        <div className="bg-gray-50 p-3 text-center rounded-lg">
                           <p className="text-lg font-bold text-gray-900">
-                            {formatCurrency(deal.metrics.revenue)}
+                            {formatCurrency(deal.metrics.mrr)}
                           </p>
                           <p className="text-xs text-gray-600">
-                            Annual Revenue
+                            Monthly Revenue
                           </p>
                         </div>
                       )}
@@ -227,67 +405,156 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
               </TabsContent>
 
               <TabsContent value="documents" className="mt-4">
-                <div className="space-y-3">
-                  {deal.documents.map((doc, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-emerald-100 flex items-center justify-center">
-                          <FileText className="w-5 h-5 text-emerald-600" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            {doc.name}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            {doc.type} Document
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="bg-white hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity"
+                {isLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+                    <p className="text-gray-600 mt-2">Loading documents...</p>
+                  </div>
+                ) : documents.length > 0 ? (
+                  <div className="space-y-3">
+                    {documents.map((doc, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer rounded-lg group"
                       >
-                        <Download className="w-4 h-4 mr-2" />
-                        Download
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-emerald-100 flex items-center justify-center rounded-lg">
+                            <FileText className="w-5 h-5 text-emerald-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {doc.title || doc.name}
+                            </p>
+                            <p className="text-xs text-gray-600">
+                              {doc.document_type || doc.type} Document
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="bg-white hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => window.open(doc.file_url, '_blank')}
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Download
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                    <p>No documents available</p>
+                  </div>
+                )}
               </TabsContent>
 
-              <TabsContent value="activity" className="mt-4">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 p-4 bg-gray-50">
-                    <div className="w-10 h-10 bg-emerald-100 flex items-center justify-center">
-                      <Users className="w-5 h-5 text-emerald-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {deal.interested} investors interested
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Showing strong demand
-                      </p>
-                    </div>
+              <TabsContent value="conversations" className="mt-4">
+                {isLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+                    <p className="text-gray-600 mt-2">
+                      Loading conversations...
+                    </p>
                   </div>
-                  <div className="flex items-center gap-3 p-4 bg-gray-50">
-                    <div className="w-10 h-10 bg-emerald-100 flex items-center justify-center">
-                      <Calendar className="w-5 h-5 text-emerald-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {deal.meetings} meetings scheduled
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        With potential investors
-                      </p>
-                    </div>
+                ) : (
+                  <>
+                    {conversations.length > 0 ? (
+                      <div className="space-y-3">
+                        {conversations.map((conv, index) => (
+                          <div
+                            key={index}
+                            className="p-4 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer rounded-lg"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="font-medium text-gray-900">
+                                  {conv.title}
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                  {conv.message_count} messages •{' '}
+                                  {conv.private ? 'Private' : 'Public'}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {conv.last_message && (
+                                  <span className="text-xs text-gray-500">
+                                    {new Date(
+                                      conv.last_message.created_at,
+                                    ).toLocaleDateString()}
+                                  </span>
+                                )}
+                                <ExternalLink className="w-4 h-4 text-gray-400" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <MessageCircle className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                        <p>No conversations yet</p>
+                      </div>
+                    )}
+
+                    {isMember && (
+                      <div className="mt-4">
+                        <Button
+                          className="w-full"
+                          onClick={handleStartConversation}
+                          disabled={isLoading}
+                        >
+                          Start New Conversation
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </TabsContent>
+
+              <TabsContent value="meetings" className="mt-4">
+                {isLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+                    <p className="text-gray-600 mt-2">Loading meetings...</p>
                   </div>
-                </div>
+                ) : meetings.length > 0 ? (
+                  <div className="space-y-3">
+                    {meetings.map((meeting, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-50 hover:bg-gray-100 transition-colors rounded-lg"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {meeting.title}
+                            </p>
+                            <p className="text-xs text-gray-600">
+                              {meeting.meeting_type} • {meeting.status}
+                            </p>
+                          </div>
+                          <Badge
+                            variant={meeting.upcoming ? 'default' : 'secondary'}
+                          >
+                            {meeting.upcoming ? 'Upcoming' : 'Past'}
+                          </Badge>
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          <p>{new Date(meeting.start_time).toLocaleString()}</p>
+                          <p>Duration: {meeting.duration_minutes} minutes</p>
+                          <p>Organizer: {meeting.organizer?.name}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <Calendar className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                    <p>No scheduled meetings</p>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>
@@ -295,7 +562,7 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Deal Terms */}
-            <div className="bg-gray-50 p-5 space-y-4">
+            <div className="bg-gray-50 p-5 space-y-4 rounded-lg">
               <h3 className="font-semibold text-gray-900">Deal Terms</h3>
               <Separator className="bg-gray-300" />
               <div className="space-y-3">
@@ -329,47 +596,135 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
                     {deal.daysLeft > 0 ? deal.daysLeft : 'Closed'}
                   </span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Investors</span>
+                  <span className="font-medium text-gray-900">
+                    {deal.investors}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Interested</span>
+                  <span className="font-medium text-gray-900">
+                    {deal.interested}
+                  </span>
+                </div>
               </div>
             </div>
 
             {/* Founder Info */}
-            <div className="bg-gray-50 p-5">
+            <div className="bg-gray-50 p-5 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-4">
                 Meet the Founder
               </h3>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-emerald-100 flex items-center justify-center text-sm font-medium text-emerald-600">
-                  {deal.founderImage}
+                <div className="w-12 h-12 bg-emerald-100 flex items-center justify-center text-sm font-medium text-emerald-600 rounded-lg">
+                  {deal.founderImage ||
+                    deal.founderName.substring(0, 2).toUpperCase()}
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">
                     {deal.founderName}
                   </p>
-                  <p className="text-sm text-gray-600">{deal.founderTitle}</p>
+                  <p className="text-sm text-gray-600">
+                    {deal.founderTitle || 'Founder'}
+                  </p>
                 </div>
               </div>
               <div className="space-y-2">
-                <Button className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300">
+                <Button
+                  className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300"
+                  onClick={() => {
+                    /* Handle send message */
+                  }}
+                  disabled={!token || isLoading}
+                >
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Send Message
                 </Button>
-                <Button className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300">
+                <Button
+                  className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300"
+                  onClick={() => {
+                    /* Handle schedule meeting */
+                  }}
+                  disabled={!token || isLoading}
+                >
                   <Calendar className="w-4 h-4 mr-2" />
                   Schedule Meeting
                 </Button>
               </div>
             </div>
 
+            {/* Deal Room Info */}
+            {dealRoomMemberCount > 0 && (
+              <div className="bg-emerald-50 p-5 border border-emerald-200 rounded-lg">
+                <h3 className="font-semibold text-gray-900 mb-3">Deal Room</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-gray-600" />
+                    <span className="text-gray-600">
+                      {dealRoomMemberCount} members
+                    </span>
+                  </div>
+                  {!isMember && token && (
+                    <div className="mt-3">
+                      <Button
+                        className="w-full"
+                        onClick={handleJoinDealRoom}
+                        disabled={isLoading}
+                      >
+                        Join Deal Room
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Auth Required Warning */}
+            {!token && (
+              <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertCircle className="w-5 h-5 text-amber-600" />
+                  <h4 className="font-medium text-amber-900">
+                    Sign in required
+                  </h4>
+                </div>
+                <p className="text-sm text-amber-800">
+                  Please sign in to show interest, join deal rooms, or contact
+                  founders.
+                </p>
+              </div>
+            )}
+
             {/* CTA */}
             <div className="space-y-3">
               <Button
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
                 size="lg"
-                disabled={deal.status === 'Funded'}
+                disabled={
+                  deal.status === 'Funded' ||
+                  !token ||
+                  isLoading ||
+                  isInterested
+                }
+                onClick={handleShowInterest}
               >
-                {deal.status === 'Funded' ? 'Fully Funded' : 'Invest Now'}
+                {isInterested ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    Interest Shown
+                  </>
+                ) : deal.status === 'Funded' ? (
+                  'Fully Funded'
+                ) : (
+                  'Show Interest'
+                )}
               </Button>
-              <Button className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300">
+
+              <Button
+                className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300"
+                onClick={handleShareDeal}
+              >
                 <Share2 className="w-4 h-4 mr-2" />
                 Share Deal
               </Button>

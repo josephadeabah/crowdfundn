@@ -577,7 +577,9 @@ const PremiumUsers = () => {
                             No premium users found
                           </h3>
                           <p className="text-sm">
-                            {searchTerm || statusFilter !== 'all' || planFilter !== 'all-plans'
+                            {searchTerm ||
+                            statusFilter !== 'all' ||
+                            planFilter !== 'all-plans'
                               ? 'Try changing your filters'
                               : 'No users have premium subscriptions yet'}
                           </p>
