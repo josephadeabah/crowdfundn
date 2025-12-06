@@ -34,18 +34,28 @@ class DealRoom < ApplicationRecord
       .distinct
   }
   
+  # Update scope to use the correct enum value
   scope :public_deals, -> {
-    where(room_type: 'public', status: :active)  # Use string 'public' not symbol
+    where(room_type: :public_room, status: :active)  # Use symbol :public_room
       .includes(campaign: [:fundraiser, :rewards, :updates, :equity_investments])
   }
   
   # Helper methods to check room type
   def private?
-    room_type == 'private'
+    room_type == 'private_room'  # Compare with the key, not value
   end
   
   def public?
-    room_type == 'public'
+    room_type == 'public_room'   # Compare with the key, not value
+  end
+  
+  # Also update any other methods that check room_type
+  def public_room?
+    room_type == 'public_room'   # Consistent naming
+  end
+  
+  def private_room?
+    room_type == 'private_room'  # Consistent naming
   end
   
   def add_member(user, role = 'member')
