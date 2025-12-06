@@ -26,33 +26,18 @@ module Api
           page = params[:page].to_i || 1
           per_page = params[:per_page].to_i || 12
           
-          # First, try to get deals through deal rooms
+          # Fix: Query DealRoom directly instead of Campaign
           @deal_rooms = DealRoom.public_deals
                                 .includes(campaign: [:fundraiser, :equity_investments])
                                 .page(page)
                                 .per(per_page)
           
-          # If no deal rooms found, get live campaigns directly
-          if @deal_rooms.empty?
-            @campaigns = EquityCampaign.live
-                                      .includes(:fundraiser, :equity_investments)
-                                      .page(page)
-                                      .per(per_page)
-            
-            render json: {
-              deals: @campaigns.map { |campaign| campaign_deal_json(campaign) },
-              current_page: @campaigns.current_page,
-              total_pages: @campaigns.total_pages,
-              total_count: @campaigns.total_count
-            }, status: :ok
-          else
-            render json: {
-              deals: @deal_rooms.map { |dr| campaign_deal_json(dr.campaign) },
-              current_page: @deal_rooms.current_page,
-              total_pages: @deal_rooms.total_pages,
-              total_count: @deal_rooms.total_count
-            }, status: :ok
-          end
+          render json: {
+            deals: @deal_rooms.map { |dr| campaign_deal_json(dr.campaign) },
+            current_page: @deal_rooms.current_page,
+            total_pages: @deal_rooms.total_pages,
+            total_count: @deal_rooms.total_count
+          }, status: :ok
         rescue => e
           Rails.logger.error "Error in public_deals: #{e.message}\n#{e.backtrace.first(10).join("\n")}"
           render json: {
@@ -64,10 +49,10 @@ module Api
       
       # GET /api/v1/deal_rooms/stats
       def stats
-        total_deals = EquityCampaign.live.count
-        active_deals = EquityCampaign.live.where(equity_status: :live).count
-        total_raised = EquityCampaign.live.sum(:current_amount).to_f
-        avg_deal_size = EquityCampaign.live.average(:goal_amount).to_f
+        total_deals = Campaign.live.count
+        active_deals = Campaign.live.where(equity_status: :live).count
+        total_raised = Campaign.live.sum(:current_amount).to_f
+        avg_deal_size = Campaign.live.average(:goal_amount).to_f
         investor_count = EquityInvestment.successful.distinct.count(:user_id)
         
         render json: {
@@ -355,8 +340,8 @@ module Api
       end
       
       def calculate_success_rate
-        total_campaigns = EquityCampaign.count
-        successful_campaigns = EquityCampaign.where(equity_status: [:funded, :closed]).count
+        total_campaigns = Campaign.count
+        successful_campaigns = Campaign.where(equity_status: [:funded, :closed]).count
         
         return 0 if total_campaigns.zero?
         
