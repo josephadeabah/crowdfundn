@@ -10,10 +10,10 @@ class DealRoom < ApplicationRecord
   has_many :deal_room_messages, dependent: :destroy
   has_many :deal_room_meetings, dependent: :destroy
   
-  # FIX: Use the correct enum values that match what's in your database
+  # FIX: Use different key names that don't conflict with Ruby keywords
   enum :room_type, {
-    private: 'private',
-    public: 'public',
+    private_access: 'private',
+    public_access: 'public',
     syndicate: 'syndicate'
   }
   
@@ -36,17 +36,17 @@ class DealRoom < ApplicationRecord
   
   # Update scope to use the correct enum value
   scope :public_deals, -> {
-    where(room_type: :public, status: :active)
+    where(room_type: :public_access, status: :active)
       .includes(campaign: [:fundraiser, :equity_investments])
   }
   
   # Helper methods to check room type
   def private?
-    room_type == 'private'
+    room_type == 'private_access'
   end
   
   def public?
-    room_type == 'public'
+    room_type == 'public_access'
   end
   
   # Alias methods for compatibility
