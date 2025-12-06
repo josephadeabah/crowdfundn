@@ -120,21 +120,10 @@ export function DealRoom() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Header */}
       <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white">
-        <div className="absolute inset-0 bg-grid-emerald-100/50" />
-        <div className="relative max-w-7xl mx-auto px-4 py-12 md:py-20">
+        <div className="absolute inset-0 bg-gray-50" />
+        <div className="relative max-w-3xl mx-auto px-4 py-12 md:py-20">
           <div className="flex flex-col gap-6">
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-emerald-100 rounded-lg">
-                  <Briefcase className="w-6 h-6 text-emerald-600" />
-                </div>
-                <Badge
-                  variant="outline"
-                  className="bg-emerald-50 text-emerald-700"
-                >
-                  Private Access
-                </Badge>
-              </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
                 Private Deal Room
               </h1>
@@ -217,7 +206,7 @@ export function DealRoom() {
           />
 
           {/* Tabs */}
-          <div className="w-full">
+          <div className="max-w-3xl mx-auto">
             <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
               {['all', 'active', 'closing', 'new', 'funded'].map((tab) => {
                 const tabLabels = {
