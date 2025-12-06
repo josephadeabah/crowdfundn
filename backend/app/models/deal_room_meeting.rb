@@ -1,7 +1,7 @@
 # app/models/deal_room_meeting.rb
 class DealRoomMeeting < ApplicationRecord
   belongs_to :deal_room
-  belongs_to :organizer, class_name: 'User', foreign_key: 'user_id'
+  belongs_to :organizer, class_name: 'User', foreign_key: 'organizer_id'
   has_many :deal_room_meeting_participants, dependent: :destroy
   has_many :participants, through: :deal_room_meeting_participants, source: :user
   
