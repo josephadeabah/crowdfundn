@@ -26,18 +26,33 @@ module Api
           page = params[:page].to_i || 1
           per_page = params[:per_page].to_i || 12
           
-          # Fix: Query DealRoom directly instead of EquityCampaign
+          # First, try to get deals through deal rooms
           @deal_rooms = DealRoom.public_deals
                                 .includes(campaign: [:fundraiser, :equity_investments])
                                 .page(page)
                                 .per(per_page)
           
-          render json: {
-            deals: @deal_rooms.map { |dr| campaign_deal_json(dr.campaign) },
-            current_page: @deal_rooms.current_page,
-            total_pages: @deal_rooms.total_pages,
-            total_count: @deal_rooms.total_count
-          }, status: :ok
+          # If no deal rooms found, get live campaigns directly
+          if @deal_rooms.empty?
+            @campaigns = EquityCampaign.live
+                                      .includes(:fundraiser, :equity_investments)
+                                      .page(page)
+                                      .per(per_page)
+            
+            render json: {
+              deals: @campaigns.map { |campaign| campaign_deal_json(campaign) },
+              current_page: @campaigns.current_page,
+              total_pages: @campaigns.total_pages,
+              total_count: @campaigns.total_count
+            }, status: :ok
+          else
+            render json: {
+              deals: @deal_rooms.map { |dr| campaign_deal_json(dr.campaign) },
+              current_page: @deal_rooms.current_page,
+              total_pages: @deal_rooms.total_pages,
+              total_count: @deal_rooms.total_count
+            }, status: :ok
+          end
         rescue => e
           Rails.logger.error "Error in public_deals: #{e.message}\n#{e.backtrace.first(10).join("\n")}"
           render json: {
