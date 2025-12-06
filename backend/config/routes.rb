@@ -1,9 +1,47 @@
+# config/routes.rb
 Rails.application.routes.draw do
   # redirect to the detailed campaign page
   get 'campaign/:id', to: 'campaigns#show', as: 'campaign'
 
+  mount ActionCable.server => '/cable'
+
   namespace :api do
     namespace :v1 do
+      # ========== DEAL ROOM ROUTES ==========
+      resources :deal_rooms, only: [:index, :show] do
+        member do
+          get :documents
+          post :upload_document
+          get :conversations
+          post :create_conversation
+          get :meetings
+          post :create_meeting
+          post :join
+          post :show_interest
+        end
+        collection do
+          get :public_deals
+          get :stats
+          get :industries
+          get :stages
+        end
+      end
+      
+      # Deal Room Conversations
+      resources :deal_room_conversations, only: [:show, :update, :destroy] do
+        resources :deal_room_messages, only: [:index, :create, :update, :destroy]
+      end
+      
+      # Deal Room Meetings
+      resources :deal_room_meetings, only: [:show, :update, :destroy] do
+        member do
+          post :add_participant
+          delete :remove_participant
+          post :rsvp
+        end
+      end
+      
+      # ========== EXISTING ROUTES ==========
       namespace :members do
         # Premium subscription routes - UPDATED with cleaner structure
         resources :premium_plans, only: [:index]

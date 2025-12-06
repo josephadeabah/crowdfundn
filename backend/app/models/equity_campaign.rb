@@ -7,6 +7,7 @@ class EquityCampaign < Campaign
   has_many :founders, -> { where(campaign_team_members: { role: 'founder' }) },
            through: :campaign_team_members, source: :user
   has_one_attached :offering_memorandum_document
+  # has_one :deal_room, dependent: :destroy
 
   # Attributes
   attribute :company_name, :string
@@ -282,9 +283,44 @@ class EquityCampaign < Campaign
     "#{stock_type.humanize} Stock"
   end
 
+  def deal_room
+    @deal_room ||= super || create_deal_room(
+      name: "#{company_name} Deal Room",
+      user: fundraiser,
+      room_type: :public,
+      status: :active,
+      description: "Private deal room for #{company_name} investors"
+    )
+  end
+
+  def deal_room_info
+    return nil unless deal_room
+    
+    {
+      id: deal_room.id,
+      name: deal_room.name,
+      status: deal_room.status,
+      room_type: deal_room.room_type,
+      member_count: deal_room.member_count,
+      investor_count: investor_count,
+      interested_count: deal_room.interested_count,
+      meetings_count: deal_room.meetings_count,
+      available_documents: deal_room.available_documents.count,
+      conversations: deal_room.deal_room_conversations.public_channels.count
+    }
+  end
+
+  def create_or_update_deal_room(room_params)
+    if deal_room
+      deal_room.update(room_params)
+    else
+      DealRoom.create!(room_params.merge(campaign: self, user: fundraiser))
+    end
+  end
+
   # ========== SERIALIZATION METHODS ==========
   def as_json(options = {})
-    super.merge(
+    json = super.merge(
       type: 'EquityCampaign',
       total_investors: total_investors,
       company_info: {
@@ -352,6 +388,14 @@ class EquityCampaign < Campaign
         }
       }
     )
+    
+    # ADD THIS PART - Include deal room info when requested
+    if options[:include_deal_room]
+      json[:deal_room] = deal_room_info
+      json[:deal_room][:documents] = deal_room.available_documents.map(&:as_json) if deal_room
+    end
+    
+    json
   end
 
   # ========== VALIDATION HELPER METHODS ==========

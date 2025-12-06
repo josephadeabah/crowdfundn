@@ -21,6 +21,7 @@ class Campaign < ApplicationRecord
   has_many :archived_campaigns, dependent: :destroy
   has_many :archived_by_users, through: :archived_campaigns, source: :user
   has_many :reports, dependent: :destroy
+  has_one :deal_room, dependent: :destroy
 
   has_rich_text :description
 

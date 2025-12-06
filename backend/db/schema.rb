@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_28_150750) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_06_030504) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -325,6 +325,107 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_28_150750) do
     t.string "email"
     t.index ["campaign_id"], name: "index_comments_on_campaign_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "deal_room_conversations", force: :cascade do |t|
+    t.bigint "deal_room_id", null: false
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.boolean "private"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deal_room_id"], name: "index_deal_room_conversations_on_deal_room_id"
+    t.index ["private"], name: "index_deal_room_conversations_on_private"
+    t.index ["user_id"], name: "index_deal_room_conversations_on_user_id"
+  end
+
+  create_table "deal_room_documents", force: :cascade do |t|
+    t.bigint "deal_room_id", null: false
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.string "document_type"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deal_room_id"], name: "index_deal_room_documents_on_deal_room_id"
+    t.index ["document_type"], name: "index_deal_room_documents_on_document_type"
+    t.index ["user_id"], name: "index_deal_room_documents_on_user_id"
+  end
+
+  create_table "deal_room_meeting_participants", force: :cascade do |t|
+    t.bigint "deal_room_meeting_id", null: false
+    t.bigint "user_id", null: false
+    t.string "role"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deal_room_meeting_id", "user_id"], name: "index_meeting_participants_on_meeting_and_user", unique: true
+    t.index ["deal_room_meeting_id"], name: "index_deal_room_meeting_participants_on_deal_room_meeting_id"
+    t.index ["role"], name: "index_deal_room_meeting_participants_on_role"
+    t.index ["status"], name: "index_deal_room_meeting_participants_on_status"
+    t.index ["user_id"], name: "index_deal_room_meeting_participants_on_user_id"
+  end
+
+  create_table "deal_room_meetings", force: :cascade do |t|
+    t.bigint "deal_room_id", null: false
+    t.bigint "organizer_id", null: false
+    t.string "title"
+    t.text "description"
+    t.string "meeting_type"
+    t.string "status"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.string "meeting_link"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deal_room_id"], name: "index_deal_room_meetings_on_deal_room_id"
+    t.index ["meeting_type"], name: "index_deal_room_meetings_on_meeting_type"
+    t.index ["organizer_id"], name: "index_deal_room_meetings_on_organizer_id"
+    t.index ["start_time"], name: "index_deal_room_meetings_on_start_time"
+    t.index ["status"], name: "index_deal_room_meetings_on_status"
+  end
+
+  create_table "deal_room_memberships", force: :cascade do |t|
+    t.bigint "deal_room_id", null: false
+    t.bigint "user_id", null: false
+    t.string "role"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deal_room_id", "user_id"], name: "index_deal_room_memberships_on_deal_room_id_and_user_id", unique: true
+    t.index ["deal_room_id"], name: "index_deal_room_memberships_on_deal_room_id"
+    t.index ["role"], name: "index_deal_room_memberships_on_role"
+    t.index ["status"], name: "index_deal_room_memberships_on_status"
+    t.index ["user_id"], name: "index_deal_room_memberships_on_user_id"
+  end
+
+  create_table "deal_room_messages", force: :cascade do |t|
+    t.bigint "deal_room_conversation_id", null: false
+    t.bigint "user_id", null: false
+    t.text "content"
+    t.string "message_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_deal_room_messages_on_created_at"
+    t.index ["deal_room_conversation_id"], name: "index_deal_room_messages_on_deal_room_conversation_id"
+    t.index ["message_type"], name: "index_deal_room_messages_on_message_type"
+    t.index ["user_id"], name: "index_deal_room_messages_on_user_id"
+  end
+
+  create_table "deal_rooms", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.bigint "user_id", null: false
+    t.string "name"
+    t.text "description"
+    t.string "room_type"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_deal_rooms_on_campaign_id"
+    t.index ["room_type"], name: "index_deal_rooms_on_room_type"
+    t.index ["status"], name: "index_deal_rooms_on_status"
+    t.index ["user_id"], name: "index_deal_rooms_on_user_id"
   end
 
   create_table "deal_score_logs", force: :cascade do |t|
@@ -977,6 +1078,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_28_150750) do
   add_foreign_key "club_transfers", "users"
   add_foreign_key "comments", "campaigns"
   add_foreign_key "comments", "users"
+  add_foreign_key "deal_room_conversations", "deal_rooms"
+  add_foreign_key "deal_room_conversations", "users"
+  add_foreign_key "deal_room_documents", "deal_rooms"
+  add_foreign_key "deal_room_documents", "users"
+  add_foreign_key "deal_room_meeting_participants", "deal_room_meetings"
+  add_foreign_key "deal_room_meeting_participants", "users"
+  add_foreign_key "deal_room_meetings", "deal_rooms"
+  add_foreign_key "deal_room_meetings", "users", column: "organizer_id"
+  add_foreign_key "deal_room_memberships", "deal_rooms"
+  add_foreign_key "deal_room_memberships", "users"
+  add_foreign_key "deal_room_messages", "deal_room_conversations"
+  add_foreign_key "deal_room_messages", "users"
+  add_foreign_key "deal_rooms", "campaigns"
+  add_foreign_key "deal_rooms", "users"
   add_foreign_key "deal_score_logs", "campaigns"
   add_foreign_key "donations", "campaigns"
   add_foreign_key "donations", "users"
