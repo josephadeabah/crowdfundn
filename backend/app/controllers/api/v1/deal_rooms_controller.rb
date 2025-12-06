@@ -246,7 +246,18 @@ module Api
       private
       
       def set_deal_room
-        @deal_room = DealRoom.find(params[:id])
+        # Try to find by ID first (DealRoom ID)
+        @deal_room = DealRoom.find_by(id: params[:id])
+        
+        # If not found by DealRoom ID, try to find by Campaign ID
+        if @deal_room.nil?
+          @deal_room = DealRoom.find_by(campaign_id: params[:id])
+        end
+        
+        # If still not found, raise error
+        if @deal_room.nil?
+          raise ActiveRecord::RecordNotFound, "Couldn't find DealRoom with id or campaign_id=#{params[:id]}"
+        end
         
         unless @deal_room.public? || @deal_room.members.include?(@current_user) || @current_user.admin?
           render json: { error: 'Access denied' }, status: :forbidden
@@ -271,7 +282,7 @@ module Api
         }
       end
       
-      
+
       def campaign_deal_json(campaign)
         return nil unless campaign.present?
         
