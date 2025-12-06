@@ -39,7 +39,7 @@ export interface Deal {
     users?: number;
     mrr?: number;
   };
-  documents: DealDocument[];  // Changed from {name: string, type: string}[]
+  documents: DealDocument[]; // Changed from {name: string, type: string}[]
   interested: number;
   meetings: number;
   status: 'Active' | 'Closing Soon' | 'Funded' | 'New';

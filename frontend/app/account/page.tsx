@@ -190,7 +190,7 @@ const ProfileTabs = () => {
           component: <DealRoom />,
           description:
             'Access exclusive investment opportunities and connect with founders.',
-          badge: 'Soon',
+          badge: 'Dev',
           badgeColor: 'bg-yellow-100 text-yellow-800',
         },
       ],
