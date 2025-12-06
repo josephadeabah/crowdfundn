@@ -410,36 +410,38 @@ export function DealDetailModal({
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
                     <p className="text-gray-600 mt-2">Loading documents...</p>
                   </div>
-                ) : documents.length > 0 ? (
+                ) : (deal.documents && deal.documents.length > 0) ? (
                   <div className="space-y-3">
-                    {documents.map((doc, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer rounded-lg group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-emerald-100 flex items-center justify-center rounded-lg">
-                            <FileText className="w-5 h-5 text-emerald-600" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {doc.title || doc.name}
-                            </p>
-                            <p className="text-xs text-gray-600">
-                              {doc.document_type || doc.type} Document
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="bg-white hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => window.open(doc.file_url, '_blank')}
+                    {deal.documents.map((doc, index) => (
+                      doc.files && doc.files.map((file, fileIndex) => (
+                        <div
+                          key={`${index}-${fileIndex}`}
+                          className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer rounded-lg group"
                         >
-                          <Download className="w-4 h-4 mr-2" />
-                          Download
-                        </Button>
-                      </div>
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-emerald-100 flex items-center justify-center rounded-lg">
+                              <FileText className="w-5 h-5 text-emerald-600" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {doc.name}
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                {file.filename} • {file.human_size}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="bg-white hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => window.open(file.url, '_blank')}
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Download
+                          </Button>
+                        </div>
+                      ))
                     ))}
                   </div>
                 ) : (

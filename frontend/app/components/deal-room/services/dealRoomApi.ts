@@ -1,4 +1,20 @@
 // app/services/dealRoomApi.ts
+export interface DealDocument {
+  id: string;
+  name: string;
+  type: string;
+  files: Array<{
+    url: string;
+    filename: string;
+    content_type: string;
+    byte_size: number;
+    human_size: string;
+    uploaded_at: string;
+  }>;
+  required: boolean;
+  uploaded_at: string;
+}
+
 export interface Deal {
   id: string;
   companyName: string;
@@ -23,10 +39,7 @@ export interface Deal {
     users?: number;
     mrr?: number;
   };
-  documents: {
-    name: string;
-    type: string;
-  }[];
+  documents: DealDocument[];  // Changed from {name: string, type: string}[]
   interested: number;
   meetings: number;
   status: 'Active' | 'Closing Soon' | 'Funded' | 'New';
