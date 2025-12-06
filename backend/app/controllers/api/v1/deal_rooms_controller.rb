@@ -26,17 +26,17 @@ module Api
           page = params[:page].to_i || 1
           per_page = params[:per_page].to_i || 12
           
-          @campaigns = EquityCampaign.live
-                                    .includes(:fundraiser, :equity_investments, :deal_room)
-                                    .where(equity_status: [:approved, :live])
-                                    .page(page)
-                                    .per(per_page)
+          # Fix: Query DealRoom directly instead of EquityCampaign
+          @deal_rooms = DealRoom.public_deals
+                                .includes(campaign: [:fundraiser, :equity_investments])
+                                .page(page)
+                                .per(per_page)
           
           render json: {
-            deals: @campaigns.map { |c| campaign_deal_json(c) },
-            current_page: @campaigns.current_page,
-            total_pages: @campaigns.total_pages,
-            total_count: @campaigns.total_count
+            deals: @deal_rooms.map { |dr| campaign_deal_json(dr.campaign) },
+            current_page: @deal_rooms.current_page,
+            total_pages: @deal_rooms.total_pages,
+            total_count: @deal_rooms.total_count
           }, status: :ok
         rescue => e
           Rails.logger.error "Error in public_deals: #{e.message}\n#{e.backtrace.first(10).join("\n")}"
@@ -200,7 +200,7 @@ module Api
       
       # POST /api/v1/deal_rooms/:id/join
       def join
-        if @deal_room.public_room? || @current_user.admin?
+        if @deal_room.public? || @current_user.admin?
           membership = @deal_room.deal_room_memberships.find_or_initialize_by(user: @current_user)
           membership.status = :active
           membership.role = :member
@@ -248,7 +248,7 @@ module Api
       def set_deal_room
         @deal_room = DealRoom.find(params[:id])
         
-        unless @deal_room.public_room? || @deal_room.members.include?(@current_user) || @current_user.admin?
+        unless @deal_room.public? || @deal_room.members.include?(@current_user) || @current_user.admin?
           render json: { error: 'Access denied' }, status: :forbidden
         end
       end
@@ -265,14 +265,14 @@ module Api
           campaign: campaign_deal_json(campaign),
           member_count: deal_room.member_count.to_i,
           is_member: deal_room.members.include?(@current_user),
-          can_join: deal_room.public_room? && !deal_room.members.include?(@current_user),
+          can_join: deal_room.public? && !deal_room.members.include?(@current_user),
           created_at: deal_room.created_at,
           updated_at: deal_room.updated_at
         }
       end
       
       def campaign_deal_json(campaign)
-        return nil unless campaign.is_a?(EquityCampaign)
+        return nil unless campaign.present?
         
         # Helper method to format currency
         def format_currency(amount)

@@ -10,10 +10,10 @@ class DealRoom < ApplicationRecord
   has_many :deal_room_messages, dependent: :destroy
   has_many :deal_room_meetings, dependent: :destroy
   
-  # FIX: Change 'private' to something else or use _prefix
+  # FIX: Use the correct enum values that match what's in your database
   enum :room_type, {
-    private_room: 'private',    # Changed from 'private' to 'private_room'
-    public_room: 'public',      # Changed from 'public' to 'public_room' for consistency
+    private: 'private',
+    public: 'public',
     syndicate: 'syndicate'
   }
   
@@ -36,26 +36,26 @@ class DealRoom < ApplicationRecord
   
   # Update scope to use the correct enum value
   scope :public_deals, -> {
-    where(room_type: :public_room, status: :active)  # Use symbol :public_room
-      .includes(campaign: [:fundraiser, :rewards, :updates, :equity_investments])
+    where(room_type: :public, status: :active)
+      .includes(campaign: [:fundraiser, :equity_investments])
   }
   
   # Helper methods to check room type
   def private?
-    room_type == 'private_room'  # Compare with the key, not value
+    room_type == 'private'
   end
   
   def public?
-    room_type == 'public_room'   # Compare with the key, not value
+    room_type == 'public'
   end
   
-  # Also update any other methods that check room_type
+  # Alias methods for compatibility
   def public_room?
-    room_type == 'public_room'   # Consistent naming
+    public?
   end
   
   def private_room?
-    room_type == 'private_room'  # Consistent naming
+    private?
   end
   
   def add_member(user, role = 'member')
@@ -90,7 +90,7 @@ class DealRoom < ApplicationRecord
   def as_json(options = {})
     super(options.merge(
       only: [:id, :name, :description, :room_type, :status, :created_at, :updated_at],
-      methods: [:member_count, :investor_count, :interested_count, :meetings_count, :private_room?, :public_room?]
+      methods: [:member_count, :investor_count, :interested_count, :meetings_count, :private?, :public?]
     )).merge(
       campaign_id: campaign_id,
       user_id: user_id
