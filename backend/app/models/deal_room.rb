@@ -35,7 +35,7 @@ class DealRoom < ApplicationRecord
   }
   
   scope :public_deals, -> {
-    where(room_type: :public, status: :active)
+    where(room_type: :public_room, status: :active)
       .includes(campaign: [:fundraiser, :rewards, :updates, :equity_investments])
   }
   
