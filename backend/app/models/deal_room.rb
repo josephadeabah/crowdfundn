@@ -35,7 +35,7 @@ class DealRoom < ApplicationRecord
   }
   
   scope :public_deals, -> {
-    where(room_type: :public_room, status: :active)  # Updated to use :public_room
+    where(room_type: 'public', status: :active)  # Use string 'public' not symbol
       .includes(campaign: [:fundraiser, :rewards, :updates, :equity_investments])
   }
   
@@ -76,10 +76,11 @@ class DealRoom < ApplicationRecord
     campaign.investor_documents.where(document_type: ['pitch', 'financial_statement', 'business_plan', 'agreement'])
   end
   
+  # And update as_json:
   def as_json(options = {})
     super(options.merge(
       only: [:id, :name, :description, :room_type, :status, :created_at, :updated_at],
-      methods: [:member_count, :investor_count, :interested_count, :meetings_count, :private?, :public?]
+      methods: [:member_count, :investor_count, :interested_count, :meetings_count, :private_room?, :public_room?]
     )).merge(
       campaign_id: campaign_id,
       user_id: user_id

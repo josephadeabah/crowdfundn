@@ -22,29 +22,37 @@ module Api
       
       # GET /api/v1/deal_rooms/public_deals
       def public_deals
-        page = params[:page] || 1
-        per_page = params[:per_page] || 12
-        
-        @campaigns = EquityCampaign.live
-                                  .includes(:fundraiser, :equity_investments, :deal_room)
-                                  .where(equity_status: [:approved, :live])
-                                  .page(page)
-                                  .per(per_page)
-        
-        render json: {
-          deals: @campaigns.map { |c| campaign_deal_json(c) },
-          current_page: @campaigns.current_page,
-          total_pages: @campaigns.total_pages,
-          total_count: @campaigns.total_count
-        }, status: :ok
+        begin
+          page = params[:page].to_i || 1
+          per_page = params[:per_page].to_i || 12
+          
+          @campaigns = EquityCampaign.live
+                                    .includes(:fundraiser, :equity_investments, :deal_room)
+                                    .where(equity_status: [:approved, :live])
+                                    .page(page)
+                                    .per(per_page)
+          
+          render json: {
+            deals: @campaigns.map { |c| campaign_deal_json(c) },
+            current_page: @campaigns.current_page,
+            total_pages: @campaigns.total_pages,
+            total_count: @campaigns.total_count
+          }, status: :ok
+        rescue => e
+          Rails.logger.error "Error in public_deals: #{e.message}\n#{e.backtrace.first(10).join("\n")}"
+          render json: {
+            error: 'Failed to load deals',
+            message: e.message
+          }, status: :internal_server_error
+        end
       end
       
       # GET /api/v1/deal_rooms/stats
       def stats
         total_deals = EquityCampaign.live.count
         active_deals = EquityCampaign.live.where(equity_status: :live).count
-        total_raised = EquityCampaign.live.sum(:current_amount)
-        avg_deal_size = EquityCampaign.live.average(:goal_amount).to_i
+        total_raised = EquityCampaign.live.sum(:current_amount).to_f
+        avg_deal_size = EquityCampaign.live.average(:goal_amount).to_f
         investor_count = EquityInvestment.successful.distinct.count(:user_id)
         
         render json: {
@@ -192,7 +200,7 @@ module Api
       
       # POST /api/v1/deal_rooms/:id/join
       def join
-        if @deal_room.public? || @current_user.admin?
+        if @deal_room.public_room? || @current_user.admin?
           membership = @deal_room.deal_room_memberships.find_or_initialize_by(user: @current_user)
           membership.status = :active
           membership.role = :member
@@ -240,7 +248,7 @@ module Api
       def set_deal_room
         @deal_room = DealRoom.find(params[:id])
         
-        unless @deal_room.public? || @deal_room.members.include?(@current_user) || @current_user.admin?
+        unless @deal_room.public_room? || @deal_room.members.include?(@current_user) || @current_user.admin?
           render json: { error: 'Access denied' }, status: :forbidden
         end
       end
@@ -249,15 +257,15 @@ module Api
         campaign = deal_room.campaign
         
         {
-          id: deal_room.id,
-          name: deal_room.name,
-          description: deal_room.description,
-          room_type: deal_room.room_type,
-          status: deal_room.status,
+          id: deal_room.id.to_s,
+          name: deal_room.name.to_s,
+          description: deal_room.description.to_s,
+          room_type: deal_room.room_type.to_s,
+          status: deal_room.status.to_s,
           campaign: campaign_deal_json(campaign),
-          member_count: deal_room.member_count,
+          member_count: deal_room.member_count.to_i,
           is_member: deal_room.members.include?(@current_user),
-          can_join: deal_room.public? && !deal_room.members.include?(@current_user),
+          can_join: deal_room.public_room? && !deal_room.members.include?(@current_user),
           created_at: deal_room.created_at,
           updated_at: deal_room.updated_at
         }
@@ -266,40 +274,55 @@ module Api
       def campaign_deal_json(campaign)
         return nil unless campaign.is_a?(EquityCampaign)
         
+        # Helper method to format currency
+        def format_currency(amount)
+          return '$0' if amount.nil? || amount.zero?
+          
+          amount_int = amount.to_i
+          
+          if amount_int >= 1_000_000
+            "$#{(amount_int / 1_000_000.0).round(1)}M"
+          elsif amount_int >= 1_000
+            "$#{(amount_int / 1_000.0).round(1)}K"
+          else
+            "$#{amount_int}"
+          end
+        end
+        
         {
-          id: campaign.id,
-          companyName: campaign.company_name,
-          logo: campaign.company_name[0..1].upcase,
-          tagline: campaign.description&.to_plain_text&.truncate(100),
-          industry: campaign.category,
-          stage: campaign.funding_round_display || 'Seed',
-          targetRaise: campaign.goal_amount,
-          currentRaise: campaign.current_amount,
-          minInvestment: campaign.minimum_investment,
-          valuation: campaign.valuation,
-          investors: campaign.total_investors,
-          daysLeft: [campaign.remaining_days, 0].max,
-          founderName: campaign.fundraiser.full_name,
-          founderImage: campaign.fundraiser.full_name[0..1].upcase,
+          id: campaign.id.to_s,
+          companyName: campaign.company_name.to_s,
+          logo: campaign.company_name.to_s[0..1].upcase,
+          tagline: campaign.description&.to_plain_text&.truncate(100).to_s,
+          industry: campaign.category.to_s,
+          stage: campaign.funding_round_display.to_s.presence || 'Seed',
+          targetRaise: campaign.goal_amount.to_f,
+          currentRaise: campaign.current_amount.to_f,
+          minInvestment: campaign.minimum_investment.to_f,
+          valuation: campaign.valuation.to_f,
+          investors: campaign.total_investors.to_i,
+          daysLeft: [campaign.remaining_days.to_i, 0].max,
+          founderName: campaign.fundraiser&.full_name.to_s,
+          founderImage: campaign.fundraiser&.full_name.to_s[0..1].upcase,
           founderTitle: 'Founder & CEO',
           highlights: [
-            "Valuation: $#{campaign.valuation.to_i.to_s(:delimited)}",
-            "Equity offered: #{campaign.equity_offered}%",
-            "Minimum investment: $#{campaign.minimum_investment.to_i.to_s(:delimited)}"
+            "Valuation: #{format_currency(campaign.valuation)}",
+            "Equity offered: #{campaign.equity_offered.to_f}%",
+            "Minimum investment: #{format_currency(campaign.minimum_investment)}"
           ],
-          description: campaign.description&.to_plain_text,
+          description: campaign.description&.to_plain_text.to_s,
           metrics: {
-            revenue: campaign.current_amount,
+            revenue: campaign.current_amount.to_f,
             growth: campaign.percentage_raised.to_i
           },
-          documents: campaign.investor_documents.map do |doc|
+          documents: Array(campaign.investor_documents).map do |doc|
             {
-              name: doc.display_name,
-              type: doc.document_type
+              name: doc.display_name.to_s,
+              type: doc.document_type.to_s
             }
           end,
-          interested: campaign.subscriptions.count,
-          meetings: campaign.deal_room&.deal_room_meetings&.count || 0,
+          interested: campaign.subscriptions.count.to_i,
+          meetings: campaign.deal_room&.deal_room_meetings&.count.to_i || 0,
           status: campaign_status_for_deal_room(campaign)
         }
       end
