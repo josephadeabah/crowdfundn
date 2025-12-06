@@ -185,6 +185,7 @@ export function DealRoom() {
               variant="outline"
               onClick={handleRefresh}
               disabled={isLoading}
+              className="rounded-none border border-gray-50"
             >
               <Loader2
                 className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
