@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/components/ui/select';
+import { deslugify } from '@/app/utils/helpers/categories';
 
 interface DealFiltersProps {
   searchQuery: string;
@@ -62,7 +63,7 @@ export function DealFilters({
             <SelectContent>
               {industries.map((industry) => (
                 <SelectItem key={industry} value={industry}>
-                  {industry}
+                  {deslugify(industry)}
                 </SelectItem>
               ))}
             </SelectContent>
