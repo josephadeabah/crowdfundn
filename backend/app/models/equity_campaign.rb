@@ -288,7 +288,7 @@ class EquityCampaign < Campaign
     @deal_room ||= super || create_deal_room(
       name: "#{company_name} Deal Room",
       user: fundraiser,
-      room_type: :public,
+      room_type: :public_access,  # Changed from :public to :public_access
       status: :active,
       description: "Private deal room for #{company_name} investors"
     )
@@ -637,13 +637,19 @@ class EquityCampaign < Campaign
   def create_deal_room_if_needed
     return if deal_room.present?
     
-    DealRoom.create!(
-      campaign: self,
-      user: fundraiser,
-      name: "#{company_name} Deal Room",
-      description: "Investment deal room for #{company_name}",
-      room_type: :public_access, # This will save as 'public' in database
-      status: :active
-    )
+    begin
+      DealRoom.create!(
+        campaign: self,
+        user: fundraiser,
+        name: "#{company_name} Deal Room",
+        description: "Investment deal room for #{company_name}",
+        room_type: :public_access,
+        status: :active
+      )
+    rescue => e
+      Rails.logger.error "Failed to create deal room for EquityCampaign #{id}: #{e.message}"
+      # Don't raise error in callback to prevent campaign creation from failing
+    end
   end
+
 end
