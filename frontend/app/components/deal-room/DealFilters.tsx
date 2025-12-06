@@ -57,7 +57,7 @@ export function DealFilters({
             onValueChange={onIndustryChange}
             disabled={isLoading}
           >
-            <SelectTrigger className="w-[160px] bg-white border border-gray-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+            <SelectTrigger className="w-[160px] bg-white border border-gray-50 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
               <SelectValue placeholder="Industry" />
             </SelectTrigger>
             <SelectContent>
