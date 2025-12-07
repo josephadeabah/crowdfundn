@@ -544,7 +544,7 @@ export function DealDetailModal({
                     {(isMember || token) && (
                       <div className="mt-4">
                         <Button
-                          className="w-full "
+                          className="w-full bg-white hover:bg-gray-50 text-gray-900 border border-gray-100"
                           variant="outline"
                           onClick={handleStartConversation}
                           disabled={isLoading}
