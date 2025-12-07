@@ -72,8 +72,7 @@ module PaystackWebhook::Handlers
           # Set as COMMITTED instead of SUCCESSFUL to allow cancellation
           investment.update!(status: EquityInvestment::STATUS_COMMITTED)
           
-          # IMPORTANT: Do NOT update transferred_amount here
-          # Wait until the investment is finalized (after 48-hour window)
+          # Don't update campaign totals yet - wait until cancellation window expires
           
           create_pledges_from_rewards(investment, metadata)
           

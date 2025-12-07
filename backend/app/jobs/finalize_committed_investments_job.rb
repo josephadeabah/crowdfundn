@@ -20,8 +20,7 @@ class FinalizeCommittedInvestmentsJob < ApplicationJob
             total_equity_invested: campaign.total_equity_invested + investment.net_amount
           )
           
-          # Use force: true to bypass transfer lock for finalized investments
-          campaign.update_transferred_amount(investment.net_amount, force: true)
+          campaign.update_transferred_amount(investment.net_amount)
         end
         
         campaign_identifier = campaign.slug || campaign.id
