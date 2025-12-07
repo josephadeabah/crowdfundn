@@ -334,7 +334,7 @@ class EquityInvestment < ApplicationRecord
       # NEW: Add cancellation-related fields for frontend
       can_be_cancelled: can_be_cancelled?,
       cancel_window_expires_at: cancel_window_expires_at,
-      time_remaining_for_cancellation: time_remaining_for_cancellation,
+      time_remaining_for_cancellation: 1.minute.from_now, # time_remaining_for_cancellation
       campaign: {
         id: campaign.id,
         title: campaign.title,
