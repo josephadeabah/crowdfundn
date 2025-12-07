@@ -50,7 +50,7 @@ import ToastComponent from '@/app/components/toast/Toast';
 import Pagination from '@/app/components/pagination/Pagination';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { Progress } from '@/app/components/ui/progress';
-import { Separator } from '@/app/components/ui/seperator';
+import { Separator } from '@/app/components/ui/separator';
 
 const KYCReview = () => {
   const {

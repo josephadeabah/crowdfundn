@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Eye } from 'lucide-react';
-import { Separator } from '../ui/seperator';
+import { Separator } from '../ui/separator';
 
 interface CampaignSidebarProps {
   title: string;

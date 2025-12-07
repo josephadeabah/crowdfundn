@@ -13,7 +13,7 @@ import {
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Progress } from '@/app/components/ui/progress';
-import { Separator } from '@/app/components/ui/seperator';
+import { Separator } from '@/app/components/ui/separator';
 import {
   Tabs,
   TabsContent,

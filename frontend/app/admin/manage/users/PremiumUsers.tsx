@@ -49,7 +49,7 @@ import {
 } from '@/app/components/ui/tooltip';
 import { Progress } from '@/app/components/ui/progress';
 import { Label } from '@/app/components/ui/label';
-import { Separator } from '@/app/components/ui/seperator';
+import { Separator } from '@/app/components/ui/separator';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import {
   Search,

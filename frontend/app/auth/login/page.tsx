@@ -15,7 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
-import { Separator } from '@/app/components/ui/seperator';
+import { Separator } from '@/app/components/ui/separator';
 import { ArrowLeft } from 'lucide-react';
 
 const LoginPage = () => {

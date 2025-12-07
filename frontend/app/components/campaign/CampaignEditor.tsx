@@ -13,7 +13,7 @@ import RichTextEditor from '@/app/components/ui/RichTextEditor';
 import TemplateSelector from '@/app/components/ui/TemplateSelector';
 import { CampaignTemplate } from '@/app/lib/campaign-templates';
 import { toast } from 'sonner';
-import { Separator } from '../ui/seperator';
+import { Separator } from '../ui/separator';
 import { useDropzone } from 'react-dropzone';
 import { FiX } from 'react-icons/fi';
 import { FormErrors } from './CampaignCreator';
