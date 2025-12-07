@@ -236,7 +236,7 @@ export function DealDetailModal({
     <Modal
       isOpen={!!deal}
       onClose={onClose}
-      size="xxxlarge"
+      size="huge"
       closeOnBackdropClick={true}
     >
       {/* Header */}

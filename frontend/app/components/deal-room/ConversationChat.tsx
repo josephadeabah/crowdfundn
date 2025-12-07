@@ -666,7 +666,7 @@ export function ConversationChat({
                 setNewMessage(e.target.value);
                 handleTyping();
               }}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               placeholder="Type your message..."
               className="pr-10"
               disabled={isSending}
