@@ -454,9 +454,12 @@ export function DealDetailModal({
                     <h3 className="font-semibold text-gray-900 mb-2">
                       About {deal.companyName}
                     </h3>
-                    <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                      {deal.description}
-                    </p>
+                    <p
+                      className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-line"
+                      dangerouslySetInnerHTML={{
+                        __html: deal.description,
+                      }}
+                    />
                   </div>
 
                   {/* Highlights */}
