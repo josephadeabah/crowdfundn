@@ -1,4 +1,5 @@
 // app/components/deal-room/DealRoom.tsx
+'use client';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Briefcase, TrendingUp, Sparkles, Loader2 } from 'lucide-react';
 import { DealFilters } from './DealFilters';

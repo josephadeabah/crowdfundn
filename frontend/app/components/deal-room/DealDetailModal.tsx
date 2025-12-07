@@ -76,7 +76,9 @@ export function DealDetailModal({
   const [activeTab, setActiveTab] = useState('overview');
   const [isInterested, setIsInterested] = useState(false);
   const [isMember, setIsMember] = useState(false);
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null); // ADDED
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    string | null
+  >(null); // ADDED
 
   useEffect(() => {
     if (deal) {
@@ -165,13 +167,13 @@ export function DealDetailModal({
       setIsLoading(true);
       const result = await createConversation(deal.id, title);
       toast.success('Conversation created successfully!');
-      
+
       // Select the newly created conversation
       if (result?.conversation?.id) {
         setSelectedConversationId(result.conversation.id);
         setActiveTab('chat'); // Switch to chat tab
       }
-      
+
       loadAdditionalData(); // Refresh conversations list
     } catch (error) {
       console.error('Failed to create conversation:', error);
@@ -209,7 +211,7 @@ export function DealDetailModal({
       toast.error('Please login to send a message');
       return;
     }
-    
+
     const conversationTitle = `Direct message with ${deal.founderName}`;
     handleStartConversation();
   };
@@ -560,22 +562,26 @@ export function DealDetailModal({
                   <div className="border rounded-lg overflow-hidden">
                     <DealRoomChat
                       dealRoomId={dealRoomId}
-                      initialConversationId={selectedConversationId || undefined}
+                      initialConversationId={
+                        selectedConversationId || undefined
+                      }
                     />
                   </div>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     <AlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-400" />
                     <p className="mb-4">
-                      {!token 
-                        ? 'Please sign in to access the chat' 
+                      {!token
+                        ? 'Please sign in to access the chat'
                         : 'Join the deal room to access conversations'}
                     </p>
                     {!token ? (
-                      <Button onClick={() => {
-                        // This would redirect to login
-                        toast.info('Please sign in first');
-                      }}>
+                      <Button
+                        onClick={() => {
+                          // This would redirect to login
+                          toast.info('Please sign in first');
+                        }}
+                      >
                         Sign In
                       </Button>
                     ) : (
@@ -624,7 +630,9 @@ export function DealDetailModal({
                               variant="outline"
                               size="sm"
                               className="mt-2"
-                              onClick={() => window.open(meeting.meeting_link, '_blank')}
+                              onClick={() =>
+                                window.open(meeting.meeting_link, '_blank')
+                              }
                             >
                               Join Meeting
                             </Button>

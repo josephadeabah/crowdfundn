@@ -16,7 +16,7 @@ interface DealRoomChannelOptions {
 
 export const useDealRoomChannel = (
   dealRoomId: string | null,
-  options: DealRoomChannelOptions = {}
+  options: DealRoomChannelOptions = {},
 ) => {
   const { token } = useAuth();
   const [isConnected, setIsConnected] = useState(false);
@@ -26,13 +26,13 @@ export const useDealRoomChannel = (
 
   const getWebSocketURL = useCallback(() => {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    
+
     // Use environment variable or fallback
     if (process.env.NEXT_PUBLIC_NODE_ENV === 'development') {
       const railsPort = process.env.NEXT_PUBLIC_RAILS_PORT || '3000';
       return `${protocol}//${window.location.hostname}:${railsPort}/cable`;
     }
-    
+
     const host = process.env.NEXT_PUBLIC_WS_HOST || window.location.host;
     return `${protocol}//${host}/cable`;
   }, []);
@@ -54,43 +54,43 @@ export const useDealRoomChannel = (
     newSocket.onopen = () => {
       console.log('WebSocket connected to DealRoomChannel');
       setIsConnected(true);
-      
+
       // Subscribe to deal room channel
       const subscriptionMsg = {
         command: 'subscribe',
         identifier: JSON.stringify({
           channel: 'DealRoomChannel',
-          id: dealRoomId
-        })
+          id: dealRoomId,
+        }),
       };
-      
+
       newSocket.send(JSON.stringify(subscriptionMsg));
-      
+
       // Start ping interval
       pingIntervalRef.current = setInterval(() => {
         if (newSocket.readyState === WebSocket.OPEN) {
           newSocket.send(JSON.stringify({ type: 'ping' }));
         }
       }, 30000);
-      
+
       options.onConnected?.();
     };
 
     newSocket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        
+
         // Handle subscription confirmation
         if (data.type === 'confirm_subscription') {
           console.log('Subscribed to DealRoomChannel');
           return;
         }
-        
+
         // Handle pings
         if (data.type === 'ping' || data.type === 'welcome') {
           return;
         }
-        
+
         // Handle actual messages - ActionCable format
         if (data.message) {
           switch (data.message.type) {
@@ -132,7 +132,7 @@ export const useDealRoomChannel = (
       setIsConnected(false);
       clearInterval(pingIntervalRef.current);
       options.onDisconnected?.();
-      
+
       // Attempt to reconnect after 5 seconds
       reconnectTimeoutRef.current = setTimeout(() => {
         if (dealRoomId && token) {
@@ -160,91 +160,99 @@ export const useDealRoomChannel = (
     setIsConnected(false);
   }, [socket]);
 
-  const sendMessage = useCallback((
-    conversationId: string,
-    content: string,
-    messageType: string = 'text'
-  ) => {
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
-      console.error('WebSocket not connected');
-      return false;
-    }
+  const sendMessage = useCallback(
+    (conversationId: string, content: string, messageType: string = 'text') => {
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.error('WebSocket not connected');
+        return false;
+      }
 
-    const message = {
-      command: 'message',
-      identifier: JSON.stringify({
-        channel: 'DealRoomChannel',
-        id: dealRoomId
-      }),
-      data: JSON.stringify({
-        action: 'send_message',
-        conversation_id: conversationId,
-        content: content,
-        message_type: messageType
-      })
-    };
+      const message = {
+        command: 'message',
+        identifier: JSON.stringify({
+          channel: 'DealRoomChannel',
+          id: dealRoomId,
+        }),
+        data: JSON.stringify({
+          action: 'send_message',
+          conversation_id: conversationId,
+          content: content,
+          message_type: messageType,
+        }),
+      };
 
-    socket.send(JSON.stringify(message));
-    return true;
-  }, [socket, dealRoomId]);
+      socket.send(JSON.stringify(message));
+      return true;
+    },
+    [socket, dealRoomId],
+  );
 
-  const startTyping = useCallback((conversationId: string) => {
-    if (!socket || socket.readyState !== WebSocket.OPEN) return false;
+  const startTyping = useCallback(
+    (conversationId: string) => {
+      if (!socket || socket.readyState !== WebSocket.OPEN) return false;
 
-    const message = {
-      command: 'message',
-      identifier: JSON.stringify({
-        channel: 'DealRoomChannel',
-        id: dealRoomId
-      }),
-      data: JSON.stringify({
-        action: 'typing',
-        conversation_id: conversationId
-      })
-    };
+      const message = {
+        command: 'message',
+        identifier: JSON.stringify({
+          channel: 'DealRoomChannel',
+          id: dealRoomId,
+        }),
+        data: JSON.stringify({
+          action: 'typing',
+          conversation_id: conversationId,
+        }),
+      };
 
-    socket.send(JSON.stringify(message));
-    return true;
-  }, [socket, dealRoomId]);
+      socket.send(JSON.stringify(message));
+      return true;
+    },
+    [socket, dealRoomId],
+  );
 
-  const updateMessage = useCallback((messageId: string, content: string) => {
-    if (!socket || socket.readyState !== WebSocket.OPEN) return false;
+  const updateMessage = useCallback(
+    (messageId: string, content: string) => {
+      if (!socket || socket.readyState !== WebSocket.OPEN) return false;
 
-    const message = {
-      command: 'message',
-      identifier: JSON.stringify({
-        channel: 'DealRoomChannel',
-        id: dealRoomId
-      }),
-      data: JSON.stringify({
-        action: 'update_message',
-        message_id: messageId,
-        content: content
-      })
-    };
+      const message = {
+        command: 'message',
+        identifier: JSON.stringify({
+          channel: 'DealRoomChannel',
+          id: dealRoomId,
+        }),
+        data: JSON.stringify({
+          action: 'update_message',
+          message_id: messageId,
+          content: content,
+        }),
+      };
 
-    socket.send(JSON.stringify(message));
-    return true;
-  }, [socket, dealRoomId]);
+      socket.send(JSON.stringify(message));
+      return true;
+    },
+    [socket, dealRoomId],
+  );
 
-  const deleteMessage = useCallback((messageId: string) => {
-    if (!socket || socket.readyState !== WebSocket.OPEN) return false;
+  const deleteMessage = useCallback(
+    (messageId: string) => {
+      if (!socket || socket.readyState !== WebSocket.OPEN) return false;
 
-    const message = {
-      command: 'message',
-      identifier: JSON.stringify({
-        channel: 'DealRoomChannel',
-        id: dealRoomId
-      }),
-      data: JSON.stringify({
-        action: 'delete_message',
-        message_id: messageId
-      })
-    };
+      const message = {
+        command: 'message',
+        identifier: JSON.stringify({
+          channel: 'DealRoomChannel',
+          id: dealRoomId,
+        }),
+        data: JSON.stringify({
+          action: 'delete_message',
+          message_id: messageId,
+        }),
+      };
 
-    socket.send(JSON.stringify(message));
-    return true;
-  }, [socket, dealRoomId]);
+      socket.send(JSON.stringify(message));
+      return true;
+    },
+    [socket, dealRoomId],
+  );
 
   // Connect on mount and when dependencies change
   useEffect(() => {
@@ -266,6 +274,6 @@ export const useDealRoomChannel = (
     updateMessage,
     deleteMessage,
     disconnect,
-    reconnect: connect
+    reconnect: connect,
   };
 };

@@ -1,86 +1,100 @@
-import React, { useState, useEffect } from 'react'
-import { Search, MessageSquare, Users, Lock, Plus, Calendar, FileText } from 'lucide-react'
-import { Input } from '@/app/components/ui/input'
-import { Button } from '@/app/components/ui/button'
-import { Badge } from '@/app/components/ui/badge'
-import { ScrollArea } from '@/app/components/ui/scroll-area'
-import { formatDistanceToNow } from 'date-fns'
-import { useAuth } from '@/app/context/auth/AuthContext'
+import React, { useState, useEffect } from 'react';
+import {
+  Search,
+  MessageSquare,
+  Users,
+  Lock,
+  Plus,
+  Calendar,
+  FileText,
+} from 'lucide-react';
+import { Input } from '@/app/components/ui/input';
+import { Button } from '@/app/components/ui/button';
+import { Badge } from '@/app/components/ui/badge';
+import { ScrollArea } from '@/app/components/ui/scroll-area';
+import { formatDistanceToNow } from 'date-fns';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface Conversation {
-  id: string
-  title: string
-  private: boolean
-  created_at: string
-  updated_at: string
-  message_count: number
-  unread_count: number
+  id: string;
+  title: string;
+  private: boolean;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+  unread_count: number;
   last_message?: {
-    content: string
-    created_at: string
+    content: string;
+    created_at: string;
     user: {
-      full_name: string
-    }
-  }
+      full_name: string;
+    };
+  };
   user: {
-    id: string
-    full_name: string
-  }
+    id: string;
+    full_name: string;
+  };
 }
 
 interface ConversationsListProps {
-  dealRoomId: string
-  onSelectConversation: (conversation: Conversation) => void
-  onCreateConversation: () => void
+  dealRoomId: string;
+  onSelectConversation: (conversation: Conversation) => void;
+  onCreateConversation: () => void;
 }
 
 export function ConversationsList({
   dealRoomId,
   onSelectConversation,
-  onCreateConversation
+  onCreateConversation,
 }: ConversationsListProps) {
-  const { token } = useAuth()
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
+  const { token } = useAuth();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetchConversations()
-  }, [dealRoomId, token])
+    fetchConversations();
+  }, [dealRoomId, token]);
 
   const fetchConversations = async () => {
     try {
-      setIsLoading(true)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/deal_rooms/${dealRoomId}/conversations`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      
+      setIsLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/deal_rooms/${dealRoomId}/conversations`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
       if (response.ok) {
-        const data = await response.json()
-        setConversations(data.conversations || [])
+        const data = await response.json();
+        setConversations(data.conversations || []);
       }
     } catch (error) {
-      console.error('Failed to fetch conversations:', error)
+      console.error('Failed to fetch conversations:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const filteredConversations = conversations.filter(conv =>
-    conv.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    conv.last_message?.content.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredConversations = conversations.filter(
+    (conv) =>
+      conv.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conv.last_message?.content
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()),
+  );
 
   const formatTime = (dateString: string) => {
     try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true })
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
     } catch {
-      return dateString
+      return dateString;
     }
-  }
+  };
 
   return (
     <div className="flex flex-col h-full border-r">
@@ -97,7 +111,7 @@ export function ConversationsList({
             New
           </Button>
         </div>
-        
+
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           <Input
@@ -145,7 +159,7 @@ export function ConversationsList({
                         <Lock className="w-3 h-3 text-gray-500 flex-shrink-0" />
                       )}
                     </div>
-                    
+
                     {conversation.last_message ? (
                       <p className="text-sm text-gray-600 truncate">
                         <span className="font-medium">
@@ -154,12 +168,10 @@ export function ConversationsList({
                         {conversation.last_message.content}
                       </p>
                     ) : (
-                      <p className="text-sm text-gray-500">
-                        No messages yet
-                      </p>
+                      <p className="text-sm text-gray-500">No messages yet</p>
                     )}
                   </div>
-                  
+
                   <div className="flex flex-col items-end gap-1 ml-2">
                     <span className="text-xs text-gray-500 whitespace-nowrap">
                       {formatTime(conversation.updated_at)}
@@ -171,7 +183,7 @@ export function ConversationsList({
                     )}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
                     <MessageSquare className="w-3 h-3" />
@@ -202,24 +214,16 @@ export function ConversationsList({
             <MessageSquare className="w-4 h-4 mb-1" />
             <span className="text-xs">New Chat</span>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-col h-auto py-2"
-          >
+          <Button variant="ghost" size="sm" className="flex-col h-auto py-2">
             <Calendar className="w-4 h-4 mb-1" />
             <span className="text-xs">Schedule</span>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-col h-auto py-2"
-          >
+          <Button variant="ghost" size="sm" className="flex-col h-auto py-2">
             <FileText className="w-4 h-4 mb-1" />
             <span className="text-xs">Documents</span>
           </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }

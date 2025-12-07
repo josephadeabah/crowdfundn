@@ -1,54 +1,55 @@
-import React, { useState } from 'react'
-import { ConversationsList } from './ConversationsList'
-import { ConversationChat } from './ConversationChat'
-import { CreateConversationModal } from './CreateConversationModal'
-import { Button } from '../ui/button'
-import { MessageSquare } from 'lucide-react'
+import React, { useState } from 'react';
+import { ConversationsList } from './ConversationsList';
+import { ConversationChat } from './ConversationChat';
+import { CreateConversationModal } from './CreateConversationModal';
+import { Button } from '../ui/button';
+import { MessageSquare } from 'lucide-react';
 
 interface Conversation {
-  id: string
-  title: string
-  private: boolean
-  created_at: string
-  updated_at: string
-  message_count: number
-  unread_count: number
+  id: string;
+  title: string;
+  private: boolean;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+  unread_count: number;
   user: {
-    id: string
-    full_name: string
-  }
+    id: string;
+    full_name: string;
+  };
 }
 
 interface DealRoomChatProps {
-  dealRoomId: string
-  initialConversationId?: string
+  dealRoomId: string;
+  initialConversationId?: string;
 }
 
 export function DealRoomChat({
   dealRoomId,
-  initialConversationId
+  initialConversationId,
 }: DealRoomChatProps) {
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [isMobileView, setIsMobileView] = useState(false)
+  const [selectedConversation, setSelectedConversation] =
+    useState<Conversation | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
 
   // Handle conversation selection
   const handleSelectConversation = (conversation: Conversation) => {
-    setSelectedConversation(conversation)
-    setIsMobileView(true)
-  }
+    setSelectedConversation(conversation);
+    setIsMobileView(true);
+  };
 
   // Handle new conversation creation
   const handleConversationCreated = (conversation: Conversation) => {
-    setSelectedConversation(conversation)
-    setIsCreateModalOpen(false)
-    setIsMobileView(true)
-  }
+    setSelectedConversation(conversation);
+    setIsCreateModalOpen(false);
+    setIsMobileView(true);
+  };
 
   // Handle back to list on mobile
   const handleBackToList = () => {
-    setIsMobileView(false)
-  }
+    setIsMobileView(false);
+  };
 
   return (
     <div className="h-[600px] flex bg-white border rounded-lg overflow-hidden">
@@ -120,5 +121,5 @@ export function DealRoomChat({
         onConversationCreated={handleConversationCreated}
       />
     </div>
-  )
+  );
 }
