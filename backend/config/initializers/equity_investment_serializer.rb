@@ -22,7 +22,7 @@ class EquityInvestmentSerializer
       can_be_cancelled: @investment.can_be_cancelled?,
       cancel_window_expires_at: @investment.cancel_window_expires_at,
       committed_at: @investment.committed_at,
-      time_remaining_for_cancellation: 1.minute.from_now, # @investment.time_remaining_for_cancellation NEW: Added for countdown timer
+      time_remaining_for_cancellation: @investment.time_remaining_for_cancellation, # NEW: Added for countdown timer
       campaign: {
         id: @investment.campaign.id,
         title: @investment.campaign.title,
