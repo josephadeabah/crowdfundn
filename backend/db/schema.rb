@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_06_030504) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_07_132124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -398,6 +398,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_06_030504) do
     t.index ["role"], name: "index_deal_room_memberships_on_role"
     t.index ["status"], name: "index_deal_room_memberships_on_status"
     t.index ["user_id"], name: "index_deal_room_memberships_on_user_id"
+  end
+
+  create_table "deal_room_message_reads", force: :cascade do |t|
+    t.bigint "deal_room_message_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deal_room_message_id", "user_id"], name: "index_message_reads_on_message_and_user", unique: true
+    t.index ["deal_room_message_id"], name: "index_deal_room_message_reads_on_deal_room_message_id"
+    t.index ["user_id"], name: "index_deal_room_message_reads_on_user_id"
   end
 
   create_table "deal_room_messages", force: :cascade do |t|
@@ -1088,6 +1099,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_06_030504) do
   add_foreign_key "deal_room_meetings", "users", column: "organizer_id"
   add_foreign_key "deal_room_memberships", "deal_rooms"
   add_foreign_key "deal_room_memberships", "users"
+  add_foreign_key "deal_room_message_reads", "deal_room_messages"
+  add_foreign_key "deal_room_message_reads", "users"
   add_foreign_key "deal_room_messages", "deal_room_conversations"
   add_foreign_key "deal_room_messages", "users"
   add_foreign_key "deal_rooms", "campaigns"

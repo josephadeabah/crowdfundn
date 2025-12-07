@@ -30,6 +30,9 @@ Rails.application.routes.draw do
       # Deal Room Conversations
       resources :deal_room_conversations, only: [:show, :update, :destroy] do
         resources :deal_room_messages, only: [:index, :create, :update, :destroy]
+        member do
+          post :mark_as_read
+        end
       end
       
       # Deal Room Meetings
