@@ -131,7 +131,7 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
           <div className="flex items-start gap-3">
             <FaInfoCircle className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm text-blue-600 font-medium mb-1">
+              <p className="text-xs text-blue-600 font-medium mb-1">
                 Important Notice
               </p>
               <p className="text-xs text-blue-500">
