@@ -22,7 +22,7 @@ import {
 } from '@/app/components/ui/tabs';
 import Modal from '@/app/components/modal/Modal';
 import { useState, useEffect } from 'react';
-import AlertPopup from '@/app/components/alertpopup/AlertPopup'; // Updated import
+import AlertPopup from '@/app/components/alertpopup/AlertPopup';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { Deal } from './services/dealRoomApi';
 import { DealRoomChat } from './DealRoomChat';
@@ -88,6 +88,11 @@ export function DealDetailModal({
     'info',
   );
   const [alertAction, setAlertAction] = useState<(() => void) | null>(null);
+
+  // Conversation title input state
+  const [showConversationInput, setShowConversationInput] = useState(false);
+  const [conversationTitle, setConversationTitle] = useState('');
+  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
 
   useEffect(() => {
     if (deal) {
@@ -188,7 +193,7 @@ export function DealDetailModal({
     }
   };
 
-  const handleStartConversation = async () => {
+  const handleStartConversation = () => {
     if (!deal || !token) {
       showAlertMessage(
         'Login Required',
@@ -198,25 +203,37 @@ export function DealDetailModal({
       return;
     }
 
+    // Show the conversation title input modal
+    setShowConversationInput(true);
+    setConversationTitle('');
+  };
+
+  const confirmStartConversation = async () => {
+    if (!conversationTitle.trim()) {
+      showAlertMessage('Error', 'Please enter a conversation title', 'error');
+      return;
+    }
+
     try {
-      const title = prompt('Enter conversation title:');
-      if (!title) return;
-
-      setIsLoading(true);
-      const result = await createConversation(deal.id, title);
-      showAlertMessage(
-        'Success',
-        'Conversation created successfully!',
-        'success',
-      );
-
-      // Select the newly created conversation
+      setIsCreatingConversation(true);
+      const result = await createConversation(deal!.id, conversationTitle.trim());
+      
       if (result?.conversation?.id) {
-        setSelectedConversationId(result.conversation.id);
-        setActiveTab('chat'); // Switch to chat tab
+        showAlertMessage(
+          'Success',
+          'Conversation created successfully!',
+          'success',
+          () => {
+            // Select the newly created conversation
+            setSelectedConversationId(result.conversation.id);
+            setActiveTab('chat'); // Switch to chat tab
+            loadAdditionalData(); // Refresh conversations list
+          }
+        );
+      } else {
+        showAlertMessage('Success', 'Conversation created successfully!', 'success');
+        loadAdditionalData(); // Refresh conversations list
       }
-
-      loadAdditionalData(); // Refresh conversations list
     } catch (error) {
       console.error('Failed to create conversation:', error);
       showAlertMessage(
@@ -227,7 +244,9 @@ export function DealDetailModal({
         'error',
       );
     } finally {
-      setIsLoading(false);
+      setIsCreatingConversation(false);
+      setShowConversationInput(false);
+      setConversationTitle('');
     }
   };
 
@@ -260,8 +279,9 @@ export function DealDetailModal({
       return;
     }
 
-    const conversationTitle = `Direct message with ${deal.founderName}`;
-    handleStartConversation();
+    // Set default conversation title for direct message
+    setConversationTitle(`Direct message with ${deal.founderName}`);
+    setShowConversationInput(true);
   };
 
   const handleScheduleMeeting = () => {
@@ -898,6 +918,68 @@ export function DealDetailModal({
                 </Button>
               </div>
             </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Conversation Title Input Modal */}
+      <Modal
+        isOpen={showConversationInput}
+        onClose={() => {
+          setShowConversationInput(false);
+          setConversationTitle('');
+        }}
+        size="medium"
+        closeOnBackdropClick={true}
+      >
+        <div className="p-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Start New Conversation
+          </h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Enter a title for your conversation
+          </p>
+          <input
+            type="text"
+            value={conversationTitle}
+            onChange={(e) => setConversationTitle(e.target.value)}
+            placeholder="e.g., Due Diligence Questions, Investment Details..."
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent mb-6"
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && conversationTitle.trim()) {
+                confirmStartConversation();
+              }
+            }}
+          />
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1"
+              onClick={() => {
+                setShowConversationInput(false);
+                setConversationTitle('');
+              }}
+              disabled={isCreatingConversation}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+              onClick={confirmStartConversation}
+              disabled={!conversationTitle.trim() || isCreatingConversation}
+            >
+              {isCreatingConversation ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Creating...
+                </>
+              ) : (
+                'Create Conversation'
+              )}
+            </Button>
           </div>
         </div>
       </Modal>
