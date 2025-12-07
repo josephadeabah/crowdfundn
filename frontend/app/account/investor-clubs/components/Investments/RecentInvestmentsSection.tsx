@@ -6,6 +6,7 @@ import { FileText, TrendingUp, Clock, X, AlertTriangle } from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
 import Modal from '@/app/components/modal/Modal';
 import { CountdownTimer } from '@/app/components/countdowntimer/CountdonwTimer';
+import { FaInfoCircle } from 'react-icons/fa';
 
 interface RecentInvestmentsSectionProps {
   investments: ClubInvestment[];
