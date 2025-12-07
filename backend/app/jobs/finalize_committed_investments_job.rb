@@ -11,17 +11,15 @@ class FinalizeCommittedInvestmentsJob < ApplicationJob
         # Finalize the investment - capture payment and update campaign
         investment.update!(status: EquityInvestment::STATUS_SUCCESSFUL)
         
-        # Update campaign totals including transferred_amount
+        # Update campaign totals (moved from webhook handler)
         campaign = investment.campaign
-        campaign.with_lock do
-          campaign.update!(
-            current_amount: campaign.current_amount + investment.net_amount,
-            total_successful_donations: campaign.total_successful_donations + investment.net_amount,
-            total_equity_invested: campaign.total_equity_invested + investment.net_amount
-          )
-          
-          campaign.update_transferred_amount(investment.net_amount)
-        end
+        campaign.update!(
+          current_amount: campaign.current_amount + investment.net_amount,
+          total_successful_donations: campaign.total_successful_donations + investment.net_amount,
+          total_equity_invested: campaign.total_equity_invested + investment.net_amount
+        )
+
+        campaign.update_transferred_amount(investment.net_amount)
         
         campaign_identifier = campaign.slug || campaign.id
         # Send final confirmation using existing service
