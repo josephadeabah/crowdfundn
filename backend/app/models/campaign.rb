@@ -174,17 +174,21 @@ class Campaign < ApplicationRecord
   end
 
   # Update the transfer amount method to check locks
-  def update_transferred_amount(new_donated_amount)
-    unless can_transfer_funds?(:incoming)  # Allow incoming investments
+  def update_transferred_amount(new_donated_amount, force: false)
+    # For incoming investments, bypass the lock check if force is true
+    unless force || can_transfer_funds?(:incoming)
+      Rails.logger.error "Transfers are locked for fundraiser #{fundraiser_id}"
       raise "Transfers are locked for this fundraiser"
     end
     
-    updated_transferred_amount = transferred_amount + new_donated_amount
-    update!(transferred_amount: updated_transferred_amount)
-    
-    # Update user's total transferred amount
-    fundraiser.update_column(:total_transferred_amount, 
-      fundraiser.total_transferred_amount + new_donated_amount)
+    ActiveRecord::Base.transaction do
+      updated_transferred_amount = transferred_amount + new_donated_amount
+      update!(transferred_amount: updated_transferred_amount)
+      
+      # Update user's total transferred amount
+      fundraiser.update_column(:total_transferred_amount, 
+        fundraiser.total_transferred_amount + new_donated_amount)
+    end
   end
 
   # app/models/campaign.rb

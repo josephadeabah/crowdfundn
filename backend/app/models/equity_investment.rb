@@ -69,6 +69,7 @@ class EquityInvestment < ApplicationRecord
   before_create :set_investment_date
   after_commit :update_campaign_leaderboard, if: :saved_change_to_status?
   after_save :update_campaign_shares, if: -> { saved_change_to_status? && successful? }
+  after_save :handle_cancellation, if: -> { saved_change_to_status?(to: EquityInvestment::STATUS_CANCELED) }
   before_save :update_current_value, if: -> { campaign_id_changed? || percentage_changed? || will_save_change_to_percentage? }
   before_save :set_commitment_timestamps, if: -> { will_save_change_to_status?(to: STATUS_COMMITTED) }
 
@@ -523,6 +524,17 @@ class EquityInvestment < ApplicationRecord
   # Campaign Update Methods
   def update_campaign_leaderboard
     campaign.update_fundraiser_leaderboard if successful?
+  end
+
+  def handle_cancellation
+    # When an investment is cancelled during the 48-hour window,
+    # we need to update the campaign's transferred_amount
+    if committed? && canceled?
+      # Note: The payment will be voided/refunded separately
+      # We should NOT update transferred_amount here since the money
+      # was never actually transferred to the campaign
+      Rails.logger.info "Investment #{id} cancelled during commitment window"
+    end
   end
 
   # FIXED: Added transaction to prevent race conditions
