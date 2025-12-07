@@ -71,10 +71,6 @@ module Api
           end
 
           ActiveRecord::Base.transaction do
-            # Build investment with all required attributes first
-            Rails.logger.info "Creating investment with params: user_id=#{@current_user.id}, amount=#{amount}, " \
-                            "email=#{investment_params[:email]}, full_name=#{investment_params[:full_name]}, " \
-                            "phone=#{investment_params[:phone]}"
 
             investment = @campaign.equity_investments.new(
               user: @current_user,
@@ -495,13 +491,6 @@ module Api
 
           paystack_service = PaystackService.new
           
-          Rails.logger.info "Initializing Paystack transaction for investment #{investment.id}:"
-          Rails.logger.info "  Email: #{investment.email}"
-          Rails.logger.info "  Amount: #{investment.amount}"
-          Rails.logger.info "  Currency: #{@campaign.currency.upcase}"
-          Rails.logger.info "  Subaccount: #{subaccount.subaccount_code}"
-          Rails.logger.info "  Callback URL: #{redirect_url}"
-          
           begin
             response = paystack_service.initialize_transaction(
               email: investment.email,
@@ -512,7 +501,6 @@ module Api
               currency: @campaign.currency.upcase
             )
 
-            Rails.logger.info "Paystack response: #{response.inspect}"
 
             if response[:status]
               investment.update!(
