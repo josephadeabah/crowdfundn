@@ -216,8 +216,11 @@ export function DealDetailModal({
 
     try {
       setIsCreatingConversation(true);
-      const result = await createConversation(deal!.id, conversationTitle.trim());
-      
+      const result = await createConversation(
+        deal!.id,
+        conversationTitle.trim(),
+      );
+
       if (result?.conversation?.id) {
         showAlertMessage(
           'Success',
@@ -228,10 +231,14 @@ export function DealDetailModal({
             setSelectedConversationId(result.conversation.id);
             setActiveTab('chat'); // Switch to chat tab
             loadAdditionalData(); // Refresh conversations list
-          }
+          },
         );
       } else {
-        showAlertMessage('Success', 'Conversation created successfully!', 'success');
+        showAlertMessage(
+          'Success',
+          'Conversation created successfully!',
+          'success',
+        );
         loadAdditionalData(); // Refresh conversations list
       }
     } catch (error) {
