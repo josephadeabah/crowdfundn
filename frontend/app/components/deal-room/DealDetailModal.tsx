@@ -1,4 +1,3 @@
-// app/components/deal-room/DealDetailModal.tsx
 import {
   Users,
   Clock,
@@ -25,8 +24,9 @@ import Modal from '@/app/components/modal/Modal';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '@/app/context/auth/AuthContext';
-import { useDealRoomApi } from './hooks/useDealRoom';
 import { Deal } from './services/dealRoomApi';
+import { DealRoomChat } from './DealRoomChat';
+import { useDealRoomApi } from './hooks/useDealRoom';
 
 interface DealDetailModalProps {
   deal: Deal | null;
@@ -76,6 +76,7 @@ export function DealDetailModal({
   const [activeTab, setActiveTab] = useState('overview');
   const [isInterested, setIsInterested] = useState(false);
   const [isMember, setIsMember] = useState(false);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null); // ADDED
 
   useEffect(() => {
     if (deal) {
@@ -162,9 +163,16 @@ export function DealDetailModal({
       if (!title) return;
 
       setIsLoading(true);
-      await createConversation(deal.id, title);
+      const result = await createConversation(deal.id, title);
       toast.success('Conversation created successfully!');
-      loadAdditionalData(); // Refresh conversations
+      
+      // Select the newly created conversation
+      if (result?.conversation?.id) {
+        setSelectedConversationId(result.conversation.id);
+        setActiveTab('chat'); // Switch to chat tab
+      }
+      
+      loadAdditionalData(); // Refresh conversations list
     } catch (error) {
       console.error('Failed to create conversation:', error);
       toast.error(
@@ -175,6 +183,11 @@ export function DealDetailModal({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSelectConversation = (conversationId: string) => {
+    setSelectedConversationId(conversationId);
+    setActiveTab('chat');
   };
 
   const handleShareDeal = () => {
@@ -190,6 +203,22 @@ export function DealDetailModal({
     }
   };
 
+  const handleSendMessageToFounder = () => {
+    // Create a direct conversation with the founder
+    if (!deal || !token) {
+      toast.error('Please login to send a message');
+      return;
+    }
+    
+    const conversationTitle = `Direct message with ${deal.founderName}`;
+    handleStartConversation();
+  };
+
+  const handleScheduleMeeting = () => {
+    // This would open a meeting scheduling modal
+    toast.info('Meeting scheduling feature coming soon!');
+  };
+
   if (!deal) return null;
 
   const progressPercent = Math.min(
@@ -199,6 +228,7 @@ export function DealDetailModal({
 
   const canJoin = deal.campaign?.deal_room?.can_join;
   const dealRoomMemberCount = deal.campaign?.deal_room?.member_count || 0;
+  const dealRoomId = deal.campaign?.deal_room?.id || deal.id;
 
   return (
     <Modal
@@ -297,13 +327,13 @@ export function DealDetailModal({
               </div>
             </div>
 
-            {/* Tabs */}
+            {/* Tabs - UPDATED with Chat tab */}
             <Tabs
               value={activeTab}
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="w-full grid grid-cols-4 bg-gray-100">
+              <TabsList className="w-full grid grid-cols-5 bg-gray-100">
                 <TabsTrigger
                   value="overview"
                   className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
@@ -321,6 +351,12 @@ export function DealDetailModal({
                   className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
                 >
                   Conversations
+                </TabsTrigger>
+                <TabsTrigger
+                  value="chat"
+                  className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
+                >
+                  Chat
                 </TabsTrigger>
                 <TabsTrigger
                   value="meetings"
@@ -468,8 +504,9 @@ export function DealDetailModal({
                       <div className="space-y-3">
                         {conversations.map((conv, index) => (
                           <div
-                            key={index}
+                            key={conv.id}
                             className="p-4 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer rounded-lg"
+                            onClick={() => handleSelectConversation(conv.id)}
                           >
                             <div className="flex items-center justify-between">
                               <div>
@@ -502,7 +539,7 @@ export function DealDetailModal({
                       </div>
                     )}
 
-                    {isMember && (
+                    {(isMember || token) && (
                       <div className="mt-4">
                         <Button
                           className="w-full"
@@ -517,6 +554,39 @@ export function DealDetailModal({
                 )}
               </TabsContent>
 
+              {/* NEW CHAT TAB */}
+              <TabsContent value="chat" className="mt-4">
+                {dealRoomId && (isMember || token) ? (
+                  <div className="border rounded-lg overflow-hidden">
+                    <DealRoomChat
+                      dealRoomId={dealRoomId}
+                      initialConversationId={selectedConversationId || undefined}
+                    />
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <AlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                    <p className="mb-4">
+                      {!token 
+                        ? 'Please sign in to access the chat' 
+                        : 'Join the deal room to access conversations'}
+                    </p>
+                    {!token ? (
+                      <Button onClick={() => {
+                        // This would redirect to login
+                        toast.info('Please sign in first');
+                      }}>
+                        Sign In
+                      </Button>
+                    ) : (
+                      <Button onClick={handleJoinDealRoom}>
+                        Join Deal Room
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </TabsContent>
+
               <TabsContent value="meetings" className="mt-4">
                 {isLoading ? (
                   <div className="text-center py-8">
@@ -527,7 +597,7 @@ export function DealDetailModal({
                   <div className="space-y-3">
                     {meetings.map((meeting, index) => (
                       <div
-                        key={index}
+                        key={meeting.id}
                         className="p-4 bg-gray-50 hover:bg-gray-100 transition-colors rounded-lg"
                       >
                         <div className="flex items-center justify-between mb-2">
@@ -549,6 +619,16 @@ export function DealDetailModal({
                           <p>{new Date(meeting.start_time).toLocaleString()}</p>
                           <p>Duration: {meeting.duration_minutes} minutes</p>
                           <p>Organizer: {meeting.organizer?.name}</p>
+                          {meeting.meeting_link && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="mt-2"
+                              onClick={() => window.open(meeting.meeting_link, '_blank')}
+                            >
+                              Join Meeting
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -557,6 +637,11 @@ export function DealDetailModal({
                   <div className="text-center py-8 text-gray-500">
                     <Calendar className="w-12 h-12 mx-auto mb-3 text-gray-400" />
                     <p>No scheduled meetings</p>
+                    {(isMember || token) && (
+                      <Button className="mt-4" onClick={handleScheduleMeeting}>
+                        Schedule a Meeting
+                      </Button>
+                    )}
                   </div>
                 )}
               </TabsContent>
@@ -637,9 +722,7 @@ export function DealDetailModal({
               <div className="space-y-2">
                 <Button
                   className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300"
-                  onClick={() => {
-                    /* Handle send message */
-                  }}
+                  onClick={handleSendMessageToFounder}
                   disabled={!token || isLoading}
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
@@ -647,9 +730,7 @@ export function DealDetailModal({
                 </Button>
                 <Button
                   className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300"
-                  onClick={() => {
-                    /* Handle schedule meeting */
-                  }}
+                  onClick={handleScheduleMeeting}
                   disabled={!token || isLoading}
                 >
                   <Calendar className="w-4 h-4 mr-2" />
@@ -667,6 +748,12 @@ export function DealDetailModal({
                     <Users className="w-4 h-4 text-gray-600" />
                     <span className="text-gray-600">
                       {dealRoomMemberCount} members
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4 text-gray-600" />
+                    <span className="text-gray-600">
+                      {conversations.length} conversations
                     </span>
                   </div>
                   {!isMember && token && (

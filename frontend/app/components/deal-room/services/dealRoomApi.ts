@@ -1,4 +1,3 @@
-// app/services/dealRoomApi.ts
 export interface DealDocument {
   id: string;
   name: string;
@@ -39,7 +38,7 @@ export interface Deal {
     users?: number;
     mrr?: number;
   };
-  documents: DealDocument[]; // Changed from {name: string, type: string}[]
+  documents: DealDocument[];
   interested: number;
   meetings: number;
   status: 'Active' | 'Closing Soon' | 'Funded' | 'New';
