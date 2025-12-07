@@ -544,7 +544,8 @@ export function DealDetailModal({
                     {(isMember || token) && (
                       <div className="mt-4">
                         <Button
-                          className="w-full"
+                          className="w-full "
+                          variant="outline"
                           onClick={handleStartConversation}
                           disabled={isLoading}
                         >
@@ -738,6 +739,7 @@ export function DealDetailModal({
                 </Button>
                 <Button
                   className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300"
+                  variant="outline"
                   onClick={handleScheduleMeeting}
                   disabled={!token || isLoading}
                 >
