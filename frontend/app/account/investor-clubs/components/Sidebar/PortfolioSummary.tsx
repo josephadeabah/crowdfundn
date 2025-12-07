@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, Users, BarChart3 } from 'lucide-react';
 import { ClubInvestmentPortfolio } from '../../clubTypes';
+import { FaInfoCircle } from 'react-icons/fa';
 
 interface PortfolioSummaryProps {
   portfolio: ClubInvestmentPortfolio | null;
@@ -125,6 +126,24 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
           Currency: {clubCurrency}
           <span className="ml-1 text-emerald-600">• Live Portfolio Data</span>
         </div>
+              {/* Professional Disclaimer Banner */}
+              <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <FaInfoCircle className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-blue-600 font-medium mb-1">
+                      Important Notice
+                    </p>
+                    <p className="text-xs text-blue-500">
+                      These data assume the company's current valuation accurately
+                      reflects what investors would pay today. In reality, this is an
+                      estimate until there's either an actual exit event (acquisition,
+                      IPO, or secondary sale) or the specific terms of the investment
+                      instrument are realized (such as profit-sharing distributions).
+                    </p>
+                  </div>
+                </div>
+              </div>
       </div>
     </motion.div>
   );

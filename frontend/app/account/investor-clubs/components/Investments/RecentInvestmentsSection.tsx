@@ -6,7 +6,6 @@ import { FileText, TrendingUp, Clock, X, AlertTriangle } from 'lucide-react';
 import Pagination from '@/app/components/pagination/Pagination';
 import Modal from '@/app/components/modal/Modal';
 import { CountdownTimer } from '@/app/components/countdowntimer/CountdonwTimer';
-import { FaInfoCircle } from 'react-icons/fa';
 
 interface RecentInvestmentsSectionProps {
   investments: ClubInvestment[];
@@ -307,24 +306,6 @@ export const RecentInvestmentsSection: React.FC<
         <span className="text-xs lg:text-sm text-gray-500">
           {totalCount || investments?.length || 0} total
         </span>
-      </div>
-      {/* Professional Disclaimer Banner */}
-      <div className="bg-blue-50 rounded-lg p-4 mb-6">
-        <div className="flex items-start gap-3">
-          <FaInfoCircle className="text-blue-500 text-lg flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm text-blue-600 font-medium mb-1">
-              Important Notice
-            </p>
-            <p className="text-xs text-blue-500">
-              These data assume the company's current valuation accurately
-              reflects what investors would pay today. In reality, this is an
-              estimate until there's either an actual exit event (acquisition,
-              IPO, or secondary sale) or the specific terms of the investment
-              instrument are realized (such as profit-sharing distributions).
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Cancellation Notice Banner */}
