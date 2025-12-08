@@ -17,7 +17,7 @@ export function OverviewTab({ deal }: OverviewTabProps) {
         <div
           className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-line"
           dangerouslySetInnerHTML={{
-            __html: deal.description,
+            __html: deal.description.body,
           }}
         />
       </div>
