@@ -334,7 +334,7 @@ module Api
             "Equity offered: #{campaign.equity_offered.to_f}%",
             "Minimum investment: #{format_currency(campaign.minimum_investment)}"
           ],
-          description: campaign.description&.to_plain_text.to_s,
+          description: campaign.description,
           metrics: {
             revenue: campaign.current_amount.to_f,
             growth: campaign.percentage_raised.to_i
