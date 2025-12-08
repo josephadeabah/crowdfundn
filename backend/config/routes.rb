@@ -18,6 +18,10 @@ Rails.application.routes.draw do
           post :create_meeting
           post :join
           post :show_interest
+          # NEW: Additional meeting routes
+          get :calendar
+          get :availability
+          get :members # Add this for getting deal room members
         end
         collection do
           get :public_deals
@@ -35,14 +39,24 @@ Rails.application.routes.draw do
         end
       end
       
-      # Deal Room Meetings
+      # Deal Room Meetings - EXPANDED with full functionality
       resources :deal_room_meetings, only: [:show, :update, :destroy] do
         member do
           post :add_participant
           delete :remove_participant
           post :rsvp
+          # NEW: Additional meeting actions
+          post :start
+          post :end
+          post :cancel
+          post :reschedule
+          post :add_participants
+          post :attendance
         end
       end
+      
+      # NEW: Get user's upcoming meetings
+      get 'my/meetings/upcoming', to: 'deal_room_meetings#upcoming'
       
       # ========== EXISTING ROUTES ==========
       namespace :members do
