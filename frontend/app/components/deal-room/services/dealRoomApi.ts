@@ -41,7 +41,7 @@ export interface Deal {
   documents: DealDocument[];
   interested: number;
   meetings: number;
-  status: 'Active' | 'Closing Soon' | 'Funded' | 'New';
+  status: 'Active' | 'Closing Soon' | 'Funded' | 'New' | 'Closed' | 'Fully Funded';
   campaign?: {
     id: string;
     deal_room?: {

@@ -25,8 +25,13 @@ const getStatusVariant = (status: Deal['status']) => {
     case 'Closing Soon':
       return 'destructive';
     case 'Funded':
+    case 'Fully Funded':
       return 'secondary';
+    case 'Closed':
+      return 'outline';
     case 'New':
+      return 'default';
+    case 'Active':
       return 'default';
     default:
       return 'outline';
@@ -118,6 +123,7 @@ export function DealCard({ deal, onViewDetails }: DealCardProps) {
           size="sm"
           className="text-gray-800 hover:text-gray-900 hover:bg-gray-200 bg-white"
           onClick={() => onViewDetails(deal)}
+          disabled={deal.status === 'Closed' || deal.status === 'Funded'} // Disable button for closed/funded deals
         >
           View Deal
           <ArrowRight className="w-4 h-4 ml-1" />
