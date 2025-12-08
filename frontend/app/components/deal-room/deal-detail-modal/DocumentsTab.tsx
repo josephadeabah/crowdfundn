@@ -6,10 +6,7 @@ interface DocumentsTabProps {
   documents: any[];
 }
 
-export function DocumentsTab({ 
-  isLoading, 
-  documents, 
-}: DocumentsTabProps) {
+export function DocumentsTab({ isLoading, documents }: DocumentsTabProps) {
   // Use dealDocuments if available, otherwise use documents from API
 
   if (isLoading) {

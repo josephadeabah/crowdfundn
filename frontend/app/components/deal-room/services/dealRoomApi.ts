@@ -31,7 +31,7 @@ export interface Deal {
   founderImage: string;
   founderTitle: string;
   highlights: string[];
-  description:{ body: string };
+  description: { body: string };
   metrics: {
     revenue?: number;
     growth?: number;

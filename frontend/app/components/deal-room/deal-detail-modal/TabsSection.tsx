@@ -88,7 +88,7 @@ export function TabsSection({
             Meetings
           </TabsTrigger>
         </TabsList>
-        
+
         {/* Gradient fade effect on mobile */}
         <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-100 to-transparent pointer-events-none lg:hidden" />
       </div>
@@ -98,10 +98,7 @@ export function TabsSection({
       </TabsContent>
 
       <TabsContent value="documents" className="mt-4">
-        <DocumentsTab
-          isLoading={isLoading}
-          documents={deal.documents}
-        />
+        <DocumentsTab isLoading={isLoading} documents={deal.documents} />
       </TabsContent>
 
       <TabsContent value="conversations" className="mt-4">
