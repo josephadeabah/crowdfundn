@@ -348,14 +348,38 @@ module Api
       
       def campaign_status_for_deal_room(campaign)
         if campaign.equity_status == 'funded'
-          'Funded'
-        elsif campaign.remaining_days <= 7 && campaign.remaining_days > 0
-          'Closing Soon'
-        elsif campaign.created_at > 7.days.ago
-          'New'
-        else
-          'Active'
+          return 'Funded'
         end
+        
+        # Check if campaign has ended
+        remaining_days = campaign.remaining_days.to_i
+        
+        if remaining_days <= 0
+          # Check if it was funded before ending
+          if campaign.current_amount >= campaign.goal_amount
+            return 'Fully Funded'
+          else
+            return 'Closed'
+          end
+        end
+        
+        # Check if campaign is closing soon
+        if remaining_days <= 7
+          return 'Closing Soon'
+        end
+        
+        # Check if campaign is new (created within last 7 days)
+        if campaign.created_at > 7.days.ago && campaign.created_at <= DateTime.current
+          # But if it has significant investment already, don't mark as new
+          if campaign.percentage_raised > 50
+            return 'Active'
+          else
+            return 'New'
+          end
+        end
+        
+        # Default status
+        'Active'
       end
       
       def calculate_success_rate
