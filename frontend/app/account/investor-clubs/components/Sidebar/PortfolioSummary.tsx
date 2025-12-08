@@ -122,10 +122,6 @@ export const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
 
       {/* Currency indicator - same as ClubStats */}
       <div className="mt-3 pt-3 border-t border-gray-200">
-        <div className="text-xs text-gray-500 text-center">
-          Currency: {clubCurrency}
-          <span className="ml-1 text-emerald-600">• Live Portfolio Data</span>
-        </div>
         {/* Professional Disclaimer Banner */}
         <div className="bg-blue-50 rounded-lg p-4 mb-6">
           <div className="flex items-start gap-3">
