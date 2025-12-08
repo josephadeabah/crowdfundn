@@ -54,38 +54,44 @@ export function TabsSection({
 }: TabsSectionProps) {
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <TabsList className="w-full grid grid-cols-5 bg-gray-100">
-        <TabsTrigger
-          value="overview"
-          className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-        >
-          Overview
-        </TabsTrigger>
-        <TabsTrigger
-          value="documents"
-          className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-        >
-          Documents
-        </TabsTrigger>
-        <TabsTrigger
-          value="conversations"
-          className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-        >
-          Conversations
-        </TabsTrigger>
-        <TabsTrigger
-          value="chat"
-          className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-        >
-          Chat
-        </TabsTrigger>
-        <TabsTrigger
-          value="meetings"
-          className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-        >
-          Meetings
-        </TabsTrigger>
-      </TabsList>
+      {/* Responsive TabsList with horizontal scroll on mobile */}
+      <div className="relative">
+        <TabsList className="w-full bg-gray-100 flex lg:grid lg:grid-cols-5 overflow-x-auto scrollbar-hide">
+          <TabsTrigger
+            value="overview"
+            className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white whitespace-nowrap px-4 py-2 lg:px-0 lg:py-2 flex-shrink-0 lg:flex-shrink"
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger
+            value="documents"
+            className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white whitespace-nowrap px-4 py-2 lg:px-0 lg:py-2 flex-shrink-0 lg:flex-shrink"
+          >
+            Documents
+          </TabsTrigger>
+          <TabsTrigger
+            value="conversations"
+            className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white whitespace-nowrap px-4 py-2 lg:px-0 lg:py-2 flex-shrink-0 lg:flex-shrink"
+          >
+            Conversations
+          </TabsTrigger>
+          <TabsTrigger
+            value="chat"
+            className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white whitespace-nowrap px-4 py-2 lg:px-0 lg:py-2 flex-shrink-0 lg:flex-shrink"
+          >
+            Chat
+          </TabsTrigger>
+          <TabsTrigger
+            value="meetings"
+            className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white whitespace-nowrap px-4 py-2 lg:px-0 lg:py-2 flex-shrink-0 lg:flex-shrink"
+          >
+            Meetings
+          </TabsTrigger>
+        </TabsList>
+        
+        {/* Gradient fade effect on mobile */}
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-100 to-transparent pointer-events-none lg:hidden" />
+      </div>
 
       <TabsContent value="overview" className="mt-4 space-y-6">
         <OverviewTab deal={deal} />
