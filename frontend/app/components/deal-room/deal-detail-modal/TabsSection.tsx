@@ -100,7 +100,7 @@ export function TabsSection({
       <TabsContent value="documents" className="mt-4">
         <DocumentsTab
           isLoading={isLoading}
-          documents={documents || deal.documents}
+          documents={deal.documents}
         />
       </TabsContent>
 
