@@ -431,7 +431,7 @@ export function CreateMeetingModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" className="bg-emerald-600 text-white" disabled={isLoading}>
               {isLoading ? 'Scheduling...' : 'Schedule Meeting'}
             </Button>
           </div>

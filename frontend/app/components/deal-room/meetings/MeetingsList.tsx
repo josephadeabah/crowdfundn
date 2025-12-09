@@ -260,7 +260,7 @@ export function MeetingsList({
             Schedule and manage meetings for this deal room
           </p>
         </div>
-        <Button onClick={() => setShowCreateModal(true)}>
+        <Button onClick={() => setShowCreateModal(true)} variant="ghost" className="bg-emerald-600 text-white">
           <Calendar className="w-4 h-4 mr-2" />
           Schedule Meeting
         </Button>
@@ -275,7 +275,7 @@ export function MeetingsList({
           <p className="text-gray-600 mb-6">
             Schedule your first meeting to connect with investors
           </p>
-          <Button onClick={() => setShowCreateModal(true)}>
+          <Button onClick={() => setShowCreateModal(true)} variant="ghost" className="bg-emerald-600 text-white">
             Schedule First Meeting
           </Button>
         </div>
