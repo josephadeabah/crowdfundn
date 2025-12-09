@@ -162,15 +162,77 @@ export const useDealRoomApi = () => {
   );
 
   const getDealMeetings = useCallback(
-    async (dealId: string) => {
+    async (dealId: string, pageNum: number = 1, perPage: number = 20) => {
       try {
-        const meetings = await dealRoomApi.getDealMeetings(
+        const response = await dealRoomApi.getDealMeetings(
           dealId,
           token ?? undefined,
+          pageNum,
+          perPage,
         );
-        return meetings;
+        return response;
       } catch (err) {
         console.error('Error getting deal meetings:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const getMeetingCalendar = useCallback(
+    async (dealId: string, startDate: string, endDate: string) => {
+      try {
+        const calendar = await dealRoomApi.getMeetingCalendar(
+          dealId,
+          startDate,
+          endDate,
+          token ?? undefined,
+        );
+        return calendar;
+      } catch (err) {
+        console.error('Error getting meeting calendar:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const getMeetingAvailability = useCallback(
+    async (
+      dealId: string,
+      date: string,
+      duration: number,
+      participantIds: string[],
+    ) => {
+      try {
+        const availability = await dealRoomApi.getMeetingAvailability(
+          dealId,
+          date,
+          duration,
+          participantIds,
+          token ?? undefined,
+        );
+        return availability;
+      } catch (err) {
+        console.error('Error getting meeting availability:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const getDealRoomMembers = useCallback(
+    async (dealId: string, pageNum: number = 1, perPage: number = 50) => {
+      try {
+        const members = await dealRoomApi.getDealRoomMembers(
+          dealId,
+          token ?? undefined,
+          pageNum,
+          perPage,
+        );
+        return members;
+      } catch (err) {
+        console.error('Error getting deal room members:', err);
         throw err;
       }
     },
@@ -211,6 +273,8 @@ export const useDealRoomApi = () => {
         meeting_link?: string;
         notes?: string;
         participant_ids?: string[];
+        participant_emails?: string[];
+        invite_all_members?: boolean;
       },
     ) => {
       if (!token) {
@@ -226,6 +290,242 @@ export const useDealRoomApi = () => {
         return result;
       } catch (err) {
         console.error('Error creating meeting:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const updateMeeting = useCallback(
+    async (
+      meetingId: string,
+      meetingData: {
+        title?: string;
+        description?: string;
+        meeting_type?: string;
+        start_time?: string;
+        end_time?: string;
+        meeting_link?: string;
+        notes?: string;
+        participant_ids?: string[];
+      },
+    ) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      try {
+        const result = await dealRoomApi.updateMeeting(
+          meetingId,
+          meetingData,
+          token,
+        );
+        return result;
+      } catch (err) {
+        console.error('Error updating meeting:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const deleteMeeting = useCallback(
+    async (meetingId: string) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      try {
+        const result = await dealRoomApi.deleteMeeting(meetingId, token);
+        return result;
+      } catch (err) {
+        console.error('Error deleting meeting:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const startMeeting = useCallback(
+    async (meetingId: string) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      try {
+        const result = await dealRoomApi.startMeeting(meetingId, token);
+        return result;
+      } catch (err) {
+        console.error('Error starting meeting:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const endMeeting = useCallback(
+    async (meetingId: string) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      try {
+        const result = await dealRoomApi.endMeeting(meetingId, token);
+        return result;
+      } catch (err) {
+        console.error('Error ending meeting:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const cancelMeeting = useCallback(
+    async (meetingId: string, reason: string) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      try {
+        const result = await dealRoomApi.cancelMeeting(
+          meetingId,
+          reason,
+          token,
+        );
+        return result;
+      } catch (err) {
+        console.error('Error canceling meeting:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const rescheduleMeeting = useCallback(
+    async (meetingId: string, newStartTime: string, newEndTime: string) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      try {
+        const result = await dealRoomApi.rescheduleMeeting(
+          meetingId,
+          newStartTime,
+          newEndTime,
+          token,
+        );
+        return result;
+      } catch (err) {
+        console.error('Error rescheduling meeting:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const addMeetingParticipants = useCallback(
+    async (
+      meetingId: string,
+      participantIds: string[],
+      participantEmails: string[] = [],
+    ) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      try {
+        const result = await dealRoomApi.addMeetingParticipants(
+          meetingId,
+          participantIds,
+          participantEmails,
+          token,
+        );
+        return result;
+      } catch (err) {
+        console.error('Error adding meeting participants:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const removeMeetingParticipant = useCallback(
+    async (meetingId: string, userId: string) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      try {
+        const result = await dealRoomApi.removeMeetingParticipant(
+          meetingId,
+          userId,
+          token,
+        );
+        return result;
+      } catch (err) {
+        console.error('Error removing meeting participant:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const rsvpToMeeting = useCallback(
+    async (
+      meetingId: string,
+      status: 'accepted' | 'declined' | 'tentative',
+    ) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      try {
+        const result = await dealRoomApi.rsvpToMeeting(
+          meetingId,
+          status,
+          token,
+        );
+        return result;
+      } catch (err) {
+        console.error('Error RSVPing to meeting:', err);
+        throw err;
+      }
+    },
+    [token],
+  );
+
+  const getUpcomingMeetings = useCallback(async () => {
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
+    try {
+      const result = await dealRoomApi.getUpcomingMeetings(token);
+      return result;
+    } catch (err) {
+      console.error('Error getting upcoming meetings:', err);
+      throw err;
+    }
+  }, [token]);
+
+  const updateMeetingAttendance = useCallback(
+    async (
+      meetingId: string,
+      attendance: Record<string, 'attended' | 'no_show'>,
+    ) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      try {
+        const result = await dealRoomApi.updateMeetingAttendance(
+          meetingId,
+          attendance,
+          token,
+        );
+        return result;
+      } catch (err) {
+        console.error('Error updating meeting attendance:', err);
         throw err;
       }
     },
@@ -257,8 +557,22 @@ export const useDealRoomApi = () => {
     getDealDocuments,
     getDealConversations,
     getDealMeetings,
+    getMeetingCalendar,
+    getMeetingAvailability,
+    getDealRoomMembers,
     createConversation,
     createMeeting,
+    updateMeeting,
+    deleteMeeting,
+    startMeeting,
+    endMeeting,
+    cancelMeeting,
+    rescheduleMeeting,
+    addMeetingParticipants,
+    removeMeetingParticipant,
+    rsvpToMeeting,
+    getUpcomingMeetings,
+    updateMeetingAttendance,
 
     // Setters
     setPage,

@@ -93,6 +93,72 @@ export interface DealRoomInfo {
   can_join: boolean;
 }
 
+export interface DealRoomMember {
+  id: string;
+  full_name: string;
+  email: string;
+  avatar_url?: string;
+  role: string;
+  joined_at: string;
+}
+
+export interface Meeting {
+  id: string;
+  title: string;
+  description: string;
+  meeting_type: string;
+  status: string;
+  start_time: string;
+  end_time: string;
+  meeting_link?: string;
+  duration_minutes: number;
+  upcoming: boolean;
+  ongoing: boolean;
+  past: boolean;
+  organizer: {
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  participants: Array<{
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+    role: string;
+    status: string;
+    rsvp_at?: string;
+  }>;
+  can_edit: boolean;
+  can_delete: boolean;
+  participant_status?: string;
+  deal_room_id: string;
+  deal_room_name: string;
+  formatted_start_time: string;
+  formatted_end_time: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+  all_day: boolean;
+  color: string;
+  meeting_type: string;
+  status: string;
+}
+
+export interface AvailabilitySlot {
+  start: string;
+  end: string;
+  formatted: string;
+}
+
 class DealRoomApi {
   private baseUrl: string;
 
@@ -274,22 +340,6 @@ class DealRoomApi {
     return data.conversations || [];
   }
 
-  async getDealMeetings(dealId: string, token?: string): Promise<any[]> {
-    const response = await fetch(
-      `${this.baseUrl}/deal_rooms/${dealId}/meetings`,
-      {
-        headers: this.getHeaders(token),
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch meetings');
-    }
-
-    const data = await response.json();
-    return data.meetings || [];
-  }
-
   async createConversation(
     dealId: string,
     title: string,
@@ -312,22 +362,101 @@ class DealRoomApi {
     return response.json();
   }
 
+  async getDealMeetings(
+    dealId: string,
+    token?: string,
+    page: number = 1,
+    perPage: number = 20,
+  ): Promise<ApiResponse<any[]>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      per_page: perPage.toString(),
+    });
+
+    const response = await fetch(
+      `${this.baseUrl}/deal_rooms/${dealId}/meetings?${params}`,
+      {
+        headers: this.getHeaders(token),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch meetings');
+    }
+
+    return response.json();
+  }
+
+  async getMeetingCalendar(
+    dealId: string,
+    startDate: string,
+    endDate: string,
+    token?: string,
+  ): Promise<any> {
+    const params = new URLSearchParams({
+      start_date: startDate,
+      end_date: endDate,
+    });
+
+    const response = await fetch(
+      `${this.baseUrl}/deal_rooms/${dealId}/meetings/calendar?${params}`,
+      {
+        headers: this.getHeaders(token),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch calendar');
+    }
+
+    return response.json();
+  }
+
+  async getMeetingAvailability(
+    dealId: string,
+    date: string,
+    duration: number,
+    participantIds: string[],
+    token?: string,
+  ): Promise<any> {
+    const params = new URLSearchParams({
+      date,
+      duration: duration.toString(),
+      participant_ids: participantIds.join(','),
+    });
+
+    const response = await fetch(
+      `${this.baseUrl}/deal_rooms/${dealId}/meetings/availability?${params}`,
+      {
+        headers: this.getHeaders(token),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch availability');
+    }
+
+    return response.json();
+  }
+
   async createMeeting(
     dealId: string,
     meetingData: {
       title: string;
-      description: string;
+      description?: string;
       meeting_type: string;
       start_time: string;
       end_time: string;
       meeting_link?: string;
       notes?: string;
       participant_ids?: string[];
+      participant_emails?: string[];
+      invite_all_members?: boolean;
     },
     token: string,
   ): Promise<any> {
     const response = await fetch(
-      `${this.baseUrl}/deal_rooms/${dealId}/create_meeting`,
+      `${this.baseUrl}/deal_rooms/${dealId}/meetings`,
       {
         method: 'POST',
         headers: this.getHeaders(token),
@@ -336,7 +465,257 @@ class DealRoomApi {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to create meeting');
+      const error = await response.json();
+      throw new Error(error.errors?.join(', ') || 'Failed to create meeting');
+    }
+
+    return response.json();
+  }
+
+  async updateMeeting(
+    meetingId: string,
+    meetingData: {
+      title?: string;
+      description?: string;
+      meeting_type?: string;
+      start_time?: string;
+      end_time?: string;
+      meeting_link?: string;
+      notes?: string;
+      participant_ids?: string[];
+    },
+    token: string,
+  ): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/deal_room_meetings/${meetingId}`,
+      {
+        method: 'PUT',
+        headers: this.getHeaders(token),
+        body: JSON.stringify(meetingData),
+      },
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.errors?.join(', ') || 'Failed to update meeting');
+    }
+
+    return response.json();
+  }
+
+  async deleteMeeting(meetingId: string, token: string): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/deal_room_meetings/${meetingId}`,
+      {
+        method: 'DELETE',
+        headers: this.getHeaders(token),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to delete meeting');
+    }
+
+    return response.json();
+  }
+
+  async getDealRoomMembers(
+    dealId: string,
+    token?: string,
+    page: number = 1,
+    perPage: number = 50,
+  ): Promise<ApiResponse<DealRoomMember[]>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      per_page: perPage.toString(),
+    });
+
+    const response = await fetch(
+      `${this.baseUrl}/deal_rooms/${dealId}/members?${params}`,
+      {
+        headers: this.getHeaders(token),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch deal room members');
+    }
+
+    return response.json();
+  }
+
+  async startMeeting(meetingId: string, token: string): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/deal_room_meetings/${meetingId}/start`,
+      {
+        method: 'POST',
+        headers: this.getHeaders(token),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to start meeting');
+    }
+
+    return response.json();
+  }
+
+  async endMeeting(meetingId: string, token: string): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/deal_room_meetings/${meetingId}/end`,
+      {
+        method: 'POST',
+        headers: this.getHeaders(token),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to end meeting');
+    }
+
+    return response.json();
+  }
+
+  async cancelMeeting(
+    meetingId: string,
+    reason: string,
+    token: string,
+  ): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/deal_room_meetings/${meetingId}/cancel`,
+      {
+        method: 'POST',
+        headers: this.getHeaders(token),
+        body: JSON.stringify({ reason }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to cancel meeting');
+    }
+
+    return response.json();
+  }
+
+  async rescheduleMeeting(
+    meetingId: string,
+    newStartTime: string,
+    newEndTime: string,
+    token: string,
+  ): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/deal_room_meetings/${meetingId}/reschedule`,
+      {
+        method: 'POST',
+        headers: this.getHeaders(token),
+        body: JSON.stringify({
+          new_start_time: newStartTime,
+          new_end_time: newEndTime,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to reschedule meeting');
+    }
+
+    return response.json();
+  }
+
+  async addMeetingParticipants(
+    meetingId: string,
+    participantIds: string[],
+    participantEmails: string[] = [],
+    token: string,
+  ): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/deal_room_meetings/${meetingId}/add_participants`,
+      {
+        method: 'POST',
+        headers: this.getHeaders(token),
+        body: JSON.stringify({
+          participant_ids: participantIds,
+          participant_emails: participantEmails,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to add participants');
+    }
+
+    return response.json();
+  }
+
+  async removeMeetingParticipant(
+    meetingId: string,
+    userId: string,
+    token: string,
+  ): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/deal_room_meetings/${meetingId}/remove_participant/${userId}`,
+      {
+        method: 'DELETE',
+        headers: this.getHeaders(token),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to remove participant');
+    }
+
+    return response.json();
+  }
+
+  async rsvpToMeeting(
+    meetingId: string,
+    status: 'accepted' | 'declined' | 'tentative',
+    token: string,
+  ): Promise<any> {
+    const response = await fetch(
+      `${this.baseUrl}/deal_room_meetings/${meetingId}/rsvp`,
+      {
+        method: 'POST',
+        headers: this.getHeaders(token),
+        body: JSON.stringify({ status }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to RSVP');
+    }
+
+    return response.json();
+  }
+
+  async getUpcomingMeetings(token: string): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/my/meetings/upcoming`, {
+      headers: this.getHeaders(token),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch upcoming meetings');
+    }
+
+    return response.json();
+  }
+
+  async updateMeetingAttendance(
+    meetingId: string,
+    attendance: Record<string, 'attended' | 'no_show'>,
+    token: string,
+  ): Promise<{ message: string; meeting: Meeting }> {
+    const response = await fetch(
+      `${this.baseUrl}/deal_room_meetings/${meetingId}/attendance`,
+      {
+        method: 'POST',
+        headers: this.getHeaders(token),
+        body: JSON.stringify({ attendance }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to update attendance');
     }
 
     return response.json();
