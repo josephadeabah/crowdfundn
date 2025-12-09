@@ -63,4 +63,17 @@ module Clockwork
   rescue => e
     Rails.logger.error "[Clockwork] Failed to enqueue ClubInvestmentFinalizationJob: #{e.message}"
   end
+
+  every(5.minutes, 'send_meeting_reminders_every_five_mins') do
+    SendMeetingRemindersJob.perform_later
+  rescue => e
+    Rails.logger.error "[Clockwork] Failed to enqueue SendMeetingRemindersJob: #{e.message}"
+  end
+
+  # Also schedule for morning reminders
+  every(1.day, at: 'send_morning_meeting_reminders') do
+    SendMorningMeetingRemindersJob.perform_later
+  rescue => e
+    Rails.logger.error "[Clockwork] Failed to enqueue SendMorningMeetingRemindersJob: #{e.message}"
+  end
 end
