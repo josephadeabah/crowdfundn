@@ -130,7 +130,9 @@ export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
           </Tabs>
 
           {isMember && token && (
-            <Button onClick={() => setShowCreateModal(true)}>
+            <Button onClick={() => setShowCreateModal(true)} 
+              variant="ghost"
+              className="text-gray-800">
               <Plus className="w-4 h-4 mr-2" />
               Schedule Meeting
             </Button>
