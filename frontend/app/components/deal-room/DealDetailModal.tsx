@@ -1,3 +1,6 @@
+// app/components/deal-room/DealDetailModal.tsx
+'use client';
+
 import { useState, useEffect } from 'react';
 import Modal from '@/app/components/modal/Modal';
 import AlertPopup from '@/app/components/alertpopup/AlertPopup';
@@ -84,15 +87,24 @@ export function DealDetailModal({
 
     setIsLoading(true);
     try {
-      const [docs, convs, meets] = await Promise.all([
+      const [docs, convs] = await Promise.all([
         getDealDocuments(deal.id),
         getDealConversations(deal.id),
-        getDealMeetings(deal.id),
       ]);
 
       setDocuments(docs);
       setConversations(convs);
-      // setMeetings(meets);
+
+      // Load meetings only if user is a member
+      if (isMember || deal.campaign?.deal_room?.is_member) {
+        try {
+          const meetingsResponse = await getDealMeetings(deal.id, 1, 10);
+          setMeetings(meetingsResponse.data || []);
+        } catch (meetingError) {
+          console.error('Failed to load meetings:', meetingError);
+          // Don't show error for meetings - they might not have access
+        }
+      }
     } catch (error) {
       console.error('Failed to load additional data:', error);
       showAlertMessage('Error', 'Failed to load deal details', 'error');
@@ -144,6 +156,10 @@ export function DealDetailModal({
       await joinDealRoom(deal.id);
       setIsMember(true);
       showAlertMessage('Success', 'Successfully joined deal room!', 'success');
+
+      // Reload meetings after joining
+      await loadAdditionalData();
+
       if (onDealUpdate) onDealUpdate();
     } catch (error) {
       console.error('Failed to join deal room:', error);
@@ -250,11 +266,27 @@ export function DealDetailModal({
   };
 
   const handleScheduleMeeting = () => {
-    showAlertMessage(
-      'Coming Soon',
-      'Meeting scheduling feature coming soon!',
-      'info',
-    );
+    if (!deal || !token) {
+      showAlertMessage(
+        'Login Required',
+        'Please login to schedule a meeting',
+        'error',
+      );
+      return;
+    }
+
+    if (!isMember) {
+      showAlertMessage(
+        'Join Required',
+        'Please join the deal room to schedule meetings',
+        'info',
+        handleJoinDealRoom,
+      );
+      return;
+    }
+
+    // Switch to meetings tab where they can schedule
+    setActiveTab('meetings');
   };
 
   if (!deal) return null;

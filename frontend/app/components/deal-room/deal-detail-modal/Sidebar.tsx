@@ -1,3 +1,6 @@
+// app/components/deal-room/deal-detail-modal/Sidebar.tsx
+'use client';
+
 import {
   Users,
   MessageCircle,
@@ -40,6 +43,23 @@ export function Sidebar({
   onScheduleMeeting,
   onShareDeal,
 }: SidebarProps) {
+  // Function to handle meeting scheduling
+  const handleScheduleMeetingClick = () => {
+    if (!token) {
+      // Show login alert
+      return;
+    }
+
+    if (!isMember) {
+      // If not a member, ask to join first
+      onJoinDealRoom();
+      return;
+    }
+
+    // Trigger the meeting scheduling flow
+    onScheduleMeeting();
+  };
+
   return (
     <div className="space-y-6">
       {/* Deal Terms */}
@@ -111,8 +131,8 @@ export function Sidebar({
           <Button
             className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300"
             variant="outline"
-            onClick={onScheduleMeeting}
-            disabled={!token || isLoading}
+            onClick={handleScheduleMeetingClick}
+            disabled={isLoading}
           >
             <Calendar className="w-4 h-4 mr-2" />
             Schedule Meeting

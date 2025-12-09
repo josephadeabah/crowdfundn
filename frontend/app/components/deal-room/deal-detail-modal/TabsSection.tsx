@@ -1,3 +1,6 @@
+// app/components/deal-room/deal-detail-modal/TabsSection.tsx
+'use client';
+
 import {
   Tabs,
   TabsContent,
@@ -125,11 +128,9 @@ export function TabsSection({
 
       <TabsContent value="meetings" className="mt-4">
         <MeetingsTab
-          isLoading={isLoading}
-          meetings={meetings}
-          isMember={isMember}
+          dealRoomId={dealRoomId.toString()}
           token={token}
-          onScheduleMeeting={onScheduleMeeting}
+          isMember={isMember}
         />
       </TabsContent>
     </Tabs>
