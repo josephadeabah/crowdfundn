@@ -92,7 +92,7 @@ export function DealDetailModal({
 
       setDocuments(docs);
       setConversations(convs);
-      setMeetings(meets);
+      // setMeetings(meets);
     } catch (error) {
       console.error('Failed to load additional data:', error);
       showAlertMessage('Error', 'Failed to load deal details', 'error');
