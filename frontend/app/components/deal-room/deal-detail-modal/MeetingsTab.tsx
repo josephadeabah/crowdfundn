@@ -104,7 +104,7 @@ export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
         </p>
         <Button 
          variant="ghost"
-         className="bg-emerald-800 text-white">
+         className="bg-emerald-600 text-white">
           Join Deal Room
         </Button>
       </div>
