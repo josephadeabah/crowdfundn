@@ -296,17 +296,17 @@ module Api
           status: 'interested'
         )
         
-        Notification.create!(
-          user: @deal_room.campaign.fundraiser,
-          title: "New interest in #{@deal_room.campaign.company_name}",
-          body: "#{@current_user.full_name} has shown interest in your deal",
-          notification_type: 'deal_interest',
-          data: {
-            deal_room_id: @deal_room.id,
-            campaign_id: @deal_room.campaign.id,
-            user_id: @current_user.id
-          }
-        )
+        # Notification.create!(
+        #   user: @deal_room.campaign.fundraiser,
+        #   title: "New interest in #{@deal_room.campaign.company_name}",
+        #   body: "#{@current_user.full_name} has shown interest in your deal",
+        #   notification_type: 'deal_interest',
+        #   data: {
+        #     deal_room_id: @deal_room.id,
+        #     campaign_id: @deal_room.campaign.id,
+        #     user_id: @current_user.id
+        #   }
+        # )
         
         render json: {
           message: "Interest noted for #{@deal_room.campaign.company_name}",
@@ -514,7 +514,7 @@ module Api
         
         busy_slots
       end
-      
+
       def generate_available_slots(date, busy_slots, duration)
         available_slots = []
         start_time = date.beginning_of_day + 9.hours  # 9 AM
