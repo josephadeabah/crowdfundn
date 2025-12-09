@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_07_132124) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_09_065822) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -536,6 +536,21 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_132124) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_event_processeds_on_event_id", unique: true
+  end
+
+  create_table "external_meeting_invitations", force: :cascade do |t|
+    t.bigint "deal_room_meeting_id", null: false
+    t.string "email", null: false
+    t.string "token", null: false
+    t.string "status", default: "pending"
+    t.datetime "accepted_at"
+    t.datetime "declined_at"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deal_room_meeting_id", "email"], name: "index_external_invites_on_meeting_and_email", unique: true
+    t.index ["deal_room_meeting_id"], name: "index_external_meeting_invitations_on_deal_room_meeting_id"
+    t.index ["token"], name: "index_external_meeting_invitations_on_token", unique: true
   end
 
   create_table "failed_donation_attempts", force: :cascade do |t|
@@ -1111,6 +1126,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_132124) do
   add_foreign_key "equity_investments", "campaigns"
   add_foreign_key "equity_investments", "club_investments"
   add_foreign_key "equity_investments", "users"
+  add_foreign_key "external_meeting_invitations", "deal_room_meetings"
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
   add_foreign_key "fundraiser_leaderboard_entries", "users"
