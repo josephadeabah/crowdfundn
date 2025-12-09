@@ -325,3 +325,25 @@ img[src*='#markdown-transferspage'] {
   box-shadow: none !important;
   border-color: inherit !important;
 }
+
+/* scrollbar-hide.css */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Optional: Add smooth scrolling for better UX */
+.tab-scroll-container {
+  scroll-behavior: smooth;
+}
+
+/* Add this to your global CSS or tailwind.config.js */
+@media (max-width: 1024px) {
+  .tab-item {
+    min-width: 140px; /* Adjust based on your content */
+  }
+}
