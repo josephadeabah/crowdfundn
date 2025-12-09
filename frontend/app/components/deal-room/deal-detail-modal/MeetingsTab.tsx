@@ -102,7 +102,11 @@ export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
         <p className="text-gray-600 mb-6">
           You need to join the deal room to view and schedule meetings
         </p>
-        <Button>Join Deal Room</Button>
+        <Button 
+         variant="ghost"
+         className="bg-emerald-800 text-white">
+          Join Deal Room
+        </Button>
       </div>
     );
   }
