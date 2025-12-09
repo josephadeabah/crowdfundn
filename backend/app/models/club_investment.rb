@@ -7,6 +7,8 @@ class ClubInvestment < ApplicationRecord
   has_many :member_investment_shares, dependent: :destroy
   has_many :members, through: :member_investment_shares, source: :user
   has_many :votes, as: :votable, dependent: :destroy
+  has_many :approved_campaigns, dependent: :destroy
+
   has_one_attached :certificate
   
   # Add these missing attributes - FIXED: use canceled_at (single 'l')
