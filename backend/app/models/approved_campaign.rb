@@ -1,7 +1,8 @@
 class ApprovedCampaign < ApplicationRecord
   belongs_to :investment_club
   belongs_to :campaign
-  belongs_to :club_investment, optional: true
+  belongs_to :club_investment, optional: true, dependent: :destroy
+
   
   validates :investment_club_id, uniqueness: { scope: :campaign_id }
   
