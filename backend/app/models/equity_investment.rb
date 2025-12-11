@@ -170,29 +170,16 @@ class EquityInvestment < ApplicationRecord
   end
 
   # NEW: Added time_remaining_for_cancellation method for countdown timer
-  # def time_remaining_for_cancellation
-  #   return nil unless cancel_window_expires_at
-  #   return 'Expired' if cancel_window_expires_at <= Time.current
-    
-  #   diff_seconds = (cancel_window_expires_at - Time.current).to_i
-  #   hours = diff_seconds / 3600
-  #   minutes = (diff_seconds % 3600) / 60
-    
-  #   "#{hours}h #{minutes}m"
-  # end
-
   def time_remaining_for_cancellation
     return nil unless cancel_window_expires_at
     return 'Expired' if cancel_window_expires_at <= Time.current
-
+    
     diff_seconds = (cancel_window_expires_at - Time.current).to_i
-
-    minutes = diff_seconds / 60
-    seconds = diff_seconds % 60
-
-    "#{minutes} min #{seconds} sec"
+    hours = diff_seconds / 3600
+    minutes = (diff_seconds % 3600) / 60
+    
+    "#{hours}h #{minutes}m"
   end
-
 
   def cancel!(reason = nil)
     return false unless can_be_cancelled?
@@ -505,7 +492,7 @@ class EquityInvestment < ApplicationRecord
   # Timestamp Methods
   def set_commitment_timestamps
     self.committed_at ||= Time.current
-    self.cancel_window_expires_at ||= 5.minutes.from_now
+    self.cancel_window_expires_at ||= 48.hours.from_now
   end
 
   def set_investment_date
