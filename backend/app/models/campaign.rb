@@ -179,12 +179,12 @@ class Campaign < ApplicationRecord
       raise "Transfers are locked for this fundraiser"
     end
     
-    updated_transferred_amount = transferred_amount + new_donated_amount
-    update!(transferred_amount: updated_transferred_amount)
+    # Update campaign's transferred_amount
+    update!(transferred_amount: transferred_amount + new_donated_amount)
     
-    # Update user's total transferred amount
-    fundraiser.update_column(:total_transferred_amount, 
-      fundraiser.total_transferred_amount + new_donated_amount)
+    # Update user's total transferred amount by summing all campaigns
+    new_total = fundraiser.campaigns.sum(:transferred_amount)
+    fundraiser.update!(total_transferred_amount: new_total)
   end
 
   # app/models/campaign.rb

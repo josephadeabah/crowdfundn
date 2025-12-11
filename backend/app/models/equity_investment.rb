@@ -47,6 +47,7 @@ class EquityInvestment < ApplicationRecord
   validates :full_name, presence: true  # ADDED: Ensure full_name is validated
   validates :phone, presence: false
   validates :status, inclusion: { in: VALID_STATUSES }
+  validate :prevent_double_finalization
 
   # NEW: Custom validation for club investments
   validate :validate_investor_presence
@@ -56,7 +57,7 @@ class EquityInvestment < ApplicationRecord
   scope :committed, -> { where(status: STATUS_COMMITTED) }
   scope :cancellable, -> { 
     where(status: STATUS_COMMITTED)
-    .where('cancel_window_expires_at > ?', Time.current)
+    .where('cancel_window_expires_at > ?', 1.minute.ago)
   }
 
   # NEW: Scope for club investments
@@ -164,7 +165,7 @@ class EquityInvestment < ApplicationRecord
 
   # ========== CANCELLATION METHODS ==========
   def can_be_cancelled?
-    committed? && (cancel_window_expires_at.nil? || cancel_window_expires_at > Time.current)
+    committed? && (cancel_window_expires_at.nil? || cancel_window_expires_at > 1.minute.ago)
   end
 
   # NEW: Added time_remaining_for_cancellation method for countdown timer
@@ -334,7 +335,7 @@ class EquityInvestment < ApplicationRecord
       # NEW: Add cancellation-related fields for frontend
       can_be_cancelled: can_be_cancelled?,
       cancel_window_expires_at: cancel_window_expires_at,
-      time_remaining_for_cancellation: time_remaining_for_cancellation,
+      time_remaining_for_cancellation: 1.minute.ago, # time_remaining_for_cancellation
       campaign: {
         id: campaign.id,
         title: campaign.title,
@@ -490,7 +491,7 @@ class EquityInvestment < ApplicationRecord
   # Timestamp Methods
   def set_commitment_timestamps
     self.committed_at ||= Time.current
-    self.cancel_window_expires_at ||= 48.hours.from_now
+    self.cancel_window_expires_at ||= 1.minute.ago
   end
 
   def set_investment_date
@@ -544,5 +545,12 @@ class EquityInvestment < ApplicationRecord
   rescue => e
     Rails.logger.error "Error updating campaign shares: #{e.message}"
     raise
+  end
+
+  def prevent_double_finalization
+    if status_changed? && status == EquityInvestment::STATUS_SUCCESSFUL && 
+      status_was == EquityInvestment::STATUS_SUCCESSFUL
+      errors.add(:status, "already finalized")
+    end
   end
 end
