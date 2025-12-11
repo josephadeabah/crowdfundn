@@ -505,7 +505,7 @@ class EquityInvestment < ApplicationRecord
   # Timestamp Methods
   def set_commitment_timestamps
     self.committed_at ||= Time.current
-    self.cancel_window_expires_at ||= 48.hours.from_now
+    self.cancel_window_expires_at ||= 5.minutes.from_now
   end
 
   def set_investment_date
