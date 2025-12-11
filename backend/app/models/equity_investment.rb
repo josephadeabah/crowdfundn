@@ -57,7 +57,7 @@ class EquityInvestment < ApplicationRecord
   scope :committed, -> { where(status: STATUS_COMMITTED) }
   scope :cancellable, -> { 
     where(status: STATUS_COMMITTED)
-    .where('cancel_window_expires_at > ?', 1.minute.ago)
+    .where('cancel_window_expires_at > ?', 5.minutes.from_now)
   }
 
   # NEW: Scope for club investments
@@ -165,7 +165,7 @@ class EquityInvestment < ApplicationRecord
 
   # ========== CANCELLATION METHODS ==========
   def can_be_cancelled?
-    committed? && (cancel_window_expires_at.nil? || cancel_window_expires_at > 1.minute.ago)
+    committed? && (cancel_window_expires_at.nil? || cancel_window_expires_at > 5.minutes.from_now)
   end
 
   # NEW: Added time_remaining_for_cancellation method for countdown timer
@@ -335,7 +335,7 @@ class EquityInvestment < ApplicationRecord
       # NEW: Add cancellation-related fields for frontend
       can_be_cancelled: can_be_cancelled?,
       cancel_window_expires_at: cancel_window_expires_at,
-      time_remaining_for_cancellation: 1.minute.ago, # time_remaining_for_cancellation
+      time_remaining_for_cancellation: 5.minutes.from_now, # time_remaining_for_cancellation
       campaign: {
         id: campaign.id,
         title: campaign.title,
@@ -491,7 +491,7 @@ class EquityInvestment < ApplicationRecord
   # Timestamp Methods
   def set_commitment_timestamps
     self.committed_at ||= Time.current
-    self.cancel_window_expires_at ||= 1.minute.ago
+    self.cancel_window_expires_at ||= 5.minutes.from_now
   end
 
   def set_investment_date
