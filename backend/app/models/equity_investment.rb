@@ -47,10 +47,11 @@ class EquityInvestment < ApplicationRecord
   validates :full_name, presence: true  # ADDED: Ensure full_name is validated
   validates :phone, presence: false
   validates :status, inclusion: { in: VALID_STATUSES }
-  validate :prevent_double_finalization
+  
 
   # NEW: Custom validation for club investments
   validate :validate_investor_presence
+  validate :prevent_double_finalization
 
   # Scopes
   scope :successful, -> { where(status: STATUS_SUCCESSFUL) }
@@ -169,16 +170,29 @@ class EquityInvestment < ApplicationRecord
   end
 
   # NEW: Added time_remaining_for_cancellation method for countdown timer
+  # def time_remaining_for_cancellation
+  #   return nil unless cancel_window_expires_at
+  #   return 'Expired' if cancel_window_expires_at <= Time.current
+    
+  #   diff_seconds = (cancel_window_expires_at - Time.current).to_i
+  #   hours = diff_seconds / 3600
+  #   minutes = (diff_seconds % 3600) / 60
+    
+  #   "#{hours}h #{minutes}m"
+  # end
+
   def time_remaining_for_cancellation
     return nil unless cancel_window_expires_at
     return 'Expired' if cancel_window_expires_at <= Time.current
-    
+
     diff_seconds = (cancel_window_expires_at - Time.current).to_i
-    hours = diff_seconds / 3600
-    minutes = (diff_seconds % 3600) / 60
-    
-    "#{hours}h #{minutes}m"
+
+    minutes = diff_seconds / 60
+    seconds = diff_seconds % 60
+
+    "#{minutes} min #{seconds} sec"
   end
+
 
   def cancel!(reason = nil)
     return false unless can_be_cancelled?
@@ -335,7 +349,7 @@ class EquityInvestment < ApplicationRecord
       # NEW: Add cancellation-related fields for frontend
       can_be_cancelled: can_be_cancelled?,
       cancel_window_expires_at: cancel_window_expires_at,
-      time_remaining_for_cancellation: 5.minutes.from_now, # time_remaining_for_cancellation
+      time_remaining_for_cancellation: time_remaining_for_cancellation,
       campaign: {
         id: campaign.id,
         title: campaign.title,
@@ -491,7 +505,7 @@ class EquityInvestment < ApplicationRecord
   # Timestamp Methods
   def set_commitment_timestamps
     self.committed_at ||= Time.current
-    self.cancel_window_expires_at ||= 5.minutes.from_now
+    self.cancel_window_expires_at ||= 48.hours.from_now
   end
 
   def set_investment_date
@@ -530,11 +544,6 @@ class EquityInvestment < ApplicationRecord
   def update_campaign_shares
     ActiveRecord::Base.transaction do
       campaign.with_lock do
-        # FIXED: Use increment! to avoid race conditions
-        campaign.increment!(:current_amount, amount)
-        campaign.increment!(:total_successful_donations, amount)
-        campaign.increment!(:total_equity_invested, amount)
-        
         # FIXED: Also update shares allocated
         campaign.decrement!(:shares_available, shares)
       end
