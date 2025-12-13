@@ -536,12 +536,12 @@ const EquityInvestments = () => {
                   Important Notice
                 </p>
                 <p className="text-xs text-blue-500">
-                  These data (current value & return) assume the company's current valuation accurately
-                  reflects what investors would earn today. In reality, this is
-                  an estimate until there's either an actual exit event
-                  (acquisition, IPO, or secondary sale) or the specific terms of
-                  the investment instrument are realized (such as profit-sharing
-                  distributions).
+                  These data (current value & return) assume the company's
+                  current valuation accurately reflects what investors would
+                  earn today. In reality, this is an estimate until there's
+                  either an actual exit event (acquisition, IPO, or secondary
+                  sale) or the specific terms of the investment instrument are
+                  realized (such as profit-sharing distributions).
                 </p>
               </div>
             </div>
