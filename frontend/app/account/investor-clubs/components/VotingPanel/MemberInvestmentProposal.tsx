@@ -712,7 +712,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-700">
-                  Invest w/ Swipe
+                  Decide w/ Vote
                 </h1>
                 <p className="text-sm text-gray-600">
                   Vote on investment opportunities for {club?.name}
