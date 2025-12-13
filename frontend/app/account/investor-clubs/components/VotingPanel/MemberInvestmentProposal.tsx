@@ -115,7 +115,7 @@ const MemberInvestmentProposal: React.FC<MemberInvestmentProposalProps> = ({
   // Helper function to safely extract currency symbol
   const getCurrencySymbol = (investment: any): string => {
     return (
-      investment.campaign?.currency_symbol || investment.currency_symbol || '$'
+      investment.campaign?.currency_symbol || investment?.campaign?.currency || investment?.currency || '$'
     );
   };
 

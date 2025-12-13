@@ -23,6 +23,7 @@ export interface Investment {
   title?: string;
   description: string;
   amount: string;
+  currency?: string;
   sector: string;
   votes: number;
   threshold: number;
@@ -119,7 +120,7 @@ export const VotingCard: React.FC<VotingCardProps> = ({
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold text-emerald-600">
-              {investment.amount}
+              {investment.currency}{investment.amount}
             </div>
             {investment.match_score && (
               <div className="text-xs text-gray-500 mt-1">
