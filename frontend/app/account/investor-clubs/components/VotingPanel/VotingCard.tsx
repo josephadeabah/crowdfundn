@@ -240,7 +240,7 @@ export const VotingCard: React.FC<VotingCardProps> = ({
               disabled={isAnimating}
             >
               <ThumbsUp className="w-4 h-4 mr-2" />
-              Vote
+              Invest
             </Button>
           </div>
         )}
