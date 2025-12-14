@@ -26,6 +26,8 @@ class DealRoom < ApplicationRecord
   
   validates :campaign_id, uniqueness: true
   validates :name, presence: true
+
+  after_create :add_creator_as_member
   
   scope :active, -> { where(status: :active) }
   scope :for_user, ->(user) {
@@ -95,5 +97,13 @@ class DealRoom < ApplicationRecord
       campaign_id: campaign_id,
       user_id: user_id
     )
+  end
+
+  def add_creator_as_member
+    # Ensure the creator is always a member
+    deal_room_memberships.find_or_create_by(user: user) do |membership|
+      membership.role = 'admin'
+      membership.status = 'active'
+    end
   end
 end
