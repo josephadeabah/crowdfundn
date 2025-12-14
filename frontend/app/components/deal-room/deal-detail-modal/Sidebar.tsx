@@ -46,18 +46,7 @@ export function Sidebar({
   onShareDeal,
   onMeetingCreated,
 }: SidebarProps) {
-  const { token: authToken } = useAuth();
-  const [localToken, setLocalToken] = useState<string | null>(null);
-
-  // Sync token from localStorage on component mount and auth changes
-  useEffect(() => {
-    const token =
-      localStorage.getItem('token') || sessionStorage.getItem('token');
-    setLocalToken(token);
-  }, [authToken]);
-
-  // Use either authToken or localStorage token
-  const token = authToken || localToken;
+  const { token } = useAuth();
 
   const handleSendMessageToFounder = () => {
     if (!token) {
