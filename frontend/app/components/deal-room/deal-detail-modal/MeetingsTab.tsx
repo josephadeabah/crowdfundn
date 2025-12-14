@@ -53,7 +53,6 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
   const loadMeetings = async () => {
     try {
       setIsLoading(true);
-     
 
       if (!token) {
         toast.error('Please sign in to view meetings');
