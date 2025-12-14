@@ -19,6 +19,32 @@ module Api
           total_count: @deal_rooms.total_count
         }, status: :ok
       end
+
+            # POST /api/v1/deal_rooms/:id/meetings
+      def create_meeting
+        # Check if user has access to the deal room
+        unless @deal_room.members.include?(@current_user) || @current_user.admin?
+          render json: { error: 'Access denied' }, status: :forbidden
+          return
+        end
+        
+        # Build meeting with organizer set to current user
+        @meeting = @deal_room.deal_room_meetings.new(meeting_params)
+        @meeting.organizer = @current_user
+        @meeting.status = 'scheduled'
+        
+        if @meeting.save
+          # Handle participants
+          handle_participants(@meeting)
+          
+          render json: {
+            message: 'Meeting created successfully',
+            meeting: @meeting.as_json(current_user: @current_user)
+          }, status: :created
+        else
+          render json: { errors: @meeting.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
       
       # GET /api/v1/deal_rooms/public_deals
       def public_deals
@@ -315,6 +341,42 @@ module Api
       end
       
       private
+
+      def meeting_params
+        params.permit(
+          :title, :description, :meeting_type,
+          :start_time, :end_time, :meeting_link, :notes
+        )
+      end
+      
+      def handle_participants(meeting)
+        # Add current user as host
+        meeting.add_participant(@current_user, role: 'host', status: 'accepted')
+        
+        # Add selected users
+        if params[:participant_ids].present?
+          params[:participant_ids].each do |user_id|
+            user = User.find_by(id: user_id)
+            meeting.add_participant(user) if user
+          end
+        end
+        
+        # Add participants by email
+        if params[:participant_emails].present?
+          emails = params[:participant_emails].is_a?(String) ? 
+                   params[:participant_emails].split(',').map(&:strip) : 
+                   params[:participant_emails]
+          meeting.add_participants_by_email(emails)
+        end
+        
+        # Invite all deal room members if requested
+        if params[:invite_all_members] == true || params[:invite_all_members] == 'true'
+          @deal_room.members.each do |member|
+            next if member == @current_user # Already added as host
+            meeting.add_participant(member)
+          end
+        end
+      end
       
       def set_deal_room
         # Try to find by ID first (DealRoom ID)
