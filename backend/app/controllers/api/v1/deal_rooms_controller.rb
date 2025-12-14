@@ -20,31 +20,47 @@ module Api
         }, status: :ok
       end
 
-            # POST /api/v1/deal_rooms/:id/meetings
-      def create_meeting
-        # Check if user has access to the deal room
-        unless @deal_room.members.include?(@current_user) || @current_user.admin?
-          render json: { error: 'Access denied' }, status: :forbidden
-          return
-        end
+    
+      # GET /api/deal_rooms/:id/meetings
+      def meetings
+        @deal_room = DealRoom.find(params[:id])
         
-        # Build meeting with organizer set to current user
+        # Get meetings for this deal room
+        meetings = @deal_room.deal_room_meetings
+          .order(start_time: :desc)
+          .page(params[:page])
+          .per(params[:per_page] || 20)
+        
+        render json: {
+          meetings: meetings.as_json(current_user: current_user),
+          current_page: meetings.current_page,
+          total_pages: meetings.total_pages,
+          total_count: meetings.total_count
+        }
+      end
+      
+      # POST /api/deal_rooms/:id/meetings
+      def create_meeting
+        @deal_room = DealRoom.find(params[:id])
+        
         @meeting = @deal_room.deal_room_meetings.new(meeting_params)
-        @meeting.organizer = @current_user
-        @meeting.status = 'scheduled'
+        @meeting.organizer = current_user
         
         if @meeting.save
-          # Handle participants
-          handle_participants(@meeting)
+          # Auto-add organizer as host
+          @meeting.deal_room_meeting_participants.create(
+            user: current_user,
+            role: :host,
+            status: :accepted
+          )
           
-          render json: {
-            message: 'Meeting created successfully',
-            meeting: @meeting.as_json(current_user: @current_user)
-          }, status: :created
+          render json: @meeting, status: :created
         else
           render json: { errors: @meeting.errors.full_messages }, status: :unprocessable_entity
         end
       end
+      
+
       
       # GET /api/v1/deal_rooms/public_deals
       def public_deals
@@ -178,22 +194,6 @@ module Api
             errors: @conversation.errors.full_messages
           }, status: :unprocessable_entity
         end
-      end
-      
-      # GET /api/v1/deal_rooms/:id/meetings
-      def meetings
-        @meetings = @deal_room.deal_room_meetings
-                             .includes(:organizer, :participants)
-                             .order(start_time: :asc)
-                             .page(params[:page])
-                             .per(params[:per_page] || 20)
-        
-        render json: {
-          meetings: @meetings.map { |m| m.as_json(current_user: @current_user) },
-          current_page: @meetings.current_page,
-          total_pages: @meetings.total_pages,
-          total_count: @meetings.total_count
-        }, status: :ok
       end
 
       # GET /api/v1/deal_rooms/:id/calendar
@@ -352,37 +352,6 @@ module Api
           Rails.logger.info "=== MEMBERS ACTION COMPLETED ==="
         end
       end
-
-      # POST /api/v1/deal_rooms/:id/create_meeting
-      def create_meeting
-        @meeting = @deal_room.deal_room_meetings.new(
-          organizer: @current_user,
-          title: params[:title],
-          description: params[:description],
-          meeting_type: params[:meeting_type] || 'qna',
-          start_time: params[:start_time],
-          end_time: params[:end_time],
-          meeting_link: params[:meeting_link],
-          notes: params[:notes],
-          status: params[:status] || 'scheduled'
-        )
-        
-        ActiveRecord::Base.transaction do
-          if @meeting.save
-            # Add participants
-            add_participants_to_meeting(@meeting)
-            
-            render json: {
-              message: 'Meeting scheduled successfully',
-              meeting: @meeting.as_json(current_user: @current_user)
-            }, status: :created
-          else
-            render json: {
-              errors: @meeting.errors.full_messages
-            }, status: :unprocessable_entity
-          end
-        end
-      end
       
       # POST /api/v1/deal_rooms/:id/join
       def join
@@ -429,14 +398,19 @@ module Api
         }, status: :ok
       end
       
-      private
-
-      def meeting_params
-        params.permit(
-          :title, :description, :meeting_type,
-          :start_time, :end_time, :meeting_link, :notes
-        )
-      end
+    private
+    
+    def meeting_params
+      params.require(:meeting).permit(
+        :title,
+        :description,
+        :meeting_type,
+        :start_time,
+        :end_time,
+        :meeting_link,
+        :notes
+      )
+    end
       
       def handle_participants(meeting)
         # Add current user as host

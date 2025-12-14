@@ -11,15 +11,12 @@ Rails.application.routes.draw do
       resources :deal_rooms, only: [:index, :show] do
         member do
           get :documents
-          post :upload_document
           get :conversations
+          get :meetings  # GET /api/deal_rooms/:id/meetings
+          post :create_meeting  # POST /api/deal_rooms/:id/meetings
           post :create_conversation
-          get :meetings
-          post :create_meeting  # Make sure this exists
           post :join
           post :show_interest
-          get :calendar
-          get :availability
           get :members
         end
         collection do
@@ -39,19 +36,7 @@ Rails.application.routes.draw do
       end
       
       # Deal Room Meetings - EXPANDED with full functionality
-      resources :deal_room_meetings, only: [:create, :show, :update, :destroy] do
-        member do
-          post :add_participant
-          delete :remove_participant
-          post :rsvp
-          post :start
-          post :end
-          post :cancel
-          post :reschedule
-          post :add_participants
-          post :attendance
-        end
-      end
+    resources :deal_room_meetings, only: [:create, :show, :update, :destroy]
       
       # NEW: Get user's upcoming meetings
       get 'my/meetings/upcoming', to: 'deal_room_meetings#upcoming'
