@@ -144,11 +144,7 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
     loadMeetings();
   }, [dealRoomId]);
 
-  // Get token from both localStorage and useAuth for consistency
-  const localStorageToken =
-    localStorage.getItem('token') || sessionStorage.getItem('token');
-
-  if (!localStorageToken) {
+  if (!token) {
     return (
       <div className="text-center py-12">
         <Calendar className="w-12 h-12 mx-auto text-gray-400 mb-4" />
