@@ -15,7 +15,8 @@ import { CreateMeetingModal } from '../meetings/CreateMeetingModal';
 import { toast } from 'sonner';
 
 // Get API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
 
 interface Meeting {
   id: string;
@@ -58,12 +59,15 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/deal_rooms/${dealRoomId}/meetings`, {
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        `${API_BASE_URL}/deal_rooms/${dealRoomId}/meetings`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -140,7 +144,8 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
   }, [dealRoomId]);
 
   // Get token from both localStorage and useAuth for consistency
-  const localStorageToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const localStorageToken =
+    localStorage.getItem('token') || sessionStorage.getItem('token');
 
   if (!localStorageToken) {
     return (

@@ -266,29 +266,29 @@ export const useDealRoomApi = () => {
   );
 
   // Fixed createMeeting function using environment variable
-const createMeeting = useCallback(
-  async (
-    dealId: string,
-    meetingData: {
-      title: string;
-      description?: string;
-      meeting_type: string;
-      start_time: string;
-      end_time: string;
-      meeting_link: string;
-      notes?: string;
-    },
-  ) => {
-    if (!token) {
-      throw new Error('Authentication required');
-    }
+  const createMeeting = useCallback(
+    async (
+      dealId: string,
+      meetingData: {
+        title: string;
+        description?: string;
+        meeting_type: string;
+        start_time: string;
+        end_time: string;
+        meeting_link: string;
+        notes?: string;
+      },
+    ) => {
+      if (!token) {
+        throw new Error('Authentication required');
+      }
 
-    try {
-      const result = await fetch(`${API_BASE_URL}/deal_room_meetings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+      try {
+        const result = await fetch(`${API_BASE_URL}/deal_room_meetings`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             deal_room_meeting: {

@@ -51,7 +51,8 @@ export function Sidebar({
 
   // Sync token from localStorage on component mount and auth changes
   useEffect(() => {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem('token') || sessionStorage.getItem('token');
     setLocalToken(token);
   }, [authToken]);
 
