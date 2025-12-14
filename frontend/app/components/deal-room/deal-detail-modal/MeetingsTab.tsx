@@ -93,8 +93,13 @@ export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
       };
 
       console.log('Creating meeting with data:', formattedData);
+      console.log('Token:', token ? 'Present' : 'Missing');
+      console.log('Deal Room ID:', dealRoomId);
+      console.log('API URL:', `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/deal_rooms/${dealRoomId}/meetings`);
       
       const result = await createMeeting(dealRoomId, formattedData);
+      
+      console.log('Meeting creation response:', result);
       
       toast.success('Meeting scheduled successfully');
       setShowCreateModal(false);
