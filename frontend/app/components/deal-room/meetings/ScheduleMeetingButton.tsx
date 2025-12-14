@@ -11,14 +11,15 @@ interface ScheduleMeetingButtonProps {
   onMeetingCreated: () => void;
 }
 
-export function ScheduleMeetingButton({ 
+export function ScheduleMeetingButton({
   dealRoomId,
-  onMeetingCreated 
+  onMeetingCreated,
 }: ScheduleMeetingButtonProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const handleScheduleClick = () => {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token =
+      localStorage.getItem('token') || sessionStorage.getItem('token');
     if (!token) {
       toast.error('Please sign in to schedule a meeting');
       return;

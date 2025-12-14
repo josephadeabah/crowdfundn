@@ -1,7 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, CheckCircle, XCircle, Loader2, Video } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Loader2,
+  Video,
+} from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { CreateMeetingModal } from '../meetings/CreateMeetingModal';
@@ -40,16 +47,17 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
   const loadMeetings = async () => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      
+      const token =
+        localStorage.getItem('token') || sessionStorage.getItem('token');
+
       const response = await fetch(`/api/deal_rooms/${dealRoomId}/meetings`, {
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       if (!response.ok) {
         throw new Error('Failed to load meetings');
       }
-      
+
       const data = await response.json();
       setMeetings(data.meetings || []);
     } catch (error) {
@@ -71,23 +79,44 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'scheduled':
-        return { label: 'Scheduled', color: 'bg-blue-100 text-blue-800', icon: Clock };
+        return {
+          label: 'Scheduled',
+          color: 'bg-blue-100 text-blue-800',
+          icon: Clock,
+        };
       case 'completed':
-        return { label: 'Completed', color: 'bg-green-100 text-green-800', icon: CheckCircle };
+        return {
+          label: 'Completed',
+          color: 'bg-green-100 text-green-800',
+          icon: CheckCircle,
+        };
       case 'canceled':
-        return { label: 'Canceled', color: 'bg-red-100 text-red-800', icon: XCircle };
+        return {
+          label: 'Canceled',
+          color: 'bg-red-100 text-red-800',
+          icon: XCircle,
+        };
       default:
-        return { label: 'Scheduled', color: 'bg-blue-100 text-blue-800', icon: Clock };
+        return {
+          label: 'Scheduled',
+          color: 'bg-blue-100 text-blue-800',
+          icon: Clock,
+        };
     }
   };
 
   const getMeetingTypeLabel = (type: string) => {
     switch (type) {
-      case 'one_on_one': return 'One-on-One';
-      case 'pitch_review': return 'Pitch Review';
-      case 'due_diligence': return 'Due Diligence';
-      case 'investor_update': return 'Investor Update';
-      default: return type;
+      case 'one_on_one':
+        return 'One-on-One';
+      case 'pitch_review':
+        return 'Pitch Review';
+      case 'due_diligence':
+        return 'Due Diligence';
+      case 'investor_update':
+        return 'Investor Update';
+      default:
+        return type;
     }
   };
 
@@ -95,7 +124,8 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
     loadMeetings();
   }, [dealRoomId]);
 
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const token =
+    localStorage.getItem('token') || sessionStorage.getItem('token');
 
   if (!token) {
     return (
@@ -116,9 +146,7 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Meetings</h3>
-          <p className="text-sm text-gray-600">
-            Schedule and join meetings
-          </p>
+          <p className="text-sm text-gray-600">Schedule and join meetings</p>
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
@@ -177,26 +205,27 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
                         {getMeetingTypeLabel(meeting.meeting_type)}
                       </Badge>
                     </div>
-                    
+
                     {meeting.description && (
                       <p className="text-gray-600 text-sm mb-2">
                         {meeting.description}
                       </p>
                     )}
-                    
+
                     <div className="text-sm text-gray-500 space-y-1">
                       <div>📅 {meeting.formatted_start_time}</div>
                       <div>⏱️ {meeting.duration_minutes} minutes</div>
                       <div>👤 Organized by: {meeting.organizer.name}</div>
                     </div>
-                    
+
                     {meeting.notes && (
                       <div className="mt-3 text-sm text-gray-600 bg-gray-50 p-3 rounded">
-                        <span className="font-medium">Notes:</span> {meeting.notes}
+                        <span className="font-medium">Notes:</span>{' '}
+                        {meeting.notes}
                       </div>
                     )}
                   </div>
-                  
+
                   {canJoin && (
                     <Button
                       size="sm"

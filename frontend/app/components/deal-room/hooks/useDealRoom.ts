@@ -4,7 +4,8 @@ import { useAuth } from '@/app/context/auth/AuthContext';
 import { toast } from 'sonner';
 
 // Get the API base URL from environment variable
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
 
 export const useDealRoomApi = () => {
   const { token } = useAuth();
@@ -287,19 +288,21 @@ export const useDealRoomApi = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             deal_room_meeting: {
               ...meetingData,
-              deal_room_id: dealId
-            }
-          })
+              deal_room_id: dealId,
+            },
+          }),
         });
 
         if (!result.ok) {
           const error = await result.json();
-          throw new Error(error.errors?.join(', ') || 'Failed to create meeting');
+          throw new Error(
+            error.errors?.join(', ') || 'Failed to create meeting',
+          );
         }
 
         return await result.json();
@@ -329,18 +332,23 @@ export const useDealRoomApi = () => {
       }
 
       try {
-        const result = await fetch(`${API_BASE_URL}/deal_room_meetings/${meetingId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+        const result = await fetch(
+          `${API_BASE_URL}/deal_room_meetings/${meetingId}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ deal_room_meeting: meetingData }),
           },
-          body: JSON.stringify({ deal_room_meeting: meetingData })
-        });
+        );
 
         if (!result.ok) {
           const error = await result.json();
-          throw new Error(error.errors?.join(', ') || 'Failed to update meeting');
+          throw new Error(
+            error.errors?.join(', ') || 'Failed to update meeting',
+          );
         }
 
         return await result.json();
@@ -359,12 +367,15 @@ export const useDealRoomApi = () => {
       }
 
       try {
-        const result = await fetch(`${API_BASE_URL}/deal_room_meetings/${meetingId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        const result = await fetch(
+          `${API_BASE_URL}/deal_room_meetings/${meetingId}`,
+          {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
 
         if (!result.ok) {
           throw new Error('Failed to delete meeting');
@@ -386,7 +397,9 @@ export const useDealRoomApi = () => {
       }
 
       try {
-        toast.error('Meeting start functionality not available in simplified version');
+        toast.error(
+          'Meeting start functionality not available in simplified version',
+        );
         return Promise.resolve();
       } catch (err) {
         console.error('Error starting meeting:', err);
@@ -403,7 +416,9 @@ export const useDealRoomApi = () => {
       }
 
       try {
-        toast.error('Meeting end functionality not available in simplified version');
+        toast.error(
+          'Meeting end functionality not available in simplified version',
+        );
         return Promise.resolve();
       } catch (err) {
         console.error('Error ending meeting:', err);
@@ -420,18 +435,21 @@ export const useDealRoomApi = () => {
       }
 
       try {
-        const result = await fetch(`${API_BASE_URL}/deal_room_meetings/${meetingId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+        const result = await fetch(
+          `${API_BASE_URL}/deal_room_meetings/${meetingId}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              deal_room_meeting: {
+                status: 'canceled',
+              },
+            }),
           },
-          body: JSON.stringify({ 
-            deal_room_meeting: { 
-              status: 'canceled' 
-            } 
-          })
-        });
+        );
 
         if (!result.ok) {
           throw new Error('Failed to cancel meeting');
@@ -453,19 +471,22 @@ export const useDealRoomApi = () => {
       }
 
       try {
-        const result = await fetch(`${API_BASE_URL}/deal_room_meetings/${meetingId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+        const result = await fetch(
+          `${API_BASE_URL}/deal_room_meetings/${meetingId}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              deal_room_meeting: {
+                start_time: newStartTime,
+                end_time: newEndTime,
+              },
+            }),
           },
-          body: JSON.stringify({ 
-            deal_room_meeting: { 
-              start_time: newStartTime,
-              end_time: newEndTime
-            } 
-          })
-        });
+        );
 
         if (!result.ok) {
           throw new Error('Failed to reschedule meeting');
@@ -515,9 +536,12 @@ export const useDealRoomApi = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/deal_rooms/meetings/upcoming`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/deal_rooms/meetings/upcoming`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       if (!response.ok) {
         throw new Error('Failed to fetch upcoming meetings');
