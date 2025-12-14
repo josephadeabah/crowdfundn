@@ -1,15 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  X,
-  Calendar,
-  Clock,
-  Video,
-  Type,
-  FileText,
-  Loader2,
-} from 'lucide-react';
+import { X, Calendar, Clock, Video, Type, FileText, Loader2 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Textarea } from '@/app/components/ui/textarea';
@@ -25,9 +17,8 @@ import { toast } from 'sonner';
 import { TimePicker } from '../../ui/time-picker';
 import { DatePicker } from '../../ui/date-picker';
 
-// Get API base URL from environment variable
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
+// Get API base URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
 
 interface CreateMeetingModalProps {
   isOpen: boolean;
@@ -47,9 +38,7 @@ export function CreateMeetingModal({
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [meetingType, setMeetingType] = useState('one_on_one');
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date(),
-  );
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
   const [meetingLink, setMeetingLink] = useState('');
@@ -153,26 +142,25 @@ export function CreateMeetingModal({
     };
 
     try {
-      const token =
-        localStorage.getItem('token') || sessionStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       if (!token) {
         throw new Error('Please sign in to schedule a meeting');
       }
 
+      // Use the correct API endpoint based on your routes
+      // If you're using /api/deal_room_meetings (without v1)
       const response = await fetch(`${API_BASE_URL}/deal_room_meetings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ deal_room_meeting: meetingData }),
+        body: JSON.stringify({ deal_room_meeting: meetingData })
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(
-          error.errors?.join(', ') || 'Failed to schedule meeting',
-        );
+        throw new Error(error.errors?.join(', ') || 'Failed to schedule meeting');
       }
 
       const result = await response.json();
@@ -183,7 +171,7 @@ export function CreateMeetingModal({
       return result;
     } catch (error: any) {
       console.error('Failed to create meeting:', error);
-
+      
       if (error.errors) {
         const backendErrors: Record<string, string> = {};
         error.errors.forEach((err: string) => {
@@ -213,13 +201,13 @@ export function CreateMeetingModal({
   if (!isOpen) return null;
 
   return (
-    <div
+    <div 
       className="fixed inset-0 z-50 flex items-center justify-center"
       onClick={handleBackgroundClick}
     >
       <div className="absolute inset-0 bg-black/50" />
 
-      <div
+      <div 
         className="relative bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
@@ -280,8 +268,8 @@ export function CreateMeetingModal({
             {/* Meeting Type */}
             <div className="space-y-2">
               <Label htmlFor="meetingType">Meeting Type *</Label>
-              <Select
-                value={meetingType}
+              <Select 
+                value={meetingType} 
                 onValueChange={setMeetingType}
                 disabled={isSubmitting || isLoading}
               >
@@ -319,8 +307,8 @@ export function CreateMeetingModal({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="startTime">Start Time *</Label>
-                <TimePicker
-                  value={startTime}
+                <TimePicker 
+                  value={startTime} 
                   onChange={setStartTime}
                   minTime="00:00"
                   disabled={isSubmitting || isLoading}
@@ -391,7 +379,7 @@ export function CreateMeetingModal({
               className="bg-emerald-600 text-white hover:bg-emerald-700"
               disabled={isSubmitting || isLoading}
             >
-              {isSubmitting || isLoading ? (
+              {(isSubmitting || isLoading) ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Scheduling...

@@ -15,6 +15,7 @@ import { formatCurrency } from '../utils/formatters';
 import { toast } from 'sonner';
 import { ScheduleMeetingButton } from '../meetings/ScheduleMeetingButton';
 import { useAuth } from '@/app/context/auth/AuthContext';
+import { useState, useEffect } from 'react';
 
 interface SidebarProps {
   deal: Deal;
@@ -45,7 +46,17 @@ export function Sidebar({
   onShareDeal,
   onMeetingCreated,
 }: SidebarProps) {
-  const { token } = useAuth();
+  const { token: authToken } = useAuth();
+  const [localToken, setLocalToken] = useState<string | null>(null);
+
+  // Sync token from localStorage on component mount and auth changes
+  useEffect(() => {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    setLocalToken(token);
+  }, [authToken]);
+
+  // Use either authToken or localStorage token
+  const token = authToken || localToken;
 
   const handleSendMessageToFounder = () => {
     if (!token) {

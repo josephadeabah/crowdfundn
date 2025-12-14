@@ -14,6 +14,9 @@ import { Badge } from '@/app/components/ui/badge';
 import { CreateMeetingModal } from '../meetings/CreateMeetingModal';
 import { toast } from 'sonner';
 
+// Get API base URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
+
 interface Meeting {
   id: string;
   title: string;
@@ -50,16 +53,28 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
       const token =
         localStorage.getItem('token') || sessionStorage.getItem('token');
 
-      const response = await fetch(`/api/deal_rooms/${dealRoomId}/meetings`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      if (!token) {
+        toast.error('Please sign in to view meetings');
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/deal_rooms/${dealRoomId}/meetings`, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          toast.error('Session expired. Please sign in again.');
+          return;
+        }
         throw new Error('Failed to load meetings');
       }
 
       const data = await response.json();
-      setMeetings(data.meetings || []);
+      setMeetings(data.meetings || data.data || []);
     } catch (error) {
       console.error('Error loading meetings:', error);
       toast.error('Failed to load meetings');
@@ -124,10 +139,10 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
     loadMeetings();
   }, [dealRoomId]);
 
-  const token =
-    localStorage.getItem('token') || sessionStorage.getItem('token');
+  // Get token from both localStorage and useAuth for consistency
+  const localStorageToken = localStorage.getItem('token') || sessionStorage.getItem('token');
 
-  if (!token) {
+  if (!localStorageToken) {
     return (
       <div className="text-center py-12">
         <Calendar className="w-12 h-12 mx-auto text-gray-400 mb-4" />
