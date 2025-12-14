@@ -1,4 +1,3 @@
-// app/components/ui/date-picker.tsx
 'use client';
 
 import * as React from 'react';
@@ -11,20 +10,20 @@ import { Calendar } from './calender';
 
 interface DatePickerProps {
   date?: Date;
-  onSelect?: (date: Date | undefined) => void;
+  onSelect: (date?: Date) => void;
   className?: string;
-  placeholder?: string;
   fromDate?: Date;
   toDate?: Date;
+  disabled?: boolean;
 }
 
 export function DatePicker({
   date,
   onSelect,
   className,
-  placeholder = 'Pick a date',
   fromDate,
   toDate,
+  disabled = false,
 }: DatePickerProps) {
   return (
     <Popover>
@@ -34,21 +33,24 @@ export function DatePicker({
           className={cn(
             'w-full justify-start text-left font-normal',
             !date && 'text-muted-foreground',
+            disabled && 'opacity-50 cursor-not-allowed',
             className,
           )}
+          disabled={disabled}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, 'PPP') : <span>{placeholder}</span>}
+          {date ? format(date, 'PPP') : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 z-[100]">
+      <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
           selected={date}
           onSelect={onSelect}
-          initialFocus
           fromDate={fromDate}
           toDate={toDate}
+          initialFocus
+          disabled={disabled}
         />
       </PopoverContent>
     </Popover>

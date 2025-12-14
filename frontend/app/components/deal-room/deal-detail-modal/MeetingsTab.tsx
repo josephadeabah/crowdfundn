@@ -1,57 +1,57 @@
-// app/components/deal-room/deal-detail-modal/MeetingsTab.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, Users, Video, Plus, Loader2 } from 'lucide-react';
+import { Calendar, Clock, CheckCircle, XCircle, Loader2, Video } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/app/components/ui/tabs';
-import { MeetingsList } from '../meetings/MeetingsList';
-import { MeetingsCalendar } from '../meetings/MeetingsCalendar';
+import { Badge } from '@/app/components/ui/badge';
 import { CreateMeetingModal } from '../meetings/CreateMeetingModal';
-import { useAuth } from '@/app/context/auth/AuthContext';
 import { toast } from 'sonner';
-import { useDealRoomApi } from '../hooks/useDealRoom';
+
+interface Meeting {
+  id: string;
+  title: string;
+  description: string;
+  meeting_type: string;
+  status: string;
+  start_time: string;
+  end_time: string;
+  meeting_link: string;
+  notes?: string;
+  duration_minutes: number;
+  upcoming: boolean;
+  ongoing: boolean;
+  past: boolean;
+  organizer: {
+    id: string;
+    name: string;
+  };
+  formatted_start_time: string;
+}
 
 interface MeetingsTabProps {
   dealRoomId: string;
-  token: string | null;
-  isMember: boolean;
 }
 
-export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
-  const { getDealMeetings, getDealRoomMembers, createMeeting } =
-    useDealRoomApi();
-  const [meetings, setMeetings] = useState<any[]>([]);
-  const [view, setView] = useState<'list' | 'calendar'>('list');
+export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState(true);
-  const [isCreatingMeeting, setIsCreatingMeeting] = useState(false);
-  const [availableUsers, setAvailableUsers] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-
-  useEffect(() => {
-    if (token && dealRoomId) {
-      loadMeetings();
-      loadAvailableUsers();
-    }
-  }, [token, dealRoomId, page]);
 
   const loadMeetings = async () => {
     try {
       setIsLoading(true);
-      const response = await getDealMeetings(dealRoomId, page, 20);
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      
+      const response = await fetch(`/api/deal_rooms/${dealRoomId}/meetings`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
 
-      setMeetings(response.data || []);
-      setTotalPages(response.total_pages || 1);
-      setTotalCount(response.total_count || 0);
+      if (!response.ok) {
+        throw new Error('Failed to load meetings');
+      }
+      
+      const data = await response.json();
+      setMeetings(data.meetings || []);
     } catch (error) {
       console.error('Error loading meetings:', error);
       toast.error('Failed to load meetings');
@@ -60,131 +60,73 @@ export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
     }
   };
 
-  const loadAvailableUsers = async () => {
-    try {
-      const response = await getDealRoomMembers(dealRoomId, 1, 100);
-      setAvailableUsers(response.data || []);
-    } catch (error) {
-      console.error('Error loading users:', error);
+  const handleMeetingCreated = () => {
+    loadMeetings();
+  };
+
+  const handleJoinMeeting = (meetingLink: string) => {
+    window.open(meetingLink, '_blank', 'noopener,noreferrer');
+  };
+
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'scheduled':
+        return { label: 'Scheduled', color: 'bg-blue-100 text-blue-800', icon: Clock };
+      case 'completed':
+        return { label: 'Completed', color: 'bg-green-100 text-green-800', icon: CheckCircle };
+      case 'canceled':
+        return { label: 'Canceled', color: 'bg-red-100 text-red-800', icon: XCircle };
+      default:
+        return { label: 'Scheduled', color: 'bg-blue-100 text-blue-800', icon: Clock };
     }
   };
 
-  const handleCreateMeeting = async (meetingData: any) => {
-    if (!token) {
-      toast.error('You must be logged in to schedule a meeting');
-      return;
-    }
-
-    try {
-      setIsCreatingMeeting(true);
-      
-      // Format the data properly for the API
-      const formattedData = {
-        title: meetingData.title,
-        description: meetingData.description || '',
-        meeting_type: meetingData.meeting_type,
-        start_time: meetingData.start_time,
-        end_time: meetingData.end_time,
-        meeting_link: meetingData.meeting_link || '',
-        notes: meetingData.notes || '',
-        participant_ids: meetingData.participant_ids || [],
-        participant_emails: meetingData.participant_emails || [],
-        invite_all_members: meetingData.invite_all_members || false
-      };
-
-      console.log('Creating meeting with data:', formattedData);
-      console.log('Token:', token ? 'Present' : 'Missing');
-      console.log('Deal Room ID:', dealRoomId);
-      console.log('API URL:', `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/deal_rooms/${dealRoomId}/meetings`);
-      
-      const result = await createMeeting(dealRoomId, formattedData);
-      
-      console.log('Meeting creation response:', result);
-      
-      toast.success('Meeting scheduled successfully');
-      setShowCreateModal(false);
-      loadMeetings(); // Refresh the meetings list
-      return result;
-    } catch (error: any) {
-      console.error('Error creating meeting:', error);
-      
-      // Handle specific error messages
-      if (error.message && error.message.includes('Failed to create meeting')) {
-        const errorData = await error.response?.json?.();
-        const errorMessage = errorData?.errors?.join(', ') || error.message;
-        toast.error(`Failed to schedule meeting: ${errorMessage}`);
-      } else {
-        toast.error(
-          error instanceof Error ? error.message : 'Failed to schedule meeting'
-        );
-      }
-      throw error; // Re-throw so the modal can handle it
-    } finally {
-      setIsCreatingMeeting(false);
+  const getMeetingTypeLabel = (type: string) => {
+    switch (type) {
+      case 'one_on_one': return 'One-on-One';
+      case 'pitch_review': return 'Pitch Review';
+      case 'due_diligence': return 'Due Diligence';
+      case 'investor_update': return 'Investor Update';
+      default: return type;
     }
   };
 
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-    // Filter meetings for the selected date if needed
-    // You could implement date filtering here
-  };
+  useEffect(() => {
+    loadMeetings();
+  }, [dealRoomId]);
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
-  if (!isMember && token) {
+  if (!token) {
     return (
       <div className="text-center py-12">
         <Calendar className="w-12 h-12 mx-auto text-gray-400 mb-4" />
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Join Deal Room
+          Sign in required
         </h3>
-        <p className="text-gray-600 mb-6">
-          You need to join the deal room to view and schedule meetings
+        <p className="text-gray-600">
+          Please sign in to view and schedule meetings
         </p>
-        <Button variant="ghost" className="bg-emerald-600 text-white">
-          Join Deal Room
-        </Button>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex justify-between items-center">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Meetings</h3>
           <p className="text-sm text-gray-600">
-            Schedule and manage meetings with investors and founders
+            Schedule and join meetings
           </p>
         </div>
-
-        <div className="flex items-center gap-3">
-          <Tabs
-            value={view}
-            onValueChange={(v) => setView(v as any)}
-            className="w-auto"
-          >
-            <TabsList>
-              <TabsTrigger value="list">List View</TabsTrigger>
-              <TabsTrigger value="calendar">Calendar</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          {isMember && token && (
-            <Button
-              onClick={() => setShowCreateModal(true)}
-              variant="ghost"
-              className="text-gray-800"
-              disabled={isLoading}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Schedule Meeting
-            </Button>
-          )}
-        </div>
+        <Button
+          onClick={() => setShowCreateModal(true)}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+        >
+          <Calendar className="w-4 h-4 mr-2" />
+          Schedule Meeting
+        </Button>
       </div>
 
       {isLoading ? (
@@ -192,110 +134,91 @@ export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
           <Loader2 className="w-8 h-8 mx-auto animate-spin text-emerald-600 mb-4" />
           <p className="text-gray-600">Loading meetings...</p>
         </div>
+      ) : meetings.length === 0 ? (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <Calendar className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+          <h4 className="text-lg font-medium text-gray-900 mb-2">
+            No meetings scheduled
+          </h4>
+          <p className="text-gray-600 mb-6">
+            Schedule your first meeting to get started
+          </p>
+          <Button
+            onClick={() => setShowCreateModal(true)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            Schedule Meeting
+          </Button>
+        </div>
       ) : (
-        <>
-          {view === 'calendar' ? (
-            <MeetingsCalendar
-              meetings={meetings}
-              onDateSelect={handleDateSelect}
-              selectedDate={selectedDate}
-            />
-          ) : (
-            <MeetingsList
-              meetings={meetings}
-              dealRoomId={dealRoomId}
-              availableUsers={availableUsers}
-              onRefresh={loadMeetings}
-            />
-          )}
+        <div className="space-y-4">
+          {meetings.map((meeting) => {
+            const statusConfig = getStatusConfig(meeting.status);
+            const StatusIcon = statusConfig.icon;
+            const isUpcoming = meeting.upcoming;
+            const canJoin = isUpcoming && meeting.meeting_link;
 
-          {/* Pagination for list view */}
-          {view === 'list' && totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1}
+            return (
+              <div
+                key={meeting.id}
+                className="bg-white border rounded-lg p-6 hover:shadow-sm transition-shadow"
               >
-                Previous
-              </Button>
-              <span className="text-sm text-gray-600">
-                Page {page} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page === totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-blue-900">
-                    Total Meetings
-                  </p>
-                  <p className="text-2xl font-bold text-blue-700">
-                    {totalCount}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-green-50 border border-green-100 p-4 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-green-900">Upcoming</p>
-                  <p className="text-2xl font-bold text-green-700">
-                    {meetings.filter((m) => m.upcoming).length}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-purple-50 border border-purple-100 p-4 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Users className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-purple-900">
-                    Avg Participants
-                  </p>
-                  <p className="text-2xl font-bold text-purple-700">
-                    {meetings.length > 0
-                      ? Math.round(
-                          meetings.reduce(
-                            (sum, m) => sum + (m.participants?.length || 0),
-                            0,
-                          ) / meetings.length,
-                        )
-                      : 0}
-                  </p>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h4 className="text-lg font-semibold text-gray-900">
+                        {meeting.title}
+                      </h4>
+                      <Badge className={statusConfig.color}>
+                        <StatusIcon className="w-3 h-3 mr-1" />
+                        {statusConfig.label}
+                      </Badge>
+                      <Badge variant="outline">
+                        {getMeetingTypeLabel(meeting.meeting_type)}
+                      </Badge>
+                    </div>
+                    
+                    {meeting.description && (
+                      <p className="text-gray-600 text-sm mb-2">
+                        {meeting.description}
+                      </p>
+                    )}
+                    
+                    <div className="text-sm text-gray-500 space-y-1">
+                      <div>📅 {meeting.formatted_start_time}</div>
+                      <div>⏱️ {meeting.duration_minutes} minutes</div>
+                      <div>👤 Organized by: {meeting.organizer.name}</div>
+                    </div>
+                    
+                    {meeting.notes && (
+                      <div className="mt-3 text-sm text-gray-600 bg-gray-50 p-3 rounded">
+                        <span className="font-medium">Notes:</span> {meeting.notes}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {canJoin && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleJoinMeeting(meeting.meeting_link)}
+                      className="ml-4"
+                    >
+                      <Video className="w-4 h-4 mr-2" />
+                      Join
+                    </Button>
+                  )}
                 </div>
               </div>
-            </div>
-          </div>
-        </>
+            );
+          })}
+        </div>
       )}
 
       <CreateMeetingModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onSubmit={handleCreateMeeting}
         dealRoomId={dealRoomId}
-        availableUsers={availableUsers}
-        isLoading={isCreatingMeeting}
+        onMeetingCreated={handleMeetingCreated}
       />
     </div>
   );

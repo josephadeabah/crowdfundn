@@ -1,4 +1,3 @@
-// app/components/ui/time-picker.tsx
 'use client';
 
 import * as React from 'react';
@@ -13,6 +12,7 @@ interface TimePickerProps {
   className?: string;
   minTime?: string;
   maxTime?: string;
+  disabled?: boolean;
 }
 
 export function TimePicker({
@@ -21,6 +21,7 @@ export function TimePicker({
   className,
   minTime,
   maxTime,
+  disabled = false,
 }: TimePickerProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -65,8 +66,10 @@ export function TimePicker({
           variant="outline"
           className={cn(
             'w-full justify-start text-left font-normal',
+            disabled && 'opacity-50 cursor-not-allowed',
             className,
           )}
+          disabled={disabled}
         >
           <Clock className="mr-2 h-4 w-4" />
           {displayValue}
@@ -84,6 +87,7 @@ export function TimePicker({
                   onChange(slot.value);
                   setOpen(false);
                 }}
+                disabled={disabled}
               >
                 {slot.display}
               </Button>

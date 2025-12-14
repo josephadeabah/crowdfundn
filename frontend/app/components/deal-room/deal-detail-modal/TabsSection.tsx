@@ -127,11 +127,7 @@ export function TabsSection({
       </TabsContent>
 
       <TabsContent value="meetings" className="mt-4">
-        <MeetingsTab
-          dealRoomId={dealRoomId.toString()}
-          token={token}
-          isMember={isMember}
-        />
+        <MeetingsTab dealRoomId={dealRoomId.toString()} />
       </TabsContent>
     </Tabs>
   );

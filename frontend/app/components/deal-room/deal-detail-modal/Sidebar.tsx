@@ -1,4 +1,3 @@
-// app/components/deal-room/deal-detail-modal/Sidebar.tsx
 'use client';
 
 import {
@@ -13,51 +12,57 @@ import { Separator } from '@/app/components/ui/separator';
 import { Button } from '@/app/components/ui/button';
 import { Deal } from '../services/dealRoomApi';
 import { formatCurrency } from '../utils/formatters';
+import { ScheduleMeetingButton } from '../meetings/ScheduleMeetingButton';
 
 interface SidebarProps {
   deal: Deal;
   dealRoomMemberCount: number;
   conversations: any[];
-  token: string | null;
   isMember: boolean;
   isLoading: boolean;
   isInterested: boolean;
   onShowInterest: () => void;
   onJoinDealRoom: () => void;
   onSendMessageToFounder: () => void;
-  onScheduleMeeting: () => void;
   onShareDeal: () => void;
+  onMeetingCreated: () => void;
 }
 
 export function Sidebar({
   deal,
   dealRoomMemberCount,
   conversations,
-  token,
   isMember,
   isLoading,
   isInterested,
   onShowInterest,
   onJoinDealRoom,
   onSendMessageToFounder,
-  onScheduleMeeting,
   onShareDeal,
+  onMeetingCreated,
 }: SidebarProps) {
-  // Function to handle meeting scheduling
-  const handleScheduleMeetingClick = () => {
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
+  const handleSendMessageToFounder = () => {
     if (!token) {
-      // Show login alert
+      toast.error('Please sign in to send messages');
       return;
     }
+    onSendMessageToFounder();
+  };
 
+  const handleScheduleMeetingClick = () => {
+    if (!token) {
+      toast.error('Please sign in to schedule meetings');
+      return;
+    }
+    
     if (!isMember) {
-      // If not a member, ask to join first
       onJoinDealRoom();
       return;
     }
-
-    // Trigger the meeting scheduling flow
-    onScheduleMeeting();
+    
+    // This will be handled by the ScheduleMeetingButton
   };
 
   return (
@@ -93,14 +98,6 @@ export function Sidebar({
               {deal.daysLeft > 0 ? deal.daysLeft : 'Closed'}
             </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Investors</span>
-            <span className="font-medium text-gray-900">{deal.investors}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Interested</span>
-            <span className="font-medium text-gray-900">{deal.interested}</span>
-          </div>
         </div>
       </div>
 
@@ -122,21 +119,18 @@ export function Sidebar({
         <div className="space-y-2">
           <Button
             className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300"
-            onClick={onSendMessageToFounder}
+            onClick={handleSendMessageToFounder}
             disabled={!token || isLoading}
           >
             <MessageCircle className="w-4 h-4 mr-2" />
             Send Message
           </Button>
-          <Button
-            className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-300"
-            variant="outline"
-            onClick={handleScheduleMeetingClick}
-            disabled={isLoading}
-          >
-            <Calendar className="w-4 h-4 mr-2" />
-            Schedule Meeting
-          </Button>
+          
+          {/* Schedule Meeting Button */}
+          <ScheduleMeetingButton 
+            dealRoomId={deal.campaign?.deal_room?.id?.toString() || ''}
+            onMeetingCreated={onMeetingCreated}
+          />
         </div>
       </div>
 
@@ -160,7 +154,7 @@ export function Sidebar({
             {!isMember && token && (
               <div className="mt-3">
                 <Button
-                  className="w-full"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
                   onClick={onJoinDealRoom}
                   disabled={isLoading}
                 >
@@ -180,8 +174,7 @@ export function Sidebar({
             <h4 className="font-medium text-amber-900">Sign in required</h4>
           </div>
           <p className="text-sm text-amber-800">
-            Please sign in to show interest, join deal rooms, or contact
-            founders.
+            Please sign in to show interest, join deal rooms, or schedule meetings.
           </p>
         </div>
       )}
@@ -219,3 +212,6 @@ export function Sidebar({
     </div>
   );
 }
+
+// Import toast at the top of your file
+import { toast } from 'sonner';

@@ -1,4 +1,3 @@
-// app/components/deal-room/meetings/MeetingsList.tsx
 'use client';
 
 import { useState } from 'react';
@@ -541,13 +540,8 @@ export function MeetingsList({
       <CreateMeetingModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onSubmit={async (meetingData) => {
-          // This should be implemented in the parent component
-          // using the createMeeting hook
-          return Promise.resolve();
-        }}
         dealRoomId={dealRoomId}
-        availableUsers={availableUsers}
+        onMeetingCreated={onRefresh}
         isLoading={false}
       />
 

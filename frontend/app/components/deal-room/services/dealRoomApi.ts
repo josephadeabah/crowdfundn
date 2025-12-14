@@ -362,12 +362,13 @@ class DealRoomApi {
     return response.json();
   }
 
+  // Simplified function for getting meetings
   async getDealMeetings(
     dealId: string,
     token?: string,
     page: number = 1,
     perPage: number = 20,
-  ): Promise<ApiResponse<any[]>> {
+  ): Promise<any> {
     const params = new URLSearchParams({
       page: page.toString(),
       per_page: perPage.toString(),
@@ -440,29 +441,23 @@ class DealRoomApi {
   }
 
   async createMeeting(
-    dealId: string,
     meetingData: {
+      deal_room_id: string;
       title: string;
       description?: string;
       meeting_type: string;
       start_time: string;
       end_time: string;
-      meeting_link?: string;
+      meeting_link: string;
       notes?: string;
-      participant_ids?: string[];
-      participant_emails?: string[];
-      invite_all_members?: boolean;
     },
     token: string,
   ): Promise<any> {
-    const response = await fetch(
-      `${this.baseUrl}/deal_rooms/${dealId}/meetings`,
-      {
-        method: 'POST',
-        headers: this.getHeaders(token),
-        body: JSON.stringify(meetingData),
-      },
-    );
+    const response = await fetch(`${this.baseUrl}/deal_room_meetings`, {
+      method: 'POST',
+      headers: this.getHeaders(token),
+      body: JSON.stringify({ deal_room_meeting: meetingData }),
+    });
 
     if (!response.ok) {
       const error = await response.json();
