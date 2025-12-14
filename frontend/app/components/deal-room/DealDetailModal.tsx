@@ -1,4 +1,3 @@
-// app/components/deal-room/DealDetailModal.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -289,6 +288,13 @@ export function DealDetailModal({
     setActiveTab('meetings');
   };
 
+  const handleMeetingCreated = () => {
+    // Refresh meetings data when a new meeting is created
+    if (deal) {
+      loadAdditionalData();
+    }
+  };
+
   if (!deal) return null;
 
   const progressPercent = Math.min(
@@ -346,7 +352,6 @@ export function DealDetailModal({
               deal={deal}
               dealRoomMemberCount={dealRoomMemberCount}
               conversations={conversations}
-              token={token}
               isMember={isMember}
               isLoading={isLoading}
               isInterested={isInterested}
@@ -355,6 +360,7 @@ export function DealDetailModal({
               onSendMessageToFounder={handleSendMessageToFounder}
               onScheduleMeeting={handleScheduleMeeting}
               onShareDeal={handleShareDeal}
+              onMeetingCreated={handleMeetingCreated}
             />
           </div>
         </div>
