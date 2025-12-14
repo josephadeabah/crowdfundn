@@ -13,6 +13,7 @@ import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { CreateMeetingModal } from '../meetings/CreateMeetingModal';
 import { toast } from 'sonner';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 // Get API base URL
 const API_BASE_URL =
@@ -47,12 +48,12 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { token } = useAuth();
 
   const loadMeetings = async () => {
     try {
       setIsLoading(true);
-      const token =
-        localStorage.getItem('token') || sessionStorage.getItem('token');
+     
 
       if (!token) {
         toast.error('Please sign in to view meetings');
