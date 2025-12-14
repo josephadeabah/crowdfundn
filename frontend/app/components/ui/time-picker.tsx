@@ -72,7 +72,7 @@ export function TimePicker({
           {displayValue}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0">
+      <PopoverContent className="w-80 p-0 z-[100]">
         <div className="max-h-60 overflow-y-auto p-2">
           <div className="grid grid-cols-2 gap-1">
             {timeSlots.map((slot) => (
