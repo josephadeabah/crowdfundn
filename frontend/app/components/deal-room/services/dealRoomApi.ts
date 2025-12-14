@@ -519,6 +519,7 @@ class DealRoomApi {
     return response.json();
   }
 
+  // Check your getDealRoomMembers method in DealRoomApi class:
   async getDealRoomMembers(
     dealId: string,
     token?: string,
@@ -538,10 +539,33 @@ class DealRoomApi {
     );
 
     if (!response.ok) {
+      // Log more details about the error
+      console.error('Members endpoint error:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: `${this.baseUrl}/deal_rooms/${dealId}/members?${params}`
+      });
+      
+      try {
+        const errorData = await response.json();
+        console.error('Error data:', errorData);
+      } catch (e) {
+        console.error('Could not parse error response');
+      }
+      
       throw new Error('Failed to fetch deal room members');
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('Members response:', data); // Add this for debugging
+    
+    // Make sure we're returning the right structure
+    return {
+      data: data.members || data.data || [],  // Try both 'members' and 'data' keys
+      current_page: data.current_page || 1,
+      total_pages: data.total_pages || 1,
+      total_count: data.total_count || 0,
+    };
   }
 
   async startMeeting(meetingId: string, token: string): Promise<any> {
