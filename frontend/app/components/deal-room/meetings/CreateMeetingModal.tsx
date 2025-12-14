@@ -24,6 +24,7 @@ import {
 import { toast } from 'sonner';
 import { TimePicker } from '../../ui/time-picker';
 import { DatePicker } from '../../ui/date-picker';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 // Get API base URL
 const API_BASE_URL =
@@ -56,6 +57,7 @@ export function CreateMeetingModal({
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { token } = useAuth();
 
   const meetingTypes = [
     { value: 'one_on_one', label: 'One-on-One Meeting' },
@@ -153,8 +155,6 @@ export function CreateMeetingModal({
     };
 
     try {
-      const token =
-        localStorage.getItem('token') || sessionStorage.getItem('token');
       if (!token) {
         throw new Error('Please sign in to schedule a meeting');
       }
