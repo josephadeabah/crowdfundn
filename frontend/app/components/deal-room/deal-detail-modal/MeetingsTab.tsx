@@ -31,6 +31,7 @@ export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreatingMeeting, setIsCreatingMeeting] = useState(false);
   const [availableUsers, setAvailableUsers] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -69,16 +70,52 @@ export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
   };
 
   const handleCreateMeeting = async (meetingData: any) => {
+    if (!token) {
+      toast.error('You must be logged in to schedule a meeting');
+      return;
+    }
+
     try {
-      await createMeeting(dealRoomId, meetingData);
+      setIsCreatingMeeting(true);
+      
+      // Format the data properly for the API
+      const formattedData = {
+        title: meetingData.title,
+        description: meetingData.description || '',
+        meeting_type: meetingData.meeting_type,
+        start_time: meetingData.start_time,
+        end_time: meetingData.end_time,
+        meeting_link: meetingData.meeting_link || '',
+        notes: meetingData.notes || '',
+        participant_ids: meetingData.participant_ids || [],
+        participant_emails: meetingData.participant_emails || [],
+        invite_all_members: meetingData.invite_all_members || false
+      };
+
+      console.log('Creating meeting with data:', formattedData);
+      
+      const result = await createMeeting(dealRoomId, formattedData);
+      
       toast.success('Meeting scheduled successfully');
       setShowCreateModal(false);
       loadMeetings(); // Refresh the meetings list
-    } catch (error) {
+      return result;
+    } catch (error: any) {
       console.error('Error creating meeting:', error);
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to schedule meeting',
-      );
+      
+      // Handle specific error messages
+      if (error.message && error.message.includes('Failed to create meeting')) {
+        const errorData = await error.response?.json?.();
+        const errorMessage = errorData?.errors?.join(', ') || error.message;
+        toast.error(`Failed to schedule meeting: ${errorMessage}`);
+      } else {
+        toast.error(
+          error instanceof Error ? error.message : 'Failed to schedule meeting'
+        );
+      }
+      throw error; // Re-throw so the modal can handle it
+    } finally {
+      setIsCreatingMeeting(false);
     }
   };
 
@@ -136,6 +173,7 @@ export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
               onClick={() => setShowCreateModal(true)}
               variant="ghost"
               className="text-gray-800"
+              disabled={isLoading}
             >
               <Plus className="w-4 h-4 mr-2" />
               Schedule Meeting
@@ -252,7 +290,7 @@ export function MeetingsTab({ dealRoomId, token, isMember }: MeetingsTabProps) {
         onSubmit={handleCreateMeeting}
         dealRoomId={dealRoomId}
         availableUsers={availableUsers}
-        isLoading={isLoading}
+        isLoading={isCreatingMeeting}
       />
     </div>
   );

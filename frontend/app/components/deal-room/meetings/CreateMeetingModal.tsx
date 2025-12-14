@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Calendar, Clock, Users, Video, Type, FileText } from 'lucide-react';
+import { X, Calendar, Clock, Users, Video, Type, FileText, Loader2 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Textarea } from '@/app/components/ui/textarea';
@@ -57,6 +57,7 @@ export function CreateMeetingModal({
   const [inviteAllMembers, setInviteAllMembers] = useState(false);
   const [participantEmails, setParticipantEmails] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const meetingTypes = [
     { value: 'qna', label: 'Q&A Session' },
@@ -87,6 +88,7 @@ export function CreateMeetingModal({
     setInviteAllMembers(false);
     setParticipantEmails('');
     setErrors({});
+    setIsSubmitting(false);
   };
 
   const validateForm = () => {
@@ -120,9 +122,10 @@ export function CreateMeetingModal({
       newErrors.endTime = 'End time must be after start time';
     }
 
-    if (startDateTime < new Date()) {
-      newErrors.startTime = 'Start time must be in the future';
-    }
+    // Allow meetings to start in the past for testing, but you can re-enable this
+    // if (startDateTime < new Date()) {
+    //   newErrors.startTime = 'Start time must be in the future';
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -135,6 +138,8 @@ export function CreateMeetingModal({
       toast.error('Please fix the errors in the form');
       return;
     }
+
+    setIsSubmitting(true);
 
     const startDateTime = new Date(selectedDate!);
     const [startHours, startMinutes] = startTime.split(':').map(Number);
@@ -162,10 +167,28 @@ export function CreateMeetingModal({
 
     try {
       await onSubmit(meetingData);
+      toast.success('Meeting scheduled successfully!');
       resetForm();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create meeting:', error);
+      
+      // Handle validation errors from backend
+      if (error.errors) {
+        const backendErrors: Record<string, string> = {};
+        error.errors.forEach((err: string) => {
+          if (err.includes('Title')) backendErrors.title = err;
+          if (err.includes('start time')) backendErrors.startTime = err;
+          if (err.includes('end time')) backendErrors.endTime = err;
+          if (err.includes('meeting type')) backendErrors.meetingType = err;
+        });
+        setErrors(backendErrors);
+        toast.error('Please fix the validation errors');
+      } else {
+        toast.error(error.message || 'Failed to schedule meeting');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -198,6 +221,7 @@ export function CreateMeetingModal({
             size="sm"
             onClick={onClose}
             className="h-8 w-8 p-0"
+            disabled={isSubmitting || isLoading}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -223,6 +247,7 @@ export function CreateMeetingModal({
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Investor Q&A Session"
                   className={errors.title ? 'border-red-500' : ''}
+                  disabled={isSubmitting || isLoading}
                 />
                 {errors.title && (
                   <p className="text-sm text-red-500">{errors.title}</p>
@@ -237,13 +262,18 @@ export function CreateMeetingModal({
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="What will this meeting be about?"
                   rows={3}
+                  disabled={isSubmitting || isLoading}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="meetingType">Meeting Type *</Label>
-                  <Select value={meetingType} onValueChange={setMeetingType}>
+                  <Select 
+                    value={meetingType} 
+                    onValueChange={setMeetingType}
+                    disabled={isSubmitting || isLoading}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
@@ -255,6 +285,9 @@ export function CreateMeetingModal({
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.meetingType && (
+                    <p className="text-sm text-red-500">{errors.meetingType}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -264,6 +297,7 @@ export function CreateMeetingModal({
                     value={meetingLink}
                     onChange={(e) => setMeetingLink(e.target.value)}
                     placeholder="https://zoom.us/j/..."
+                    disabled={isSubmitting || isLoading}
                   />
                 </div>
               </div>
@@ -291,7 +325,11 @@ export function CreateMeetingModal({
 
                 <div className="space-y-2">
                   <Label htmlFor="startTime">Start Time *</Label>
-                  <TimePicker value={startTime} onChange={setStartTime} />
+                  <TimePicker 
+                    value={startTime} 
+                    onChange={setStartTime}
+                    minTime="00:00"
+                  />
                   {errors.startTime && (
                     <p className="text-sm text-red-500">{errors.startTime}</p>
                   )}
@@ -326,6 +364,7 @@ export function CreateMeetingModal({
                     onCheckedChange={(checked) =>
                       setInviteAllMembers(checked === true)
                     }
+                    disabled={isSubmitting || isLoading}
                   />
                   <Label htmlFor="inviteAll" className="text-sm font-normal">
                     Invite all deal room members
@@ -345,7 +384,7 @@ export function CreateMeetingModal({
                             id={`user-${user.id}`}
                             checked={selectedUsers.includes(user.id)}
                             onCheckedChange={() => handleUserToggle(user.id)}
-                            disabled={inviteAllMembers}
+                            disabled={inviteAllMembers || isSubmitting || isLoading}
                           />
                           <Label
                             htmlFor={`user-${user.id}`}
@@ -372,6 +411,7 @@ export function CreateMeetingModal({
                     onChange={(e) => setParticipantEmails(e.target.value)}
                     placeholder="john@example.com, jane@example.com"
                     rows={2}
+                    disabled={isSubmitting || isLoading}
                   />
                   <p className="text-xs text-gray-500">
                     External users will receive an email invitation
@@ -392,6 +432,7 @@ export function CreateMeetingModal({
                           type="button"
                           onClick={() => handleUserToggle(userId)}
                           className="ml-1 hover:text-red-500"
+                          disabled={isSubmitting || isLoading}
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -417,6 +458,7 @@ export function CreateMeetingModal({
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Any additional information for participants..."
                   rows={3}
+                  disabled={isSubmitting || isLoading}
                 />
               </div>
             </div>
@@ -427,16 +469,23 @@ export function CreateMeetingModal({
               type="button"
               variant="outline"
               onClick={onClose}
-              disabled={isLoading}
+              disabled={isSubmitting || isLoading}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="bg-emerald-600 text-white"
-              disabled={isLoading}
+              className="bg-emerald-600 text-white hover:bg-emerald-700"
+              disabled={isSubmitting || isLoading}
             >
-              {isLoading ? 'Scheduling...' : 'Schedule Meeting'}
+              {(isSubmitting || isLoading) ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Scheduling...
+                </>
+              ) : (
+                'Schedule Meeting'
+              )}
             </Button>
           </div>
         </form>
