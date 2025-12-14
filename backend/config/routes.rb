@@ -15,13 +15,12 @@ Rails.application.routes.draw do
           get :conversations
           post :create_conversation
           get :meetings
-          post :create_meeting
+          post :create_meeting  # Make sure this exists
           post :join
           post :show_interest
-          # NEW: Additional meeting routes
           get :calendar
           get :availability
-          get :members # Add this for getting deal room members
+          get :members
         end
         collection do
           get :public_deals
@@ -40,12 +39,11 @@ Rails.application.routes.draw do
       end
       
       # Deal Room Meetings - EXPANDED with full functionality
-      resources :deal_room_meetings, only: [:show, :update, :destroy] do
+      resources :deal_room_meetings, only: [:create, :show, :update, :destroy] do
         member do
           post :add_participant
           delete :remove_participant
           post :rsvp
-          # NEW: Additional meeting actions
           post :start
           post :end
           post :cancel
