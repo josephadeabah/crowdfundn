@@ -1,7 +1,7 @@
 // app/components/deal-room/meetings/CreateMeetingModal.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, Clock, Users, Video, Type, FileText, Loader2 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -58,6 +58,7 @@ export function CreateMeetingModal({
   const [participantEmails, setParticipantEmails] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const meetingTypes = [
     { value: 'qna', label: 'Q&A Session' },
@@ -133,6 +134,7 @@ export function CreateMeetingModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Stop event bubbling
 
     if (!validateForm()) {
       toast.error('Please fix the errors in the form');
@@ -164,6 +166,8 @@ export function CreateMeetingModal({
         .filter((email) => email),
       invite_all_members: inviteAllMembers,
     };
+
+    console.log('Submitting meeting data:', meetingData);
 
     try {
       await onSubmit(meetingData);
@@ -200,13 +204,27 @@ export function CreateMeetingModal({
     );
   };
 
+  const handleBackgroundClick = (e: React.MouseEvent) => {
+    // Only close if clicking directly on the background, not the modal content
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      onClick={handleBackgroundClick}
+    >
+      <div className="absolute inset-0 bg-black/50" />
 
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      <div 
+        ref={modalRef}
+        className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
+        onClick={(e) => e.stopPropagation()} // Prevent click from closing modal
+      >
         <div className="flex items-center justify-between p-6 border-b">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">
