@@ -45,7 +45,7 @@ export function Sidebar({
   onShareDeal,
   onMeetingCreated,
 }: SidebarProps) {
-const { token } = useAuth();
+  const { token } = useAuth();
 
   const handleSendMessageToFounder = () => {
     if (!token) {
@@ -60,12 +60,12 @@ const { token } = useAuth();
       toast.error('Please sign in to schedule meetings');
       return;
     }
-    
+
     if (!isMember) {
       onJoinDealRoom();
       return;
     }
-    
+
     onScheduleMeeting();
   };
 
@@ -129,9 +129,9 @@ const { token } = useAuth();
             <MessageCircle className="w-4 h-4 mr-2" />
             Send Message
           </Button>
-          
+
           {/* Schedule Meeting Button */}
-          <ScheduleMeetingButton 
+          <ScheduleMeetingButton
             dealRoomId={deal.campaign?.deal_room?.id?.toString() || ''}
             onMeetingCreated={onMeetingCreated}
           />
@@ -178,7 +178,8 @@ const { token } = useAuth();
             <h4 className="font-medium text-amber-900">Sign in required</h4>
           </div>
           <p className="text-sm text-amber-800">
-            Please sign in to show interest, join deal rooms, or schedule meetings.
+            Please sign in to show interest, join deal rooms, or schedule
+            meetings.
           </p>
         </div>
       )}
