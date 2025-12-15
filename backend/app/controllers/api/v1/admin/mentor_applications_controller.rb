@@ -165,9 +165,9 @@ module Api
             .group_by_month(:created_at, format: '%b %Y')
             .count
             
-          # Expertise distribution
+          # Expertise distribution - FIXED typo: industry_experise -> industry_expertise
           expertise_distribution = MentorApplication
-            .where.not(industry_experise: nil)
+            .where.not(industry_expertise: nil)
             .pluck(:industry_expertise)
             .flatten
             .group_by(&:itself)
@@ -196,7 +196,7 @@ module Api
             .order(created_at: :asc)
             
           render json: {
-            applications: applications.map(&:as_json(include_user: true)),
+            applications: applications.map { |app| app.as_json(include_user: true) },
             count: applications.count
           }, status: :ok
         end
