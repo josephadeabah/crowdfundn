@@ -363,16 +363,16 @@ class Kyc < ApplicationRecord
     bust_kyc_stats_cache if saved_change_to_status?
   end
 
-  def create_mentor_application_if_needed
-    # This will be handled by the nested attributes
-    # The mentor_application_attributes will automatically create the application
-  end
-  
   def process_mentor_application
-    # If this is a mentor KYC and has mentor application attributes, create the application
-    return unless mentor? && mentor_application.present?
-    
-    # Mentor application will be created through nested attributes
-    # We can add additional processing here if needed
+    # If this is a mentor KYC, ensure the mentor application has a user
+    if mentor? && mentor_application.present?
+      # Set user if not already set
+      if mentor_application.user.nil?
+        mentor_application.update_column(:user_id, user_id)
+      end
+      
+      # Submit for review
+      mentor_application.submit_for_review
+    end
   end
 end

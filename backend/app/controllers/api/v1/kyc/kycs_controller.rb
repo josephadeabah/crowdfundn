@@ -37,6 +37,11 @@ module Api
         end
 
         def create
+          puts "=== DEBUG: KYC CREATE STARTED ==="
+          puts "Current user: #{@current_user.id}"
+          puts "Requested KYC type: #{params.dig(:kyc, :kyc_type)}"
+          puts "Mentor app attributes present: #{params.dig(:kyc, :mentor_application_attributes).present?}"
+          
           # Allow upgrades from single type to both type while maintaining security
           existing_active_kyc = @current_user.kycs.where(status: ['pending', 'in_review', 'verified']).first
           
@@ -59,6 +64,12 @@ module Api
           # Use ALL permitted parameters (including signature data and declaration data)
           @kyc = @current_user.kycs.build(kyc_params)
 
+          # CRITICAL: Set user on mentor application if it exists
+          if @kyc.mentor_application.present?
+            puts "=== DEBUG: Setting user on mentor application ==="
+            @kyc.mentor_application.user = @current_user
+          end
+
           # Set declaration fields
           if params[:declaration_data].present?
             @kyc.accredited_investor = params[:declaration_data][:accredited_investor] || false
@@ -75,6 +86,12 @@ module Api
           end
 
           if @kyc.save
+            puts "=== DEBUG: KYC saved successfully ==="
+            puts "KYC ID: #{@kyc.id}"
+            puts "KYC type: #{@kyc.kyc_type}"
+            puts "Mentor app exists: #{@kyc.mentor_application.present?}"
+            puts "Mentor app user: #{@kyc.mentor_application&.user_id}" if @kyc.mentor_application
+            
             # Process signature immediately after save
             begin
               @kyc.process_signature
@@ -84,6 +101,8 @@ module Api
             
             render json: { kyc: KycFrontendService.format_for_frontend(@kyc) }, status: :created
           else
+            puts "=== DEBUG: KYC save failed ==="
+            puts "Errors: #{@kyc.errors.full_messages}"
             render_kyc_errors(@kyc.errors)
           end
         end

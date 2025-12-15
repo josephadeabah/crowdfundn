@@ -1,6 +1,6 @@
 # app/models/mentor_application.rb
 class MentorApplication < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, optional: true  # Make optional temporarily
   belongs_to :kyc, optional: true
   belongs_to :mentor, optional: true
   
@@ -12,7 +12,7 @@ class MentorApplication < ApplicationRecord
   validates :availability, presence: true
     
   before_create :generate_tracking_id
-  after_create :submit_for_review
+  # Remove after_create :submit_for_review for now
   
   enum status: {
     draft: 'draft',
@@ -22,26 +22,22 @@ class MentorApplication < ApplicationRecord
     rejected: 'rejected'
   }
   
-  # When created through KYC, it should be submitted automatically
+  # Call this method after user is set
   def submit_for_review
+    return if user.nil? || status != 'draft'
+    
     update(
       status: 'submitted',
       submitted_at: Time.current
     )
     
     # Send notification to admins
-    MentorNotificationService.new_mentor_application_submitted(self)
-  end
-  
-  private
-  
-  def generate_tracking_id
-    self.tracking_id = "MENTOR-#{SecureRandom.alphanumeric(8).upcase}"
+    MentorNotificationService.new_mentor_application_submitted(self) if defined?(MentorNotificationService)
   end
   
   def create_mentor_profile
     # Create mentor profile when application is approved
-    return unless approved?
+    return unless approved? && user.present?
     
     mentor = Mentor.create!(
       user: user,
@@ -62,5 +58,11 @@ class MentorApplication < ApplicationRecord
     end
     
     update(mentor: mentor)
+  end
+  
+  private
+  
+  def generate_tracking_id
+    self.tracking_id = "MENTOR-#{SecureRandom.alphanumeric(8).upcase}"
   end
 end
