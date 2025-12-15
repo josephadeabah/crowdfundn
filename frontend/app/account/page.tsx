@@ -40,7 +40,7 @@ import PledgesListPage from '@/app/account/Pledges';
 import EquityInvestments from './EquityInvestments';
 import { usePremium } from '@/app/context/premium/PremiumContext';
 import { useAuth } from '../context/auth/AuthContext';
-import { Landmark } from 'lucide-react';
+import { Landmark, UserCheck } from 'lucide-react';
 import { FiArchive } from 'react-icons/fi';
 import ArchivedCampaigns from './ArchivedCampaigns';
 import InvestmentClubsDashboard from './InvestmentClubsDashboard';
@@ -239,7 +239,7 @@ const ProfileTabs = () => {
         },
         {
           label: 'Mentors',
-          icon: <Users className="w-4 h-4" />,
+          icon: <UserCheck className="w-4 h-4" />,
           component: <MentorDashboard />, // Use MentorDashboard here
           description: 'Manage mentor relationships and find mentors.',
           badge: 'New',
