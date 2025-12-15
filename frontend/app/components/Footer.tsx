@@ -80,11 +80,14 @@ const Footer = () => {
                 <BantuHiveLogoIcon className="w-40 h-auto" />
               </div>
               <p className="text-sm text-gray-800 mb-4">
-                We're on a mission to democratize access to funding and provide
-                all types of investors with exclusive opportunities to invest in
-                exciting early-stage and growth-stage African business
-                opportunities that were previously inaccessible.
+                27 Independence Avenue, Synergy Office Space, Takoradi Mall,
+                Gate 2, Takoradi | Ghana.
               </p>
+              <p className="text-sm text-gray-600 mb-6">
+                Empowering dreams through crowdfunding and investment. Join us
+                in transforming ideas into reality.
+              </p>
+              <p className="text-sm text-gray-600 mb-2">Follow us on:</p>
               <div className="flex space-x-4">
                 <a
                   href="https://web.facebook.com/profile.php?id=61568192851056"
