@@ -83,7 +83,7 @@ class DonationAbandonmentEmailService
                 <a href="https://www.instagram.com/bantuhive_fund/">Instagram</a>
                 <a href="https://www.linkedin.com/company/bantu-hive/about/">LinkedIn</a>
               </div>
-              <div class="company-address">IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana</div>
+              <div class="company-address">27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.</div>
               <p style="margin-top: 15px;"><a href="https://bantuhive.com">© #{Time.current.year} Bantuhive Ltd. All rights reserved.</a></p>
             </div>
           </div>
@@ -112,7 +112,7 @@ class DonationAbandonmentEmailService
       Thank you for your generosity,
       The Bantuhive Team
 
-      IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana
+      27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.
       © #{Time.current.year} Bantuhive Ltd. All rights reserved.
     TEXT
   end

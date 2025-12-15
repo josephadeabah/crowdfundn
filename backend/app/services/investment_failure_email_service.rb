@@ -202,7 +202,7 @@ class InvestmentFailureEmailService
               </div>
               
               <div class="company-address">
-                IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana
+                27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.
               </div>
               
               <p style="margin-top: 15px;">
@@ -248,7 +248,7 @@ class InvestmentFailureEmailService
       Warm regards,
       The Bantuhive Investments Team
 
-      IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana
+      27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.
       © #{Time.current.year} Bantuhive Ltd. All rights reserved.
     TEXT
   end

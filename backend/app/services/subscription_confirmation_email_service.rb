@@ -121,7 +121,7 @@ class SubscriptionConfirmationEmailService
               <div class="footer">
                 <p>You are receiving this email because you subscribed to a campaign on Bantuhive.</p>
                 <p>Sent from Bantuhive's Headquarters:</p>
-                <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
+                <p>27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.</p>
 
                  <!-- Social Media Links -->
                 <div style="text-align: center; margin-top: 10px;">

@@ -100,7 +100,7 @@ class ThankYouEmailService
               <div class="footer">
                 <p>You are receiving this email because you either made a donation or invested on Bantu Hive.</p>
                 <p>Sent from Bantu Hive's Headquarters:</p>
-                <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
+                <p>27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.</p>
 
                 <!-- Social Media Links -->
                 <div style="text-align: center; margin-top: 10px;">

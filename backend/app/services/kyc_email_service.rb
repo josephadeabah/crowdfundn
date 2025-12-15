@@ -62,7 +62,7 @@ class KycEmailService
                 <a href="https://www.instagram.com/bantuhive_fund/">Instagram</a>
                 <a href="https://www.linkedin.com/company/bantu-hive/about/">LinkedIn</a>
               </div>
-              <div class="company-address">IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana</div>
+              <div class="company-address">27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.</div>
               <p><a href="https://bantuhive.com">© #{Time.current.year} Bantuhive Ltd.</a></p>
             </div>
           </div>
@@ -153,7 +153,7 @@ class KycEmailService
                 <a href="https://www.instagram.com/bantuhive_fund/">Instagram</a>
                 <a href="https://www.linkedin.com/company/bantu-hive/about/">LinkedIn</a>
               </div>
-              <div class="company-address">IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana</div>
+              <div class="company-address">27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.</div>
               <p><a href="https://bantuhive.com">© #{Time.current.year} Bantuhive Ltd.</a></p>
             </div>
           </div>
@@ -243,7 +243,7 @@ class KycEmailService
                 <a href="https://www.instagram.com/bantuhive_fund/">Instagram</a>
                 <a href="https://www.linkedin.com/company/bantu-hive/about/">LinkedIn</a>
               </div>
-              <div class="company-address">IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana</div>
+              <div class="company-address">27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.</div>
               <p><a href="https://bantuhive.com">© #{Time.current.year} Bantuhive Ltd.</a></p>
             </div>
           </div>

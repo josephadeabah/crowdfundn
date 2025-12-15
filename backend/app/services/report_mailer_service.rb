@@ -138,7 +138,7 @@ class ReportMailerService
               <div class="footer">
                 <p>You are receiving this email because you submitted a report on BantuHive.</p>
                 <p>Sent from Bantuhive's Headquarters:</p>
-                <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
+                <p>27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.</p>
 
                 <!-- Social Media Links -->
                 <div style="text-align: center; margin-top: 10px;">
@@ -304,7 +304,7 @@ class ReportMailerService
                 <div class="footer">
                   <p>This is an automated notification from Bantu Hive's reporting system.</p>
                   <p>Sent from Bantuhive's Headquarters:</p>
-                  <p>IVY Street, Kingstel Hotel Avenue, Apollo, Takoradi, Ghana.</p>
+                  <p>27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi, Ghana.</p>
 
                   <!-- Social Media Links -->
                   <div style="text-align: center; margin-top: 10px;">
