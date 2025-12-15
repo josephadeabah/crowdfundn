@@ -179,12 +179,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             You haven't applied to become a mentor yet.
           </p>
           <Button
-            onClick={() => {
-              window.location.href = '/account#Settings'; // Navigate to settings for mentor application
-            }}
             className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700"
           >
-            Apply to Become a Mentor
+            Go to &gt; Account &gt; Settings &gt; KYC &amp; Select Mentor
           </Button>
         </CardContent>
       </Card>
