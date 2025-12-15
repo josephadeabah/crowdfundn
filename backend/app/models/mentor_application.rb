@@ -12,7 +12,6 @@ class MentorApplication < ApplicationRecord
   validates :availability, presence: true
     
   before_create :generate_tracking_id
-  # Remove after_create :submit_for_review for now
   
   enum status: {
     draft: 'draft',
@@ -31,8 +30,12 @@ class MentorApplication < ApplicationRecord
       submitted_at: Time.current
     )
     
+    # TEMPORARILY DISABLE NOTIFICATIONS TO FIX THE ERROR
     # Send notification to admins
-    MentorNotificationService.new_mentor_application_submitted(self) if defined?(MentorNotificationService)
+    # MentorNotificationService.new_mentor_application_submitted(self) if defined?(MentorNotificationService)
+    
+    # Log instead for debugging
+    Rails.logger.info "Mentor application #{id} submitted for review by user #{user_id}"
   end
   
   def create_mentor_profile
