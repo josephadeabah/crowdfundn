@@ -121,9 +121,9 @@ const ContactUs = () => {
                     </h3>
                     <div className="space-y-2 text-sm">
                       <p className="font-medium">BantuHive Ltd</p>
-                      <p>East Legon, Behind A&C Mall</p>
-                      <p>Accra, Ghana</p>
-                      <p>Digital Address: GA-184-5678</p>
+                      <p>27 Independence Avenue, Synergy Office Space</p>
+                      <p>Takoradi Mall, Western Region</p>
+                      <p>Takoradi | Ghana</p>
                     </div>
                   </div>
 
@@ -133,16 +133,16 @@ const ContactUs = () => {
                     </h3>
                     <div className="space-y-2 text-sm">
                       <p>
-                        <strong>General:</strong> +233 (0) 302 123 4567
+                        <strong>Phone:</strong> +233 (0) 551 563 081
                       </p>
                       <p>
-                        <strong>WhatsApp:</strong> +233 (0) 200 000 000
+                        <strong>WhatsApp:</strong> +233 (0) 551 563 081
                       </p>
                       <p>
-                        <strong>Email:</strong> hello@bantuhive.com
+                        <strong>Email:</strong> help@bantuhive.com
                       </p>
                       <p>
-                        <strong>Support:</strong> support@bantuhive.com
+                        <strong>Support:</strong> help@bantuhive.com
                       </p>
                     </div>
                   </div>
@@ -153,7 +153,7 @@ const ContactUs = () => {
                     </h3>
                     <div className="space-y-1 text-sm">
                       <p>
-                        <strong>Monday - Friday:</strong> 8:00 AM - 6:00 PM GMT
+                        <strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM GMT
                       </p>
                       <p>
                         <strong>Saturday:</strong> 9:00 AM - 3:00 PM GMT
@@ -300,7 +300,7 @@ const ContactUs = () => {
                       24/7 Emergency Hotline
                     </h3>
                     <p className="text-lg font-bold text-destructive">
-                      +233 (0) 200 000 000
+                      +233 (0) 551 563 081
                     </p>
                     <p className="text-muted-foreground">
                       For urgent platform issues
@@ -308,7 +308,7 @@ const ContactUs = () => {
                   </div>
                   <div className="bg-card p-4 rounded-lg border">
                     <h3 className="font-semibold mb-2">Security Issues</h3>
-                    <p className="font-medium">security@bantuhive.com</p>
+                    <p className="font-medium">help@bantuhive.com</p>
                     <p className="text-muted-foreground">
                       For account security concerns
                     </p>
