@@ -127,7 +127,7 @@ export function TabsSection({
       </TabsContent>
 
       <TabsContent value="meetings" className="mt-4">
-        <MeetingsTab dealRoomId={dealRoomId.toString()} />
+       <MeetingsTab dealRoomId={deal.campaign?.deal_room?.id?.toString() || dealRoomId.toString()} />
       </TabsContent>
     </Tabs>
   );
