@@ -10,9 +10,7 @@ class MentorApplication < ApplicationRecord
   validates :previous_mentoring, presence: true
   validates :mentorship_approach, presence: true, length: { minimum: 100 }
   validates :availability, presence: true
-  
-  serialize :industry_expertise, Array
-  
+    
   before_create :generate_tracking_id
   after_create :submit_for_review
   
