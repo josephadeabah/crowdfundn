@@ -27,6 +27,11 @@ class User < ApplicationRecord
   has_many :archived_campaigns, dependent: :destroy
   has_many :archived_campaigns_list, through: :archived_campaigns, source: :campaign
   belongs_to :premium_plan, optional: true
+
+  # Add these mentor associations HERE:
+  has_one :mentor, dependent: :destroy
+  has_many :mentor_applications, dependent: :destroy
+  has_many :entrepreneur_mentor_assignments, class_name: 'MentorAssignment', foreign_key: 'entrepreneur_id', dependent: :destroy
   # Update KYC associations to use full namespace
   has_many :kycs, class_name: '::Kyc', dependent: :destroy
   has_one :latest_kyc, -> { where.not(status: 'superseded').order(created_at: :desc) }, class_name: '::Kyc'
