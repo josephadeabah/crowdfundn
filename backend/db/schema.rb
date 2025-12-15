@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_15_174749) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_15_203444) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -796,23 +796,25 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_15_174749) do
 
   create_table "mentor_applications", force: :cascade do |t|
     t.bigint "user_id", null: false
+    t.bigint "kyc_id"
     t.bigint "mentor_id"
     t.string "tracking_id"
-    t.string "professional_title"
-    t.integer "years_of_experience"
-    t.json "industry_expertise"
-    t.string "previous_mentoring"
+    t.string "professional_title", null: false
+    t.integer "years_of_experience", null: false
+    t.text "industry_expertise", default: [], array: true
+    t.text "previous_mentoring", null: false
     t.string "linkedin_profile"
     t.string "resume_url"
-    t.text "mentorship_approach"
-    t.string "availability"
+    t.text "mentorship_approach", null: false
+    t.string "availability", null: false
     t.string "status", default: "draft"
-    t.text "review_notes"
     t.datetime "submitted_at"
     t.datetime "reviewed_at"
     t.bigint "reviewed_by_id"
+    t.text "review_notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["kyc_id"], name: "index_mentor_applications_on_kyc_id"
     t.index ["mentor_id"], name: "index_mentor_applications_on_mentor_id"
     t.index ["reviewed_by_id"], name: "index_mentor_applications_on_reviewed_by_id"
     t.index ["status"], name: "index_mentor_applications_on_status"
@@ -825,15 +827,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_15_174749) do
     t.bigint "mentor_id", null: false
     t.bigint "entrepreneur_id", null: false
     t.string "status", default: "pending"
-    t.decimal "mentor_fee", precision: 10, scale: 2
     t.text "entrepreneur_notes"
     t.text "mentor_notes"
+    t.decimal "mentor_fee", precision: 10, scale: 2
     t.decimal "rating", precision: 3, scale: 2
     t.text "feedback"
     t.datetime "started_at"
     t.datetime "completed_at"
     t.datetime "cancelled_at"
-    t.string "cancellation_reason"
+    t.text "cancellation_reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["campaign_id", "mentor_id"], name: "index_mentor_assignments_on_campaign_id_and_mentor_id", unique: true
@@ -855,17 +857,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_15_174749) do
 
   create_table "mentors", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "professional_title"
-    t.integer "years_of_experience"
+    t.string "professional_title", null: false
+    t.integer "years_of_experience", null: false
     t.text "bio"
-    t.string "linkedin_profile"
     t.decimal "hourly_rate", precision: 10, scale: 2
+    t.integer "max_assignments"
+    t.integer "current_assignments", default: 0
     t.decimal "rating", precision: 3, scale: 2, default: "0.0"
     t.integer "reviews_count", default: 0
-    t.integer "current_assignments", default: 0
-    t.integer "max_assignments"
     t.string "status", default: "pending"
-    t.json "metadata"
+    t.string "linkedin_profile"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["rating"], name: "index_mentors_on_rating"
@@ -1232,6 +1233,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_15_174749) do
   add_foreign_key "member_investment_shares", "users"
   add_foreign_key "member_share_changes", "investment_club_contributions"
   add_foreign_key "member_share_changes", "investment_club_memberships"
+  add_foreign_key "mentor_applications", "kycs"
   add_foreign_key "mentor_applications", "mentors"
   add_foreign_key "mentor_applications", "users"
   add_foreign_key "mentor_applications", "users", column: "reviewed_by_id"
