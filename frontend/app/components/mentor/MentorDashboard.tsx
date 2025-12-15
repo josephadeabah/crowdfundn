@@ -182,6 +182,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             onClick={() => {
               window.location.href = '/account#Settings'; // Navigate to settings for mentor application
             }}
+            className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700"
           >
             Apply to Become a Mentor
           </Button>
