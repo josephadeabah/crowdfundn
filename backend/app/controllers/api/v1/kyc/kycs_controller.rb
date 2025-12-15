@@ -438,19 +438,36 @@ module Api
         end
 
         def validate_kyc_upgrade(existing_kyc, requested_type)
+          # Mentor verifications are completely separate from other KYC types
+          # They should be allowed regardless of existing KYC status
+          if requested_type == 'mentor'
+            # If requesting mentor, check if they already have a mentor KYC
+            if existing_kyc.kyc_type == 'mentor'
+              return { 
+                allowed: false, 
+                message: 'You already have a mentor verification.' 
+              }
+            else
+              # Allow mentor KYC even if they have other types
+              # Mentor is a separate verification path
+              return { allowed: true, message: 'Mentor verification allowed' }
+            end
+          end
+          
+          # If existing KYC is mentor, cannot upgrade to non-mentor types
+          if existing_kyc.kyc_type == 'mentor' && requested_type != 'mentor'
+            return { 
+              allowed: false, 
+              message: 'Mentor verification is separate. Please submit a new verification for other types.' 
+            }
+          end
+          
+          # Original logic for non-mentor types
           # Cannot upgrade if already has both access
           if existing_kyc.kyc_type == 'both'
             return { 
               allowed: false, 
               message: 'You already have full platform access. No upgrade needed.' 
-            }
-          end
-          
-          # Mentor verifications are separate and cannot be upgraded
-          if existing_kyc.kyc_type == 'mentor' || requested_type == 'mentor'
-            return { 
-              allowed: false, 
-              message: 'Mentor verification is separate and cannot be combined with other types.' 
             }
           end
           
