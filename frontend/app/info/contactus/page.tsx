@@ -122,7 +122,7 @@ const ContactUs = () => {
                     <div className="space-y-2 text-sm">
                       <p className="font-medium">BantuHive Ltd</p>
                       <p>27 Independence Avenue, Synergy Office Space</p>
-                      <p>Takoradi Mall, Western Region</p>
+                      <p>Takoradi Mall, Gate 2</p>
                       <p>Takoradi | Ghana</p>
                     </div>
                   </div>
