@@ -1,18 +1,19 @@
+# app/controllers/api/v1/deal_room_meetings_controller.rb
 module Api
   module V1
     class DealRoomMeetingsController < ApplicationController
-      before_action :authenticate_user!
+      before_action :authenticate_request  # Changed from :authenticate_user!
       before_action :set_meeting, only: [:show, :update, :destroy]
       
       # POST /api/v1/deal_room_meetings
       def create
         @meeting = DealRoomMeeting.new(meeting_params)
-        @meeting.organizer = current_user
+        @meeting.organizer = @current_user  # Changed from current_user to @current_user
         
         if @meeting.save
           # Auto-add organizer as host
           @meeting.deal_room_meeting_participants.create(
-            user: current_user,
+            user: @current_user,  # Changed from current_user to @current_user
             role: :host,
             status: :accepted
           )
@@ -25,7 +26,7 @@ module Api
       
       # GET /api/v1/deal_room_meetings/:id
       def show
-        render json: @meeting, current_user: current_user
+        render json: @meeting.as_json(current_user: @current_user)  # Changed from current_user
       end
       
       # PUT /api/v1/deal_room_meetings/:id
