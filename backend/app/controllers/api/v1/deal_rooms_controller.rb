@@ -32,9 +32,9 @@ module Api
           .per(params[:per_page] || 20)
         
         render json: {
-          meetings: meetings.as_json(current_user: current_user),
+          meetings: meetings.as_json(current_user: @current_user),  # FIXED: @current_user
           current_page: meetings.current_page,
-          total_pages: meetings.total_pages,
+          total_pages: meetings.total_count.zero? ? 1 : (meetings.total_count.to_f / (params[:per_page] || 20).to_i).ceil,
           total_count: meetings.total_count
         }
       end
