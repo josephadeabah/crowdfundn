@@ -20,6 +20,7 @@ import Avatar from '@/app/components/avatar/Avatar';
 import { SingleCampaignResponseDataType } from '../types/campaigns.types';
 import InfoTooltip from '../components/tooltip/tooltip';
 import { deslugify } from '../utils/helpers/categories';
+import MentorTab from '../components/mentor/MentorTab';
 
 interface EquityCampaignCardsProps {
   campaign: SingleCampaignResponseDataType | null;
@@ -420,6 +421,22 @@ const EquityCampaignSections: React.FC<EquityCampaignCardsProps> = ({
           </div>
         </div>
       )}
+
+      {/*External Advisors (Mentors) */}
+      <div className="bg-white rounded-3xl border border-gray-100 p-8">
+        <div className="flex items-center mb-8">
+          <div className="p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl mr-4">
+            <FaLink className="text-2xl text-blue-600" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900">
+            External Advisors
+          </h2>
+        </div>
+        <div className="mt-4">
+          <MentorTab campaignId={Number(campaign?.id)} />
+        </div>
+      </div>
+
       {/* Team Members */}
       <div className="bg-white rounded-3xl border border-gray-100 p-8">
         <div className="flex items-center mb-8">

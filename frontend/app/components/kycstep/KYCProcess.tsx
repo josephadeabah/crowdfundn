@@ -522,7 +522,9 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         ? 'both'
         : userType === 'issuer'
           ? 'issuer'
-          : 'investor';
+          : userType === 'mentor'
+            ? 'mentor'
+            : 'investor';
 
     const baseData = {
       kyc_type: kycType,
@@ -579,6 +581,24 @@ const KYCProcess: React.FC<KYCProcessProps> = ({
         (formData as InvestorKYCFormData).termsAcceptance || false,
       data_consent: (formData as InvestorKYCFormData).dataConsent || false,
     };
+
+    // Add mentor application data if user type is mentor
+    if (isMentor) {
+      const mentorData = formData as MentorKYCFormData;
+      return {
+        ...baseData,
+        mentor_application_attributes: {
+          professional_title: mentorData.professionalTitle,
+          years_of_experience: mentorData.yearsOfExperience,
+          industry_expertise: mentorData.industryExpertise || [],
+          previous_mentoring: mentorData.previousMentoring,
+          linkedin_profile: mentorData.linkedinProfile,
+          resume_url: mentorData.resume,
+          mentorship_approach: mentorData.mentorshipApproach,
+          availability: mentorData.availability,
+        },
+      } as any;
+    }
 
     if ((kycType === 'issuer' || kycType === 'both') && !isNonProfit) {
       return {

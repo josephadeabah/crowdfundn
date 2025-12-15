@@ -1,7 +1,13 @@
 'use client';
 import React from 'react';
 import BantuHiveLogoIcon from './icons/BantuHiveLogoIcon';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaTiktok } from 'react-icons/fa';
+import {
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedin,
+  FaTiktok,
+} from 'react-icons/fa';
 import FooterWarning from '../molecules/FooterWarning';
 
 const Footer = () => {

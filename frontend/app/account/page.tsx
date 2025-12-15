@@ -58,6 +58,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { DealRoom } from '../components/deal-room/DealRoom';
+import MentorDashboard from '../components/mentor/MentorDashboard';
 
 // Define proper TypeScript interfaces
 interface Tab {
@@ -235,6 +236,14 @@ const ProfileTabs = () => {
           icon: <IconJarLogoIcon className="w-4 h-4" />,
           component: <Rewards />,
           description: 'Manage rewards for your backers.',
+        },
+        {
+          label: 'Mentors',
+          icon: <Users className="w-4 h-4" />,
+          component: <MentorDashboard />, // Use MentorDashboard here
+          description: 'Manage mentor relationships and find mentors.',
+          badge: 'New',
+          badgeColor: 'bg-blue-100 text-blue-800',
         },
       ],
     },
