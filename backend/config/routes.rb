@@ -7,6 +7,74 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      # ========== MENTOR ROUTES ==========
+      namespace :mentor do
+        resources :applications, only: [:create, :update, :show] do
+          collection do
+            get :my_applications
+            get :status
+          end
+          member do
+            post :submit
+          end
+        end
+        
+        resources :assignments, only: [] do
+          collection do
+            get :my_mentor_assignments
+          end
+          member do
+            post :approve_assignment
+            post :complete_assignment
+            post :cancel_assignment
+          end
+        end
+        
+        resources :mentors, only: [:index, :show] do
+          collection do
+            get :my_mentor_profile
+            put :update_profile
+            put :update_availability
+          end
+        end
+        
+        # Campaign-specific mentor routes
+        resources :campaigns, only: [] do
+          resources :assignments, only: [:index], controller: 'campaign_assignments' do
+            collection do
+              get :available_mentors
+              post :request_mentor
+            end
+          end
+        end
+      end
+      
+      # Admin mentor management
+      namespace :admin do
+        resources :mentor_applications, only: [:index, :show, :update] do
+          member do
+            post :approve
+            post :reject
+            post :request_additional_info
+          end
+          collection do
+            get :stats
+            get :pending_review
+          end
+        end
+        
+        resources :mentors, only: [:index, :show, :update, :destroy] do
+          member do
+            post :suspend
+            post :activate
+            post :update_limits
+          end
+          collection do
+            get :analytics
+          end
+        end
+      end
+
       # ========== DEAL ROOM ROUTES ==========
       resources :deal_rooms, only: [:index, :show] do
         member do
@@ -36,7 +104,7 @@ Rails.application.routes.draw do
       end
       
       # Deal Room Meetings - EXPANDED with full functionality
-    resources :deal_room_meetings, only: [:create, :show, :update, :destroy]
+      resources :deal_room_meetings, only: [:create, :show, :update, :destroy]
       
       # NEW: Get user's upcoming meetings
       get 'my/meetings/upcoming', to: 'deal_room_meetings#upcoming'

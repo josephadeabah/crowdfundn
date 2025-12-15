@@ -21,6 +21,8 @@ class Campaign < ApplicationRecord
   has_many :archived_campaigns, dependent: :destroy
   has_many :archived_by_users, through: :archived_campaigns, source: :user
   has_many :reports, dependent: :destroy
+  has_many :mentor_assignments, dependent: :destroy
+  has_many :mentors, through: :mentor_assignments
   has_one :deal_room, dependent: :destroy
 
   has_rich_text :description
@@ -297,7 +299,26 @@ class Campaign < ApplicationRecord
       methods: %i[media_url media_filename total_days remaining_days archived?]
     }.merge(options))
 
-        # Add archive information if user context is provided
+    # Add mentor assignments if requested
+    if options[:include_mentors]
+      json[:mentor_assignments] = mentor_assignments.includes(:mentor).map do |assignment|
+        {
+          id: assignment.id,
+          status: assignment.status,
+          mentor: {
+            id: assignment.mentor.id,
+            name: assignment.mentor.user.full_name,
+            professional_title: assignment.mentor.professional_title,
+            rating: assignment.mentor.rating,
+            expertise: assignment.mentor.expertise_list
+          },
+          started_at: assignment.started_at,
+          completed_at: assignment.completed_at
+        }
+      end
+    end
+
+    # Add archive information if user context is provided
     if options[:user]
       user_archive_info = archive_info_for_user(options[:user])
       json.merge!(

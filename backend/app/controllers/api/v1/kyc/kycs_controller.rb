@@ -423,7 +423,17 @@ module Api
             signature_data: [:x, :y],
             investor_signature_data: [:x, :y],
             issuer_signature_data: [:x, :y],
-            kyc_addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy]
+            kyc_addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy],
+            mentor_application_attributes: [
+              :professional_title,
+              :years_of_experience,
+              :previous_mentoring,
+              :linkedin_profile,
+              :resume_url,
+              :mentorship_approach,
+              :availability,
+              industry_expertise: []
+            ]
           )
         end
 

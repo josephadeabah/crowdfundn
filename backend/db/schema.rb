@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_09_065822) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_15_174749) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -538,6 +538,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_065822) do
     t.index ["event_id"], name: "index_event_processeds_on_event_id", unique: true
   end
 
+  create_table "expertise_tags", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "category"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_expertise_tags_on_category"
+    t.index ["name"], name: "index_expertise_tags_on_name", unique: true
+  end
+
   create_table "external_meeting_invitations", force: :cascade do |t|
     t.bigint "deal_room_meeting_id", null: false
     t.string "email", null: false
@@ -782,6 +792,85 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_065822) do
     t.index ["investment_club_contribution_id"], name: "index_member_share_changes_on_investment_club_contribution_id"
     t.index ["investment_club_membership_id", "created_at"], name: "index_share_changes_on_membership_and_created_at"
     t.index ["investment_club_membership_id"], name: "index_member_share_changes_on_investment_club_membership_id"
+  end
+
+  create_table "mentor_applications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "mentor_id"
+    t.string "tracking_id"
+    t.string "professional_title"
+    t.integer "years_of_experience"
+    t.json "industry_expertise"
+    t.string "previous_mentoring"
+    t.string "linkedin_profile"
+    t.string "resume_url"
+    t.text "mentorship_approach"
+    t.string "availability"
+    t.string "status", default: "draft"
+    t.text "review_notes"
+    t.datetime "submitted_at"
+    t.datetime "reviewed_at"
+    t.bigint "reviewed_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["mentor_id"], name: "index_mentor_applications_on_mentor_id"
+    t.index ["reviewed_by_id"], name: "index_mentor_applications_on_reviewed_by_id"
+    t.index ["status"], name: "index_mentor_applications_on_status"
+    t.index ["tracking_id"], name: "index_mentor_applications_on_tracking_id", unique: true
+    t.index ["user_id"], name: "index_mentor_applications_on_user_id"
+  end
+
+  create_table "mentor_assignments", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.bigint "mentor_id", null: false
+    t.bigint "entrepreneur_id", null: false
+    t.string "status", default: "pending"
+    t.decimal "mentor_fee", precision: 10, scale: 2
+    t.text "entrepreneur_notes"
+    t.text "mentor_notes"
+    t.decimal "rating", precision: 3, scale: 2
+    t.text "feedback"
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "cancelled_at"
+    t.string "cancellation_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id", "mentor_id"], name: "index_mentor_assignments_on_campaign_id_and_mentor_id", unique: true
+    t.index ["campaign_id"], name: "index_mentor_assignments_on_campaign_id"
+    t.index ["entrepreneur_id"], name: "index_mentor_assignments_on_entrepreneur_id"
+    t.index ["mentor_id"], name: "index_mentor_assignments_on_mentor_id"
+    t.index ["status"], name: "index_mentor_assignments_on_status"
+  end
+
+  create_table "mentor_expertise_tags", force: :cascade do |t|
+    t.bigint "mentor_id", null: false
+    t.bigint "expertise_tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expertise_tag_id"], name: "index_mentor_expertise_tags_on_expertise_tag_id"
+    t.index ["mentor_id", "expertise_tag_id"], name: "index_mentor_expertise_tags_on_mentor_id_and_expertise_tag_id", unique: true
+    t.index ["mentor_id"], name: "index_mentor_expertise_tags_on_mentor_id"
+  end
+
+  create_table "mentors", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "professional_title"
+    t.integer "years_of_experience"
+    t.text "bio"
+    t.string "linkedin_profile"
+    t.decimal "hourly_rate", precision: 10, scale: 2
+    t.decimal "rating", precision: 3, scale: 2, default: "0.0"
+    t.integer "reviews_count", default: 0
+    t.integer "current_assignments", default: 0
+    t.integer "max_assignments"
+    t.string "status", default: "pending"
+    t.json "metadata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["rating"], name: "index_mentors_on_rating"
+    t.index ["status"], name: "index_mentors_on_status"
+    t.index ["user_id"], name: "index_mentors_on_user_id"
   end
 
   create_table "pledges", force: :cascade do |t|
@@ -1143,6 +1232,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_065822) do
   add_foreign_key "member_investment_shares", "users"
   add_foreign_key "member_share_changes", "investment_club_contributions"
   add_foreign_key "member_share_changes", "investment_club_memberships"
+  add_foreign_key "mentor_applications", "mentors"
+  add_foreign_key "mentor_applications", "users"
+  add_foreign_key "mentor_applications", "users", column: "reviewed_by_id"
+  add_foreign_key "mentor_assignments", "campaigns"
+  add_foreign_key "mentor_assignments", "mentors"
+  add_foreign_key "mentor_assignments", "users", column: "entrepreneur_id"
+  add_foreign_key "mentor_expertise_tags", "expertise_tags"
+  add_foreign_key "mentor_expertise_tags", "mentors"
+  add_foreign_key "mentors", "users"
   add_foreign_key "pledges", "donations"
   add_foreign_key "pledges", "rewards"
   add_foreign_key "points", "donations"
