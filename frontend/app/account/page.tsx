@@ -123,7 +123,7 @@ const ScrollableTabList = ({
   return (
     <div className="relative">
       {/* Scrollable container */}
-      <div className="space-y-1 max-h-56 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+      <div className="space-y-1 max-h-48 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
         {children}
       </div>
 
