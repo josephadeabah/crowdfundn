@@ -246,7 +246,7 @@ export function MeetingsTab({ dealRoomId }: MeetingsTabProps) {
                     <Button
                       size="sm"
                       onClick={() => handleJoinMeeting(meeting.meeting_link)}
-                      className="ml-4"
+                      className="ml-4 bg-orange-600"
                     >
                       <Video className="w-4 h-4 mr-2" />
                       Join
