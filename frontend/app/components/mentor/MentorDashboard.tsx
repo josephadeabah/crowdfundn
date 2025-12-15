@@ -180,7 +180,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           </p>
           <Button
             onClick={() => {
-              window.location.href = '/kyc?type=mentor';
+              window.location.href = '/account#Settings'; // Navigate to settings for mentor application
             }}
           >
             Apply to Become a Mentor
