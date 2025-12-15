@@ -1,7 +1,7 @@
 // app/account/ProfileTabs.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   DashboardIcon,
   IconJarLogoIcon,
@@ -40,7 +40,7 @@ import PledgesListPage from '@/app/account/Pledges';
 import EquityInvestments from './EquityInvestments';
 import { usePremium } from '@/app/context/premium/PremiumContext';
 import { useAuth } from '../context/auth/AuthContext';
-import { Landmark, UserCheck } from 'lucide-react';
+import { Landmark, UserCheck, ChevronUp, ChevronDown } from 'lucide-react';
 import { FiArchive } from 'react-icons/fi';
 import ArchivedCampaigns from './ArchivedCampaigns';
 import InvestmentClubsDashboard from './InvestmentClubsDashboard';
@@ -108,6 +108,31 @@ const UserNameDisplay = ({
   );
 };
 
+// Component to render scrollable tab list with gradient fade
+const ScrollableTabList = ({
+  children,
+  hasManyTabs,
+}: {
+  children: React.ReactNode;
+  hasManyTabs: boolean;
+}) => {
+  if (!hasManyTabs) {
+    return <div className="space-y-1">{children}</div>;
+  }
+
+  return (
+    <div className="relative">
+      {/* Scrollable container */}
+      <div className="space-y-1 max-h-64 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+        {children}
+      </div>
+
+      {/* Bottom fade gradient (only visible when scrolled) */}
+      <div className="absolute bottom-0 left-0 right-4 h-6 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+    </div>
+  );
+};
+
 const ProfileTabs = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<string>('');
@@ -118,6 +143,7 @@ const ProfileTabs = () => {
     new Set(['dashboard', 'investing']),
   );
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const tabContainerRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   // Get premium subscription status
   const { subscription, fetchSubscription } = usePremium();
@@ -169,7 +195,7 @@ const ProfileTabs = () => {
         },
         {
           label: 'Your Clubs',
-          icon: <Briefcase className="w-4 h-4" />, // Changed to Briefcase - represents personal investment clubs
+          icon: <Briefcase className="w-4 h-4" />,
           component: <InvestmentClubsDashboard />,
           description:
             'Manage clubs you belong to and track your contributions.',
@@ -178,7 +204,7 @@ const ProfileTabs = () => {
         },
         {
           label: 'Venture Clubs',
-          icon: <Building2 className="w-4 h-4" />, // Changed to Building2 - represents larger investment communities
+          icon: <Building2 className="w-4 h-4" />,
           component: <ClubsListPage />,
           description:
             'Discover and join investment clubs to collaborate with other investors.',
@@ -240,7 +266,7 @@ const ProfileTabs = () => {
         {
           label: 'Mentors',
           icon: <UserCheck className="w-4 h-4" />,
-          component: <MentorDashboard />, // Use MentorDashboard here
+          component: <MentorDashboard />,
           description: 'Manage mentor relationships and find mentors.',
           badge: 'New',
           badgeColor: 'bg-blue-100 text-blue-800',
@@ -377,6 +403,9 @@ const ProfileTabs = () => {
     return badgeColor || 'bg-blue-100 text-blue-800';
   };
 
+  // Helper to check if group has many tabs
+  const hasManyTabs = (tabs: Tab[]) => tabs.length > 4;
+
   // Mobile sidebar component
   const MobileSidebar = () => (
     <div
@@ -422,6 +451,7 @@ const ProfileTabs = () => {
                 const hasActiveTab = group.tabs.some(
                   (tab) => tab.label === activeTab,
                 );
+                const manyTabs = hasManyTabs(group.tabs);
 
                 return (
                   <div key={group.id} className="space-y-1">
@@ -441,67 +471,66 @@ const ProfileTabs = () => {
                         </span>
                         <span>{group.name}</span>
                       </div>
-                      <svg
-                        className={`w-4 h-4 transform transition-transform duration-200 ${
-                          isExpanded ? 'rotate-180' : ''
-                        } ${hasActiveTab ? 'text-orange-400' : 'text-gray-400'}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
+                      <div className="flex items-center">
+                        {manyTabs && isExpanded && (
+                          <span className="text-xs text-gray-500 mr-2">
+                            {group.tabs.length} tabs
+                          </span>
+                        )}
+                        {isExpanded ? (
+                          <ChevronUp className="w-4 h-4 text-gray-400" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 text-gray-400" />
+                        )}
+                      </div>
                     </button>
 
                     {isExpanded && (
-                      <div className="ml-4 space-y-1 border-l-2 border-gray-100 pl-3">
-                        {group.tabs.map((tab) => {
-                          const isActive = activeTab === tab.label;
-                          const isOnboarding =
-                            showOnboarding &&
-                            currentStep ===
-                              allTabs.findIndex((t) => t.label === tab.label);
+                      <div className="ml-4 border-l-2 border-gray-100 pl-3">
+                        <ScrollableTabList hasManyTabs={manyTabs}>
+                          {group.tabs.map((tab) => {
+                            const isActive = activeTab === tab.label;
+                            const isOnboarding =
+                              showOnboarding &&
+                              currentStep ===
+                                allTabs.findIndex((t) => t.label === tab.label);
 
-                          return (
-                            <button
-                              key={tab.label}
-                              onClick={() => handleTabClick(tab.label)}
-                              className={`flex items-center justify-between w-full px-3 py-2 text-sm rounded-lg transition-all duration-200 group relative ${
-                                isActive
-                                  ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-600'
-                                  : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                              } ${isOnboarding ? 'ring-2 ring-green-400' : ''}`}
-                            >
-                              <div className="flex items-center space-x-3">
-                                <span
-                                  className={
-                                    isActive
-                                      ? 'text-white'
-                                      : 'text-gray-400 group-hover:text-gray-600'
-                                  }
-                                >
-                                  {tab.icon}
-                                </span>
-                                <span>{tab.label}</span>
-                              </div>
-                              {tab.badge && (
-                                <span
-                                  className={`text-xs px-2 py-1 rounded-full ${getBadgeColorClasses(tab.badgeColor)}`}
-                                >
-                                  {tab.badge}
-                                </span>
-                              )}
-                              {isActive && (
-                                <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-orange-500 rounded-full" />
-                              )}
-                            </button>
-                          );
-                        })}
+                            return (
+                              <button
+                                key={tab.label}
+                                onClick={() => handleTabClick(tab.label)}
+                                className={`flex items-center justify-between w-full px-3 py-2 text-sm rounded-lg transition-all duration-200 group relative mb-1 ${
+                                  isActive
+                                    ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-600 bg-orange-50'
+                                    : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                } ${isOnboarding ? 'ring-2 ring-green-400' : ''}`}
+                              >
+                                <div className="flex items-center space-x-3">
+                                  <span
+                                    className={
+                                      isActive
+                                        ? 'text-orange-600'
+                                        : 'text-gray-400 group-hover:text-gray-600'
+                                    }
+                                  >
+                                    {tab.icon}
+                                  </span>
+                                  <span className="text-left">{tab.label}</span>
+                                </div>
+                                {tab.badge && (
+                                  <span
+                                    className={`text-xs px-2 py-1 rounded-full ${getBadgeColorClasses(tab.badgeColor)}`}
+                                  >
+                                    {tab.badge}
+                                  </span>
+                                )}
+                                {isActive && (
+                                  <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-orange-500 rounded-full" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </ScrollableTabList>
                       </div>
                     )}
                   </div>
@@ -621,6 +650,7 @@ const ProfileTabs = () => {
                   const hasActiveTab = group.tabs.some(
                     (tab) => tab.label === activeTab,
                   );
+                  const manyTabs = hasManyTabs(group.tabs);
 
                   return (
                     <div key={group.id} className="space-y-1">
@@ -640,67 +670,75 @@ const ProfileTabs = () => {
                           </span>
                           <span>{group.name}</span>
                         </div>
-                        <svg
-                          className={`w-4 h-4 transform transition-transform duration-200 ${
-                            isExpanded ? 'rotate-180' : ''
-                          } ${hasActiveTab ? 'text-orange-400' : 'text-gray-400'}`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
+                        <div className="flex items-center">
+                          {manyTabs && isExpanded && (
+                            <span className="text-xs text-gray-500 mr-2">
+                              {group.tabs.length} tabs
+                            </span>
+                          )}
+                          {isExpanded ? (
+                            <ChevronUp className="w-4 h-4 text-gray-400" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4 text-gray-400" />
+                          )}
+                        </div>
                       </button>
 
                       {isExpanded && (
-                        <div className="ml-4 space-y-1 border-l-2 border-gray-100 pl-3">
-                          {group.tabs.map((tab) => {
-                            const isActive = activeTab === tab.label;
-                            const isOnboarding =
-                              showOnboarding &&
-                              currentStep ===
-                                allTabs.findIndex((t) => t.label === tab.label);
+                        <div
+                          ref={(el) =>
+                            (tabContainerRefs.current[group.id] = el)
+                          }
+                          className="ml-4 border-l-2 border-gray-100 pl-3"
+                        >
+                          <ScrollableTabList hasManyTabs={manyTabs}>
+                            {group.tabs.map((tab) => {
+                              const isActive = activeTab === tab.label;
+                              const isOnboarding =
+                                showOnboarding &&
+                                currentStep ===
+                                  allTabs.findIndex(
+                                    (t) => t.label === tab.label,
+                                  );
 
-                            return (
-                              <button
-                                key={tab.label}
-                                onClick={() => handleTabClick(tab.label)}
-                                className={`flex items-center justify-between w-full px-3 py-2 text-sm rounded-lg transition-all duration-200 group relative ${
-                                  isActive
-                                    ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-600'
-                                    : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                                } ${isOnboarding ? 'ring-2 ring-green-400' : ''}`}
-                              >
-                                <div className="flex items-center space-x-3">
-                                  <span
-                                    className={
-                                      isActive
-                                        ? 'text-white'
-                                        : 'text-gray-400 group-hover:text-gray-600'
-                                    }
-                                  >
-                                    {tab.icon}
-                                  </span>
-                                  <span>{tab.label}</span>
-                                </div>
-                                {tab.badge && (
-                                  <span
-                                    className={`text-xs px-2 py-1 rounded-full ${getBadgeColorClasses(tab.badgeColor)}`}
-                                  >
-                                    {tab.badge}
-                                  </span>
-                                )}
-                                {isActive && (
-                                  <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-orange-500 rounded-full" />
-                                )}
-                              </button>
-                            );
-                          })}
+                              return (
+                                <button
+                                  key={tab.label}
+                                  onClick={() => handleTabClick(tab.label)}
+                                  className={`flex items-center justify-between w-full px-3 py-2 text-sm rounded-lg transition-all duration-200 group relative mb-1 ${
+                                    isActive
+                                      ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-600 bg-orange-50'
+                                      : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                  } ${isOnboarding ? 'ring-2 ring-green-400' : ''}`}
+                                >
+                                  <div className="flex items-center space-x-3">
+                                    <span
+                                      className={
+                                        isActive
+                                          ? 'text-orange-600'
+                                          : 'text-gray-400 group-hover:text-gray-600'
+                                      }
+                                    >
+                                      {tab.icon}
+                                    </span>
+                                    <span className="text-left">
+                                      {tab.label}
+                                    </span>
+                                  </div>
+                                  {tab.badge && (
+                                    <span
+                                      className={`text-xs px-2 py-1 rounded-full ${getBadgeColorClasses(tab.badgeColor)}`}
+                                    >
+                                      {tab.badge}
+                                    </span>
+                                  )}
+                                  {isActive && (
+                                    <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-orange-500 rounded-full" />
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </ScrollableTabList>
                         </div>
                       )}
                     </div>

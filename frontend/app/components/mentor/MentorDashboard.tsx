@@ -178,9 +178,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           <p className="text-gray-600 mb-4">
             You haven't applied to become a mentor yet.
           </p>
-          <Button
-            className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700"
-          >
+          <Button className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700">
             Go to &gt; Account &gt; Settings &gt; KYC &amp; Select Mentor
           </Button>
         </CardContent>
