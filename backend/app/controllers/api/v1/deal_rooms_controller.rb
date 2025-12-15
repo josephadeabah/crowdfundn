@@ -3,7 +3,7 @@ module Api
   module V1
     class DealRoomsController < ApplicationController
       before_action :authenticate_request
-      before_action :set_deal_room, except: [:index, :public_deals, :stats, :industries, :stages]
+      before_action :set_deal_room, except: [:index, :public_deals, :stats, :industries, :stages, :meetings]
       
       # GET /api/v1/deal_rooms
       def index
@@ -20,23 +20,39 @@ module Api
         }, status: :ok
       end
 
-    
-      # GET /api/deal_rooms/:id/meetings
+      # GET /api/v1/deal_rooms/:id/meetings
       def meetings
-        @deal_room = DealRoom.find(params[:id])
-        
-        # Get meetings for this deal room
-        meetings = @deal_room.deal_room_meetings
-          .order(start_time: :desc)
-          .page(params[:page])
-          .per(params[:per_page] || 20)
-        
-        render json: {
-          meetings: meetings.as_json(current_user: @current_user),  # FIXED: @current_user
-          current_page: meetings.current_page,
-          total_pages: meetings.total_count.zero? ? 1 : (meetings.total_count.to_f / (params[:per_page] || 20).to_i).ceil,
-          total_count: meetings.total_count
-        }
+        begin
+          # Find deal room by ID or campaign ID
+          @deal_room = DealRoom.find_by(id: params[:id]) || DealRoom.find_by(campaign_id: params[:id])
+          
+          if @deal_room.nil?
+            render json: { error: 'Deal room not found' }, status: :not_found
+            return
+          end
+          
+          # Check access
+          unless @deal_room.public? || @deal_room.members.include?(@current_user) || @current_user&.admin?
+            render json: { error: 'Access denied' }, status: :forbidden
+            return
+          end
+          
+          # Get meetings for this deal room
+          meetings = @deal_room.deal_room_meetings
+            .order(start_time: :desc)
+            .page(params[:page])
+            .per(params[:per_page] || 20)
+          
+          render json: {
+            meetings: meetings.map { |m| m.as_json(current_user: @current_user) },
+            current_page: meetings.current_page,
+            total_pages: meetings.total_pages,
+            total_count: meetings.total_count
+          }
+        rescue => e
+          Rails.logger.error "Error fetching meetings: #{e.message}"
+          render json: { error: 'Failed to fetch meetings' }, status: :internal_server_error
+        end
       end
       
       # POST /api/deal_rooms/:id/meetings
