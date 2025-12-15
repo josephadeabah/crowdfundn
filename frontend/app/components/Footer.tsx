@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import BantuHiveLogoIcon from './icons/BantuHiveLogoIcon';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaTiktok } from 'react-icons/fa';
 import FooterWarning from '../molecules/FooterWarning';
 
 const Footer = () => {
@@ -97,11 +97,11 @@ const Footer = () => {
                   <FaFacebook className="h-5 w-5" />
                 </a>
                 <a
-                  href="https://twitter.com"
+                  href="https://tiktok.com/@bantuhive4"
                   className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
-                  aria-label="Twitter"
+                  aria-label="TikTok"
                 >
-                  <FaTwitter className="h-5 w-5" />
+                  <FaTiktok className="h-5 w-5" />
                 </a>
                 <a
                   href="https://www.instagram.com/bantuhive_fund/"
