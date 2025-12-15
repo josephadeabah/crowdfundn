@@ -164,42 +164,42 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-700"></div>
       </div>
     );
   }
 
-// Replace the entire "Not a Mentor Yet" card section with this:
-if (!dashboardData) {
-  return (
-    <Card>
-      <CardContent className="py-8 text-center">
-        <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold mb-2">Not a Mentor Yet</h3>
-        <p className="text-gray-600 mb-4 px-4">
-          You haven't applied to become a mentor yet.
-        </p>
-        <Button 
-          className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700 
+  // Replace the entire "Not a Mentor Yet" card section with this:
+  if (!dashboardData) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center">
+          <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Not a Mentor Yet</h3>
+          <p className="text-gray-600 mb-4 px-4">
+            You haven't applied to become a mentor yet.
+          </p>
+          <Button
+            className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700 
                      px-4 py-2 h-auto min-h-[44px] 
                      text-sm sm:text-base 
                      whitespace-normal text-center 
                      mx-2 sm:mx-0"
-        >
-          <span className="block sm:hidden">
-            Complete KYC &amp; Select Mentor
-          </span>
-          <span className="hidden sm:block">
-            Go to &gt; Account &gt; Settings &gt; KYC &amp; Select Mentor
-          </span>
-        </Button>
-        <p className="text-xs text-gray-500 mt-3 px-4">
-          Navigate to Account Settings → KYC Section → Select "Mentor" option
-        </p>
-      </CardContent>
-    </Card>
-  );
-}
+          >
+            <span className="block sm:hidden">
+              Complete KYC &amp; Select Mentor
+            </span>
+            <span className="hidden sm:block">
+              Go to &gt; Account &gt; Settings &gt; KYC &amp; Select Mentor
+            </span>
+          </Button>
+          <p className="text-xs text-gray-500 mt-3 px-4">
+            Navigate to Account Settings → KYC Section → Select "Mentor" option
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const { mentor, assignments, statistics } = dashboardData;
 
