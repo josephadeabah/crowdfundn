@@ -40,7 +40,7 @@ Rails.application.routes.draw do
         
         # Campaign-specific mentor routes
         resources :campaigns, only: [] do
-          resources :assignments, only: [:index], controller: 'campaign_assignments' do
+          resources :assignments, only: [:index], controller: 'assignments' do
             collection do
               get :available_mentors
               post :request_mentor
