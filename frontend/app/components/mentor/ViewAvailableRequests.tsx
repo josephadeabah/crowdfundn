@@ -7,42 +7,24 @@ import { Input } from '@/app/components/ui/input';
 import { Badge } from '@/app/components/ui/badge';
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from '@/app/components/ui/card';
 import { Progress } from '@/app/components/ui/progress';
 import {
   Tabs,
-  TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/app/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/app/components/ui/select';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import {
   Search,
-  Filter,
-  Briefcase,
-  Users,
-  DollarSign,
   Calendar,
   Clock,
-  TrendingUp,
   CheckCircle,
-  XCircle,
   Eye,
   MessageSquare,
   Loader2,
   Award,
-  Target,
   Building,
   Globe,
   UserCheck,
@@ -52,7 +34,6 @@ import {
   BarChart,
   ChevronLeft,
   ChevronRight,
-  MoreVertical,
 } from 'lucide-react';
 
 interface ViewAvailableRequestsProps {
