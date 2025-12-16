@@ -158,10 +158,10 @@ const AdminMentorApplications: React.FC = () => {
     if (searchQuery) {
       filtered = filtered.filter(
         (app) =>
-          app.user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          app.user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          app.tracking_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          app.professional_title.toLowerCase().includes(searchQuery.toLowerCase())
+          app?.user?.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          app?.user?.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          app?.tracking_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          app?.professional_title.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -517,32 +517,32 @@ const AdminMentorApplications: React.FC = () => {
             </TableHeader>
             <TableBody>
               {filteredApplications.map((application) => (
-                <TableRow key={application.id}>
+                <TableRow key={application?.id}>
                   <TableCell>
-                    <div className="font-medium">{application.user.full_name}</div>
-                    <div className="text-sm text-gray-500">{application.user.email}</div>
-                    <div className="text-xs text-gray-400">{application.tracking_id}</div>
+                    <div className="font-medium">{application?.user?.full_name}</div>
+                    <div className="text-sm text-gray-500">{application?.user?.email}</div>
+                    <div className="text-xs text-gray-400">{application?.tracking_id}</div>
                   </TableCell>
-                  <TableCell>{application.professional_title}</TableCell>
-                  <TableCell>{application.years_of_experience} years</TableCell>
+                  <TableCell>{application?.professional_title}</TableCell>
+                  <TableCell>{application?.years_of_experience} years</TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1 max-w-[200px]">
-                      {application.industry_expertise.slice(0, 2).map((tag) => (
+                      {application?.industry_expertise.slice(0, 2).map((tag) => (
                         <Badge key={tag} variant="secondary" className="text-xs">
                           {tag}
                         </Badge>
                       ))}
-                      {application.industry_expertise.length > 2 && (
+                      {application?.industry_expertise?.length > 2 && (
                         <span className="text-xs text-gray-500">
-                          +{application.industry_expertise.length - 2}
+                          +{application?.industry_expertise?.length - 2}
                         </span>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
-                    {formatDistanceToNow(new Date(application.submitted_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(application?.submitted_at), { addSuffix: true })}
                   </TableCell>
-                  <TableCell>{getStatusBadge(application.status)}</TableCell>
+                  <TableCell>{getStatusBadge(application?.status)}</TableCell>
                   <TableCell className="text-right">
                     <Button
                       size="sm"
@@ -578,7 +578,7 @@ const AdminMentorApplications: React.FC = () => {
             <DialogHeader>
               <DialogTitle>Review Mentor Application</DialogTitle>
               <DialogDescription>
-                Application ID: {selectedApplication.tracking_id}
+                Application ID: {selectedApplication?.tracking_id}
               </DialogDescription>
             </DialogHeader>
 
@@ -592,19 +592,19 @@ const AdminMentorApplications: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <h4 className="font-semibold text-sm text-gray-600">Name</h4>
-                      <p>{selectedApplication.user.full_name}</p>
+                      <p>{selectedApplication?.user?.full_name}</p>
                     </div>
                     <div>
                       <h4 className="font-semibold text-sm text-gray-600">Email</h4>
-                      <p>{selectedApplication.user.email}</p>
+                      <p>{selectedApplication?.user?.email}</p>
                     </div>
                     <div>
                       <h4 className="font-semibold text-sm text-gray-600">Professional Title</h4>
-                      <p>{selectedApplication.professional_title}</p>
+                      <p>{selectedApplication?.professional_title}</p>
                     </div>
                     <div>
                       <h4 className="font-semibold text-sm text-gray-600">Years of Experience</h4>
-                      <p>{selectedApplication.years_of_experience} years</p>
+                      <p>{selectedApplication?.years_of_experience} years</p>
                     </div>
                   </div>
                 </CardContent>
@@ -619,7 +619,7 @@ const AdminMentorApplications: React.FC = () => {
                   <div>
                     <h4 className="font-semibold text-sm text-gray-600 mb-2">Areas of Expertise</h4>
                     <div className="flex flex-wrap gap-2">
-                      {selectedApplication.industry_expertise.map((tag) => (
+                      {selectedApplication?.industry_expertise.map((tag) => (
                         <Badge key={tag} variant="secondary">
                           {tag}
                         </Badge>
@@ -629,33 +629,33 @@ const AdminMentorApplications: React.FC = () => {
 
                   <div>
                     <h4 className="font-semibold text-sm text-gray-600 mb-2">Previous Mentoring Experience</h4>
-                    <p className="capitalize">{selectedApplication.previous_mentoring}</p>
+                    <p className="capitalize">{selectedApplication?.previous_mentoring}</p>
                   </div>
 
                   <div>
                     <h4 className="font-semibold text-sm text-gray-600 mb-2">Availability</h4>
-                    <p className="capitalize">{selectedApplication.availability}</p>
+                    <p className="capitalize">{selectedApplication?.availability}</p>
                   </div>
 
-                  {selectedApplication.linkedin_profile && (
+                  {selectedApplication?.linkedin_profile && (
                     <div>
                       <h4 className="font-semibold text-sm text-gray-600 mb-2">LinkedIn Profile</h4>
                       <a
-                        href={selectedApplication.linkedin_profile}
+                        href={selectedApplication?.linkedin_profile}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
                       >
-                        {selectedApplication.linkedin_profile}
+                        {selectedApplication?.linkedin_profile}
                       </a>
                     </div>
                   )}
 
-                  {selectedApplication.resume_url && (
+                  {selectedApplication?.resume_url && (
                     <div>
                       <h4 className="font-semibold text-sm text-gray-600 mb-2">Resume</h4>
                       <a
-                        href={selectedApplication.resume_url}
+                        href={selectedApplication?.resume_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
@@ -675,7 +675,7 @@ const AdminMentorApplications: React.FC = () => {
                 <CardContent>
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <p className="text-gray-700 whitespace-pre-wrap">
-                      {selectedApplication.mentorship_approach}
+                      {selectedApplication?.mentorship_approach}
                     </p>
                   </div>
                 </CardContent>
