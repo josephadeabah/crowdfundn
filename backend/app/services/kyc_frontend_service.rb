@@ -29,6 +29,8 @@ class KycFrontendService
       data_consent: kyc.data_consent || false,
       addresses: kyc.kyc_addresses.map { |a| format_address(a) },
       documents: kyc.kyc_documents.map { |d| format_document(d) },
+      # ADD MENTOR APPLICATION HERE
+      mentor_application: kyc.mentor_application ? format_mentor_application(kyc.mentor_application) : nil,
       signature_data: kyc.signature_data,
       investor_signature_data: kyc.investor_signature_data,
       issuer_signature_data: kyc.issuer_signature_data,
@@ -56,6 +58,32 @@ class KycFrontendService
     end
     
     base_data
+  end
+
+  def self.format_mentor_application(mentor_app)
+    return nil unless mentor_app
+    
+    {
+      id: mentor_app.id,
+      tracking_id: mentor_app.tracking_id,
+      professional_title: mentor_app.professional_title,
+      years_of_experience: mentor_app.years_of_experience,
+      industry_expertise: mentor_app.industry_expertise || [],
+      previous_mentoring: mentor_app.previous_mentoring,
+      linkedin_profile: mentor_app.linkedin_profile,
+      resume_url: mentor_app.resume_url,
+      mentorship_approach: mentor_app.mentorship_approach,
+      availability: mentor_app.availability,
+      status: mentor_app.status,
+      submitted_at: mentor_app.submitted_at,
+      reviewed_at: mentor_app.reviewed_at,
+      review_notes: mentor_app.review_notes,
+      created_at: mentor_app.created_at,
+      updated_at: mentor_app.updated_at,
+      user_id: mentor_app.user_id,
+      kyc_id: mentor_app.kyc_id,
+      mentor_id: mentor_app.mentor_id
+    }
   end
 
   def self.format_address(address)
@@ -154,6 +182,21 @@ class KycFrontendService
           is_primary: address_data[:is_primary]
         )
       end
+    end
+
+    # Create mentor application if present
+    if frontend_data[:mentor_application_attributes]
+      kyc.build_mentor_application(
+        professional_title: frontend_data[:mentor_application_attributes][:professional_title],
+        years_of_experience: frontend_data[:mentor_application_attributes][:years_of_experience],
+        industry_expertise: frontend_data[:mentor_application_attributes][:industry_expertise] || [],
+        previous_mentoring: frontend_data[:mentor_application_attributes][:previous_mentoring],
+        linkedin_profile: frontend_data[:mentor_application_attributes][:linkedin_profile],
+        resume_url: frontend_data[:mentor_application_attributes][:resume_url],
+        mentorship_approach: frontend_data[:mentor_application_attributes][:mentorship_approach],
+        availability: frontend_data[:mentor_application_attributes][:availability]
+      )
+      kyc.mentor_application.user = user
     end
 
     kyc

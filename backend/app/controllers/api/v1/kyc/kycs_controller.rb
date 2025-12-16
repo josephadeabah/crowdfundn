@@ -18,9 +18,11 @@ module Api
         def index
           @kycs = if @current_user.admin?
             # Use ::Kyc instead of just Kyc to avoid namespace conflicts
-            ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns]).all.order(created_at: :desc)
+            # INCLUDE MENTOR_APPLICATION IN THE QUERY
+            ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, :mentor_application, user: [:profile, :campaigns]).all.order(created_at: :desc)
           else
-            @current_user.kycs.includes(:kyc_documents, :kyc_addresses).order(created_at: :desc)
+            # INCLUDE MENTOR_APPLICATION FOR USER'S KYCS TOO
+            @current_user.kycs.includes(:kyc_documents, :kyc_addresses, :mentor_application).order(created_at: :desc)
           end
           
           # Apply pagination
@@ -67,7 +69,9 @@ module Api
           # CRITICAL: Set user on mentor application if it exists
           if @kyc.mentor_application.present?
             puts "=== DEBUG: Setting user on mentor application ==="
+            puts "Mentor app user before: #{@kyc.mentor_application.user_id}"
             @kyc.mentor_application.user = @current_user
+            puts "Mentor app user after: #{@kyc.mentor_application.user_id}"
           end
 
           # Set declaration fields
@@ -90,7 +94,9 @@ module Api
             puts "KYC ID: #{@kyc.id}"
             puts "KYC type: #{@kyc.kyc_type}"
             puts "Mentor app exists: #{@kyc.mentor_application.present?}"
-            puts "Mentor app user: #{@kyc.mentor_application&.user_id}" if @kyc.mentor_application
+            puts "Mentor app ID: #{@kyc.mentor_application&.id}"
+            puts "Mentor app status: #{@kyc.mentor_application&.status}"
+            puts "Mentor app user: #{@kyc.mentor_application&.user_id}"
             
             # Process signature immediately after save
             begin
@@ -99,7 +105,19 @@ module Api
               Rails.logger.error "Signature processing failed: #{e.message}"
             end
             
-            render json: { kyc: KycFrontendService.format_for_frontend(@kyc) }, status: :created
+            # RELOAD WITH MENTOR APPLICATION INCLUDED
+            @kyc.reload
+            
+            render json: { 
+              kyc: KycFrontendService.format_for_frontend(@kyc),
+              # ADD EXTRA MENTOR APP INFO FOR DEBUGGING
+              mentor_application_debug: @kyc.mentor_application ? {
+                id: @kyc.mentor_application.id,
+                status: @kyc.mentor_application.status,
+                professional_title: @kyc.mentor_application.professional_title,
+                tracking_id: @kyc.mentor_application.tracking_id
+              } : nil
+            }, status: :created
           else
             puts "=== DEBUG: KYC save failed ==="
             puts "Errors: #{@kyc.errors.full_messages}"
@@ -224,7 +242,8 @@ module Api
         end
 
         def all_needs_review
-          @kycs = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns])
+          # INCLUDE MENTOR_APPLICATION HERE TOO
+          @kycs = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, :mentor_application, user: [:profile, :campaigns])
                       .needs_review
                       .order(created_at: :desc)
           
@@ -423,7 +442,8 @@ module Api
         end
 
         def set_kyc
-          @kyc = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, user: [:profile, :campaigns]).find(params[:id])
+          # UPDATE THIS METHOD TO INCLUDE MENTOR_APPLICATION
+          @kyc = ::Kyc.includes(:user, :kyc_documents, :kyc_addresses, :mentor_application, user: [:profile, :campaigns]).find(params[:id])
         end
 
         def authorize_user_access
@@ -444,6 +464,7 @@ module Api
             issuer_signature_data: [:x, :y],
             kyc_addresses_attributes: [:id, :address_type, :street, :city, :state, :postal_code, :country, :is_primary, :_destroy],
             mentor_application_attributes: [
+              :id, :_destroy, # ADD THESE
               :professional_title,
               :years_of_experience,
               :previous_mentoring,
