@@ -828,11 +828,12 @@ const MentorMarketplace: React.FC = () => {
                     )}
 
                     {/* Actions */}
-                    <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t mt-auto">
+                    {/* Actions */}
+                    <div className="flex flex-row gap-2 pt-4 border-t mt-auto min-h-[36px]">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="flex-1 h-9 text-xs sm:text-sm min-w-0"
+                        className="flex-1 h-9 text-xs sm:text-sm min-w-0 basis-1/2 flex items-center justify-center"
                         onClick={() => handleViewProfile(mentor)}
                       >
                         <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
@@ -843,7 +844,7 @@ const MentorMarketplace: React.FC = () => {
                       {!isCurrentUser && (
                         <Button
                           size="sm"
-                          className="flex-1 h-9 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 min-w-0"
+                          className="flex-1 h-9 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 min-w-0 basis-1/2 flex items-center justify-center"
                           disabled={isRequested || !isMentorAvailable}
                           onClick={() => requestMentor(mentor.id)}
                         >
