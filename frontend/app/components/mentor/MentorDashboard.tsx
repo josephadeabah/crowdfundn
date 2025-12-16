@@ -22,6 +22,9 @@ import {
   Calendar,
   TrendingUp,
   Award,
+  FileText,
+  Hourglass,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useToast } from '@/app/components/ui/use-toast';
@@ -30,10 +33,50 @@ interface MentorDashboardProps {
   mentorId?: number;
 }
 
+interface MentorData {
+  has_mentor_profile: boolean;
+  has_mentor_application: boolean;
+  mentor?: {
+    id: number;
+    professional_title: string;
+    rating: number;
+    current_assignments: number;
+    max_assignments: number;
+    status: string;
+    expertise: string[];
+    // other mentor properties
+  };
+  application?: {
+    id: number;
+    status: string;
+    submitted_at: string;
+    professional_title: string;
+    years_of_experience: number;
+    // other application properties
+  };
+  assignments?: Array<{
+    id: number;
+    status: string;
+    campaign?: {
+      title: string;
+      fundraiser_name: string;
+    };
+    started_at?: string;
+    completed_at?: string;
+    rating?: number;
+    feedback?: string;
+  }>;
+  statistics?: {
+    total_assignments: number;
+  };
+  expertise?: string[];
+  message?: string;
+}
+
 const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const { user, token } = useAuth();
   const { toast } = useToast();
-  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<MentorData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -167,8 +210,83 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     );
   }
 
-  // Replace the entire "Not a Mentor Yet" card section with this:
+  // Handle different states based on the response
   if (!dashboardData) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center">
+          <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Unable to Load Data</h3>
+          <p className="text-gray-600 mb-4 px-4">
+            There was an error loading your mentor information.
+          </p>
+          <Button
+            onClick={fetchDashboardData}
+            className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700"
+          >
+            Retry
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Application Pending Review State
+  if (dashboardData.has_mentor_application && !dashboardData.has_mentor_profile) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center">
+          <Hourglass className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Application Pending Review</h3>
+          <p className="text-gray-600 mb-4 px-4">
+            Your mentor application has been submitted and is under review.
+          </p>
+          
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-left">
+            <div className="flex items-start">
+              <FileText className="h-5 w-5 text-yellow-600 mr-2 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-yellow-800">Application Details</h4>
+                {dashboardData.application && (
+                  <>
+                    <p className="text-sm text-yellow-700 mt-1">
+                      <strong>Professional Title:</strong> {dashboardData.application.professional_title}
+                    </p>
+                    <p className="text-sm text-yellow-700">
+                      <strong>Experience:</strong> {dashboardData.application.years_of_experience} years
+                    </p>
+                    <p className="text-sm text-yellow-700">
+                      <strong>Submitted:</strong> {new Date(dashboardData.application.submitted_at).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm text-yellow-700">
+                      <strong>Status:</strong> <span className="capitalize">{dashboardData.application.status}</span>
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          <Button
+            onClick={() => window.location.href = '/mentor/application/status'}
+            variant="outline"
+            className="mr-2"
+          >
+            View Application Status
+          </Button>
+          <Button
+            onClick={() => window.location.href = '/account/settings?tab=kyc'}
+            className="bg-emerald-600 text-white hover:bg-emerald-700"
+          >
+            Update KYC Information
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Not a Mentor Yet State
+  if (!dashboardData.has_mentor_application && !dashboardData.has_mentor_profile) {
     return (
       <Card>
         <CardContent className="py-8 text-center">
@@ -178,6 +296,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             You haven't applied to become a mentor yet.
           </p>
           <Button
+            onClick={() => window.location.href = '/mentor/application'}
             className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700 
                      px-4 py-2 h-auto min-h-[44px] 
                      text-sm sm:text-base 
@@ -185,366 +304,387 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                      mx-2 sm:mx-0"
           >
             <span className="block sm:hidden">
-              Complete KYC &amp; Select Mentor
+              Apply to Become a Mentor
             </span>
             <span className="hidden sm:block">
-              Go to &gt; Account &gt; Settings &gt; KYC &amp; Select Mentor
+              Apply to Become a Mentor
             </span>
           </Button>
           <p className="text-xs text-gray-500 mt-3 px-4">
-            Navigate to Account Settings → KYC Section → Select "Mentor" option
+            Complete your KYC verification first, then submit a mentor application
           </p>
         </CardContent>
       </Card>
     );
   }
 
-  const { mentor, assignments, statistics } = dashboardData;
+  // Mentor Dashboard - User has a mentor profile
+  if (dashboardData.has_mentor_profile && dashboardData.mentor) {
+    const { mentor, assignments = [], statistics = { total_assignments: 0 } } = dashboardData;
+    
+    const activeAssignments = assignments.filter(
+      (a: any) => a.status === 'active',
+    );
+    const pendingRequests = assignments.filter(
+      (a: any) => a.status === 'pending',
+    );
+    const completedAssignments = assignments.filter(
+      (a: any) => a.status === 'completed',
+    );
 
-  const activeAssignments = assignments.filter(
-    (a: any) => a.status === 'active',
-  );
-  const pendingRequests = assignments.filter(
-    (a: any) => a.status === 'pending',
-  );
-  const completedAssignments = assignments.filter(
-    (a: any) => a.status === 'completed',
-  );
-
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Mentor Dashboard</h2>
-          <p className="text-gray-600">
-            Manage your mentorship assignments and profile
-          </p>
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold">Mentor Dashboard</h2>
+            <p className="text-gray-600">
+              Manage your mentorship assignments and profile
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Badge className={`px-3 py-1 ${mentor.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+              {mentor.status === 'approved' ? 'Available' : 'Unavailable'}
+            </Badge>
+            <Badge className="px-3 py-1 bg-blue-100 text-blue-800">
+              <Award className="h-4 w-4 mr-1" />
+              {mentor.rating?.toFixed(1) || '0.0'} Rating
+            </Badge>
+            <Button
+              variant="outline"
+              onClick={() => {
+                window.location.href = '/mentor/profile/edit';
+              }}
+            >
+              Edit Profile
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <Badge className="px-3 py-1 bg-blue-100 text-blue-800">
-            <Award className="h-4 w-4 mr-1" />
-            {mentor.rating.toFixed(1)} Rating
-          </Badge>
-          <Button
-            variant="outline"
-            onClick={() => {
-              // Navigate to profile edit
-              window.location.href = '/mentor/profile/edit';
-            }}
-          >
-            Edit Profile
-          </Button>
-        </div>
-      </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Active Assignments
-                </p>
-                <h3 className="text-2xl font-bold mt-2">
-                  {activeAssignments.length}
-                </h3>
-              </div>
-              <div className="p-3 bg-green-100 rounded-full">
-                <Briefcase className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Capacity</span>
-                <span>
-                  {mentor.current_assignments}/{mentor.max_assignments || '∞'}
-                </span>
-              </div>
-              <Progress
-                value={
-                  (mentor.current_assignments / (mentor.max_assignments || 1)) *
-                  100
-                }
-                className="h-2"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Pending Requests
-                </p>
-                <h3 className="text-2xl font-bold mt-2">
-                  {pendingRequests.length}
-                </h3>
-              </div>
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <Clock className="h-6 w-6 text-yellow-600" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={() => {
-                  // Navigate to pending requests
-                  window.location.href = '/mentor/requests';
-                }}
-              >
-                Review Requests
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Completed</p>
-                <h3 className="text-2xl font-bold mt-2">
-                  {completedAssignments.length}
-                </h3>
-              </div>
-              <div className="p-3 bg-purple-100 rounded-full">
-                <CheckCircle className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="flex items-center text-sm text-gray-600">
-                <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                <span>Average Rating: {mentor.rating.toFixed(1)}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Impact
-                </p>
-                <h3 className="text-2xl font-bold mt-2">
-                  {statistics.total_assignments}
-                </h3>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <TrendingUp className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-            <div className="mt-4">
-              <p className="text-sm text-gray-600">Ventures mentored</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Active Assignments */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Active Mentorships</CardTitle>
-          <CardDescription>Ventures you're currently mentoring</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {activeAssignments.length > 0 ? (
-            <div className="space-y-4">
-              {activeAssignments.map((assignment: any) => (
-                <div
-                  key={assignment.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <Briefcase className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold">
-                        {assignment.campaign.title}
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        Founder: {assignment.campaign.fundraiser_name}
-                      </p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <Badge variant="outline" className="text-xs">
-                          Started:{' '}
-                          {new Date(assignment.started_at).toLocaleDateString()}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Message
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Schedule
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => {
-                        // Complete assignment
-                        window.location.href = `/mentor/assignment/${assignment.id}/complete`;
-                      }}
-                    >
-                      Complete
-                    </Button>
-                  </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Active Assignments
+                  </p>
+                  <h3 className="text-2xl font-bold mt-2">
+                    {activeAssignments.length}
+                  </h3>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h4 className="font-semibold mb-2">No Active Assignments</h4>
-              <p className="text-gray-600 mb-4">
-                You don't have any active mentorship assignments.
-              </p>
-              <Button variant="outline">View Available Requests</Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                <div className="p-3 bg-green-100 rounded-full">
+                  <Briefcase className="h-6 w-6 text-green-600" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex justify-between text-sm text-gray-600 mb-1">
+                  <span>Capacity</span>
+                  <span>
+                    {mentor.current_assignments || 0}/{mentor.max_assignments || '∞'}
+                  </span>
+                </div>
+                <Progress
+                  value={
+                    ((mentor.current_assignments || 0) / (mentor.max_assignments || 1)) * 100
+                  }
+                  className="h-2"
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Recent Reviews */}
-      {completedAssignments.length > 0 && (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Pending Requests
+                  </p>
+                  <h3 className="text-2xl font-bold mt-2">
+                    {pendingRequests.length}
+                  </h3>
+                </div>
+                <div className="p-3 bg-yellow-100 rounded-full">
+                  <Clock className="h-6 w-6 text-yellow-600" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    window.location.href = '/mentor/requests';
+                  }}
+                >
+                  Review Requests
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Completed</p>
+                  <h3 className="text-2xl font-bold mt-2">
+                    {completedAssignments.length}
+                  </h3>
+                </div>
+                <div className="p-3 bg-purple-100 rounded-full">
+                  <CheckCircle className="h-6 w-6 text-purple-600" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex items-center text-sm text-gray-600">
+                  <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                  <span>Average Rating: {mentor.rating?.toFixed(1) || '0.0'}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Impact
+                  </p>
+                  <h3 className="text-2xl font-bold mt-2">
+                    {statistics.total_assignments || 0}
+                  </h3>
+                </div>
+                <div className="p-3 bg-blue-100 rounded-full">
+                  <TrendingUp className="h-6 w-6 text-blue-600" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <p className="text-sm text-gray-600">Ventures mentored</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Active Assignments */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Reviews</CardTitle>
+            <CardTitle>Active Mentorships</CardTitle>
+            <CardDescription>Ventures you're currently mentoring</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {activeAssignments.length > 0 ? (
+              <div className="space-y-4">
+                {activeAssignments.map((assignment: any) => (
+                  <div
+                    key={assignment.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Briefcase className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">
+                          {assignment.campaign?.title || 'Untitled Campaign'}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          Founder: {assignment.campaign?.fundraiser_name || 'Unknown'}
+                        </p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          {assignment.started_at && (
+                            <Badge variant="outline" className="text-xs">
+                              Started: {new Date(assignment.started_at).toLocaleDateString()}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm">
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Message
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Schedule
+                      </Button>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => {
+                          window.location.href = `/mentor/assignment/${assignment.id}/complete`;
+                        }}
+                      >
+                        Complete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2">No Active Assignments</h4>
+                <p className="text-gray-600 mb-4">
+                  You don't have any active mentorship assignments.
+                </p>
+                <Button variant="outline" onClick={() => window.location.href = '/mentor/requests'}>
+                  View Available Requests
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Recent Reviews */}
+        {completedAssignments.filter((a: any) => a.rating).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Reviews</CardTitle>
+              <CardDescription>
+                Feedback from your completed mentorships
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {completedAssignments
+                  .filter((a: any) => a.rating)
+                  .slice(0, 3)
+                  .map((assignment: any) => (
+                    <div key={assignment.id} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="font-semibold">
+                            {assignment.campaign?.title || 'Untitled Campaign'}
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            {assignment.campaign?.fundraiser_name || 'Unknown'}
+                          </p>
+                        </div>
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`h-4 w-4 ${
+                                star <= (assignment.rating || 0)
+                                  ? 'text-yellow-400 fill-yellow-400'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      {assignment.feedback && (
+                        <p className="text-gray-600 mt-2 text-sm">
+                          "{assignment.feedback}"
+                        </p>
+                      )}
+                      {assignment.completed_at && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Completed on {new Date(assignment.completed_at).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Availability Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Availability Settings</CardTitle>
             <CardDescription>
-              Feedback from your completed mentorships
+              Control your mentorship capacity and availability
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {completedAssignments
-                .filter((a: any) => a.rating)
-                .slice(0, 3)
-                .map((assignment: any) => (
-                  <div key={assignment.id} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h4 className="font-semibold">
-                          {assignment.campaign.title}
-                        </h4>
-                        <p className="text-sm text-gray-600">
-                          {assignment.campaign.fundraiser_name}
-                        </p>
-                      </div>
-                      <div className="flex items-center">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`h-4 w-4 ${
-                              star <= assignment.rating
-                                ? 'text-yellow-400 fill-yellow-400'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    {assignment.feedback && (
-                      <p className="text-gray-600 mt-2 text-sm">
-                        "{assignment.feedback}"
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-500 mt-2">
-                      Completed on{' '}
-                      {new Date(assignment.completed_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Availability Management */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Availability Settings</CardTitle>
-          <CardDescription>
-            Control your mentorship capacity and availability
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-semibold">
-                  Maximum Concurrent Assignments
-                </h4>
-                <p className="text-sm text-gray-600">
-                  Set how many ventures you can mentor at once
-                </p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg font-semibold">
-                  {mentor.max_assignments || 'Unlimited'}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    // Update max assignments
-                    const newMax = prompt(
-                      'Enter maximum concurrent assignments:',
-                      mentor.max_assignments?.toString() || '5',
-                    );
-                    if (newMax) {
-                      const parsedMax = parseInt(newMax);
-                      if (!isNaN(parsedMax) && parsedMax > 0) {
-                        updateMaxAssignments(parsedMax);
-                      } else {
-                        toast({
-                          title: 'Error',
-                          description: 'Please enter a valid positive number',
-                          variant: 'destructive',
-                        });
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold">
+                    Maximum Concurrent Assignments
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    Set how many ventures you can mentor at once
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-lg font-semibold">
+                    {mentor.max_assignments || 'Unlimited'}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newMax = prompt(
+                        'Enter maximum concurrent assignments:',
+                        mentor.max_assignments?.toString() || '5',
+                      );
+                      if (newMax) {
+                        const parsedMax = parseInt(newMax);
+                        if (!isNaN(parsedMax) && parsedMax > 0) {
+                          updateMaxAssignments(parsedMax);
+                        } else {
+                          toast({
+                            title: 'Error',
+                            description: 'Please enter a valid positive number',
+                            variant: 'destructive',
+                          });
+                        }
                       }
-                    }
-                  }}
+                    }}
+                  >
+                    Change
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold">Mentor Status</h4>
+                  <p className="text-sm text-gray-600">
+                    {mentor.status === 'approved'
+                      ? 'Available for new assignments'
+                      : 'Not accepting new assignments'}
+                  </p>
+                </div>
+                <Button
+                  variant={mentor.status === 'approved' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={toggleAvailability}
                 >
-                  Change
+                  {mentor.status === 'approved'
+                    ? 'Set as Unavailable'
+                    : 'Set as Available'}
                 </Button>
               </div>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-semibold">Mentor Status</h4>
-                <p className="text-sm text-gray-600">
-                  {mentor.status === 'approved'
-                    ? 'Available for new assignments'
-                    : 'Not accepting new assignments'}
-                </p>
-              </div>
-              <Button
-                variant={mentor.status === 'approved' ? 'default' : 'outline'}
-                size="sm"
-                onClick={toggleAvailability}
-              >
-                {mentor.status === 'approved'
-                  ? 'Set as Unavailable'
-                  : 'Set as Available'}
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+  // Fallback - shouldn't reach here
+  return (
+    <Card>
+      <CardContent className="py-8 text-center">
+        <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Unexpected State</h3>
+        <p className="text-gray-600 mb-4 px-4">
+          There was an unexpected error loading your mentor dashboard.
+        </p>
+        <pre className="text-xs bg-gray-100 p-2 rounded text-left overflow-auto">
+          {JSON.stringify(dashboardData, null, 2)}
+        </pre>
+      </CardContent>
+    </Card>
   );
 };
 
