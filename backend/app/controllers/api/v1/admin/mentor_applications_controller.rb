@@ -96,16 +96,16 @@ module Api
             application.update(mentor: mentor)
             
             # Send notification to applicant
-            Notification.create(
-              user: application.user,
-              title: 'Mentor Application Approved',
-              message: 'Congratulations! Your mentor application has been approved. You can now access your mentor dashboard.',
-              notification_type: 'mentor_application_approved',
-              metadata: {
-                application_id: application.id,
-                mentor_id: mentor.id
-              }
-            )
+            # Notification.create(
+            #   user: application.user,
+            #   title: 'Mentor Application Approved',
+            #   message: 'Congratulations! Your mentor application has been approved. You can now access your mentor dashboard.',
+            #   notification_type: 'mentor_application_approved',
+            #   metadata: {
+            #     application_id: application.id,
+            #     mentor_id: mentor.id
+            #   }
+            # )
             
             render json: {
               application: application.as_json,
@@ -127,16 +127,16 @@ module Api
             review_notes: params[:review_notes]
           )
             # Send notification to applicant
-            Notification.create(
-              user: application.user,
-              title: 'Mentor Application Update',
-              message: 'Your mentor application requires additional information.',
-              notification_type: 'mentor_application_rejected',
-              metadata: {
-                application_id: application.id,
-                review_notes: params[:review_notes]
-              }
-            )
+            # Notification.create(
+            #   user: application.user,
+            #   title: 'Mentor Application Update',
+            #   message: 'Your mentor application requires additional information.',
+            #   notification_type: 'mentor_application_rejected',
+            #   metadata: {
+            #     application_id: application.id,
+            #     review_notes: params[:review_notes]
+            #   }
+            # )
             
             render json: {
               application: application.as_json,
@@ -151,16 +151,16 @@ module Api
           application = MentorApplication.find(params[:id])
           
           # Send notification to applicant requesting more info
-          Notification.create(
-            user: application.user,
-            title: 'Mentor Application - Additional Info Needed',
-            message: 'We need some additional information to process your application.',
-            notification_type: 'mentor_application_info_request',
-            metadata: {
-              application_id: application.id,
-              requested_info: params[:requested_info]
-            }
-          )
+          # Notification.create(
+          #   user: application.user,
+          #   title: 'Mentor Application - Additional Info Needed',
+          #   message: 'We need some additional information to process your application.',
+          #   notification_type: 'mentor_application_info_request',
+          #   metadata: {
+          #     application_id: application.id,
+          #     requested_info: params[:requested_info]
+          #   }
+          # )
           
           render json: {
             message: 'Information request sent to applicant'
