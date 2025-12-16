@@ -104,7 +104,7 @@ const MentorMarketplace: React.FC = () => {
       if (mentorsRes.ok) {
         const mentorsData = await mentorsRes.json();
         setMentors(mentorsData.mentors || []);
-        
+
         // Use expertise tags from filters if available
         if (mentorsData.filters?.expertise_tags) {
           setAvailableTags(mentorsData.filters.expertise_tags);
@@ -237,20 +237,23 @@ const MentorMarketplace: React.FC = () => {
       mentor.professional_title
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      (mentor.bio && mentor.bio.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (mentor.expertise && Array.isArray(mentor.expertise) && 
+      (mentor.bio &&
+        mentor.bio.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (mentor.expertise &&
+        Array.isArray(mentor.expertise) &&
         mentor.expertise.some((tag) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
+          tag.toLowerCase().includes(searchQuery.toLowerCase()),
         ));
 
     const matchesExpertise =
       selectedExpertise === 'all' ||
       (mentor.expertise && mentor.expertise.includes(selectedExpertise));
-    
-    const ratingValue = typeof mentor.rating === 'string' 
-      ? parseFloat(mentor.rating) 
-      : mentor.rating;
-    
+
+    const ratingValue =
+      typeof mentor.rating === 'string'
+        ? parseFloat(mentor.rating)
+        : mentor.rating;
+
     const matchesRating = ratingValue >= minRating;
     const matchesExperience = mentor.years_of_experience >= minExperience;
 
@@ -260,7 +263,10 @@ const MentorMarketplace: React.FC = () => {
   });
 
   const getAvailabilityBadge = (mentor: Mentor) => {
-    if (mentor.max_assignments === undefined || mentor.max_assignments === null) {
+    if (
+      mentor.max_assignments === undefined ||
+      mentor.max_assignments === null
+    ) {
       return <Badge className="bg-green-100 text-green-800">Available</Badge>;
     }
 
@@ -285,8 +291,9 @@ const MentorMarketplace: React.FC = () => {
   };
 
   const renderStars = (rating: number | string, reviewsCount: number) => {
-    const ratingValue = typeof rating === 'string' ? parseFloat(rating) : rating;
-    
+    const ratingValue =
+      typeof rating === 'string' ? parseFloat(rating) : rating;
+
     return (
       <div className="flex items-center">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -476,7 +483,11 @@ const MentorMarketplace: React.FC = () => {
                     {mentor.expertise && Array.isArray(mentor.expertise) ? (
                       <>
                         {mentor.expertise.slice(0, 4).map((tag, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs capitalize">
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="text-xs capitalize"
+                          >
                             {tag}
                           </Badge>
                         ))}
@@ -487,7 +498,9 @@ const MentorMarketplace: React.FC = () => {
                         )}
                       </>
                     ) : (
-                      <span className="text-sm text-gray-500">No expertise listed</span>
+                      <span className="text-sm text-gray-500">
+                        No expertise listed
+                      </span>
                     )}
                   </div>
                 </div>
@@ -563,8 +576,8 @@ const MentorMarketplace: React.FC = () => {
             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No mentors found</h3>
             <p className="text-gray-600 mb-4">
-              {mentors.length === 0 
-                ? 'No mentors are currently available. Check back soon!' 
+              {mentors.length === 0
+                ? 'No mentors are currently available. Check back soon!'
                 : 'Try adjusting your search filters to find mentors.'}
             </p>
             <Button

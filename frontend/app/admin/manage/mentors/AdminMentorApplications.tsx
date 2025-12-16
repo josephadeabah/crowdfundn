@@ -11,7 +11,12 @@ import {
 } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/app/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -80,10 +85,13 @@ const AdminMentorApplications: React.FC = () => {
   const { user, token } = useAuth();
   const { toast } = useToast();
   const [applications, setApplications] = useState<MentorApplication[]>([]);
-  const [filteredApplications, setFilteredApplications] = useState<MentorApplication[]>([]);
+  const [filteredApplications, setFilteredApplications] = useState<
+    MentorApplication[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any>(null);
-  const [selectedApplication, setSelectedApplication] = useState<MentorApplication | null>(null);
+  const [selectedApplication, setSelectedApplication] =
+    useState<MentorApplication | null>(null);
   const [reviewNotes, setReviewNotes] = useState('');
   const [maxAssignments, setMaxAssignments] = useState(5);
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,7 +119,7 @@ const AdminMentorApplications: React.FC = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.ok) {
@@ -140,7 +148,7 @@ const AdminMentorApplications: React.FC = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.ok) {
@@ -158,10 +166,14 @@ const AdminMentorApplications: React.FC = () => {
     if (searchQuery) {
       filtered = filtered.filter(
         (app) =>
-          app?.user?.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          app?.user?.full_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
           app?.user?.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
           app?.tracking_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          app?.professional_title.toLowerCase().includes(searchQuery.toLowerCase())
+          app?.professional_title
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -227,7 +239,7 @@ const AdminMentorApplications: React.FC = () => {
             review_notes: reviewNotes,
             max_assignments: maxAssignments,
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -235,11 +247,11 @@ const AdminMentorApplications: React.FC = () => {
           title: 'Success',
           description: 'Mentor application approved successfully',
         });
-        
+
         // Refresh data
         fetchApplications();
         fetchStats();
-        
+
         // Close dialog
         setSelectedApplication(null);
         setReviewNotes('');
@@ -277,7 +289,7 @@ const AdminMentorApplications: React.FC = () => {
           body: JSON.stringify({
             review_notes: reviewNotes,
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -285,11 +297,11 @@ const AdminMentorApplications: React.FC = () => {
           title: 'Success',
           description: 'Mentor application rejected',
         });
-        
+
         // Refresh data
         fetchApplications();
         fetchStats();
-        
+
         // Close dialog
         setSelectedApplication(null);
         setReviewNotes('');
@@ -329,7 +341,7 @@ const AdminMentorApplications: React.FC = () => {
           body: JSON.stringify({
             requested_info: requestedInfo,
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -374,9 +386,7 @@ const AdminMentorApplications: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Mentor Applications</h2>
-          <p className="text-gray-600">
-            Review and manage mentor applications
-          </p>
+          <p className="text-gray-600">Review and manage mentor applications</p>
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="outline" className="px-3 py-1">
@@ -393,7 +403,9 @@ const AdminMentorApplications: React.FC = () => {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Pending Review</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Pending Review
+                  </p>
                   <h3 className="text-2xl font-bold mt-2">
                     {stats.totals?.pending || 0}
                   </h3>
@@ -441,7 +453,9 @@ const AdminMentorApplications: React.FC = () => {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Approval Rate</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Approval Rate
+                  </p>
                   <h3 className="text-2xl font-bold mt-2">
                     {stats.totals?.approval_rate || 0}%
                   </h3>
@@ -519,19 +533,33 @@ const AdminMentorApplications: React.FC = () => {
               {filteredApplications.map((application) => (
                 <TableRow key={application?.id}>
                   <TableCell>
-                    <div className="font-medium">{application?.user?.full_name}</div>
-                    <div className="text-sm text-gray-500">{application?.user?.email}</div>
-                    <div className="text-xs text-gray-400">{application?.tracking_id}</div>
+                    <div className="font-medium">
+                      {application?.user?.full_name}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {application?.user?.email}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {application?.tracking_id}
+                    </div>
                   </TableCell>
                   <TableCell>{application?.professional_title}</TableCell>
-                  <TableCell>{application?.years_of_experience} years</TableCell>
+                  <TableCell>
+                    {application?.years_of_experience} years
+                  </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1 max-w-[200px]">
-                      {application?.industry_expertise.slice(0, 2).map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
+                      {application?.industry_expertise
+                        .slice(0, 2)
+                        .map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
                       {application?.industry_expertise?.length > 2 && (
                         <span className="text-xs text-gray-500">
                           +{application?.industry_expertise?.length - 2}
@@ -540,7 +568,9 @@ const AdminMentorApplications: React.FC = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {formatDistanceToNow(new Date(application?.submitted_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(application?.submitted_at), {
+                      addSuffix: true,
+                    })}
                   </TableCell>
                   <TableCell>{getStatusBadge(application?.status)}</TableCell>
                   <TableCell className="text-right">
@@ -560,7 +590,9 @@ const AdminMentorApplications: React.FC = () => {
           {filteredApplications.length === 0 && (
             <div className="text-center py-8">
               <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No applications found</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                No applications found
+              </h3>
               <p className="text-gray-600">
                 {searchQuery || statusFilter !== 'all'
                   ? 'Try adjusting your search filters'
@@ -573,7 +605,10 @@ const AdminMentorApplications: React.FC = () => {
 
       {/* Application Review Dialog */}
       {selectedApplication && (
-        <Dialog open={!!selectedApplication} onOpenChange={() => setSelectedApplication(null)}>
+        <Dialog
+          open={!!selectedApplication}
+          onOpenChange={() => setSelectedApplication(null)}
+        >
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Review Mentor Application</DialogTitle>
@@ -586,24 +621,34 @@ const AdminMentorApplications: React.FC = () => {
               {/* Applicant Info */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Applicant Information</CardTitle>
+                  <CardTitle className="text-lg">
+                    Applicant Information
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-600">Name</h4>
+                      <h4 className="font-semibold text-sm text-gray-600">
+                        Name
+                      </h4>
                       <p>{selectedApplication?.user?.full_name}</p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-600">Email</h4>
+                      <h4 className="font-semibold text-sm text-gray-600">
+                        Email
+                      </h4>
                       <p>{selectedApplication?.user?.email}</p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-600">Professional Title</h4>
+                      <h4 className="font-semibold text-sm text-gray-600">
+                        Professional Title
+                      </h4>
                       <p>{selectedApplication?.professional_title}</p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-600">Years of Experience</h4>
+                      <h4 className="font-semibold text-sm text-gray-600">
+                        Years of Experience
+                      </h4>
                       <p>{selectedApplication?.years_of_experience} years</p>
                     </div>
                   </div>
@@ -617,7 +662,9 @@ const AdminMentorApplications: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h4 className="font-semibold text-sm text-gray-600 mb-2">Areas of Expertise</h4>
+                    <h4 className="font-semibold text-sm text-gray-600 mb-2">
+                      Areas of Expertise
+                    </h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedApplication?.industry_expertise.map((tag) => (
                         <Badge key={tag} variant="secondary">
@@ -628,18 +675,28 @@ const AdminMentorApplications: React.FC = () => {
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-sm text-gray-600 mb-2">Previous Mentoring Experience</h4>
-                    <p className="capitalize">{selectedApplication?.previous_mentoring}</p>
+                    <h4 className="font-semibold text-sm text-gray-600 mb-2">
+                      Previous Mentoring Experience
+                    </h4>
+                    <p className="capitalize">
+                      {selectedApplication?.previous_mentoring}
+                    </p>
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-sm text-gray-600 mb-2">Availability</h4>
-                    <p className="capitalize">{selectedApplication?.availability}</p>
+                    <h4 className="font-semibold text-sm text-gray-600 mb-2">
+                      Availability
+                    </h4>
+                    <p className="capitalize">
+                      {selectedApplication?.availability}
+                    </p>
                   </div>
 
                   {selectedApplication?.linkedin_profile && (
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-600 mb-2">LinkedIn Profile</h4>
+                      <h4 className="font-semibold text-sm text-gray-600 mb-2">
+                        LinkedIn Profile
+                      </h4>
                       <a
                         href={selectedApplication?.linkedin_profile}
                         target="_blank"
@@ -653,7 +710,9 @@ const AdminMentorApplications: React.FC = () => {
 
                   {selectedApplication?.resume_url && (
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-600 mb-2">Resume</h4>
+                      <h4 className="font-semibold text-sm text-gray-600 mb-2">
+                        Resume
+                      </h4>
                       <a
                         href={selectedApplication?.resume_url}
                         target="_blank"
@@ -688,7 +747,9 @@ const AdminMentorApplications: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h4 className="font-semibold text-sm text-gray-600 mb-2">Review Notes</h4>
+                    <h4 className="font-semibold text-sm text-gray-600 mb-2">
+                      Review Notes
+                    </h4>
                     <Textarea
                       placeholder="Add review notes for internal reference..."
                       value={reviewNotes}
@@ -704,7 +765,9 @@ const AdminMentorApplications: React.FC = () => {
                       </h4>
                       <select
                         value={maxAssignments}
-                        onChange={(e) => setMaxAssignments(parseInt(e.target.value))}
+                        onChange={(e) =>
+                          setMaxAssignments(parseInt(e.target.value))
+                        }
                         className="px-3 py-2 border rounded-md"
                       >
                         <option value={3}>3 concurrent assignments</option>

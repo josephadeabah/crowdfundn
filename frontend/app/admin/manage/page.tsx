@@ -268,7 +268,7 @@ const AdminDashboard = () => {
           id: 'mentorManagement',
           label: 'Mentor Applications',
           icon: <UserCircleIcon className="h-5 w-5" />,
-          component: <AdminMentorApplications/>,
+          component: <AdminMentorApplications />,
           requiredAdmin: true,
         },
         {
