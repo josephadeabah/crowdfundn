@@ -7,7 +7,7 @@ module Api
         before_action :require_admin
         
         def index
-          applications = MentorApplication.includes(:user).order(created_at: :desc)
+          applications = ::MentorApplication.includes(:user).order(created_at: :desc)
           
           # Apply filters
           if params[:status].present?
@@ -38,13 +38,13 @@ module Api
         end
         
         def show
-          application = MentorApplication.includes(:user, :reviewed_by).find(params[:id])
+          application = ::MentorApplication.includes(:user, :reviewed_by).find(params[:id])
           
           render json: {
             application: application.as_json(include: [:user, :reviewed_by]),
             user: application.user.as_json(include_profile: true),
             reviewed_by: application.reviewed_by&.as_json,
-            similar_applications: MentorApplication
+            similar_applications: ::MentorApplication
               .where(professional_title: application.professional_title)
               .where.not(id: application.id)
               .limit(5)
@@ -53,11 +53,11 @@ module Api
         end
                 
         def approve
-          application = MentorApplication.find(params[:id])
+          application = ::MentorApplication.find(params[:id])
           
           begin
             # Start transaction
-            MentorApplication.transaction do
+            ::MentorApplication.transaction do
               # Update application status - use reviewed_by_id instead of reviewed_by
               application.update!(
                 status: 'approved',
@@ -78,8 +78,8 @@ module Api
                   max_assignments: params[:max_assignments] || 5
                 )
               else
-                # Create mentor profile
-                mentor = Mentor.create!(
+                # Create mentor profile - Use ::Mentor to specify the global namespace
+                mentor = ::Mentor.create!(
                   user: application.user,
                   professional_title: application.professional_title,
                   years_of_experience: application.years_of_experience,
@@ -133,7 +133,7 @@ module Api
         end
         
         def reject
-          application = MentorApplication.find(params[:id])
+          application = ::MentorApplication.find(params[:id])
           
           if application.update(
             status: 'rejected',
@@ -163,7 +163,7 @@ module Api
         end
         
         def request_additional_info
-          application = MentorApplication.find(params[:id])
+          application = ::MentorApplication.find(params[:id])
           
           # Send notification to applicant requesting more info (commented out)
           # Notification.create(
@@ -183,19 +183,19 @@ module Api
         end
         
         def stats
-          total = MentorApplication.count
-          pending = MentorApplication.where(status: 'submitted').count
-          approved = MentorApplication.where(status: 'approved').count
-          rejected = MentorApplication.where(status: 'rejected').count
+          total = ::MentorApplication.count
+          pending = ::MentorApplication.where(status: 'submitted').count
+          approved = ::MentorApplication.where(status: 'approved').count
+          rejected = ::MentorApplication.where(status: 'rejected').count
           
           # Monthly stats
-          monthly_data = MentorApplication
+          monthly_data = ::MentorApplication
             .where('created_at >= ?', 6.months.ago)
             .group_by_month(:created_at, format: '%b %Y')
             .count
             
           # Expertise distribution
-          expertise_distribution = MentorApplication
+          expertise_distribution = ::MentorApplication
             .where.not(industry_expertise: nil)
             .pluck(:industry_expertise)
             .flatten
@@ -219,7 +219,7 @@ module Api
         end
         
         def pending_review
-          applications = MentorApplication
+          applications = ::MentorApplication
             .where(status: ['submitted', 'under_review'])
             .includes(:user)
             .order(created_at: :asc)
