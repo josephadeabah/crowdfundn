@@ -92,7 +92,9 @@ const MentorMarketplace: React.FC = () => {
   const [minExperience, setMinExperience] = useState<number>(0);
   const [requestedMentors, setRequestedMentors] = useState<number[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>({});
+  const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>(
+    {},
+  );
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
@@ -103,7 +105,7 @@ const MentorMarketplace: React.FC = () => {
   // Fetch mentor expertise separately since it's not in the main response
   const fetchMentorExpertise = async (mentorId: number) => {
     if (!token) return [];
-    
+
     try {
       const response = await fetch(
         `${API_BASE_URL}/mentor/mentors/${mentorId}`,
@@ -407,7 +409,10 @@ const MentorMarketplace: React.FC = () => {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          <Badge variant="outline" className="px-2 sm:px-3 py-1 text-xs sm:text-sm justify-center">
+          <Badge
+            variant="outline"
+            className="px-2 sm:px-3 py-1 text-xs sm:text-sm justify-center"
+          >
             <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             {mentors.length} Verified Mentors
           </Badge>
@@ -426,12 +431,14 @@ const MentorMarketplace: React.FC = () => {
         <CardContent className="p-4 sm:p-6">
           <div className="space-y-4">
             <div>
-              <h3 className="font-semibold text-base sm:text-lg mb-1">Find a Mentor</h3>
+              <h3 className="font-semibold text-base sm:text-lg mb-1">
+                Find a Mentor
+              </h3>
               <p className="text-sm text-gray-600">
                 Browse available mentors by expertise, rating, and experience
               </p>
             </div>
-            
+
             <div className="flex flex-col lg:flex-row gap-3">
               {/* Search Input - Full width on mobile, flex on desktop */}
               <div className="flex-1">
@@ -445,7 +452,7 @@ const MentorMarketplace: React.FC = () => {
                   />
                 </div>
               </div>
-              
+
               {/* Filters - Responsive grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 <Select
@@ -456,15 +463,21 @@ const MentorMarketplace: React.FC = () => {
                     <SelectValue placeholder="All Expertise" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all" className="text-xs sm:text-sm">All Expertise</SelectItem>
+                    <SelectItem value="all" className="text-xs sm:text-sm">
+                      All Expertise
+                    </SelectItem>
                     {availableTags.map((tag) => (
-                      <SelectItem key={tag} value={tag} className="text-xs sm:text-sm capitalize">
+                      <SelectItem
+                        key={tag}
+                        value={tag}
+                        className="text-xs sm:text-sm capitalize"
+                      >
                         {tag}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                
+
                 <Select
                   value={minRating.toString()}
                   onValueChange={(v) => setMinRating(parseFloat(v))}
@@ -473,13 +486,21 @@ const MentorMarketplace: React.FC = () => {
                     <SelectValue placeholder="Min Rating" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0" className="text-xs sm:text-sm">Any Rating</SelectItem>
-                    <SelectItem value="3" className="text-xs sm:text-sm">3+ Stars</SelectItem>
-                    <SelectItem value="4" className="text-xs sm:text-sm">4+ Stars</SelectItem>
-                    <SelectItem value="4.5" className="text-xs sm:text-sm">4.5+ Stars</SelectItem>
+                    <SelectItem value="0" className="text-xs sm:text-sm">
+                      Any Rating
+                    </SelectItem>
+                    <SelectItem value="3" className="text-xs sm:text-sm">
+                      3+ Stars
+                    </SelectItem>
+                    <SelectItem value="4" className="text-xs sm:text-sm">
+                      4+ Stars
+                    </SelectItem>
+                    <SelectItem value="4.5" className="text-xs sm:text-sm">
+                      4.5+ Stars
+                    </SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select
                   value={minExperience.toString()}
                   onValueChange={(v) => setMinExperience(parseInt(v))}
@@ -488,15 +509,23 @@ const MentorMarketplace: React.FC = () => {
                     <SelectValue placeholder="Min Experience" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0" className="text-xs sm:text-sm">Any Experience</SelectItem>
-                    <SelectItem value="5" className="text-xs sm:text-sm">5+ Years</SelectItem>
-                    <SelectItem value="10" className="text-xs sm:text-sm">10+ Years</SelectItem>
-                    <SelectItem value="15" className="text-xs sm:text-sm">15+ Years</SelectItem>
+                    <SelectItem value="0" className="text-xs sm:text-sm">
+                      Any Experience
+                    </SelectItem>
+                    <SelectItem value="5" className="text-xs sm:text-sm">
+                      5+ Years
+                    </SelectItem>
+                    <SelectItem value="10" className="text-xs sm:text-sm">
+                      10+ Years
+                    </SelectItem>
+                    <SelectItem value="15" className="text-xs sm:text-sm">
+                      15+ Years
+                    </SelectItem>
                   </SelectContent>
                 </Select>
-                
-                <Button 
-                  variant="outline" 
+
+                <Button
+                  variant="outline"
                   onClick={fetchMentors}
                   className="h-9 text-xs sm:text-sm"
                 >
@@ -517,11 +546,14 @@ const MentorMarketplace: React.FC = () => {
             mentor.max_assignments === undefined ||
             mentor.max_assignments === null ||
             mentor.current_assignments < mentor.max_assignments;
-          
+
           const mentorExpertise = expertiseMap[mentor.id] || [];
 
           return (
-            <Card key={mentor.id} className="border-0 shadow-none hover:bg-gray-50 transition-colors">
+            <Card
+              key={mentor.id}
+              className="border-0 shadow-none hover:bg-gray-50 transition-colors"
+            >
               <CardContent className="p-4 sm:p-6">
                 <div className="space-y-4">
                   {/* Mentor Header - Stack on mobile, row on desktop */}
@@ -538,7 +570,10 @@ const MentorMarketplace: React.FC = () => {
                         </h3>
                         <div className="flex items-center text-sm text-gray-600 mt-1">
                           <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                          <span>{formatExperience(mentor.years_of_experience)} experience</span>
+                          <span>
+                            {formatExperience(mentor.years_of_experience)}{' '}
+                            experience
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -547,7 +582,8 @@ const MentorMarketplace: React.FC = () => {
                       <div className="text-xs text-gray-500 sm:text-right">
                         <div className="flex items-center">
                           <Target className="h-3 w-3 mr-1" />
-                          {mentor.current_assignments}/{mentor.max_assignments || '∞'} slots
+                          {mentor.current_assignments}/
+                          {mentor.max_assignments || '∞'} slots
                         </div>
                       </div>
                     </div>
@@ -559,8 +595,12 @@ const MentorMarketplace: React.FC = () => {
                   {/* Expertise - Now shows actual expertise */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-semibold">Areas of Expertise</h4>
-                      <span className="text-xs text-gray-500">{mentorExpertise.length} areas</span>
+                      <h4 className="text-sm font-semibold">
+                        Areas of Expertise
+                      </h4>
+                      <span className="text-xs text-gray-500">
+                        {mentorExpertise.length} areas
+                      </span>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {mentorExpertise.length > 0 ? (
@@ -575,7 +615,10 @@ const MentorMarketplace: React.FC = () => {
                             </Badge>
                           ))}
                           {mentorExpertise.length > 4 && (
-                            <Badge variant="outline" className="text-xs px-2 py-0.5">
+                            <Badge
+                              variant="outline"
+                              className="text-xs px-2 py-0.5"
+                            >
                               +{mentorExpertise.length - 4} more
                             </Badge>
                           )}
@@ -647,7 +690,9 @@ const MentorMarketplace: React.FC = () => {
                       ) : (
                         <>
                           <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                          <span className="hidden sm:inline">Request Mentor</span>
+                          <span className="hidden sm:inline">
+                            Request Mentor
+                          </span>
                           <span className="sm:hidden">Request</span>
                         </>
                       )}
@@ -700,25 +745,29 @@ const MentorMarketplace: React.FC = () => {
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-emerald-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span className="text-sm text-emerald-800">
-                  <strong>Request a Mentor:</strong> Founders with active campaigns can request mentors
+                  <strong>Request a Mentor:</strong> Founders with active
+                  campaigns can request mentors
                 </span>
               </li>
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-emerald-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span className="text-sm text-emerald-800">
-                  <strong>Mentor Acceptance:</strong> Mentors review requests and choose which ventures to support
+                  <strong>Mentor Acceptance:</strong> Mentors review requests
+                  and choose which ventures to support
                 </span>
               </li>
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-emerald-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span className="text-sm text-emerald-800">
-                  <strong>Capacity Limits:</strong> Mentors can support up to 5 ventures simultaneously
+                  <strong>Capacity Limits:</strong> Mentors can support up to 5
+                  ventures simultaneously
                 </span>
               </li>
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-emerald-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span className="text-sm text-emerald-800">
-                  <strong>Become a Mentor:</strong> Verified users can apply to become mentors via Account → Settings → KYC
+                  <strong>Become a Mentor:</strong> Verified users can apply to
+                  become mentors via Account → Settings → KYC
                 </span>
               </li>
             </ul>

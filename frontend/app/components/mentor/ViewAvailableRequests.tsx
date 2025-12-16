@@ -5,16 +5,9 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Badge } from '@/app/components/ui/badge';
-import {
-  Card,
-  CardContent
-} from '@/app/components/ui/card';
+import { Card, CardContent } from '@/app/components/ui/card';
 import { Progress } from '@/app/components/ui/progress';
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from '@/app/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import {
   Search,
