@@ -42,6 +42,9 @@ Rails.application.routes.draw do
             put :update_availability
           end
         end
+
+        # Add separate route for my_mentor_profile
+        get 'mentors/my_mentor_profile', to: 'mentors#my_mentor_profile'
         
         # Campaign-specific mentor routes
         resources :campaigns, only: [] do

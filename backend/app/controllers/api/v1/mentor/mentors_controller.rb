@@ -93,6 +93,29 @@ module Api
             end
             return
           end
+          
+          # If mentor exists, return their profile
+          render json: {
+            has_mentor_profile: true,
+            mentor: mentor.as_json(include_user: true),
+            expertise: mentor.expertise_list,
+            assignments: {
+              current: mentor.current_assignments,
+              max: mentor.max_assignments,
+              completed: mentor.mentor_assignments.completed.count,
+              active: mentor.mentor_assignments.active.count
+            },
+            reviews: mentor.mentor_assignments.completed.where.not(rating: nil).map do |assignment|
+              {
+                rating: assignment.rating,
+                feedback: assignment.feedback,
+                campaign_title: assignment.campaign.title,
+                entrepreneur_name: assignment.entrepreneur.full_name,
+                completed_at: assignment.completed_at
+              }
+            end
+          }, status: :ok
+        end
         
         def update_profile
           mentor = @current_user.mentor
