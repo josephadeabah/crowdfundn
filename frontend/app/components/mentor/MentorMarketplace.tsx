@@ -51,7 +51,6 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
-import { useToast } from '@/app/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import Modal from '@/app/components/modal/Modal';
 import ToastComponent from '@/app/components/toast/Toast';
@@ -88,9 +87,15 @@ interface MentorResponse {
   };
 }
 
+interface ToastState {
+  isOpen: boolean;
+  title: string;
+  description: string;
+  type: 'success' | 'error' | 'warning';
+}
+
 const MentorMarketplace: React.FC = () => {
   const { user, token } = useAuth();
-  const { toast } = useToast();
   const router = useRouter();
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,12 +108,31 @@ const MentorMarketplace: React.FC = () => {
   const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>({});
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [toast, setToast] = useState<ToastState>({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'success'
+  });
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
   useEffect(() => {
     fetchMentors();
   }, [token]);
+
+  const showToast = (title: string, description: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    setToast({
+      isOpen: true,
+      title,
+      description,
+      type
+    });
+  };
+
+  const closeToast = () => {
+    setToast(prev => ({ ...prev, isOpen: false }));
+  };
 
   const fetchMentorExpertise = async (mentorId: number) => {
     if (!token) return [];
@@ -177,19 +201,11 @@ const MentorMarketplace: React.FC = () => {
         setExpertiseMap(newExpertiseMap);
       } else {
         console.error('Failed to fetch mentors:', mentorsRes.status);
-        toast({
-          title: 'Error',
-          description: 'Failed to load mentors',
-          variant: 'destructive',
-        });
+        showToast('Error', 'Failed to load mentors', 'error');
       }
     } catch (error) {
       console.error('Error fetching mentors:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load mentors',
-        variant: 'destructive',
-      });
+      showToast('Error', 'Failed to load mentors', 'error');
     } finally {
       setLoading(false);
     }
@@ -197,11 +213,7 @@ const MentorMarketplace: React.FC = () => {
 
   const requestMentor = async (mentorId: number) => {
     if (!token) {
-      toast({
-        title: 'Error',
-        description: 'You must be logged in to request a mentor',
-        variant: 'destructive',
-      });
+      showToast('Error', 'You must be logged in to request a mentor', 'error');
       return;
     }
 
@@ -225,11 +237,7 @@ const MentorMarketplace: React.FC = () => {
         [];
 
       if (activeCampaigns.length === 0) {
-        toast({
-          title: 'No Active Campaigns',
-          description: 'You need an active campaign to request a mentor.',
-          variant: 'destructive',
-        });
+        showToast('No Active Campaigns', 'You need an active campaign to request a mentor.', 'error');
 
         if (confirm('Would you like to create a campaign first?')) {
           router.push('/campaigns/create');
@@ -261,25 +269,14 @@ const MentorMarketplace: React.FC = () => {
 
       if (response.ok) {
         setRequestedMentors([...requestedMentors, mentorId]);
-        toast({
-          title: 'Success',
-          description: 'Mentor request sent successfully',
-        });
+        showToast('Success', 'Mentor request sent successfully');
       } else {
         const error = await response.json();
-        toast({
-          title: 'Error',
-          description: error.error || 'Failed to request mentor',
-          variant: 'destructive',
-        });
+        showToast('Error', error.error || 'Failed to request mentor', 'error');
       }
     } catch (error) {
       console.error('Error requesting mentor:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to request mentor',
-        variant: 'destructive',
-      });
+      showToast('Error', 'Failed to request mentor', 'error');
     }
   };
 
@@ -948,6 +945,15 @@ const MentorMarketplace: React.FC = () => {
       >
         {selectedMentor && <MentorProfileModal />}
       </Modal>
+
+      {/* Toast Component */}
+      <ToastComponent
+        isOpen={toast.isOpen}
+        onClose={closeToast}
+        title={toast.title}
+        description={toast.description}
+        type={toast.type}
+      />
     </>
   );
 };
