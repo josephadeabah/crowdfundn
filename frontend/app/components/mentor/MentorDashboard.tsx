@@ -339,19 +339,17 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   if (dashboardData.has_mentor_profile && dashboardData.mentor) {
     const {
       mentor,
-      assignments = [],
       statistics = { total_assignments: 0 },
     } = dashboardData;
 
-    const activeAssignments = assignments.filter(
-      (a: any) => a.status === 'active',
-    );
-    const pendingRequests = assignments.filter(
-      (a: any) => a.status === 'pending',
-    );
-    const completedAssignments = assignments.filter(
-      (a: any) => a.status === 'completed',
-    );
+    // Safeguard: Ensure assignments is an array
+    const assignmentsArray = Array.isArray(dashboardData.assignments) 
+      ? dashboardData.assignments 
+      : [];
+
+    const activeAssignments = assignmentsArray.filter((a: any) => a.status === 'active');
+    const pendingRequests = assignmentsArray.filter((a: any) => a.status === 'pending');
+    const completedAssignments = assignmentsArray.filter((a: any) => a.status === 'completed');
 
     return (
       <div className="space-y-6">
