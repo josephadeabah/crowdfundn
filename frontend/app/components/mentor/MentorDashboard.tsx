@@ -846,7 +846,11 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     }
                     size="sm"
                     onClick={toggleAvailability}
-                    className={mentor.status === 'approved' ? 'bg-emerald-700 text-white hover:bg-emerald-800' : 'bg-white text-gray-800 hover:bg-gray-50'}
+                    className={
+                      mentor.status === 'approved'
+                        ? 'bg-emerald-700 text-white hover:bg-emerald-800'
+                        : 'bg-white text-gray-800 hover:bg-gray-50'
+                    }
                   >
                     {mentor.status === 'approved'
                       ? 'Set as Unavailable'
