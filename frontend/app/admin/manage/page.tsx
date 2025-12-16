@@ -49,6 +49,7 @@ import PayoutsManager from './payouts/Payouts';
 import PremiumUsers from './users/PremiumUsers';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import ReportsManager from './reports/ReportsManager';
+import AdminMentorApplications from './mentors/AdminMentorApplications';
 
 // Type definitions for better type safety
 type TabGroup = {
@@ -262,6 +263,13 @@ const AdminDashboard = () => {
           icon: <UsersIcon className="h-5 w-5" />,
           component: <UserManagement />,
           requiredAdmin: true, // Only full admins can manage users
+        },
+        {
+          id: 'mentorManagement',
+          label: 'Mentor Applications',
+          icon: <UserCircleIcon className="h-5 w-5" />,
+          component: <AdminMentorApplications/>,
+          requiredAdmin: true,
         },
         {
           id: 'allKycs',
