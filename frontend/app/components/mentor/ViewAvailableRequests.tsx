@@ -5,20 +5,9 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Badge } from '@/app/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/app/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Progress } from '@/app/components/ui/progress';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/app/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -45,6 +34,11 @@ import {
   Target,
   Building,
   Globe,
+  UserCheck,
+  UserX,
+  Mail,
+  Sparkles,
+  BarChart,
 } from 'lucide-react';
 
 interface ViewAvailableRequestsProps {
@@ -52,36 +46,40 @@ interface ViewAvailableRequestsProps {
   onCancel: () => void;
 }
 
-interface Campaign {
-  id: number;
-  title: string;
-  description: string;
-  goal_amount: number;
-  current_amount: number;
-  category: string;
-  location: string;
-  created_at: string;
-  fundraiser: {
-    id: number;
-    full_name: string;
-    profile?: {
-      name?: string;
-      description?: string;
-    };
-  };
-}
-
 interface MentorRequest {
   id: number;
   campaign_id: number;
   entrepreneur_id: number;
-  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'cancelled';
   entrepreneur_notes?: string;
+  mentor_notes?: string;
   created_at: string;
-  campaign?: Campaign;
+  started_at?: string;
+  completed_at?: string;
+  rating?: number;
+  feedback?: string;
+  campaign?: {
+    id: number;
+    title: string;
+    description: string;
+    goal_amount: number;
+    current_amount: number;
+    category: string;
+    location: string;
+    created_at: string;
+    fundraiser: {
+      id: number;
+      full_name: string;
+      profile?: {
+        name?: string;
+        description?: string;
+      };
+    };
+  };
   entrepreneur?: {
     id: number;
     full_name: string;
+    email: string;
     profile?: {
       name?: string;
       description?: string;
@@ -93,91 +91,33 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
   onSuccess,
   onCancel,
 }) => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [loadingRequests, setLoadingRequests] = useState(false);
-  const [activeTab, setActiveTab] = useState('campaigns');
-
-  // Campaigns state
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [filteredCampaigns, setFilteredCampaigns] = useState<Campaign[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedLocation, setSelectedLocation] = useState('all');
-
+  const [activeTab, setActiveTab] = useState('pending');
+  
   // Requests state
   const [requests, setRequests] = useState<MentorRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<MentorRequest[]>([]);
-  const [requestSearchQuery, setRequestSearchQuery] = useState('');
-
+  const [searchQuery, setSearchQuery] = useState('');
+  
   // Stats
   const [stats, setStats] = useState({
-    totalCampaigns: 0,
-    totalRequests: 0,
-    pendingRequests: 0,
-    activeCampaigns: 0,
+    total: 0,
+    pending: 0,
+    approved: 0,
+    completed: 0,
+    rejected: 0
   });
 
-  // Categories and locations from campaigns
-  const [categories, setCategories] = useState<string[]>([]);
-  const [locations, setLocations] = useState<string[]>([]);
-
   useEffect(() => {
-    fetchData();
+    fetchMentorRequests();
   }, [token]);
-
-  const fetchData = async () => {
-    if (!token) return;
-
-    try {
-      setLoading(true);
-
-      // Fetch campaigns
-      const campaignsRes = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?limit=50`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (campaignsRes.ok) {
-        const campaignsData = await campaignsRes.json();
-        const campaignsList = campaignsData.campaigns || [];
-        setCampaigns(campaignsList);
-        setFilteredCampaigns(campaignsList);
-
-        // Extract unique categories and locations
-        const uniqueCategories = Array.from(
-          new Set(
-            campaignsList.map((c: Campaign) => c.category).filter(Boolean),
-          ),
-        );
-        const uniqueLocations = Array.from(
-          new Set(
-            campaignsList.map((c: Campaign) => c.location).filter(Boolean),
-          ),
-        );
-
-        setCategories(uniqueCategories as string[]);
-        setLocations(uniqueLocations as string[]);
-      }
-
-      // Fetch mentor requests
-      await fetchMentorRequests();
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchMentorRequests = async () => {
     if (!token) return;
 
     try {
-      setLoadingRequests(true);
+      setLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/assignments/my_mentor_assignments`,
         {
@@ -190,114 +130,103 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
       if (response.ok) {
         const data = await response.json();
         const requestsList = data.assignments || [];
-        setRequests(requestsList);
-        setFilteredRequests(requestsList);
-
-        // Update stats
-        const pendingReqs = requestsList.filter(
-          (r: MentorRequest) => r.status === 'pending',
-        ).length;
+        
+        // Transform the data to match our interface
+        const transformedRequests = requestsList.map((req: any) => ({
+          id: req.id,
+          campaign_id: req.campaign?.id,
+          entrepreneur_id: req.entrepreneur?.id,
+          status: req.status,
+          entrepreneur_notes: req.entrepreneur_notes,
+          mentor_notes: req.mentor_notes,
+          created_at: req.created_at,
+          started_at: req.started_at,
+          completed_at: req.completed_at,
+          rating: req.rating,
+          feedback: req.feedback,
+          campaign: req.campaign ? {
+            id: req.campaign.id,
+            title: req.campaign.title,
+            description: req.campaign.description,
+            goal_amount: req.campaign.goal_amount,
+            current_amount: req.campaign.current_amount,
+            category: req.campaign.category,
+            location: req.campaign.location,
+            created_at: req.campaign.created_at,
+            fundraiser: {
+              id: req.campaign.fundraiser?.id,
+              full_name: req.campaign.fundraiser?.full_name || 'Unknown',
+              profile: req.campaign.fundraiser?.profile
+            }
+          } : undefined,
+          entrepreneur: req.entrepreneur ? {
+            id: req.entrepreneur.id,
+            full_name: req.entrepreneur.full_name || 'Unknown',
+            email: req.entrepreneur.email,
+            profile: req.entrepreneur.profile
+          } : undefined
+        }));
+        
+        setRequests(transformedRequests);
+        
+        // Calculate stats
+        const pending = transformedRequests.filter((r: MentorRequest) => r.status === 'pending').length;
+        const approved = transformedRequests.filter((r: MentorRequest) => r.status === 'approved').length;
+        const completed = transformedRequests.filter((r: MentorRequest) => r.status === 'completed').length;
+        const rejected = transformedRequests.filter((r: MentorRequest) => r.status === 'rejected' || r.status === 'cancelled').length;
+        
         setStats({
-          totalCampaigns: campaigns.length,
-          totalRequests: requestsList.length,
-          pendingRequests: pendingReqs,
-          activeCampaigns: campaigns.length,
+          total: transformedRequests.length,
+          pending,
+          approved,
+          completed,
+          rejected
         });
+        
+        // Set initial filtered requests (pending by default)
+        setFilteredRequests(transformedRequests.filter((r: MentorRequest) => r.status === 'pending'));
+      } else {
+        console.error('Failed to fetch mentor requests:', response.status);
       }
     } catch (error) {
       console.error('Error fetching mentor requests:', error);
     } finally {
-      setLoadingRequests(false);
+      setLoading(false);
     }
   };
 
-  // Filter campaigns
-  useEffect(() => {
-    let result = campaigns;
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (campaign) =>
-          campaign.title.toLowerCase().includes(query) ||
-          campaign.description.toLowerCase().includes(query) ||
-          campaign.fundraiser.full_name.toLowerCase().includes(query),
-      );
-    }
-
-    if (selectedCategory !== 'all') {
-      result = result.filter(
-        (campaign) => campaign.category === selectedCategory,
-      );
-    }
-
-    if (selectedLocation !== 'all') {
-      result = result.filter(
-        (campaign) => campaign.location === selectedLocation,
-      );
-    }
-
-    setFilteredCampaigns(result);
-  }, [searchQuery, selectedCategory, selectedLocation, campaigns]);
-
-  // Filter requests
+  // Filter requests based on active tab and search
   useEffect(() => {
     let result = requests;
 
-    if (requestSearchQuery) {
-      const query = requestSearchQuery.toLowerCase();
-      result = result.filter(
-        (request) =>
-          request.campaign?.title.toLowerCase().includes(query) ||
-          request.entrepreneur?.full_name.toLowerCase().includes(query) ||
-          request.entrepreneur_notes?.toLowerCase().includes(query),
+    // Filter by status tab
+    if (activeTab !== 'all') {
+      if (activeTab === 'rejected') {
+        result = result.filter(r => r.status === 'rejected' || r.status === 'cancelled');
+      } else {
+        result = result.filter(r => r.status === activeTab);
+      }
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(request =>
+        request.campaign?.title.toLowerCase().includes(query) ||
+        request.entrepreneur?.full_name.toLowerCase().includes(query) ||
+        request.entrepreneur_notes?.toLowerCase().includes(query) ||
+        request.campaign?.category.toLowerCase().includes(query)
       );
     }
 
     setFilteredRequests(result);
-  }, [requestSearchQuery, requests]);
+  }, [searchQuery, activeTab, requests]);
 
-  const requestMentorship = async (campaignId: number) => {
+  const handleRequestAction = async (requestId: number, action: 'approve' | 'reject', notes?: string) => {
     if (!token) return;
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/assignments/request_mentor`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            campaign_id: campaignId,
-            entrepreneur_notes:
-              "I'd like to request mentorship for this campaign",
-          }),
-        },
-      );
-
-      if (response.ok) {
-        // Refresh requests
-        await fetchMentorRequests();
-      } else {
-        const error = await response.json();
-        console.error('Error requesting mentorship:', error);
-      }
-    } catch (error) {
-      console.error('Error requesting mentorship:', error);
-    }
-  };
-
-  const handleRequestAction = async (
-    requestId: number,
-    action: 'approve' | 'reject',
-  ) => {
-    if (!token) return;
-
-    try {
-      const endpoint =
-        action === 'approve' ? 'approve_assignment' : 'cancel_assignment';
+      const endpoint = action === 'approve' ? 'approve_assignment' : 'cancel_assignment';
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/assignments/${requestId}/${endpoint}`,
         {
@@ -306,12 +235,16 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
+          body: JSON.stringify({
+            mentor_notes: notes
+          }),
         },
       );
 
       if (response.ok) {
         // Refresh requests
         await fetchMentorRequests();
+        onSuccess();
       } else {
         const error = await response.json();
         console.error(`Error ${action}ing request:`, error);
@@ -330,15 +263,31 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
+      day: 'numeric'
     });
   };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'USD'
     }).format(amount);
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <Badge className="bg-yellow-100 text-yellow-800">Pending Review</Badge>;
+      case 'approved':
+        return <Badge className="bg-green-100 text-green-800">Active</Badge>;
+      case 'completed':
+        return <Badge className="bg-blue-100 text-blue-800">Completed</Badge>;
+      case 'rejected':
+      case 'cancelled':
+        return <Badge className="bg-red-100 text-red-800">Declined</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
   };
 
   if (loading) {
@@ -353,387 +302,409 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Available Requests</h2>
+          <h2 className="text-2xl font-bold">Mentorship Requests</h2>
           <p className="text-gray-600">
-            Browse campaigns seeking mentorship and manage your requests
+            Review and manage mentorship requests from entrepreneurs
           </p>
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="outline" className="px-3 py-1">
-            <Users className="h-4 w-4 mr-1" />
-            {stats.activeCampaigns} Active Campaigns
+            <MessageSquare className="h-4 w-4 mr-1" />
+            {stats.pending} Pending
           </Badge>
           <Badge variant="outline" className="px-3 py-1">
-            <Clock className="h-4 w-4 mr-1" />
-            {stats.pendingRequests} Pending Requests
+            <UserCheck className="h-4 w-4 mr-1" />
+            {stats.approved} Active
           </Badge>
         </div>
       </div>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="space-y-4"
-      >
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger
-            value="campaigns"
-            className="data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-800"
-          >
-            <Briefcase className="h-4 w-4 mr-2" />
-            Browse Campaigns
-          </TabsTrigger>
-          <TabsTrigger
-            value="requests"
-            className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-800"
-          >
-            <MessageSquare className="h-4 w-4 mr-2" />
-            My Requests ({requests.length})
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="campaigns" className="space-y-4">
-          {/* Campaign Filters */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="md:col-span-2">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      placeholder="Search campaigns by title, description, or founder..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <Select
-                  value={selectedCategory}
-                  onValueChange={setSelectedCategory}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Categories" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {categories.map((category, index) => (
-                      <SelectItem key={index} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select
-                  value={selectedLocation}
-                  onValueChange={setSelectedLocation}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Locations" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
-                    {locations.map((location, index) => (
-                      <SelectItem key={index} value={location}>
-                        {location}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Campaigns Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredCampaigns.map((campaign) => {
-              const progress = getProgressPercentage(
-                campaign.current_amount,
-                campaign.goal_amount,
-              );
-              const hasExistingRequest = requests.some(
-                (r) => r.campaign_id === campaign.id,
-              );
-
-              return (
-                <Card
-                  key={campaign.id}
-                  className="hover:shadow-lg transition-shadow"
-                >
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg line-clamp-1">
-                          {campaign.title}
-                        </CardTitle>
-                        <CardDescription className="flex items-center mt-1">
-                          <Building className="h-3 w-3 mr-1" />
-                          {campaign.fundraiser.full_name}
-                        </CardDescription>
-                      </div>
-                      <Badge variant="outline">{campaign.category}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Campaign Description */}
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                      {campaign.description.replace(/<[^>]*>/g, '')}
-                    </p>
-
-                    {/* Funding Progress */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Raised</span>
-                        <span className="font-semibold">
-                          {formatCurrency(campaign.current_amount)} of{' '}
-                          {formatCurrency(campaign.goal_amount)}
-                        </span>
-                      </div>
-                      <Progress value={progress} className="h-2" />
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>{progress.toFixed(1)}% funded</span>
-                        <span>{formatDate(campaign.created_at)}</span>
-                      </div>
-                    </div>
-
-                    {/* Location */}
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Globe className="h-4 w-4 mr-2" />
-                      {campaign.location}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex space-x-2 pt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() =>
-                          window.open(`/campaigns/${campaign.id}`, '_blank')
-                        }
-                      >
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Campaign
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="flex-1"
-                        disabled={hasExistingRequest}
-                        onClick={() => requestMentorship(campaign.id)}
-                      >
-                        {hasExistingRequest ? (
-                          <>
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Requested
-                          </>
-                        ) : (
-                          <>
-                            <MessageSquare className="h-4 w-4 mr-2" />
-                            Request Mentorship
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-
-          {filteredCampaigns.length === 0 && (
-            <Card>
-              <CardContent className="py-8 text-center">
-                <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  No campaigns found
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {campaigns.length === 0
-                    ? 'No active campaigns are available at the moment.'
-                    : 'Try adjusting your search filters to find campaigns.'}
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedCategory('all');
-                    setSelectedLocation('all');
-                  }}
-                >
-                  Clear All Filters
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="requests" className="space-y-4">
-          {/* Requests Filters */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search requests by campaign, founder, or notes..."
-                  value={requestSearchQuery}
-                  onChange={(e) => setRequestSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Requests List */}
-          {loadingRequests ? (
-            <div className="flex justify-center items-center h-32">
-              <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+      {/* Stats Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-emerald-600">{stats.total}</div>
+              <div className="text-sm text-gray-600">Total Requests</div>
             </div>
-          ) : filteredRequests.length > 0 ? (
-            <div className="space-y-4">
-              {filteredRequests.map((request) => (
-                <Card
-                  key={request.id}
-                  className="hover:shadow-md transition-shadow"
-                >
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="font-semibold text-lg">
-                                {request.campaign?.title ||
-                                  'Campaign Not Found'}
-                              </h3>
-                              <p className="text-sm text-gray-600">
-                                Requested by{' '}
-                                {request.entrepreneur?.full_name || 'Unknown'}
-                              </p>
-                            </div>
-                            <Badge
-                              className={`
-                                ${request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
-                                ${request.status === 'approved' ? 'bg-green-100 text-green-800' : ''}
-                                ${request.status === 'rejected' ? 'bg-red-100 text-red-800' : ''}
-                                ${request.status === 'completed' ? 'bg-blue-100 text-blue-800' : ''}
-                              `}
-                            >
-                              {request.status.charAt(0).toUpperCase() +
-                                request.status.slice(1)}
-                            </Badge>
-                          </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-yellow-50 border-yellow-200">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
+              <div className="text-sm text-yellow-700">Pending Review</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-green-50 border-green-200">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">{stats.approved}</div>
+              <div className="text-sm text-green-700">Active</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{stats.completed}</div>
+              <div className="text-sm text-blue-700">Completed</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gray-50 border-gray-200">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-600">{stats.rejected}</div>
+              <div className="text-sm text-gray-700">Declined</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-                          {request.entrepreneur_notes && (
-                            <div className="mt-3 p-3 bg-gray-50 rounded-md">
-                              <p className="text-sm text-gray-700">
-                                <span className="font-semibold">
-                                  Founder's Notes:
-                                </span>{' '}
-                                {request.entrepreneur_notes}
-                              </p>
-                            </div>
-                          )}
+      {/* Search and Tabs */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Search requests by campaign, founder, or notes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="all" className="data-[state=active]:bg-gray-100">
+                  All ({stats.total})
+                </TabsTrigger>
+                <TabsTrigger value="pending" className="data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-800">
+                  <Clock className="h-4 w-4 mr-2" />
+                  Pending ({stats.pending})
+                </TabsTrigger>
+                <TabsTrigger value="approved" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-800">
+                  <UserCheck className="h-4 w-4 mr-2" />
+                  Active ({stats.approved})
+                </TabsTrigger>
+                <TabsTrigger value="completed" className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-800">
+                  <Award className="h-4 w-4 mr-2" />
+                  Completed ({stats.completed})
+                </TabsTrigger>
+                <TabsTrigger value="rejected" className="data-[state=active]:bg-red-100 data-[state=active]:text-red-800">
+                  <UserX className="h-4 w-4 mr-2" />
+                  Declined ({stats.rejected})
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </CardContent>
+      </Card>
 
-                          <div className="mt-4 text-sm text-gray-600">
-                            <div className="flex items-center">
+      {/* Requests List */}
+      {filteredRequests.length > 0 ? (
+        <div className="space-y-4">
+          {filteredRequests.map((request) => {
+            const progress = request.campaign ? 
+              getProgressPercentage(request.campaign.current_amount, request.campaign.goal_amount) : 0;
+            
+            return (
+              <Card key={request.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h3 className="font-semibold text-lg">
+                              {request.campaign?.title || 'Campaign Not Available'}
+                            </h3>
+                            <div className="flex items-center mt-1 text-sm text-gray-600">
+                              <Building className="h-4 w-4 mr-2" />
+                              <span>Requested by {request.entrepreneur?.full_name || 'Unknown'}</span>
+                              <span className="mx-2">•</span>
                               <Calendar className="h-4 w-4 mr-2" />
-                              Requested on {formatDate(request.created_at)}
+                              <span>{formatDate(request.created_at)}</span>
                             </div>
+                          </div>
+                          <div className="flex flex-col items-end space-y-2">
+                            {getStatusBadge(request.status)}
+                            {request.campaign && (
+                              <Badge variant="outline">{request.campaign.category}</Badge>
+                            )}
                           </div>
                         </div>
-                      </div>
 
-                      {/* Actions based on status */}
-                      <div className="flex justify-end space-x-2 pt-4 border-t">
-                        {request.status === 'pending' && (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() =>
-                                handleRequestAction(request.id, 'reject')
-                              }
-                            >
-                              <XCircle className="h-4 w-4 mr-2" />
-                              Decline
-                            </Button>
-                            <Button
-                              size="sm"
-                              className="bg-emerald-600 hover:bg-emerald-700"
-                              onClick={() =>
-                                handleRequestAction(request.id, 'approve')
-                              }
-                            >
-                              <CheckCircle className="h-4 w-4 mr-2" />
-                              Accept Request
-                            </Button>
-                          </>
+                        {/* Campaign Info */}
+                        {request.campaign && (
+                          <div className="mb-4 p-3 bg-gray-50 rounded-md">
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-600">Campaign Progress</span>
+                                <span className="font-semibold">
+                                  {formatCurrency(request.campaign.current_amount)} of {formatCurrency(request.campaign.goal_amount)}
+                                </span>
+                              </div>
+                              <Progress value={progress} className="h-2" />
+                              <div className="flex justify-between text-xs text-gray-500">
+                                <span>{progress.toFixed(1)}% funded</span>
+                                {request.campaign.location && (
+                                  <span className="flex items-center">
+                                    <Globe className="h-3 w-3 mr-1" />
+                                    {request.campaign.location}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
                         )}
 
-                        {request.status === 'approved' && (
+                        {/* Entrepreneur's Notes */}
+                        {request.entrepreneur_notes && (
+                          <div className="mb-4 p-3 bg-blue-50 rounded-md">
+                            <p className="text-sm text-blue-800">
+                              <span className="font-semibold">Founder's Message:</span>{' '}
+                              "{request.entrepreneur_notes}"
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Mentor's Notes (if any) */}
+                        {request.mentor_notes && (
+                          <div className="mb-4 p-3 bg-emerald-50 rounded-md">
+                            <p className="text-sm text-emerald-800">
+                              <span className="font-semibold">Your Notes:</span>{' '}
+                              {request.mentor_notes}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Rating (for completed requests) */}
+                        {request.status === 'completed' && request.rating && (
+                          <div className="mb-4 p-3 bg-purple-50 rounded-md">
+                            <div className="flex items-center">
+                              <Sparkles className="h-4 w-4 mr-2 text-purple-600" />
+                              <span className="text-sm font-semibold text-purple-800">
+                                Rating: {request.rating}/5
+                              </span>
+                            </div>
+                            {request.feedback && (
+                              <p className="text-sm text-purple-700 mt-1">
+                                "{request.feedback}"
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Timeline */}
+                        <div className="text-sm text-gray-600 space-y-1">
+                          {request.started_at && (
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-2" />
+                              <span>Mentorship started: {formatDate(request.started_at)}</span>
+                            </div>
+                          )}
+                          {request.completed_at && (
+                            <div className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              <span>Completed: {formatDate(request.completed_at)}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions based on status */}
+                    <div className="flex justify-end space-x-2 pt-4 border-t">
+                      {request.status === 'pending' && (
+                        <>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() =>
-                              window.open(
-                                `/campaigns/${request.campaign_id}`,
-                                '_blank',
-                              )
-                            }
+                            onClick={() => handleRequestAction(request.id, 'reject')}
+                            className="text-red-600 border-red-200 hover:bg-red-50"
+                          >
+                            <UserX className="h-4 w-4 mr-2" />
+                            Decline
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-emerald-600 hover:bg-emerald-700"
+                            onClick={() => handleRequestAction(request.id, 'approve')}
+                          >
+                            <UserCheck className="h-4 w-4 mr-2" />
+                            Accept Request
+                          </Button>
+                        </>
+                      )}
+
+                      {(request.status === 'approved' || request.status === 'completed') && (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open(`/campaigns/${request.campaign_id}`, '_blank')}
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             View Campaign
                           </Button>
-                        )}
+                          {request.entrepreneur && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => window.location.href = `/messages?user=${request.entrepreneur_id}`}
+                            >
+                              <Mail className="h-4 w-4 mr-2" />
+                              Message Founder
+                            </Button>
+                          )}
+                        </>
+                      )}
 
-                        {request.status === 'completed' && (
-                          <Button variant="outline" size="sm" disabled>
-                            <Award className="h-4 w-4 mr-2" />
-                            Completed
-                          </Button>
-                        )}
-                      </div>
+                      {request.status === 'completed' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled
+                          className="bg-blue-50 text-blue-700 border-blue-200"
+                        >
+                          <Award className="h-4 w-4 mr-2" />
+                          Completed
+                        </Button>
+                      )}
+
+                      {(request.status === 'rejected' || request.status === 'cancelled') && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled
+                          className="bg-gray-50 text-gray-600 border-gray-200"
+                        >
+                          <UserX className="h-4 w-4 mr-2" />
+                          Request Declined
+                        </Button>
+                      )}
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="py-8 text-center">
-                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  No mentorship requests
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  You don't have any mentorship requests yet. Browse campaigns
-                  to request mentorship.
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      ) : (
+        <Card>
+          <CardContent className="py-12 text-center">
+            {activeTab === 'pending' ? (
+              <>
+                <MessageSquare className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No Pending Requests</h3>
+                <p className="text-gray-600 mb-4 max-w-md mx-auto">
+                  You don't have any pending mentorship requests at the moment. 
+                  Entrepreneurs will send you requests through the mentor marketplace.
                 </p>
-                <Button
-                  variant="outline"
-                  onClick={() => setActiveTab('campaigns')}
-                >
-                  Browse Campaigns
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-500">
+                    To increase your visibility to entrepreneurs:
+                  </p>
+                  <ul className="text-sm text-gray-600 text-left max-w-md mx-auto space-y-2">
+                    <li className="flex items-start">
+                      <CheckCircle className="h-4 w-4 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Keep your profile up-to-date with your expertise</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-4 w-4 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Maintain an "Available" status in your dashboard</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-4 w-4 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Encourage entrepreneurs to leave reviews after completing mentorships</span>
+                    </li>
+                  </ul>
+                </div>
+              </>
+            ) : (
+              <>
+                <BarChart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No Requests Found</h3>
+                <p className="text-gray-600 mb-4">
+                  {activeTab === 'all' 
+                    ? 'You haven\'t received any mentorship requests yet.'
+                    : `You don't have any ${activeTab} mentorship requests.`}
+                </p>
+              </>
+            )}
+            <Button
+              variant="outline"
+              onClick={() => setActiveTab('all')}
+            >
+              View All Requests
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Help Card */}
+      {activeTab === 'pending' && filteredRequests.length > 0 && (
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="pt-6">
+            <div className="space-y-3">
+              <h4 className="font-semibold text-blue-900 flex items-center">
+                <Sparkles className="h-5 w-5 mr-2" />
+                Quick Tips for Reviewing Requests
+              </h4>
+              <ul className="space-y-2 text-sm text-blue-800">
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>
+                    <strong>Review the campaign:</strong> Check if the venture aligns with your expertise
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>
+                    <strong>Check your capacity:</strong> Ensure you have time to take on new assignments
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>
+                    <strong>Read founder's message:</strong> Understand what specific help they're seeking
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>
+                    <strong>Respond promptly:</strong> Entrepreneurs appreciate timely responses (within 48 hours)
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Actions */}
-      <div className="flex justify-end space-x-3 pt-6 border-t">
-        <Button variant="outline" onClick={onCancel}>
-          Close
-        </Button>
-        <Button
-          onClick={() => window.open('/mentor/marketplace', '_blank')}
-          className="bg-emerald-600 hover:bg-emerald-700"
-        >
-          View Full Marketplace
-        </Button>
+      <div className="flex justify-between pt-6 border-t">
+        <div className="text-sm text-gray-600">
+          <p>Need help with mentorship requests? <a href="/help/mentors" className="text-emerald-600 hover:underline">Visit our mentor guide</a></p>
+        </div>
+        <div className="flex space-x-3">
+          <Button
+            variant="outline"
+            onClick={onCancel}
+          >
+            Close
+          </Button>
+          <Button
+            onClick={() => window.open('/mentor/marketplace', '_blank')}
+            className="bg-emerald-600 hover:bg-emerald-700"
+          >
+            Browse Mentor Marketplace
+          </Button>
+        </div>
       </div>
     </div>
   );
