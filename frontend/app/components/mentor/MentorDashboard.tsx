@@ -36,7 +36,10 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+  const API_BASE_URL =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000'
+      : process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
   useEffect(() => {
     fetchDashboardData();

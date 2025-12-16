@@ -219,7 +219,9 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
       );
 
     const matchesExpertise =
-      !selectedExpertise || mentor.expertise.includes(selectedExpertise);
+      !selectedExpertise ||
+      selectedExpertise === 'all' ||
+      mentor.expertise.includes(selectedExpertise);
     const matchesRating = mentor.rating >= minRating;
     const matchesExperience = mentor.years_of_experience >= minExperience;
 
@@ -404,7 +406,8 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
                     <SelectValue placeholder="All Expertise" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Expertise</SelectItem>
+                    <SelectItem value="all">All Expertise</SelectItem>{' '}
+                    {/* Changed from "" to "all" */}
                     {expertiseTags.map((tag) => (
                       <SelectItem key={tag} value={tag}>
                         {tag}
