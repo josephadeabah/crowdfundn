@@ -39,12 +39,18 @@ interface MentorData {
   mentor?: {
     id: number;
     professional_title: string;
-    rating: number;
+    rating: number | string; // Rating can be string "0.0"
     current_assignments: number;
     max_assignments: number;
     status: string;
     expertise: string[];
-    // other mentor properties
+    years_of_experience?: number;
+    bio?: string;
+    linkedin_profile?: string;
+    hourly_rate?: number;
+    reviews_count?: number;
+    created_at?: string;
+    updated_at?: string;
   };
   application?: {
     id: number;
@@ -52,19 +58,20 @@ interface MentorData {
     submitted_at: string;
     professional_title: string;
     years_of_experience: number;
-    // other application properties
+    // Add other application properties if needed
   };
-  assignments?: Array<{
-    id: number;
-    status: string;
-    campaign?: {
-      title: string;
-      fundraiser_name: string;
-    };
-    started_at?: string;
-    completed_at?: string;
-    rating?: number;
+  assignments?: {
+    current: number;
+    max: number;
+    completed: number;
+    active: number;
+  };
+  reviews?: Array<{
+    rating: number;
     feedback?: string;
+    campaign_title?: string;
+    entrepreneur_name?: string;
+    completed_at?: string;
   }>;
   statistics?: {
     total_assignments: number;
@@ -339,17 +346,17 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   if (dashboardData.has_mentor_profile && dashboardData.mentor) {
     const {
       mentor,
+      assignments = { current: 0, max: 0, completed: 0, active: 0 },
       statistics = { total_assignments: 0 },
+      reviews = [],
+      expertise = [],
     } = dashboardData;
 
-    // Safeguard: Ensure assignments is an array
-    const assignmentsArray = Array.isArray(dashboardData.assignments) 
-      ? dashboardData.assignments 
-      : [];
-
-    const activeAssignments = assignmentsArray.filter((a: any) => a.status === 'active');
-    const pendingRequests = assignmentsArray.filter((a: any) => a.status === 'pending');
-    const completedAssignments = assignmentsArray.filter((a: any) => a.status === 'completed');
+    // Since assignments is an object, we need to handle it differently
+    const activeAssignmentsCount = assignments.active || 0;
+    const pendingRequestsCount = 0; // You might need to get this from another endpoint
+    const completedAssignmentsCount = assignments.completed || 0;
+    const totalAssignmentsCount = statistics.total_assignments || completedAssignmentsCount;
 
     return (
       <div className="space-y-6">
@@ -369,7 +376,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             </Badge>
             <Badge className="px-3 py-1 bg-blue-100 text-blue-800">
               <Award className="h-4 w-4 mr-1" />
-              {mentor.rating?.toFixed(1) || '0.0'} Rating
+              {parseFloat(mentor.rating as any)?.toFixed(1) || '0.0'} Rating
             </Badge>
             <Button
               variant="outline"
@@ -392,7 +399,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     Active Assignments
                   </p>
                   <h3 className="text-2xl font-bold mt-2">
-                    {activeAssignments.length}
+                    {activeAssignmentsCount}
                   </h3>
                 </div>
                 <div className="p-3 bg-green-100 rounded-full">
@@ -403,14 +410,12 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                 <div className="flex justify-between text-sm text-gray-600 mb-1">
                   <span>Capacity</span>
                   <span>
-                    {mentor.current_assignments || 0}/
-                    {mentor.max_assignments || '∞'}
+                    {assignments.current || 0}/{assignments.max || '∞'}
                   </span>
                 </div>
                 <Progress
                   value={
-                    ((mentor.current_assignments || 0) /
-                      (mentor.max_assignments || 1)) *
+                    ((assignments.current || 0) / (assignments.max || 1)) *
                     100
                   }
                   className="h-2"
@@ -427,7 +432,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     Pending Requests
                   </p>
                   <h3 className="text-2xl font-bold mt-2">
-                    {pendingRequests.length}
+                    {pendingRequestsCount}
                   </h3>
                 </div>
                 <div className="p-3 bg-yellow-100 rounded-full">
@@ -455,7 +460,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Completed</p>
                   <h3 className="text-2xl font-bold mt-2">
-                    {completedAssignments.length}
+                    {completedAssignmentsCount}
                   </h3>
                 </div>
                 <div className="p-3 bg-purple-100 rounded-full">
@@ -466,7 +471,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                 <div className="flex items-center text-sm text-gray-600">
                   <Star className="h-4 w-4 text-yellow-400 mr-1" />
                   <span>
-                    Average Rating: {mentor.rating?.toFixed(1) || '0.0'}
+                    Average Rating: {parseFloat(mentor.rating as any)?.toFixed(1) || '0.0'}
                   </span>
                 </div>
               </div>
@@ -481,7 +486,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     Total Impact
                   </p>
                   <h3 className="text-2xl font-bold mt-2">
-                    {statistics.total_assignments || 0}
+                    {totalAssignmentsCount}
                   </h3>
                 </div>
                 <div className="p-3 bg-blue-100 rounded-full">
@@ -504,58 +509,22 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {activeAssignments.length > 0 ? (
-              <div className="space-y-4">
-                {activeAssignments.map((assignment: any) => (
-                  <div
-                    key={assignment.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <Briefcase className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold">
-                          {assignment.campaign?.title || 'Untitled Campaign'}
-                        </h4>
-                        <p className="text-sm text-gray-600">
-                          Founder:{' '}
-                          {assignment.campaign?.fundraiser_name || 'Unknown'}
-                        </p>
-                        <div className="flex items-center space-x-2 mt-1">
-                          {assignment.started_at && (
-                            <Badge variant="outline" className="text-xs">
-                              Started:{' '}
-                              {new Date(
-                                assignment.started_at,
-                              ).toLocaleDateString()}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">
-                        <MessageSquare className="h-4 w-4 mr-2" />
-                        Message
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Schedule
-                      </Button>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() => {
-                          window.location.href = `/mentor/assignment/${assignment.id}/complete`;
-                        }}
-                      >
-                        Complete
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+            {activeAssignmentsCount > 0 ? (
+              <div className="text-center py-4">
+                <p className="text-gray-600">
+                  You have {activeAssignmentsCount} active assignment(s).
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-4"
+                  onClick={() => {
+                    // Fetch actual assignments here or navigate to assignments page
+                    console.log('Fetch detailed assignments');
+                  }}
+                >
+                  View Details
+                </Button>
               </div>
             ) : (
               <div className="text-center py-8">
@@ -576,7 +545,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         </Card>
 
         {/* Recent Reviews */}
-        {completedAssignments.filter((a: any) => a.rating).length > 0 && (
+        {reviews.length > 0 ? (
           <Card>
             <CardHeader>
               <CardTitle>Recent Reviews</CardTitle>
@@ -586,48 +555,79 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {completedAssignments
-                  .filter((a: any) => a.rating)
-                  .slice(0, 3)
-                  .map((assignment: any) => (
-                    <div key={assignment.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h4 className="font-semibold">
-                            {assignment.campaign?.title || 'Untitled Campaign'}
-                          </h4>
-                          <p className="text-sm text-gray-600">
-                            {assignment.campaign?.fundraiser_name || 'Unknown'}
-                          </p>
-                        </div>
-                        <div className="flex items-center">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              className={`h-4 w-4 ${
-                                star <= (assignment.rating || 0)
-                                  ? 'text-yellow-400 fill-yellow-400'
-                                  : 'text-gray-300'
-                              }`}
-                            />
-                          ))}
-                        </div>
+                {reviews.slice(0, 3).map((review: any, index: number) => (
+                  <div key={index} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h4 className="font-semibold">
+                          {review.campaign_title || 'Untitled Campaign'}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          {review.entrepreneur_name || 'Unknown'}
+                        </p>
                       </div>
-                      {assignment.feedback && (
-                        <p className="text-gray-600 mt-2 text-sm">
-                          "{assignment.feedback}"
-                        </p>
-                      )}
-                      {assignment.completed_at && (
-                        <p className="text-xs text-gray-500 mt-2">
-                          Completed on{' '}
-                          {new Date(
-                            assignment.completed_at,
-                          ).toLocaleDateString()}
-                        </p>
-                      )}
+                      <div className="flex items-center">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-4 w-4 ${
+                              star <= (review.rating || 0)
+                                ? 'text-yellow-400 fill-yellow-400'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  ))}
+                    {review.feedback && (
+                      <p className="text-gray-600 mt-2 text-sm">
+                        "{review.feedback}"
+                      </p>
+                    )}
+                    {review.completed_at && (
+                      <p className="text-xs text-gray-500 mt-2">
+                        Completed on{' '}
+                        {new Date(review.completed_at).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : completedAssignmentsCount > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Reviews</CardTitle>
+              <CardDescription>
+                No reviews yet for your completed assignments
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center py-8">
+              <Star className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-600">
+                Your completed assignments don't have reviews yet.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Expertise Section */}
+        {expertise.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Areas of Expertise</CardTitle>
+              <CardDescription>
+                Your mentorship specialties
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {expertise.map((tag: string, index: number) => (
+                  <Badge key={index} variant="secondary" className="capitalize">
+                    {tag}
+                  </Badge>
+                ))}
               </div>
             </CardContent>
           </Card>
