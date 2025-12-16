@@ -43,22 +43,19 @@ import { useRouter } from 'next/navigation';
 
 interface Mentor {
   id: number;
-  user: {
-    id: number;
-    full_name: string;
-    profile?: {
-      avatar_url?: string;
-    };
-  };
+  user_id: number;
   professional_title: string;
   years_of_experience: number;
-  rating: number;
+  rating: number | string; // Can be string like "0.0"
   reviews_count: number;
   current_assignments: number;
   max_assignments?: number;
-  expertise: string[];
+  expertise: string[]; // Add this based on your API
   bio?: string;
   linkedin_profile?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const MentorMarketplace: React.FC = () => {
@@ -73,6 +70,7 @@ const MentorMarketplace: React.FC = () => {
   const [minExperience, setMinExperience] = useState<number>(0);
   const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
   const [requestedMentors, setRequestedMentors] = useState<number[]>([]);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
@@ -106,13 +104,20 @@ const MentorMarketplace: React.FC = () => {
       if (mentorsRes.ok) {
         const mentorsData = await mentorsRes.json();
         setMentors(mentorsData.mentors || []);
-
-        // Extract unique expertise tags
-        const allTags = new Set<string>();
-        mentorsData.mentors?.forEach((mentor: Mentor) => {
-          mentor.expertise?.forEach((tag) => allTags.add(tag));
-        });
-        setExpertiseTags(Array.from(allTags));
+        
+        // Use expertise tags from filters if available
+        if (mentorsData.filters?.expertise_tags) {
+          setAvailableTags(mentorsData.filters.expertise_tags);
+        } else {
+          // Fallback: extract unique expertise from mentors
+          const allTags = new Set<string>();
+          mentorsData.mentors?.forEach((mentor: Mentor) => {
+            if (mentor.expertise && Array.isArray(mentor.expertise)) {
+              mentor.expertise.forEach((tag) => allTags.add(tag));
+            }
+          });
+          setAvailableTags(Array.from(allTags));
+        }
       } else {
         console.error('Failed to fetch mentors:', mentorsRes.status);
         toast({
@@ -229,18 +234,24 @@ const MentorMarketplace: React.FC = () => {
   const filteredMentors = mentors.filter((mentor) => {
     const matchesSearch =
       searchQuery === '' ||
-      mentor.user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       mentor.professional_title
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      mentor.expertise.some((tag) =>
-        tag.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
+      (mentor.bio && mentor.bio.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (mentor.expertise && Array.isArray(mentor.expertise) && 
+        mentor.expertise.some((tag) =>
+          tag.toLowerCase().includes(searchQuery.toLowerCase())
+        ));
 
     const matchesExpertise =
       selectedExpertise === 'all' ||
-      mentor.expertise.includes(selectedExpertise);
-    const matchesRating = mentor.rating >= minRating;
+      (mentor.expertise && mentor.expertise.includes(selectedExpertise));
+    
+    const ratingValue = typeof mentor.rating === 'string' 
+      ? parseFloat(mentor.rating) 
+      : mentor.rating;
+    
+    const matchesRating = ratingValue >= minRating;
     const matchesExperience = mentor.years_of_experience >= minExperience;
 
     return (
@@ -249,7 +260,7 @@ const MentorMarketplace: React.FC = () => {
   });
 
   const getAvailabilityBadge = (mentor: Mentor) => {
-    if (mentor.max_assignments === undefined) {
+    if (mentor.max_assignments === undefined || mentor.max_assignments === null) {
       return <Badge className="bg-green-100 text-green-800">Available</Badge>;
     }
 
@@ -273,26 +284,37 @@ const MentorMarketplace: React.FC = () => {
     }
   };
 
-  const renderStars = (rating: number, reviewsCount: number) => {
+  const renderStars = (rating: number | string, reviewsCount: number) => {
+    const ratingValue = typeof rating === 'string' ? parseFloat(rating) : rating;
+    
     return (
       <div className="flex items-center">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
             className={`h-4 w-4 ${
-              star <= Math.floor(rating)
+              star <= Math.floor(ratingValue)
                 ? 'text-yellow-400 fill-yellow-400'
-                : star <= rating
+                : star <= ratingValue
                   ? 'text-yellow-400 fill-yellow-400'
                   : 'text-gray-300'
             }`}
           />
         ))}
         <span className="ml-2 text-sm text-gray-600">
-          {rating.toFixed(1)} ({reviewsCount} reviews)
+          {ratingValue.toFixed(1)} ({reviewsCount} reviews)
         </span>
       </div>
     );
+  };
+
+  const getInitials = (title: string) => {
+    // Get initials from professional title
+    const words = title.split(' ');
+    if (words.length >= 2) {
+      return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
+    }
+    return title.charAt(0).toUpperCase();
   };
 
   if (loading) {
@@ -342,7 +364,7 @@ const MentorMarketplace: React.FC = () => {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                    placeholder="Search mentors by name, title, or expertise..."
+                    placeholder="Search mentors by title, bio, or expertise..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"
@@ -359,7 +381,7 @@ const MentorMarketplace: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Expertise</SelectItem>
-                    {expertiseTags.map((tag) => (
+                    {availableTags.map((tag) => (
                       <SelectItem key={tag} value={tag}>
                         {tag}
                       </SelectItem>
@@ -410,6 +432,7 @@ const MentorMarketplace: React.FC = () => {
           const isRequested = requestedMentors.includes(mentor.id);
           const isMentorAvailable =
             mentor.max_assignments === undefined ||
+            mentor.max_assignments === null ||
             mentor.current_assignments < mentor.max_assignments;
 
           return (
@@ -418,17 +441,17 @@ const MentorMarketplace: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={mentor.user.profile?.avatar_url} />
+                      <AvatarImage src="" /> {/* No avatar from API */}
                       <AvatarFallback>
-                        {mentor.user.full_name.charAt(0)}
+                        {getInitials(mentor.professional_title)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <CardTitle className="text-lg">
-                        {mentor.user.full_name}
+                        {mentor.professional_title}
                       </CardTitle>
                       <CardDescription>
-                        {mentor.professional_title}
+                        {mentor.years_of_experience}+ years experience
                       </CardDescription>
                     </div>
                   </div>
@@ -438,12 +461,6 @@ const MentorMarketplace: React.FC = () => {
               <CardContent className="space-y-4">
                 {/* Rating */}
                 {renderStars(mentor.rating, mentor.reviews_count)}
-
-                {/* Experience */}
-                <div className="flex items-center text-sm text-gray-600">
-                  <Briefcase className="h-4 w-4 mr-2" />
-                  {mentor.years_of_experience}+ years experience
-                </div>
 
                 {/* Current Load */}
                 <div className="flex items-center text-sm text-gray-600">
@@ -456,15 +473,21 @@ const MentorMarketplace: React.FC = () => {
                 <div className="space-y-2">
                   <h4 className="text-sm font-semibold">Areas of Expertise</h4>
                   <div className="flex flex-wrap gap-2">
-                    {mentor.expertise.slice(0, 4).map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {mentor.expertise.length > 4 && (
-                      <Badge variant="outline" className="text-xs">
-                        +{mentor.expertise.length - 4} more
-                      </Badge>
+                    {mentor.expertise && Array.isArray(mentor.expertise) ? (
+                      <>
+                        {mentor.expertise.slice(0, 4).map((tag, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs capitalize">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {mentor.expertise.length > 4 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{mentor.expertise.length - 4} more
+                          </Badge>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-sm text-gray-500">No expertise listed</span>
                     )}
                   </div>
                 </div>
@@ -540,8 +563,9 @@ const MentorMarketplace: React.FC = () => {
             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No mentors found</h3>
             <p className="text-gray-600 mb-4">
-              Try adjusting your search filters or check back later for new
-              mentors.
+              {mentors.length === 0 
+                ? 'No mentors are currently available. Check back soon!' 
+                : 'Try adjusting your search filters to find mentors.'}
             </p>
             <Button
               variant="outline"
