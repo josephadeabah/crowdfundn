@@ -27,12 +27,12 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
   mentor,
   expertise: initialExpertise,
   onSuccess,
-  onCancel
+  onCancel,
 }) => {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     professional_title: mentor.professional_title || '',
@@ -40,7 +40,7 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
     linkedin_profile: mentor.linkedin_profile || '',
     hourly_rate: mentor.hourly_rate?.toString() || '',
   });
-  
+
   const [expertise, setExpertise] = useState<string[]>(initialExpertise || []);
   const [newExpertise, setNewExpertise] = useState('');
   const [availableTags, setAvailableTags] = useState<string[]>([]);
@@ -53,7 +53,7 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
     isOpen: false,
     title: '',
     description: '',
-    type: 'success'
+    type: 'success',
   });
 
   // Fetch available expertise tags
@@ -86,44 +86,54 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
     }
   };
 
-  const showToast = (title: string, description: string, type: 'success' | 'error' | 'warning' = 'success') => {
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning' = 'success',
+  ) => {
     setToast({
       isOpen: true,
       title,
       description,
-      type
+      type,
     });
 
     // Auto-hide toast after 5 seconds
     setTimeout(() => {
-      setToast(prev => ({ ...prev, isOpen: false }));
+      setToast((prev) => ({ ...prev, isOpen: false }));
     }, 5000);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const addExpertise = (tag: string) => {
     if (tag.trim() && !expertise.includes(tag.trim())) {
-      setExpertise(prev => [...prev, tag.trim()]);
+      setExpertise((prev) => [...prev, tag.trim()]);
       setNewExpertise('');
     }
   };
 
   const removeExpertise = (tagToRemove: string) => {
-    setExpertise(prev => prev.filter(tag => tag !== tagToRemove));
+    setExpertise((prev) => prev.filter((tag) => tag !== tagToRemove));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!token) {
-      showToast('Error', 'You must be logged in to update your profile', 'error');
+      showToast(
+        'Error',
+        'You must be logged in to update your profile',
+        'error',
+      );
       return;
     }
 
@@ -143,7 +153,9 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
               professional_title: formData.professional_title,
               bio: formData.bio,
               linkedin_profile: formData.linkedin_profile,
-              hourly_rate: formData.hourly_rate ? parseFloat(formData.hourly_rate) : null,
+              hourly_rate: formData.hourly_rate
+                ? parseFloat(formData.hourly_rate)
+                : null,
             },
             expertise_tags: expertise,
           }),
@@ -169,14 +181,16 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">Edit Mentor Profile</h2>
-        <p className="text-gray-600">Update your mentor information and expertise</p>
+        <p className="text-gray-600">
+          Update your mentor information and expertise
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Professional Information */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Professional Information</h3>
-          
+
           <div className="space-y-2">
             <Label htmlFor="professional_title">Professional Title *</Label>
             <Input
@@ -219,7 +233,10 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
             {/* Current Expertise Tags */}
             <div className="flex flex-wrap gap-2">
               {expertise.map((tag, index) => (
-                <Badge key={index} className="px-3 py-1 flex items-center gap-1">
+                <Badge
+                  key={index}
+                  className="px-3 py-1 flex items-center gap-1"
+                >
                   {tag}
                   <button
                     type="button"
@@ -231,7 +248,9 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
                 </Badge>
               ))}
               {expertise.length === 0 && (
-                <p className="text-sm text-gray-500 italic">No expertise tags added yet</p>
+                <p className="text-sm text-gray-500 italic">
+                  No expertise tags added yet
+                </p>
               )}
             </div>
 
@@ -264,7 +283,7 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
                 <p className="text-sm text-gray-600">Popular tags:</p>
                 <div className="flex flex-wrap gap-2">
                   {availableTags
-                    .filter(tag => !expertise.includes(tag))
+                    .filter((tag) => !expertise.includes(tag))
                     .slice(0, 10)
                     .map((tag, index) => (
                       <Badge
@@ -292,7 +311,7 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
         {/* Contact & Rates */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Contact & Rates</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="linkedin_profile">LinkedIn Profile</Label>
@@ -354,18 +373,22 @@ const EditMentorProfile: React.FC<MentorProfileProps> = ({
 
       {/* Toast Notification */}
       {toast.isOpen && (
-        <div className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
-          toast.type === 'success' ? 'bg-green-100 border border-green-200 text-green-800' :
-          toast.type === 'error' ? 'bg-red-100 border border-red-200 text-red-800' :
-          'bg-yellow-100 border border-yellow-200 text-yellow-800'
-        }`}>
+        <div
+          className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+            toast.type === 'success'
+              ? 'bg-green-100 border border-green-200 text-green-800'
+              : toast.type === 'error'
+                ? 'bg-red-100 border border-red-200 text-red-800'
+                : 'bg-yellow-100 border border-yellow-200 text-yellow-800'
+          }`}
+        >
           <div className="flex items-start">
             <div className="flex-1">
               <h4 className="font-semibold">{toast.title}</h4>
               <p className="text-sm mt-1">{toast.description}</p>
             </div>
             <button
-              onClick={() => setToast(prev => ({ ...prev, isOpen: false }))}
+              onClick={() => setToast((prev) => ({ ...prev, isOpen: false }))}
               className="ml-4 text-gray-500 hover:text-gray-700"
             >
               <X className="h-4 w-4" />

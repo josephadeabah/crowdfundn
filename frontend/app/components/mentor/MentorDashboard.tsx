@@ -86,33 +86,39 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const { user, token } = useAuth();
   const [dashboardData, setDashboardData] = useState<MentorData | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   // Modal states
-  const [isMaxAssignmentsModalOpen, setIsMaxAssignmentsModalOpen] = useState(false);
+  const [isMaxAssignmentsModalOpen, setIsMaxAssignmentsModalOpen] =
+    useState(false);
   const [newMaxAssignments, setNewMaxAssignments] = useState('');
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [isViewRequestsModalOpen, setIsViewRequestsModalOpen] = useState(false);
-  const [isReviewRequestsModalOpen, setIsReviewRequestsModalOpen] = useState(false);
-  
+  const [isReviewRequestsModalOpen, setIsReviewRequestsModalOpen] =
+    useState(false);
+
   // Toast states
   const [toast, setToast] = useState({
     isOpen: false,
     title: '',
     description: '',
-    type: 'success' as 'success' | 'error' | 'warning'
+    type: 'success' as 'success' | 'error' | 'warning',
   });
 
-  const showToast = (title: string, description: string, type: 'success' | 'error' | 'warning' = 'success') => {
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning' = 'success',
+  ) => {
     setToast({
       isOpen: true,
       title,
       description,
-      type
+      type,
     });
   };
 
   const closeToast = () => {
-    setToast(prev => ({ ...prev, isOpen: false }));
+    setToast((prev) => ({ ...prev, isOpen: false }));
   };
 
   useEffect(() => {
@@ -178,7 +184,11 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         fetchDashboardData();
       } else {
         const error = await response.json();
-        showToast('Error', error.error || 'Failed to update maximum assignments', 'error');
+        showToast(
+          'Error',
+          error.error || 'Failed to update maximum assignments',
+          'error',
+        );
       }
     } catch (error) {
       console.error('Error updating max assignments:', error);
@@ -208,11 +218,18 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
       );
 
       if (response.ok) {
-        showToast('Success', `Status updated to ${newStatus === 'approved' ? 'Available' : 'Unavailable'}`);
+        showToast(
+          'Success',
+          `Status updated to ${newStatus === 'approved' ? 'Available' : 'Unavailable'}`,
+        );
         fetchDashboardData();
       } else {
         const error = await response.json();
-        showToast('Error', error.error || 'Failed to update availability', 'error');
+        showToast(
+          'Error',
+          error.error || 'Failed to update availability',
+          'error',
+        );
       }
     } catch (error) {
       console.error('Error toggling availability:', error);
@@ -228,7 +245,10 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         Set how many ventures you can mentor at once
       </p>
       <div className="space-y-2">
-        <label htmlFor="maxAssignments" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="maxAssignments"
+          className="block text-sm font-medium text-gray-700"
+        >
           Maximum Concurrent Assignments
         </label>
         <input
@@ -266,7 +286,8 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Review Requests</h3>
       <p className="text-gray-600 text-sm">
-        This would normally load your pending mentorship requests. For now, you can navigate to the full requests page.
+        This would normally load your pending mentorship requests. For now, you
+        can navigate to the full requests page.
       </p>
       <div className="flex justify-end space-x-3 pt-4">
         <Button
@@ -378,7 +399,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             View Application Status
           </Button>
           <Button
-            onClick={() => (window.location.href = '/account/settings?tab=kyc')}
+            onClick={() => (window.location.href = '/account#Settings')}
             className="bg-emerald-600 text-white hover:bg-emerald-700"
           >
             Update KYC Information
@@ -494,7 +515,8 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                   </div>
                   <Progress
                     value={
-                      ((assignments.current || 0) / (assignments.max || 1)) * 100
+                      ((assignments.current || 0) / (assignments.max || 1)) *
+                      100
                     }
                     className="h-2"
                   />
@@ -534,7 +556,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Completed</p>
+                    <p className="text-sm font-medium text-gray-600">
+                      Completed
+                    </p>
                     <h3 className="text-2xl font-bold mt-2">
                       {completedAssignmentsCount}
                     </h3>
@@ -701,7 +725,11 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {expertise.map((tag: string, index: number) => (
-                    <Badge key={index} variant="secondary" className="capitalize">
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="capitalize"
+                    >
                       {tag}
                     </Badge>
                   ))}
@@ -737,7 +765,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setNewMaxAssignments(mentor.max_assignments?.toString() || '5');
+                        setNewMaxAssignments(
+                          mentor.max_assignments?.toString() || '5',
+                        );
                         setIsMaxAssignmentsModalOpen(true);
                       }}
                     >
@@ -756,7 +786,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     </p>
                   </div>
                   <Button
-                    variant={mentor.status === 'approved' ? 'default' : 'outline'}
+                    variant={
+                      mentor.status === 'approved' ? 'default' : 'outline'
+                    }
                     size="sm"
                     onClick={toggleAvailability}
                     className="bg-emerald-700 text-white hover:bg-emerald-800"
@@ -788,7 +820,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           onClose={() => setIsEditProfileModalOpen(false)}
           size="xlarge"
         >
-          <EditMentorProfile 
+          <EditMentorProfile
             mentor={mentor}
             expertise={expertise}
             onSuccess={() => {
@@ -804,7 +836,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           onClose={() => setIsViewRequestsModalOpen(false)}
           size="huge"
         >
-          <ViewAvailableRequests 
+          <ViewAvailableRequests
             onSuccess={() => {
               setIsViewRequestsModalOpen(false);
               fetchDashboardData();

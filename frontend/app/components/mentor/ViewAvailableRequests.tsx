@@ -5,9 +5,20 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Badge } from '@/app/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
 import { Progress } from '@/app/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/app/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -80,31 +91,31 @@ interface MentorRequest {
 
 const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
   onSuccess,
-  onCancel
+  onCancel,
 }) => {
   const { token } = useAuth();
   const [loading, setLoading] = useState(true);
   const [loadingRequests, setLoadingRequests] = useState(false);
   const [activeTab, setActiveTab] = useState('campaigns');
-  
+
   // Campaigns state
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [filteredCampaigns, setFilteredCampaigns] = useState<Campaign[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState('all');
-  
+
   // Requests state
   const [requests, setRequests] = useState<MentorRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<MentorRequest[]>([]);
   const [requestSearchQuery, setRequestSearchQuery] = useState('');
-  
+
   // Stats
   const [stats, setStats] = useState({
     totalCampaigns: 0,
     totalRequests: 0,
     pendingRequests: 0,
-    activeCampaigns: 0
+    activeCampaigns: 0,
   });
 
   // Categories and locations from campaigns
@@ -120,7 +131,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
 
     try {
       setLoading(true);
-      
+
       // Fetch campaigns
       const campaignsRes = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns?limit=50`,
@@ -138,9 +149,17 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
         setFilteredCampaigns(campaignsList);
 
         // Extract unique categories and locations
-        const uniqueCategories = Array.from(new Set(campaignsList.map((c: Campaign) => c.category).filter(Boolean)));
-        const uniqueLocations = Array.from(new Set(campaignsList.map((c: Campaign) => c.location).filter(Boolean)));
-        
+        const uniqueCategories = Array.from(
+          new Set(
+            campaignsList.map((c: Campaign) => c.category).filter(Boolean),
+          ),
+        );
+        const uniqueLocations = Array.from(
+          new Set(
+            campaignsList.map((c: Campaign) => c.location).filter(Boolean),
+          ),
+        );
+
         setCategories(uniqueCategories as string[]);
         setLocations(uniqueLocations as string[]);
       }
@@ -175,12 +194,14 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
         setFilteredRequests(requestsList);
 
         // Update stats
-        const pendingReqs = requestsList.filter((r: MentorRequest) => r.status === 'pending').length;
+        const pendingReqs = requestsList.filter(
+          (r: MentorRequest) => r.status === 'pending',
+        ).length;
         setStats({
           totalCampaigns: campaigns.length,
           totalRequests: requestsList.length,
           pendingRequests: pendingReqs,
-          activeCampaigns: campaigns.length
+          activeCampaigns: campaigns.length,
         });
       }
     } catch (error) {
@@ -196,19 +217,24 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(campaign =>
-        campaign.title.toLowerCase().includes(query) ||
-        campaign.description.toLowerCase().includes(query) ||
-        campaign.fundraiser.full_name.toLowerCase().includes(query)
+      result = result.filter(
+        (campaign) =>
+          campaign.title.toLowerCase().includes(query) ||
+          campaign.description.toLowerCase().includes(query) ||
+          campaign.fundraiser.full_name.toLowerCase().includes(query),
       );
     }
 
     if (selectedCategory !== 'all') {
-      result = result.filter(campaign => campaign.category === selectedCategory);
+      result = result.filter(
+        (campaign) => campaign.category === selectedCategory,
+      );
     }
 
     if (selectedLocation !== 'all') {
-      result = result.filter(campaign => campaign.location === selectedLocation);
+      result = result.filter(
+        (campaign) => campaign.location === selectedLocation,
+      );
     }
 
     setFilteredCampaigns(result);
@@ -220,10 +246,11 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
 
     if (requestSearchQuery) {
       const query = requestSearchQuery.toLowerCase();
-      result = result.filter(request =>
-        request.campaign?.title.toLowerCase().includes(query) ||
-        request.entrepreneur?.full_name.toLowerCase().includes(query) ||
-        request.entrepreneur_notes?.toLowerCase().includes(query)
+      result = result.filter(
+        (request) =>
+          request.campaign?.title.toLowerCase().includes(query) ||
+          request.entrepreneur?.full_name.toLowerCase().includes(query) ||
+          request.entrepreneur_notes?.toLowerCase().includes(query),
       );
     }
 
@@ -244,7 +271,8 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
           },
           body: JSON.stringify({
             campaign_id: campaignId,
-            entrepreneur_notes: "I'd like to request mentorship for this campaign"
+            entrepreneur_notes:
+              "I'd like to request mentorship for this campaign",
           }),
         },
       );
@@ -261,11 +289,15 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
     }
   };
 
-  const handleRequestAction = async (requestId: number, action: 'approve' | 'reject') => {
+  const handleRequestAction = async (
+    requestId: number,
+    action: 'approve' | 'reject',
+  ) => {
     if (!token) return;
 
     try {
-      const endpoint = action === 'approve' ? 'approve_assignment' : 'cancel_assignment';
+      const endpoint =
+        action === 'approve' ? 'approve_assignment' : 'cancel_assignment';
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/assignments/${requestId}/${endpoint}`,
         {
@@ -298,14 +330,14 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount);
   };
 
@@ -338,13 +370,23 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="campaigns" className="data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-800">
+          <TabsTrigger
+            value="campaigns"
+            className="data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-800"
+          >
             <Briefcase className="h-4 w-4 mr-2" />
             Browse Campaigns
           </TabsTrigger>
-          <TabsTrigger value="requests" className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-800">
+          <TabsTrigger
+            value="requests"
+            className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-800"
+          >
             <MessageSquare className="h-4 w-4 mr-2" />
             My Requests ({requests.length})
           </TabsTrigger>
@@ -366,8 +408,11 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                     />
                   </div>
                 </div>
-                
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+
+                <Select
+                  value={selectedCategory}
+                  onValueChange={setSelectedCategory}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
@@ -381,7 +426,10 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                   </SelectContent>
                 </Select>
 
-                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                <Select
+                  value={selectedLocation}
+                  onValueChange={setSelectedLocation}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="All Locations" />
                   </SelectTrigger>
@@ -401,15 +449,25 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
           {/* Campaigns Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {filteredCampaigns.map((campaign) => {
-              const progress = getProgressPercentage(campaign.current_amount, campaign.goal_amount);
-              const hasExistingRequest = requests.some(r => r.campaign_id === campaign.id);
+              const progress = getProgressPercentage(
+                campaign.current_amount,
+                campaign.goal_amount,
+              );
+              const hasExistingRequest = requests.some(
+                (r) => r.campaign_id === campaign.id,
+              );
 
               return (
-                <Card key={campaign.id} className="hover:shadow-lg transition-shadow">
+                <Card
+                  key={campaign.id}
+                  className="hover:shadow-lg transition-shadow"
+                >
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
-                        <CardTitle className="text-lg line-clamp-1">{campaign.title}</CardTitle>
+                        <CardTitle className="text-lg line-clamp-1">
+                          {campaign.title}
+                        </CardTitle>
                         <CardDescription className="flex items-center mt-1">
                           <Building className="h-3 w-3 mr-1" />
                           {campaign.fundraiser.full_name}
@@ -429,7 +487,8 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Raised</span>
                         <span className="font-semibold">
-                          {formatCurrency(campaign.current_amount)} of {formatCurrency(campaign.goal_amount)}
+                          {formatCurrency(campaign.current_amount)} of{' '}
+                          {formatCurrency(campaign.goal_amount)}
                         </span>
                       </div>
                       <Progress value={progress} className="h-2" />
@@ -451,7 +510,9 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                         variant="outline"
                         size="sm"
                         className="flex-1"
-                        onClick={() => window.open(`/campaigns/${campaign.id}`, '_blank')}
+                        onClick={() =>
+                          window.open(`/campaigns/${campaign.id}`, '_blank')
+                        }
                       >
                         <Eye className="h-4 w-4 mr-2" />
                         View Campaign
@@ -485,7 +546,9 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
             <Card>
               <CardContent className="py-8 text-center">
                 <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No campaigns found</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  No campaigns found
+                </h3>
                 <p className="text-gray-600 mb-4">
                   {campaigns.length === 0
                     ? 'No active campaigns are available at the moment.'
@@ -530,7 +593,10 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
           ) : filteredRequests.length > 0 ? (
             <div className="space-y-4">
               {filteredRequests.map((request) => (
-                <Card key={request.id} className="hover:shadow-md transition-shadow">
+                <Card
+                  key={request.id}
+                  className="hover:shadow-md transition-shadow"
+                >
                   <CardContent className="pt-6">
                     <div className="space-y-4">
                       <div className="flex justify-between items-start">
@@ -538,10 +604,12 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                           <div className="flex items-start justify-between">
                             <div>
                               <h3 className="font-semibold text-lg">
-                                {request.campaign?.title || 'Campaign Not Found'}
+                                {request.campaign?.title ||
+                                  'Campaign Not Found'}
                               </h3>
                               <p className="text-sm text-gray-600">
-                                Requested by {request.entrepreneur?.full_name || 'Unknown'}
+                                Requested by{' '}
+                                {request.entrepreneur?.full_name || 'Unknown'}
                               </p>
                             </div>
                             <Badge
@@ -552,14 +620,17 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                                 ${request.status === 'completed' ? 'bg-blue-100 text-blue-800' : ''}
                               `}
                             >
-                              {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                              {request.status.charAt(0).toUpperCase() +
+                                request.status.slice(1)}
                             </Badge>
                           </div>
 
                           {request.entrepreneur_notes && (
                             <div className="mt-3 p-3 bg-gray-50 rounded-md">
                               <p className="text-sm text-gray-700">
-                                <span className="font-semibold">Founder's Notes:</span>{' '}
+                                <span className="font-semibold">
+                                  Founder's Notes:
+                                </span>{' '}
                                 {request.entrepreneur_notes}
                               </p>
                             </div>
@@ -581,7 +652,9 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleRequestAction(request.id, 'reject')}
+                              onClick={() =>
+                                handleRequestAction(request.id, 'reject')
+                              }
                             >
                               <XCircle className="h-4 w-4 mr-2" />
                               Decline
@@ -589,7 +662,9 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                             <Button
                               size="sm"
                               className="bg-emerald-600 hover:bg-emerald-700"
-                              onClick={() => handleRequestAction(request.id, 'approve')}
+                              onClick={() =>
+                                handleRequestAction(request.id, 'approve')
+                              }
                             >
                               <CheckCircle className="h-4 w-4 mr-2" />
                               Accept Request
@@ -601,7 +676,12 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => window.open(`/campaigns/${request.campaign_id}`, '_blank')}
+                            onClick={() =>
+                              window.open(
+                                `/campaigns/${request.campaign_id}`,
+                                '_blank',
+                              )
+                            }
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             View Campaign
@@ -609,11 +689,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                         )}
 
                         {request.status === 'completed' && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled
-                          >
+                          <Button variant="outline" size="sm" disabled>
                             <Award className="h-4 w-4 mr-2" />
                             Completed
                           </Button>
@@ -628,9 +704,12 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
             <Card>
               <CardContent className="py-8 text-center">
                 <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No mentorship requests</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  No mentorship requests
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  You don't have any mentorship requests yet. Browse campaigns to request mentorship.
+                  You don't have any mentorship requests yet. Browse campaigns
+                  to request mentorship.
                 </p>
                 <Button
                   variant="outline"
@@ -646,10 +725,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
 
       {/* Actions */}
       <div className="flex justify-end space-x-3 pt-6 border-t">
-        <Button
-          variant="outline"
-          onClick={onCancel}
-        >
+        <Button variant="outline" onClick={onCancel}>
           Close
         </Button>
         <Button
