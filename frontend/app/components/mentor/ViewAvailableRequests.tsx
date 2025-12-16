@@ -373,11 +373,17 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="px-2 sm:px-3 py-1 text-xs sm:text-sm">
+          <Badge
+            variant="outline"
+            className="px-2 sm:px-3 py-1 text-xs sm:text-sm"
+          >
             <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             {stats.pending} Pending
           </Badge>
-          <Badge variant="outline" className="px-2 sm:px-3 py-1 text-xs sm:text-sm hidden sm:flex">
+          <Badge
+            variant="outline"
+            className="px-2 sm:px-3 py-1 text-xs sm:text-sm hidden sm:flex"
+          >
             <UserCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             {stats.approved} Active
           </Badge>
@@ -466,7 +472,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               <div className="hidden sm:block absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 z-10">
                 <Button
                   variant="ghost"
@@ -479,7 +485,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
               </div>
 
               <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList 
+                <TabsList
                   className="tabs-container flex w-full overflow-x-auto pb-2 space-x-2 sm:space-x-0 sm:grid sm:grid-cols-5"
                   style={{ scrollbarWidth: 'thin' }}
                   onMouseEnter={() => setIsScrolling(true)}
@@ -564,8 +570,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-base sm:text-lg truncate">
-                          {request.campaign?.title ||
-                            'Campaign Not Available'}
+                          {request.campaign?.title || 'Campaign Not Available'}
                         </h3>
                         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1 text-sm text-gray-600">
                           <div className="flex items-center">
@@ -584,7 +589,10 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                       <div className="flex flex-col sm:items-end gap-2">
                         {getStatusBadge(request.status)}
                         {request.campaign && (
-                          <Badge variant="outline" className="text-xs px-2 py-0.5">
+                          <Badge
+                            variant="outline"
+                            className="text-xs px-2 py-0.5"
+                          >
                             {request.campaign.category}
                           </Badge>
                         )}
@@ -598,8 +606,8 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                           <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-600">Progress</span>
                             <span className="font-semibold">
-                              {formatCurrency(request.campaign.current_amount)} /{' '}
-                              {formatCurrency(request.campaign.goal_amount)}
+                              {formatCurrency(request.campaign.current_amount)}{' '}
+                              / {formatCurrency(request.campaign.goal_amount)}
                             </span>
                           </div>
                           <Progress value={progress} className="h-2" />
@@ -622,7 +630,9 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                       {request.entrepreneur_notes && (
                         <div className="p-3 bg-blue-50 rounded-md">
                           <p className="text-sm text-blue-800 line-clamp-3">
-                            <span className="font-semibold">Founder's Message:</span>{' '}
+                            <span className="font-semibold">
+                              Founder's Message:
+                            </span>{' '}
                             "{request.entrepreneur_notes}"
                           </p>
                         </div>
@@ -815,8 +825,8 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                 </p>
               </>
             )}
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setActiveTab('all')}
               className="w-full sm:w-auto"
             >
@@ -839,25 +849,29 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                 <li className="flex items-start">
                   <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                   <span className="text-xs sm:text-sm">
-                    <strong>Review the campaign:</strong> Check if the venture aligns with your expertise
+                    <strong>Review the campaign:</strong> Check if the venture
+                    aligns with your expertise
                   </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                   <span className="text-xs sm:text-sm">
-                    <strong>Check your capacity:</strong> Ensure you have time for new assignments
+                    <strong>Check your capacity:</strong> Ensure you have time
+                    for new assignments
                   </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                   <span className="text-xs sm:text-sm">
-                    <strong>Read founder's message:</strong> Understand what help they need
+                    <strong>Read founder's message:</strong> Understand what
+                    help they need
                   </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                   <span className="text-xs sm:text-sm">
-                    <strong>Respond promptly:</strong> Aim to reply within 48 hours
+                    <strong>Respond promptly:</strong> Aim to reply within 48
+                    hours
                   </span>
                 </li>
               </ul>
@@ -880,8 +894,8 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={onCancel}
             className="w-full sm:w-auto order-2 sm:order-1"
           >
