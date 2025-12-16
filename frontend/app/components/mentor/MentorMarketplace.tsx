@@ -105,14 +105,16 @@ const MentorMarketplace: React.FC = () => {
   const [minExperience, setMinExperience] = useState<number>(0);
   const [requestedMentors, setRequestedMentors] = useState<number[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>({});
+  const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>(
+    {},
+  );
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [toast, setToast] = useState<ToastState>({
     isOpen: false,
     title: '',
     description: '',
-    type: 'success'
+    type: 'success',
   });
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -121,22 +123,26 @@ const MentorMarketplace: React.FC = () => {
     fetchMentors();
   }, [token]);
 
-  const showToast = (title: string, description: string, type: 'success' | 'error' | 'warning' = 'success') => {
+  const showToast = (
+    title: string,
+    description: string,
+    type: 'success' | 'error' | 'warning' = 'success',
+  ) => {
     setToast({
       isOpen: true,
       title,
       description,
-      type
+      type,
     });
   };
 
   const closeToast = () => {
-    setToast(prev => ({ ...prev, isOpen: false }));
+    setToast((prev) => ({ ...prev, isOpen: false }));
   };
 
   const fetchMentorExpertise = async (mentorId: number) => {
     if (!token) return [];
-    
+
     try {
       const response = await fetch(
         `${API_BASE_URL}/mentor/mentors/${mentorId}`,
@@ -237,7 +243,11 @@ const MentorMarketplace: React.FC = () => {
         [];
 
       if (activeCampaigns.length === 0) {
-        showToast('No Active Campaigns', 'You need an active campaign to request a mentor.', 'error');
+        showToast(
+          'No Active Campaigns',
+          'You need an active campaign to request a mentor.',
+          'error',
+        );
 
         if (confirm('Would you like to create a campaign first?')) {
           router.push('/campaigns/create');
@@ -406,7 +416,7 @@ const MentorMarketplace: React.FC = () => {
   // Mentor Profile Modal Content
   const MentorProfileModal = () => {
     if (!selectedMentor) return null;
-    
+
     const mentorExpertise = expertiseMap[selectedMentor.id] || [];
     const isCurrentUser = isCurrentUserMentor(selectedMentor);
 
@@ -420,10 +430,15 @@ const MentorMarketplace: React.FC = () => {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="text-xl font-bold">{selectedMentor.professional_title}</h3>
+              <h3 className="text-xl font-bold">
+                {selectedMentor.professional_title}
+              </h3>
               <div className="flex items-center text-gray-600 mt-1">
                 <Calendar className="h-4 w-4 mr-2" />
-                <span>{formatExperience(selectedMentor.years_of_experience)} experience</span>
+                <span>
+                  {formatExperience(selectedMentor.years_of_experience)}{' '}
+                  experience
+                </span>
               </div>
             </div>
           </div>
@@ -446,14 +461,15 @@ const MentorMarketplace: React.FC = () => {
           <div className="flex items-center justify-between mb-2">
             <h4 className="font-semibold">Current Availability</h4>
             <span className="text-sm text-gray-600">
-              {selectedMentor.current_assignments} of {selectedMentor.max_assignments || '∞'} slots filled
+              {selectedMentor.current_assignments} of{' '}
+              {selectedMentor.max_assignments || '∞'} slots filled
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-emerald-600 h-2 rounded-full" 
-              style={{ 
-                width: `${(selectedMentor.current_assignments / (selectedMentor.max_assignments || 1)) * 100}%` 
+            <div
+              className="bg-emerald-600 h-2 rounded-full"
+              style={{
+                width: `${(selectedMentor.current_assignments / (selectedMentor.max_assignments || 1)) * 100}%`,
               }}
             />
           </div>
@@ -551,7 +567,9 @@ const MentorMarketplace: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
           <div className="space-y-1">
-            <h2 className="text-xl sm:text-2xl font-bold">Mentor Marketplace</h2>
+            <h2 className="text-xl sm:text-2xl font-bold">
+              Mentor Marketplace
+            </h2>
             <p className="text-sm sm:text-base text-gray-600">
               Find experienced mentors to guide your venture
             </p>
@@ -718,7 +736,8 @@ const MentorMarketplace: React.FC = () => {
                             <div className="flex items-center text-sm text-gray-600 mt-1">
                               <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
                               <span className="truncate">
-                                {formatExperience(mentor.years_of_experience)} experience
+                                {formatExperience(mentor.years_of_experience)}{' '}
+                                experience
                               </span>
                             </div>
                           </div>
@@ -736,7 +755,8 @@ const MentorMarketplace: React.FC = () => {
                     <div className="flex items-center text-sm text-gray-600">
                       <Target className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span className="truncate">
-                        {mentor.current_assignments} of {mentor.max_assignments || '∞'} slots filled
+                        {mentor.current_assignments} of{' '}
+                        {mentor.max_assignments || '∞'} slots filled
                       </span>
                     </div>
 
@@ -818,7 +838,7 @@ const MentorMarketplace: React.FC = () => {
                         <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
                         <span className="truncate">View Profile</span>
                       </Button>
-                      
+
                       {/* Show request button only if not current user's own profile */}
                       {!isCurrentUser && (
                         <Button
@@ -907,15 +927,15 @@ const MentorMarketplace: React.FC = () => {
                 <li className="flex items-start">
                   <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">
-                    <strong>Capacity Limits:</strong> Mentors can support up to 5
-                    ventures simultaneously
+                    <strong>Capacity Limits:</strong> Mentors can support up to
+                    5 ventures simultaneously
                   </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">
-                    <strong>Become a Mentor:</strong> Verified users can apply to
-                    become mentors via Account → Settings → KYC
+                    <strong>Become a Mentor:</strong> Verified users can apply
+                    to become mentors via Account → Settings → KYC
                   </span>
                 </li>
               </ul>
