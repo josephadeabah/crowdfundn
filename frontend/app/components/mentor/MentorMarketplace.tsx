@@ -29,12 +29,9 @@ import {
   Filter,
   Star,
   Users,
-  Briefcase,
-  MessageSquare,
   UserPlus,
   XCircle,
   CheckCircle,
-  Globe,
   Building,
   ExternalLink,
   Calendar,
@@ -43,12 +40,6 @@ import {
   Loader2,
   ChevronRight,
   Eye,
-  User,
-  Mail,
-  MessageCircle,
-  BriefcaseIcon,
-  Clock,
-  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -87,11 +78,25 @@ interface MentorResponse {
   };
 }
 
+interface Campaign {
+  id: number;
+  title: string;
+  status: string;
+  [key: string]: any;
+}
+
 interface ToastState {
   isOpen: boolean;
   title: string;
   description: string;
   type: 'success' | 'error' | 'warning';
+}
+
+interface RequestingState {
+  [mentorId: number]: {
+    loading: boolean;
+    campaignId?: number;
+  };
 }
 
 const MentorMarketplace: React.FC = () => {
@@ -105,22 +110,24 @@ const MentorMarketplace: React.FC = () => {
   const [minExperience, setMinExperience] = useState<number>(0);
   const [requestedMentors, setRequestedMentors] = useState<number[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>(
-    {},
-  );
+  const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>({});
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
   const [toast, setToast] = useState<ToastState>({
     isOpen: false,
     title: '',
     description: '',
     type: 'success',
   });
+  const [requestingState, setRequestingState] = useState<RequestingState>({});
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
   useEffect(() => {
     fetchMentors();
+    fetchCampaigns();
   }, [token]);
 
   const showToast = (
@@ -138,6 +145,33 @@ const MentorMarketplace: React.FC = () => {
 
   const closeToast = () => {
     setToast((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const fetchCampaigns = async () => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/fundraisers/campaigns/my_campaigns`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const activeCampaigns = data.campaigns?.filter((c: Campaign) => c.status === 'active') || [];
+        setCampaigns(activeCampaigns);
+        
+        if (activeCampaigns.length > 0) {
+          setSelectedCampaignId(activeCampaigns[0].id);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching campaigns:', error);
+    }
   };
 
   const fetchMentorExpertise = async (mentorId: number) => {
@@ -223,47 +257,20 @@ const MentorMarketplace: React.FC = () => {
       return;
     }
 
+    if (!selectedCampaignId) {
+      showToast('Error', 'Please select a campaign to assign the mentor to', 'error');
+      return;
+    }
+
+    // Set loading state for this specific mentor
+    setRequestingState(prev => ({
+      ...prev,
+      [mentorId]: { loading: true, campaignId: selectedCampaignId }
+    }));
+
     try {
-      const campaignsRes = await fetch(
-        `${API_BASE_URL}/fundraisers/campaigns/my_campaigns`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!campaignsRes.ok) {
-        throw new Error('Failed to fetch campaigns');
-      }
-
-      const campaignsData = await campaignsRes.json();
-      const activeCampaigns =
-        campaignsData.campaigns?.filter((c: any) => c.status === 'active') ||
-        [];
-
-      if (activeCampaigns.length === 0) {
-        showToast(
-          'No Active Campaigns',
-          'You need an active campaign to request a mentor.',
-          'error',
-        );
-
-        if (confirm('Would you like to create a campaign first?')) {
-          router.push('/campaigns/create');
-        }
-        return;
-      }
-
-      let campaignId: number;
-      if (activeCampaigns.length === 1) {
-        campaignId = activeCampaigns[0].id;
-      } else {
-        campaignId = activeCampaigns[0].id;
-      }
-
       const response = await fetch(
-        `${API_BASE_URL}/mentor/campaigns/${campaignId}/assignments/request_mentor`,
+        `${API_BASE_URL}/mentor/campaigns/${selectedCampaignId}/assignments/request_mentor`,
         {
           method: 'POST',
           headers: {
@@ -272,21 +279,44 @@ const MentorMarketplace: React.FC = () => {
           },
           body: JSON.stringify({
             mentor_id: mentorId,
-            notes: `Mentor request from ${user?.full_name}`,
+            notes: `Mentor request from ${user?.full_name} for campaign ${selectedCampaignId}`,
           }),
         },
       );
 
+      const responseData = await response.json();
+      
       if (response.ok) {
-        setRequestedMentors([...requestedMentors, mentorId]);
-        showToast('Success', 'Mentor request sent successfully');
+        setRequestedMentors(prev => [...prev, mentorId]);
+        showToast('Success', `Mentor request sent successfully for campaign #${selectedCampaignId}`);
+      } else if (response.status === 409) {
+        // Handle conflict - mentor already assigned
+        showToast(
+          'Already Requested',
+          responseData.error || 'This mentor has already been requested for this campaign',
+          'warning'
+        );
+        // Still add to requested mentors since it's already requested
+        if (!requestedMentors.includes(mentorId)) {
+          setRequestedMentors(prev => [...prev, mentorId]);
+        }
+      } else if (response.status === 403) {
+        showToast('Permission Denied', responseData.error || 'You do not have permission to request mentors for this campaign', 'error');
+      } else if (response.status === 422) {
+        showToast('Mentor Unavailable', responseData.error || 'Mentor is not available for new assignments', 'error');
       } else {
-        const error = await response.json();
-        showToast('Error', error.error || 'Failed to request mentor', 'error');
+        showToast('Error', responseData.error || 'Failed to request mentor', 'error');
       }
     } catch (error) {
       console.error('Error requesting mentor:', error);
-      showToast('Error', 'Failed to request mentor', 'error');
+      showToast('Error', 'Failed to request mentor. Please try again.', 'error');
+    } finally {
+      // Clear loading state
+      setRequestingState(prev => {
+        const newState = { ...prev };
+        delete newState[mentorId];
+        return newState;
+      });
     }
   };
 
@@ -413,6 +443,71 @@ const MentorMarketplace: React.FC = () => {
     return user?.id === mentor.user_id;
   };
 
+  // Campaign Selection Modal
+  const CampaignSelectionModal = () => {
+    if (campaigns.length === 0) return null;
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Select Campaign</h3>
+        <p className="text-sm text-gray-600">
+          Choose which active campaign to assign this mentor to:
+        </p>
+        
+        <div className="space-y-2">
+          {campaigns.map((campaign) => (
+            <div
+              key={campaign.id}
+              className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                selectedCampaignId === campaign.id
+                  ? 'border-emerald-500 bg-emerald-50'
+                  : 'border-gray-200 hover:bg-gray-50'
+              }`}
+              onClick={() => setSelectedCampaignId(campaign.id)}
+            >
+              <div className="flex items-center">
+                <div className={`h-3 w-3 rounded-full mr-3 ${
+                  selectedCampaignId === campaign.id ? 'bg-emerald-500' : 'bg-gray-300'
+                }`} />
+                <div className="flex-1">
+                  <p className="font-medium text-sm">{campaign.title}</p>
+                  <p className="text-xs text-gray-500">ID: {campaign.id}</p>
+                </div>
+                {selectedCampaignId === campaign.id && (
+                  <CheckCircle className="h-5 w-5 text-emerald-500" />
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="pt-4 border-t flex justify-end space-x-3">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setSelectedMentor(null);
+              setIsProfileModalOpen(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="bg-emerald-600 hover:bg-emerald-700"
+            onClick={() => {
+              if (selectedMentor) {
+                requestMentor(selectedMentor.id);
+                setIsProfileModalOpen(false);
+              }
+            }}
+            disabled={!selectedCampaignId}
+          >
+            Request Mentor
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
   // Mentor Profile Modal Content
   const MentorProfileModal = () => {
     if (!selectedMentor) return null;
@@ -518,24 +613,51 @@ const MentorMarketplace: React.FC = () => {
           </div>
         )}
 
+        {/* Campaign Selection */}
+        {!isCurrentUser && campaigns.length > 0 && (
+          <div className="border-t pt-4">
+            <h4 className="font-semibold mb-3">Assign to Campaign</h4>
+            <Select
+              value={selectedCampaignId?.toString() || ''}
+              onValueChange={(value) => setSelectedCampaignId(parseInt(value))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a campaign" />
+              </SelectTrigger>
+              <SelectContent>
+                {campaigns.map((campaign) => (
+                  <SelectItem key={campaign.id} value={campaign.id.toString()}>
+                    {campaign.title} (ID: {campaign.id})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         {/* Modal Actions */}
         <div className="border-t pt-4 flex justify-end space-x-3">
           <Button
             variant="outline"
-            onClick={() => setIsProfileModalOpen(false)}
+            onClick={() => {
+              setIsProfileModalOpen(false);
+              setSelectedMentor(null);
+            }}
           >
             Close
           </Button>
-          {!isCurrentUser && (
+          {!isCurrentUser && campaigns.length > 0 && (
             <Button
               className="bg-emerald-600 hover:bg-emerald-700"
-              onClick={() => {
-                setIsProfileModalOpen(false);
-                requestMentor(selectedMentor.id);
-              }}
-              disabled={requestedMentors.includes(selectedMentor.id)}
+              onClick={() => requestMentor(selectedMentor.id)}
+              disabled={requestedMentors.includes(selectedMentor.id) || !selectedCampaignId || requestingState[selectedMentor.id]?.loading}
             >
-              {requestedMentors.includes(selectedMentor.id) ? (
+              {requestingState[selectedMentor.id]?.loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Requesting...
+                </>
+              ) : requestedMentors.includes(selectedMentor.id) ? (
                 <>
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Request Sent
@@ -591,6 +713,42 @@ const MentorMarketplace: React.FC = () => {
             </Button>
           </div>
         </div>
+
+        {/* Campaign Info Card */}
+        {campaigns.length > 0 && (
+          <Card className="border shadow-sm bg-emerald-50 border-emerald-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="bg-emerald-100 p-2 rounded-lg mr-3">
+                    <Award className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-emerald-900">
+                      Active Campaign{ campaigns.length > 1 ? 's' : '' }
+                    </h3>
+                    <p className="text-sm text-emerald-700">
+                      {campaigns.length > 1 
+                        ? `Select a campaign to assign mentors to. Currently viewing ${campaigns[0].title}`
+                        : `Assign mentors to: ${campaigns[0].title}`
+                      }
+                    </p>
+                  </div>
+                </div>
+                {campaigns.length > 1 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-emerald-700 border-emerald-300 hover:bg-emerald-100"
+                    onClick={() => setSelectedCampaignId(campaigns[0].id)}
+                  >
+                    Change Campaign
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Search and Filters */}
         <Card className="border shadow-sm">
@@ -712,6 +870,7 @@ const MentorMarketplace: React.FC = () => {
               mentor.current_assignments < mentor.max_assignments;
             const isCurrentUser = isCurrentUserMentor(mentor);
             const mentorExpertise = expertiseMap[mentor.id] || [];
+            const isRequesting = requestingState[mentor.id]?.loading;
 
             return (
               <Card
@@ -828,7 +987,6 @@ const MentorMarketplace: React.FC = () => {
                     )}
 
                     {/* Actions */}
-                    {/* Actions */}
                     <div className="flex flex-row gap-2 pt-4 border-t mt-auto min-h-[36px]">
                       <Button
                         variant="outline"
@@ -841,14 +999,19 @@ const MentorMarketplace: React.FC = () => {
                       </Button>
 
                       {/* Show request button only if not current user's own profile */}
-                      {!isCurrentUser && (
+                      {!isCurrentUser && campaigns.length > 0 && (
                         <Button
                           size="sm"
                           className="flex-1 h-9 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 min-w-0 basis-1/2 flex items-center justify-center"
-                          disabled={isRequested || !isMentorAvailable}
+                          disabled={isRequested || !isMentorAvailable || !selectedCampaignId || isRequesting}
                           onClick={() => requestMentor(mentor.id)}
                         >
-                          {isRequested ? (
+                          {isRequesting ? (
+                            <>
+                              <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0 animate-spin" />
+                              <span className="truncate">Requesting...</span>
+                            </>
+                          ) : isRequested ? (
                             <>
                               <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
                               <span className="truncate">Requested</span>
@@ -864,6 +1027,26 @@ const MentorMarketplace: React.FC = () => {
                               <span className="truncate">Request</span>
                             </>
                           )}
+                        </Button>
+                      )}
+                      
+                      {/* No campaigns message */}
+                      {!isCurrentUser && campaigns.length === 0 && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 h-9 text-xs sm:text-sm min-w-0 basis-1/2 flex items-center justify-center"
+                          onClick={() => {
+                            showToast(
+                              'No Active Campaigns',
+                              'You need an active campaign to request a mentor. Create a campaign first.',
+                              'error'
+                            );
+                            router.push('/campaigns/create');
+                          }}
+                        >
+                          <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                          <span className="truncate">Create Campaign First</span>
                         </Button>
                       )}
                     </div>
@@ -964,7 +1147,13 @@ const MentorMarketplace: React.FC = () => {
         }}
         size="large"
       >
-        {selectedMentor && <MentorProfileModal />}
+        {selectedMentor && (
+          campaigns.length > 1 ? (
+            <CampaignSelectionModal />
+          ) : (
+            <MentorProfileModal />
+          )
+        )}
       </Modal>
 
       {/* Toast Component */}
