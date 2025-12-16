@@ -85,12 +85,14 @@ const MentorMarketplace: React.FC = () => {
 
     try {
       setLoading(true);
-      
+
       // Fetch all available mentors
       const params = new URLSearchParams();
-      if (selectedExpertise !== 'all') params.append('expertise', selectedExpertise);
+      if (selectedExpertise !== 'all')
+        params.append('expertise', selectedExpertise);
       if (minRating > 0) params.append('min_rating', minRating.toString());
-      if (minExperience > 0) params.append('min_experience', minExperience.toString());
+      if (minExperience > 0)
+        params.append('min_experience', minExperience.toString());
 
       const mentorsRes = await fetch(
         `${API_BASE_URL}/mentor/mentors?${params.toString()}`,
@@ -157,9 +159,9 @@ const MentorMarketplace: React.FC = () => {
       }
 
       const campaignsData = await campaignsRes.json();
-      const activeCampaigns = campaignsData.campaigns?.filter(
-        (c: any) => c.status === 'active'
-      ) || [];
+      const activeCampaigns =
+        campaignsData.campaigns?.filter((c: any) => c.status === 'active') ||
+        [];
 
       if (activeCampaigns.length === 0) {
         toast({
@@ -167,7 +169,7 @@ const MentorMarketplace: React.FC = () => {
           description: 'You need an active campaign to request a mentor.',
           variant: 'destructive',
         });
-        
+
         // Offer to create a campaign
         if (confirm('Would you like to create a campaign first?')) {
           router.push('/campaigns/create');
@@ -568,25 +570,29 @@ const MentorMarketplace: React.FC = () => {
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span>
-                  <strong>Request a Mentor:</strong> Founders with active campaigns can request mentors
+                  <strong>Request a Mentor:</strong> Founders with active
+                  campaigns can request mentors
                 </span>
               </li>
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span>
-                  <strong>Mentor Acceptance:</strong> Mentors review requests and choose which ventures to support
+                  <strong>Mentor Acceptance:</strong> Mentors review requests
+                  and choose which ventures to support
                 </span>
               </li>
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span>
-                  <strong>Capacity Limits:</strong> Mentors can support up to 5 ventures simultaneously
+                  <strong>Capacity Limits:</strong> Mentors can support up to 5
+                  ventures simultaneously
                 </span>
               </li>
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span>
-                  <strong>Become a Mentor:</strong> Verified users can apply to become mentors via Account → Settings → KYC
+                  <strong>Become a Mentor:</strong> Verified users can apply to
+                  become mentors via Account → Settings → KYC
                 </span>
               </li>
             </ul>

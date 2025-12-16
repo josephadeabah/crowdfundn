@@ -279,7 +279,7 @@ const ProfileTabs = () => {
           description: 'Find and connect with mentors for your campaigns.',
           badge: 'New',
           badgeColor: 'bg-green-100 text-green-800',
-        }
+        },
       ],
     },
     {
