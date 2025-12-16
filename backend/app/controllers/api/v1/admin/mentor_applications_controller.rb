@@ -101,18 +101,18 @@ module Api
               
               application.update!(mentor: mentor)
               
-              # Send notification to applicant
-            #   Notification.create(
-            #     user: application.user,
-            #     title: 'Mentor Application Approved',
-            #     message: 'Congratulations! Your mentor application has been approved. You can now access your mentor dashboard.',
-            #     notification_type: 'mentor_application_approved',
-            #     metadata: {
-            #       application_id: application.id,
-            #       mentor_id: mentor.id
-            #     }
-            #   )
-            # end
+              # Send notification to applicant (commented out for now)
+              # Notification.create(
+              #   user: application.user,
+              #   title: 'Mentor Application Approved',
+              #   message: 'Congratulations! Your mentor application has been approved. You can now access your mentor dashboard.',
+              #   notification_type: 'mentor_application_approved',
+              #   metadata: {
+              #     application_id: application.id,
+              #     mentor_id: mentor.id
+              #   }
+              # )
+            end  # End of transaction block
             
             render json: {
               application: application.as_json,
@@ -132,7 +132,6 @@ module Api
           end
         end
         
-        # Update other methods that use reviewed_by
         def reject
           application = MentorApplication.find(params[:id])
           
@@ -142,7 +141,7 @@ module Api
             reviewed_by_id: @current_user.id,  # CHANGED: Use reviewed_by_id
             review_notes: params[:review_notes]
           )
-            # Send notification to applicant
+            # Send notification to applicant (commented out for now)
             # Notification.create(
             #   user: application.user,
             #   title: 'Mentor Application Update',
@@ -166,7 +165,7 @@ module Api
         def request_additional_info
           application = MentorApplication.find(params[:id])
           
-          # Send notification to applicant requesting more info
+          # Send notification to applicant requesting more info (commented out)
           # Notification.create(
           #   user: application.user,
           #   title: 'Mentor Application - Additional Info Needed',
@@ -195,7 +194,7 @@ module Api
             .group_by_month(:created_at, format: '%b %Y')
             .count
             
-          # Expertise distribution - FIXED typo: industry_experise -> industry_expertise
+          # Expertise distribution
           expertise_distribution = MentorApplication
             .where.not(industry_expertise: nil)
             .pluck(:industry_expertise)
