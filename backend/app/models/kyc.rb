@@ -21,9 +21,6 @@ class Kyc < ApplicationRecord
     kyc_type == 'mentor'
   end
   
-  # Update the after_create callback
-  after_create :process_mentor_application
-  
   # KYC types
   enum :kyc_type, {
     investor: 'investor',
@@ -90,6 +87,7 @@ class Kyc < ApplicationRecord
     (issuer_signature_data.present? && new_record?)
   }
   after_create :create_required_documents
+  after_create :process_mentor_application
   after_update :bust_kyc_stats_cache_if_status_changed, if: :saved_change_to_status?
 
   # Scopes
@@ -364,15 +362,27 @@ class Kyc < ApplicationRecord
   end
 
   def process_mentor_application
-    # If this is a mentor KYC, ensure the mentor application has a user
-    if mentor? && mentor_application.present?
-      # Set user if not already set
-      if mentor_application.user.nil?
-        mentor_application.update_column(:user_id, user_id)
-      end
-      
-      # Submit for review
+    # Only process if this is a mentor KYC
+    return unless mentor? && mentor_application.present?
+    
+    # Ensure the user is set
+    if mentor_application.user.nil?
+      mentor_application.update_column(:user_id, user_id)
+    end
+    
+    # Submit for review automatically
+    if mentor_application.draft? && mentor_application.user.present?
       mentor_application.submit_for_review
+      
+      # Auto-approve for testing (remove in production)
+      if Rails.env.development? || Rails.env.test?
+        mentor_application.update!(
+          status: 'approved',
+          reviewed_at: Time.current,
+          review_notes: 'Auto-approved in development'
+        )
+        mentor_application.create_mentor_profile
+      end
     end
   end
 end

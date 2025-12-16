@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       # ========== MENTOR ROUTES ==========
       namespace :mentor do
+        # Mentor applications
         resources :applications, only: [:create, :update, :show] do
           collection do
             get :my_applications
@@ -19,10 +20,13 @@ Rails.application.routes.draw do
           end
         end
         
-        resources :assignments, only: [] do
+        # Mentor assignments - FIXED VERSION
+        # Add at least one standard REST action (like :show) for member routes to work
+        resources :assignments, only: [:show] do
           collection do
             get :my_mentor_assignments
           end
+          
           member do
             post :approve_assignment
             post :complete_assignment
@@ -30,6 +34,7 @@ Rails.application.routes.draw do
           end
         end
         
+        # Mentors
         resources :mentors, only: [:index, :show] do
           collection do
             get :my_mentor_profile
@@ -135,6 +140,8 @@ Rails.application.routes.draw do
         
         resources :profiles, only: [:update]
         resources :roles, only: [:create]
+        
+        # Authentication routes
         post 'auth/signup', to: 'auth#signup'
         post 'auth/confirm_email', to: 'auth#confirm_email', as: :confirm_email
         post 'auth/login', to: 'auth#login'

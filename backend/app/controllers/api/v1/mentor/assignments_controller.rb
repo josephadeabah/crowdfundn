@@ -25,6 +25,44 @@ module Api
             can_request_mentor: can_request_mentor?
           }, status: :ok
         end
+
+        def show
+          @assignment = MentorAssignment.find(params[:id])
+          
+          # Check authorization
+          unless @assignment && (
+            @assignment.entrepreneur == @current_user || 
+            @assignment.mentor.user == @current_user ||
+            @current_user.admin?
+          )
+            render json: { error: 'Unauthorized' }, status: :unauthorized
+            return
+          end
+          
+          render json: {
+            assignment: {
+              id: @assignment.id,
+              status: @assignment.status,
+              campaign: {
+                id: @assignment.campaign.id,
+                title: @assignment.campaign.title,
+                fundraiser_name: @assignment.campaign.fundraiser.full_name
+              },
+              mentor: @assignment.mentor.as_json(include_user: true),
+              entrepreneur: {
+                id: @assignment.entrepreneur.id,
+                full_name: @assignment.entrepreneur.full_name
+              },
+              entrepreneur_notes: @assignment.entrepreneur_notes,
+              mentor_notes: @assignment.mentor_notes,
+              started_at: @assignment.started_at,
+              completed_at: @assignment.completed_at,
+              rating: @assignment.rating,
+              feedback: @assignment.feedback,
+              cancellation_reason: @assignment.cancellation_reason
+            }
+          }, status: :ok
+        end
         
         def available_mentors
           # Get mentors filtered by campaign needs
