@@ -110,11 +110,15 @@ const MentorMarketplace: React.FC = () => {
   const [minExperience, setMinExperience] = useState<number>(0);
   const [requestedMentors, setRequestedMentors] = useState<number[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>({});
+  const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>(
+    {},
+  );
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(
+    null,
+  );
   const [toast, setToast] = useState<ToastState>({
     isOpen: false,
     title: '',
@@ -162,9 +166,10 @@ const MentorMarketplace: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const activeCampaigns = data.campaigns?.filter((c: Campaign) => c.status === 'active') || [];
+        const activeCampaigns =
+          data.campaigns?.filter((c: Campaign) => c.status === 'active') || [];
         setCampaigns(activeCampaigns);
-        
+
         if (activeCampaigns.length > 0) {
           setSelectedCampaignId(activeCampaigns[0].id);
         }
@@ -258,14 +263,18 @@ const MentorMarketplace: React.FC = () => {
     }
 
     if (!selectedCampaignId) {
-      showToast('Error', 'Please select a campaign to assign the mentor to', 'error');
+      showToast(
+        'Error',
+        'Please select a campaign to assign the mentor to',
+        'error',
+      );
       return;
     }
 
     // Set loading state for this specific mentor
-    setRequestingState(prev => ({
+    setRequestingState((prev) => ({
       ...prev,
-      [mentorId]: { loading: true, campaignId: selectedCampaignId }
+      [mentorId]: { loading: true, campaignId: selectedCampaignId },
     }));
 
     try {
@@ -285,34 +294,55 @@ const MentorMarketplace: React.FC = () => {
       );
 
       const responseData = await response.json();
-      
+
       if (response.ok) {
-        setRequestedMentors(prev => [...prev, mentorId]);
-        showToast('Success', `Mentor request sent successfully for campaign #${selectedCampaignId}`);
+        setRequestedMentors((prev) => [...prev, mentorId]);
+        showToast(
+          'Success',
+          `Mentor request sent successfully for campaign #${selectedCampaignId}`,
+        );
       } else if (response.status === 409) {
         // Handle conflict - mentor already assigned
         showToast(
           'Already Requested',
-          responseData.error || 'This mentor has already been requested for this campaign',
-          'warning'
+          responseData.error ||
+            'This mentor has already been requested for this campaign',
+          'warning',
         );
         // Still add to requested mentors since it's already requested
         if (!requestedMentors.includes(mentorId)) {
-          setRequestedMentors(prev => [...prev, mentorId]);
+          setRequestedMentors((prev) => [...prev, mentorId]);
         }
       } else if (response.status === 403) {
-        showToast('Permission Denied', responseData.error || 'You do not have permission to request mentors for this campaign', 'error');
+        showToast(
+          'Permission Denied',
+          responseData.error ||
+            'You do not have permission to request mentors for this campaign',
+          'error',
+        );
       } else if (response.status === 422) {
-        showToast('Mentor Unavailable', responseData.error || 'Mentor is not available for new assignments', 'error');
+        showToast(
+          'Mentor Unavailable',
+          responseData.error || 'Mentor is not available for new assignments',
+          'error',
+        );
       } else {
-        showToast('Error', responseData.error || 'Failed to request mentor', 'error');
+        showToast(
+          'Error',
+          responseData.error || 'Failed to request mentor',
+          'error',
+        );
       }
     } catch (error) {
       console.error('Error requesting mentor:', error);
-      showToast('Error', 'Failed to request mentor. Please try again.', 'error');
+      showToast(
+        'Error',
+        'Failed to request mentor. Please try again.',
+        'error',
+      );
     } finally {
       // Clear loading state
-      setRequestingState(prev => {
+      setRequestingState((prev) => {
         const newState = { ...prev };
         delete newState[mentorId];
         return newState;
@@ -453,7 +483,7 @@ const MentorMarketplace: React.FC = () => {
         <p className="text-sm text-gray-600">
           Choose which active campaign to assign this mentor to:
         </p>
-        
+
         <div className="space-y-2">
           {campaigns.map((campaign) => (
             <div
@@ -466,9 +496,13 @@ const MentorMarketplace: React.FC = () => {
               onClick={() => setSelectedCampaignId(campaign.id)}
             >
               <div className="flex items-center">
-                <div className={`h-3 w-3 rounded-full mr-3 ${
-                  selectedCampaignId === campaign.id ? 'bg-emerald-500' : 'bg-gray-300'
-                }`} />
+                <div
+                  className={`h-3 w-3 rounded-full mr-3 ${
+                    selectedCampaignId === campaign.id
+                      ? 'bg-emerald-500'
+                      : 'bg-gray-300'
+                  }`}
+                />
                 <div className="flex-1">
                   <p className="font-medium text-sm">{campaign.title}</p>
                   <p className="text-xs text-gray-500">ID: {campaign.id}</p>
@@ -650,7 +684,11 @@ const MentorMarketplace: React.FC = () => {
             <Button
               className="bg-emerald-600 hover:bg-emerald-700"
               onClick={() => requestMentor(selectedMentor.id)}
-              disabled={requestedMentors.includes(selectedMentor.id) || !selectedCampaignId || requestingState[selectedMentor.id]?.loading}
+              disabled={
+                requestedMentors.includes(selectedMentor.id) ||
+                !selectedCampaignId ||
+                requestingState[selectedMentor.id]?.loading
+              }
             >
               {requestingState[selectedMentor.id]?.loading ? (
                 <>
@@ -725,13 +763,12 @@ const MentorMarketplace: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-emerald-900">
-                      Active Campaign{ campaigns.length > 1 ? 's' : '' }
+                      Active Campaign{campaigns.length > 1 ? 's' : ''}
                     </h3>
                     <p className="text-sm text-emerald-700">
-                      {campaigns.length > 1 
+                      {campaigns.length > 1
                         ? `Select a campaign to assign mentors to. Currently viewing ${campaigns[0].title}`
-                        : `Assign mentors to: ${campaigns[0].title}`
-                      }
+                        : `Assign mentors to: ${campaigns[0].title}`}
                     </p>
                   </div>
                 </div>
@@ -1003,7 +1040,12 @@ const MentorMarketplace: React.FC = () => {
                         <Button
                           size="sm"
                           className="flex-1 h-9 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 min-w-0 basis-1/2 flex items-center justify-center"
-                          disabled={isRequested || !isMentorAvailable || !selectedCampaignId || isRequesting}
+                          disabled={
+                            isRequested ||
+                            !isMentorAvailable ||
+                            !selectedCampaignId ||
+                            isRequesting
+                          }
                           onClick={() => requestMentor(mentor.id)}
                         >
                           {isRequesting ? (
@@ -1029,7 +1071,7 @@ const MentorMarketplace: React.FC = () => {
                           )}
                         </Button>
                       )}
-                      
+
                       {/* No campaigns message */}
                       {!isCurrentUser && campaigns.length === 0 && (
                         <Button
@@ -1040,13 +1082,15 @@ const MentorMarketplace: React.FC = () => {
                             showToast(
                               'No Active Campaigns',
                               'You need an active campaign to request a mentor. Create a campaign first.',
-                              'error'
+                              'error',
                             );
                             router.push('/campaigns/create');
                           }}
                         >
                           <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
-                          <span className="truncate">Create Campaign First</span>
+                          <span className="truncate">
+                            Create Campaign First
+                          </span>
                         </Button>
                       )}
                     </div>
@@ -1147,13 +1191,12 @@ const MentorMarketplace: React.FC = () => {
         }}
         size="large"
       >
-        {selectedMentor && (
-          campaigns.length > 1 ? (
+        {selectedMentor &&
+          (campaigns.length > 1 ? (
             <CampaignSelectionModal />
           ) : (
             <MentorProfileModal />
-          )
-        )}
+          ))}
       </Modal>
 
       {/* Toast Component */}
