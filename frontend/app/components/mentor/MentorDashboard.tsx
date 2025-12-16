@@ -28,7 +28,9 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import Modal from '@/app/components/modal/Modal';
-import ToastComponent from '../toast/Toast';
+import ToastComponent from '@/app/components/toast/Toast';
+import EditMentorProfile from '@/app/components/mentor/EditMentorProfile';
+import ViewAvailableRequests from './ViewAvailableRequests';
 
 interface MentorDashboardProps {
   mentorId?: number;
@@ -40,7 +42,7 @@ interface MentorData {
   mentor?: {
     id: number;
     professional_title: string;
-    rating: number | string; // Rating can be string "0.0"
+    rating: number | string;
     current_assignments: number;
     max_assignments: number;
     status: string;
@@ -59,7 +61,6 @@ interface MentorData {
     submitted_at: string;
     professional_title: string;
     years_of_experience: number;
-    // Add other application properties if needed
   };
   assignments?: {
     current: number;
@@ -85,39 +86,33 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const { user, token } = useAuth();
   const [dashboardData, setDashboardData] = useState<MentorData | null>(null);
   const [loading, setLoading] = useState(true);
-
+  
   // Modal states
-  const [isMaxAssignmentsModalOpen, setIsMaxAssignmentsModalOpen] =
-    useState(false);
+  const [isMaxAssignmentsModalOpen, setIsMaxAssignmentsModalOpen] = useState(false);
   const [newMaxAssignments, setNewMaxAssignments] = useState('');
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [isViewRequestsModalOpen, setIsViewRequestsModalOpen] = useState(false);
-  const [isReviewRequestsModalOpen, setIsReviewRequestsModalOpen] =
-    useState(false);
-
+  const [isReviewRequestsModalOpen, setIsReviewRequestsModalOpen] = useState(false);
+  
   // Toast states
   const [toast, setToast] = useState({
     isOpen: false,
     title: '',
     description: '',
-    type: 'success' as 'success' | 'error' | 'warning',
+    type: 'success' as 'success' | 'error' | 'warning'
   });
 
-  const showToast = (
-    title: string,
-    description: string,
-    type: 'success' | 'error' | 'warning' = 'success',
-  ) => {
+  const showToast = (title: string, description: string, type: 'success' | 'error' | 'warning' = 'success') => {
     setToast({
       isOpen: true,
       title,
       description,
-      type,
+      type
     });
   };
 
   const closeToast = () => {
-    setToast((prev) => ({ ...prev, isOpen: false }));
+    setToast(prev => ({ ...prev, isOpen: false }));
   };
 
   useEffect(() => {
@@ -183,11 +178,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         fetchDashboardData();
       } else {
         const error = await response.json();
-        showToast(
-          'Error',
-          error.error || 'Failed to update maximum assignments',
-          'error',
-        );
+        showToast('Error', error.error || 'Failed to update maximum assignments', 'error');
       }
     } catch (error) {
       console.error('Error updating max assignments:', error);
@@ -217,18 +208,11 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
       );
 
       if (response.ok) {
-        showToast(
-          'Success',
-          `Status updated to ${newStatus === 'approved' ? 'Available' : 'Unavailable'}`,
-        );
+        showToast('Success', `Status updated to ${newStatus === 'approved' ? 'Available' : 'Unavailable'}`);
         fetchDashboardData();
       } else {
         const error = await response.json();
-        showToast(
-          'Error',
-          error.error || 'Failed to update availability',
-          'error',
-        );
+        showToast('Error', error.error || 'Failed to update availability', 'error');
       }
     } catch (error) {
       console.error('Error toggling availability:', error);
@@ -244,10 +228,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         Set how many ventures you can mentor at once
       </p>
       <div className="space-y-2">
-        <label
-          htmlFor="maxAssignments"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="maxAssignments" className="block text-sm font-medium text-gray-700">
           Maximum Concurrent Assignments
         </label>
         <input
@@ -280,69 +261,12 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     </div>
   );
 
-  // Modal content for edit profile
-  const EditProfileModalContent = () => (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Edit Profile</h3>
-      <p className="text-gray-600 text-sm">
-        This would normally load your profile editing form. For now, you can
-        navigate to the full profile editor.
-      </p>
-      <div className="flex justify-end space-x-3 pt-4">
-        <Button
-          variant="outline"
-          onClick={() => setIsEditProfileModalOpen(false)}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            setIsEditProfileModalOpen(false);
-            window.location.href = '/mentor/profile/edit';
-          }}
-          className="bg-emerald-600 text-white hover:bg-emerald-700"
-        >
-          Go to Profile Editor
-        </Button>
-      </div>
-    </div>
-  );
-
-  // Modal content for viewing available requests
-  const ViewRequestsModalContent = () => (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Available Requests</h3>
-      <p className="text-gray-600 text-sm">
-        This would normally load available mentorship requests. For now, you can
-        navigate to the full requests page.
-      </p>
-      <div className="flex justify-end space-x-3 pt-4">
-        <Button
-          variant="outline"
-          onClick={() => setIsViewRequestsModalOpen(false)}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            setIsViewRequestsModalOpen(false);
-            window.location.href = '/mentor/requests';
-          }}
-          className="bg-emerald-600 text-white hover:bg-emerald-700"
-        >
-          View All Requests
-        </Button>
-      </div>
-    </div>
-  );
-
   // Modal content for reviewing requests
   const ReviewRequestsModalContent = () => (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Review Requests</h3>
       <p className="text-gray-600 text-sm">
-        This would normally load your pending mentorship requests. For now, you
-        can navigate to the full requests page.
+        This would normally load your pending mentorship requests. For now, you can navigate to the full requests page.
       </p>
       <div className="flex justify-end space-x-3 pt-4">
         <Button
@@ -570,8 +494,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                   </div>
                   <Progress
                     value={
-                      ((assignments.current || 0) / (assignments.max || 1)) *
-                      100
+                      ((assignments.current || 0) / (assignments.max || 1)) * 100
                     }
                     className="h-2"
                   />
@@ -611,9 +534,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      Completed
-                    </p>
+                    <p className="text-sm font-medium text-gray-600">Completed</p>
                     <h3 className="text-2xl font-bold mt-2">
                       {completedAssignmentsCount}
                     </h3>
@@ -780,11 +701,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {expertise.map((tag: string, index: number) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="capitalize"
-                    >
+                    <Badge key={index} variant="secondary" className="capitalize">
                       {tag}
                     </Badge>
                   ))}
@@ -820,9 +737,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setNewMaxAssignments(
-                          mentor.max_assignments?.toString() || '5',
-                        );
+                        setNewMaxAssignments(mentor.max_assignments?.toString() || '5');
                         setIsMaxAssignmentsModalOpen(true);
                       }}
                     >
@@ -841,16 +756,10 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     </p>
                   </div>
                   <Button
-                    variant={
-                      mentor.status === 'approved' ? 'default' : 'outline'
-                    }
+                    variant={mentor.status === 'approved' ? 'default' : 'outline'}
                     size="sm"
                     onClick={toggleAvailability}
-                    className={
-                      mentor.status === 'approved'
-                        ? 'bg-emerald-700 text-white hover:bg-emerald-800'
-                        : 'bg-white text-gray-800 hover:bg-gray-50'
-                    }
+                    className="bg-emerald-700 text-white hover:bg-emerald-800"
                   >
                     {mentor.status === 'approved'
                       ? 'Set as Unavailable'
@@ -877,17 +786,31 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         <Modal
           isOpen={isEditProfileModalOpen}
           onClose={() => setIsEditProfileModalOpen(false)}
-          size="large"
+          size="xlarge"
         >
-          <EditProfileModalContent />
+          <EditMentorProfile 
+            mentor={mentor}
+            expertise={expertise}
+            onSuccess={() => {
+              setIsEditProfileModalOpen(false);
+              fetchDashboardData();
+            }}
+            onCancel={() => setIsEditProfileModalOpen(false)}
+          />
         </Modal>
 
         <Modal
           isOpen={isViewRequestsModalOpen}
           onClose={() => setIsViewRequestsModalOpen(false)}
-          size="large"
+          size="huge"
         >
-          <ViewRequestsModalContent />
+          <ViewAvailableRequests 
+            onSuccess={() => {
+              setIsViewRequestsModalOpen(false);
+              fetchDashboardData();
+            }}
+            onCancel={() => setIsViewRequestsModalOpen(false)}
+          />
         </Modal>
 
         <Modal
