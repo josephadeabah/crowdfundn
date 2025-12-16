@@ -821,7 +821,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
             Close
           </Button>
           <Button
-            onClick={() => window.open('/mentor/marketplace', '_blank')}
+            onClick={() => window.open('/account#Find%20Mentor', '')}
             className="bg-emerald-600 hover:bg-emerald-700"
           >
             Browse Mentor Marketplace
