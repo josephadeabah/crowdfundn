@@ -1,4 +1,4 @@
-// app/components/fundraising/MentorTab.tsx
+// app/components/mentor/MentorMarketplace.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -30,14 +30,16 @@ import {
   Star,
   Users,
   Briefcase,
-  Clock,
-  CheckCircle,
   MessageSquare,
   UserPlus,
   XCircle,
+  CheckCircle,
+  Globe,
+  Building,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useToast } from '@/app/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 interface Mentor {
   id: number;
@@ -59,69 +61,36 @@ interface Mentor {
   linkedin_profile?: string;
 }
 
-interface MentorAssignment {
-  id: number;
-  status: 'pending' | 'active' | 'completed' | 'cancelled';
-  mentor: Mentor;
-  started_at?: string;
-  completed_at?: string;
-  rating?: number;
-  feedback?: string;
-}
-
-interface MentorTabProps {
-  campaignId: number;
-}
-
-const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
+const MentorMarketplace: React.FC = () => {
   const { user, token } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
   const [mentors, setMentors] = useState<Mentor[]>([]);
-  const [assignments, setAssignments] = useState<MentorAssignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedExpertise, setSelectedExpertise] = useState<string>('');
+  const [selectedExpertise, setSelectedExpertise] = useState<string>('all');
   const [minRating, setMinRating] = useState<number>(0);
   const [minExperience, setMinExperience] = useState<number>(0);
   const [expertiseTags, setExpertiseTags] = useState<string[]>([]);
-  const [canRequestMentor, setCanRequestMentor] = useState(false);
+  const [requestedMentors, setRequestedMentors] = useState<number[]>([]);
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
   useEffect(() => {
-    fetchMentorData();
-  }, [campaignId, token]);
+    fetchMentors();
+  }, [token]);
 
-  const fetchMentorData = async () => {
+  const fetchMentors = async () => {
     if (!token) return;
 
     try {
       setLoading(true);
-
-      // Fetch current assignments
-      const assignmentsRes = await fetch(
-        `${API_BASE_URL}/mentor/campaigns/${campaignId}/assignments`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (assignmentsRes.ok) {
-        const assignmentsData = await assignmentsRes.json();
-        setAssignments(assignmentsData.assignments || []);
-        setCanRequestMentor(assignmentsData.can_request_mentor || false);
-      } else {
-        console.error('Failed to fetch assignments:', assignmentsRes.status);
-      }
-
-      // Fetch available mentors with filters - Use the general mentors endpoint
+      
+      // Fetch all available mentors
       const params = new URLSearchParams();
-      if (selectedExpertise) params.append('expertise', selectedExpertise);
+      if (selectedExpertise !== 'all') params.append('expertise', selectedExpertise);
       if (minRating > 0) params.append('min_rating', minRating.toString());
-      if (minExperience > 0)
-        params.append('min_experience', minExperience.toString());
+      if (minExperience > 0) params.append('min_experience', minExperience.toString());
 
       const mentorsRes = await fetch(
         `${API_BASE_URL}/mentor/mentors?${params.toString()}`,
@@ -144,12 +113,17 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
         setExpertiseTags(Array.from(allTags));
       } else {
         console.error('Failed to fetch mentors:', mentorsRes.status);
+        toast({
+          title: 'Error',
+          description: 'Failed to load mentors',
+          variant: 'destructive',
+        });
       }
     } catch (error) {
-      console.error('Error fetching mentor data:', error);
+      console.error('Error fetching mentors:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load mentor data',
+        description: 'Failed to load mentors',
         variant: 'destructive',
       });
     } finally {
@@ -168,6 +142,49 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
     }
 
     try {
+      // First, check if user has campaigns
+      const campaignsRes = await fetch(
+        `${API_BASE_URL}/fundraisers/campaigns/my_campaigns`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!campaignsRes.ok) {
+        throw new Error('Failed to fetch campaigns');
+      }
+
+      const campaignsData = await campaignsRes.json();
+      const activeCampaigns = campaignsData.campaigns?.filter(
+        (c: any) => c.status === 'active'
+      ) || [];
+
+      if (activeCampaigns.length === 0) {
+        toast({
+          title: 'No Active Campaigns',
+          description: 'You need an active campaign to request a mentor.',
+          variant: 'destructive',
+        });
+        
+        // Offer to create a campaign
+        if (confirm('Would you like to create a campaign first?')) {
+          router.push('/campaigns/create');
+        }
+        return;
+      }
+
+      // If multiple campaigns, let user choose
+      let campaignId: number;
+      if (activeCampaigns.length === 1) {
+        campaignId = activeCampaigns[0].id;
+      } else {
+        // In a real app, you'd show a modal to choose campaign
+        // For now, use the first active campaign
+        campaignId = activeCampaigns[0].id;
+      }
+
       const response = await fetch(
         `${API_BASE_URL}/mentor/campaigns/${campaignId}/assignments/request_mentor`,
         {
@@ -178,17 +195,17 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
           },
           body: JSON.stringify({
             mentor_id: mentorId,
-            notes: `Mentor request for campaign ${campaignId}`,
+            notes: `Mentor request from ${user?.full_name}`,
           }),
         },
       );
 
       if (response.ok) {
+        setRequestedMentors([...requestedMentors, mentorId]);
         toast({
           title: 'Success',
           description: 'Mentor request sent successfully',
         });
-        fetchMentorData(); // Refresh data
       } else {
         const error = await response.json();
         toast({
@@ -219,7 +236,6 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
       );
 
     const matchesExpertise =
-      !selectedExpertise ||
       selectedExpertise === 'all' ||
       mentor.expertise.includes(selectedExpertise);
     const matchesRating = mentor.rating >= minRating;
@@ -298,82 +314,16 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
         <div className="flex items-center space-x-2">
           <Badge variant="outline" className="px-3 py-1">
             <Users className="h-4 w-4 mr-1" />
-            {assignments.filter((a) => a.status === 'active').length} Active
-            Mentors
+            {mentors.length} Verified Mentors
           </Badge>
+          <Button
+            variant="outline"
+            onClick={() => router.push('/account/settings#KYC')}
+          >
+            Become a Mentor
+          </Button>
         </div>
       </div>
-
-      {/* Current Assignments */}
-      {assignments.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Current Mentor Assignments</CardTitle>
-            <CardDescription>
-              Mentors currently working with your venture
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {assignments.map((assignment) => (
-                <div
-                  key={assignment.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <Avatar>
-                      <AvatarImage
-                        src={assignment.mentor.user.profile?.avatar_url}
-                      />
-                      <AvatarFallback>
-                        {assignment.mentor.user.full_name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h4 className="font-semibold">
-                        {assignment.mentor.user.full_name}
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        {assignment.mentor.professional_title}
-                      </p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        {renderStars(
-                          assignment.mentor.rating,
-                          assignment.mentor.reviews_count,
-                        )}
-                        <Badge
-                          className={
-                            assignment.status === 'active'
-                              ? 'bg-green-100 text-green-800'
-                              : assignment.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-gray-100 text-gray-800'
-                          }
-                        >
-                          {assignment.status.charAt(0).toUpperCase() +
-                            assignment.status.slice(1)}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Message
-                    </Button>
-                    {assignment.status === 'active' && (
-                      <Button variant="outline" size="sm">
-                        <Clock className="h-4 w-4 mr-2" />
-                        Schedule Call
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Search and Filters */}
       <Card>
@@ -397,7 +347,7 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
                   />
                 </div>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex flex-wrap gap-2">
                 <Select
                   value={selectedExpertise}
                   onValueChange={setSelectedExpertise}
@@ -406,8 +356,7 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
                     <SelectValue placeholder="All Expertise" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Expertise</SelectItem>{' '}
-                    {/* Changed from "" to "all" */}
+                    <SelectItem value="all">All Expertise</SelectItem>
                     {expertiseTags.map((tag) => (
                       <SelectItem key={tag} value={tag}>
                         {tag}
@@ -443,7 +392,7 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
                     <SelectItem value="15">15+ Years</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" onClick={fetchMentorData}>
+                <Button variant="outline" onClick={fetchMentors}>
                   <Filter className="h-4 w-4 mr-2" />
                   Apply
                 </Button>
@@ -456,11 +405,7 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
       {/* Mentors Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMentors.map((mentor) => {
-          const isAlreadyAssigned = assignments.some(
-            (a) =>
-              a.mentor.id === mentor.id &&
-              ['pending', 'active'].includes(a.status),
-          );
+          const isRequested = requestedMentors.includes(mentor.id);
           const isMentorAvailable =
             mentor.max_assignments === undefined ||
             mentor.current_assignments < mentor.max_assignments;
@@ -529,57 +474,57 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
                   </p>
                 )}
 
+                {/* LinkedIn Profile */}
+                {mentor.linkedin_profile && (
+                  <div className="flex items-center text-sm text-blue-600">
+                    <Building className="h-4 w-4 mr-2" />
+                    <a
+                      href={mentor.linkedin_profile}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
+                      LinkedIn Profile
+                    </a>
+                  </div>
+                )}
+
                 {/* Actions */}
                 <div className="flex space-x-2 pt-4">
-                  {canRequestMentor ? (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => {
-                          // View mentor details
-                          window.location.href = `/mentors/${mentor.id}`;
-                        }}
-                      >
-                        View Profile
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="flex-1"
-                        disabled={isAlreadyAssigned || !isMentorAvailable}
-                        onClick={() => requestMentor(mentor.id)}
-                      >
-                        {isAlreadyAssigned ? (
-                          <>
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Requested
-                          </>
-                        ) : !isMentorAvailable ? (
-                          <>
-                            <XCircle className="h-4 w-4 mr-2" />
-                            Unavailable
-                          </>
-                        ) : (
-                          <>
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Request Mentor
-                          </>
-                        )}
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => {
-                        window.location.href = `/mentors/${mentor.id}`;
-                      }}
-                    >
-                      View Mentor Profile
-                    </Button>
-                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => {
+                      // View mentor details
+                      router.push(`/mentors/${mentor.id}`);
+                    }}
+                  >
+                    View Profile
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="flex-1"
+                    disabled={isRequested || !isMentorAvailable}
+                    onClick={() => requestMentor(mentor.id)}
+                  >
+                    {isRequested ? (
+                      <>
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Requested
+                      </>
+                    ) : !isMentorAvailable ? (
+                      <>
+                        <XCircle className="h-4 w-4 mr-2" />
+                        Unavailable
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Request Mentor
+                      </>
+                    )}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -600,10 +545,10 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
               variant="outline"
               onClick={() => {
                 setSearchQuery('');
-                setSelectedExpertise('');
+                setSelectedExpertise('all');
                 setMinRating(0);
                 setMinExperience(0);
-                fetchMentorData();
+                fetchMentors();
               }}
             >
               Clear All Filters
@@ -623,36 +568,25 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span>
-                  <strong>Request a Mentor:</strong> Founders can request up to
-                  3 mentors per venture
+                  <strong>Request a Mentor:</strong> Founders with active campaigns can request mentors
                 </span>
               </li>
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span>
-                  <strong>Mentor Acceptance:</strong> Mentors review requests
-                  and choose which ventures to support
+                  <strong>Mentor Acceptance:</strong> Mentors review requests and choose which ventures to support
                 </span>
               </li>
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span>
-                  <strong>Optimized Matching:</strong> Our system ensures
-                  mentors aren't overloaded (max 5 ventures each)
+                  <strong>Capacity Limits:</strong> Mentors can support up to 5 ventures simultaneously
                 </span>
               </li>
               <li className="flex items-start">
                 <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                 <span>
-                  <strong>Flexible Engagement:</strong> Mentors provide guidance
-                  on strategy, fundraising, and growth
-                </span>
-              </li>
-              <li className="flex items-start">
-                <CheckCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                <span>
-                  <strong>Performance Tracking:</strong> Rate your mentor after
-                  each engagement to help others
+                  <strong>Become a Mentor:</strong> Verified users can apply to become mentors via Account → Settings → KYC
                 </span>
               </li>
             </ul>
@@ -663,4 +597,4 @@ const MentorTab: React.FC<MentorTabProps> = ({ campaignId }) => {
   );
 };
 
-export default MentorTab;
+export default MentorMarketplace;
