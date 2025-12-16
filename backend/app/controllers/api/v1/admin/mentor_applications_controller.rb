@@ -38,11 +38,12 @@ module Api
         end
         
         def show
-          application = MentorApplication.includes(:user).find(params[:id])
+          application = MentorApplication.includes(:user, :reviewed_by).find(params[:id])
           
           render json: {
-            application: application.as_json(include_user: true),
+            application: application.as_json(include: [:user, :reviewed_by]),
             user: application.user.as_json(include_profile: true),
+            reviewed_by: application.reviewed_by&.as_json,
             similar_applications: MentorApplication
               .where(professional_title: application.professional_title)
               .where.not(id: application.id)
@@ -54,76 +55,91 @@ module Api
         def approve
           application = MentorApplication.find(params[:id])
           
-          if application.update(
-            status: 'approved',
-            reviewed_at: Time.current,
-            reviewed_by: @current_user,
-            review_notes: params[:review_notes]
-          )
-            # IMPORTANT: Check if mentor already exists before creating
-            if application.user.mentor.present?
-              mentor = application.user.mentor
-              mentor.update!(
-                professional_title: application.professional_title,
-                years_of_experience: application.years_of_experience,
-                linkedin_profile: application.linkedin_profile,
-                bio: application.mentorship_approach,
+          begin
+            # Start transaction
+            MentorApplication.transaction do
+              # Update application status - use reviewed_by_id instead of reviewed_by
+              application.update!(
                 status: 'approved',
-                max_assignments: params[:max_assignments] || 5
+                reviewed_at: Time.current,
+                reviewed_by_id: @current_user.id,  # CHANGED: Use reviewed_by_id
+                review_notes: params[:review_notes]
               )
-            else
-              # Create mentor profile
-              mentor = Mentor.create!(
-                user: application.user,
-                professional_title: application.professional_title,
-                years_of_experience: application.years_of_experience,
-                linkedin_profile: application.linkedin_profile,
-                bio: application.mentorship_approach,
-                status: 'approved',
-                current_assignments: 0,
-                max_assignments: params[:max_assignments] || 5,
-                rating: 0,
-                reviews_count: 0
-              )
-            end
-            
-            # Add expertise tags
-            mentor.mentor_expertise_tags.destroy_all
-            application.industry_expertise.each do |expertise|
-              mentor.add_expertise(expertise)
-            end
-            
-            application.update(mentor: mentor)
-            
-            # Send notification to applicant
-            # Notification.create(
-            #   user: application.user,
-            #   title: 'Mentor Application Approved',
-            #   message: 'Congratulations! Your mentor application has been approved. You can now access your mentor dashboard.',
-            #   notification_type: 'mentor_application_approved',
-            #   metadata: {
-            #     application_id: application.id,
-            #     mentor_id: mentor.id
-            #   }
-            # )
+              
+              # Check if mentor already exists
+              if application.user.mentor.present?
+                mentor = application.user.mentor
+                mentor.update!(
+                  professional_title: application.professional_title,
+                  years_of_experience: application.years_of_experience,
+                  linkedin_profile: application.linkedin_profile,
+                  bio: application.mentorship_approach,
+                  status: 'approved',
+                  max_assignments: params[:max_assignments] || 5
+                )
+              else
+                # Create mentor profile
+                mentor = Mentor.create!(
+                  user: application.user,
+                  professional_title: application.professional_title,
+                  years_of_experience: application.years_of_experience,
+                  linkedin_profile: application.linkedin_profile,
+                  bio: application.mentorship_approach,
+                  status: 'approved',
+                  current_assignments: 0,
+                  max_assignments: params[:max_assignments] || 5,
+                  rating: 0,
+                  reviews_count: 0
+                )
+              end
+              
+              # Add expertise tags
+              mentor.mentor_expertise_tags.destroy_all
+              application.industry_expertise.each do |expertise|
+                mentor.add_expertise(expertise)
+              end
+              
+              application.update!(mentor: mentor)
+              
+              # Send notification to applicant
+            #   Notification.create(
+            #     user: application.user,
+            #     title: 'Mentor Application Approved',
+            #     message: 'Congratulations! Your mentor application has been approved. You can now access your mentor dashboard.',
+            #     notification_type: 'mentor_application_approved',
+            #     metadata: {
+            #       application_id: application.id,
+            #       mentor_id: mentor.id
+            #     }
+            #   )
+            # end
             
             render json: {
               application: application.as_json,
-              mentor: mentor.as_json,
+              mentor: application.user.mentor.as_json,
               message: 'Application approved successfully'
             }, status: :ok
-          else
-            render json: { errors: application.errors.full_messages }, status: :unprocessable_entity
+            
+          rescue ActiveRecord::RecordInvalid => e
+            render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+          rescue => e
+            Rails.logger.error "Error approving mentor application: #{e.message}"
+            Rails.logger.error e.backtrace.join("\n")
+            render json: { 
+              error: 'Failed to approve application',
+              details: e.message 
+            }, status: :internal_server_error
           end
         end
         
+        # Update other methods that use reviewed_by
         def reject
           application = MentorApplication.find(params[:id])
           
           if application.update(
             status: 'rejected',
             reviewed_at: Time.current,
-            reviewed_by: @current_user,
+            reviewed_by_id: @current_user.id,  # CHANGED: Use reviewed_by_id
             review_notes: params[:review_notes]
           )
             # Send notification to applicant

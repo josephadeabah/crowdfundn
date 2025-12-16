@@ -1,8 +1,9 @@
 # app/models/mentor_application.rb
 class MentorApplication < ApplicationRecord
-  belongs_to :user, optional: true  # Make optional temporarily
+  belongs_to :user, optional: true
   belongs_to :kyc, optional: true
   belongs_to :mentor, optional: true
+  belongs_to :reviewed_by, class_name: 'User', foreign_key: 'reviewed_by_id', optional: true  # ADD foreign_key
   
   validates :professional_title, presence: true
   validates :years_of_experience, presence: true
@@ -21,7 +22,6 @@ class MentorApplication < ApplicationRecord
     rejected: 'rejected'
   }
   
-  # Call this method after user is set
   def submit_for_review
     return if user.nil? || status != 'draft'
     
@@ -30,19 +30,12 @@ class MentorApplication < ApplicationRecord
       submitted_at: Time.current
     )
     
-    # TEMPORARILY DISABLE NOTIFICATIONS TO FIX THE ERROR
-    # Send notification to admins
-    # MentorNotificationService.new_mentor_application_submitted(self) if defined?(MentorNotificationService)
-    
-    # Log instead for debugging
     Rails.logger.info "Mentor application #{id} submitted for review by user #{user_id}"
   end
   
   def create_mentor_profile
-    # Create mentor profile when application is approved
     return unless approved? && user.present?
     
-    # Check if mentor already exists
     return if user.mentor.present?
     
     mentor = Mentor.create!(
@@ -53,20 +46,24 @@ class MentorApplication < ApplicationRecord
       bio: mentorship_approach,
       status: 'approved',
       current_assignments: 0,
-      max_assignments: 5, # Default max assignments
+      max_assignments: 5,
       rating: 0,
       reviews_count: 0
     )
     
-    # Add expertise tags
     (industry_expertise || []).each do |expertise|
       mentor.add_expertise(expertise)
     end
     
     update(mentor: mentor)
     
-    # Log the creation
     Rails.logger.info "Created mentor profile #{mentor.id} for user #{user.id}"
+  end
+
+  def as_json(options = {})
+    super(options).merge(
+      'reviewed_by' => reviewed_by&.as_json(only: [:id, :full_name, :email])
+    )
   end
   
   private
