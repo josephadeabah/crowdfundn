@@ -42,6 +42,9 @@ class MentorApplication < ApplicationRecord
     # Create mentor profile when application is approved
     return unless approved? && user.present?
     
+    # Check if mentor already exists
+    return if user.mentor.present?
+    
     mentor = Mentor.create!(
       user: user,
       professional_title: professional_title,
@@ -61,6 +64,9 @@ class MentorApplication < ApplicationRecord
     end
     
     update(mentor: mentor)
+    
+    # Log the creation
+    Rails.logger.info "Created mentor profile #{mentor.id} for user #{user.id}"
   end
   
   private

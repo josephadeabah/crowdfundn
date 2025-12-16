@@ -74,37 +74,25 @@ module Api
           mentor = @current_user.mentor
           
           if mentor.nil?
-            render json: { error: 'You are not registered as a mentor' }, status: :not_found
+            # Check if they have a pending mentor application
+            mentor_app = @current_user.mentor_applications.last
+            
+            if mentor_app
+              render json: {
+                has_mentor_profile: false,
+                has_mentor_application: true,
+                application: mentor_app.as_json,
+                message: 'Mentor application is pending review'
+              }, status: :ok
+            else
+              render json: { 
+                error: 'You are not registered as a mentor. Please submit a mentor application first.',
+                has_mentor_profile: false,
+                has_mentor_application: false
+              }, status: :not_found
+            end
             return
           end
-          
-          render json: {
-            mentor: mentor.as_json(include_user: true),
-            applications: mentor.mentor_applications.order(created_at: :desc).map(&:as_json),
-            assignments: mentor.mentor_assignments.order(created_at: :desc).map do |assignment|
-              {
-                id: assignment.id,
-                status: assignment.status,
-                campaign: {
-                  id: assignment.campaign.id,
-                  title: assignment.campaign.title,
-                  fundraiser_name: assignment.campaign.fundraiser.full_name
-                },
-                started_at: assignment.started_at,
-                completed_at: assignment.completed_at,
-                rating: assignment.rating,
-                feedback: assignment.feedback
-              }
-            end,
-            statistics: {
-              total_assignments: mentor.mentor_assignments.count,
-              completed_assignments: mentor.mentor_assignments.completed.count,
-              average_rating: mentor.rating,
-              total_reviews: mentor.reviews_count,
-              availability: mentor.available? ? 'Available' : 'Unavailable'
-            }
-          }, status: :ok
-        end
         
         def update_profile
           mentor = @current_user.mentor
