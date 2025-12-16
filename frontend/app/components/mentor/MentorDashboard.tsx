@@ -36,11 +36,6 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:3000'
-      : process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-
   useEffect(() => {
     fetchDashboardData();
   }, [mentorId, token]);
@@ -51,7 +46,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${API_BASE_URL}/mentor/mentors/my_mentor_profile`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/mentors/my_mentor_profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -82,7 +77,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/mentor/mentors/update_availability`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/mentors/update_availability`,
         {
           method: 'PUT',
           headers: {
@@ -127,7 +122,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/mentor/mentors/update_availability`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/mentors/update_availability`,
         {
           method: 'PUT',
           headers: {
