@@ -50,7 +50,7 @@ module Api
               .map(&:as_json)
           }, status: :ok
         end
-        
+                
         def approve
           application = MentorApplication.find(params[:id])
           
@@ -60,21 +60,35 @@ module Api
             reviewed_by: @current_user,
             review_notes: params[:review_notes]
           )
-            # Create mentor profile
-            mentor = Mentor.create!(
-              user: application.user,
-              professional_title: application.professional_title,
-              years_of_experience: application.years_of_experience,
-              linkedin_profile: application.linkedin_profile,
-              bio: application.mentorship_approach,
-              status: 'approved',
-              current_assignments: 0,
-              max_assignments: params[:max_assignments] || 5,
-              rating: 0,
-              reviews_count: 0
-            )
+            # IMPORTANT: Check if mentor already exists before creating
+            if application.user.mentor.present?
+              mentor = application.user.mentor
+              mentor.update!(
+                professional_title: application.professional_title,
+                years_of_experience: application.years_of_experience,
+                linkedin_profile: application.linkedin_profile,
+                bio: application.mentorship_approach,
+                status: 'approved',
+                max_assignments: params[:max_assignments] || 5
+              )
+            else
+              # Create mentor profile
+              mentor = Mentor.create!(
+                user: application.user,
+                professional_title: application.professional_title,
+                years_of_experience: application.years_of_experience,
+                linkedin_profile: application.linkedin_profile,
+                bio: application.mentorship_approach,
+                status: 'approved',
+                current_assignments: 0,
+                max_assignments: params[:max_assignments] || 5,
+                rating: 0,
+                reviews_count: 0
+              )
+            end
             
             # Add expertise tags
+            mentor.mentor_expertise_tags.destroy_all
             application.industry_expertise.each do |expertise|
               mentor.add_expertise(expertise)
             end
@@ -85,7 +99,7 @@ module Api
             Notification.create(
               user: application.user,
               title: 'Mentor Application Approved',
-              message: 'Congratulations! Your mentor application has been approved.',
+              message: 'Congratulations! Your mentor application has been approved. You can now access your mentor dashboard.',
               notification_type: 'mentor_application_approved',
               metadata: {
                 application_id: application.id,
