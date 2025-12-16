@@ -43,10 +43,18 @@ import {
   Loader2,
   ChevronRight,
   Eye,
+  User,
+  Mail,
+  MessageCircle,
+  BriefcaseIcon,
+  Clock,
+  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { useToast } from '@/app/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
+import Modal from '@/app/components/modal/Modal';
+import ToastComponent from '@/app/components/toast/Toast';
 
 interface Mentor {
   id: number;
@@ -92,9 +100,9 @@ const MentorMarketplace: React.FC = () => {
   const [minExperience, setMinExperience] = useState<number>(0);
   const [requestedMentors, setRequestedMentors] = useState<number[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>(
-    {},
-  );
+  const [expertiseMap, setExpertiseMap] = useState<Record<number, string[]>>({});
+  const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
@@ -104,7 +112,7 @@ const MentorMarketplace: React.FC = () => {
 
   const fetchMentorExpertise = async (mentorId: number) => {
     if (!token) return [];
-
+    
     try {
       const response = await fetch(
         `${API_BASE_URL}/mentor/mentors/${mentorId}`,
@@ -381,6 +389,157 @@ const MentorMarketplace: React.FC = () => {
     return `${years} years`;
   };
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  const handleViewProfile = (mentor: Mentor) => {
+    setSelectedMentor(mentor);
+    setIsProfileModalOpen(true);
+  };
+
+  const isCurrentUserMentor = (mentor: Mentor) => {
+    return user?.id === mentor.user_id;
+  };
+
+  // Mentor Profile Modal Content
+  const MentorProfileModal = () => {
+    if (!selectedMentor) return null;
+    
+    const mentorExpertise = expertiseMap[selectedMentor.id] || [];
+    const isCurrentUser = isCurrentUserMentor(selectedMentor);
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-16 w-16">
+              <AvatarFallback className="bg-gray-100 text-gray-800 text-lg">
+                {getInitials(selectedMentor.professional_title)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="text-xl font-bold">{selectedMentor.professional_title}</h3>
+              <div className="flex items-center text-gray-600 mt-1">
+                <Calendar className="h-4 w-4 mr-2" />
+                <span>{formatExperience(selectedMentor.years_of_experience)} experience</span>
+              </div>
+            </div>
+          </div>
+          {getAvailabilityBadge(selectedMentor)}
+        </div>
+
+        {/* Rating */}
+        <div className="border-t pt-4">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-semibold">Rating & Reviews</h4>
+            <span className="text-sm text-gray-600">
+              Joined {formatDate(selectedMentor.created_at)}
+            </span>
+          </div>
+          {renderStars(selectedMentor.rating, selectedMentor.reviews_count)}
+        </div>
+
+        {/* Current Load */}
+        <div className="border-t pt-4">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-semibold">Current Availability</h4>
+            <span className="text-sm text-gray-600">
+              {selectedMentor.current_assignments} of {selectedMentor.max_assignments || '∞'} slots filled
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-emerald-600 h-2 rounded-full" 
+              style={{ 
+                width: `${(selectedMentor.current_assignments / (selectedMentor.max_assignments || 1)) * 100}%` 
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Expertise */}
+        {mentorExpertise.length > 0 && (
+          <div className="border-t pt-4">
+            <h4 className="font-semibold mb-3">Areas of Expertise</h4>
+            <div className="flex flex-wrap gap-2">
+              {mentorExpertise.map((tag, index) => (
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="bg-gray-100 text-gray-700 border-gray-200 capitalize"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Bio */}
+        {selectedMentor.bio && (
+          <div className="border-t pt-4">
+            <h4 className="font-semibold mb-2">About</h4>
+            <p className="text-gray-700">{selectedMentor.bio}</p>
+          </div>
+        )}
+
+        {/* LinkedIn Profile */}
+        {selectedMentor.linkedin_profile && (
+          <div className="border-t pt-4">
+            <h4 className="font-semibold mb-2">Connect</h4>
+            <a
+              href={selectedMentor.linkedin_profile}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center text-emerald-600 hover:text-emerald-700"
+            >
+              <Building className="h-5 w-5 mr-2" />
+              <span>LinkedIn Profile</span>
+              <ExternalLink className="h-4 w-4 ml-2" />
+            </a>
+          </div>
+        )}
+
+        {/* Modal Actions */}
+        <div className="border-t pt-4 flex justify-end space-x-3">
+          <Button
+            variant="outline"
+            onClick={() => setIsProfileModalOpen(false)}
+          >
+            Close
+          </Button>
+          {!isCurrentUser && (
+            <Button
+              className="bg-emerald-600 hover:bg-emerald-700"
+              onClick={() => {
+                setIsProfileModalOpen(false);
+                requestMentor(selectedMentor.id);
+              }}
+              disabled={requestedMentors.includes(selectedMentor.id)}
+            >
+              {requestedMentors.includes(selectedMentor.id) ? (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Request Sent
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Request Mentor
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -390,392 +549,406 @@ const MentorMarketplace: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-        <div className="space-y-1">
-          <h2 className="text-xl sm:text-2xl font-bold">Mentor Marketplace</h2>
-          <p className="text-sm sm:text-base text-gray-600">
-            Find experienced mentors to guide your venture
-          </p>
+    <>
+      <div className="space-y-4 md:space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+          <div className="space-y-1">
+            <h2 className="text-xl sm:text-2xl font-bold">Mentor Marketplace</h2>
+            <p className="text-sm sm:text-base text-gray-600">
+              Find experienced mentors to guide your venture
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <Badge
+              variant="outline"
+              className="px-2 sm:px-3 py-1 text-xs sm:text-sm justify-center"
+            >
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+              {mentors.length} Verified Mentors
+            </Badge>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/account#Settings')}
+              className="text-xs sm:text-sm h-9"
+            >
+              Become a Mentor
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          <Badge
-            variant="outline"
-            className="px-2 sm:px-3 py-1 text-xs sm:text-sm justify-center"
-          >
-            <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-            {mentors.length} Verified Mentors
-          </Badge>
-          <Button
-            variant="outline"
-            onClick={() => router.push('/account#Settings')}
-            className="text-xs sm:text-sm h-9"
-          >
-            Become a Mentor
-          </Button>
-        </div>
-      </div>
 
-      {/* Search and Filters */}
-      <Card className="border shadow-sm">
-        <CardContent className="p-4 sm:p-6">
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-semibold text-base sm:text-lg mb-1">
-                Find a Mentor
-              </h3>
-              <p className="text-sm text-gray-600">
-                Browse available mentors by expertise, rating, and experience
-              </p>
-            </div>
-
-            <div className="flex flex-col lg:flex-row gap-3">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Search mentors by title, bio, or expertise..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 text-sm sm:text-base"
-                  />
-                </div>
+        {/* Search and Filters */}
+        <Card className="border shadow-sm">
+          <CardContent className="p-4 sm:p-6">
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold text-base sm:text-lg mb-1">
+                  Find a Mentor
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Browse available mentors by expertise, rating, and experience
+                </p>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                <Select
-                  value={selectedExpertise}
-                  onValueChange={setSelectedExpertise}
-                >
-                  <SelectTrigger className="h-9 text-xs sm:text-sm">
-                    <SelectValue placeholder="All Expertise" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all" className="text-xs sm:text-sm">
-                      All Expertise
-                    </SelectItem>
-                    {availableTags.map((tag) => (
-                      <SelectItem
-                        key={tag}
-                        value={tag}
-                        className="text-xs sm:text-sm capitalize"
-                      >
-                        {tag}
+              <div className="flex flex-col lg:flex-row gap-3">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Search mentors by title, bio, or expertise..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 text-sm sm:text-base"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  <Select
+                    value={selectedExpertise}
+                    onValueChange={setSelectedExpertise}
+                  >
+                    <SelectTrigger className="h-9 text-xs sm:text-sm">
+                      <SelectValue placeholder="All Expertise" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="text-xs sm:text-sm">
+                        All Expertise
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      {availableTags.map((tag) => (
+                        <SelectItem
+                          key={tag}
+                          value={tag}
+                          className="text-xs sm:text-sm capitalize"
+                        >
+                          {tag}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-                <Select
-                  value={minRating.toString()}
-                  onValueChange={(v) => setMinRating(parseFloat(v))}
-                >
-                  <SelectTrigger className="h-9 text-xs sm:text-sm">
-                    <SelectValue placeholder="Min Rating" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0" className="text-xs sm:text-sm">
-                      Any Rating
-                    </SelectItem>
-                    <SelectItem value="3" className="text-xs sm:text-sm">
-                      3+ Stars
-                    </SelectItem>
-                    <SelectItem value="4" className="text-xs sm:text-sm">
-                      4+ Stars
-                    </SelectItem>
-                    <SelectItem value="4.5" className="text-xs sm:text-sm">
-                      4.5+ Stars
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                  <Select
+                    value={minRating.toString()}
+                    onValueChange={(v) => setMinRating(parseFloat(v))}
+                  >
+                    <SelectTrigger className="h-9 text-xs sm:text-sm">
+                      <SelectValue placeholder="Min Rating" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0" className="text-xs sm:text-sm">
+                        Any Rating
+                      </SelectItem>
+                      <SelectItem value="3" className="text-xs sm:text-sm">
+                        3+ Stars
+                      </SelectItem>
+                      <SelectItem value="4" className="text-xs sm:text-sm">
+                        4+ Stars
+                      </SelectItem>
+                      <SelectItem value="4.5" className="text-xs sm:text-sm">
+                        4.5+ Stars
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
 
-                <Select
-                  value={minExperience.toString()}
-                  onValueChange={(v) => setMinExperience(parseInt(v))}
-                >
-                  <SelectTrigger className="h-9 text-xs sm:text-sm">
-                    <SelectValue placeholder="Min Experience" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0" className="text-xs sm:text-sm">
-                      Any Experience
-                    </SelectItem>
-                    <SelectItem value="5" className="text-xs sm:text-sm">
-                      5+ Years
-                    </SelectItem>
-                    <SelectItem value="10" className="text-xs sm:text-sm">
-                      10+ Years
-                    </SelectItem>
-                    <SelectItem value="15" className="text-xs sm:text-sm">
-                      15+ Years
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                  <Select
+                    value={minExperience.toString()}
+                    onValueChange={(v) => setMinExperience(parseInt(v))}
+                  >
+                    <SelectTrigger className="h-9 text-xs sm:text-sm">
+                      <SelectValue placeholder="Min Experience" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0" className="text-xs sm:text-sm">
+                        Any Experience
+                      </SelectItem>
+                      <SelectItem value="5" className="text-xs sm:text-sm">
+                        5+ Years
+                      </SelectItem>
+                      <SelectItem value="10" className="text-xs sm:text-sm">
+                        10+ Years
+                      </SelectItem>
+                      <SelectItem value="15" className="text-xs sm:text-sm">
+                        15+ Years
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
 
+                  <Button
+                    variant="outline"
+                    onClick={fetchMentors}
+                    className="h-9 text-xs sm:text-sm"
+                  >
+                    <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    Apply
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Mentors Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          {filteredMentors.map((mentor) => {
+            const isRequested = requestedMentors.includes(mentor.id);
+            const isMentorAvailable =
+              mentor.max_assignments === undefined ||
+              mentor.max_assignments === null ||
+              mentor.current_assignments < mentor.max_assignments;
+            const isCurrentUser = isCurrentUserMentor(mentor);
+            const mentorExpertise = expertiseMap[mentor.id] || [];
+
+            return (
+              <Card
+                key={mentor.id}
+                className="border shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+              >
+                <CardContent className="p-4 sm:p-5">
+                  <div className="space-y-4 h-full flex flex-col">
+                    {/* Mentor Header */}
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0">
+                        <AvatarFallback className="bg-gray-100 text-gray-800">
+                          {getInitials(mentor.professional_title)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <div className="min-w-0">
+                            <h3 className="font-semibold text-base sm:text-lg truncate">
+                              {mentor.professional_title}
+                            </h3>
+                            <div className="flex items-center text-sm text-gray-600 mt-1">
+                              <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
+                              <span className="truncate">
+                                {formatExperience(mentor.years_of_experience)} experience
+                              </span>
+                            </div>
+                          </div>
+                          {getAvailabilityBadge(mentor)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="overflow-hidden">
+                      {renderStars(mentor.rating, mentor.reviews_count)}
+                    </div>
+
+                    {/* Current Load */}
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Target className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">
+                        {mentor.current_assignments} of {mentor.max_assignments || '∞'} slots filled
+                      </span>
+                    </div>
+
+                    {/* Expertise */}
+                    <div className="space-y-2 flex-1">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-semibold">
+                          Areas of Expertise
+                        </h4>
+                        <span className="text-xs text-gray-500">
+                          {mentorExpertise.length} areas
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 min-h-[24px]">
+                        {mentorExpertise.length > 0 ? (
+                          <>
+                            {mentorExpertise.slice(0, 3).map((tag, index) => (
+                              <Badge
+                                key={index}
+                                variant="secondary"
+                                className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 border-gray-200 capitalize max-w-full truncate"
+                                title={tag}
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                            {mentorExpertise.length > 3 && (
+                              <Badge
+                                variant="outline"
+                                className="text-xs px-2 py-0.5"
+                              >
+                                +{mentorExpertise.length - 3} more
+                              </Badge>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-sm text-gray-500 italic">
+                            Expertise information loading...
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Bio Preview */}
+                    {mentor.bio && (
+                      <div className="pt-2 border-t">
+                        <p className="text-sm text-gray-600 line-clamp-3 overflow-hidden">
+                          {mentor.bio}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* LinkedIn Profile */}
+                    {mentor.linkedin_profile && (
+                      <div className="pt-2 border-t">
+                        <a
+                          href={mentor.linkedin_profile}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center text-sm text-emerald-600 hover:text-emerald-700 group"
+                        >
+                          <Building className="h-4 w-4 mr-2 flex-shrink-0" />
+                          <span className="truncate flex-1">
+                            LinkedIn Profile
+                          </span>
+                          <ExternalLink className="h-3 w-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t mt-auto">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 h-9 text-xs sm:text-sm min-w-0"
+                        onClick={() => handleViewProfile(mentor)}
+                      >
+                        <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                        <span className="truncate">View Profile</span>
+                      </Button>
+                      
+                      {/* Show request button only if not current user's own profile */}
+                      {!isCurrentUser && (
+                        <Button
+                          size="sm"
+                          className="flex-1 h-9 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 min-w-0"
+                          disabled={isRequested || !isMentorAvailable}
+                          onClick={() => requestMentor(mentor.id)}
+                        >
+                          {isRequested ? (
+                            <>
+                              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                              <span className="truncate">Requested</span>
+                            </>
+                          ) : !isMentorAvailable ? (
+                            <>
+                              <XCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                              <span className="truncate">Unavailable</span>
+                            </>
+                          ) : (
+                            <>
+                              <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                              <span className="truncate">Request</span>
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Empty State */}
+        {filteredMentors.length === 0 && (
+          <Card className="border shadow-sm">
+            <CardContent className="py-8 sm:py-12 text-center">
+              <Users className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No mentors found</h3>
+              <p className="text-gray-600 mb-4 max-w-md mx-auto text-sm sm:text-base">
+                {mentors.length === 0
+                  ? 'No mentors are currently available. Check back soon!'
+                  : 'Try adjusting your search filters to find mentors.'}
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedExpertise('all');
+                  setMinRating(0);
+                  setMinExperience(0);
+                  fetchMentors();
+                }}
+                className="text-xs sm:text-sm"
+              >
+                Clear All Filters
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Information Card */}
+        <Card className="border shadow-sm bg-gray-50">
+          <CardContent className="p-4 sm:p-6">
+            <div className="space-y-4">
+              <h3 className="font-semibold text-gray-900 flex items-center">
+                <Award className="h-5 w-5 mr-2 text-emerald-600" />
+                How Mentor Assignments Work
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">
+                    <strong>Request a Mentor:</strong> Founders with active
+                    campaigns can request mentors
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">
+                    <strong>Mentor Acceptance:</strong> Mentors review requests
+                    and choose which ventures to support
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">
+                    <strong>Capacity Limits:</strong> Mentors can support up to 5
+                    ventures simultaneously
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">
+                    <strong>Become a Mentor:</strong> Verified users can apply to
+                    become mentors via Account → Settings → KYC
+                  </span>
+                </li>
+              </ul>
+              <div className="pt-2">
                 <Button
-                  variant="outline"
-                  onClick={fetchMentors}
-                  className="h-9 text-xs sm:text-sm"
+                  variant="link"
+                  className="text-emerald-600 hover:text-emerald-700 p-0 h-auto text-sm"
+                  onClick={() => router.push('/help/mentorship')}
                 >
-                  <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  Apply
+                  Learn more about mentorship
+                  <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Mentors Grid - Fixed content overflow */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {filteredMentors.map((mentor) => {
-          const isRequested = requestedMentors.includes(mentor.id);
-          const isMentorAvailable =
-            mentor.max_assignments === undefined ||
-            mentor.max_assignments === null ||
-            mentor.current_assignments < mentor.max_assignments;
-
-          const mentorExpertise = expertiseMap[mentor.id] || [];
-
-          return (
-            <Card
-              key={mentor.id}
-              className="border shadow-sm hover:shadow-md transition-shadow overflow-hidden"
-            >
-              <CardContent className="p-4 sm:p-5">
-                <div className="space-y-4 h-full flex flex-col">
-                  {/* Mentor Header */}
-                  <div className="flex items-start gap-3">
-                    <Avatar className="h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0">
-                      <AvatarFallback className="bg-gray-100 text-gray-800">
-                        {getInitials(mentor.professional_title)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start">
-                        <div className="min-w-0">
-                          <h3 className="font-semibold text-base sm:text-lg truncate">
-                            {mentor.professional_title}
-                          </h3>
-                          <div className="flex items-center text-sm text-gray-600 mt-1">
-                            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-                            <span className="truncate">
-                              {formatExperience(mentor.years_of_experience)}{' '}
-                              experience
-                            </span>
-                          </div>
-                        </div>
-                        {getAvailabilityBadge(mentor)}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Rating - Fixed to prevent overflow */}
-                  <div className="overflow-hidden">
-                    {renderStars(mentor.rating, mentor.reviews_count)}
-                  </div>
-
-                  {/* Current Load - Fixed width */}
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Target className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="truncate">
-                      {mentor.current_assignments} of{' '}
-                      {mentor.max_assignments || '∞'} slots filled
-                    </span>
-                  </div>
-
-                  {/* Expertise - Fixed to stay within card */}
-                  <div className="space-y-2 flex-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-semibold">
-                        Areas of Expertise
-                      </h4>
-                      <span className="text-xs text-gray-500">
-                        {mentorExpertise.length} areas
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 min-h-[24px]">
-                      {mentorExpertise.length > 0 ? (
-                        <>
-                          {mentorExpertise.slice(0, 3).map((tag, index) => (
-                            <Badge
-                              key={index}
-                              variant="secondary"
-                              className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 border-gray-200 capitalize max-w-full truncate"
-                              title={tag}
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                          {mentorExpertise.length > 3 && (
-                            <Badge
-                              variant="outline"
-                              className="text-xs px-2 py-0.5"
-                            >
-                              +{mentorExpertise.length - 3} more
-                            </Badge>
-                          )}
-                        </>
-                      ) : (
-                        <span className="text-sm text-gray-500 italic">
-                          Expertise information loading...
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Bio Preview - Fixed height with overflow control */}
-                  {mentor.bio && (
-                    <div className="pt-2 border-t">
-                      <p className="text-sm text-gray-600 line-clamp-3 overflow-hidden">
-                        {mentor.bio}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* LinkedIn Profile */}
-                  {mentor.linkedin_profile && (
-                    <div className="pt-2 border-t">
-                      <a
-                        href={mentor.linkedin_profile}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center text-sm text-emerald-600 hover:text-emerald-700 group"
-                      >
-                        <Building className="h-4 w-4 mr-2 flex-shrink-0" />
-                        <span className="truncate flex-1">
-                          LinkedIn Profile
-                        </span>
-                        <ExternalLink className="h-3 w-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </a>
-                    </div>
-                  )}
-
-                  {/* Actions - Fixed at bottom */}
-                  <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t mt-auto">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 h-9 text-xs sm:text-sm min-w-0"
-                      onClick={() => {
-                        router.push(`/mentors/${mentor.id}`);
-                      }}
-                    >
-                      <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
-                      <span className="truncate">View Profile</span>
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="flex-1 h-9 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 min-w-0"
-                      disabled={isRequested || !isMentorAvailable}
-                      onClick={() => requestMentor(mentor.id)}
-                    >
-                      {isRequested ? (
-                        <>
-                          <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
-                          <span className="truncate">Requested</span>
-                        </>
-                      ) : !isMentorAvailable ? (
-                        <>
-                          <XCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
-                          <span className="truncate">Unavailable</span>
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
-                          <span className="truncate">Request</span>
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Empty State */}
-      {filteredMentors.length === 0 && (
-        <Card className="border shadow-sm">
-          <CardContent className="py-8 sm:py-12 text-center">
-            <Users className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No mentors found</h3>
-            <p className="text-gray-600 mb-4 max-w-md mx-auto text-sm sm:text-base">
-              {mentors.length === 0
-                ? 'No mentors are currently available. Check back soon!'
-                : 'Try adjusting your search filters to find mentors.'}
-            </p>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedExpertise('all');
-                setMinRating(0);
-                setMinExperience(0);
-                fetchMentors();
-              }}
-              className="text-xs sm:text-sm"
-            >
-              Clear All Filters
-            </Button>
           </CardContent>
         </Card>
-      )}
+      </div>
 
-      {/* Information Card - Limited emerald usage */}
-      <Card className="border shadow-sm bg-gray-50">
-        <CardContent className="p-4 sm:p-6">
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900 flex items-center">
-              <Award className="h-5 w-5 mr-2 text-emerald-600" />
-              How Mentor Assignments Work
-            </h3>
-            <ul className="space-y-3">
-              <li className="flex items-start">
-                <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-gray-700">
-                  <strong>Request a Mentor:</strong> Founders with active
-                  campaigns can request mentors
-                </span>
-              </li>
-              <li className="flex items-start">
-                <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-gray-700">
-                  <strong>Mentor Acceptance:</strong> Mentors review requests
-                  and choose which ventures to support
-                </span>
-              </li>
-              <li className="flex items-start">
-                <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-gray-700">
-                  <strong>Capacity Limits:</strong> Mentors can support up to 5
-                  ventures simultaneously
-                </span>
-              </li>
-              <li className="flex items-start">
-                <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-gray-700">
-                  <strong>Become a Mentor:</strong> Verified users can apply to
-                  become mentors via Account → Settings → KYC
-                </span>
-              </li>
-            </ul>
-            <div className="pt-2">
-              <Button
-                variant="link"
-                className="text-emerald-600 hover:text-emerald-700 p-0 h-auto text-sm"
-                onClick={() => router.push('/help/mentorship')}
-              >
-                Learn more about mentorship
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      {/* Mentor Profile Modal */}
+      <Modal
+        isOpen={isProfileModalOpen}
+        onClose={() => {
+          setIsProfileModalOpen(false);
+          setSelectedMentor(null);
+        }}
+        size="large"
+      >
+        {selectedMentor && <MentorProfileModal />}
+      </Modal>
+    </>
   );
 };
 
