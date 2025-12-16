@@ -59,6 +59,7 @@ import {
 } from 'lucide-react';
 import { DealRoom } from '../components/deal-room/DealRoom';
 import MentorDashboard from '../components/mentor/MentorDashboard';
+import MentorTab from '../components/mentor/MentorTab';
 
 // Define proper TypeScript interfaces
 interface Tab {
@@ -271,6 +272,14 @@ const ProfileTabs = () => {
           badge: 'New',
           badgeColor: 'bg-green-100 text-green-800',
         },
+        {
+          label: 'Find Mentor',
+          icon: <Users className="w-4 h-4" />,
+          component: <MentorTab campaignId={1} />,
+          description: 'Find and connect with mentors for your campaigns.',
+          badge: 'New',
+          badgeColor: 'bg-green-100 text-green-800',
+        }
       ],
     },
     {
