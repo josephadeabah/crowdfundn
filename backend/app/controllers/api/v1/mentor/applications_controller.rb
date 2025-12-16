@@ -66,8 +66,8 @@ module Api
             status: 'submitted',
             submitted_at: Time.current
           )
-            # Send notification to admins
-            NotificationService.new_mentor_application_submitted(@application)
+            # Send notification to admins using the new service
+            MentorNotificationService.new_mentor_application_submitted(application: @application)
             
             render json: {
               application: @application.as_json,
@@ -137,6 +137,3 @@ module Api
     end
   end
 end
-
-
-

@@ -109,11 +109,13 @@ module Api
           if existing_assignment
             render json: { 
               error: 'Mentor is already assigned to this campaign',
-              assignment: existing_assignment.as_json
+              assignment: existing_assignment.as_json,
+              existing_status: existing_assignment.status
             }, status: :conflict
             return
           end
         
+          # Create the assignment
           @assignment = MentorAssignment.new(
             campaign: @campaign,
             mentor: @mentor,
@@ -122,16 +124,21 @@ module Api
             entrepreneur_notes: params[:notes]
           )
         
-          if @assignment.save
-            # Send notification to mentor
-            NotificationService.new_mentor_request(@assignment)
-            
-            render json: {
-              assignment: @assignment.as_json,
-              message: 'Mentor request sent successfully'
-            }, status: :created
-          else
-            render json: { errors: @assignment.errors.full_messages }, status: :unprocessable_entity
+          begin
+            if @assignment.save
+              # Send notification to mentor using the new service
+              MentorNotificationService.new_mentor_request(assignment: @assignment)
+              
+              render json: {
+                assignment: @assignment.as_json,
+                message: 'Mentor request sent successfully'
+              }, status: :created
+            else
+              render json: { errors: @assignment.errors.full_messages }, status: :unprocessable_entity
+            end
+          rescue => e
+            Rails.logger.error "Error creating mentor assignment: #{e.message}"
+            render json: { error: 'Failed to create mentor assignment' }, status: :internal_server_error
           end
         end
         
@@ -173,6 +180,13 @@ module Api
           
           if @assignment.pending?
             @assignment.approve!
+            
+            # Send notification using the new service
+            MentorNotificationService.send_mentor_assignment_notification(
+              assignment: @assignment, 
+              event_type: :assignment_approved
+            )
+            
             render json: {
               assignment: @assignment.as_json,
               message: 'Assignment approved successfully'
@@ -200,6 +214,12 @@ module Api
               params[:feedback]
             )
             
+            # Send notification using the new service
+            MentorNotificationService.send_mentor_assignment_notification(
+              assignment: @assignment, 
+              event_type: :assignment_completed
+            )
+            
             render json: {
               assignment: @assignment.as_json,
               message: 'Assignment completed successfully'
@@ -224,6 +244,12 @@ module Api
           if @assignment.pending? || @assignment.active?
             @assignment.cancel!(params[:reason])
             
+            # Send notification using the new service
+            MentorNotificationService.send_mentor_assignment_notification(
+              assignment: @assignment, 
+              event_type: :assignment_cancelled
+            )
+            
             render json: {
               assignment: @assignment.as_json,
               message: 'Assignment cancelled successfully'
@@ -236,7 +262,12 @@ module Api
         private
         
         def set_campaign
-          @campaign = Campaign.find(params[:campaign_id])
+          @campaign = Campaign.find_by(id: params[:campaign_id])
+          
+          if @campaign.nil?
+            render json: { error: 'Campaign not found' }, status: :not_found
+            return
+          end
           
           # Check if user has access to the campaign
           unless @campaign.fundraiser == @current_user || @current_user.admin?
@@ -245,7 +276,11 @@ module Api
         end
         
         def set_mentor
-          @mentor = ::Mentor.find(params[:mentor_id])
+          @mentor = ::Mentor.find_by(id: params[:mentor_id])
+          
+          if @mentor.nil?
+            render json: { error: 'Mentor not found' }, status: :not_found
+          end
         end
         
         def can_request_mentor?

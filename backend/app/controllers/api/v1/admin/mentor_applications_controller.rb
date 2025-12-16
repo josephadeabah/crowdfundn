@@ -62,7 +62,7 @@ module Api
               application.update!(
                 status: 'approved',
                 reviewed_at: Time.current,
-                reviewed_by_id: @current_user.id,  # CHANGED: Use reviewed_by_id
+                reviewed_by_id: @current_user.id,
                 review_notes: params[:review_notes]
               )
               
@@ -100,19 +100,10 @@ module Api
               end
               
               application.update!(mentor: mentor)
-              
-              # Send notification to applicant (commented out for now)
-              # Notification.create(
-              #   user: application.user,
-              #   title: 'Mentor Application Approved',
-              #   message: 'Congratulations! Your mentor application has been approved. You can now access your mentor dashboard.',
-              #   notification_type: 'mentor_application_approved',
-              #   metadata: {
-              #     application_id: application.id,
-              #     mentor_id: mentor.id
-              #   }
-              # )
             end  # End of transaction block
+            
+            # Send approval email to applicant (you can add this if you want)
+            MentorNotificationService.send_application_approved_email(application: application)
             
             render json: {
               application: application.as_json,
@@ -138,20 +129,11 @@ module Api
           if application.update(
             status: 'rejected',
             reviewed_at: Time.current,
-            reviewed_by_id: @current_user.id,  # CHANGED: Use reviewed_by_id
+            reviewed_by_id: @current_user.id,
             review_notes: params[:review_notes]
           )
-            # Send notification to applicant (commented out for now)
-            # Notification.create(
-            #   user: application.user,
-            #   title: 'Mentor Application Update',
-            #   message: 'Your mentor application requires additional information.',
-            #   notification_type: 'mentor_application_rejected',
-            #   metadata: {
-            #     application_id: application.id,
-            #     review_notes: params[:review_notes]
-            #   }
-            # )
+            # Send rejection email to applicant (you can add this if you want)
+            MentorNotificationService.send_application_rejected_email(application: application)
             
             render json: {
               application: application.as_json,
@@ -165,17 +147,11 @@ module Api
         def request_additional_info
           application = ::MentorApplication.find(params[:id])
           
-          # Send notification to applicant requesting more info (commented out)
-          # Notification.create(
-          #   user: application.user,
-          #   title: 'Mentor Application - Additional Info Needed',
-          #   message: 'We need some additional information to process your application.',
-          #   notification_type: 'mentor_application_info_request',
-          #   metadata: {
-          #     application_id: application.id,
-          #     requested_info: params[:requested_info]
-          #   }
-          # )
+          # Send information request email to applicant (you can add this if you want)
+          MentorNotificationService.send_additional_info_request_email(
+            application: application, 
+            requested_info: params[:requested_info]
+          )
           
           render json: {
             message: 'Information request sent to applicant'

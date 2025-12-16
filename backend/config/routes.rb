@@ -21,7 +21,6 @@ Rails.application.routes.draw do
         end
         
         # Mentor assignments - FIXED VERSION
-        # Add at least one standard REST action (like :show) for member routes to work
         resources :assignments, only: [:show] do
           collection do
             get :my_mentor_assignments
@@ -46,7 +45,7 @@ Rails.application.routes.draw do
         # Add separate route for my_mentor_profile
         get 'mentors/my_mentor_profile', to: 'mentors#my_mentor_profile'
         
-        # Campaign-specific mentor routes
+        # Campaign-specific mentor routes - UPDATED with proper route ordering
         resources :campaigns, only: [] do
           resources :assignments, only: [:index], controller: 'assignments' do
             collection do
