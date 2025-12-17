@@ -25,6 +25,15 @@ import {
   FileText,
   Hourglass,
   AlertCircle,
+  ExternalLink,
+  Mail,
+  Globe,
+  Building,
+  User,
+  Target,
+  DollarSign,
+  Loader2,
+  Tag,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import Modal from '@/app/components/modal/Modal';
@@ -82,10 +91,45 @@ interface MentorData {
   message?: string;
 }
 
+interface Assignment {
+  id: number;
+  status: 'pending' | 'approved' | 'active' | 'completed' | 'cancelled';
+  campaign?: {
+    id: number;
+    title: string;
+    description: string;
+    goal_amount: number;
+    current_amount: number;
+    category: string;
+    location: string;
+    created_at: string;
+    fundraiser_name?: string;
+    fundraiser?: {
+      id: number;
+      full_name: string;
+      email?: string;
+    };
+  };
+  entrepreneur?: {
+    id: number;
+    full_name: string;
+    email?: string;
+  };
+  entrepreneur_notes?: string;
+  mentor_notes?: string;
+  started_at?: string;
+  completed_at?: string;
+  rating?: number;
+  feedback?: string;
+  created_at: string;
+}
+
 const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const { user, token } = useAuth();
   const [dashboardData, setDashboardData] = useState<MentorData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [assignmentsLoading, setAssignmentsLoading] = useState(false);
+  const [activeAssignments, setActiveAssignments] = useState<Assignment[]>([]);
 
   // Modal states
   const [isMaxAssignmentsModalOpen, setIsMaxAssignmentsModalOpen] =
@@ -95,6 +139,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const [isViewRequestsModalOpen, setIsViewRequestsModalOpen] = useState(false);
   const [isReviewRequestsModalOpen, setIsReviewRequestsModalOpen] =
     useState(false);
+  const [isActiveAssignmentsModalOpen, setIsActiveAssignmentsModalOpen] =
+    useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
 
   // Toast states
   const [toast, setToast] = useState({
@@ -142,6 +189,11 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
       if (response.ok) {
         const data = await response.json();
         setDashboardData(data);
+        
+        // If user has mentor profile, fetch assignments
+        if (data.has_mentor_profile) {
+          fetchAssignments();
+        }
       } else {
         throw new Error('Failed to fetch dashboard data');
       }
@@ -150,6 +202,37 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
       showToast('Error', 'Failed to load mentor dashboard', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAssignments = async () => {
+    if (!token) return;
+
+    try {
+      setAssignmentsLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/assignments/my_mentor_assignments`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const assignmentsList = data.assignments || [];
+        
+        // Filter for active assignments
+        const active = assignmentsList.filter(
+          (assignment: Assignment) => assignment.status === 'active' || assignment.status === 'approved'
+        );
+        setActiveAssignments(active);
+      }
+    } catch (error) {
+      console.error('Error fetching assignments:', error);
+    } finally {
+      setAssignmentsLoading(false);
     }
   };
 
@@ -237,6 +320,80 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     }
   };
 
+  const handleViewAssignmentDetails = (assignment: Assignment) => {
+    setSelectedAssignment(assignment);
+    setIsActiveAssignmentsModalOpen(true);
+  };
+
+  const handleCompleteAssignment = async (assignmentId: number) => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/assignments/${assignmentId}/complete_assignment`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            rating: 5, // You can add a rating input in the modal
+            feedback: 'Mentorship completed successfully', // You can add a feedback input
+          }),
+        },
+      );
+
+      if (response.ok) {
+        showToast('Success', 'Assignment completed successfully');
+        setIsActiveAssignmentsModalOpen(false);
+        setSelectedAssignment(null);
+        fetchDashboardData();
+        fetchAssignments();
+      } else {
+        const error = await response.json();
+        showToast('Error', error.error || 'Failed to complete assignment', 'error');
+      }
+    } catch (error) {
+      console.error('Error completing assignment:', error);
+      showToast('Error', 'Failed to complete assignment', 'error');
+    }
+  };
+
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'Not specified';
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Invalid date';
+      
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch (error) {
+      return 'Date error';
+    }
+  };
+
+  const formatCurrency = (amount: number | undefined) => {
+    const safeAmount = amount || 0;
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(safeAmount);
+  };
+
+  const getProgressPercentage = (current: number | undefined, goal: number | undefined) => {
+    const safeCurrent = current || 0;
+    const safeGoal = goal || 0;
+    if (safeGoal === 0) return 0;
+    return Math.min((safeCurrent / safeGoal) * 100, 100);
+  };
+
   // Modal content for editing maximum assignments
   const MaxAssignmentsModalContent = () => (
     <div className="space-y-4">
@@ -308,6 +465,171 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
       </div>
     </div>
   );
+
+  // Modal content for active assignment details
+  const ActiveAssignmentModalContent = () => {
+    if (!selectedAssignment) return null;
+
+    const progress = getProgressPercentage(
+      selectedAssignment.campaign?.current_amount,
+      selectedAssignment.campaign?.goal_amount
+    );
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-xl font-bold mb-2">
+            {selectedAssignment.campaign?.title || 'Assignment Details'}
+          </h3>
+          <div className="flex items-center gap-2 mb-4">
+            <Badge className="bg-green-100 text-green-800">
+              Active
+            </Badge>
+            <span className="text-sm text-gray-500">
+              Started: {formatDate(selectedAssignment.started_at)}
+            </span>
+          </div>
+        </div>
+
+        {/* Campaign Information */}
+        {selectedAssignment.campaign && (
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-semibold mb-3 text-gray-800">Campaign Information</h4>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-gray-600">
+                    <Building className="h-4 w-4 mr-2" />
+                    <span>Founder:</span>
+                  </div>
+                  <span className="font-medium">
+                    {selectedAssignment.campaign.fundraiser_name || 
+                     selectedAssignment.entrepreneur?.full_name || 
+                     'Unknown'}
+                  </span>
+                </div>
+
+                {selectedAssignment.campaign.category && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-gray-600">
+                      <Tag className="h-4 w-4 mr-2" />
+                      <span>Category:</span>
+                    </div>
+                    <Badge variant="outline">{selectedAssignment.campaign.category}</Badge>
+                  </div>
+                )}
+
+                {selectedAssignment.campaign.location && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-gray-600">
+                      <Globe className="h-4 w-4 mr-2" />
+                      <span>Location:</span>
+                    </div>
+                    <span>{selectedAssignment.campaign.location}</span>
+                  </div>
+                )}
+
+                <div className="space-y-2 pt-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Funding Progress</span>
+                    <span className="font-semibold">
+                      {formatCurrency(selectedAssignment.campaign.current_amount)} / {formatCurrency(selectedAssignment.campaign.goal_amount)}
+                    </span>
+                  </div>
+                  <Progress value={progress} className="h-2" />
+                  <div className="text-xs text-gray-500 text-right">
+                    {progress.toFixed(1)}% funded
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Notes Section */}
+            <div className="space-y-3">
+              {selectedAssignment.entrepreneur_notes && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h5 className="font-semibold text-blue-900 mb-2 flex items-center">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Founder's Message
+                  </h5>
+                  <p className="text-sm text-blue-800 italic">
+                    "{selectedAssignment.entrepreneur_notes}"
+                  </p>
+                </div>
+              )}
+
+              {selectedAssignment.mentor_notes && (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                  <h5 className="font-semibold text-emerald-900 mb-2 flex items-center">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Your Notes
+                  </h5>
+                  <p className="text-sm text-emerald-800">
+                    {selectedAssignment.mentor_notes}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+          {selectedAssignment.campaign?.id && (
+            <Button
+              variant="outline"
+              onClick={() => window.open(`/campaign/${selectedAssignment.campaign?.id}`, '_blank')}
+              className="flex-1"
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View Campaign
+            </Button>
+          )}
+
+          {selectedAssignment.entrepreneur?.email && (
+            <Button
+              variant="outline"
+              onClick={() => window.location.href = `/messages?user=${selectedAssignment.entrepreneur?.id}`}
+              className="flex-1"
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              Message Founder
+            </Button>
+          )}
+
+          <Button
+            onClick={() => handleCompleteAssignment(selectedAssignment.id)}
+            className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+          >
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Complete Mentorship
+          </Button>
+        </div>
+
+        {/* Timeline */}
+        <div className="pt-4 border-t">
+          <h5 className="font-semibold mb-3 text-gray-800">Timeline</h5>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Request Received:</span>
+              <span>{formatDate(selectedAssignment.created_at)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Mentorship Started:</span>
+              <span>{formatDate(selectedAssignment.started_at)}</span>
+            </div>
+            {selectedAssignment.completed_at && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Completed:</span>
+                <span>{formatDate(selectedAssignment.completed_at)}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -452,9 +774,8 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
       expertise = [],
     } = dashboardData;
 
-    // Since assignments is an object, we need to handle it differently
-    const activeAssignmentsCount = assignments.active || 0;
-    const pendingRequestsCount = 0; // You might need to get this from another endpoint
+    const activeAssignmentsCount = activeAssignments.length;
+    const pendingRequestsCount = 0;
     const completedAssignmentsCount = assignments.completed || 0;
     const totalAssignmentsCount =
       statistics.total_assignments || completedAssignmentsCount;
@@ -610,22 +931,71 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {activeAssignmentsCount > 0 ? (
-                <div className="text-center py-4">
+              {assignmentsLoading ? (
+                <div className="flex justify-center items-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+                </div>
+              ) : activeAssignmentsCount > 0 ? (
+                <div className="space-y-4">
                   <p className="text-gray-600">
                     You have {activeAssignmentsCount} active assignment(s).
                   </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-4"
-                    onClick={() => {
-                      // Fetch actual assignments here or navigate to assignments page
-                      console.log('Fetch detailed assignments');
-                    }}
-                  >
-                    View Details
-                  </Button>
+                  
+                  <div className="space-y-3">
+                    {activeAssignments.map((assignment) => (
+                      <div key={assignment.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-lg mb-1">
+                              {assignment.campaign?.title || 'Untitled Campaign'}
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-2">
+                              Founder: {assignment.campaign?.fundraiser_name || assignment.entrepreneur?.full_name || 'Unknown'}
+                            </p>
+                            {assignment.entrepreneur_notes && (
+                              <p className="text-sm text-gray-700 italic mb-2 line-clamp-2">
+                                "{assignment.entrepreneur_notes}"
+                              </p>
+                            )}
+                            <div className="flex items-center text-sm text-gray-500">
+                              <Calendar className="h-4 w-4 mr-1" />
+                              <span>Started: {formatDate(assignment.started_at)}</span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col sm:items-end gap-2">
+                            <Badge className="bg-green-100 text-green-800">
+                              Active
+                            </Badge>
+                            {assignment.campaign?.category && (
+                              <Badge variant="outline" className="text-xs">
+                                {assignment.campaign.category}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2 pt-4 border-t mt-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewAssignmentDetails(assignment)}
+                            className="flex-1"
+                          >
+                            View Details
+                          </Button>
+                          {assignment.campaign?.id && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(`/campaigns/${assignment.campaign?.id}`, '_blank')}
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-8">
@@ -840,6 +1210,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             onSuccess={() => {
               setIsViewRequestsModalOpen(false);
               fetchDashboardData();
+              fetchAssignments();
             }}
             onCancel={() => setIsViewRequestsModalOpen(false)}
           />
@@ -851,6 +1222,17 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           size="large"
         >
           <ReviewRequestsModalContent />
+        </Modal>
+
+        <Modal
+          isOpen={isActiveAssignmentsModalOpen}
+          onClose={() => {
+            setIsActiveAssignmentsModalOpen(false);
+            setSelectedAssignment(null);
+          }}
+          size="large"
+        >
+          <ActiveAssignmentModalContent />
         </Modal>
 
         {/* Toast Component */}
