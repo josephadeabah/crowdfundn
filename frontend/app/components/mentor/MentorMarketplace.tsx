@@ -99,6 +99,64 @@ interface RequestingState {
   };
 }
 
+// Star Rating Component
+const StarRating = ({ 
+  rating, 
+  size = "sm",
+  showNumber = true,
+  showReviewsCount = false,
+  reviewsCount = 0 
+}: { 
+  rating: number | string; 
+  size?: "xs" | "sm" | "md" | "lg";
+  showNumber?: boolean;
+  showReviewsCount?: boolean;
+  reviewsCount?: number;
+}) => {
+  const ratingNum = typeof rating === 'string' ? parseFloat(rating) : rating;
+  const sizeMap = {
+    xs: "h-2 w-2",
+    sm: "h-3 w-3",
+    md: "h-4 w-4",
+    lg: "h-5 w-5"
+  };
+  
+  return (
+    <div className="flex items-center">
+      <div className="flex">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`${sizeMap[size]} ${
+              star <= Math.floor(ratingNum || 0)
+                ? 'text-yellow-400 fill-yellow-400'
+                : star <= (ratingNum || 0)
+                ? 'text-yellow-400 fill-yellow-400'
+                : 'text-gray-300'
+            }`}
+          />
+        ))}
+      </div>
+      {showNumber && (
+        <span className={`ml-1 font-semibold ${
+          size === 'lg' ? 'text-lg' : 
+          size === 'md' ? 'text-base' : 'text-xs'
+        }`}>
+          {ratingNum?.toFixed(1) || '0.0'}
+        </span>
+      )}
+      {showReviewsCount && reviewsCount > 0 && (
+        <span className={`ml-1 text-gray-500 ${
+          size === 'lg' ? 'text-base' : 
+          size === 'md' ? 'text-sm' : 'text-xs'
+        }`}>
+          ({reviewsCount})
+        </span>
+      )}
+    </div>
+  );
+};
+
 const MentorMarketplace: React.FC = () => {
   const { user, token } = useAuth();
   const router = useRouter();
@@ -418,31 +476,6 @@ const MentorMarketplace: React.FC = () => {
     }
   };
 
-  const renderStars = (rating: number | string, reviewsCount: number) => {
-    const ratingValue =
-      typeof rating === 'string' ? parseFloat(rating) : rating;
-
-    return (
-      <div className="flex items-center">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`h-3 w-3 sm:h-4 sm:w-4 ${
-              star <= Math.floor(ratingValue)
-                ? 'text-yellow-400 fill-yellow-400'
-                : star <= ratingValue
-                  ? 'text-yellow-400 fill-yellow-400'
-                  : 'text-gray-300'
-            }`}
-          />
-        ))}
-        <span className="ml-2 text-xs sm:text-sm text-gray-600">
-          {ratingValue.toFixed(1)} ({reviewsCount} reviews)
-        </span>
-      </div>
-    );
-  };
-
   const getInitials = (title: string) => {
     const words = title.split(' ');
     if (words.length >= 2) {
@@ -574,15 +607,25 @@ const MentorMarketplace: React.FC = () => {
           {getAvailabilityBadge(selectedMentor)}
         </div>
 
-        {/* Rating */}
+        {/* Rating - UPDATED with StarRating component */}
         <div className="border-t pt-4">
           <div className="flex items-center justify-between mb-2">
             <h4 className="font-semibold">Rating & Reviews</h4>
-            <span className="text-sm text-gray-600">
-              Joined {formatDate(selectedMentor.created_at)}
-            </span>
+            <div className="flex items-center">
+              <StarRating 
+                rating={selectedMentor.rating} 
+                size="md" 
+                showNumber={true}
+                showReviewsCount={false}
+              />
+              <Badge variant="outline" className="ml-2">
+                {selectedMentor.reviews_count || 0} reviews
+              </Badge>
+            </div>
           </div>
-          {renderStars(selectedMentor.rating, selectedMentor.reviews_count)}
+          <p className="text-sm text-gray-600">
+            Joined {formatDate(selectedMentor.created_at)}
+          </p>
         </div>
 
         {/* Current Load */}
@@ -837,6 +880,7 @@ const MentorMarketplace: React.FC = () => {
                     </SelectContent>
                   </Select>
 
+                  {/* Updated Rating Filter */}
                   <Select
                     value={minRating.toString()}
                     onValueChange={(v) => setMinRating(parseFloat(v))}
@@ -847,6 +891,12 @@ const MentorMarketplace: React.FC = () => {
                     <SelectContent>
                       <SelectItem value="0" className="text-xs sm:text-sm">
                         Any Rating
+                      </SelectItem>
+                      <SelectItem value="1" className="text-xs sm:text-sm">
+                        1+ Stars
+                      </SelectItem>
+                      <SelectItem value="2" className="text-xs sm:text-sm">
+                        2+ Stars
                       </SelectItem>
                       <SelectItem value="3" className="text-xs sm:text-sm">
                         3+ Stars
@@ -916,7 +966,7 @@ const MentorMarketplace: React.FC = () => {
               >
                 <CardContent className="p-4 sm:p-5">
                   <div className="space-y-4 h-full flex flex-col">
-                    {/* Mentor Header */}
+                    {/* Mentor Header - UPDATED with rating display */}
                     <div className="flex items-start gap-3">
                       <Avatar className="h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0">
                         <AvatarFallback className="bg-gray-100 text-gray-800">
@@ -929,12 +979,15 @@ const MentorMarketplace: React.FC = () => {
                             <h3 className="font-semibold text-base sm:text-lg truncate">
                               {mentor.professional_title}
                             </h3>
-                            <div className="flex items-center text-sm text-gray-600 mt-1">
-                              <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-                              <span className="truncate">
-                                {formatExperience(mentor.years_of_experience)}{' '}
-                                experience
-                              </span>
+                            {/* ADDED: Rating display directly under the title */}
+                            <div className="flex items-center mt-1">
+                              <StarRating 
+                                rating={mentor.rating} 
+                                size="sm" 
+                                showNumber={true}
+                                showReviewsCount={true}
+                                reviewsCount={mentor.reviews_count || 0}
+                              />
                             </div>
                           </div>
                           {getAvailabilityBadge(mentor)}
@@ -942,18 +995,20 @@ const MentorMarketplace: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Rating */}
-                    <div className="overflow-hidden">
-                      {renderStars(mentor.rating, mentor.reviews_count)}
-                    </div>
-
-                    {/* Current Load */}
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Target className="h-4 w-4 mr-2 flex-shrink-0" />
-                      <span className="truncate">
-                        {mentor.current_assignments} of{' '}
-                        {mentor.max_assignments || '∞'} slots filled
-                      </span>
+                    {/* Current Load - Updated to be more compact */}
+                    <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                      <div className="flex items-center">
+                        <Target className="h-4 w-4 mr-2 flex-shrink-0" />
+                        <span className="truncate">
+                          {mentor.current_assignments} of {mentor.max_assignments || '∞'} slots
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
+                        <span className="truncate">
+                          {formatExperience(mentor.years_of_experience)}
+                        </span>
+                      </div>
                     </div>
 
                     {/* Expertise */}
