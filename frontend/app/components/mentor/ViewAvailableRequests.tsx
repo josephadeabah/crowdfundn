@@ -129,7 +129,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
         const transformedRequests = requestsList.map((req: any) => {
           const campaign = req.campaign;
           const entrepreneur = req.entrepreneur;
-          
+
           return {
             id: req.id,
             campaign_id: campaign?.id,
@@ -137,7 +137,10 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
             status: req.status || 'pending',
             entrepreneur_notes: req.entrepreneur_notes || '',
             mentor_notes: req.mentor_notes || '',
-            created_at: req.created_at || campaign?.created_at || new Date().toISOString(),
+            created_at:
+              req.created_at ||
+              campaign?.created_at ||
+              new Date().toISOString(),
             started_at: req.started_at,
             completed_at: req.completed_at,
             rating: req.rating,
@@ -155,7 +158,10 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                   fundraiser_name: campaign.fundraiser_name, // Keep the fundraiser_name field
                   fundraiser: {
                     id: campaign.fundraiser?.id,
-                    full_name: campaign.fundraiser?.full_name || campaign.fundraiser_name || 'Unknown',
+                    full_name:
+                      campaign.fundraiser?.full_name ||
+                      campaign.fundraiser_name ||
+                      'Unknown',
                     profile: campaign.fundraiser?.profile,
                   },
                 }
@@ -280,7 +286,10 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
     }
   };
 
-  const getProgressPercentage = (current: number | undefined, goal: number | undefined) => {
+  const getProgressPercentage = (
+    current: number | undefined,
+    goal: number | undefined,
+  ) => {
     const safeCurrent = current || 0;
     const safeGoal = goal || 0;
     if (safeGoal === 0) return 0;
@@ -289,11 +298,11 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return 'Date not available';
-    
+
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'Invalid date';
-      
+
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
@@ -574,10 +583,11 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                           <div className="flex items-center">
                             <Building className="h-3 w-3 sm:h-4 sm:w-4 mr-2 flex-shrink-0" />
                             <span className="truncate">
-                              By {request.entrepreneur?.full_name || 
-                                   request.campaign?.fundraiser_name || 
-                                   request.campaign?.fundraiser?.full_name || 
-                                   'Unknown'}
+                              By{' '}
+                              {request.entrepreneur?.full_name ||
+                                request.campaign?.fundraiser_name ||
+                                request.campaign?.fundraiser?.full_name ||
+                                'Unknown'}
                             </span>
                           </div>
                           <span className="hidden sm:inline">•</span>
@@ -607,18 +617,20 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                           <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-600">Progress</span>
                             <span className="font-semibold">
-                              {formatCurrency(request.campaign.current_amount)} / {formatCurrency(request.campaign.goal_amount)}
+                              {formatCurrency(request.campaign.current_amount)}{' '}
+                              / {formatCurrency(request.campaign.goal_amount)}
                             </span>
                           </div>
                           <Progress value={progress} className="h-2" />
                           <div className="flex flex-col xs:flex-row xs:justify-between text-xs text-gray-500 gap-1">
                             <span>{progress.toFixed(1)}% funded</span>
-                            {request.campaign.location && request.campaign.location !== 'Unknown' && (
-                              <span className="flex items-center">
-                                <Globe className="h-3 w-3 mr-1" />
-                                {request.campaign.location}
-                              </span>
-                            )}
+                            {request.campaign.location &&
+                              request.campaign.location !== 'Unknown' && (
+                                <span className="flex items-center">
+                                  <Globe className="h-3 w-3 mr-1" />
+                                  {request.campaign.location}
+                                </span>
+                              )}
                           </div>
                         </div>
                       </div>
