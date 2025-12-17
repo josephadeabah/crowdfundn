@@ -59,7 +59,7 @@ export default function FAQ() {
     {
       question: 'Can I mentor in multiple categories?',
       answer:
-        "Yes, during the application process you can select multiple areas of expertise. Many mentors have experience across fundraising, product development, marketing, and scaling operations. You'll be matched based on the interdiv of your expertise and founder needs.",
+        "Yes, during the application process you can select multiple areas of expertise. Many mentors have experience across fundraising, product development, marketing, and scaling operations. You'll be matched based on the intersection of your expertise and founder needs.",
       category: 'mentors',
     },
   ];
