@@ -44,7 +44,6 @@ import {
   Shield,
   FileCheck,
   AlertTriangle,
-  GraduationCap,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import ToastComponent from '@/app/components/toast/Toast';
@@ -210,7 +209,6 @@ const KYCReview = () => {
       investor: User,
       issuer: Building,
       both: FileText,
-      mentor: GraduationCap,
     };
 
     const Icon = icons[kycType as keyof typeof icons] || User;
@@ -391,11 +389,6 @@ const KYCReview = () => {
     );
   };
 
-  // Filter out mentor KYCs from the display
-  const nonMentorReviews = reviews.filter(
-    (review: any) => review.kyc_type !== 'mentor',
-  );
-
   if (error) {
     return (
       <div className="p-6">
@@ -430,8 +423,7 @@ const KYCReview = () => {
         <div>
           <h1 className="text-3xl font-bold">KYC Review</h1>
           <p className="text-muted-foreground">
-            Manage and review user verification requests (Mentor applications
-            are handled separately)
+            Manage and review user verification requests
           </p>
         </div>
         <Button onClick={handleRefresh} variant="outline" className="gap-2">
@@ -515,8 +507,7 @@ const KYCReview = () => {
                   {
                     reviews.filter(
                       (r: any) =>
-                        (r.kyc_type === 'investor' || r.kyc_type === 'both') &&
-                        r.kyc_type !== 'mentor',
+                        r.kyc_type === 'investor' || r.kyc_type === 'both',
                     ).length
                   }
                 </p>
@@ -592,7 +583,6 @@ const KYCReview = () => {
                   <SelectItem value="investor">Investor</SelectItem>
                   <SelectItem value="issuer">Issuer</SelectItem>
                   <SelectItem value="both">Both</SelectItem>
-                  {/* Note: Mentor type is intentionally excluded from filters */}
                 </SelectContent>
               </Select>
             </div>
@@ -600,20 +590,16 @@ const KYCReview = () => {
         </CardContent>
       </Card>
 
-      {/* KYC Applications List - UPDATED: Now excludes mentor applications */}
+      {/* KYC Applications List */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>KYC Applications Pending Review</span>
             <span className="text-sm font-normal text-gray-500">
-              {nonMentorReviews.length} application(s)
+              {pagination.total_count} application(s)
               {loading && ' - Loading...'}
             </span>
           </CardTitle>
-          <CardDescription>
-            Showing only investor, issuer, and both types. Mentor applications
-            are handled through the Mentor Application review process.
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -621,14 +607,14 @@ const KYCReview = () => {
               <div className="text-center py-8">
                 Loading KYC applications...
               </div>
-            ) : nonMentorReviews.length === 0 ? (
+            ) : reviews.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 {Object.keys(filters).length > 0
                   ? 'No KYC applications match your filters'
                   : 'No KYC applications found'}
               </div>
             ) : (
-              nonMentorReviews.map((review) => {
+              reviews.map((review) => {
                 const isExpanded = expandedReview === review.id;
                 const residentialAddress = review.addresses?.find(
                   (addr: any) => addr.address_type === 'residential',
