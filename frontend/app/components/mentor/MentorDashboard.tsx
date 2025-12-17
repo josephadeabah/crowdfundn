@@ -1,4 +1,3 @@
-// app/components/mentor/MentorDashboard.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -38,12 +37,14 @@ import {
   ChevronRight,
   Menu,
   X,
+  AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import Modal from '@/app/components/modal/Modal';
 import ToastComponent from '@/app/components/toast/Toast';
 import EditMentorProfile from '@/app/components/mentor/EditMentorProfile';
 import ViewAvailableRequests from './ViewAvailableRequests';
+import RateMentor from '@/app/components/entrepreneur/RateMentor'; // NEW: Import rating component
 
 interface MentorDashboardProps {
   mentorId?: number;
@@ -88,6 +89,13 @@ interface MentorData {
     entrepreneur_name?: string;
     completed_at?: string;
   }>;
+  assignments_needing_rating?: Array<{
+    // NEW: Added type
+    id: number;
+    mentor_name: string;
+    campaign_title: string;
+    completed_at?: string;
+  }>;
   statistics?: {
     total_assignments: number;
   };
@@ -126,6 +134,7 @@ interface Assignment {
   rating?: number;
   feedback?: string;
   created_at: string;
+  needs_rating?: boolean; // NEW: Added field
 }
 
 const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
@@ -136,6 +145,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const [allAssignments, setAllAssignments] = useState<Assignment[]>([]);
   const [activeAssignments, setActiveAssignments] = useState<Assignment[]>([]);
   const [pendingRequests, setPendingRequests] = useState<Assignment[]>([]);
+  const [assignmentsNeedingRating, setAssignmentsNeedingRating] = useState<
+    Assignment[]
+  >([]); // NEW
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Modal states
@@ -152,6 +164,10 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const [selectedRequest, setSelectedRequest] = useState<Assignment | null>(
     null,
   );
+  const [isRateMentorModalOpen, setIsRateMentorModalOpen] = useState(false); // NEW
+  const [assignmentToRate, setAssignmentToRate] = useState<Assignment | null>(
+    null,
+  ); // NEW
 
   // Toast states
   const [toast, setToast] = useState({
@@ -204,6 +220,24 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         if (data.has_mentor_profile) {
           fetchAssignments();
         }
+
+        // If there are assignments needing rating, set them
+        if (
+          data.assignments_needing_rating &&
+          data.assignments_needing_rating.length > 0
+        ) {
+          // Convert to Assignment format
+          const needingRating = data.assignments_needing_rating.map(
+            (assignment: any) => ({
+              id: assignment.id,
+              status: 'completed' as const,
+              campaign: { title: assignment.campaign_title },
+              entrepreneur: { full_name: assignment.mentor_name },
+              needs_rating: true,
+            }),
+          );
+          setAssignmentsNeedingRating(needingRating);
+        }
       } else {
         throw new Error('Failed to fetch dashboard data');
       }
@@ -246,6 +280,13 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             assignment.status === 'active' || assignment.status === 'approved',
         );
         setActiveAssignments(active);
+
+        // Filter for assignments needing rating (completed but not rated)
+        const needingRating = assignmentsList.filter(
+          (assignment: Assignment) =>
+            assignment.status === 'completed' && assignment.needs_rating,
+        );
+        setAssignmentsNeedingRating(needingRating);
       }
     } catch (error) {
       console.error('Error fetching assignments:', error);
@@ -254,6 +295,94 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     }
   };
 
+  // UPDATED: Complete assignment (mentor marks as complete)
+  const handleCompleteAssignment = async (assignmentId: number) => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/assignments/${assignmentId}/complete_assignment`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          // Remove rating and feedback from body
+          body: JSON.stringify({}),
+        },
+      );
+
+      if (response.ok) {
+        showToast(
+          'Success',
+          'Assignment completed. The entrepreneur will be asked to provide a rating.',
+        );
+        setIsActiveAssignmentsModalOpen(false);
+        setSelectedAssignment(null);
+        fetchDashboardData();
+        fetchAssignments();
+      } else {
+        const error = await response.json();
+        showToast(
+          'Error',
+          error.error || 'Failed to complete assignment',
+          'error',
+        );
+      }
+    } catch (error) {
+      console.error('Error completing assignment:', error);
+      showToast('Error', 'Failed to complete assignment', 'error');
+    }
+  };
+
+  // NEW: Rate mentor (entrepreneur rates completed mentorship)
+  const handleRateMentor = async (
+    assignmentId: number,
+    rating: number,
+    feedback: string,
+  ) => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/assignments/${assignmentId}/rate_assignment`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            rating: rating,
+            feedback: feedback,
+          }),
+        },
+      );
+
+      if (response.ok) {
+        showToast('Success', 'Thank you for your feedback!');
+        setIsRateMentorModalOpen(false);
+        setAssignmentToRate(null);
+        fetchDashboardData();
+        fetchAssignments();
+      } else {
+        const error = await response.json();
+        showToast('Error', error.error || 'Failed to submit rating', 'error');
+      }
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      showToast('Error', 'Failed to submit rating', 'error');
+    }
+  };
+
+  // NEW: Open rating modal
+  const handleOpenRatingModal = (assignment: Assignment) => {
+    setAssignmentToRate(assignment);
+    setIsRateMentorModalOpen(true);
+  };
+
+  // Keep other functions unchanged (updateMaxAssignments, toggleAvailability, handleRequestAction, etc.)
   const updateMaxAssignments = async () => {
     if (!token || !newMaxAssignments) return;
 
@@ -390,45 +519,6 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     setIsActiveAssignmentsModalOpen(true);
   };
 
-  const handleCompleteAssignment = async (assignmentId: number) => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/assignments/${assignmentId}/complete_assignment`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            rating: 5,
-            feedback: 'Mentorship completed successfully',
-          }),
-        },
-      );
-
-      if (response.ok) {
-        showToast('Success', 'Assignment completed successfully');
-        setIsActiveAssignmentsModalOpen(false);
-        setSelectedAssignment(null);
-        fetchDashboardData();
-        fetchAssignments();
-      } else {
-        const error = await response.json();
-        showToast(
-          'Error',
-          error.error || 'Failed to complete assignment',
-          'error',
-        );
-      }
-    } catch (error) {
-      console.error('Error completing assignment:', error);
-      showToast('Error', 'Failed to complete assignment', 'error');
-    }
-  };
-
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return 'Not specified';
 
@@ -466,7 +556,34 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     return Math.min((safeCurrent / safeGoal) * 100, 100);
   };
 
-  // Modal content for editing maximum assignments
+  // NEW: Modal content for rating mentor
+  const RatingModalContent = () => {
+    if (!assignmentToRate) return null;
+
+    return (
+      <div className="space-y-6">
+        <h3 className="text-lg font-semibold">Rate Your Mentor</h3>
+        <RateMentor
+          assignmentId={assignmentToRate.id}
+          mentorName={assignmentToRate.entrepreneur?.full_name || 'Your Mentor'}
+          campaignTitle={assignmentToRate.campaign?.title || 'Campaign'}
+          onSuccess={() => {
+            setIsRateMentorModalOpen(false);
+            setAssignmentToRate(null);
+            fetchDashboardData();
+          }}
+          onCancel={() => {
+            setIsRateMentorModalOpen(false);
+            setAssignmentToRate(null);
+          }}
+        />
+      </div>
+    );
+  };
+
+  // Keep other modal content functions unchanged (MaxAssignmentsModalContent, NewRequestsModalContent, ActiveAssignmentModalContent)
+
+  // Max Assignments Modal
   const MaxAssignmentsModalContent = () => (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Update Maximum Assignments</h3>
@@ -511,7 +628,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     </div>
   );
 
-  // Modal content for new mentorship requests
+  // New Requests Modal
   const NewRequestsModalContent = () => {
     if (selectedRequest) {
       const progress = getProgressPercentage(
@@ -540,7 +657,6 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                 <h4 className="font-semibold mb-3 text-gray-800">
                   Campaign Information
                 </h4>
-
                 <div className="space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <div className="flex items-center text-gray-600">
@@ -611,7 +727,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             </div>
           )}
 
-          {/* Action Buttons - Responsive */}
+          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 border-t">
             {selectedRequest.campaign?.id && (
               <Button
@@ -782,7 +898,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     );
   };
 
-  // Modal content for active assignment details
+  // Active Assignment Modal
   const ActiveAssignmentModalContent = () => {
     if (!selectedAssignment) return null;
 
@@ -812,7 +928,6 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               <h4 className="font-semibold mb-3 text-gray-800">
                 Campaign Information
               </h4>
-
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <div className="flex items-center text-gray-600">
@@ -898,7 +1013,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           </div>
         )}
 
-        {/* Action Buttons - Responsive */}
+        {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 border-t">
           {selectedAssignment.campaign?.id && (
             <Button
@@ -1006,7 +1121,6 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           <p className="text-gray-600 mb-4">
             Your mentor application has been submitted and is under review.
           </p>
-
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-left mx-2">
             <div className="flex items-start">
               <FileText className="h-5 w-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
@@ -1041,7 +1155,6 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               </div>
             </div>
           </div>
-
           <div className="flex flex-col sm:flex-row gap-2 justify-center">
             <Button
               onClick={() =>
@@ -1111,6 +1224,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     const completedAssignmentsCount = assignments.completed || 0;
     const totalAssignmentsCount =
       statistics.total_assignments || completedAssignmentsCount;
+    const assignmentsNeedingRatingCount = assignmentsNeedingRating.length; // NEW
 
     return (
       <>
@@ -1190,6 +1304,38 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                 Edit Profile
               </Button>
             </div>
+          )}
+
+          {/* NEW: Pending Ratings Alert */}
+          {assignmentsNeedingRatingCount > 0 && (
+            <Card className="border-yellow-200 bg-yellow-50">
+              <CardContent className="p-4">
+                <div className="flex items-center">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 mr-3" />
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-yellow-800">
+                      Pending Ratings
+                    </h4>
+                    <p className="text-sm text-yellow-700">
+                      You have {assignmentsNeedingRatingCount} completed
+                      mentorship(s) that need your feedback.
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-yellow-300 text-yellow-700 hover:bg-yellow-100"
+                    onClick={() => {
+                      if (assignmentsNeedingRating.length > 0) {
+                        handleOpenRatingModal(assignmentsNeedingRating[0]);
+                      }
+                    }}
+                  >
+                    Rate Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Stats Grid */}
@@ -1326,7 +1472,6 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                   <p className="text-sm text-gray-600">
                     You have {activeAssignmentsCount} active assignment(s).
                   </p>
-
                   <div className="space-y-3">
                     {activeAssignments.map((assignment) => (
                       <div
@@ -1368,7 +1513,6 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                             )}
                           </div>
                         </div>
-
                         <div className="flex gap-2 pt-3 sm:pt-4 border-t mt-3 sm:mt-4">
                           <Button
                             variant="outline"
@@ -1653,6 +1797,18 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           size="large"
         >
           <ActiveAssignmentModalContent />
+        </Modal>
+
+        {/* NEW: Rate Mentor Modal */}
+        <Modal
+          isOpen={isRateMentorModalOpen}
+          onClose={() => {
+            setIsRateMentorModalOpen(false);
+            setAssignmentToRate(null);
+          }}
+          size="medium"
+        >
+          <RatingModalContent />
         </Modal>
 
         {/* Toast Component */}
