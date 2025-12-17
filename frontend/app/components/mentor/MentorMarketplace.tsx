@@ -1142,7 +1142,7 @@ const MentorMarketplace: React.FC = () => {
                               'You need an active campaign to request a mentor. Create a campaign first.',
                               'error',
                             );
-                            router.push('/campaigns/create');
+                            router.push('/account/dashboard/create');
                           }}
                         >
                           <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
