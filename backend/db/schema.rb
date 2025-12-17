@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_16_020436) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_17_030045) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -838,10 +838,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_16_020436) do
     t.text "cancellation_reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "rated_at"
     t.index ["campaign_id", "mentor_id"], name: "index_mentor_assignments_on_campaign_id_and_mentor_id", unique: true
     t.index ["campaign_id"], name: "index_mentor_assignments_on_campaign_id"
     t.index ["entrepreneur_id"], name: "index_mentor_assignments_on_entrepreneur_id"
     t.index ["mentor_id"], name: "index_mentor_assignments_on_mentor_id"
+    t.index ["rated_at"], name: "index_mentor_assignments_on_rated_at"
     t.index ["status"], name: "index_mentor_assignments_on_status"
   end
 

@@ -1,4 +1,3 @@
-# app/controllers/api/v1/mentor/assignments_controller.rb
 module Api
   module V1
     module Mentor
@@ -19,7 +18,8 @@ module Api
                 started_at: assignment.started_at,
                 completed_at: assignment.completed_at,
                 rating: assignment.rating,
-                feedback: assignment.feedback
+                feedback: assignment.feedback,
+                needs_rating: assignment.needs_rating?
               }
             end,
             can_request_mentor: can_request_mentor?
@@ -59,7 +59,8 @@ module Api
               completed_at: @assignment.completed_at,
               rating: @assignment.rating,
               feedback: @assignment.feedback,
-              cancellation_reason: @assignment.cancellation_reason
+              cancellation_reason: @assignment.cancellation_reason,
+              needs_rating: @assignment.needs_rating?
             }
           }, status: :ok
         end
@@ -145,7 +146,7 @@ module Api
         def my_mentor_assignments
           assignments = MentorAssignment.where(entrepreneur: @current_user)
                                         .or(MentorAssignment.where(mentor: @current_user.mentor))
-                                        .includes(:campaign, :mentor)
+                                        .includes(:campaign, :mentor, :entrepreneur)
                                         .order(created_at: :desc)
           
           render json: {
@@ -156,15 +157,32 @@ module Api
                 campaign: {
                   id: assignment.campaign.id,
                   title: assignment.campaign.title,
-                  fundraiser_name: assignment.campaign.fundraiser.full_name
+                  description: assignment.campaign.description,
+                  goal_amount: assignment.campaign.goal_amount,
+                  current_amount: assignment.campaign.current_amount,
+                  category: assignment.campaign.category,
+                  location: assignment.campaign.location,
+                  created_at: assignment.campaign.created_at,
+                  fundraiser_name: assignment.campaign.fundraiser.full_name,
+                  fundraiser: {
+                    id: assignment.campaign.fundraiser.id,
+                    full_name: assignment.campaign.fundraiser.full_name,
+                    email: assignment.campaign.fundraiser.email
+                  }
                 },
                 mentor: assignment.mentor.as_json(include_user: true),
+                entrepreneur: {
+                  id: assignment.entrepreneur.id,
+                  full_name: assignment.entrepreneur.full_name,
+                  email: assignment.entrepreneur.email
+                },
                 entrepreneur_notes: assignment.entrepreneur_notes,
                 mentor_notes: assignment.mentor_notes,
                 started_at: assignment.started_at,
                 completed_at: assignment.completed_at,
                 rating: assignment.rating,
-                feedback: assignment.feedback
+                feedback: assignment.feedback,
+                needs_rating: assignment.needs_rating?
               }
             end
           }, status: :ok
@@ -181,7 +199,6 @@ module Api
           if @assignment.pending?
             @assignment.approve!
             
-            # This call looks correct, but double-check it
             MentorNotificationService.send_mentor_assignment_notification(
               assignment: @assignment, 
               event_type: :assignment_approved
@@ -199,34 +216,50 @@ module Api
         def complete_assignment
           @assignment = MentorAssignment.find_by(id: params[:id])
           
-          # Check authorization
-          unless @assignment && (
-            @assignment.entrepreneur == @current_user || 
-            @assignment.mentor.user == @current_user
-          )
-            render json: { error: 'Unauthorized' }, status: :unauthorized
+          # Check authorization - only mentor can complete
+          unless @assignment && @assignment.mentor.user == @current_user
+            render json: { error: 'Unauthorized. Only the mentor can complete assignments.' }, status: :unauthorized
             return
           end
           
           if @assignment.active?
-            @assignment.complete!(
-              params[:rating],
-              params[:feedback]
-            )
-            
-            # This should be called automatically by the model's complete! method
-            # No need to call it here again
-            # MentorNotificationService.send_mentor_assignment_notification(
-            #   assignment: @assignment, 
-            #   event_type: :assignment_completed
-            # )
+            @assignment.complete!
             
             render json: {
               assignment: @assignment.as_json,
-              message: 'Assignment completed successfully'
+              message: 'Assignment marked as completed. Entrepreneur will be asked to provide rating.'
             }, status: :ok
           else
             render json: { error: 'Assignment cannot be completed in current state' }, status: :unprocessable_entity
+          end
+        end
+        
+        def rate_assignment
+          @assignment = MentorAssignment.find_by(id: params[:id])
+          
+          # Check authorization - only entrepreneur can rate
+          unless @assignment && @assignment.entrepreneur == @current_user
+            render json: { error: 'Unauthorized. Only the entrepreneur can rate mentors.' }, status: :unauthorized
+            return
+          end
+          
+          unless @assignment.completed?
+            render json: { error: 'Cannot rate an assignment that is not completed' }, status: :unprocessable_entity
+            return
+          end
+          
+          if params[:rating].blank? || params[:rating].to_i < 1 || params[:rating].to_i > 5
+            render json: { error: 'Rating must be between 1 and 5' }, status: :unprocessable_entity
+            return
+          end
+          
+          if @assignment.rate_mentor(params[:rating].to_i, params[:feedback])
+            render json: {
+              assignment: @assignment.as_json,
+              message: 'Rating submitted successfully'
+            }, status: :ok
+          else
+            render json: { errors: @assignment.errors.full_messages }, status: :unprocessable_entity
           end
         end
 
@@ -244,13 +277,6 @@ module Api
           
           if @assignment.pending? || @assignment.active?
             @assignment.cancel!(params[:reason])
-            
-            # This should be called automatically by the model's cancel! method
-            # No need to call it here again
-            # MentorNotificationService.send_mentor_assignment_notification(
-            #   assignment: @assignment, 
-            #   event_type: :assignment_cancelled
-            # )
             
             render json: {
               assignment: @assignment.as_json,

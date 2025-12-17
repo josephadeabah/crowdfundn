@@ -30,6 +30,7 @@ Rails.application.routes.draw do
             post :approve_assignment
             post :complete_assignment
             post :cancel_assignment
+            post :rate_assignment
           end
         end
         
@@ -54,6 +55,9 @@ Rails.application.routes.draw do
             end
           end
         end
+
+        # NEW: Route for entrepreneur to see assignments needing rating
+        get 'assignments/needing_rating', to: 'assignments#needing_rating'
       end
       
       # Admin mentor management

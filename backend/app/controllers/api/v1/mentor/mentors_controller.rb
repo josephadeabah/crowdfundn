@@ -1,4 +1,3 @@
-# app/controllers/api/v1/mentor/mentors_controller.rb
 module Api
   module V1
     module Mentor
@@ -56,7 +55,8 @@ module Api
               current: mentor.current_assignments,
               max: mentor.max_assignments,
               completed: mentor.mentor_assignments.completed.count,
-              active: mentor.mentor_assignments.active.count
+              active: mentor.mentor_assignments.active.count,
+              needs_rating: mentor.mentor_assignments.completed.where(rating: nil).count
             },
             reviews: mentor.mentor_assignments.completed.where.not(rating: nil).map do |assignment|
               {
@@ -94,7 +94,9 @@ module Api
             return
           end
           
-          # If mentor exists, return their profile
+          # Get assignments that need rating (from entrepreneur's perspective)
+          entrepreneur_assignments = MentorAssignment.where(entrepreneur: @current_user, status: 'completed', rating: nil)
+          
           render json: {
             has_mentor_profile: true,
             mentor: mentor.as_json(include_user: true),
@@ -113,7 +115,16 @@ module Api
                 entrepreneur_name: assignment.entrepreneur.full_name,
                 completed_at: assignment.completed_at
               }
-            end
+            end,
+            assignments_needing_rating: entrepreneur_assignments.map do |assignment|
+              {
+                id: assignment.id,
+                mentor_name: assignment.mentor.professional_title,
+                campaign_title: assignment.campaign.title,
+                completed_at: assignment.completed_at
+              }
+            end,
+            message: entrepreneur_assignments.any? ? 'You have completed mentorships that need your rating' : nil
           }, status: :ok
         end
         

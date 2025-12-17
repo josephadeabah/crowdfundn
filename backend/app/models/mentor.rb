@@ -1,4 +1,3 @@
-# app/models/mentor.rb
 class Mentor < ApplicationRecord
   belongs_to :user
   has_many :mentor_applications, dependent: :destroy
