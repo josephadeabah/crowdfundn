@@ -927,7 +927,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
             onClick={() => window.open('/account#Find%20Mentor', '')}
             className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 order-1 sm:order-2"
           >
-            Browse Marketplace
+            Browse Directory
           </Button>
         </div>
       </div>
