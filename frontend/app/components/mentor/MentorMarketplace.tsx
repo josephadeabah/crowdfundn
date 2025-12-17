@@ -1220,7 +1220,7 @@ const MentorMarketplace: React.FC = () => {
                 <li className="flex items-start">
                   <CheckCircle className="h-4 w-4 text-gray-600 mr-2 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">
-                    <strong>Become a Mentor:</strong> Verified users can apply
+                    <strong>Become a Mentor: </strong> Verified users can apply
                     to become mentors via Account → Settings → KYC
                   </span>
                 </li>
@@ -1229,7 +1229,7 @@ const MentorMarketplace: React.FC = () => {
                 <Button
                   variant="link"
                   className="text-emerald-600 hover:text-emerald-700 p-0 h-auto text-sm"
-                  onClick={() => router.push('/help/mentorship')}
+                  onClick={() => router.push('/info/mentorship')}
                 >
                   Learn more about mentorship
                   <ChevronRight className="h-4 w-4 ml-1" />
