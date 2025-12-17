@@ -44,7 +44,7 @@ import Modal from '@/app/components/modal/Modal';
 import ToastComponent from '@/app/components/toast/Toast';
 import EditMentorProfile from '@/app/components/mentor/EditMentorProfile';
 import ViewAvailableRequests from './ViewAvailableRequests';
-import RateMentor from '@/app/components/entrepreneur/RateMentor'; // NEW: Import rating component
+import RateMentor from './RateMentor';
 
 interface MentorDashboardProps {
   mentorId?: number;
