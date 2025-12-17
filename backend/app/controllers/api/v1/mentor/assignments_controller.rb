@@ -178,10 +178,10 @@ module Api
             return
           end
           
-          if @assignment.pending?  # This will now work with the enum
+          if @assignment.pending?
             @assignment.approve!
             
-            # Send notification using the new service
+            # This call looks correct, but double-check it
             MentorNotificationService.send_mentor_assignment_notification(
               assignment: @assignment, 
               event_type: :assignment_approved
@@ -214,11 +214,12 @@ module Api
               params[:feedback]
             )
             
-            # Send notification using the new service
-            MentorNotificationService.send_mentor_assignment_notification(
-              assignment: @assignment, 
-              event_type: :assignment_completed
-            )
+            # This should be called automatically by the model's complete! method
+            # No need to call it here again
+            # MentorNotificationService.send_mentor_assignment_notification(
+            #   assignment: @assignment, 
+            #   event_type: :assignment_completed
+            # )
             
             render json: {
               assignment: @assignment.as_json,
@@ -228,7 +229,7 @@ module Api
             render json: { error: 'Assignment cannot be completed in current state' }, status: :unprocessable_entity
           end
         end
-        
+
         def cancel_assignment
           @assignment = MentorAssignment.find_by(id: params[:id])
           
@@ -244,11 +245,12 @@ module Api
           if @assignment.pending? || @assignment.active?
             @assignment.cancel!(params[:reason])
             
-            # Send notification using the new service
-            MentorNotificationService.send_mentor_assignment_notification(
-              assignment: @assignment, 
-              event_type: :assignment_cancelled
-            )
+            # This should be called automatically by the model's cancel! method
+            # No need to call it here again
+            # MentorNotificationService.send_mentor_assignment_notification(
+            #   assignment: @assignment, 
+            #   event_type: :assignment_cancelled
+            # )
             
             render json: {
               assignment: @assignment.as_json,

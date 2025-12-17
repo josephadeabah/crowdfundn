@@ -6,7 +6,7 @@ class MentorAssignment < ApplicationRecord
   
   enum status: {
     pending: 'pending',
-    active: 'active', 
+    active: 'active',
     completed: 'completed',
     cancelled: 'cancelled'
   }
@@ -60,7 +60,11 @@ class MentorAssignment < ApplicationRecord
     mentor.decrement_assignments
   end
   
-  def send_notification(type)
-    MentorNotificationService.send_mentor_assignment_notification(self, type)
+  def send_notification(event_type)
+    # FIXED: Use keyword arguments to match the service method signature
+    MentorNotificationService.send_mentor_assignment_notification(
+      assignment: self, 
+      event_type: event_type
+    )
   end
 end
