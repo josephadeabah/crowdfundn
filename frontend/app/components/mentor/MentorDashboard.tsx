@@ -486,7 +486,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           min="1"
           value={newMaxAssignments}
           onChange={(e) => setNewMaxAssignments(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-none shadow-none focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           placeholder="Enter a number"
         />
       </div>
@@ -677,7 +677,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             {pendingRequests.map((request) => (
               <Card
                 key={request.id}
-                className="border hover:shadow-sm transition-shadow overflow-hidden"
+                className="border hover:shadow-none transition-shadow overflow-hidden"
               >
                 <CardContent className="p-3 sm:p-4">
                   <div className="space-y-3">
@@ -696,7 +696,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     </div>
 
                     {request.entrepreneur_notes && (
-                      <div className="bg-blue-50 p-2 sm:p-3 rounded-md">
+                      <div className="bg-blue-50 p-2 sm:p-3 rounded-none">
                         <p className="text-xs sm:text-sm text-blue-800 italic line-clamp-2">
                           "{request.entrepreneur_notes}"
                         </p>
@@ -704,7 +704,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     )}
 
                     {request.campaign && (
-                      <div className="bg-gray-50 p-2 sm:p-3 rounded-md">
+                      <div className="bg-gray-50 p-2 sm:p-3 rounded-none">
                         <div className="flex justify-between text-xs sm:text-sm mb-1">
                           <span className="text-gray-600">Goal:</span>
                           <span className="font-semibold">
@@ -1167,7 +1167,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="sm:hidden bg-white rounded-lg shadow-sm p-4 space-y-3 border">
+            <div className="sm:hidden bg-white rounded-lg shadow-none p-4 space-y-3 border">
               <div className="flex items-center justify-between">
                 <Badge
                   className={`px-3 py-1 ${mentor.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}
@@ -1331,7 +1331,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     {activeAssignments.map((assignment) => (
                       <div
                         key={assignment.id}
-                        className="border rounded-lg p-3 sm:p-4 hover:shadow-sm transition-shadow"
+                        className="border rounded-lg p-3 sm:p-4 hover:shadow-none transition-shadow"
                       >
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-3">
                           <div className="flex-1 min-w-0">
