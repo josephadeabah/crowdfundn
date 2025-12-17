@@ -100,27 +100,27 @@ interface RequestingState {
 }
 
 // Star Rating Component
-const StarRating = ({ 
-  rating, 
-  size = "sm",
+const StarRating = ({
+  rating,
+  size = 'sm',
   showNumber = true,
   showReviewsCount = false,
-  reviewsCount = 0 
-}: { 
-  rating: number | string; 
-  size?: "xs" | "sm" | "md" | "lg";
+  reviewsCount = 0,
+}: {
+  rating: number | string;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   showNumber?: boolean;
   showReviewsCount?: boolean;
   reviewsCount?: number;
 }) => {
   const ratingNum = typeof rating === 'string' ? parseFloat(rating) : rating;
   const sizeMap = {
-    xs: "h-2 w-2",
-    sm: "h-3 w-3",
-    md: "h-4 w-4",
-    lg: "h-5 w-5"
+    xs: 'h-2 w-2',
+    sm: 'h-3 w-3',
+    md: 'h-4 w-4',
+    lg: 'h-5 w-5',
   };
-  
+
   return (
     <div className="flex items-center">
       <div className="flex">
@@ -131,25 +131,27 @@ const StarRating = ({
               star <= Math.floor(ratingNum || 0)
                 ? 'text-yellow-400 fill-yellow-400'
                 : star <= (ratingNum || 0)
-                ? 'text-yellow-400 fill-yellow-400'
-                : 'text-gray-300'
+                  ? 'text-yellow-400 fill-yellow-400'
+                  : 'text-gray-300'
             }`}
           />
         ))}
       </div>
       {showNumber && (
-        <span className={`ml-1 font-semibold ${
-          size === 'lg' ? 'text-lg' : 
-          size === 'md' ? 'text-base' : 'text-xs'
-        }`}>
+        <span
+          className={`ml-1 font-semibold ${
+            size === 'lg' ? 'text-lg' : size === 'md' ? 'text-base' : 'text-xs'
+          }`}
+        >
           {ratingNum?.toFixed(1) || '0.0'}
         </span>
       )}
       {showReviewsCount && reviewsCount > 0 && (
-        <span className={`ml-1 text-gray-500 ${
-          size === 'lg' ? 'text-base' : 
-          size === 'md' ? 'text-sm' : 'text-xs'
-        }`}>
+        <span
+          className={`ml-1 text-gray-500 ${
+            size === 'lg' ? 'text-base' : size === 'md' ? 'text-sm' : 'text-xs'
+          }`}
+        >
           ({reviewsCount})
         </span>
       )}
@@ -612,9 +614,9 @@ const MentorMarketplace: React.FC = () => {
           <div className="flex items-center justify-between mb-2">
             <h4 className="font-semibold">Rating & Reviews</h4>
             <div className="flex items-center">
-              <StarRating 
-                rating={selectedMentor.rating} 
-                size="md" 
+              <StarRating
+                rating={selectedMentor.rating}
+                size="md"
                 showNumber={true}
                 showReviewsCount={false}
               />
@@ -981,9 +983,9 @@ const MentorMarketplace: React.FC = () => {
                             </h3>
                             {/* ADDED: Rating display directly under the title */}
                             <div className="flex items-center mt-1">
-                              <StarRating 
-                                rating={mentor.rating} 
-                                size="sm" 
+                              <StarRating
+                                rating={mentor.rating}
+                                size="sm"
                                 showNumber={true}
                                 showReviewsCount={true}
                                 reviewsCount={mentor.reviews_count || 0}
@@ -1000,7 +1002,8 @@ const MentorMarketplace: React.FC = () => {
                       <div className="flex items-center">
                         <Target className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span className="truncate">
-                          {mentor.current_assignments} of {mentor.max_assignments || '∞'} slots
+                          {mentor.current_assignments} of{' '}
+                          {mentor.max_assignments || '∞'} slots
                         </span>
                       </div>
                       <div className="flex items-center">
