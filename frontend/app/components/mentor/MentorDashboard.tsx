@@ -29,11 +29,12 @@ import {
   Mail,
   Globe,
   Building,
-  User,
-  Target,
-  DollarSign,
   Loader2,
   Tag,
+  Bell,
+  UserCheck,
+  UserX,
+  Eye,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import Modal from '@/app/components/modal/Modal';
@@ -129,7 +130,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const [dashboardData, setDashboardData] = useState<MentorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [assignmentsLoading, setAssignmentsLoading] = useState(false);
+  const [allAssignments, setAllAssignments] = useState<Assignment[]>([]);
   const [activeAssignments, setActiveAssignments] = useState<Assignment[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<Assignment[]>([]);
 
   // Modal states
   const [isMaxAssignmentsModalOpen, setIsMaxAssignmentsModalOpen] =
@@ -143,6 +146,8 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     useState(false);
   const [selectedAssignment, setSelectedAssignment] =
     useState<Assignment | null>(null);
+  const [isNewRequestsModalOpen, setIsNewRequestsModalOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<Assignment | null>(null);
 
   // Toast states
   const [toast, setToast] = useState({
@@ -223,8 +228,15 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
       if (response.ok) {
         const data = await response.json();
         const assignmentsList = data.assignments || [];
+        setAllAssignments(assignmentsList);
 
-        // Filter for active assignments
+        // Filter for pending requests
+        const pending = assignmentsList.filter(
+          (assignment: Assignment) => assignment.status === 'pending',
+        );
+        setPendingRequests(pending);
+
+        // Filter for active assignments (approved or active)
         const active = assignmentsList.filter(
           (assignment: Assignment) =>
             assignment.status === 'active' || assignment.status === 'approved',
@@ -322,6 +334,53 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     }
   };
 
+  const handleRequestAction = async (
+    requestId: number,
+    action: 'approve' | 'reject',
+    notes?: string,
+  ) => {
+    if (!token) return;
+
+    try {
+      const endpoint =
+        action === 'approve' ? 'approve_assignment' : 'cancel_assignment';
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/mentor/assignments/${requestId}/${endpoint}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            mentor_notes: notes,
+          }),
+        },
+      );
+
+      if (response.ok) {
+        showToast(
+          'Success',
+          `Request ${action === 'approve' ? 'approved' : 'rejected'} successfully`,
+        );
+        fetchAssignments();
+        fetchDashboardData();
+        setIsNewRequestsModalOpen(false);
+        setSelectedRequest(null);
+      } else {
+        const error = await response.json();
+        showToast(
+          'Error',
+          error.error || `Failed to ${action} request`,
+          'error',
+        );
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing request:`, error);
+      showToast('Error', `Failed to ${action} request`, 'error');
+    }
+  };
+
   const handleViewAssignmentDetails = (assignment: Assignment) => {
     setSelectedAssignment(assignment);
     setIsActiveAssignmentsModalOpen(true);
@@ -340,8 +399,8 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            rating: 5, // You can add a rating input in the modal
-            feedback: 'Mentorship completed successfully', // You can add a feedback input
+            rating: 5,
+            feedback: 'Mentorship completed successfully',
           }),
         },
       );
@@ -447,33 +506,261 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     </div>
   );
 
-  // Modal content for reviewing requests
-  const ReviewRequestsModalContent = () => (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Review Requests</h3>
-      <p className="text-gray-600 text-sm">
-        This would normally load your pending mentorship requests. For now, you
-        can navigate to the full requests page.
-      </p>
-      <div className="flex justify-end space-x-3 pt-4">
-        <Button
-          variant="outline"
-          onClick={() => setIsReviewRequestsModalOpen(false)}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            setIsReviewRequestsModalOpen(false);
-            window.location.href = '/mentor/requests';
-          }}
-          className="bg-emerald-600 text-white hover:bg-emerald-700"
-        >
-          Review All Requests
-        </Button>
+  // Modal content for new mentorship requests
+  const NewRequestsModalContent = () => {
+    if (selectedRequest) {
+      const progress = getProgressPercentage(
+        selectedRequest.campaign?.current_amount,
+        selectedRequest.campaign?.goal_amount,
+      );
+
+      return (
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-xl font-bold mb-2">Review Mentorship Request</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
+              <span className="text-sm text-gray-500">
+                Requested: {formatDate(selectedRequest.created_at)}
+              </span>
+            </div>
+          </div>
+
+          {/* Campaign Information */}
+          {selectedRequest.campaign && (
+            <div className="space-y-4">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h4 className="font-semibold mb-3 text-gray-800">
+                  Campaign Information
+                </h4>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-gray-600">
+                      <Building className="h-4 w-4 mr-2" />
+                      <span>Founder:</span>
+                    </div>
+                    <span className="font-medium">
+                      {selectedRequest.campaign.fundraiser_name ||
+                        selectedRequest.entrepreneur?.full_name ||
+                        'Unknown'}
+                    </span>
+                  </div>
+
+                  {selectedRequest.campaign.category && (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-gray-600">
+                        <Tag className="h-4 w-4 mr-2" />
+                        <span>Category:</span>
+                      </div>
+                      <Badge variant="outline">
+                        {selectedRequest.campaign.category}
+                      </Badge>
+                    </div>
+                  )}
+
+                  {selectedRequest.campaign.location && (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-gray-600">
+                        <Globe className="h-4 w-4 mr-2" />
+                        <span>Location:</span>
+                      </div>
+                      <span>{selectedRequest.campaign.location}</span>
+                    </div>
+                  )}
+
+                  <div className="space-y-2 pt-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Funding Progress</span>
+                      <span className="font-semibold">
+                        {formatCurrency(
+                          selectedRequest.campaign.current_amount,
+                        )}{' '}
+                        /{' '}
+                        {formatCurrency(selectedRequest.campaign.goal_amount)}
+                      </span>
+                    </div>
+                    <Progress value={progress} className="h-2" />
+                    <div className="text-xs text-gray-500 text-right">
+                      {progress.toFixed(1)}% funded
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Entrepreneur Notes */}
+              {selectedRequest.entrepreneur_notes && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h5 className="font-semibold text-blue-900 mb-2 flex items-center">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Founder's Message
+                  </h5>
+                  <p className="text-sm text-blue-800 italic">
+                    "{selectedRequest.entrepreneur_notes}"
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+            {selectedRequest.campaign?.id && (
+              <Button
+                variant="outline"
+                onClick={() =>
+                  window.open(
+                    `/campaign/${selectedRequest.campaign?.id}`,
+                    '_blank',
+                  )
+                }
+                className="flex-1"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                View Campaign
+              </Button>
+            )}
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSelectedRequest(null);
+              }}
+              className="flex-1"
+            >
+              Back to List
+            </Button>
+
+            <Button
+              onClick={() => handleRequestAction(selectedRequest.id, 'reject')}
+              className="flex-1 bg-red-600 hover:bg-red-700"
+            >
+              <UserX className="h-4 w-4 mr-2" />
+              Decline Request
+            </Button>
+
+            <Button
+              onClick={() => handleRequestAction(selectedRequest.id, 'approve')}
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+            >
+              <UserCheck className="h-4 w-4 mr-2" />
+              Accept Request
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">New Mentorship Requests</h3>
+          <Badge className="bg-yellow-100 text-yellow-800">
+            {pendingRequests.length} Pending
+          </Badge>
+        </div>
+        
+        {assignmentsLoading ? (
+          <div className="flex justify-center items-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+          </div>
+        ) : pendingRequests.length > 0 ? (
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+            {pendingRequests.map((request) => (
+              <Card key={request.id} className="border hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-semibold">
+                          {request.campaign?.title || 'New Mentorship Request'}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          From: {request.entrepreneur?.full_name || 'Unknown'}
+                        </p>
+                      </div>
+                      <Badge className="bg-yellow-100 text-yellow-800">
+                        Pending
+                      </Badge>
+                    </div>
+                    
+                    {request.entrepreneur_notes && (
+                      <div className="bg-blue-50 p-3 rounded-md">
+                        <p className="text-sm text-blue-800 italic line-clamp-2">
+                          "{request.entrepreneur_notes}"
+                        </p>
+                      </div>
+                    )}
+                    
+                    {request.campaign && (
+                      <div className="bg-gray-50 p-3 rounded-md">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-600">Goal:</span>
+                          <span className="font-semibold">
+                            {formatCurrency(request.campaign.goal_amount)}
+                          </span>
+                        </div>
+                        <Progress 
+                          value={getProgressPercentage(
+                            request.campaign.current_amount,
+                            request.campaign.goal_amount
+                          )} 
+                          className="h-2" 
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => setSelectedRequest(request)}
+                      >
+                        View Details
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
+                        onClick={() => handleRequestAction(request.id, 'reject')}
+                      >
+                        Decline
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                        onClick={() => handleRequestAction(request.id, 'approve')}
+                      >
+                        Accept
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h4 className="font-semibold mb-2">No New Requests</h4>
+            <p className="text-gray-600 mb-4">
+              You don't have any new mentorship requests at the moment.
+            </p>
+          </div>
+        )}
+        
+        <div className="flex justify-end space-x-3 pt-4 border-t">
+          <Button
+            variant="outline"
+            onClick={() => setIsNewRequestsModalOpen(false)}
+          >
+            Close
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Modal content for active assignment details
   const ActiveAssignmentModalContent = () => {
@@ -797,7 +1084,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     } = dashboardData;
 
     const activeAssignmentsCount = activeAssignments.length;
-    const pendingRequestsCount = 0;
+    const pendingRequestsCount = pendingRequests.length;
     const completedAssignmentsCount = assignments.completed || 0;
     const totalAssignmentsCount =
       statistics.total_assignments || completedAssignmentsCount;
@@ -879,7 +1166,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     </h3>
                   </div>
                   <div className="p-3 bg-yellow-100 rounded-full">
-                    <Clock className="h-6 w-6 text-yellow-600" />
+                    <Bell className="h-6 w-6 text-yellow-600" />
                   </div>
                 </div>
                 <div className="mt-4">
@@ -887,9 +1174,10 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     variant="outline"
                     size="sm"
                     className="w-full"
-                    onClick={() => setIsReviewRequestsModalOpen(true)}
+                    onClick={() => setIsNewRequestsModalOpen(true)}
+                    disabled={pendingRequestsCount === 0}
                   >
-                    Review Requests
+                    {pendingRequestsCount > 0 ? 'Review Requests' : 'No New Requests'}
                   </Button>
                 </div>
               </CardContent>
@@ -1255,11 +1543,14 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         </Modal>
 
         <Modal
-          isOpen={isReviewRequestsModalOpen}
-          onClose={() => setIsReviewRequestsModalOpen(false)}
+          isOpen={isNewRequestsModalOpen}
+          onClose={() => {
+            setIsNewRequestsModalOpen(false);
+            setSelectedRequest(null);
+          }}
           size="large"
         >
-          <ReviewRequestsModalContent />
+          <NewRequestsModalContent />
         </Modal>
 
         <Modal
