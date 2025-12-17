@@ -223,7 +223,7 @@ export const MentorExperienceStep: React.FC = () => {
         )}
       />
 
-      <FormField
+      {/* <FormField
         control={form.control}
         name="selectedStartup"
         render={({ field }) => (
@@ -249,7 +249,7 @@ export const MentorExperienceStep: React.FC = () => {
             <FormMessage />
           </FormItem>
         )}
-      />
+      /> */}
 
       <FormField
         control={form.control}
