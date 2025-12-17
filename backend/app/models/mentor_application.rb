@@ -3,7 +3,7 @@ class MentorApplication < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :kyc, optional: true
   belongs_to :mentor, optional: true
-  belongs_to :reviewed_by, class_name: 'User', foreign_key: 'reviewed_by_id', optional: true  # ADD foreign_key
+  belongs_to :reviewed_by, class_name: 'User', foreign_key: 'reviewed_by_id', optional: true
   
   validates :professional_title, presence: true
   validates :years_of_experience, presence: true
@@ -11,8 +11,6 @@ class MentorApplication < ApplicationRecord
   validates :previous_mentoring, presence: true
   validates :mentorship_approach, presence: true, length: { minimum: 100 }
   validates :availability, presence: true
-    
-  before_create :generate_tracking_id
   
   enum status: {
     draft: 'draft',
@@ -22,11 +20,13 @@ class MentorApplication < ApplicationRecord
     rejected: 'rejected'
   }
   
+  before_create :generate_tracking_id
+  
   def submit_for_review
     return if user.nil? || status != 'draft'
     
     update(
-      status: 'submitted',
+      status: :submitted,
       submitted_at: Time.current
     )
     
@@ -44,7 +44,7 @@ class MentorApplication < ApplicationRecord
       years_of_experience: years_of_experience,
       linkedin_profile: linkedin_profile,
       bio: mentorship_approach,
-      status: 'approved',
+      status: :approved,
       current_assignments: 0,
       max_assignments: 5,
       rating: 0,

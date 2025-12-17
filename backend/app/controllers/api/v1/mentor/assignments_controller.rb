@@ -178,7 +178,7 @@ module Api
             return
           end
           
-          if @assignment.pending?
+          if @assignment.pending?  # This will now work with the enum
             @assignment.approve!
             
             # Send notification using the new service

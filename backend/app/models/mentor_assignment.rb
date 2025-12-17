@@ -4,7 +4,13 @@ class MentorAssignment < ApplicationRecord
   belongs_to :mentor
   belongs_to :entrepreneur, class_name: 'User'
   
-  validates :status, inclusion: { in: %w[pending active completed cancelled] }
+  enum status: {
+    pending: 'pending',
+    active: 'active', 
+    completed: 'completed',
+    cancelled: 'cancelled'
+  }
+  
   validates :mentor_fee, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   
   before_create :set_defaults
@@ -16,14 +22,14 @@ class MentorAssignment < ApplicationRecord
   scope :completed, -> { where(status: 'completed') }
   
   def approve!
-    update(status: 'active', started_at: Time.current)
+    update(status: :active, started_at: Time.current)
     send_notification(:assignment_approved)
   end
   
   def complete!(rating = nil, feedback = nil)
     transaction do
       update(
-        status: 'completed',
+        status: :completed,
         completed_at: Time.current,
         rating: rating,
         feedback: feedback
@@ -35,14 +41,14 @@ class MentorAssignment < ApplicationRecord
   end
   
   def cancel!(reason = nil)
-    update(status: 'cancelled', cancelled_at: Time.current, cancellation_reason: reason)
+    update(status: :cancelled, cancelled_at: Time.current, cancellation_reason: reason)
     send_notification(:assignment_cancelled)
   end
   
   private
   
   def set_defaults
-    self.status ||= 'pending'
+    self.status ||= :pending
     self.mentor_fee ||= mentor.hourly_rate
   end
   

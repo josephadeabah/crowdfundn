@@ -7,18 +7,24 @@ class Mentor < ApplicationRecord
   has_many :mentor_expertise_tags, dependent: :destroy
   has_many :expertise_tags, through: :mentor_expertise_tags
   
+  enum status: {
+    pending: 'pending',
+    approved: 'approved',
+    rejected: 'rejected',
+    inactive: 'inactive'
+  }
+  
   validates :professional_title, presence: true
   validates :years_of_experience, presence: true
   validates :hourly_rate, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :max_assignments, numericality: { greater_than: 0, less_than_or_equal_to: 10 }, allow_nil: true
-  validates :status, inclusion: { in: %w[pending approved rejected inactive] }
   
-  scope :available, -> { where(status: 'approved').where('current_assignments < max_assignments OR max_assignments IS NULL') }
+  scope :available, -> { approved.where('current_assignments < max_assignments OR max_assignments IS NULL') }
   scope :by_expertise, ->(expertise) { joins(:expertise_tags).where(expertise_tags: { name: expertise }) }
   scope :highly_rated, -> { where('rating >= ?', 4.0) }
   
   def available?
-    status == 'approved' && (max_assignments.nil? || current_assignments < max_assignments)
+    approved? && (max_assignments.nil? || current_assignments < max_assignments)
   end
   
   def increment_assignments
