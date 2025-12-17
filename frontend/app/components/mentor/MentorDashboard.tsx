@@ -141,7 +141,8 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     useState(false);
   const [isActiveAssignmentsModalOpen, setIsActiveAssignmentsModalOpen] =
     useState(false);
-  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
+  const [selectedAssignment, setSelectedAssignment] =
+    useState<Assignment | null>(null);
 
   // Toast states
   const [toast, setToast] = useState({
@@ -189,7 +190,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
       if (response.ok) {
         const data = await response.json();
         setDashboardData(data);
-        
+
         // If user has mentor profile, fetch assignments
         if (data.has_mentor_profile) {
           fetchAssignments();
@@ -222,10 +223,11 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
       if (response.ok) {
         const data = await response.json();
         const assignmentsList = data.assignments || [];
-        
+
         // Filter for active assignments
         const active = assignmentsList.filter(
-          (assignment: Assignment) => assignment.status === 'active' || assignment.status === 'approved'
+          (assignment: Assignment) =>
+            assignment.status === 'active' || assignment.status === 'approved',
         );
         setActiveAssignments(active);
       }
@@ -352,7 +354,11 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         fetchAssignments();
       } else {
         const error = await response.json();
-        showToast('Error', error.error || 'Failed to complete assignment', 'error');
+        showToast(
+          'Error',
+          error.error || 'Failed to complete assignment',
+          'error',
+        );
       }
     } catch (error) {
       console.error('Error completing assignment:', error);
@@ -362,11 +368,11 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return 'Not specified';
-    
+
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'Invalid date';
-      
+
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
@@ -387,7 +393,10 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     }).format(safeAmount);
   };
 
-  const getProgressPercentage = (current: number | undefined, goal: number | undefined) => {
+  const getProgressPercentage = (
+    current: number | undefined,
+    goal: number | undefined,
+  ) => {
     const safeCurrent = current || 0;
     const safeGoal = goal || 0;
     if (safeGoal === 0) return 0;
@@ -472,7 +481,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
 
     const progress = getProgressPercentage(
       selectedAssignment.campaign?.current_amount,
-      selectedAssignment.campaign?.goal_amount
+      selectedAssignment.campaign?.goal_amount,
     );
 
     return (
@@ -482,9 +491,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             {selectedAssignment.campaign?.title || 'Assignment Details'}
           </h3>
           <div className="flex items-center gap-2 mb-4">
-            <Badge className="bg-green-100 text-green-800">
-              Active
-            </Badge>
+            <Badge className="bg-green-100 text-green-800">Active</Badge>
             <span className="text-sm text-gray-500">
               Started: {formatDate(selectedAssignment.started_at)}
             </span>
@@ -495,8 +502,10 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         {selectedAssignment.campaign && (
           <div className="space-y-4">
             <div className="bg-gray-50 rounded-lg p-4">
-              <h4 className="font-semibold mb-3 text-gray-800">Campaign Information</h4>
-              
+              <h4 className="font-semibold mb-3 text-gray-800">
+                Campaign Information
+              </h4>
+
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-gray-600">
@@ -504,9 +513,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     <span>Founder:</span>
                   </div>
                   <span className="font-medium">
-                    {selectedAssignment.campaign.fundraiser_name || 
-                     selectedAssignment.entrepreneur?.full_name || 
-                     'Unknown'}
+                    {selectedAssignment.campaign.fundraiser_name ||
+                      selectedAssignment.entrepreneur?.full_name ||
+                      'Unknown'}
                   </span>
                 </div>
 
@@ -516,7 +525,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                       <Tag className="h-4 w-4 mr-2" />
                       <span>Category:</span>
                     </div>
-                    <Badge variant="outline">{selectedAssignment.campaign.category}</Badge>
+                    <Badge variant="outline">
+                      {selectedAssignment.campaign.category}
+                    </Badge>
                   </div>
                 )}
 
@@ -534,7 +545,11 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Funding Progress</span>
                     <span className="font-semibold">
-                      {formatCurrency(selectedAssignment.campaign.current_amount)} / {formatCurrency(selectedAssignment.campaign.goal_amount)}
+                      {formatCurrency(
+                        selectedAssignment.campaign.current_amount,
+                      )}{' '}
+                      /{' '}
+                      {formatCurrency(selectedAssignment.campaign.goal_amount)}
                     </span>
                   </div>
                   <Progress value={progress} className="h-2" />
@@ -579,7 +594,12 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           {selectedAssignment.campaign?.id && (
             <Button
               variant="outline"
-              onClick={() => window.open(`/campaign/${selectedAssignment.campaign?.id}`, '_blank')}
+              onClick={() =>
+                window.open(
+                  `/campaign/${selectedAssignment.campaign?.id}`,
+                  '_blank',
+                )
+              }
               className="flex-1"
             >
               <ExternalLink className="h-4 w-4 mr-2" />
@@ -590,7 +610,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           {selectedAssignment.entrepreneur?.email && (
             <Button
               variant="outline"
-              onClick={() => window.location.href = `/messages?user=${selectedAssignment.entrepreneur?.id}`}
+              onClick={() =>
+                (window.location.href = `/messages?user=${selectedAssignment.entrepreneur?.id}`)
+              }
               className="flex-1"
             >
               <Mail className="h-4 w-4 mr-2" />
@@ -940,17 +962,24 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                   <p className="text-gray-600">
                     You have {activeAssignmentsCount} active assignment(s).
                   </p>
-                  
+
                   <div className="space-y-3">
                     {activeAssignments.map((assignment) => (
-                      <div key={assignment.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div
+                        key={assignment.id}
+                        className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                      >
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                           <div className="flex-1">
                             <h4 className="font-semibold text-lg mb-1">
-                              {assignment.campaign?.title || 'Untitled Campaign'}
+                              {assignment.campaign?.title ||
+                                'Untitled Campaign'}
                             </h4>
                             <p className="text-sm text-gray-600 mb-2">
-                              Founder: {assignment.campaign?.fundraiser_name || assignment.entrepreneur?.full_name || 'Unknown'}
+                              Founder:{' '}
+                              {assignment.campaign?.fundraiser_name ||
+                                assignment.entrepreneur?.full_name ||
+                                'Unknown'}
                             </p>
                             {assignment.entrepreneur_notes && (
                               <p className="text-sm text-gray-700 italic mb-2 line-clamp-2">
@@ -959,7 +988,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                             )}
                             <div className="flex items-center text-sm text-gray-500">
                               <Calendar className="h-4 w-4 mr-1" />
-                              <span>Started: {formatDate(assignment.started_at)}</span>
+                              <span>
+                                Started: {formatDate(assignment.started_at)}
+                              </span>
                             </div>
                           </div>
                           <div className="flex flex-col sm:items-end gap-2">
@@ -973,12 +1004,14 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                             )}
                           </div>
                         </div>
-                        
+
                         <div className="flex gap-2 pt-4 border-t mt-4">
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleViewAssignmentDetails(assignment)}
+                            onClick={() =>
+                              handleViewAssignmentDetails(assignment)
+                            }
                             className="flex-1"
                           >
                             View Details
@@ -987,7 +1020,12 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => window.open(`/campaigns/${assignment.campaign?.id}`, '_blank')}
+                              onClick={() =>
+                                window.open(
+                                  `/campaigns/${assignment.campaign?.id}`,
+                                  '_blank',
+                                )
+                              }
                             >
                               <ExternalLink className="h-4 w-4" />
                             </Button>
