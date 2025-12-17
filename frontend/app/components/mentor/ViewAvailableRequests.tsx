@@ -908,7 +908,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
           <p>
             Need help?{' '}
             <a
-              href="/help/mentors"
+              href="/info/mentorship"
               className="text-emerald-600 hover:underline"
             >
               Visit mentor guide
