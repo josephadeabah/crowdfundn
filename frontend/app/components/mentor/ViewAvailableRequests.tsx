@@ -55,7 +55,8 @@ interface MentorRequest {
     category: string;
     location: string;
     created_at: string;
-    fundraiser: {
+    fundraiser_name?: string; // Added this field
+    fundraiser?: {
       id: number;
       full_name: string;
       profile?: {
@@ -120,45 +121,55 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
         const data = await response.json();
         const requestsList = data.assignments || [];
 
-        // Transform the data to match our interface
-        const transformedRequests = requestsList.map((req: any) => ({
-          id: req.id,
-          campaign_id: req.campaign?.id,
-          entrepreneur_id: req.entrepreneur?.id,
-          status: req.status,
-          entrepreneur_notes: req.entrepreneur_notes,
-          mentor_notes: req.mentor_notes,
-          created_at: req.created_at,
-          started_at: req.started_at,
-          completed_at: req.completed_at,
-          rating: req.rating,
-          feedback: req.feedback,
-          campaign: req.campaign
-            ? {
-                id: req.campaign.id,
-                title: req.campaign.title,
-                description: req.campaign.description,
-                goal_amount: req.campaign.goal_amount,
-                current_amount: req.campaign.current_amount,
-                category: req.campaign.category,
-                location: req.campaign.location,
-                created_at: req.campaign.created_at,
-                fundraiser: {
-                  id: req.campaign.fundraiser?.id,
-                  full_name: req.campaign.fundraiser?.full_name || 'Unknown',
-                  profile: req.campaign.fundraiser?.profile,
-                },
-              }
-            : undefined,
-          entrepreneur: req.entrepreneur
-            ? {
-                id: req.entrepreneur.id,
-                full_name: req.entrepreneur.full_name || 'Unknown',
-                email: req.entrepreneur.email,
-                profile: req.entrepreneur.profile,
-              }
-            : undefined,
-        }));
+        // Debug log to see actual data structure
+        console.log('Raw API response:', data);
+        console.log('First assignment:', requestsList[0]);
+
+        // Transform the data to match our interface with defensive programming
+        const transformedRequests = requestsList.map((req: any) => {
+          const campaign = req.campaign;
+          const entrepreneur = req.entrepreneur;
+          
+          return {
+            id: req.id,
+            campaign_id: campaign?.id,
+            entrepreneur_id: entrepreneur?.id,
+            status: req.status || 'pending',
+            entrepreneur_notes: req.entrepreneur_notes || '',
+            mentor_notes: req.mentor_notes || '',
+            created_at: req.created_at || campaign?.created_at || new Date().toISOString(),
+            started_at: req.started_at,
+            completed_at: req.completed_at,
+            rating: req.rating,
+            feedback: req.feedback,
+            campaign: campaign
+              ? {
+                  id: campaign.id,
+                  title: campaign.title || 'Untitled Campaign',
+                  description: campaign.description || '',
+                  goal_amount: campaign.goal_amount || 0,
+                  current_amount: campaign.current_amount || 0,
+                  category: campaign.category || 'General',
+                  location: campaign.location || 'Unknown',
+                  created_at: campaign.created_at || new Date().toISOString(),
+                  fundraiser_name: campaign.fundraiser_name, // Keep the fundraiser_name field
+                  fundraiser: {
+                    id: campaign.fundraiser?.id,
+                    full_name: campaign.fundraiser?.full_name || campaign.fundraiser_name || 'Unknown',
+                    profile: campaign.fundraiser?.profile,
+                  },
+                }
+              : undefined,
+            entrepreneur: entrepreneur
+              ? {
+                  id: entrepreneur.id,
+                  full_name: entrepreneur.full_name || 'Unknown',
+                  email: entrepreneur.email || '',
+                  profile: entrepreneur.profile,
+                }
+              : undefined,
+          };
+        });
 
         setRequests(transformedRequests);
 
@@ -221,10 +232,11 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
       const query = searchQuery.toLowerCase();
       result = result.filter(
         (request) =>
-          request.campaign?.title.toLowerCase().includes(query) ||
-          request.entrepreneur?.full_name.toLowerCase().includes(query) ||
+          request.campaign?.title?.toLowerCase().includes(query) ||
+          request.entrepreneur?.full_name?.toLowerCase().includes(query) ||
+          request.campaign?.fundraiser_name?.toLowerCase().includes(query) ||
           request.entrepreneur_notes?.toLowerCase().includes(query) ||
-          request.campaign?.category.toLowerCase().includes(query),
+          request.campaign?.category?.toLowerCase().includes(query),
       );
     }
 
@@ -268,24 +280,38 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
     }
   };
 
-  const getProgressPercentage = (current: number, goal: number) => {
-    if (goal === 0) return 0;
-    return Math.min((current / goal) * 100, 100);
+  const getProgressPercentage = (current: number | undefined, goal: number | undefined) => {
+    const safeCurrent = current || 0;
+    const safeGoal = goal || 0;
+    if (safeGoal === 0) return 0;
+    return Math.min((safeCurrent / safeGoal) * 100, 100);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'Date not available';
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Invalid date';
+      
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch (error) {
+      return 'Date error';
+    }
   };
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | undefined) => {
+    const safeAmount = amount || 0;
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-    }).format(amount);
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(safeAmount);
   };
 
   const getStatusBadge = (status: string) => {
@@ -526,12 +552,10 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
       {filteredRequests.length > 0 ? (
         <div className="space-y-3 sm:space-y-4">
           {filteredRequests.map((request) => {
-            const progress = request.campaign
-              ? getProgressPercentage(
-                  request.campaign.current_amount,
-                  request.campaign.goal_amount,
-                )
-              : 0;
+            const progress = getProgressPercentage(
+              request.campaign?.current_amount,
+              request.campaign?.goal_amount,
+            );
 
             return (
               <Card
@@ -550,7 +574,10 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                           <div className="flex items-center">
                             <Building className="h-3 w-3 sm:h-4 sm:w-4 mr-2 flex-shrink-0" />
                             <span className="truncate">
-                              By {request.entrepreneur?.full_name || 'Unknown'}
+                              By {request.entrepreneur?.full_name || 
+                                   request.campaign?.fundraiser_name || 
+                                   request.campaign?.fundraiser?.full_name || 
+                                   'Unknown'}
                             </span>
                           </div>
                           <span className="hidden sm:inline">•</span>
@@ -562,7 +589,7 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                       </div>
                       <div className="flex flex-col sm:items-end gap-2">
                         {getStatusBadge(request.status)}
-                        {request.campaign && (
+                        {request.campaign?.category && (
                           <Badge
                             variant="outline"
                             className="text-xs px-2 py-0.5"
@@ -574,20 +601,19 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                     </div>
 
                     {/* Campaign Info */}
-                    {request.campaign && (
+                    {request.campaign ? (
                       <div className="p-3 bg-gray-50 rounded-md">
                         <div className="space-y-2">
                           <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-600">Progress</span>
                             <span className="font-semibold">
-                              {formatCurrency(request.campaign.current_amount)}{' '}
-                              / {formatCurrency(request.campaign.goal_amount)}
+                              {formatCurrency(request.campaign.current_amount)} / {formatCurrency(request.campaign.goal_amount)}
                             </span>
                           </div>
                           <Progress value={progress} className="h-2" />
                           <div className="flex flex-col xs:flex-row xs:justify-between text-xs text-gray-500 gap-1">
                             <span>{progress.toFixed(1)}% funded</span>
-                            {request.campaign.location && (
+                            {request.campaign.location && request.campaign.location !== 'Unknown' && (
                               <span className="flex items-center">
                                 <Globe className="h-3 w-3 mr-1" />
                                 {request.campaign.location}
@@ -595,6 +621,12 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                             )}
                           </div>
                         </div>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-yellow-50 rounded-md">
+                        <p className="text-sm text-yellow-800">
+                          Campaign details not available
+                        </p>
                       </div>
                     )}
 
@@ -641,24 +673,26 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                     </div>
 
                     {/* Timeline - Mobile optimized */}
-                    <div className="text-sm text-gray-600 space-y-1">
-                      {request.started_at && (
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
-                          <span className="truncate">
-                            Started: {formatDate(request.started_at)}
-                          </span>
-                        </div>
-                      )}
-                      {request.completed_at && (
-                        <div className="flex items-center">
-                          <Award className="h-4 w-4 mr-2 flex-shrink-0" />
-                          <span className="truncate">
-                            Completed: {formatDate(request.completed_at)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                    {(request.started_at || request.completed_at) && (
+                      <div className="text-sm text-gray-600 space-y-1">
+                        {request.started_at && (
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
+                            <span className="truncate">
+                              Started: {formatDate(request.started_at)}
+                            </span>
+                          </div>
+                        )}
+                        {request.completed_at && (
+                          <div className="flex items-center">
+                            <Award className="h-4 w-4 mr-2 flex-shrink-0" />
+                            <span className="truncate">
+                              Completed: {formatDate(request.completed_at)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {/* Action Buttons - Responsive */}
                     <div className="flex flex-col sm:flex-row sm:justify-end gap-2 pt-4 border-t">
@@ -691,21 +725,23 @@ const ViewAvailableRequests: React.FC<ViewAvailableRequestsProps> = ({
                       {(request.status === 'approved' ||
                         request.status === 'completed') && (
                         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full sm:w-auto"
-                            onClick={() =>
-                              window.open(
-                                `/campaigns/${request.campaign_id}`,
-                                '_blank',
-                              )
-                            }
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            View Campaign
-                          </Button>
-                          {request.entrepreneur && (
+                          {request.campaign_id && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full sm:w-auto"
+                              onClick={() =>
+                                window.open(
+                                  `/campaigns/${request.campaign_id}`,
+                                  '_blank',
+                                )
+                              }
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Campaign
+                            </Button>
+                          )}
+                          {request.entrepreneur_id && (
                             <Button
                               variant="outline"
                               size="sm"
