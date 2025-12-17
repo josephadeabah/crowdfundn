@@ -35,6 +35,9 @@ import {
   UserCheck,
   UserX,
   Eye,
+  ChevronRight,
+  Menu,
+  X,
 } from 'lucide-react';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import Modal from '@/app/components/modal/Modal';
@@ -133,6 +136,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const [allAssignments, setAllAssignments] = useState<Assignment[]>([]);
   const [activeAssignments, setActiveAssignments] = useState<Assignment[]>([]);
   const [pendingRequests, setPendingRequests] = useState<Assignment[]>([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Modal states
   const [isMaxAssignmentsModalOpen, setIsMaxAssignmentsModalOpen] =
@@ -140,14 +144,14 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   const [newMaxAssignments, setNewMaxAssignments] = useState('');
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [isViewRequestsModalOpen, setIsViewRequestsModalOpen] = useState(false);
-  const [isReviewRequestsModalOpen, setIsReviewRequestsModalOpen] =
-    useState(false);
   const [isActiveAssignmentsModalOpen, setIsActiveAssignmentsModalOpen] =
     useState(false);
   const [selectedAssignment, setSelectedAssignment] =
     useState<Assignment | null>(null);
   const [isNewRequestsModalOpen, setIsNewRequestsModalOpen] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState<Assignment | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<Assignment | null>(
+    null,
+  );
 
   // Toast states
   const [toast, setToast] = useState({
@@ -486,19 +490,20 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           placeholder="Enter a number"
         />
       </div>
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
         <Button
           variant="outline"
           onClick={() => {
             setIsMaxAssignmentsModalOpen(false);
             setNewMaxAssignments('');
           }}
+          className="w-full sm:w-auto"
         >
           Cancel
         </Button>
         <Button
           onClick={updateMaxAssignments}
-          className="bg-emerald-600 text-white hover:bg-emerald-700"
+          className="w-full sm:w-auto bg-emerald-600 text-white hover:bg-emerald-700"
         >
           Update
         </Button>
@@ -517,7 +522,9 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
       return (
         <div className="space-y-6">
           <div>
-            <h3 className="text-xl font-bold mb-2">Review Mentorship Request</h3>
+            <h3 className="text-xl font-bold mb-2">
+              Review Mentorship Request
+            </h3>
             <div className="flex items-center gap-2 mb-4">
               <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
               <span className="text-sm text-gray-500">
@@ -535,12 +542,12 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                 </h4>
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <div className="flex items-center text-gray-600">
-                      <Building className="h-4 w-4 mr-2" />
+                      <Building className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span>Founder:</span>
                     </div>
-                    <span className="font-medium">
+                    <span className="font-medium text-sm sm:text-base truncate ml-6 sm:ml-0">
                       {selectedRequest.campaign.fundraiser_name ||
                         selectedRequest.entrepreneur?.full_name ||
                         'Unknown'}
@@ -548,24 +555,26 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                   </div>
 
                   {selectedRequest.campaign.category && (
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                       <div className="flex items-center text-gray-600">
-                        <Tag className="h-4 w-4 mr-2" />
+                        <Tag className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span>Category:</span>
                       </div>
-                      <Badge variant="outline">
+                      <Badge variant="outline" className="mt-1 sm:mt-0">
                         {selectedRequest.campaign.category}
                       </Badge>
                     </div>
                   )}
 
                   {selectedRequest.campaign.location && (
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                       <div className="flex items-center text-gray-600">
-                        <Globe className="h-4 w-4 mr-2" />
+                        <Globe className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span>Location:</span>
                       </div>
-                      <span>{selectedRequest.campaign.location}</span>
+                      <span className="text-sm sm:text-base truncate ml-6 sm:ml-0">
+                        {selectedRequest.campaign.location}
+                      </span>
                     </div>
                   )}
 
@@ -576,8 +585,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                         {formatCurrency(
                           selectedRequest.campaign.current_amount,
                         )}{' '}
-                        /{' '}
-                        {formatCurrency(selectedRequest.campaign.goal_amount)}
+                        / {formatCurrency(selectedRequest.campaign.goal_amount)}
                       </span>
                     </div>
                     <Progress value={progress} className="h-2" />
@@ -592,7 +600,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               {selectedRequest.entrepreneur_notes && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <h5 className="font-semibold text-blue-900 mb-2 flex items-center">
-                    <MessageSquare className="h-4 w-4 mr-2" />
+                    <MessageSquare className="h-4 w-4 mr-2 flex-shrink-0" />
                     Founder's Message
                   </h5>
                   <p className="text-sm text-blue-800 italic">
@@ -603,8 +611,8 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+          {/* Action Buttons - Responsive */}
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 border-t">
             {selectedRequest.campaign?.id && (
               <Button
                 variant="outline"
@@ -614,7 +622,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     '_blank',
                   )
                 }
-                className="flex-1"
+                className="w-full sm:flex-1"
               >
                 <Eye className="h-4 w-4 mr-2" />
                 View Campaign
@@ -626,25 +634,25 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               onClick={() => {
                 setSelectedRequest(null);
               }}
-              className="flex-1"
+              className="w-full sm:flex-1"
             >
               Back to List
             </Button>
 
             <Button
               onClick={() => handleRequestAction(selectedRequest.id, 'reject')}
-              className="flex-1 bg-red-600 hover:bg-red-700"
+              className="w-full sm:flex-1 bg-red-600 hover:bg-red-700"
             >
               <UserX className="h-4 w-4 mr-2" />
-              Decline Request
+              Decline
             </Button>
 
             <Button
               onClick={() => handleRequestAction(selectedRequest.id, 'approve')}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+              className="w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-700"
             >
               <UserCheck className="h-4 w-4 mr-2" />
-              Accept Request
+              Accept
             </Button>
           </div>
         </div>
@@ -653,87 +661,98 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
 
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <h3 className="text-lg font-semibold">New Mentorship Requests</h3>
-          <Badge className="bg-yellow-100 text-yellow-800">
+          <Badge className="bg-yellow-100 text-yellow-800 self-start sm:self-center">
             {pendingRequests.length} Pending
           </Badge>
         </div>
-        
+
         {assignmentsLoading ? (
           <div className="flex justify-center items-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           </div>
         ) : pendingRequests.length > 0 ? (
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
             {pendingRequests.map((request) => (
-              <Card key={request.id} className="border hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
+              <Card
+                key={request.id}
+                className="border hover:shadow-sm transition-shadow overflow-hidden"
+              >
+                <CardContent className="p-3 sm:p-4">
                   <div className="space-y-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-semibold">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-sm sm:text-base truncate">
                           {request.campaign?.title || 'New Mentorship Request'}
                         </h4>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs sm:text-sm text-gray-600 truncate">
                           From: {request.entrepreneur?.full_name || 'Unknown'}
                         </p>
                       </div>
-                      <Badge className="bg-yellow-100 text-yellow-800">
+                      <Badge className="bg-yellow-100 text-yellow-800 self-start sm:self-center">
                         Pending
                       </Badge>
                     </div>
-                    
+
                     {request.entrepreneur_notes && (
-                      <div className="bg-blue-50 p-3 rounded-md">
-                        <p className="text-sm text-blue-800 italic line-clamp-2">
+                      <div className="bg-blue-50 p-2 sm:p-3 rounded-md">
+                        <p className="text-xs sm:text-sm text-blue-800 italic line-clamp-2">
                           "{request.entrepreneur_notes}"
                         </p>
                       </div>
                     )}
-                    
+
                     {request.campaign && (
-                      <div className="bg-gray-50 p-3 rounded-md">
-                        <div className="flex justify-between text-sm mb-1">
+                      <div className="bg-gray-50 p-2 sm:p-3 rounded-md">
+                        <div className="flex justify-between text-xs sm:text-sm mb-1">
                           <span className="text-gray-600">Goal:</span>
                           <span className="font-semibold">
                             {formatCurrency(request.campaign.goal_amount)}
                           </span>
                         </div>
-                        <Progress 
+                        <Progress
                           value={getProgressPercentage(
                             request.campaign.current_amount,
-                            request.campaign.goal_amount
-                          )} 
-                          className="h-2" 
+                            request.campaign.goal_amount,
+                          )}
+                          className="h-1.5 sm:h-2"
                         />
                       </div>
                     )}
-                    
-                    <div className="flex gap-2 pt-2">
+
+                    <div className="flex flex-col xs:flex-row gap-2 pt-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="flex-1"
+                        className="w-full xs:flex-1"
                         onClick={() => setSelectedRequest(request)}
                       >
                         View Details
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
-                        onClick={() => handleRequestAction(request.id, 'reject')}
-                      >
-                        Decline
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-                        onClick={() => handleRequestAction(request.id, 'approve')}
-                      >
-                        Accept
-                      </Button>
+                      <div className="flex gap-2 w-full xs:w-auto">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 xs:flex-none text-red-600 border-red-200 hover:bg-red-50"
+                          onClick={() =>
+                            handleRequestAction(request.id, 'reject')
+                          }
+                        >
+                          <UserX className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                          <span className="text-xs sm:text-sm">Decline</span>
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="flex-1 xs:flex-none bg-emerald-600 hover:bg-emerald-700"
+                          onClick={() =>
+                            handleRequestAction(request.id, 'approve')
+                          }
+                        >
+                          <UserCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                          <span className="text-xs sm:text-sm">Accept</span>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -744,16 +763,17 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           <div className="text-center py-8">
             <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h4 className="font-semibold mb-2">No New Requests</h4>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 mb-4 text-sm px-4">
               You don't have any new mentorship requests at the moment.
             </p>
           </div>
         )}
-        
-        <div className="flex justify-end space-x-3 pt-4 border-t">
+
+        <div className="flex justify-end pt-4 border-t">
           <Button
             variant="outline"
             onClick={() => setIsNewRequestsModalOpen(false)}
+            className="w-full sm:w-auto"
           >
             Close
           </Button>
@@ -774,10 +794,10 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     return (
       <div className="space-y-6">
         <div>
-          <h3 className="text-xl font-bold mb-2">
+          <h3 className="text-xl font-bold mb-2 truncate">
             {selectedAssignment.campaign?.title || 'Assignment Details'}
           </h3>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
             <Badge className="bg-green-100 text-green-800">Active</Badge>
             <span className="text-sm text-gray-500">
               Started: {formatDate(selectedAssignment.started_at)}
@@ -794,12 +814,12 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               </h4>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <div className="flex items-center text-gray-600">
-                    <Building className="h-4 w-4 mr-2" />
+                    <Building className="h-4 w-4 mr-2 flex-shrink-0" />
                     <span>Founder:</span>
                   </div>
-                  <span className="font-medium">
+                  <span className="font-medium text-sm sm:text-base truncate ml-6 sm:ml-0">
                     {selectedAssignment.campaign.fundraiser_name ||
                       selectedAssignment.entrepreneur?.full_name ||
                       'Unknown'}
@@ -807,24 +827,26 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                 </div>
 
                 {selectedAssignment.campaign.category && (
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <div className="flex items-center text-gray-600">
-                      <Tag className="h-4 w-4 mr-2" />
+                      <Tag className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span>Category:</span>
                     </div>
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="mt-1 sm:mt-0">
                       {selectedAssignment.campaign.category}
                     </Badge>
                   </div>
                 )}
 
                 {selectedAssignment.campaign.location && (
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <div className="flex items-center text-gray-600">
-                      <Globe className="h-4 w-4 mr-2" />
+                      <Globe className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span>Location:</span>
                     </div>
-                    <span>{selectedAssignment.campaign.location}</span>
+                    <span className="text-sm sm:text-base truncate ml-6 sm:ml-0">
+                      {selectedAssignment.campaign.location}
+                    </span>
                   </div>
                 )}
 
@@ -852,7 +874,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               {selectedAssignment.entrepreneur_notes && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <h5 className="font-semibold text-blue-900 mb-2 flex items-center">
-                    <MessageSquare className="h-4 w-4 mr-2" />
+                    <MessageSquare className="h-4 w-4 mr-2 flex-shrink-0" />
                     Founder's Message
                   </h5>
                   <p className="text-sm text-blue-800 italic">
@@ -864,7 +886,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               {selectedAssignment.mentor_notes && (
                 <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
                   <h5 className="font-semibold text-emerald-900 mb-2 flex items-center">
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-4 w-4 mr-2 flex-shrink-0" />
                     Your Notes
                   </h5>
                   <p className="text-sm text-emerald-800">
@@ -876,8 +898,8 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+        {/* Action Buttons - Responsive */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 border-t">
           {selectedAssignment.campaign?.id && (
             <Button
               variant="outline"
@@ -887,7 +909,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                   '_blank',
                 )
               }
-              className="flex-1"
+              className="w-full sm:flex-1"
             >
               <ExternalLink className="h-4 w-4 mr-2" />
               View Campaign
@@ -900,7 +922,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               onClick={() =>
                 (window.location.href = `/messages?user=${selectedAssignment.entrepreneur?.id}`)
               }
-              className="flex-1"
+              className="w-full sm:flex-1"
             >
               <Mail className="h-4 w-4 mr-2" />
               Message Founder
@@ -909,7 +931,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
 
           <Button
             onClick={() => handleCompleteAssignment(selectedAssignment.id)}
-            className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+            className="w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-700"
           >
             <CheckCircle className="h-4 w-4 mr-2" />
             Complete Mentorship
@@ -920,16 +942,16 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
         <div className="pt-4 border-t">
           <h5 className="font-semibold mb-3 text-gray-800">Timeline</h5>
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
+            <div className="flex flex-col sm:flex-row justify-between gap-1">
               <span className="text-gray-600">Request Received:</span>
               <span>{formatDate(selectedAssignment.created_at)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex flex-col sm:flex-row justify-between gap-1">
               <span className="text-gray-600">Mentorship Started:</span>
               <span>{formatDate(selectedAssignment.started_at)}</span>
             </div>
             {selectedAssignment.completed_at && (
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row justify-between gap-1">
                 <span className="text-gray-600">Completed:</span>
                 <span>{formatDate(selectedAssignment.completed_at)}</span>
               </div>
@@ -952,15 +974,15 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   if (!dashboardData) {
     return (
       <Card>
-        <CardContent className="py-8 text-center">
+        <CardContent className="py-8 text-center px-4">
           <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">Unable to Load Data</h3>
-          <p className="text-gray-600 mb-4 px-4">
+          <p className="text-gray-600 mb-4">
             There was an error loading your mentor information.
           </p>
           <Button
             onClick={fetchDashboardData}
-            className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700"
+            className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700 w-full sm:w-auto"
           >
             Retry
           </Button>
@@ -976,25 +998,25 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   ) {
     return (
       <Card>
-        <CardContent className="py-8 text-center">
+        <CardContent className="py-8 text-center px-4">
           <Hourglass className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">
             Application Pending Review
           </h3>
-          <p className="text-gray-600 mb-4 px-4">
+          <p className="text-gray-600 mb-4">
             Your mentor application has been submitted and is under review.
           </p>
 
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-left">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-left mx-2">
             <div className="flex items-start">
-              <FileText className="h-5 w-5 text-yellow-600 mr-2 mt-0.5" />
-              <div>
+              <FileText className="h-5 w-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
+              <div className="min-w-0">
                 <h4 className="font-semibold text-yellow-800">
                   Application Details
                 </h4>
                 {dashboardData.application && (
                   <>
-                    <p className="text-sm text-yellow-700 mt-1">
+                    <p className="text-sm text-yellow-700 mt-1 truncate">
                       <strong>Professional Title:</strong>{' '}
                       {dashboardData.application.professional_title}
                     </p>
@@ -1020,21 +1042,23 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
             </div>
           </div>
 
-          <Button
-            onClick={() =>
-              (window.location.href = '/mentor/application/status')
-            }
-            variant="outline"
-            className="mr-2"
-          >
-            View Application Status
-          </Button>
-          <Button
-            onClick={() => (window.location.href = '/account#Settings')}
-            className="bg-emerald-600 text-white hover:bg-emerald-700"
-          >
-            Update KYC Information
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2 justify-center">
+            <Button
+              onClick={() =>
+                (window.location.href = '/mentor/application/status')
+              }
+              variant="outline"
+              className="w-full sm:w-auto"
+            >
+              View Application Status
+            </Button>
+            <Button
+              onClick={() => (window.location.href = '/account#Settings')}
+              className="w-full sm:w-auto bg-emerald-600 text-white hover:bg-emerald-700"
+            >
+              Update KYC Information
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
@@ -1047,24 +1071,23 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   ) {
     return (
       <Card>
-        <CardContent className="py-8 text-center">
+        <CardContent className="py-8 text-center px-4">
           <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">Not a Mentor Yet</h3>
-          <p className="text-gray-600 mb-4 px-4">
+          <p className="text-gray-600 mb-4">
             You haven't applied to become a mentor yet.
           </p>
           <Button
             onClick={() => (window.location.href = '/mentor/application')}
             className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700 
+                     w-full sm:w-auto
                      px-4 py-2 h-auto min-h-[44px] 
                      text-sm sm:text-base 
-                     whitespace-normal text-center 
-                     mx-2 sm:mx-0"
+                     whitespace-normal text-center"
           >
-            <span className="block sm:hidden">Apply to Become a Mentor</span>
-            <span className="hidden sm:block">Apply to Become a Mentor</span>
+            Apply to Become a Mentor
           </Button>
-          <p className="text-xs text-gray-500 mt-3 px-4">
+          <p className="text-xs text-gray-500 mt-3 px-2">
             Complete your KYC verification first, then submit a mentor
             application
           </p>
@@ -1092,8 +1115,30 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
     return (
       <>
         <div className="space-y-6">
-          {/* Header */}
-          <div className="flex justify-between items-center">
+          {/* Mobile Menu Button */}
+          <div className="sm:hidden flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-xl font-bold">Mentor Dashboard</h2>
+              <p className="text-sm text-gray-600">
+                Manage mentorship assignments
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
+
+          {/* Header - Desktop */}
+          <div className="hidden sm:flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold">Mentor Dashboard</h2>
               <p className="text-gray-600">
@@ -1113,31 +1158,59 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               <Button
                 variant="outline"
                 onClick={() => setIsEditProfileModalOpen(true)}
+                className="hidden sm:inline-flex"
               >
                 Edit Profile
               </Button>
             </div>
           </div>
 
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="sm:hidden bg-white rounded-lg shadow-sm p-4 space-y-3 border">
+              <div className="flex items-center justify-between">
+                <Badge
+                  className={`px-3 py-1 ${mentor.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}
+                >
+                  {mentor.status === 'approved' ? 'Available' : 'Unavailable'}
+                </Badge>
+                <Badge className="px-3 py-1 bg-blue-100 text-blue-800">
+                  <Award className="h-4 w-4 mr-1" />
+                  {parseFloat(mentor.rating as any)?.toFixed(1) || '0.0'}
+                </Badge>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditProfileModalOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full"
+              >
+                Edit Profile
+              </Button>
+            </div>
+          )}
+
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <Card>
-              <CardContent className="pt-6">
+              <CardContent className="pt-4 sm:pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      Active Assignments
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">
+                      Active
                     </p>
-                    <h3 className="text-2xl font-bold mt-2">
+                    <h3 className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2">
                       {activeAssignmentsCount}
                     </h3>
                   </div>
-                  <div className="p-3 bg-green-100 rounded-full">
-                    <Briefcase className="h-6 w-6 text-green-600" />
+                  <div className="p-2 sm:p-3 bg-green-100 rounded-full">
+                    <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                   </div>
                 </div>
-                <div className="mt-4">
-                  <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <div className="mt-3 sm:mt-4">
+                  <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
                     <span>Capacity</span>
                     <span>
                       {assignments.current || 0}/{assignments.max || '∞'}
@@ -1148,61 +1221,60 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                       ((assignments.current || 0) / (assignments.max || 1)) *
                       100
                     }
-                    className="h-2"
+                    className="h-1.5 sm:h-2"
                   />
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="pt-6">
+              <CardContent className="pt-4 sm:pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      Pending Requests
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">
+                      Pending
                     </p>
-                    <h3 className="text-2xl font-bold mt-2">
+                    <h3 className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2">
                       {pendingRequestsCount}
                     </h3>
                   </div>
-                  <div className="p-3 bg-yellow-100 rounded-full">
-                    <Bell className="h-6 w-6 text-yellow-600" />
+                  <div className="p-2 sm:p-3 bg-yellow-100 rounded-full">
+                    <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" />
                   </div>
                 </div>
-                <div className="mt-4">
+                <div className="mt-3 sm:mt-4">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full"
+                    className="w-full text-xs sm:text-sm"
                     onClick={() => setIsNewRequestsModalOpen(true)}
                     disabled={pendingRequestsCount === 0}
                   >
-                    {pendingRequestsCount > 0 ? 'Review Requests' : 'No New Requests'}
+                    {pendingRequestsCount > 0 ? 'Review' : 'None'}
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="pt-6">
+              <CardContent className="pt-4 sm:pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">
                       Completed
                     </p>
-                    <h3 className="text-2xl font-bold mt-2">
+                    <h3 className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2">
                       {completedAssignmentsCount}
                     </h3>
                   </div>
-                  <div className="p-3 bg-purple-100 rounded-full">
-                    <CheckCircle className="h-6 w-6 text-purple-600" />
+                  <div className="p-2 sm:p-3 bg-purple-100 rounded-full">
+                    <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
                   </div>
                 </div>
-                <div className="mt-4">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                    <span>
-                      Average Rating:{' '}
+                <div className="mt-3 sm:mt-4">
+                  <div className="flex items-center text-xs sm:text-sm text-gray-600">
+                    <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 mr-1" />
+                    <span className="truncate">
                       {parseFloat(mentor.rating as any)?.toFixed(1) || '0.0'}
                     </span>
                   </div>
@@ -1210,23 +1282,25 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="pt-6">
+            <Card className="col-span-2 md:col-span-1">
+              <CardContent className="pt-4 sm:pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">
                       Total Impact
                     </p>
-                    <h3 className="text-2xl font-bold mt-2">
+                    <h3 className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2">
                       {totalAssignmentsCount}
                     </h3>
                   </div>
-                  <div className="p-3 bg-blue-100 rounded-full">
-                    <TrendingUp className="h-6 w-6 text-blue-600" />
+                  <div className="p-2 sm:p-3 bg-blue-100 rounded-full">
+                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                   </div>
                 </div>
-                <div className="mt-4">
-                  <p className="text-sm text-gray-600">Ventures mentored</p>
+                <div className="mt-3 sm:mt-4">
+                  <p className="text-xs sm:text-sm text-gray-600 truncate">
+                    Ventures mentored
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -1234,20 +1308,22 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
 
           {/* Active Assignments */}
           <Card>
-            <CardHeader>
-              <CardTitle>Active Mentorships</CardTitle>
-              <CardDescription>
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="text-lg sm:text-xl">
+                Active Mentorships
+              </CardTitle>
+              <CardDescription className="text-sm">
                 Ventures you're currently mentoring
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6">
               {assignmentsLoading ? (
                 <div className="flex justify-center items-center py-8">
                   <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
                 </div>
               ) : activeAssignmentsCount > 0 ? (
                 <div className="space-y-4">
-                  <p className="text-gray-600">
+                  <p className="text-sm text-gray-600">
                     You have {activeAssignmentsCount} active assignment(s).
                   </p>
 
@@ -1255,34 +1331,34 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     {activeAssignments.map((assignment) => (
                       <div
                         key={assignment.id}
-                        className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                        className="border rounded-lg p-3 sm:p-4 hover:shadow-sm transition-shadow"
                       >
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-lg mb-1">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-3">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-base sm:text-lg mb-1 truncate">
                               {assignment.campaign?.title ||
                                 'Untitled Campaign'}
                             </h4>
-                            <p className="text-sm text-gray-600 mb-2">
+                            <p className="text-xs sm:text-sm text-gray-600 mb-2 truncate">
                               Founder:{' '}
                               {assignment.campaign?.fundraiser_name ||
                                 assignment.entrepreneur?.full_name ||
                                 'Unknown'}
                             </p>
                             {assignment.entrepreneur_notes && (
-                              <p className="text-sm text-gray-700 italic mb-2 line-clamp-2">
+                              <p className="text-xs sm:text-sm text-gray-700 italic mb-2 line-clamp-2">
                                 "{assignment.entrepreneur_notes}"
                               </p>
                             )}
-                            <div className="flex items-center text-sm text-gray-500">
-                              <Calendar className="h-4 w-4 mr-1" />
-                              <span>
+                            <div className="flex items-center text-xs sm:text-sm text-gray-500">
+                              <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
+                              <span className="truncate">
                                 Started: {formatDate(assignment.started_at)}
                               </span>
                             </div>
                           </div>
-                          <div className="flex flex-col sm:items-end gap-2">
-                            <Badge className="bg-green-100 text-green-800">
+                          <div className="flex flex-col sm:items-end gap-2 mt-2 sm:mt-0">
+                            <Badge className="bg-green-100 text-green-800 text-xs">
                               Active
                             </Badge>
                             {assignment.campaign?.category && (
@@ -1293,16 +1369,16 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                           </div>
                         </div>
 
-                        <div className="flex gap-2 pt-4 border-t mt-4">
+                        <div className="flex gap-2 pt-3 sm:pt-4 border-t mt-3 sm:mt-4">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() =>
                               handleViewAssignmentDetails(assignment)
                             }
-                            className="flex-1"
+                            className="flex-1 text-xs sm:text-sm"
                           >
-                            View Details
+                            Details
                           </Button>
                           {assignment.campaign?.id && (
                             <Button
@@ -1314,6 +1390,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                                   '_blank',
                                 )
                               }
+                              className="p-2"
                             >
                               <ExternalLink className="h-4 w-4" />
                             </Button>
@@ -1324,15 +1401,18 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h4 className="font-semibold mb-2">No Active Assignments</h4>
-                  <p className="text-gray-600 mb-4">
+                <div className="text-center py-6 sm:py-8">
+                  <Briefcase className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+                  <h4 className="font-semibold text-base sm:text-lg mb-2">
+                    No Active Assignments
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-4 px-2">
                     You don't have any active mentorship assignments.
                   </p>
                   <Button
                     variant="outline"
                     onClick={() => setIsViewRequestsModalOpen(true)}
+                    className="w-full sm:w-auto"
                   >
                     View Available Requests
                   </Button>
@@ -1344,22 +1424,24 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           {/* Recent Reviews */}
           {reviews.length > 0 ? (
             <Card>
-              <CardHeader>
-                <CardTitle>Recent Reviews</CardTitle>
-                <CardDescription>
+              <CardHeader className="px-4 sm:px-6">
+                <CardTitle className="text-lg sm:text-xl">
+                  Recent Reviews
+                </CardTitle>
+                <CardDescription className="text-sm">
                   Feedback from your completed mentorships
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              <CardContent className="px-4 sm:px-6">
+                <div className="space-y-3 sm:space-y-4">
                   {reviews.slice(0, 3).map((review: any, index: number) => (
-                    <div key={index} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h4 className="font-semibold">
+                    <div key={index} className="border rounded-lg p-3 sm:p-4">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-sm sm:text-base truncate">
                             {review.campaign_title || 'Untitled Campaign'}
                           </h4>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-xs sm:text-sm text-gray-600 truncate">
                             {review.entrepreneur_name || 'Unknown'}
                           </p>
                         </div>
@@ -1367,7 +1449,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
                               key={star}
-                              className={`h-4 w-4 ${
+                              className={`h-3 w-3 sm:h-4 sm:w-4 ${
                                 star <= (review.rating || 0)
                                   ? 'text-yellow-400 fill-yellow-400'
                                   : 'text-gray-300'
@@ -1377,7 +1459,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                         </div>
                       </div>
                       {review.feedback && (
-                        <p className="text-gray-600 mt-2 text-sm">
+                        <p className="text-xs sm:text-sm text-gray-600 mt-2 line-clamp-2">
                           "{review.feedback}"
                         </p>
                       )}
@@ -1395,15 +1477,15 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           ) : (
             completedAssignmentsCount > 0 && (
               <Card>
-                <CardHeader>
-                  <CardTitle>Reviews</CardTitle>
-                  <CardDescription>
+                <CardHeader className="px-4 sm:px-6">
+                  <CardTitle className="text-lg sm:text-xl">Reviews</CardTitle>
+                  <CardDescription className="text-sm">
                     No reviews yet for your completed assignments
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="text-center py-8">
-                  <Star className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600">
+                <CardContent className="text-center py-6 sm:py-8">
+                  <Star className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mx-auto mb-3 sm:mb-4" />
+                  <p className="text-sm text-gray-600 px-2">
                     Your completed assignments don't have reviews yet.
                   </p>
                 </CardContent>
@@ -1414,17 +1496,21 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
           {/* Expertise Section */}
           {expertise.length > 0 && (
             <Card>
-              <CardHeader>
-                <CardTitle>Areas of Expertise</CardTitle>
-                <CardDescription>Your mentorship specialties</CardDescription>
+              <CardHeader className="px-4 sm:px-6">
+                <CardTitle className="text-lg sm:text-xl">
+                  Areas of Expertise
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  Your mentorship specialties
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
+              <CardContent className="px-4 sm:px-6">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {expertise.map((tag: string, index: number) => (
                     <Badge
                       key={index}
                       variant="secondary"
-                      className="capitalize"
+                      className="text-xs sm:text-sm capitalize px-2 py-1"
                     >
                       {tag}
                     </Badge>
@@ -1436,25 +1522,27 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
 
           {/* Availability Management */}
           <Card>
-            <CardHeader>
-              <CardTitle>Availability Settings</CardTitle>
-              <CardDescription>
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="text-lg sm:text-xl">
+                Availability Settings
+              </CardTitle>
+              <CardDescription className="text-sm">
                 Control your mentorship capacity and availability
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6">
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm sm:text-base">
                       Maximum Concurrent Assignments
                     </h4>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs sm:text-sm text-gray-600">
                       Set how many ventures you can mentor at once
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-lg font-semibold">
+                    <span className="text-base sm:text-lg font-semibold">
                       {mentor.max_assignments || 'Unlimited'}
                     </span>
                     <Button
@@ -1466,16 +1554,19 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                         );
                         setIsMaxAssignmentsModalOpen(true);
                       }}
+                      className="text-xs sm:text-sm"
                     >
                       Change
                     </Button>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold">Mentor Status</h4>
-                    <p className="text-sm text-gray-600">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm sm:text-base">
+                      Mentor Status
+                    </h4>
+                    <p className="text-xs sm:text-sm text-gray-600">
                       {mentor.status === 'approved'
                         ? 'Available for new assignments'
                         : 'Not accepting new assignments'}
@@ -1487,7 +1578,7 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
                     }
                     size="sm"
                     onClick={toggleAvailability}
-                    className="bg-emerald-700 text-white hover:bg-emerald-800"
+                    className="bg-emerald-700 text-white hover:bg-emerald-800 text-xs sm:text-sm w-full sm:w-auto"
                   >
                     {mentor.status === 'approved'
                       ? 'Set as Unavailable'
@@ -1579,15 +1670,17 @@ const MentorDashboard: React.FC<MentorDashboardProps> = ({ mentorId }) => {
   // Fallback - shouldn't reach here
   return (
     <Card>
-      <CardContent className="py-8 text-center">
+      <CardContent className="py-8 text-center px-4">
         <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
         <h3 className="text-lg font-semibold mb-2">Unexpected State</h3>
-        <p className="text-gray-600 mb-4 px-4">
+        <p className="text-gray-600 mb-4">
           There was an unexpected error loading your mentor dashboard.
         </p>
-        <pre className="text-xs bg-gray-100 p-2 rounded text-left overflow-auto">
-          {JSON.stringify(dashboardData, null, 2)}
-        </pre>
+        <div className="overflow-x-auto">
+          <pre className="text-xs bg-gray-100 p-2 rounded text-left max-w-full overflow-auto">
+            {JSON.stringify(dashboardData, null, 2)}
+          </pre>
+        </div>
       </CardContent>
     </Card>
   );
