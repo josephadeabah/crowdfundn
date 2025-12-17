@@ -773,7 +773,7 @@ const MentorMarketplace: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
           <div className="space-y-1">
             <h2 className="text-xl sm:text-2xl font-bold">
-              Mentor Marketplace
+              Mentor Directory
             </h2>
             <p className="text-sm sm:text-base text-gray-600">
               Find experienced mentors to guide your venture
