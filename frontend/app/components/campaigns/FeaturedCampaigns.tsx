@@ -40,7 +40,7 @@ const FeaturedCampaigns = () => {
     return campaigns.filter((campaign) => {
       const isRegularCampaign = campaign.type !== 'EquityCampaign';
       const hasMinimumAmount = isRegularCampaign
-        ? Number(campaign.transferred_amount || 0) > 2000
+        ? Number(campaign.transferred_amount || 0) > 100
         : true;
 
       return (
