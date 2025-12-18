@@ -193,3 +193,4 @@ const BantuHiveLogoIcon = (
   </svg>
 );
 export default BantuHiveLogoIcon;
+  
