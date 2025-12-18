@@ -167,7 +167,7 @@ export default function HowItWorks() {
                   succeed.
                 </p>
                 <a
-                  href="/account/settings"
+                  href="/account#Settings"
                   className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
                 >
                   Go to Account Settings

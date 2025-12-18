@@ -147,7 +147,7 @@ export default function CTAdiv() {
                 </li>
               </ul>
               <a
-                href="/account/settings"
+                href="/account#Settings"
                 className="block w-full bg-transparent hover:bg-white/20 text-white font-bold py-4 px-6 rounded-lg text-center border-2 border-white transition-colors"
               >
                 Become a Mentor
@@ -160,7 +160,7 @@ export default function CTAdiv() {
               Learn more about mentorship program guidelines and best practices
               in our
               <a
-                href="/help/mentorship-guide"
+                href="/info/mentorship"
                 className="text-white font-medium underline ml-1"
               >
                 complete guide
