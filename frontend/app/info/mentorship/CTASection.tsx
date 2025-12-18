@@ -79,7 +79,7 @@ export default function CTAdiv() {
                 </li>
               </ul>
               <a
-                href="/dashboard/request-mentor"
+                href="/account#Find%20Mentor"
                 className="block w-full bg-white hover:bg-gray-100 text-gray-900 font-bold py-4 px-6 rounded-lg text-center transition-colors"
               >
                 Request a Mentor
