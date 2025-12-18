@@ -10,7 +10,7 @@ class PlatformFeeService
       response = paystack_service.initiate_transfer(
         amount: total_platform_fee.round,
         currency: 'GHS',
-        recipient: 'RCP_pjyf6vw02jmif6j',
+        recipient: 'RCP_i72gh68af2w3rfn', # Company recipient code
         reason: 'Platform fee accumulation transfer'
       )
 
