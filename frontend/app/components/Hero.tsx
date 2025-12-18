@@ -10,6 +10,7 @@ import {
   Target,
   Sparkles,
   Rocket,
+  UserCheck
 } from 'lucide-react';
 import { useAuth } from '../context/auth/AuthContext';
 import Link from 'next/link';
@@ -20,6 +21,7 @@ import Avatar from './avatar/Avatar';
 import { getVerifiedBadge } from '../utils/helpers/get.level.trophy';
 import { VideoPlayer } from './videoplayer/videoplayar';
 import { Button } from './ui/button';
+import { UserGroupIcon } from '@heroicons/react/24/outline';
 
 const Hero = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -61,6 +63,16 @@ const Hero = () => {
       text: 'Predictive Analytics',
       description: 'AI forecasts campaign success and investment potential',
     },
+    {
+      icon: UserCheck,
+      text: 'Get Mentors',
+      description: 'We match you with the best mentors for your venture',
+    },
+    {
+      icon: UserGroupIcon,
+      text: 'Community Support & Investment',
+      description: 'Leverage our community of co-investors and backers',
+    }
   ];
 
   useEffect(() => {
