@@ -83,7 +83,7 @@ const Footer = () => {
             {/* Logo and Mission - spans 2 columns on md+ screens */}
             <div className="md:col-span-2">
               <div className="mb-4">
-                <BantuHiveLogoIcon width={800} height={600} />
+                <BantuHiveLogoIcon className="w-40 h-auto" />
               </div>
               <p className="text-sm text-gray-800 mb-4">
                 27 Independence Avenue, Synergy Office Space, Takoradi Mall,
