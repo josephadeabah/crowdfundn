@@ -29,13 +29,13 @@ const FooterWarning: React.FC = () => {
 
             <div className="border border-amber-300 bg-amber-50 rounded-md p-4">
               <p className="text-xs font-semibold text-amber-900 leading-relaxed">
-                PLATFORM STATUS NOTICE: BantuHive is currently operating in a controlled,
-                invite-only private pilot phase. The platform is not open to the general
-                public and does not presently operate as a licensed public investment
+                PLATFORM STATUS NOTICE: BantuHive is currently operating in a
+                controlled, invite-only private pilot phase. The platform's
+                investment crowdfunding is not open to the general public and
+                does not presently operate as a licensed public investment
                 crowdfunding intermediary.
               </p>
             </div>
-
 
             <p>
               BantuHive does not provide investment advice, recommendations, or
