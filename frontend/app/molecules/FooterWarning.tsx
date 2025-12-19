@@ -5,63 +5,63 @@ const FooterWarning: React.FC = () => {
   return (
     <div className="bg-white">
       <div className="max-w-7xl mx-auto px-4 mb-6 pt-8">
-        <div className="">
+        <div>
           <h4 className="font-bold text-sm mb-4 text-gray-900">
             Important Investment Notice
           </h4>
 
           <div className="space-y-4 text-xs leading-relaxed text-gray-600">
             <p className="font-medium text-gray-900">
-              IN MAKING AN INVESTMENT DECISION, INVESTORS MUST RELY ON THEIR OWN
-              EXAMINATION OF THE ISSUER AND THE TERMS OF THE OFFERING, INCLUDING
-              THE MERITS AND RISKS INVOLVED. INVESTMENTS ON BANTUHIVE ARE
-              SPECULATIVE, ILLIQUID, AND INVOLVE A HIGH DEGREE OF RISK,
-              INCLUDING THE POSSIBLE LOSS OF YOUR ENTIRE INVESTMENT.
+              INVESTMENTS IN STARTUPS AND SMES ARE SPECULATIVE, ILLIQUID, AND
+              INVOLVE A HIGH DEGREE OF RISK, INCLUDING THE POSSIBLE LOSS OF YOUR
+              ENTIRE INVESTMENT. PARTICIPANTS MUST RELY ON THEIR OWN EXAMINATION
+              OF EACH ISSUER AND THE TERMS OF ANY OFFERING, INCLUDING THE MERITS
+              AND RISKS INVOLVED.
             </p>
 
             <p>
-              www.BantuHive.com is a website owned and operated by BantuHive LLC
-              ("BantuHive").
+              www.bantuhive.com is owned and operated by BantuHive Ltd.
+              (“BantuHive”), a private technology platform facilitating capital
+              introduction between issuers and invited participants.
             </p>
 
             <p className="font-semibold text-gray-900">
-              Securities offered on BantuHive are regulated by the Securities
-              and Exchange Commission, Ghana (SEC Ghana)
+              Platform Status
             </p>
 
             <p>
-              All investment opportunities on this platform comply with SEC
-              Ghana regulations and have undergone proper regulatory review.
-              BantuHive operates under the supervision and guidelines set forth
-              by SEC Ghana to ensure compliance with securities laws and
-              investor protection standards.
+              BantuHive is currently operating in a controlled, invite-only
+              private pilot phase. The platform is not open to the general
+              public and does not presently operate as a licensed public
+              investment crowdfunding intermediary.
             </p>
 
             <p>
-              BantuHive conducts thorough due diligence and verification of all
-              information provided by issuers. We verify the adequacy, accuracy,
-              and completeness of offering materials to maintain the highest
-              standards of transparency and investor protection. However,
-              investors should conduct their own independent research and
-              consult with financial advisors before making any investment
-              decisions.
+              BantuHive does not provide investment advice, recommendations, or
+              guarantees. All information relating to investment opportunities
+              is provided by issuers, and participants are encouraged to
+              conduct their own independent due diligence before committing
+              capital.
             </p>
 
             <p>
-              Investing in private securities involves significant risks and is
-              not suitable for all investors. These investments are highly
-              speculative, illiquid, and carry a high degree of risk, including
-              the potential loss of your entire investment. You should only
-              invest capital that you can afford to lose completely.
+              BantuHive does not hold client funds. Payment processing and fund
+              transfers are facilitated through regulated third-party payment
+              service providers.
             </p>
 
             <p>
-              Private company securities typically lack an established secondary
-              market, BantuHive does not offer a secondary market for liquidity
-              at the moment. Each investment opportunity carries unique risks
-              specific to the company, industry, and market conditions.
-              Prospective investors should carefully review all offering
-              documents and seek professional advice.
+              Investments in private securities are not suitable for all
+              investors. These investments are highly speculative, subject to
+              business, market, and liquidity risks, and may result in the loss
+              of the entire invested amount. Participants should only commit
+              capital they can afford to lose.
+            </p>
+
+            <p>
+              Private company securities typically lack an established
+              secondary market. BantuHive does not currently provide a
+              secondary market or liquidity mechanism for investments.
             </p>
 
             <p>
@@ -80,25 +80,25 @@ const FooterWarning: React.FC = () => {
               >
                 Privacy Policy
               </Link>
-              , which may be updated periodically without prior notice.
+              , which may be updated periodically.
             </p>
 
             <p className="font-semibold text-gray-900">
-              International Investors
+              International Participants
             </p>
 
             <p>
-              Investment opportunities are offered in compliance with Ghana
-              securities regulations and African market standards. International
-              investors are responsible for ensuring that their participation
-              complies with the laws and regulations of their country of
-              residence. We strongly recommend consulting with legal, tax, and
-              financial advisors in your jurisdiction before investing.
+              Participation in private investment opportunities may be subject
+              to the laws and regulations of your country of residence.
+              International participants are responsible for ensuring their
+              compliance with applicable legal, tax, and regulatory
+              requirements and should seek independent professional advice
+              where appropriate.
             </p>
 
             <p>
-              For additional information or customer support, please contact us
-              at contact@bantuhive.com.
+              For additional information or support, please contact us at{' '}
+              <span className="font-medium">contact@bantuhive.com</span>.
             </p>
           </div>
         </div>
