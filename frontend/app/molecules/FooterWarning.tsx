@@ -25,9 +25,7 @@ const FooterWarning: React.FC = () => {
               introduction between issuers and invited participants.
             </p>
 
-            <p className="font-semibold text-gray-900">
-              Platform Status
-            </p>
+            <p className="font-semibold text-gray-900">Platform Status</p>
 
             <p>
               BantuHive is currently operating in a controlled, invite-only
@@ -39,9 +37,8 @@ const FooterWarning: React.FC = () => {
             <p>
               BantuHive does not provide investment advice, recommendations, or
               guarantees. All information relating to investment opportunities
-              is provided by issuers, and participants are encouraged to
-              conduct their own independent due diligence before committing
-              capital.
+              is provided by issuers, and participants are encouraged to conduct
+              their own independent due diligence before committing capital.
             </p>
 
             <p>
@@ -59,9 +56,9 @@ const FooterWarning: React.FC = () => {
             </p>
 
             <p>
-              Private company securities typically lack an established
-              secondary market. BantuHive does not currently provide a
-              secondary market or liquidity mechanism for investments.
+              Private company securities typically lack an established secondary
+              market. BantuHive does not currently provide a secondary market or
+              liquidity mechanism for investments.
             </p>
 
             <p>
@@ -91,9 +88,8 @@ const FooterWarning: React.FC = () => {
               Participation in private investment opportunities may be subject
               to the laws and regulations of your country of residence.
               International participants are responsible for ensuring their
-              compliance with applicable legal, tax, and regulatory
-              requirements and should seek independent professional advice
-              where appropriate.
+              compliance with applicable legal, tax, and regulatory requirements
+              and should seek independent professional advice where appropriate.
             </p>
 
             <p>
