@@ -365,12 +365,12 @@ const Hero = () => {
                 </div>
 
                 {/* Small decorative badge - positioned absolutely relative to viewport */}
-                <img
+                {/*<img
                   src="/badge-graphic.png"
                   alt=""
                   className="absolute -bottom-8 -right-8 w-24 h-24 lg:w-32 lg:h-32 opacity-40 animate-bounce hidden lg:block"
                   style={{ animationDuration: '3s' }}
-                />
+                />*/}
               </div>
             </div>
           </div>
