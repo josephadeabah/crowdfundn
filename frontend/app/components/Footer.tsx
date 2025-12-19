@@ -110,7 +110,7 @@ const Footer = () => {
                   <FaTiktok className="h-5 w-5" />
                 </a>
                 <a
-                  href="https://www.instagram.com/bantuhive_fund/"
+                  href="https://www.instagram.com/bantu.hive/"
                   className="text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
                   aria-label="Instagram"
                 >
