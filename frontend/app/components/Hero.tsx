@@ -10,7 +10,7 @@ import {
   Target,
   Sparkles,
   Rocket,
-  UserCheck
+  UserCheck,
 } from 'lucide-react';
 import { useAuth } from '../context/auth/AuthContext';
 import Link from 'next/link';
@@ -72,7 +72,7 @@ const Hero = () => {
       icon: UserGroupIcon,
       text: 'Community Support & Investment',
       description: 'Leverage our community of co-investors and backers',
-    }
+    },
   ];
 
   useEffect(() => {
