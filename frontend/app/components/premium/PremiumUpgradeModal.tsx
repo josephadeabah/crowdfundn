@@ -89,12 +89,6 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
                 Priority support
               </span>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <Crown className="h-5 w-5 text-emerald-500" />
-              <span className="text-gray-700 font-medium">
-                Exclusive investment opportunities
-              </span>
-            </div>
           </div>
 
           {/* Action Buttons - Side by side on all devices */}
