@@ -136,7 +136,7 @@ const ScrollableTabList = ({
 
 const ProfileTabs = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<string>('Dashboard');
+  const [activeTab, setActiveTab] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -360,21 +360,16 @@ const ProfileTabs = () => {
       window.removeEventListener('popstate', syncFromUrl);
       window.removeEventListener('hashchange', syncFromUrl);
     };
-     setLoading(false);
   }, []);
 
   useEffect(() => {
-    if (!activeTab) return;
-
-    const currentHash = window.location.hash.replace('#', '');
-    if (currentHash === activeTab) return;
-
-    const url = new URL(window.location.href);
-    url.hash = activeTab;
-    window.history.replaceState(null, '', url.toString());
-    localStorage.setItem('activeTab', activeTab);
+    if (activeTab) {
+      const url = new URL(window.location.href);
+      url.hash = activeTab;
+      window.history.replaceState(null, '', url.toString());
+      localStorage.setItem('activeTab', activeTab);
+    }
   }, [activeTab]);
-
 
   const handleTabClick = (tab: string) => {
     setLoading(true);
