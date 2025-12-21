@@ -31,9 +31,7 @@ const FooterWarning: React.FC = () => {
               <p className="text-xs font-semibold text-amber-900 leading-relaxed">
                 PLATFORM STATUS NOTICE: BantuHive is currently operating in a
                 controlled, invite-only private pilot phase. The platform's
-                investment crowdfunding is not open to the general public and
-                does not presently operate as a licensed public investment
-                crowdfunding intermediary.
+                investment crowdfunding is not open to the general public. Strictly invite-only.
               </p>
             </div>
 
