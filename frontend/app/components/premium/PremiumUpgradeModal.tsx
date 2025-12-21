@@ -26,13 +26,13 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
       // Use localStorage to communicate with ProfileTabs
       localStorage.setItem('activeTab', 'Settings');
       localStorage.setItem('forceScrollToSubscription', 'true');
-      
+
       // Create the exact URL pattern that ProfileTabs expects
       const url = new URL(window.location.href);
       url.hash = 'Settings';
       url.searchParams.set('subscribe', 'true');
       window.history.replaceState(null, '', url.toString());
-      
+
       // Force a page reload to ensure ProfileTabs picks up the change
       // This is necessary because we're in a modal and need to trigger the parent component
       window.location.reload();
@@ -42,11 +42,11 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
   // Alternative: Navigate to Settings without reload if possible
   const handleCheckSubscription = () => {
     localStorage.setItem('activeTab', 'Settings');
-    
+
     const url = new URL(window.location.href);
     url.hash = 'Settings';
     window.history.replaceState(null, '', url.toString());
-    
+
     // Trigger hashchange event for ProfileTabs
     window.dispatchEvent(new HashChangeEvent('hashchange'));
     onClose();
