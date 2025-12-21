@@ -355,31 +355,30 @@ const ProfileTabs = () => {
   }, []);
 
   useEffect(() => {
-  const handleUrlChange = () => {
-    const hashTab = window.location.hash.replace('#', '');
-    const params = new URLSearchParams(window.location.search);
-    const subscribe = params.get('subscribe');
+    const handleUrlChange = () => {
+      const hashTab = window.location.hash.replace('#', '');
+      const params = new URLSearchParams(window.location.search);
+      const subscribe = params.get('subscribe');
 
-    if (hashTab === 'Settings') {
-      setActiveTab('Settings');
-      setLoading(true);
-      setTimeout(() => setLoading(false), 300);
-    }
+      if (hashTab === 'Settings') {
+        setActiveTab('Settings');
+        setLoading(true);
+        setTimeout(() => setLoading(false), 300);
+      }
 
-    if (subscribe === 'true') {
-      setActiveTab('Settings');
-    }
-  };
+      if (subscribe === 'true') {
+        setActiveTab('Settings');
+      }
+    };
 
-  window.addEventListener('hashchange', handleUrlChange);
-  window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+    window.addEventListener('popstate', handleUrlChange);
 
-  return () => {
-    window.removeEventListener('hashchange', handleUrlChange);
-    window.removeEventListener('popstate', handleUrlChange);
-  };
-}, []);
-
+    return () => {
+      window.removeEventListener('hashchange', handleUrlChange);
+      window.removeEventListener('popstate', handleUrlChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (activeTab) {

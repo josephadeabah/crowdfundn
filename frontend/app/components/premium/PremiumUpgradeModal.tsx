@@ -19,23 +19,22 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
   onUpgrade,
 }) => {
   // Enhanced upgrade logic to match ProfileTabs exactly
-const handleUpgrade = () => {
-  if (onUpgrade) {
-    onUpgrade();
-    return;
-  }
+  const handleUpgrade = () => {
+    if (onUpgrade) {
+      onUpgrade();
+      return;
+    }
 
-  const url = new URL(window.location.href);
-  url.hash = 'Settings';
-  url.searchParams.set('subscribe', 'true');
-  window.history.pushState(null, '', url.toString());
+    const url = new URL(window.location.href);
+    url.hash = 'Settings';
+    url.searchParams.set('subscribe', 'true');
+    window.history.pushState(null, '', url.toString());
 
-  // Notify ProfileTabs
-  window.dispatchEvent(new HashChangeEvent('hashchange'));
+    // Notify ProfileTabs
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
 
-  onClose();
-};
-
+    onClose();
+  };
 
   // Alternative: Navigate to Settings without reload if possible
   const handleCheckSubscription = () => {
