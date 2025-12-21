@@ -61,11 +61,14 @@ import {
   Code,
   Banknote,
   Building2,
+  MessageSquare, // Added for message icon
 } from 'lucide-react';
 import { deslugify } from '@/app/utils/helpers/categories';
 import ClubDetailsModal from './club-details/ClubDetailsModal';
 import { useInfiniteScroll } from './hooks/useInfiniteScroll';
 import ClubSearchTab from './SearchClub/ClubSearchTab';
+import { usePremium } from '@/app/context/premium/PremiumContext'; // Import premium context
+import PremiumUpgradeModal from '@/app/components/premium/PremiumUpgradeModal';
 
 // Define proper types for infinite scroll state
 type TabType = 'all' | 'my_clubs' | 'discover';
@@ -83,6 +86,7 @@ type InfiniteScrollStates = {
 
 const ClubsListPage: React.FC = () => {
   const { token, user } = useAuth();
+  const { subscription } = usePremium(); // Get premium subscription
   const [clubs, setClubs] = useState<Club[]>([]);
   const [myClubs, setMyClubs] = useState<Club[]>([]);
   const [discoverClubs, setDiscoverClubs] = useState<Club[]>([]);
@@ -100,6 +104,9 @@ const ClubsListPage: React.FC = () => {
     'all' | 'my_clubs' | 'discover' | 'dealroom'
   >('all');
   const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
+  const [showPremiumModal, setShowPremiumModal] = useState(false); // State for premium modal
+  const [selectedClubForMessage, setSelectedClubForMessage] =
+    useState<Club | null>(null); // Track club for messaging
 
   // Infinite scroll states with proper typing
   const [infiniteScroll, setInfiniteScroll] = useState<InfiniteScrollStates>({
@@ -107,6 +114,9 @@ const ClubsListPage: React.FC = () => {
     my_clubs: { loading: false, hasMore: true, page: 1 },
     discover: { loading: false, hasMore: true, page: 1 },
   });
+
+  // Check if user has premium
+  const hasPremium = subscription?.has_premium;
 
   // Load clubs function with infinite scroll support and proper typing
   const loadClubs = useCallback(
@@ -301,6 +311,31 @@ const ClubsListPage: React.FC = () => {
     } finally {
       setActionLoading(null);
     }
+  };
+
+  // Handle message button click
+  const handleMessageClick = (club: Club, event: React.MouseEvent) => {
+    event.stopPropagation();
+
+    if (!hasPremium) {
+      // Show premium upgrade modal
+      setSelectedClubForMessage(club);
+      setShowPremiumModal(true);
+    } else {
+      // User has premium, proceed to messaging
+      handleSendMessage(club);
+    }
+  };
+
+  // Handle actual message sending (premium users only)
+  const handleSendMessage = (club: Club) => {
+    // Here you would implement the actual message sending logic
+    // For now, we'll show an alert and redirect to messages page
+    alert(`Preparing to send message to ${club.name}`);
+
+    // You can implement the actual message flow here
+    // For example, redirect to messages page with club pre-selected
+    window.location.href = `/account/messages?club=${club.slug}`;
   };
 
   const revertOptimisticUpdate = (clubId: string) => {
@@ -781,13 +816,35 @@ const ClubsListPage: React.FC = () => {
                               Club Balance
                             </div>
                           </div>
-                          <button
-                            onClick={actionButton.onClick}
-                            disabled={actionButton.disabled}
-                            className={`px-4 py-2 rounded-full font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${actionButton.style}`}
-                          >
-                            {actionButton.label}
-                          </button>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 items-center">
+                            {/* Message Button */}
+                            <button
+                              onClick={(e) => handleMessageClick(club, e)}
+                              className={`p-2 rounded-full transition-colors ${
+                                hasPremium
+                                  ? 'bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700'
+                                  : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-500'
+                              }`}
+                              title={
+                                hasPremium
+                                  ? 'Send message to club'
+                                  : 'Upgrade to premium to send messages'
+                              }
+                            >
+                              <MessageSquare size={18} />
+                            </button>
+
+                            {/* Main Action Button */}
+                            <button
+                              onClick={actionButton.onClick}
+                              disabled={actionButton.disabled}
+                              className={`px-4 py-2 rounded-full font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${actionButton.style}`}
+                            >
+                              {actionButton.label}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -887,6 +944,20 @@ const ClubsListPage: React.FC = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onClubCreated={handleClubCreated}
+      />
+
+      {/* Premium Upgrade Modal */}
+      <PremiumUpgradeModal
+        isOpen={showPremiumModal}
+        onClose={() => {
+          setShowPremiumModal(false);
+          setSelectedClubForMessage(null);
+        }}
+        featureName="sending messages to investment clubs"
+        onUpgrade={() => {
+          // Redirect to pricing page
+          window.location.href = '/account/pricing';
+        }}
       />
     </div>
   );
