@@ -23,7 +23,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
       onUpgrade();
     } else {
       // Default upgrade action - redirect to pricing page
-      window.location.href = '/account/pricing';
+      window.location.href = '/account#Settings';
     }
   };
 
@@ -77,13 +77,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
               <Shield className="h-5 w-5 text-blue-500" />
               <span className="text-gray-700 font-medium">
-                Priority support and verification
-              </span>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <Star className="h-5 w-5 text-emerald-500" />
-              <span className="text-gray-700 font-medium">
-                Exclusive investment opportunities
+                Priority support
               </span>
             </div>
           </div>
@@ -108,7 +102,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
           <p className="text-center text-gray-500 text-sm mt-4">
             Already premium?{' '}
             <a
-              href="/account/subscription"
+              href="/account#Settings"
               className="text-amber-600 hover:text-amber-700 font-medium"
             >
               Check your subscription
