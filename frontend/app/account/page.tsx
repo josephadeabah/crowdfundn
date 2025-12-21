@@ -138,6 +138,7 @@ const ProfileTabs = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
+  const [initialLoad, setInitialLoad] = useState<boolean>(true);
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
@@ -150,25 +151,7 @@ const ProfileTabs = () => {
   const { subscription, fetchSubscription } = usePremium();
   const [isPremiumDataLoaded, setIsPremiumDataLoaded] = useState(false);
 
-  useEffect(() => {
-    const loadPremiumData = async () => {
-      try {
-        await fetchSubscription();
-      } catch (err) {
-        console.error('Failed to load premium data:', err);
-      } finally {
-        setIsPremiumDataLoaded(true);
-      }
-    };
-
-    if (!subscription) {
-      loadPremiumData();
-    } else {
-      setIsPremiumDataLoaded(true);
-    }
-  }, [fetchSubscription, subscription]);
-
-  // Grouped tabs with proper type definitions
+  // Grouped tabs with proper type definitions - MOVED OUTSIDE COMPONENT TO PREVENT RECREATION
   const tabGroups: TabGroup[] = [
     {
       id: 'dashboard',
@@ -328,7 +311,56 @@ const ProfileTabs = () => {
   // Flatten all tabs for easy access
   const allTabs: Tab[] = tabGroups.flatMap((group) => group.tabs);
 
+  // Initialize active tab and load premium data
   useEffect(() => {
+    const initializeTabs = async () => {
+      try {
+        // Set a default active tab if none exists
+        const params = new URLSearchParams(window.location.search);
+        const subscribe = params.get('subscribe');
+        const hashTab = window.location.hash.replace('#', '');
+
+        let tabToSet = 'Dashboard'; // Default
+
+        if (hashTab === 'Settings' || subscribe === 'true') {
+          tabToSet = 'Settings';
+        } else if (hashTab && allTabs.find((t) => t.label === hashTab)) {
+          tabToSet = hashTab;
+        } else {
+          const savedTab = localStorage.getItem('activeTab');
+          if (savedTab && allTabs.find((t) => t.label === savedTab)) {
+            tabToSet = savedTab;
+          }
+        }
+
+        // Load premium data in parallel
+        if (!subscription) {
+          try {
+            await fetchSubscription();
+          } catch (err) {
+            console.error('Failed to load premium data:', err);
+          }
+        }
+
+        // Set active tab after a small delay to ensure state is ready
+        setTimeout(() => {
+          setActiveTab(tabToSet);
+          setLoading(false);
+          setInitialLoad(false);
+        }, 100);
+
+      } catch (error) {
+        console.error('Error initializing tabs:', error);
+        // Fallback to default tab
+        setActiveTab('Dashboard');
+        setLoading(false);
+        setInitialLoad(false);
+      }
+    };
+
+    initializeTabs();
+
+    // Sync URL changes
     const syncFromUrl = () => {
       const params = new URLSearchParams(window.location.search);
       const subscribe = params.get('subscribe');
@@ -339,19 +371,16 @@ const ProfileTabs = () => {
         return;
       }
 
-
       if (hashTab && allTabs.find((t) => t.label === hashTab)) {
         setActiveTab(hashTab);
         return;
       }
 
       const savedTab = localStorage.getItem('activeTab');
-      if (savedTab) {
+      if (savedTab && allTabs.find((t) => t.label === savedTab)) {
         setActiveTab(savedTab);
       }
     };
-
-    syncFromUrl();
 
     window.addEventListener('popstate', syncFromUrl);
     window.addEventListener('hashchange', syncFromUrl);
@@ -360,25 +389,30 @@ const ProfileTabs = () => {
       window.removeEventListener('popstate', syncFromUrl);
       window.removeEventListener('hashchange', syncFromUrl);
     };
-  }, []);
+  }, []); // Remove dependencies to prevent infinite loops
 
+  // Update URL and localStorage when activeTab changes
   useEffect(() => {
-    if (activeTab) {
+    if (!initialLoad && activeTab) {
       const url = new URL(window.location.href);
       url.hash = activeTab;
+      // Remove subscribe param if present (it was already handled)
+      url.searchParams.delete('subscribe');
       window.history.replaceState(null, '', url.toString());
       localStorage.setItem('activeTab', activeTab);
     }
-  }, [activeTab]);
+  }, [activeTab, initialLoad]);
 
   const handleTabClick = (tab: string) => {
-    setLoading(true);
     setActiveTab(tab);
     // Close mobile menu when a tab is selected
     setIsMobileMenuOpen(false);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
+    // Only show loading if it's a heavy component
+    const heavyTabs = ['Settings', 'Investments', 'Dashboard'];
+    if (heavyTabs.includes(tab)) {
+      setLoading(true);
+      setTimeout(() => setLoading(false), 300);
+    }
   };
 
   const handleGroupToggle = (groupId: string) => {
@@ -411,7 +445,8 @@ const ProfileTabs = () => {
 
   const hasPremium = subscription?.has_premium;
 
-  if (loading) {
+  // Show loader only during initial load
+  if (loading && initialLoad) {
     return <ProfileTabsLoader />;
   }
 
@@ -507,10 +542,6 @@ const ProfileTabs = () => {
                         <ScrollableTabList hasManyTabs={manyTabs}>
                           {group.tabs.map((tab) => {
                             const isActive = activeTab === tab.label;
-                            const isOnboarding =
-                              showOnboarding &&
-                              currentStep ===
-                                allTabs.findIndex((t) => t.label === tab.label);
 
                             return (
                               <button
@@ -520,7 +551,7 @@ const ProfileTabs = () => {
                                   isActive
                                     ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-600 bg-orange-50'
                                     : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                                } ${isOnboarding ? 'ring-2 ring-green-400' : ''}`}
+                                }`}
                               >
                                 <div className="flex items-center space-x-3">
                                   <span
@@ -565,7 +596,7 @@ const ProfileTabs = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-purple-900 truncate">
-                    {subscription.current_plan?.name} Plan
+                    {subscription?.current_plan?.name || 'Premium'} Plan
                   </p>
                   <p className="text-xs text-purple-600">Active</p>
                 </div>
@@ -711,12 +742,6 @@ const ProfileTabs = () => {
                           <ScrollableTabList hasManyTabs={manyTabs}>
                             {group.tabs.map((tab) => {
                               const isActive = activeTab === tab.label;
-                              const isOnboarding =
-                                showOnboarding &&
-                                currentStep ===
-                                  allTabs.findIndex(
-                                    (t) => t.label === tab.label,
-                                  );
 
                               return (
                                 <button
@@ -726,7 +751,7 @@ const ProfileTabs = () => {
                                     isActive
                                       ? 'border-b-2 border-2 border-dashed md:border-b-0 md:border-l-2 md:border-r-0 border-orange-200 text-orange-600 bg-orange-50'
                                       : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                                  } ${isOnboarding ? 'ring-2 ring-green-400' : ''}`}
+                                  }`}
                                 >
                                   <div className="flex items-center space-x-3">
                                     <span
@@ -773,7 +798,7 @@ const ProfileTabs = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-purple-900 truncate">
-                      {subscription.current_plan?.name} Plan
+                      {subscription?.current_plan?.name || 'Premium'} Plan
                     </p>
                     <p className="text-xs text-purple-600">Active</p>
                   </div>
