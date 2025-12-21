@@ -18,23 +18,38 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
   featureName = 'this feature',
   onUpgrade,
 }) => {
-  // Same logic as ProfileTabs component
+  // Enhanced upgrade logic to match ProfileTabs exactly
   const handleUpgrade = () => {
     if (onUpgrade) {
       onUpgrade();
     } else {
-      // Default upgrade action - same as ProfileTabs component
+      // Use localStorage to communicate with ProfileTabs
+      localStorage.setItem('activeTab', 'Settings');
+      localStorage.setItem('forceScrollToSubscription', 'true');
+      
+      // Create the exact URL pattern that ProfileTabs expects
       const url = new URL(window.location.href);
       url.hash = 'Settings';
       url.searchParams.set('subscribe', 'true');
       window.history.replaceState(null, '', url.toString());
-
-      // Set active tab to Settings
-      window.location.hash = 'Settings';
-
-      // Close the modal
-      onClose();
+      
+      // Force a page reload to ensure ProfileTabs picks up the change
+      // This is necessary because we're in a modal and need to trigger the parent component
+      window.location.reload();
     }
+  };
+
+  // Alternative: Navigate to Settings without reload if possible
+  const handleCheckSubscription = () => {
+    localStorage.setItem('activeTab', 'Settings');
+    
+    const url = new URL(window.location.href);
+    url.hash = 'Settings';
+    window.history.replaceState(null, '', url.toString());
+    
+    // Trigger hashchange event for ProfileTabs
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    onClose();
   };
 
   return (
@@ -109,7 +124,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
               <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
                 <FaCashRegister className="w-3 h-3" />
               </div>
-              <span>Upgrade to Premium</span>
+              <span>Go Premium</span>
             </button>
           </div>
 
@@ -117,13 +132,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
           <p className="text-center text-gray-500 text-sm mt-6">
             Already premium?{' '}
             <button
-              onClick={() => {
-                const url = new URL(window.location.href);
-                url.hash = 'Settings';
-                window.history.replaceState(null, '', url.toString());
-                window.location.hash = 'Settings';
-                onClose();
-              }}
+              onClick={handleCheckSubscription}
               className="text-amber-600 hover:text-amber-700 font-medium underline"
             >
               Check your subscription
