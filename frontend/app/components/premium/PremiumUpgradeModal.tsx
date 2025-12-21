@@ -97,25 +97,25 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
             </div>
           </div>
 
-          {/* Action Buttons - Matching ProfileTabs styling */}
-          <div className="space-y-3">
-            {/* Main Upgrade Button - Same as ProfileTabs */}
-            <button
-              onClick={handleUpgrade}
-              className="w-full flex items-center space-x-3 p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                <FaCashRegister className="w-4 h-4" />
-              </div>
-              <span className="text-sm font-medium">Upgrade to Premium</span>
-            </button>
-
-            {/* Maybe Later Button */}
+          {/* Action Buttons - Side by side on all devices */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Maybe Later Button - First on mobile, left on desktop */}
             <button
               onClick={onClose}
-              className="w-full py-2 px-4 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors order-2 sm:order-1"
             >
               Maybe Later
+            </button>
+
+            {/* Main Upgrade Button - Second on mobile, right on desktop */}
+            <button
+              onClick={handleUpgrade}
+              className="flex-1 py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2 order-1 sm:order-2"
+            >
+              <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                <FaCashRegister className="w-3 h-3" />
+              </div>
+              <span>Upgrade to Premium</span>
             </button>
           </div>
 
