@@ -22,17 +22,33 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
 const handleUpgrade = () => {
   if (onUpgrade) {
     onUpgrade();
-  } else {
-    // Simple redirect that always works
-    window.location.href = '/account#Settings?subscribe=true';
-    onClose();
+    return;
   }
-};
 
-const handleCheckSubscription = () => {
-  window.location.href = '/account#Settings';
+  const url = new URL(window.location.href);
+  url.hash = 'Settings';
+  url.searchParams.set('subscribe', 'true');
+  window.history.pushState(null, '', url.toString());
+
+  // Notify ProfileTabs
+  window.dispatchEvent(new HashChangeEvent('hashchange'));
+
   onClose();
 };
+
+
+  // Alternative: Navigate to Settings without reload if possible
+  const handleCheckSubscription = () => {
+    localStorage.setItem('activeTab', 'Settings');
+
+    const url = new URL(window.location.href);
+    url.hash = 'Settings';
+    window.history.replaceState(null, '', url.toString());
+
+    // Trigger hashchange event for ProfileTabs
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    onClose();
+  };
 
   return (
     <Modal
