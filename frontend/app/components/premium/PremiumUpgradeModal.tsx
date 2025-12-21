@@ -1,7 +1,8 @@
 // app/account/components/premium/PremiumUpgradeModal.tsx
 'use client';
 import React from 'react';
-import { X, Star, CheckCircle, Zap, Shield } from 'lucide-react';
+import { Star, CheckCircle, Zap, Shield } from 'lucide-react';
+import Modal from '@/app/components/modal/Modal';
 
 interface PremiumUpgradeModalProps {
   isOpen: boolean;
@@ -16,8 +17,6 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
   featureName = 'this feature',
   onUpgrade,
 }) => {
-  if (!isOpen) return null;
-
   const handleUpgrade = () => {
     if (onUpgrade) {
       onUpgrade();
@@ -28,10 +27,15 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="medium"
+      closeOnBackdropClick={true}
+    >
+      <div className="bg-white">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full">
               <Star className="h-6 w-6 text-white" />
@@ -40,16 +44,10 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
               Upgrade to Premium
             </h2>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="h-5 w-5 text-gray-500" />
-          </button>
         </div>
 
         {/* Modal Content */}
-        <div className="p-6">
+        <div>
           <div className="text-center mb-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
               Unlock Premium Features
@@ -83,7 +81,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={onClose}
               className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
@@ -99,7 +97,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
           </div>
 
           {/* Footer */}
-          <p className="text-center text-gray-500 text-sm mt-4">
+          <p className="text-center text-gray-500 text-sm mt-6">
             Already premium?{' '}
             <a
               href="/account#Settings"
@@ -110,7 +108,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
           </p>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 
