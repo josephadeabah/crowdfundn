@@ -19,38 +19,44 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
   onUpgrade,
 }) => {
   // Enhanced upgrade logic to match ProfileTabs exactly
-  const handleUpgrade = () => {
-    if (onUpgrade) {
-      onUpgrade();
-    } else {
-      // Use localStorage to communicate with ProfileTabs
-      localStorage.setItem('activeTab', 'Settings');
-      localStorage.setItem('forceScrollToSubscription', 'true');
-
-      // Create the exact URL pattern that ProfileTabs expects
-      const url = new URL(window.location.href);
-      url.hash = 'Settings';
-      url.searchParams.set('subscribe', 'true');
-      window.history.replaceState(null, '', url.toString());
-
-      // Force a page reload to ensure ProfileTabs picks up the change
-      // This is necessary because we're in a modal and need to trigger the parent component
-      window.location.reload();
-    }
-  };
-
-  // Alternative: Navigate to Settings without reload if possible
-  const handleCheckSubscription = () => {
-    localStorage.setItem('activeTab', 'Settings');
-
-    const url = new URL(window.location.href);
-    url.hash = 'Settings';
-    window.history.replaceState(null, '', url.toString());
-
-    // Trigger hashchange event for ProfileTabs
-    window.dispatchEvent(new HashChangeEvent('hashchange'));
+const handleUpgrade = () => {
+  if (onUpgrade) {
+    onUpgrade();
+  } else {
+    // Use a more direct approach
+    console.log('Upgrade button clicked, navigating to Settings');
+    
+    // Clear any existing params
+    const baseUrl = window.location.origin + window.location.pathname;
+    
+    // Create new URL with subscription param
+    const url = new URL(baseUrl);
+    url.hash = 'Settings'; // Top-level Settings tab in ProfileTabs
+    url.searchParams.set('subscribe', 'true');
+    
+    console.log('Navigating to:', url.toString());
+    
+    // Navigate directly
+    window.location.href = url.toString();
+    
+    // Close modal
     onClose();
-  };
+  }
+};
+
+// Update handleCheckSubscription:
+const handleCheckSubscription = () => {
+  console.log('Check subscription clicked');
+  
+  const baseUrl = window.location.origin + window.location.pathname;
+  const url = new URL(baseUrl);
+  url.hash = 'Settings';
+  
+  console.log('Navigating to:', url.toString());
+  window.location.href = url.toString();
+  
+  onClose();
+};
 
   return (
     <Modal

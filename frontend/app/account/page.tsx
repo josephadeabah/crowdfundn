@@ -328,6 +328,8 @@ const ProfileTabs = () => {
   // Flatten all tabs for easy access
   const allTabs: Tab[] = tabGroups.flatMap((group) => group.tabs);
 
+  // In ProfileTabs.tsx, update the useEffect that handles initial loading:
+
   useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
     const onboardingCompleted = localStorage.getItem('onboardingCompleted');
@@ -336,15 +338,46 @@ const ProfileTabs = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const subscribeParam = urlParams.get('subscribe');
 
+    console.log('ProfileTabs loading:', {
+      savedTab,
+      hashTab,
+      subscribeParam,
+      url: window.location.href
+    });
+
+    // Always check URL hash first - this is the source of truth
+    if (hashTab) {
+      // Check if hash matches any tab label
+      const matchingTab = allTabs.find((tab) => tab.label === hashTab);
+      if (matchingTab) {
+        setActiveTab(hashTab);
+        localStorage.setItem('activeTab', hashTab);
+        console.log('Set active tab from hash:', hashTab);
+      }
+    }
+    
+    // Then check for subscription parameter
     if (subscribeParam === 'true') {
-      window.history.replaceState(null, '', '/account#Settings?subscribe=true');
+      console.log('Subscription param found, navigating to Settings');
+      // Clean URL first
+      const url = new URL(window.location.href);
+      url.searchParams.delete('subscribe');
+      url.hash = 'Settings';
+      window.history.replaceState(null, '', url.toString());
+      
       setActiveTab('Settings');
-    } else if (hashTab && allTabs.find((tab) => tab.label === hashTab)) {
-      setActiveTab(hashTab);
-    } else if (savedTab) {
+      localStorage.setItem('activeTab', 'Settings');
+      localStorage.setItem('forceScrollToSubscription', 'true');
+    }
+    // If no hash but we have a saved tab
+    else if (!hashTab && savedTab) {
       setActiveTab(savedTab);
-    } else {
+      console.log('Set active tab from localStorage:', savedTab);
+    }
+    // Default to first tab
+    else if (!hashTab) {
       setActiveTab(allTabs[0]?.label || '');
+      console.log('Set default tab:', allTabs[0]?.label);
     }
 
     if (!onboardingCompleted) {

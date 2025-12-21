@@ -1,3 +1,4 @@
+// app/account/settings/AccountSettings.tsx
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import {
@@ -19,18 +20,43 @@ const AccountSettings = () => {
   const [activeTab, setActiveTab] = useState('kyc');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const subscriptionRef = useRef<HTMLDivElement>(null);
+  const hasScrolled = useRef(false);
 
-  // Handle ?subscribe=true parameter
+  // Handle ?subscribe=true parameter and hash
   useEffect(() => {
-    const checkSubscriptionParam = () => {
+    const checkParamsAndHash = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const subscribeParam = urlParams.get('subscribe');
+      const hash = window.location.hash.replace('#', '').toLowerCase();
 
-      if (subscribeParam === 'true') {
+      console.log('AccountSettings checking:', {
+        subscribeParam,
+        hash,
+        url: window.location.href
+      });
+
+      // Check hash first
+      const tabIds = ['payment', 'subscription', 'account', 'kyc', 'system'];
+      if (hash && tabIds.includes(hash.toLowerCase())) {
+        setActiveTab(hash.toLowerCase());
+        console.log('Set tab from hash:', hash.toLowerCase());
+      }
+
+      // Then check subscription parameter
+      if (subscribeParam === 'true' && !hasScrolled.current) {
+        console.log('Subscription param found, setting active tab to subscription');
         setActiveTab('subscription');
+        
+        // Clean URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete('subscribe');
+        url.hash = 'subscription';
+        window.history.replaceState(null, '', url.toString());
 
+        // Scroll to subscription after a delay
         setTimeout(() => {
           if (subscriptionRef.current) {
+            console.log('Scrolling to subscription section');
             subscriptionRef.current.scrollIntoView({
               behavior: 'smooth',
               block: 'start',
@@ -40,30 +66,44 @@ const AccountSettings = () => {
               'ring-2',
               'ring-green-500',
               'rounded-lg',
+              'p-2',
             );
+            
             setTimeout(() => {
               if (subscriptionRef.current) {
                 subscriptionRef.current.classList.remove(
                   'ring-2',
                   'ring-green-500',
                   'rounded-lg',
+                  'p-2',
                 );
               }
             }, 3000);
+            
+            hasScrolled.current = true;
           }
-        }, 300);
-
-        // Clean URL
-        const url = new URL(window.location.href);
-        url.searchParams.delete('subscribe');
-        window.history.replaceState(null, '', url.toString());
+        }, 500);
       }
     };
 
-    checkSubscriptionParam();
+    checkParamsAndHash();
+
+    // Also listen for hash changes
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      const tabIds = ['payment', 'subscription', 'account', 'kyc', 'system'];
+      if (hash && tabIds.includes(hash)) {
+        setActiveTab(hash);
+        console.log('Hash changed to:', hash);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   const renderTabContent = () => {
+    console.log('Rendering tab:', activeTab);
     switch (activeTab) {
       case 'payment':
         return <PaymentMethod />;
@@ -134,7 +174,11 @@ const AccountSettings = () => {
                   ? 'border-green-600 text-green-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id);
+                // Update URL hash
+                window.location.hash = tab.id;
+              }}
             >
               {tab.icon}
               {tab.label}
@@ -156,6 +200,8 @@ const AccountSettings = () => {
                 onClick={() => {
                   setActiveTab(tab.id);
                   setShowMobileMenu(false);
+                  // Update URL hash
+                  window.location.hash = tab.id;
                 }}
               >
                 {tab.icon}
