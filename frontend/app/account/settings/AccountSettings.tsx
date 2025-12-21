@@ -21,51 +21,50 @@ const AccountSettings = () => {
   const subscriptionRef = useRef<HTMLDivElement>(null);
 
   // Handle ?subscribe=true parameter
-useEffect(() => {
-  const handleUrlChange = () => {
-    const params = new URLSearchParams(window.location.search);
-    const subscribe = params.get('subscribe');
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const params = new URLSearchParams(window.location.search);
+      const subscribe = params.get('subscribe');
 
-    if (subscribe === 'true') {
-      setActiveTab('subscription');
+      if (subscribe === 'true') {
+        setActiveTab('subscription');
 
-      requestAnimationFrame(() => {
-        subscriptionRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
+        requestAnimationFrame(() => {
+          subscriptionRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
 
-        subscriptionRef.current?.classList.add(
-          'ring-2',
-          'ring-green-500',
-          'rounded-lg',
-        );
-
-        setTimeout(() => {
-          subscriptionRef.current?.classList.remove(
+          subscriptionRef.current?.classList.add(
             'ring-2',
             'ring-green-500',
             'rounded-lg',
           );
-        }, 3000);
-      });
 
-      // Clean URL AFTER render + scroll
-      const url = new URL(window.location.href);
-      url.searchParams.delete('subscribe');
-      window.history.replaceState(null, '', url.toString());
-    }
-  };
+          setTimeout(() => {
+            subscriptionRef.current?.classList.remove(
+              'ring-2',
+              'ring-green-500',
+              'rounded-lg',
+            );
+          }, 3000);
+        });
 
-  handleUrlChange();
+        // Clean URL AFTER render + scroll
+        const url = new URL(window.location.href);
+        url.searchParams.delete('subscribe');
+        window.history.replaceState(null, '', url.toString());
+      }
+    };
 
-  window.addEventListener('popstate', handleUrlChange);
+    handleUrlChange();
 
-  return () => {
-    window.removeEventListener('popstate', handleUrlChange);
-  };
-}, []);
+    window.addEventListener('popstate', handleUrlChange);
 
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+    };
+  }, []);
 
   const renderTabContent = () => {
     switch (activeTab) {

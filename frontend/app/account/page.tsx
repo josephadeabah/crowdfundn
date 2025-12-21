@@ -328,41 +328,40 @@ const ProfileTabs = () => {
   // Flatten all tabs for easy access
   const allTabs: Tab[] = tabGroups.flatMap((group) => group.tabs);
 
-useEffect(() => {
-  const syncFromUrl = () => {
-    const params = new URLSearchParams(window.location.search);
-    const subscribe = params.get('subscribe');
-    const hashTab = window.location.hash.replace('#', '');
+  useEffect(() => {
+    const syncFromUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      const subscribe = params.get('subscribe');
+      const hashTab = window.location.hash.replace('#', '');
 
-    if (hashTab === 'Settings' || subscribe === 'true') {
-      setActiveTab('Settings');
-      setLoading(true);
-      setTimeout(() => setLoading(false), 300);
-      return;
-    }
+      if (hashTab === 'Settings' || subscribe === 'true') {
+        setActiveTab('Settings');
+        setLoading(true);
+        setTimeout(() => setLoading(false), 300);
+        return;
+      }
 
-    if (hashTab && allTabs.find((t) => t.label === hashTab)) {
-      setActiveTab(hashTab);
-      return;
-    }
+      if (hashTab && allTabs.find((t) => t.label === hashTab)) {
+        setActiveTab(hashTab);
+        return;
+      }
 
-    const savedTab = localStorage.getItem('activeTab');
-    if (savedTab) {
-      setActiveTab(savedTab);
-    }
-  };
+      const savedTab = localStorage.getItem('activeTab');
+      if (savedTab) {
+        setActiveTab(savedTab);
+      }
+    };
 
-  syncFromUrl();
+    syncFromUrl();
 
-  window.addEventListener('popstate', syncFromUrl);
-  window.addEventListener('hashchange', syncFromUrl);
+    window.addEventListener('popstate', syncFromUrl);
+    window.addEventListener('hashchange', syncFromUrl);
 
-  return () => {
-    window.removeEventListener('popstate', syncFromUrl);
-    window.removeEventListener('hashchange', syncFromUrl);
-  };
-}, []);
-
+    return () => {
+      window.removeEventListener('popstate', syncFromUrl);
+      window.removeEventListener('hashchange', syncFromUrl);
+    };
+  }, []);
 
   useEffect(() => {
     if (activeTab) {

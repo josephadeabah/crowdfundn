@@ -19,7 +19,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
   onUpgrade,
 }) => {
   // Enhanced upgrade logic to match ProfileTabs exactly
-    const handleUpgrade = () => {
+  const handleUpgrade = () => {
     const url = new URL(window.location.href);
 
     url.searchParams.set('subscribe', 'true');
@@ -31,8 +31,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
     window.dispatchEvent(new Event('popstate'));
 
     onClose();
-    };
-
+  };
 
   // Alternative: Navigate to Settings without reload if possible
   const handleCheckSubscription = () => {
