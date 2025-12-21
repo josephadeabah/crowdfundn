@@ -328,57 +328,41 @@ const ProfileTabs = () => {
   // Flatten all tabs for easy access
   const allTabs: Tab[] = tabGroups.flatMap((group) => group.tabs);
 
-  useEffect(() => {
-    const savedTab = localStorage.getItem('activeTab');
-    const onboardingCompleted = localStorage.getItem('onboardingCompleted');
+useEffect(() => {
+  const syncFromUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    const subscribe = params.get('subscribe');
     const hashTab = window.location.hash.replace('#', '');
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const subscribeParam = urlParams.get('subscribe');
-
-    if (subscribeParam === 'true') {
-      window.history.replaceState(null, '', '/account#Settings?subscribe=true');
+    if (hashTab === 'Settings' || subscribe === 'true') {
       setActiveTab('Settings');
-    } else if (hashTab && allTabs.find((tab) => tab.label === hashTab)) {
+      setLoading(true);
+      setTimeout(() => setLoading(false), 300);
+      return;
+    }
+
+    if (hashTab && allTabs.find((t) => t.label === hashTab)) {
       setActiveTab(hashTab);
-    } else if (savedTab) {
+      return;
+    }
+
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab) {
       setActiveTab(savedTab);
-    } else {
-      setActiveTab(allTabs[0]?.label || '');
     }
+  };
 
-    if (!onboardingCompleted) {
-      setShowOnboarding(true);
-    }
+  syncFromUrl();
 
-    setLoading(false);
-  }, []);
+  window.addEventListener('popstate', syncFromUrl);
+  window.addEventListener('hashchange', syncFromUrl);
 
-  useEffect(() => {
-    const handleUrlChange = () => {
-      const hashTab = window.location.hash.replace('#', '');
-      const params = new URLSearchParams(window.location.search);
-      const subscribe = params.get('subscribe');
+  return () => {
+    window.removeEventListener('popstate', syncFromUrl);
+    window.removeEventListener('hashchange', syncFromUrl);
+  };
+}, []);
 
-      if (hashTab === 'Settings') {
-        setActiveTab('Settings');
-        setLoading(true);
-        setTimeout(() => setLoading(false), 300);
-      }
-
-      if (subscribe === 'true') {
-        setActiveTab('Settings');
-      }
-    };
-
-    window.addEventListener('hashchange', handleUrlChange);
-    window.addEventListener('popstate', handleUrlChange);
-
-    return () => {
-      window.removeEventListener('hashchange', handleUrlChange);
-      window.removeEventListener('popstate', handleUrlChange);
-    };
-  }, []);
 
   useEffect(() => {
     if (activeTab) {
