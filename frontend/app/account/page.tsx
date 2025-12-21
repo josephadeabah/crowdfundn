@@ -136,7 +136,7 @@ const ScrollableTabList = ({
 
 const ProfileTabs = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>('Dashboard');
   const [loading, setLoading] = useState<boolean>(true);
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -336,10 +336,9 @@ const ProfileTabs = () => {
 
       if (hashTab === 'Settings' || subscribe === 'true') {
         setActiveTab('Settings');
-        setLoading(true);
-        setTimeout(() => setLoading(false), 300);
         return;
       }
+
 
       if (hashTab && allTabs.find((t) => t.label === hashTab)) {
         setActiveTab(hashTab);
