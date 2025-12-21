@@ -363,13 +363,17 @@ const ProfileTabs = () => {
   }, []);
 
   useEffect(() => {
-    if (activeTab) {
-      const url = new URL(window.location.href);
-      url.hash = activeTab;
-      window.history.replaceState(null, '', url.toString());
-      localStorage.setItem('activeTab', activeTab);
-    }
+    if (!activeTab) return;
+
+    const currentHash = window.location.hash.replace('#', '');
+    if (currentHash === activeTab) return;
+
+    const url = new URL(window.location.href);
+    url.hash = activeTab;
+    window.history.replaceState(null, '', url.toString());
+    localStorage.setItem('activeTab', activeTab);
   }, [activeTab]);
+
 
   const handleTabClick = (tab: string) => {
     setLoading(true);
