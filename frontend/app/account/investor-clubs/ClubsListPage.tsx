@@ -1,4 +1,3 @@
-// app/account/investor-clubs/ClubsListPage.tsx
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
@@ -69,6 +68,8 @@ import { useInfiniteScroll } from './hooks/useInfiniteScroll';
 import ClubSearchTab from './SearchClub/ClubSearchTab';
 import { usePremium } from '@/app/context/premium/PremiumContext'; // Import premium context
 import PremiumUpgradeModal from '@/app/components/premium/PremiumUpgradeModal';
+import AlertPopup from '@/app/components/alertpopup/AlertPopup'; // Import AlertPopup
+import { FaPaperPlane, FaComments } from 'react-icons/fa'; // Add icons for message alert
 
 // Define proper types for infinite scroll state
 type TabType = 'all' | 'my_clubs' | 'discover';
@@ -107,6 +108,7 @@ const ClubsListPage: React.FC = () => {
   const [showPremiumModal, setShowPremiumModal] = useState(false); // State for premium modal
   const [selectedClubForMessage, setSelectedClubForMessage] =
     useState<Club | null>(null); // Track club for messaging
+  const [showMessageAlert, setShowMessageAlert] = useState(false); // State for message alert
 
   // Infinite scroll states with proper typing
   const [infiniteScroll, setInfiniteScroll] = useState<InfiniteScrollStates>({
@@ -329,13 +331,19 @@ const ClubsListPage: React.FC = () => {
 
   // Handle actual message sending (premium users only)
   const handleSendMessage = (club: Club) => {
-    // Here you would implement the actual message sending logic
-    // For now, we'll show an alert and redirect to messages page
-    alert(`Preparing to send message to ${club.name}`);
+    // Show confirmation alert popup instead of alert()
+    setSelectedClubForMessage(club);
+    setShowMessageAlert(true);
+  };
 
-    // You can implement the actual message flow here
-    // For example, redirect to messages page with club pre-selected
-    window.location.href = `/account/messages?club=${club.slug}`;
+  // Handle message confirmation
+  const handleMessageConfirm = () => {
+    if (!selectedClubForMessage) return;
+
+    // Redirect to messages page with club pre-selected
+    window.location.href = `/account/messages?club=${selectedClubForMessage.slug}`;
+    setShowMessageAlert(false);
+    setSelectedClubForMessage(null);
   };
 
   const revertOptimisticUpdate = (clubId: string) => {
@@ -824,7 +832,7 @@ const ClubsListPage: React.FC = () => {
                               onClick={(e) => handleMessageClick(club, e)}
                               className={`p-2 rounded-full transition-colors ${
                                 hasPremium
-                                  ? 'bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700'
+                                  ? 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-700'
                                   : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-500'
                               }`}
                               title={
@@ -958,6 +966,64 @@ const ClubsListPage: React.FC = () => {
           // Redirect to pricing page
           window.location.href = '/account/pricing';
         }}
+      />
+
+      {/* Message Confirmation Alert Popup */}
+      <AlertPopup
+        title="Send Message"
+        message={
+          selectedClubForMessage ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white">
+                  {getClubIcon(selectedClubForMessage)}
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">
+                    {selectedClubForMessage.name}
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    {selectedClubForMessage.membership_status === 'pending'
+                      ? 'Membership Pending'
+                      : selectedClubForMessage.is_member
+                        ? 'Club Member'
+                        : 'Non-Member'}
+                  </p>
+                </div>
+              </div>
+              <p className="text-gray-700">
+                You're about to send a message to{' '}
+                <span className="font-semibold">
+                  {selectedClubForMessage.name}
+                </span>
+                . This will open your messages page where you can communicate
+                with club members.
+              </p>
+              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Note:</span> As a premium user,
+                  you can send unlimited messages to any investment club.
+                </p>
+              </div>
+            </div>
+          ) : (
+            'Preparing to send message...'
+          )
+        }
+        isOpen={showMessageAlert}
+        setIsOpen={setShowMessageAlert}
+        onConfirm={handleMessageConfirm}
+        onCancel={() => {
+          setShowMessageAlert(false);
+          setSelectedClubForMessage(null);
+        }}
+        icon={<FaComments className="w-6 h-6 text-gray-600" />}
+        confirmText="Go to Messages"
+        cancelText="Cancel"
+        confirmButtonClass="bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
+        cancelButtonClass="bg-white hover:bg-gray-50"
+        showCancelButton={true}
+        maxHeight="max-h-96"
       />
     </div>
   );

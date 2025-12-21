@@ -1,3 +1,4 @@
+// In ClubDetailsModal.tsx, update the handleSendMessage function:
 'use client';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -14,6 +15,10 @@ import { ContributionModal } from '../components/Contribution/ContributionModal'
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { ShareChangesSection } from '../components/ShareChanges/ShareChangesSection';
 import MemberInvestmentProposalModal from '../components/VotingPanel/MemberInvestmentProposalModal';
+import { MessageSquare } from 'lucide-react';
+import { usePremium } from '@/app/context/premium/PremiumContext';
+import { FaComments } from 'react-icons/fa'; // Add this import
+import PremiumUpgradeModal from '@/app/components/premium/PremiumUpgradeModal';
 
 const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   isOpen,
@@ -32,7 +37,10 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
   const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
   const [isInvestmentProposalModalOpen, setIsInvestmentProposalModalOpen] =
     useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [showMessageAlert, setShowMessageAlert] = useState(false); // Add this state
   const { token } = useAuth();
+  const { subscription } = usePremium();
 
   const {
     myMembership,
@@ -49,6 +57,9 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     setMessage,
   } = useClubMembership(club, members, isOpen, onMembershipUpdate);
 
+  // Check if user has premium
+  const hasPremium = subscription?.has_premium;
+
   const handleFeatureClick = (featureName: string) => {
     setFeatureMessage(`${featureName} feature would open here`);
     setFeatureAlert(true);
@@ -58,9 +69,27 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
     setIsContributionModalOpen(true);
   };
 
-  // NEW: Handler for propose investment
+  // Handler for propose investment
   const handleProposeInvestment = () => {
     setIsInvestmentProposalModalOpen(true);
+  };
+
+  // NEW: Handler for sending messages
+  const handleSendMessage = () => {
+    if (!hasPremium) {
+      // Show premium upgrade modal
+      setShowPremiumModal(true);
+    } else {
+      // User has premium, show confirmation alert
+      setShowMessageAlert(true);
+    }
+  };
+
+  // Handle message confirmation
+  const handleMessageConfirm = () => {
+    // Open messages page with club pre-selected in a new tab
+    window.open(`/account/messages?club=${club.slug}`, '_blank');
+    setShowMessageAlert(false);
   };
 
   // Simple close handler - no payment verification
@@ -110,7 +139,7 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
             onCancelRequest={handleCancelRequest}
             onDeleteClub={handleDeleteClub}
             onMakeContribution={handleMakeContribution}
-            onProposeInvestment={handleProposeInvestment} // Pass the new handler
+            onProposeInvestment={handleProposeInvestment}
           />
         );
       case 'share-history':
@@ -119,6 +148,24 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         );
       default:
         return null;
+    }
+  };
+
+  // Get club icon for message alert
+  const getClubIcon = () => {
+    const focus = club.investment_focus?.toLowerCase();
+    if (focus?.includes('tech') || focus?.includes('software')) {
+      return '💻';
+    } else if (focus?.includes('finance') || focus?.includes('banking')) {
+      return '💰';
+    } else if (focus?.includes('real estate') || focus?.includes('property')) {
+      return '🏠';
+    } else if (focus?.includes('health') || focus?.includes('medical')) {
+      return '🏥';
+    } else if (focus?.includes('education') || focus?.includes('learning')) {
+      return '📚';
+    } else {
+      return '🏢';
     }
   };
 
@@ -138,7 +185,27 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ClubHeader club={club} myMembership={myMembership} />
+          {/* Add Message Button to Header Section */}
+          <div className="relative">
+            <ClubHeader club={club} myMembership={myMembership} />
+
+            {/* Message Button - positioned in top-right corner */}
+            <button
+              onClick={handleSendMessage}
+              className={`absolute top-4 right-4 p-3 rounded-full transition-colors shadow-md hover:shadow-lg ${
+                hasPremium
+                  ? 'bg-gray-600 text-white hover:bg-gray-700'
+                  : 'bg-gradient-to-r from-amber-400 to-amber-600 text-white hover:from-amber-500 hover:to-amber-700'
+              }`}
+              title={
+                hasPremium
+                  ? `Send message to ${club.name}`
+                  : 'Upgrade to premium to send messages'
+              }
+            >
+              <MessageSquare size={20} />
+            </button>
+          </div>
 
           {message && (
             <div
@@ -168,11 +235,66 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         showSuccess={false} // Disable success display in this modal
       />
 
-      {/* NEW: Investment Proposal Modal */}
+      {/* Investment Proposal Modal */}
       <MemberInvestmentProposalModal
         isOpen={isInvestmentProposalModalOpen}
         onClose={() => setIsInvestmentProposalModalOpen(false)}
         club={club}
+      />
+
+      {/* Premium Upgrade Modal */}
+      <PremiumUpgradeModal
+        isOpen={showPremiumModal}
+        onClose={() => setShowPremiumModal(false)}
+        featureName="sending messages to investment clubs"
+        onUpgrade={() => {
+          // Redirect to pricing page
+          window.open('/account/pricing', '_blank');
+        }}
+      />
+
+      {/* Message Confirmation Alert Popup */}
+      <AlertPopup
+        title="Send Message"
+        message={
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center w-12 h-12 text-2xl">
+                {getClubIcon()}
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900">{club.name}</h4>
+                <p className="text-sm text-gray-600">
+                  {club.current_members_count} members • {club.club_type}
+                </p>
+              </div>
+            </div>
+            <p className="text-gray-700">
+              You're about to send a message to{' '}
+              <span className="font-semibold">{club.name}</span>. This will open
+              your messages page in a new tab where you can communicate with
+              club members.
+            </p>
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-700">
+                <span className="font-medium">Premium Benefit:</span> As a
+                premium user, you have unlimited messaging access to all
+                investment clubs.
+              </p>
+            </div>
+          </div>
+        }
+        isOpen={showMessageAlert}
+        setIsOpen={setShowMessageAlert}
+        onConfirm={handleMessageConfirm}
+        onCancel={() => setShowMessageAlert(false)}
+        icon={<FaComments className="w-6 h-6 text-gray-600" />}
+        confirmText="Open Messages"
+        cancelText="Cancel"
+        confirmButtonClass="bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
+        cancelButtonClass="bg-white hover:bg-gray-50"
+        showCancelButton={true}
+        maxHeight="max-h-96"
       />
 
       {/* Transfer Ownership Alert */}
