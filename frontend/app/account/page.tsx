@@ -360,6 +360,7 @@ const ProfileTabs = () => {
       window.removeEventListener('popstate', syncFromUrl);
       window.removeEventListener('hashchange', syncFromUrl);
     };
+     setLoading(false);
   }, []);
 
   useEffect(() => {
