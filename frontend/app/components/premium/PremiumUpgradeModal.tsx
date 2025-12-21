@@ -23,38 +23,14 @@ const handleUpgrade = () => {
   if (onUpgrade) {
     onUpgrade();
   } else {
-    // Use a more direct approach
-    console.log('Upgrade button clicked, navigating to Settings');
-    
-    // Clear any existing params
-    const baseUrl = window.location.origin + window.location.pathname;
-    
-    // Create new URL with subscription param
-    const url = new URL(baseUrl);
-    url.hash = 'Settings'; // Top-level Settings tab in ProfileTabs
-    url.searchParams.set('subscribe', 'true');
-    
-    console.log('Navigating to:', url.toString());
-    
-    // Navigate directly
-    window.location.href = url.toString();
-    
-    // Close modal
+    // Simple redirect that always works
+    window.location.href = '/account#Settings?subscribe=true';
     onClose();
   }
 };
 
-// Update handleCheckSubscription:
 const handleCheckSubscription = () => {
-  console.log('Check subscription clicked');
-  
-  const baseUrl = window.location.origin + window.location.pathname;
-  const url = new URL(baseUrl);
-  url.hash = 'Settings';
-  
-  console.log('Navigating to:', url.toString());
-  window.location.href = url.toString();
-  
+  window.location.href = '/account#Settings';
   onClose();
 };
 
