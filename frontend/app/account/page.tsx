@@ -348,7 +348,6 @@ const ProfileTabs = () => {
           setLoading(false);
           setInitialLoad(false);
         }, 100);
-
       } catch (error) {
         console.error('Error initializing tabs:', error);
         // Fallback to default tab
