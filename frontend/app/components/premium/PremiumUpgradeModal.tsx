@@ -1,8 +1,9 @@
 // app/account/components/premium/PremiumUpgradeModal.tsx
 'use client';
 import React from 'react';
-import { Star, CheckCircle, Zap, Shield } from 'lucide-react';
+import { Star, CheckCircle, Zap, Shield, Crown } from 'lucide-react';
 import Modal from '@/app/components/modal/Modal';
+import { FaCashRegister } from 'react-icons/fa';
 
 interface PremiumUpgradeModalProps {
   isOpen: boolean;
@@ -17,12 +18,22 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
   featureName = 'this feature',
   onUpgrade,
 }) => {
+  // Same logic as ProfileTabs component
   const handleUpgrade = () => {
     if (onUpgrade) {
       onUpgrade();
     } else {
-      // Default upgrade action - redirect to pricing page
-      window.location.href = '/account#Settings';
+      // Default upgrade action - same as ProfileTabs component
+      const url = new URL(window.location.href);
+      url.hash = 'Settings';
+      url.searchParams.set('subscribe', 'true');
+      window.history.replaceState(null, '', url.toString());
+
+      // Set active tab to Settings
+      window.location.hash = 'Settings';
+
+      // Close the modal
+      onClose();
     }
   };
 
@@ -78,33 +89,51 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
                 Priority support
               </span>
             </div>
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Crown className="h-5 w-5 text-emerald-500" />
+              <span className="text-gray-700 font-medium">
+                Exclusive investment opportunities
+              </span>
+            </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={onClose}
-              className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Maybe Later
-            </button>
+          {/* Action Buttons - Matching ProfileTabs styling */}
+          <div className="space-y-3">
+            {/* Main Upgrade Button - Same as ProfileTabs */}
             <button
               onClick={handleUpgrade}
-              className="flex-1 py-3 px-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-medium rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all shadow-md hover:shadow-lg"
+              className="w-full flex items-center space-x-3 p-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              Upgrade Now
+              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                <FaCashRegister className="w-4 h-4" />
+              </div>
+              <span className="text-sm font-medium">Upgrade to Premium</span>
+            </button>
+
+            {/* Maybe Later Button */}
+            <button
+              onClick={onClose}
+              className="w-full py-2 px-4 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Maybe Later
             </button>
           </div>
 
           {/* Footer */}
           <p className="text-center text-gray-500 text-sm mt-6">
             Already premium?{' '}
-            <a
-              href="/account#Settings"
-              className="text-amber-600 hover:text-amber-700 font-medium"
+            <button
+              onClick={() => {
+                const url = new URL(window.location.href);
+                url.hash = 'Settings';
+                window.history.replaceState(null, '', url.toString());
+                window.location.hash = 'Settings';
+                onClose();
+              }}
+              className="text-amber-600 hover:text-amber-700 font-medium underline"
             >
               Check your subscription
-            </a>
+            </button>
           </p>
         </div>
       </div>

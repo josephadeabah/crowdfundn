@@ -248,8 +248,13 @@ const ClubDetailsModal: React.FC<ClubDetailsModalProps> = ({
         onClose={() => setShowPremiumModal(false)}
         featureName="sending messages to investment clubs"
         onUpgrade={() => {
-          // Redirect to pricing page
-          window.open('/account/pricing', '_blank');
+          // Same logic as ProfileTabs
+          const url = new URL(window.location.href);
+          url.hash = 'Settings';
+          url.searchParams.set('subscribe', 'true');
+          window.history.replaceState(null, '', url.toString());
+          window.location.hash = 'Settings';
+          setShowPremiumModal(false);
         }}
       />
 

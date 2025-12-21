@@ -963,8 +963,13 @@ const ClubsListPage: React.FC = () => {
         }}
         featureName="sending messages to investment clubs"
         onUpgrade={() => {
-          // Redirect to pricing page
-          window.location.href = '/account/pricing';
+          // Same logic as ProfileTabs
+          const url = new URL(window.location.href);
+          url.hash = 'Settings';
+          url.searchParams.set('subscribe', 'true');
+          window.history.replaceState(null, '', url.toString());
+          window.location.hash = 'Settings';
+          setShowPremiumModal(false);
         }}
       />
 
