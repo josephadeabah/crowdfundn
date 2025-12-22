@@ -370,65 +370,65 @@ const ProfileTabs = () => {
   }, []); // Empty dependency array ensures this runs only once on mount
 
   // Handle URL changes (hash changes and popstate)
-// In ProfileTabs.tsx, update the useEffect that updates URL and localStorage:
-useEffect(() => {
-  if (activeTab) {
-    const url = new URL(window.location.href);
-    url.hash = activeTab;
-    
-    // IMPORTANT: Don't remove the subscribe parameter here!
-    // Only update the hash, keep query parameters intact
-    window.history.replaceState(null, '', url.toString());
-    
-    localStorage.setItem('activeTab', activeTab);
-  }
-}, [activeTab]);
+  // In ProfileTabs.tsx, update the useEffect that updates URL and localStorage:
+  useEffect(() => {
+    if (activeTab) {
+      const url = new URL(window.location.href);
+      url.hash = activeTab;
 
-// Update the handleSubscribeClick function:
-const handleSubscribeClick = () => {
-  const url = new URL(window.location.href);
-  url.hash = 'Settings';
-  url.searchParams.set('subscribe', 'true');
-  window.history.replaceState(null, '', url.toString());
+      // IMPORTANT: Don't remove the subscribe parameter here!
+      // Only update the hash, keep query parameters intact
+      window.history.replaceState(null, '', url.toString());
 
-  setActiveTab('Settings');
-  setLoading(true);
-  setTimeout(() => setLoading(false), 300);
-  
-  // Dispatch events to ensure AccountSettings gets notified
-  window.dispatchEvent(new PopStateEvent('popstate'));
-  window.dispatchEvent(new HashChangeEvent('hashchange'));
-};
-
-// Also update the URL change handler to preserve subscribe param:
-useEffect(() => {
-  const handleUrlChange = () => {
-    const hashTab = window.location.hash.replace('#', '');
-    const params = new URLSearchParams(window.location.search);
-    const subscribe = params.get('subscribe');
-
-    if (hashTab === 'Settings' || subscribe === 'true') {
-      setActiveTab('Settings');
-      // Keep the subscribe parameter in URL when navigating to Settings
-      if (subscribe === 'true') {
-        const url = new URL(window.location.href);
-        url.hash = 'Settings';
-        // Don't remove subscribe parameter here
-        window.history.replaceState(null, '', url.toString());
-      }
-    } else if (hashTab && allTabs.find((tab) => tab.label === hashTab)) {
-      setActiveTab(hashTab);
+      localStorage.setItem('activeTab', activeTab);
     }
+  }, [activeTab]);
+
+  // Update the handleSubscribeClick function:
+  const handleSubscribeClick = () => {
+    const url = new URL(window.location.href);
+    url.hash = 'Settings';
+    url.searchParams.set('subscribe', 'true');
+    window.history.replaceState(null, '', url.toString());
+
+    setActiveTab('Settings');
+    setLoading(true);
+    setTimeout(() => setLoading(false), 300);
+
+    // Dispatch events to ensure AccountSettings gets notified
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
   };
 
-  window.addEventListener('hashchange', handleUrlChange);
-  window.addEventListener('popstate', handleUrlChange);
+  // Also update the URL change handler to preserve subscribe param:
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const hashTab = window.location.hash.replace('#', '');
+      const params = new URLSearchParams(window.location.search);
+      const subscribe = params.get('subscribe');
 
-  return () => {
-    window.removeEventListener('hashchange', handleUrlChange);
-    window.removeEventListener('popstate', handleUrlChange);
-  };
-}, []);
+      if (hashTab === 'Settings' || subscribe === 'true') {
+        setActiveTab('Settings');
+        // Keep the subscribe parameter in URL when navigating to Settings
+        if (subscribe === 'true') {
+          const url = new URL(window.location.href);
+          url.hash = 'Settings';
+          // Don't remove subscribe parameter here
+          window.history.replaceState(null, '', url.toString());
+        }
+      } else if (hashTab && allTabs.find((tab) => tab.label === hashTab)) {
+        setActiveTab(hashTab);
+      }
+    };
+
+    window.addEventListener('hashchange', handleUrlChange);
+    window.addEventListener('popstate', handleUrlChange);
+
+    return () => {
+      window.removeEventListener('hashchange', handleUrlChange);
+      window.removeEventListener('popstate', handleUrlChange);
+    };
+  }, []);
 
   const handleTabClick = (tab: string) => {
     setLoading(true);

@@ -48,7 +48,7 @@ const AccountSettings = () => {
           'ring-green-500',
           'rounded-lg',
           'transition-all',
-          'duration-500'
+          'duration-500',
         );
 
         setTimeout(() => {
@@ -75,7 +75,7 @@ const AccountSettings = () => {
     // Listen for URL changes
     window.addEventListener('popstate', handleSubscribeEvent);
     window.addEventListener('hashchange', handleSubscribeEvent);
-    
+
     // Also check when component mounts (in case it loads after URL is set)
     const timer = setTimeout(checkSubscribeParam, 500);
 
@@ -90,7 +90,7 @@ const AccountSettings = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const subscribe = params.get('subscribe');
-    
+
     // If we're on Settings tab and subscribe param is present, switch to subscription
     if (subscribe === 'true' && activeTab !== 'subscription') {
       // Small delay to ensure state updates properly

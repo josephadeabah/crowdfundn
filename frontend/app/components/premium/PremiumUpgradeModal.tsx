@@ -100,20 +100,20 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
             </div>
           </div>
 
-          {/* Action Buttons - Side by side on all devices */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            {/* Maybe Later Button - First on mobile, left on desktop */}
+          {/* Action Buttons - Side by side on ALL devices */}
+          <div className="flex flex-row gap-3">
+            {/* Maybe Later Button */}
             <button
               onClick={onClose}
-              className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors order-2 sm:order-1"
+              className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
             >
               Maybe Later
             </button>
 
-            {/* Main Upgrade Button - Second on mobile, right on desktop */}
+            {/* Main Upgrade Button */}
             <button
               onClick={handleUpgrade}
-              className="flex-1 py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2 order-1 sm:order-2"
+              className="flex-1 py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
             >
               <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
                 <FaCashRegister className="w-3 h-3" />

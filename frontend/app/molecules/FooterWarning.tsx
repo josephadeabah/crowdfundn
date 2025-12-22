@@ -96,7 +96,7 @@ const FooterWarning: React.FC = () => {
 
             <p>
               For additional information or support, please contact us at{' '}
-              <span className="font-medium">contact@bantuhive.com</span>.
+              <span className="font-medium">help@bantuhive.com</span>.
             </p>
           </div>
         </div>
