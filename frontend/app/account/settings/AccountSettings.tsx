@@ -1,3 +1,4 @@
+// app/account/settings/AccountSettings.tsx
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import {
@@ -20,7 +21,7 @@ const AccountSettings = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const subscriptionRef = useRef<HTMLDivElement>(null);
 
-  // Handle ?subscribe=true parameter
+  // Handle ?subscribe=true parameter - Enhanced version
   useEffect(() => {
     const handleUrlChange = () => {
       const params = new URLSearchParams(window.location.search);
@@ -29,7 +30,13 @@ const AccountSettings = () => {
       if (subscribe === 'true') {
         setActiveTab('subscription');
 
-        requestAnimationFrame(() => {
+        // Clean URL after setting tab
+        const url = new URL(window.location.href);
+        url.searchParams.delete('subscribe');
+        window.history.replaceState(null, '', url.toString());
+
+        // Scroll and highlight after a brief delay to ensure component is rendered
+        setTimeout(() => {
           subscriptionRef.current?.scrollIntoView({
             behavior: 'smooth',
             block: 'start',
@@ -48,23 +55,43 @@ const AccountSettings = () => {
               'rounded-lg',
             );
           }, 3000);
-        });
+        }, 100);
+      }
+    };
 
-        // Clean URL AFTER render + scroll
+    // Check on initial load
+    handleUrlChange();
+
+    // Listen for URL changes
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+    };
+  }, []);
+
+  // Also check when component becomes visible (in case it's loaded dynamically)
+  useEffect(() => {
+    const checkSubscribeParam = () => {
+      const params = new URLSearchParams(window.location.search);
+      const subscribe = params.get('subscribe');
+      
+      if (subscribe === 'true' && activeTab !== 'subscription') {
+        setActiveTab('subscription');
+        
+        // Clean URL
         const url = new URL(window.location.href);
         url.searchParams.delete('subscribe');
         window.history.replaceState(null, '', url.toString());
       }
     };
-
-    handleUrlChange();
-
-    window.addEventListener('popstate', handleUrlChange);
-
-    return () => {
-      window.removeEventListener('popstate', handleUrlChange);
-    };
-  }, []);
+    
+    // Small delay to ensure component is fully rendered
+    const timer = setTimeout(checkSubscribeParam, 300);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
 
   const renderTabContent = () => {
     switch (activeTab) {

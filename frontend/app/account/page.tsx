@@ -441,6 +441,10 @@ const ProfileTabs = () => {
     setActiveTab('Settings');
     setLoading(true);
     setTimeout(() => setLoading(false), 300);
+    
+    // Dispatch events to ensure AccountSettings gets notified
+    window.dispatchEvent(new Event('popstate'));
+    window.dispatchEvent(new Event('hashchange'));
   };
 
   const completeOnboarding = () => {
