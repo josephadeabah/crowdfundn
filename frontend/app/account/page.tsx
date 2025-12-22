@@ -341,15 +341,15 @@ const ProfileTabs = () => {
         newUrl.searchParams.set('subscribe', 'true');
         window.history.replaceState(null, '', newUrl.toString());
         setActiveTab('Settings');
-      } 
+      }
       // Handle hash tab
       else if (hashTab && allTabs.find((tab) => tab.label === hashTab)) {
         setActiveTab(hashTab);
-      } 
+      }
       // Handle saved tab
       else if (savedTab && allTabs.find((tab) => tab.label === savedTab)) {
         setActiveTab(savedTab);
-      } 
+      }
       // Default to first tab
       else {
         setActiveTab(allTabs[0]?.label || 'Dashboard');
