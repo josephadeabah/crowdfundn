@@ -370,45 +370,65 @@ const ProfileTabs = () => {
   }, []); // Empty dependency array ensures this runs only once on mount
 
   // Handle URL changes (hash changes and popstate)
-  useEffect(() => {
-    const handleUrlChange = () => {
-      const hashTab = window.location.hash.replace('#', '');
-      const params = new URLSearchParams(window.location.search);
-      const subscribe = params.get('subscribe');
+// In ProfileTabs.tsx, update the useEffect that updates URL and localStorage:
+useEffect(() => {
+  if (activeTab) {
+    const url = new URL(window.location.href);
+    url.hash = activeTab;
+    
+    // IMPORTANT: Don't remove the subscribe parameter here!
+    // Only update the hash, keep query parameters intact
+    window.history.replaceState(null, '', url.toString());
+    
+    localStorage.setItem('activeTab', activeTab);
+  }
+}, [activeTab]);
 
-      if (hashTab === 'Settings' || subscribe === 'true') {
-        setActiveTab('Settings');
-        // If coming from subscribe param, ensure URL is updated
-        if (subscribe === 'true') {
-          const url = new URL(window.location.href);
-          url.hash = 'Settings';
-          window.history.replaceState(null, '', url.toString());
-        }
-      } else if (hashTab && allTabs.find((tab) => tab.label === hashTab)) {
-        setActiveTab(hashTab);
+// Update the handleSubscribeClick function:
+const handleSubscribeClick = () => {
+  const url = new URL(window.location.href);
+  url.hash = 'Settings';
+  url.searchParams.set('subscribe', 'true');
+  window.history.replaceState(null, '', url.toString());
+
+  setActiveTab('Settings');
+  setLoading(true);
+  setTimeout(() => setLoading(false), 300);
+  
+  // Dispatch events to ensure AccountSettings gets notified
+  window.dispatchEvent(new PopStateEvent('popstate'));
+  window.dispatchEvent(new HashChangeEvent('hashchange'));
+};
+
+// Also update the URL change handler to preserve subscribe param:
+useEffect(() => {
+  const handleUrlChange = () => {
+    const hashTab = window.location.hash.replace('#', '');
+    const params = new URLSearchParams(window.location.search);
+    const subscribe = params.get('subscribe');
+
+    if (hashTab === 'Settings' || subscribe === 'true') {
+      setActiveTab('Settings');
+      // Keep the subscribe parameter in URL when navigating to Settings
+      if (subscribe === 'true') {
+        const url = new URL(window.location.href);
+        url.hash = 'Settings';
+        // Don't remove subscribe parameter here
+        window.history.replaceState(null, '', url.toString());
       }
-    };
-
-    window.addEventListener('hashchange', handleUrlChange);
-    window.addEventListener('popstate', handleUrlChange);
-
-    return () => {
-      window.removeEventListener('hashchange', handleUrlChange);
-      window.removeEventListener('popstate', handleUrlChange);
-    };
-  }, []);
-
-  // Update URL and localStorage when activeTab changes
-  useEffect(() => {
-    if (activeTab) {
-      const url = new URL(window.location.href);
-      url.hash = activeTab;
-      // Remove subscribe param if it exists (it's already been handled)
-      url.searchParams.delete('subscribe');
-      window.history.replaceState(null, '', url.toString());
-      localStorage.setItem('activeTab', activeTab);
+    } else if (hashTab && allTabs.find((tab) => tab.label === hashTab)) {
+      setActiveTab(hashTab);
     }
-  }, [activeTab]);
+  };
+
+  window.addEventListener('hashchange', handleUrlChange);
+  window.addEventListener('popstate', handleUrlChange);
+
+  return () => {
+    window.removeEventListener('hashchange', handleUrlChange);
+    window.removeEventListener('popstate', handleUrlChange);
+  };
+}, []);
 
   const handleTabClick = (tab: string) => {
     setLoading(true);
@@ -430,21 +450,6 @@ const ProfileTabs = () => {
       }
       return newSet;
     });
-  };
-
-  const handleSubscribeClick = () => {
-    const url = new URL(window.location.href);
-    url.hash = 'Settings';
-    url.searchParams.set('subscribe', 'true');
-    window.history.replaceState(null, '', url.toString());
-
-    setActiveTab('Settings');
-    setLoading(true);
-    setTimeout(() => setLoading(false), 300);
-    
-    // Dispatch events to ensure AccountSettings gets notified
-    window.dispatchEvent(new Event('popstate'));
-    window.dispatchEvent(new Event('hashchange'));
   };
 
   const completeOnboarding = () => {

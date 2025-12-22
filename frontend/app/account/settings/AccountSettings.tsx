@@ -1,6 +1,6 @@
 // app/account/settings/AccountSettings.tsx
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   FaCreditCard,
   FaUser,
@@ -21,76 +21,83 @@ const AccountSettings = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const subscriptionRef = useRef<HTMLDivElement>(null);
 
-  // Handle ?subscribe=true parameter - Enhanced version
-  useEffect(() => {
-    const handleUrlChange = () => {
-      const params = new URLSearchParams(window.location.search);
-      const subscribe = params.get('subscribe');
+  // Function to check and handle subscribe parameter
+  const checkSubscribeParam = useCallback(() => {
+    const params = new URLSearchParams(window.location.search);
+    const subscribe = params.get('subscribe');
 
-      if (subscribe === 'true') {
-        setActiveTab('subscription');
+    if (subscribe === 'true') {
+      setActiveTab('subscription');
 
-        // Clean URL after setting tab
+      // Clean URL after setting tab, but with a delay to ensure component sees it
+      setTimeout(() => {
         const url = new URL(window.location.href);
         url.searchParams.delete('subscribe');
         window.history.replaceState(null, '', url.toString());
+      }, 100);
 
-        // Scroll and highlight after a brief delay to ensure component is rendered
+      // Scroll and highlight after a brief delay to ensure component is rendered
+      setTimeout(() => {
+        subscriptionRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+
+        subscriptionRef.current?.classList.add(
+          'ring-2',
+          'ring-green-500',
+          'rounded-lg',
+          'transition-all',
+          'duration-500'
+        );
+
         setTimeout(() => {
-          subscriptionRef.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-          });
-
-          subscriptionRef.current?.classList.add(
+          subscriptionRef.current?.classList.remove(
             'ring-2',
             'ring-green-500',
             'rounded-lg',
           );
-
-          setTimeout(() => {
-            subscriptionRef.current?.classList.remove(
-              'ring-2',
-              'ring-green-500',
-              'rounded-lg',
-            );
-          }, 3000);
-        }, 100);
-      }
-    };
-
-    // Check on initial load
-    handleUrlChange();
-
-    // Listen for URL changes
-    window.addEventListener('popstate', handleUrlChange);
-    window.addEventListener('hashchange', handleUrlChange);
-
-    return () => {
-      window.removeEventListener('popstate', handleUrlChange);
-      window.removeEventListener('hashchange', handleUrlChange);
-    };
+        }, 3000);
+      }, 200);
+    }
   }, []);
 
-  // Also check when component becomes visible (in case it's loaded dynamically)
+  // Handle ?subscribe=true parameter
   useEffect(() => {
-    const checkSubscribeParam = () => {
-      const params = new URLSearchParams(window.location.search);
-      const subscribe = params.get('subscribe');
-      
-      if (subscribe === 'true' && activeTab !== 'subscription') {
-        setActiveTab('subscription');
-        
-        // Clean URL
-        const url = new URL(window.location.href);
-        url.searchParams.delete('subscribe');
-        window.history.replaceState(null, '', url.toString());
-      }
+    // Check on initial load
+    checkSubscribeParam();
+
+    // Create a custom event listener for subscribe events
+    const handleSubscribeEvent = () => {
+      checkSubscribeParam();
     };
+
+    // Listen for URL changes
+    window.addEventListener('popstate', handleSubscribeEvent);
+    window.addEventListener('hashchange', handleSubscribeEvent);
     
-    // Small delay to ensure component is fully rendered
-    const timer = setTimeout(checkSubscribeParam, 300);
-    return () => clearTimeout(timer);
+    // Also check when component mounts (in case it loads after URL is set)
+    const timer = setTimeout(checkSubscribeParam, 500);
+
+    return () => {
+      window.removeEventListener('popstate', handleSubscribeEvent);
+      window.removeEventListener('hashchange', handleSubscribeEvent);
+      clearTimeout(timer);
+    };
+  }, [checkSubscribeParam]);
+
+  // Also check when the component becomes visible or when activeTab changes
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const subscribe = params.get('subscribe');
+    
+    // If we're on Settings tab and subscribe param is present, switch to subscription
+    if (subscribe === 'true' && activeTab !== 'subscription') {
+      // Small delay to ensure state updates properly
+      setTimeout(() => {
+        setActiveTab('subscription');
+      }, 100);
+    }
   }, [activeTab]);
 
   const renderTabContent = () => {
