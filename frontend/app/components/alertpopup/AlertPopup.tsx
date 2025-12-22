@@ -222,9 +222,9 @@ const AlertPopup: React.FC<AlertPopupProps> = ({
               )}
             </div>
 
-            {/* Actions Section */}
+            {/* Actions Section - Updated for side-by-side buttons on all screens */}
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 space-y-2 sm:space-y-0">
+              <div className="flex flex-row justify-end space-x-3">
                 {showCancelButton && (
                   <button
                     type="button"
