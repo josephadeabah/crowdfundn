@@ -40,7 +40,7 @@ const config = {
     ],
     additionalSitemaps: [
       'https://bantuhive.com/sitemap-0.xml',
-      'https://bantuhive.com/sitemap-campaigns.xml',
+      'https://api.bantuhive.com/sitemap-campaigns.xml',
     ],
   },
 };
