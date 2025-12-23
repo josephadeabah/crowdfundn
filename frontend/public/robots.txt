@@ -3,19 +3,16 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /account
-Disallow: /api
 
 # Googlebot
 User-agent: Googlebot
 Allow: /
 Disallow: /admin
 Disallow: /account
-Disallow: /api
 
 # Host
 Host: https://bantuhive.com
 
 # Sitemaps
 Sitemap: https://bantuhive.com/sitemap.xml
-Sitemap: https://bantuhive.com/api/sitemap/campaigns
 Sitemap: https://bantuhive.com/sitemap-0.xml

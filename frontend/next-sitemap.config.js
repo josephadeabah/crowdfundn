@@ -5,10 +5,6 @@ const config = {
 
   // Don't transform during build if API might fail
   transform: async (config, path) => {
-    // Skip individual campaign pages as they're in a separate sitemap
-    if (path.startsWith('/campaign/')) {
-      return null;
-    }
 
     return {
       loc: path,
@@ -26,8 +22,6 @@ const config = {
     '/account',
     '/account/*',
     '/thank-you',
-    '/campaign/*',
-    '/api/sitemap/*', // Exclude sitemap API from main sitemap
   ],
 
   robotsTxtOptions: {
@@ -35,16 +29,15 @@ const config = {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/account', '/api'],
+        disallow: ['/admin', '/account'],
       },
       {
         userAgent: 'Googlebot',
         allow: '/',
-        disallow: ['/admin', '/account', '/api'],
+        disallow: ['/admin', '/account'],
       },
     ],
     additionalSitemaps: [
-      'https://bantuhive.com/api/sitemap/campaigns',
       'https://bantuhive.com/sitemap-0.xml',
     ],
   },
