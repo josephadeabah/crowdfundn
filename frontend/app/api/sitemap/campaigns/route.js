@@ -24,6 +24,17 @@ async function fetchCampaigns() {
 }
 
 export async function GET() {
+  const now = Date.now();
+
+  if (cachedXml && now - lastGenerated < CACHE_TTL) {
+    return new NextResponse(cachedXml, {
+      headers: {
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600',
+      },
+    });
+  }
+
   const campaigns = await fetchCampaigns();
   const baseUrl = 'https://www.bantuhive.com';
 
@@ -39,6 +50,9 @@ ${campaigns.map((c) => `
 `).join('')}
 </urlset>`;
 
+  cachedXml = xml;
+  lastGenerated = now;
+
   return new NextResponse(xml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
@@ -46,3 +60,4 @@ ${campaigns.map((c) => `
     },
   });
 }
+
