@@ -22,6 +22,7 @@ const config = {
     '/account',
     '/account/*',
     '/thank-you',
+    '/campaign/*'
   ],
 
   robotsTxtOptions: {
