@@ -4,6 +4,11 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
 
+// 🔥 ADD THESE (missing)
+let cachedXml = null;
+let lastGenerated = 0;
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
 async function fetchCampaigns() {
   const response = await fetch(
     'https://api.bantuhive.com/api/v1/fundraisers/campaigns?per_page=50&status=active&is_public=true',
@@ -26,6 +31,7 @@ async function fetchCampaigns() {
 export async function GET() {
   const now = Date.now();
 
+  // ✅ Serve cached sitemap if fresh
   if (cachedXml && now - lastGenerated < CACHE_TTL) {
     return new NextResponse(cachedXml, {
       headers: {
@@ -50,6 +56,7 @@ ${campaigns.map((c) => `
 `).join('')}
 </urlset>`;
 
+  // ✅ Cache result
   cachedXml = xml;
   lastGenerated = now;
 
@@ -60,4 +67,3 @@ ${campaigns.map((c) => `
     },
   });
 }
-
