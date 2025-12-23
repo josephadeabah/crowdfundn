@@ -64,6 +64,13 @@ module Clockwork
     Rails.logger.error "[Clockwork] Failed to enqueue ClubInvestmentFinalizationJob: #{e.message}"
   end
 
+  every(1.hour, 'generate_campaign_sitemap') do
+    GenerateCampaignSitemapJob.perform_later
+  rescue => e
+    Rails.logger.error "[Clockwork] Failed to enqueue GenerateCampaignSitemapJob: #{e.message}"
+  end
+
+
   # every(5.minutes, 'send_meeting_reminders_every_five_mins') do
   #   SendMeetingRemindersJob.perform_later
   # rescue => e
