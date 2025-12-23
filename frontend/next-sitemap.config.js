@@ -5,7 +5,6 @@ const config = {
 
   // Don't transform during build if API might fail
   transform: async (config, path) => {
-
     return {
       loc: path,
       changefreq: 'weekly',
@@ -17,13 +16,7 @@ const config = {
   sitemapSize: 5000,
   changefreq: 'daily',
   priority: 0.7,
-  exclude: [
-    '/admin/*',
-    '/account',
-    '/account/*',
-    '/thank-you',
-    '/campaign/*'
-  ],
+  exclude: ['/admin/*', '/account', '/account/*', '/thank-you', '/campaign/*'],
 
   robotsTxtOptions: {
     policies: [
