@@ -5,7 +5,7 @@ class GenerateCampaignSitemapJob < ApplicationJob
   SITEMAP_PATH = Rails.root.join('public', 'sitemap-campaigns.xml')
 
   def perform
-    campaigns = Campaign.active.where(is_public: true).where(appear_in_search_results: true).select(:id, :slug, :updated_at).select(:id, :slug, :updated_at)
+    campaigns = Campaign.active.where(is_public: true).where(appear_in_search_results: true).select(:id, :slug, :updated_at)
     base_url = 'https://www.bantuhive.com'
 
     xml = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
