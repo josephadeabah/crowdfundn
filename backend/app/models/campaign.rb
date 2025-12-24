@@ -287,6 +287,22 @@ class Campaign < ApplicationRecord
     self[:total_equity_invested] || (is_a?(EquityCampaign) ? equity_investments.successful.sum(:amount) : 0)
   end
 
+  # SEO methods
+  def seo_title
+    self[:seo_title].presence || title.truncate(60)
+  end
+
+  def seo_description
+    self[:seo_description].presence ||
+      ActionView::Base.full_sanitizer
+        .sanitize(description.to_s)
+        .truncate(155)
+  end
+
+  def canonical_url
+    "https://www.bantuhive.com/campaign/#{slug}"
+  end
+
   # app/models/campaign.rb
   def as_json(options = {})
     json = super({
@@ -369,6 +385,10 @@ class Campaign < ApplicationRecord
     # Add additional fields
     json.merge!(
       type: self.class.name,
+      # Add SEO fields
+      seo_title: seo_title,
+      seo_description: seo_description,
+      canonical_url: canonical_url,
       description: description.as_json,
       total_social_media_shares: total_social_media_shares,
       donations_over_time: donations_over_time,
@@ -654,11 +674,14 @@ class Campaign < ApplicationRecord
   end
 
   def generate_slug
-    self.slug = title.parameterize
-    # Handle duplicate slugs
+    # Truncate title to avoid overly long slugs
+    base = title.parameterize.truncate(80, omission: '')
+    self.slug = base
+
     counter = 1
-    while Campaign.exists?(slug: slug) && (new_record? || Campaign.where.not(id: id).exists?(slug: slug))
-      self.slug = "#{title.parameterize}-#{counter}"
+    while Campaign.exists?(slug: slug) &&
+          (new_record? || Campaign.where.not(id: id).exists?(slug: slug))
+      self.slug = "#{base}-#{counter}"
       counter += 1
     end
   end

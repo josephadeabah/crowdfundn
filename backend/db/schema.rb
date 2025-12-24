@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_17_030045) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_23_234213) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -207,6 +207,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_17_030045) do
     t.string "ai_sentiment"
     t.string "ai_team_assessment"
     t.string "ai_market_opportunity"
+    t.string "seo_title"
+    t.string "seo_description"
     t.index ["ai_deal_score"], name: "index_campaigns_on_ai_deal_score"
     t.index ["ai_embedding"], name: "index_campaigns_on_ai_embedding", using: :gin
     t.index ["ai_market_opportunity"], name: "index_campaigns_on_ai_market_opportunity"
