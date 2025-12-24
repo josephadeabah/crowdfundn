@@ -21,7 +21,7 @@ const ubuntu = Ubuntu({
 
 export const metadata: Metadata = {
   title: {
-    default: 'BantuHive - Fund & Invest in African Startups',
+    default: 'BantuHive - Fund & Invest in African Startups & Impact Projects',
     template: '%s | BantuHive',
   },
   description:
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://www.bantuhive.com',
-    title: 'BantuHive - Fund & Invest in African Startups',
+    title: 'BantuHive - Fund & Invest in African Startups & Impact Projects',
     description:
       "Africa's premier fundraising platform for startups and impact projects.",
     siteName: 'BantuHive',
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BantuHive - Fund & Invest in African Startups',
+    title: 'BantuHive - Fund & Invest in African Startups & Impact Projects',
     description:
       "Africa's premier fundraising platform for startups and impact projects.",
     images: ['/bantuhive.svg'],
