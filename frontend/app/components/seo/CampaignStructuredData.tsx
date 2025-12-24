@@ -15,8 +15,13 @@ export default function CampaignStructuredData({
     '@context': 'https://schema.org',
     '@type': 'CrowdfundingCampaign', // Changed from FundingAgency
     name: campaign.title,
-    description: campaign.seo_description || campaign.description?.plain_text?.substring(0, 300) || `Fundraising campaign for ${campaign.title}`,
-    url: campaign.canonical_url || `https://www.bantuhive.com/campaign/${campaign.slug}`,
+    description:
+      campaign.seo_description ||
+      campaign.description?.plain_text?.substring(0, 300) ||
+      `Fundraising campaign for ${campaign.title}`,
+    url:
+      campaign.canonical_url ||
+      `https://www.bantuhive.com/campaign/${campaign.slug}`,
     image: campaign.media_url,
     location: {
       '@type': 'Place',
@@ -24,8 +29,14 @@ export default function CampaignStructuredData({
     },
     currency: campaign.currency_code || 'USD',
     funder: {
-      '@type': campaign.fundraiser?.type === 'Organization' ? 'Organization' : 'Individual',
-      name: campaign.fundraiser?.name || campaign.fundraiser?.full_name || 'Anonymous',
+      '@type':
+        campaign.fundraiser?.type === 'Organization'
+          ? 'Organization'
+          : 'Individual',
+      name:
+        campaign.fundraiser?.name ||
+        campaign.fundraiser?.full_name ||
+        'Anonymous',
       url: `https://www.bantuhive.com/user/${campaign.fundraiser_id}`,
     },
     funding: {
@@ -40,9 +51,14 @@ export default function CampaignStructuredData({
     },
     startDate: campaign.start_date,
     endDate: campaign.end_date,
-    campaignStatus: campaign.status === 'active' ? 'Active' : 
-                   campaign.status === 'completed' ? 'Successful' : 
-                   campaign.status === 'canceled' ? 'Failed' : 'Unknown',
+    campaignStatus:
+      campaign.status === 'active'
+        ? 'Active'
+        : campaign.status === 'completed'
+          ? 'Successful'
+          : campaign.status === 'canceled'
+            ? 'Failed'
+            : 'Unknown',
   };
 
   return (
