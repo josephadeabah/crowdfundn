@@ -293,10 +293,14 @@ class Campaign < ApplicationRecord
   end
 
   def seo_description
-    self[:seo_description].presence ||
-      ActionView::Base.full_sanitizer
-        .sanitize(description.to_s)
-        .truncate(155)
+    description_text = self[:seo_description].presence || 
+                      ActionView::Base.full_sanitizer.sanitize(description.to_s)
+    
+    # Clean up newlines, extra spaces, and truncate
+    description_text
+      .gsub(/\s+/, ' ')          # Replace multiple whitespace with single space
+      .strip                     # Remove leading/trailing whitespace
+      .truncate(155)             # Truncate to 155 characters
   end
 
   def canonical_url
