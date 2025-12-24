@@ -1,211 +1,146 @@
-// app/components/campaign/SingleCampaignPage.tsx
-'use client';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/app/context/auth/AuthContext';
-import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { useDonationsContext } from '@/app/context/account/donations/DonationsContext';
-import SuggestedCampaignsComponent from '@/app/components/suggestedCampaigns/SuggestedCampaigns';
-import SingleCampaignLoader from '@/app/loaders/SingleCampaignLoader';
-import Modal from '@/app/components/modal/Modal';
-import ToastComponent from '@/app/components/toast/Toast';
-import ContactFundraiserForm from '@/app/components/contactfundraiserform/ContactFundraiserForm';
-import CampaignDetails from '../CampaignDetails';
-import CampaignDonate from '../CampaignDonate';
-import CampaignUpdates from '../CampaignUpdates';
-import CampaignComments from '../CampaignComments';
-import CampaignBackers from '../CampaignBackers';
-import CampaignSidebar from '../CampaignSidebar';
-import CampaignTabs from '../CampaignTabs';
-import CampaignFAQs from '../CampaignFAQs';
-import { DealScoreCard } from '../DealScoreCard';
-import { AIDashboardMetrics } from '../AIDashboardMetrics';
+// app/campaign/[slugOrId]/page.tsx - Updated version
+import { Metadata } from 'next';
+import SingleCampaignPage from '../SingleCampaignPage';
 
-const SingleCampaignPage: React.FC = () => {
-  const [selectedTab, setSelectedTab] = useState<
-    'details' | 'donate' | 'updates' | 'comments' | 'backers' | 'faqs'
-  >('details');
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [toast, setToast] = useState({
-    isOpen: false,
-    title: '',
-    description: '',
-    type: 'success' as 'success' | 'error' | 'warning',
-  });
-  const [localLoading, setLocalLoading] = useState(true);
+export async function generateMetadata({
+  params,
+}: {
+  params: { slugOrId: string };
+}): Promise<Metadata> {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/fundraisers/campaigns/${params.slugOrId}`,
+      {
+        cache: 'no-store',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
 
-  const tabsRef = useRef<HTMLDivElement>(null);
-  const { slugOrId } = useParams() as { slugOrId: string };
-  const searchParams = useSearchParams();
-  const tabParam = searchParams.get('tab');
-
-  const { currentCampaign, fetchCampaignById, loading, resetCurrentCampaign } =
-    useCampaignContext();
-  const { user } = useAuth();
-  const { fetchPublicDonations } = useDonationsContext();
-
-  const showToast = useCallback(
-    (
-      title: string,
-      description: string,
-      type: 'success' | 'error' | 'warning',
-    ) => {
-      setToast({
-        isOpen: true,
-        title,
-        description,
-        type,
-      });
-    },
-    [],
-  );
-
-  useEffect(() => {
-    if (tabParam === 'donate') {
-      setSelectedTab('donate');
-    } else if (tabParam === 'faqs') {
-      setSelectedTab('faqs');
+    if (!res.ok) {
+      return {
+        title: 'Campaign | BantuHive',
+        description: 'Explore this fundraising campaign on BantuHive',
+      };
     }
-  }, [tabParam]);
 
-  useEffect(() => {
-    let isMounted = true;
+    const campaign = await res.json();
 
-    const loadData = async () => {
-      if (!slugOrId) return;
-
-      setLocalLoading(true);
-      try {
-        await Promise.all([
-          fetchCampaignById(slugOrId),
-          fetchPublicDonations(slugOrId, 1, 10),
-        ]);
-
-        if (isMounted) {
-          setLocalLoading(false);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setLocalLoading(false);
-          showToast('Error', 'Failed to load campaign data', 'error');
-        }
-      }
+    // Build structured data
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@type': 'CrowdfundingCampaign',
+      name: campaign.title,
+      description:
+        campaign.seo_description ||
+        campaign.description?.plain_text?.substring(0, 300) ||
+        `Fundraising campaign for ${campaign.title}`,
+      url:
+        campaign.canonical_url ||
+        `https://www.bantuhive.com/campaign/${campaign.slug}`,
+      image: campaign.media_url,
+      location: {
+        '@type': 'Place',
+        name: campaign.location || 'Online',
+      },
+      currency: campaign.currency_code || 'USD',
+      funder: {
+        '@type':
+          campaign.fundraiser?.type === 'Organization'
+            ? 'Organization'
+            : 'Individual',
+        name:
+          campaign.fundraiser?.name ||
+          campaign.fundraiser?.full_name ||
+          'Anonymous',
+        url: `https://www.bantuhive.com/user/${campaign.fundraiser_id}`,
+      },
+      funding: {
+        '@type': 'MonetaryAmount',
+        currency: campaign.currency_code || 'USD',
+        value: campaign.goal_amount,
+      },
+      amountRaised: {
+        '@type': 'MonetaryAmount',
+        currency: campaign.currency_code || 'USD',
+        value: campaign.transferred_amount || campaign.current_amount || 0,
+      },
+      startDate: campaign.start_date,
+      endDate: campaign.end_date,
+      campaignStatus:
+        campaign.status === 'active'
+          ? 'Active'
+          : campaign.status === 'completed'
+            ? 'Successful'
+            : campaign.status === 'canceled'
+              ? 'Failed'
+              : 'Unknown',
     };
 
-    loadData();
-
-    return () => {
-      isMounted = false;
-      // Reset campaign when component unmounts
-      resetCurrentCampaign?.();
+    return {
+      title: campaign.seo_title || campaign.title,
+      description: campaign.seo_description,
+      alternates: {
+        canonical:
+          campaign.canonical_url ||
+          `https://www.bantuhive.com/campaign/${campaign.slug}`,
+      },
+      openGraph: {
+        title: campaign.seo_title || campaign.title,
+        description: campaign.seo_description,
+        url:
+          campaign.canonical_url ||
+          `https://www.bantuhive.com/campaign/${campaign.slug}`,
+        images: campaign.media_url
+          ? [
+              {
+                url: campaign.media_url,
+                width: 1200,
+                height: 630,
+                alt: campaign.title,
+              },
+            ]
+          : [],
+        type: 'article',
+        publishedTime: campaign.created_at,
+        modifiedTime: campaign.updated_at,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: campaign.seo_title || campaign.title,
+        description: campaign.seo_description,
+        images: campaign.media_url ? [campaign.media_url] : [],
+      },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
+      // ADD THIS for better SEO
+      other: {
+        'application/ld+json': JSON.stringify(structuredData),
+      },
     };
-  }, [
-    slugOrId,
-    fetchCampaignById,
-    fetchPublicDonations,
-    resetCurrentCampaign,
-    showToast,
-  ]);
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Campaign | BantuHive',
+      description: 'Explore this fundraising campaign on BantuHive',
+    };
+  }
+}
 
-  if (loading || localLoading) return <SingleCampaignLoader />;
-
-  const isEquityCampaign = currentCampaign?.type === 'EquityCampaign';
-
-  return (
-    <div key={slugOrId} className="min-h-screen w-full bg-white">
-      <ToastComponent
-        isOpen={toast.isOpen}
-        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
-        title={toast.title}
-        description={toast.description}
-        type={toast.type}
-      />
-      <div className="max-w-7xl mx-auto px-2 py-8">
-        <Modal
-          isOpen={isContactModalOpen}
-          onClose={() => setIsContactModalOpen(false)}
-          size="medium"
-          closeOnBackdropClick={false}
-        >
-          <ContactFundraiserForm campaignId={slugOrId} />
-        </Modal>
-        <div className="flex flex-col lg:flex-row gap-8 mb-10">
-          {/* Main Content Column */}
-          <div className="lg:w-2/3">
-            <div className="bg-white p-2 md:px-5 rounded-lg">
-              <CampaignTabs
-                selectedTab={selectedTab}
-                setSelectedTab={setSelectedTab}
-                tabsRef={tabsRef}
-                campaign={currentCampaign}
-                isEquityCampaign={isEquityCampaign}
-              />
-
-              {/* Tab Content - Only render when not loading */}
-              {!loading && selectedTab === 'details' && (
-                <div className="mt-6">
-                  {currentCampaign && (
-                    <>
-                      <DealScoreCard
-                        campaignId={currentCampaign.id.toString()}
-                        currentUser={user}
-                      />
-                      {user && (
-                        <AIDashboardMetrics
-                          campaignId={currentCampaign.id.toString()}
-                        />
-                      )}
-                    </>
-                  )}
-                  <CampaignDetails
-                    campaign={currentCampaign}
-                    isEquityCampaign={isEquityCampaign}
-                    showToast={showToast}
-                    setIsContactModalOpen={setIsContactModalOpen}
-                    user={user}
-                  />
-                </div>
-              )}
-              {!loading && selectedTab === 'donate' && (
-                <CampaignDonate
-                  campaign={currentCampaign}
-                  isEquityCampaign={isEquityCampaign}
-                />
-              )}
-              {!loading && selectedTab === 'updates' && (
-                <CampaignUpdates campaign={currentCampaign} />
-              )}
-              {!loading && selectedTab === 'comments' && (
-                <CampaignComments campaign={currentCampaign} />
-              )}
-              {!loading && selectedTab === 'backers' && (
-                <CampaignBackers
-                  campaign={currentCampaign}
-                  isEquityCampaign={isEquityCampaign}
-                />
-              )}
-              {!loading && selectedTab === 'faqs' && (
-                <CampaignFAQs
-                  campaign={currentCampaign}
-                  isEquityCampaign={isEquityCampaign}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Sidebar Column */}
-          <div className="lg:w-1/3 border border-gray-200 hover:border-gray-300">
-            {!loading && <CampaignSidebar campaign={currentCampaign} />}
-          </div>
-        </div>
-        {!loading && (
-          <SuggestedCampaignsComponent
-            currentCategory={currentCampaign?.category}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default SingleCampaignPage;
+export default function CampaignPage({
+  params,
+}: {
+  params: { slugOrId: string };
+}) {
+  return <SingleCampaignPage />;
+}
