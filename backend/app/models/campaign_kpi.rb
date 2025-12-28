@@ -10,7 +10,7 @@ class CampaignKpi < ApplicationRecord
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
   
   scope :primary, -> { where(is_primary: true) }
-  scope :public, -> { where(is_public: true) }
+  scope :publicly_visible, -> { where(is_public: true) }  # Changed from 'public' to 'publicly_visible'
   scope :by_type, ->(type) { where(kpi_type: type) }
   scope :ordered, -> { order(display_order: :asc, created_at: :asc) }
   
