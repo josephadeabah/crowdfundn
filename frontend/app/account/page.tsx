@@ -192,7 +192,7 @@ const ProfileTabs = () => {
       icon: <FaChartLine className="w-4 h-4" />,
       tabs: [
         {
-          label: 'Investor Reporting',
+          label: 'Reporting',
           icon: <BarChart3 className="w-4 h-4" />,
           component: <InvestorReportingDashboard />,
           description:
