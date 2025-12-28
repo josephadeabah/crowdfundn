@@ -40,7 +40,7 @@ import PledgesListPage from '@/app/account/Pledges';
 import EquityInvestments from './EquityInvestments';
 import { usePremium } from '@/app/context/premium/PremiumContext';
 import { useAuth } from '../context/auth/AuthContext';
-import { Landmark, UserCheck, ChevronUp, ChevronDown } from 'lucide-react';
+import { Landmark, UserCheck, ChevronUp, ChevronDown, BarChart3 } from 'lucide-react';
 import { FiArchive } from 'react-icons/fi';
 import ArchivedCampaigns from './ArchivedCampaigns';
 import InvestmentClubsDashboard from './InvestmentClubsDashboard';
@@ -60,6 +60,7 @@ import {
 import { DealRoom } from '../components/deal-room/DealRoom';
 import MentorDashboard from '../components/mentor/MentorDashboard';
 import MentorMarketplace from '../components/mentor/MentorMarketplace';
+import InvestorReportingDashboard from '../components/investor-reporting/InvestorReportingDashboard';
 
 // Define proper TypeScript interfaces
 interface Tab {
@@ -179,6 +180,21 @@ const ProfileTabs = () => {
         },
       ],
     },
+      {
+    id: 'investor',
+    name: 'Investor',
+    icon: <BarChart3 className="w-4 h-4" />,
+    tabs: [
+      {
+        label: 'Investor Reporting',
+        icon: <BarChart3 className="w-4 h-4" />,
+        component: <InvestorReportingDashboard />,
+        description: 'Track investments, view reports, and manage notifications',
+        badge: 'New',
+        badgeColor: 'bg-green-100 text-green-800',
+      },
+    ],
+  },
     {
       id: 'investing',
       name: 'Investing',
