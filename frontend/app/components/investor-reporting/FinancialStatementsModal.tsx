@@ -2,9 +2,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  FileText, 
-  Download, 
+import {
+  FileText,
+  Download,
   Calendar,
   TrendingUp,
   TrendingDown,
@@ -12,14 +12,31 @@ import {
   Eye,
   BarChart,
   PieChart,
-  LineChart
+  LineChart,
 } from 'lucide-react';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '@/app/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/app/components/ui/tabs';
 import { Badge } from '@/app/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
 import { toast } from 'sonner';
 import {
   LineChart as RechartsLineChart,
@@ -34,7 +51,7 @@ import {
   ResponsiveContainer,
   PieChart as RechartsPieChart,
   Pie,
-  Cell
+  Cell,
 } from 'recharts';
 import { formatCurrency } from '@/app/utils/helpers/calculate.days';
 import { Skeleton } from '../ui/Skeleton';
@@ -70,12 +87,13 @@ interface FinancialStatement {
 const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   isOpen,
   onClose,
-  campaignId
+  campaignId,
 }) => {
   const [statements, setStatements] = useState<FinancialStatement[]>([]);
   const [loading, setLoading] = useState(false);
   const [periodType, setPeriodType] = useState('all');
-  const [selectedStatement, setSelectedStatement] = useState<FinancialStatement | null>(null);
+  const [selectedStatement, setSelectedStatement] =
+    useState<FinancialStatement | null>(null);
 
   useEffect(() => {
     if (isOpen && campaignId) {
@@ -87,8 +105,11 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
     try {
       setLoading(true);
       const service = new InvestorReportingService();
-      const response = await service.getFinancialStatements(campaignId!, periodType);
-      
+      const response = await service.getFinancialStatements(
+        campaignId!,
+        periodType,
+      );
+
       if (response.success) {
         setStatements(response.financials);
         if (response.financials.length > 0) {
@@ -107,7 +128,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
     try {
       const service = new InvestorReportingService();
       const response = await service.downloadFinancialStatement(statementId);
-      
+
       if (response.success && response.url) {
         window.open(response.url, '_blank');
       }
@@ -118,25 +139,27 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   };
 
   // Prepare data for charts
-  const chartData = statements.map(stmt => ({
+  const chartData = statements.map((stmt) => ({
     period: formatDate(stmt.period_end, 'MMM yy'),
     revenue: stmt.revenue,
     netIncome: stmt.net_income,
     grossMargin: stmt.gross_margin,
-    netMargin: stmt.net_margin
+    netMargin: stmt.net_margin,
   }));
 
-  const profitabilityData = statements.slice(-3).map(stmt => ({
+  const profitabilityData = statements.slice(-3).map((stmt) => ({
     name: formatDate(stmt.period_end, 'MMM yy'),
     revenue: stmt.revenue,
-    profit: stmt.net_income
+    profit: stmt.net_income,
   }));
 
-  const balanceSheetData = selectedStatement ? [
-    { name: 'Assets', value: selectedStatement.assets },
-    { name: 'Liabilities', value: selectedStatement.liabilities },
-    { name: 'Equity', value: selectedStatement.equity }
-  ] : [];
+  const balanceSheetData = selectedStatement
+    ? [
+        { name: 'Assets', value: selectedStatement.assets },
+        { name: 'Liabilities', value: selectedStatement.liabilities },
+        { name: 'Equity', value: selectedStatement.equity },
+      ]
+    : [];
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
 
@@ -204,17 +227,17 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey="revenue" 
-                          stroke="#0088FE" 
+                        <Line
+                          type="monotone"
+                          dataKey="revenue"
+                          stroke="#0088FE"
                           strokeWidth={2}
                           name="Revenue"
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="netIncome" 
-                          stroke="#00C49F" 
+                        <Line
+                          type="monotone"
+                          dataKey="netIncome"
+                          stroke="#00C49F"
                           strokeWidth={2}
                           name="Net Income"
                         />
@@ -236,7 +259,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                 <Card>
                   <CardContent className="pt-6">
                     <div className="text-center">
-                      <div className="text-sm font-medium text-muted-foreground mb-2">Revenue</div>
+                      <div className="text-sm font-medium text-muted-foreground mb-2">
+                        Revenue
+                      </div>
                       <div className="text-2xl font-bold">
                         {formatCurrency(selectedStatement.revenue, 'GHS', '₵')}
                       </div>
@@ -250,9 +275,17 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                 <Card>
                   <CardContent className="pt-6">
                     <div className="text-center">
-                      <div className="text-sm font-medium text-muted-foreground mb-2">Net Income</div>
-                      <div className={`text-2xl font-bold ${selectedStatement.net_income >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {formatCurrency(selectedStatement.net_income, 'GHS', '₵')}
+                      <div className="text-sm font-medium text-muted-foreground mb-2">
+                        Net Income
+                      </div>
+                      <div
+                        className={`text-2xl font-bold ${selectedStatement.net_income >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                      >
+                        {formatCurrency(
+                          selectedStatement.net_income,
+                          'GHS',
+                          '₵',
+                        )}
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         {selectedStatement.net_margin.toFixed(1)}% margin
@@ -264,12 +297,20 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                 <Card>
                   <CardContent className="pt-6">
                     <div className="text-center">
-                      <div className="text-sm font-medium text-muted-foreground mb-2">Runway</div>
+                      <div className="text-sm font-medium text-muted-foreground mb-2">
+                        Runway
+                      </div>
                       <div className="text-2xl font-bold">
                         {selectedStatement.runway_months.toFixed(1)} months
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
-                        Burn rate: {formatCurrency(selectedStatement.burn_rate, 'GHS', '₵')}/month
+                        Burn rate:{' '}
+                        {formatCurrency(
+                          selectedStatement.burn_rate,
+                          'GHS',
+                          '₵',
+                        )}
+                        /month
                       </div>
                     </div>
                   </CardContent>
@@ -289,15 +330,15 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
               <CardContent>
                 {loading ? (
                   <div className="space-y-4">
-                    {[1, 2, 3].map(i => (
+                    {[1, 2, 3].map((i) => (
                       <Skeleton key={i} className="h-20 w-full" />
                     ))}
                   </div>
                 ) : statements.length > 0 ? (
                   <div className="space-y-4">
                     {statements.map((statement) => (
-                      <div 
-                        key={statement.id} 
+                      <div
+                        key={statement.id}
                         className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-colors hover:bg-muted/50 ${selectedStatement?.id === statement.id ? 'bg-muted border-primary' : ''}`}
                         onClick={() => setSelectedStatement(statement)}
                       >
@@ -305,12 +346,15 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           <FileText className="h-8 w-8 text-blue-500" />
                           <div>
                             <h4 className="font-medium">
-                              {statement.period_type.charAt(0).toUpperCase() + statement.period_type.slice(1)} Statement
+                              {statement.period_type.charAt(0).toUpperCase() +
+                                statement.period_type.slice(1)}{' '}
+                              Statement
                             </h4>
                             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                               <Calendar className="h-3 w-3" />
                               <span>
-                                {formatDate(statement.period_start)} - {formatDate(statement.period_end)}
+                                {formatDate(statement.period_start)} -{' '}
+                                {formatDate(statement.period_end)}
                               </span>
                               <Badge variant="outline">
                                 {statement.status}
@@ -358,7 +402,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                 <CardHeader>
                   <CardTitle>Statement Details</CardTitle>
                   <CardDescription>
-                    {formatDate(selectedStatement.period_start)} - {formatDate(selectedStatement.period_end)}
+                    {formatDate(selectedStatement.period_start)} -{' '}
+                    {formatDate(selectedStatement.period_end)}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -369,25 +414,43 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         <div className="flex justify-between">
                           <span className="text-sm">Revenue</span>
                           <span className="font-medium">
-                            {formatCurrency(selectedStatement.revenue, 'GHS', '₵')}
+                            {formatCurrency(
+                              selectedStatement.revenue,
+                              'GHS',
+                              '₵',
+                            )}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-sm">Expenses</span>
                           <span className="font-medium">
-                            {formatCurrency(selectedStatement.expenses, 'GHS', '₵')}
+                            {formatCurrency(
+                              selectedStatement.expenses,
+                              'GHS',
+                              '₵',
+                            )}
                           </span>
                         </div>
                         <div className="flex justify-between border-t pt-2">
                           <span className="font-medium">Gross Profit</span>
                           <span className="font-medium">
-                            {formatCurrency(selectedStatement.gross_profit, 'GHS', '₵')}
+                            {formatCurrency(
+                              selectedStatement.gross_profit,
+                              'GHS',
+                              '₵',
+                            )}
                           </span>
                         </div>
                         <div className="flex justify-between border-t pt-2">
                           <span className="font-medium">Net Income</span>
-                          <span className={`font-medium ${selectedStatement.net_income >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {formatCurrency(selectedStatement.net_income, 'GHS', '₵')}
+                          <span
+                            className={`font-medium ${selectedStatement.net_income >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                          >
+                            {formatCurrency(
+                              selectedStatement.net_income,
+                              'GHS',
+                              '₵',
+                            )}
                           </span>
                         </div>
                       </div>
@@ -399,19 +462,31 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         <div className="flex justify-between">
                           <span className="text-sm">Assets</span>
                           <span className="font-medium">
-                            {formatCurrency(selectedStatement.assets, 'GHS', '₵')}
+                            {formatCurrency(
+                              selectedStatement.assets,
+                              'GHS',
+                              '₵',
+                            )}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-sm">Liabilities</span>
                           <span className="font-medium">
-                            {formatCurrency(selectedStatement.liabilities, 'GHS', '₵')}
+                            {formatCurrency(
+                              selectedStatement.liabilities,
+                              'GHS',
+                              '₵',
+                            )}
                           </span>
                         </div>
                         <div className="flex justify-between border-t pt-2">
                           <span className="font-medium">Equity</span>
                           <span className="font-medium">
-                            {formatCurrency(selectedStatement.equity, 'GHS', '₵')}
+                            {formatCurrency(
+                              selectedStatement.equity,
+                              'GHS',
+                              '₵',
+                            )}
                           </span>
                         </div>
                       </div>
@@ -422,22 +497,41 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                     <h4 className="font-medium mb-4">Key Ratios</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="text-center p-3 border rounded-lg">
-                        <div className="text-sm text-muted-foreground mb-1">Gross Margin</div>
-                        <div className="text-lg font-medium">{selectedStatement.gross_margin.toFixed(1)}%</div>
-                      </div>
-                      <div className="text-center p-3 border rounded-lg">
-                        <div className="text-sm text-muted-foreground mb-1">Net Margin</div>
-                        <div className="text-lg font-medium">{selectedStatement.net_margin.toFixed(1)}%</div>
-                      </div>
-                      <div className="text-center p-3 border rounded-lg">
-                        <div className="text-sm text-muted-foreground mb-1">Burn Rate</div>
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Gross Margin
+                        </div>
                         <div className="text-lg font-medium">
-                          {formatCurrency(selectedStatement.burn_rate, 'GHS', '₵')}/month
+                          {selectedStatement.gross_margin.toFixed(1)}%
                         </div>
                       </div>
                       <div className="text-center p-3 border rounded-lg">
-                        <div className="text-sm text-muted-foreground mb-1">Runway</div>
-                        <div className="text-lg font-medium">{selectedStatement.runway_months.toFixed(1)} months</div>
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Net Margin
+                        </div>
+                        <div className="text-lg font-medium">
+                          {selectedStatement.net_margin.toFixed(1)}%
+                        </div>
+                      </div>
+                      <div className="text-center p-3 border rounded-lg">
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Burn Rate
+                        </div>
+                        <div className="text-lg font-medium">
+                          {formatCurrency(
+                            selectedStatement.burn_rate,
+                            'GHS',
+                            '₵',
+                          )}
+                          /month
+                        </div>
+                      </div>
+                      <div className="text-center p-3 border rounded-lg">
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Runway
+                        </div>
+                        <div className="text-lg font-medium">
+                          {selectedStatement.runway_months.toFixed(1)} months
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -465,7 +559,11 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         <Tooltip />
                         <Legend />
                         <Bar dataKey="revenue" fill="#0088FE" name="Revenue" />
-                        <Bar dataKey="profit" fill="#00C49F" name="Net Income" />
+                        <Bar
+                          dataKey="profit"
+                          fill="#00C49F"
+                          name="Net Income"
+                        />
                       </RechartsBarChart>
                     </ResponsiveContainer>
                   </div>
@@ -495,13 +593,18 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           cx="50%"
                           cy="50%"
                           labelLine={false}
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          label={({ name, percent }) =>
+                            `${name}: ${(percent * 100).toFixed(0)}%`
+                          }
                           outerRadius={80}
                           fill="#8884d8"
                           dataKey="value"
                         >
                           {balanceSheetData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={COLORS[index % COLORS.length]}
+                            />
                           ))}
                         </Pie>
                         <Tooltip />
@@ -535,7 +638,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                       <div className="flex justify-between items-center p-3 border rounded-lg">
                         <div>
                           <div className="font-medium">Gross Margin</div>
-                          <div className="text-sm text-muted-foreground">Revenue minus COGS</div>
+                          <div className="text-sm text-muted-foreground">
+                            Revenue minus COGS
+                          </div>
                         </div>
                         <div className="text-lg font-medium">
                           {selectedStatement?.gross_margin.toFixed(1) || '0.0'}%
@@ -544,7 +649,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                       <div className="flex justify-between items-center p-3 border rounded-lg">
                         <div>
                           <div className="font-medium">Net Margin</div>
-                          <div className="text-sm text-muted-foreground">Profitability percentage</div>
+                          <div className="text-sm text-muted-foreground">
+                            Profitability percentage
+                          </div>
                         </div>
                         <div className="text-lg font-medium">
                           {selectedStatement?.net_margin.toFixed(1) || '0.0'}%
@@ -553,7 +660,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                       <div className="flex justify-between items-center p-3 border rounded-lg">
                         <div>
                           <div className="font-medium">Operating Margin</div>
-                          <div className="text-sm text-muted-foreground">Operational efficiency</div>
+                          <div className="text-sm text-muted-foreground">
+                            Operational efficiency
+                          </div>
                         </div>
                         <div className="text-lg font-medium">15.2%</div>
                       </div>
@@ -566,21 +675,27 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                       <div className="flex justify-between items-center p-3 border rounded-lg">
                         <div>
                           <div className="font-medium">Current Ratio</div>
-                          <div className="text-sm text-muted-foreground">Short-term liquidity</div>
+                          <div className="text-sm text-muted-foreground">
+                            Short-term liquidity
+                          </div>
                         </div>
                         <div className="text-lg font-medium">2.5</div>
                       </div>
                       <div className="flex justify-between items-center p-3 border rounded-lg">
                         <div>
                           <div className="font-medium">Debt to Equity</div>
-                          <div className="text-sm text-muted-foreground">Financial leverage</div>
+                          <div className="text-sm text-muted-foreground">
+                            Financial leverage
+                          </div>
                         </div>
                         <div className="text-lg font-medium">0.8</div>
                       </div>
                       <div className="flex justify-between items-center p-3 border rounded-lg">
                         <div>
                           <div className="font-medium">Asset Turnover</div>
-                          <div className="text-sm text-muted-foreground">Asset efficiency</div>
+                          <div className="text-sm text-muted-foreground">
+                            Asset efficiency
+                          </div>
                         </div>
                         <div className="text-lg font-medium">1.2</div>
                       </div>
@@ -592,19 +707,33 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                   <h4 className="font-medium mb-4">Cash Flow Analysis</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="text-center p-4 border rounded-lg">
-                      <div className="text-sm text-muted-foreground mb-2">Operating Cash Flow</div>
+                      <div className="text-sm text-muted-foreground mb-2">
+                        Operating Cash Flow
+                      </div>
                       <div className="text-xl font-medium">₵125,000</div>
-                      <div className="text-sm text-green-600 mt-1">+12% YoY</div>
+                      <div className="text-sm text-green-600 mt-1">
+                        +12% YoY
+                      </div>
                     </div>
                     <div className="text-center p-4 border rounded-lg">
-                      <div className="text-sm text-muted-foreground mb-2">Investing Cash Flow</div>
-                      <div className="text-xl font-medium text-red-600">-₵45,000</div>
-                      <div className="text-sm text-muted-foreground mt-1">Capital expenditures</div>
+                      <div className="text-sm text-muted-foreground mb-2">
+                        Investing Cash Flow
+                      </div>
+                      <div className="text-xl font-medium text-red-600">
+                        -₵45,000
+                      </div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        Capital expenditures
+                      </div>
                     </div>
                     <div className="text-center p-4 border rounded-lg">
-                      <div className="text-sm text-muted-foreground mb-2">Financing Cash Flow</div>
+                      <div className="text-sm text-muted-foreground mb-2">
+                        Financing Cash Flow
+                      </div>
                       <div className="text-xl font-medium">₵30,000</div>
-                      <div className="text-sm text-muted-foreground mt-1">Debt & equity</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        Debt & equity
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -627,7 +756,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
               Close
             </Button>
             {selectedStatement && (
-              <Button onClick={() => handleDownloadStatement(selectedStatement.id)}>
+              <Button
+                onClick={() => handleDownloadStatement(selectedStatement.id)}
+              >
                 <Download className="mr-2 h-4 w-4" />
                 Download Statement
               </Button>

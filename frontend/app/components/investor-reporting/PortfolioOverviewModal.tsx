@@ -2,9 +2,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  BarChart3, 
-  TrendingUp, 
+import {
+  BarChart3,
+  TrendingUp,
   TrendingDown,
   PieChart,
   LineChart,
@@ -14,15 +14,32 @@ import {
   Building,
   Users,
   DollarSign,
-  Percent
+  Percent,
 } from 'lucide-react';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '@/app/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/app/components/ui/tabs';
 import { Badge } from '@/app/components/ui/badge';
 import { Progress } from '@/app/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/app/utils/helpers/calculate.days';
 import { InvestorReportingService } from './services/investor-reporting.service';
@@ -38,7 +55,7 @@ interface PortfolioOverviewModalProps {
 const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
   isOpen,
   onClose,
-  portfolioData
+  portfolioData,
 }) => {
   const [timePeriod, setTimePeriod] = useState('all');
   const [loading, setLoading] = useState(false);
@@ -55,7 +72,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
       setLoading(true);
       const service = new InvestorReportingService();
       const response = await service.getPortfolioMetrics(timePeriod);
-      
+
       if (response.success) {
         setDetailedData(response.metrics);
       }
@@ -71,7 +88,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
     try {
       const service = new InvestorReportingService();
       const response = await service.exportPortfolioData();
-      
+
       if (response.success && response.url) {
         window.open(response.url, '_blank');
       }
@@ -129,9 +146,15 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Invested</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Invested
+                  </p>
                   <p className="text-2xl font-bold">
-                    {formatCurrency(summary.total_invested, summary.currency, summary.currency_symbol)}
+                    {formatCurrency(
+                      summary.total_invested,
+                      summary.currency,
+                      summary.currency_symbol,
+                    )}
                   </p>
                 </div>
                 <DollarSign className="h-8 w-8 text-blue-500" />
@@ -143,9 +166,15 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Current Value</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Current Value
+                  </p>
                   <p className="text-2xl font-bold">
-                    {formatCurrency(summary.current_value, summary.currency, summary.currency_symbol)}
+                    {formatCurrency(
+                      summary.current_value,
+                      summary.currency,
+                      summary.currency_symbol,
+                    )}
                   </p>
                 </div>
                 <BarChart3 className="h-8 w-8 text-green-500" />
@@ -157,9 +186,17 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Returns</p>
-                  <p className={`text-2xl font-bold ${summary.total_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {formatCurrency(summary.total_returns, summary.currency, summary.currency_symbol)}
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Returns
+                  </p>
+                  <p
+                    className={`text-2xl font-bold ${summary.total_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {formatCurrency(
+                      summary.total_returns,
+                      summary.currency,
+                      summary.currency_symbol,
+                    )}
                   </p>
                 </div>
                 {summary.total_returns >= 0 ? (
@@ -175,8 +212,12 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">ROI</p>
-                  <p className={`text-2xl font-bold ${summary.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    ROI
+                  </p>
+                  <p
+                    className={`text-2xl font-bold ${summary.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
                     {summary.roi.toFixed(2)}%
                   </p>
                 </div>
@@ -206,40 +247,63 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
               <CardContent>
                 {loading ? (
                   <div className="space-y-4">
-                    {[1, 2, 3].map(i => (
+                    {[1, 2, 3].map((i) => (
                       <Skeleton key={i} className="h-20 w-full" />
                     ))}
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {campaigns.map((campaign: any) => (
-                      <div key={campaign.campaign_id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div
+                        key={campaign.campaign_id}
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
                         <div className="flex items-center space-x-4">
                           <Building className="h-10 w-10 text-muted-foreground" />
                           <div>
-                            <h4 className="font-medium">{campaign.company_name}</h4>
+                            <h4 className="font-medium">
+                              {campaign.company_name}
+                            </h4>
                             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                               <Users className="h-3 w-3" />
-                              <span>{campaign.investment_count} investment{campaign.investment_count !== 1 ? 's' : ''}</span>
+                              <span>
+                                {campaign.investment_count} investment
+                                {campaign.investment_count !== 1 ? 's' : ''}
+                              </span>
                               <span>•</span>
-                              <span>{campaign.ownership_percentage.toFixed(2)}% ownership</span>
+                              <span>
+                                {campaign.ownership_percentage.toFixed(2)}%
+                                ownership
+                              </span>
                             </div>
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="font-medium">
-                            {formatCurrency(campaign.current_value, summary.currency, summary.currency_symbol)}
+                            {formatCurrency(
+                              campaign.current_value,
+                              summary.currency,
+                              summary.currency_symbol,
+                            )}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Invested: {formatCurrency(campaign.invested, summary.currency, summary.currency_symbol)}
+                            Invested:{' '}
+                            {formatCurrency(
+                              campaign.invested,
+                              summary.currency,
+                              summary.currency_symbol,
+                            )}
                           </div>
-                          <div className={`text-sm font-medium ${campaign.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {campaign.roi >= 0 ? '+' : ''}{campaign.roi.toFixed(2)}% ROI
+                          <div
+                            className={`text-sm font-medium ${campaign.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                          >
+                            {campaign.roi >= 0 ? '+' : ''}
+                            {campaign.roi.toFixed(2)}% ROI
                           </div>
                         </div>
                       </div>
                     ))}
-                    
+
                     {campaigns.length === 0 && (
                       <div className="text-center py-12 text-muted-foreground">
                         <Building className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -264,34 +328,49 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                     <div>
                       <div className="flex justify-between text-sm mb-1">
                         <span>Internal Rate of Return (IRR)</span>
-                        <span className="font-medium">{summary.irr?.toFixed(2) || '0.00'}%</span>
+                        <span className="font-medium">
+                          {summary.irr?.toFixed(2) || '0.00'}%
+                        </span>
                       </div>
-                      <Progress value={Math.min(summary.irr || 0, 100)} className="h-2" />
+                      <Progress
+                        value={Math.min(summary.irr || 0, 100)}
+                        className="h-2"
+                      />
                     </div>
                     <div>
                       <div className="flex justify-between text-sm mb-1">
                         <span>Multiple on Invested Capital (MOIC)</span>
-                        <span className="font-medium">{summary.moic?.toFixed(2) || '0.00'}x</span>
+                        <span className="font-medium">
+                          {summary.moic?.toFixed(2) || '0.00'}x
+                        </span>
                       </div>
-                      <Progress value={Math.min((summary.moic || 0) * 50, 100)} className="h-2" />
+                      <Progress
+                        value={Math.min((summary.moic || 0) * 50, 100)}
+                        className="h-2"
+                      />
                     </div>
                   </div>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-3 border rounded-lg">
                       <span className="text-sm">Active Investments</span>
-                      <Badge variant="secondary">{summary.active_investments}</Badge>
+                      <Badge variant="secondary">
+                        {summary.active_investments}
+                      </Badge>
                     </div>
                     <div className="flex items-center justify-between p-3 border rounded-lg">
                       <span className="text-sm">Campaigns Invested</span>
-                      <Badge variant="secondary">{summary.invested_campaigns}</Badge>
+                      <Badge variant="secondary">
+                        {summary.invested_campaigns}
+                      </Badge>
                     </div>
                     <div className="flex items-center justify-between p-3 border rounded-lg">
                       <span className="text-sm">Average Investment Size</span>
                       <span className="font-medium">
                         {formatCurrency(
-                          summary.total_invested / Math.max(summary.active_investments, 1),
+                          summary.total_invested /
+                            Math.max(summary.active_investments, 1),
                           summary.currency,
-                          summary.currency_symbol
+                          summary.currency_symbol,
                         )}
                       </span>
                     </div>
@@ -312,17 +391,29 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
               <CardContent>
                 <div className="space-y-4">
                   {campaigns.map((campaign: any) => {
-                    const percentage = (campaign.invested / summary.total_invested) * 100;
+                    const percentage =
+                      (campaign.invested / summary.total_invested) * 100;
                     return (
                       <div key={campaign.campaign_id} className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>{campaign.company_name}</span>
-                          <span className="font-medium">{percentage.toFixed(1)}%</span>
+                          <span className="font-medium">
+                            {percentage.toFixed(1)}%
+                          </span>
                         </div>
                         <Progress value={percentage} className="h-2" />
                         <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>{formatCurrency(campaign.invested, summary.currency, summary.currency_symbol)}</span>
-                          <span>{campaign.ownership_percentage.toFixed(2)}% ownership</span>
+                          <span>
+                            {formatCurrency(
+                              campaign.invested,
+                              summary.currency,
+                              summary.currency_symbol,
+                            )}
+                          </span>
+                          <span>
+                            {campaign.ownership_percentage.toFixed(2)}%
+                            ownership
+                          </span>
                         </div>
                       </div>
                     );
@@ -345,25 +436,41 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                   <div>
                     <h4 className="font-medium mb-3">Concentration Risk</h4>
                     <div className="space-y-3">
-                      {campaigns.slice(0, 3).map((campaign: any, index: number) => {
-                        const percentage = (campaign.invested / summary.total_invested) * 100;
-                        return (
-                          <div key={campaign.campaign_id} className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-                                <span className="text-xs font-medium text-blue-600">{index + 1}</span>
+                      {campaigns
+                        .slice(0, 3)
+                        .map((campaign: any, index: number) => {
+                          const percentage =
+                            (campaign.invested / summary.total_invested) * 100;
+                          return (
+                            <div
+                              key={campaign.campaign_id}
+                              className="flex items-center justify-between"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
+                                  <span className="text-xs font-medium text-blue-600">
+                                    {index + 1}
+                                  </span>
+                                </div>
+                                <span className="text-sm">
+                                  {campaign.company_name}
+                                </span>
                               </div>
-                              <span className="text-sm">{campaign.company_name}</span>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-medium">{percentage.toFixed(1)}%</div>
-                              <div className="text-xs text-muted-foreground">
-                                {formatCurrency(campaign.invested, summary.currency, summary.currency_symbol)}
+                              <div className="text-right">
+                                <div className="font-medium">
+                                  {percentage.toFixed(1)}%
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  {formatCurrency(
+                                    campaign.invested,
+                                    summary.currency,
+                                    summary.currency_symbol,
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
                     </div>
                   </div>
 
@@ -371,14 +478,22 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                     <h4 className="font-medium mb-3">Risk Metrics</h4>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="border rounded-lg p-3">
-                        <div className="text-sm text-muted-foreground mb-1">Portfolio Volatility</div>
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Portfolio Volatility
+                        </div>
                         <div className="text-lg font-medium">12.5%</div>
-                        <div className="text-xs text-muted-foreground">Annualized</div>
+                        <div className="text-xs text-muted-foreground">
+                          Annualized
+                        </div>
                       </div>
                       <div className="border rounded-lg p-3">
-                        <div className="text-sm text-muted-foreground mb-1">Sharpe Ratio</div>
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Sharpe Ratio
+                        </div>
                         <div className="text-lg font-medium">1.8</div>
-                        <div className="text-xs text-muted-foreground">Risk-adjusted return</div>
+                        <div className="text-xs text-muted-foreground">
+                          Risk-adjusted return
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -399,9 +514,12 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[1, 3, 5].map((years) => {
-                      const projectedValue = summary.current_value * Math.pow(1 + (summary.roi / 100), years);
-                      const projectedReturns = projectedValue - summary.total_invested;
-                      
+                      const projectedValue =
+                        summary.current_value *
+                        Math.pow(1 + summary.roi / 100, years);
+                      const projectedReturns =
+                        projectedValue - summary.total_invested;
+
                       return (
                         <Card key={years}>
                           <CardContent className="pt-6">
@@ -410,11 +528,21 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                                 {years} Year{years !== 1 ? 's' : ''} Projection
                               </div>
                               <div className="text-2xl font-bold mb-1">
-                                {formatCurrency(projectedValue, summary.currency, summary.currency_symbol)}
+                                {formatCurrency(
+                                  projectedValue,
+                                  summary.currency,
+                                  summary.currency_symbol,
+                                )}
                               </div>
-                              <div className={`text-sm ${projectedReturns >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              <div
+                                className={`text-sm ${projectedReturns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                              >
                                 {projectedReturns >= 0 ? '+' : ''}
-                                {formatCurrency(projectedReturns, summary.currency, summary.currency_symbol)}
+                                {formatCurrency(
+                                  projectedReturns,
+                                  summary.currency,
+                                  summary.currency_symbol,
+                                )}
                               </div>
                             </div>
                           </CardContent>
@@ -428,7 +556,8 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                     <ul className="space-y-2 text-sm text-muted-foreground">
                       <li className="flex items-center">
                         <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                        Current ROI of {summary.roi.toFixed(2)}% remains constant
+                        Current ROI of {summary.roi.toFixed(2)}% remains
+                        constant
                       </li>
                       <li className="flex items-center">
                         <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>

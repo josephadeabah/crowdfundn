@@ -2,9 +2,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  FileText, 
-  Download, 
+import {
+  FileText,
+  Download,
   Calendar,
   Eye,
   Filter,
@@ -15,15 +15,32 @@ import {
   Clock,
   TrendingUp,
   Users,
-  Building
+  Building,
 } from 'lucide-react';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '@/app/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/app/components/ui/tabs';
 import { Badge } from '@/app/components/ui/badge';
 import { Input } from '@/app/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
 import { toast } from 'sonner';
 import { Skeleton } from '../ui/Skeleton';
 import { formatDate } from '@/app/utils/helpers/formatters';
@@ -40,11 +57,11 @@ interface InvestorReport {
   title: string;
   report_type: string;
   report_date: string;
-  period_start?: string;  // Change from string to string | undefined
-  period_end?: string;    // Change from string to string | undefined
+  period_start?: string; // Change from string to string | undefined
+  period_end?: string; // Change from string to string | undefined
   period_description: string;
-  executive_summary?: string;  // Make optional
-  key_highlights?: string;     // Make optional
+  executive_summary?: string; // Make optional
+  key_highlights?: string; // Make optional
   status: string;
   download_count: number;
   campaign: {
@@ -52,13 +69,13 @@ interface InvestorReport {
     name: string;
     company_name: string;
   };
-  published_by_name?: string;  // Make optional
+  published_by_name?: string; // Make optional
   published_at: string;
   documents: Array<{
     id: number;
     document_type: string;
     title: string;
-    file_url?: string;  // Make optional
+    file_url?: string; // Make optional
     file_name?: string; // Make optional
     file_size?: string; // Make optional
   }>;
@@ -66,7 +83,7 @@ interface InvestorReport {
 
 const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
   isOpen,
-  onClose
+  onClose,
 }) => {
   const [reports, setReports] = useState<InvestorReport[]>([]);
   const [filteredReports, setFilteredReports] = useState<InvestorReport[]>([]);
@@ -74,7 +91,9 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [reportType, setReportType] = useState('all');
   const [timePeriod, setTimePeriod] = useState('all');
-  const [selectedReport, setSelectedReport] = useState<InvestorReport | null>(null);
+  const [selectedReport, setSelectedReport] = useState<InvestorReport | null>(
+    null,
+  );
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   useEffect(() => {
@@ -92,7 +111,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
       setLoading(true);
       const service = new InvestorReportingService();
       const response = await service.getInvestorReports();
-      
+
       if (response.success) {
         setReports(response.reports);
         if (response.reports.length > 0) {
@@ -112,23 +131,28 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
 
     // Apply search filter
     if (searchQuery) {
-      filtered = filtered.filter(report =>
-        report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        report.campaign.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        report.executive_summary?.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter(
+        (report) =>
+          report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          report.campaign.company_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          report.executive_summary
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()),
       );
     }
 
     // Apply report type filter
     if (reportType !== 'all') {
-      filtered = filtered.filter(report => report.report_type === reportType);
+      filtered = filtered.filter((report) => report.report_type === reportType);
     }
 
     // Apply time period filter
     if (timePeriod !== 'all') {
       const now = new Date();
       const cutoffDate = new Date();
-      
+
       switch (timePeriod) {
         case '7d':
           cutoffDate.setDate(now.getDate() - 7);
@@ -143,18 +167,23 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
           cutoffDate.setFullYear(now.getFullYear() - 1);
           break;
       }
-      
-      filtered = filtered.filter(report => new Date(report.published_at) >= cutoffDate);
+
+      filtered = filtered.filter(
+        (report) => new Date(report.published_at) >= cutoffDate,
+      );
     }
 
     setFilteredReports(filtered);
   };
 
-  const handleDownloadReport = async (reportId: number, documentId?: number) => {
+  const handleDownloadReport = async (
+    reportId: number,
+    documentId?: number,
+  ) => {
     try {
       const service = new InvestorReportingService();
       const response = await service.downloadReport(reportId, documentId);
-      
+
       if (response.success && response.url) {
         window.open(response.url, '_blank');
       }
@@ -170,7 +199,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
       annual: 'text-green-600 bg-green-100',
       monthly: 'text-purple-600 bg-purple-100',
       valuation_update: 'text-orange-600 bg-orange-100',
-      special: 'text-red-600 bg-red-100'
+      special: 'text-red-600 bg-red-100',
     };
     return colors[type] || 'text-gray-600 bg-gray-100';
   };
@@ -181,7 +210,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
       annual: <FileText className="h-4 w-4" />,
       monthly: <Calendar className="h-4 w-4" />,
       valuation_update: <TrendingUp className="h-4 w-4" />,
-      special: <Bell className="h-4 w-4" />
+      special: <Bell className="h-4 w-4" />,
     };
     return icons[type] || <FileText className="h-4 w-4" />;
   };
@@ -203,15 +232,15 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              variant={viewMode === 'list' ? 'default' : 'outline'} 
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode('list')}
             >
               List
             </Button>
-            <Button 
-              variant={viewMode === 'grid' ? 'default' : 'outline'} 
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode('grid')}
             >
@@ -246,7 +275,9 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                     <SelectItem value="quarterly">Quarterly</SelectItem>
                     <SelectItem value="annual">Annual</SelectItem>
                     <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="valuation_update">Valuation Updates</SelectItem>
+                    <SelectItem value="valuation_update">
+                      Valuation Updates
+                    </SelectItem>
                     <SelectItem value="special">Special Reports</SelectItem>
                   </SelectContent>
                 </Select>
@@ -271,10 +302,12 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Reports List */}
-          <div className={`${viewMode === 'grid' ? 'lg:col-span-3' : 'lg:col-span-2'}`}>
+          <div
+            className={`${viewMode === 'grid' ? 'lg:col-span-3' : 'lg:col-span-2'}`}
+          >
             {loading ? (
               <div className="space-y-4">
-                {[1, 2, 3].map(i => (
+                {[1, 2, 3].map((i) => (
                   <Skeleton key={i} className="h-32 w-full" />
                 ))}
               </div>
@@ -282,8 +315,8 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
               viewMode === 'list' ? (
                 <div className="space-y-4">
                   {filteredReports.map((report) => (
-                    <Card 
-                      key={report.id} 
+                    <Card
+                      key={report.id}
                       className={`cursor-pointer transition-all hover:shadow-lg ${selectedReport?.id === report.id ? 'ring-2 ring-primary' : ''}`}
                       onClick={() => setSelectedReport(report)}
                     >
@@ -293,17 +326,30 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                             <div className="flex items-start justify-between">
                               <div>
                                 <div className="flex items-center gap-2 mb-2">
-                                  <Badge variant="outline" className={getReportTypeColor(report.report_type)}>
+                                  <Badge
+                                    variant="outline"
+                                    className={getReportTypeColor(
+                                      report.report_type,
+                                    )}
+                                  >
                                     <span className="flex items-center gap-1">
                                       {getReportTypeIcon(report.report_type)}
-                                      {report.report_type.replace('_', ' ').charAt(0).toUpperCase() + report.report_type.replace('_', ' ').slice(1)}
+                                      {report.report_type
+                                        .replace('_', ' ')
+                                        .charAt(0)
+                                        .toUpperCase() +
+                                        report.report_type
+                                          .replace('_', ' ')
+                                          .slice(1)}
                                     </span>
                                   </Badge>
                                   <Badge variant="secondary">
                                     {report.download_count} downloads
                                   </Badge>
                                 </div>
-                                <h3 className="font-semibold text-lg mb-2">{report.title}</h3>
+                                <h3 className="font-semibold text-lg mb-2">
+                                  {report.title}
+                                </h3>
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                                   <Building className="h-3 w-3" />
                                   <span>{report.campaign.company_name}</span>
@@ -312,7 +358,8 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                                   <span>{formatDate(report.report_date)}</span>
                                 </div>
                                 <p className="text-sm text-muted-foreground line-clamp-2">
-                                  {report.executive_summary || report.key_highlights}
+                                  {report.executive_summary ||
+                                    report.key_highlights}
                                 </p>
                               </div>
                             </div>
@@ -347,15 +394,18 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {filteredReports.map((report) => (
-                    <Card 
-                      key={report.id} 
+                    <Card
+                      key={report.id}
                       className="cursor-pointer hover:shadow-lg transition-all"
                       onClick={() => setSelectedReport(report)}
                     >
                       <CardContent className="pt-6">
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
-                            <Badge variant="outline" className={getReportTypeColor(report.report_type)}>
+                            <Badge
+                              variant="outline"
+                              className={getReportTypeColor(report.report_type)}
+                            >
                               <span className="flex items-center gap-1">
                                 {getReportTypeIcon(report.report_type)}
                                 {report.report_type.charAt(0).toUpperCase()}
@@ -366,13 +416,18 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                             </Button>
                           </div>
                           <div>
-                            <h3 className="font-semibold text-lg mb-2 line-clamp-2">{report.title}</h3>
+                            <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+                              {report.title}
+                            </h3>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                               <Building className="h-3 w-3" />
-                              <span className="line-clamp-1">{report.campaign.company_name}</span>
+                              <span className="line-clamp-1">
+                                {report.campaign.company_name}
+                              </span>
                             </div>
                             <p className="text-sm text-muted-foreground line-clamp-3">
-                              {report.executive_summary || report.key_highlights}
+                              {report.executive_summary ||
+                                report.key_highlights}
                             </p>
                           </div>
                           <div className="flex items-center justify-between pt-2 border-t">
@@ -395,9 +450,13 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                 <CardContent className="pt-12 pb-12">
                   <div className="text-center">
                     <FileText className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-                    <h3 className="text-lg font-medium mb-2">No reports found</h3>
+                    <h3 className="text-lg font-medium mb-2">
+                      No reports found
+                    </h3>
                     <p className="text-muted-foreground">
-                      {searchQuery || reportType !== 'all' || timePeriod !== 'all'
+                      {searchQuery ||
+                      reportType !== 'all' ||
+                      timePeriod !== 'all'
                         ? 'Try adjusting your filters'
                         : 'No reports have been published yet'}
                     </p>
@@ -423,58 +482,87 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                       <div>
                         <h4 className="font-medium mb-2">Overview</h4>
                         <p className="text-sm text-muted-foreground">
-                          {selectedReport.executive_summary || selectedReport.key_highlights}
+                          {selectedReport.executive_summary ||
+                            selectedReport.key_highlights}
                         </p>
                       </div>
-                      
+
                       <div className="space-y-3">
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Report Type</span>
-                          <span className="font-medium capitalize">{selectedReport.report_type.replace('_', ' ')}</span>
+                          <span className="text-muted-foreground">
+                            Report Type
+                          </span>
+                          <span className="font-medium capitalize">
+                            {selectedReport.report_type.replace('_', ' ')}
+                          </span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Period</span>
-                          <span className="font-medium">{selectedReport.period_description}</span>
+                          <span className="font-medium">
+                            {selectedReport.period_description}
+                          </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Published</span>
-                          <span className="font-medium">{formatDate(selectedReport.published_at)}</span>
+                          <span className="text-muted-foreground">
+                            Published
+                          </span>
+                          <span className="font-medium">
+                            {formatDate(selectedReport.published_at)}
+                          </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Published By</span>
-                          <span className="font-medium">{selectedReport.published_by_name}</span>
+                          <span className="text-muted-foreground">
+                            Published By
+                          </span>
+                          <span className="font-medium">
+                            {selectedReport.published_by_name}
+                          </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Downloads</span>
-                          <span className="font-medium">{selectedReport.download_count}</span>
+                          <span className="text-muted-foreground">
+                            Downloads
+                          </span>
+                          <span className="font-medium">
+                            {selectedReport.download_count}
+                          </span>
                         </div>
                       </div>
                     </div>
-                    
-                    {selectedReport.documents && selectedReport.documents.length > 0 && (
-                      <div className="space-y-3">
-                        <h4 className="font-medium">Available Documents</h4>
-                        <div className="space-y-2">
-                          {selectedReport.documents.map((doc) => (
-                            <div 
-                              key={doc.id} 
-                              className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 cursor-pointer"
-                              onClick={() => handleDownloadReport(selectedReport.id, doc.id)}
-                            >
-                              <div className="flex items-center space-x-3">
-                                <FileText className="h-4 w-4 text-blue-500" />
-                                <div>
-                                  <div className="text-sm font-medium">{doc.title}</div>
-                                  <div className="text-xs text-muted-foreground">{doc.file_size}</div>
+
+                    {selectedReport.documents &&
+                      selectedReport.documents.length > 0 && (
+                        <div className="space-y-3">
+                          <h4 className="font-medium">Available Documents</h4>
+                          <div className="space-y-2">
+                            {selectedReport.documents.map((doc) => (
+                              <div
+                                key={doc.id}
+                                className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 cursor-pointer"
+                                onClick={() =>
+                                  handleDownloadReport(
+                                    selectedReport.id,
+                                    doc.id,
+                                  )
+                                }
+                              >
+                                <div className="flex items-center space-x-3">
+                                  <FileText className="h-4 w-4 text-blue-500" />
+                                  <div>
+                                    <div className="text-sm font-medium">
+                                      {doc.title}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {doc.file_size}
+                                    </div>
+                                  </div>
                                 </div>
+                                <Download className="h-4 w-4 text-muted-foreground" />
                               </div>
-                              <Download className="h-4 w-4 text-muted-foreground" />
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    
+                      )}
+
                     <div className="space-y-3">
                       <h4 className="font-medium">Key Highlights</h4>
                       <div className="space-y-2">
@@ -489,9 +577,9 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2">
-                      <Button 
+                      <Button
                         className="flex-1"
                         onClick={() => handleDownloadReport(selectedReport.id)}
                       >
@@ -512,7 +600,9 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                   <CardContent className="pt-12 pb-12">
                     <div className="text-center">
                       <Eye className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-                      <h3 className="text-lg font-medium mb-2">Select a Report</h3>
+                      <h3 className="text-lg font-medium mb-2">
+                        Select a Report
+                      </h3>
                       <p className="text-muted-foreground">
                         Choose a report from the list to view details
                       </p>

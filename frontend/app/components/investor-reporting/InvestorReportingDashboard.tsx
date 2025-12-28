@@ -2,11 +2,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  BarChart3, 
-  FileText, 
-  Bell, 
-  TrendingUp, 
+import {
+  BarChart3,
+  FileText,
+  Bell,
+  TrendingUp,
   Download,
   Calendar,
   Eye,
@@ -20,11 +20,22 @@ import {
   Clock,
   DollarSign,
   Users,
-  Building
+  Building,
 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/app/components/ui/tabs';
 import { Badge } from '@/app/components/ui/badge';
 import { Progress } from '@/app/components/ui/progress';
 import { useAuth } from '@/app/context/auth/AuthContext';
@@ -84,19 +95,25 @@ interface InvestorReport {
 const InvestorReportingDashboard: React.FC = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [portfolioMetrics, setPortfolioMetrics] = useState<PortfolioMetrics | null>(null);
-  const [campaignPerformance, setCampaignPerformance] = useState<CampaignPerformance[]>([]);
+  const [portfolioMetrics, setPortfolioMetrics] =
+    useState<PortfolioMetrics | null>(null);
+  const [campaignPerformance, setCampaignPerformance] = useState<
+    CampaignPerformance[]
+  >([]);
   const [recentReports, setRecentReports] = useState<InvestorReport[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
-  
+
   // Modal states
   const [showPortfolioOverview, setShowPortfolioOverview] = useState(false);
   const [showFinancialStatements, setShowFinancialStatements] = useState(false);
   const [showKPIDashboard, setShowKPIDashboard] = useState(false);
   const [showInvestorReports, setShowInvestorReports] = useState(false);
-  const [showNotificationPreferences, setShowNotificationPreferences] = useState(false);
+  const [showNotificationPreferences, setShowNotificationPreferences] =
+    useState(false);
   const [showPortfolioStatement, setShowPortfolioStatement] = useState(false);
-  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     if (user) {
@@ -108,7 +125,7 @@ const InvestorReportingDashboard: React.FC = () => {
     try {
       setLoading(true);
       const service = new InvestorReportingService();
-      
+
       // Fetch portfolio data
       const portfolioData = await service.getPortfolio();
       if (portfolioData.success) {
@@ -125,7 +142,6 @@ const InvestorReportingDashboard: React.FC = () => {
       // Fetch notification count
       const notificationsData = await service.getUnreadNotificationCount();
       setUnreadNotifications(notificationsData.count || 0);
-
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       toast.error('Failed to load investor dashboard data');
@@ -138,7 +154,7 @@ const InvestorReportingDashboard: React.FC = () => {
     try {
       const service = new InvestorReportingService();
       const response = await service.downloadPortfolioStatement();
-      
+
       if (response.success && response.url) {
         window.open(response.url, '_blank');
       }
@@ -163,9 +179,9 @@ const InvestorReportingDashboard: React.FC = () => {
           </div>
           <Skeleton className="h-10 w-32" />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3].map((i) => (
             <Card key={i}>
               <CardHeader>
                 <Skeleton className="h-4 w-24" />
@@ -177,14 +193,14 @@ const InvestorReportingDashboard: React.FC = () => {
             </Card>
           ))}
         </div>
-        
+
         <Card>
           <CardHeader>
             <Skeleton className="h-6 w-32" />
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="flex items-center justify-between">
                   <Skeleton className="h-4 w-48" />
                   <Skeleton className="h-4 w-24" />
@@ -202,13 +218,16 @@ const InvestorReportingDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Investor Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Investor Dashboard
+          </h1>
           <p className="text-muted-foreground">
-            Track your investments, performance, and receive updates from portfolio companies
+            Track your investments, performance, and receive updates from
+            portfolio companies
           </p>
         </div>
         <div className="flex gap-2">
-          <Button 
+          <Button
             variant="outline"
             onClick={() => setShowPortfolioStatement(true)}
           >
@@ -226,16 +245,20 @@ const InvestorReportingDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Invested</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Invested
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {portfolioMetrics ? formatCurrency(
-                portfolioMetrics.total_invested,
-                portfolioMetrics.currency,
-                portfolioMetrics.currency_symbol
-              ) : '₵0.00'}
+              {portfolioMetrics
+                ? formatCurrency(
+                    portfolioMetrics.total_invested,
+                    portfolioMetrics.currency,
+                    portfolioMetrics.currency_symbol,
+                  )
+                : '₵0.00'}
             </div>
             <p className="text-xs text-muted-foreground">
               Across {portfolioMetrics?.invested_campaigns || 0} campaigns
@@ -250,23 +273,38 @@ const InvestorReportingDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {portfolioMetrics ? formatCurrency(
-                portfolioMetrics.current_value,
-                portfolioMetrics.currency,
-                portfolioMetrics.currency_symbol
-              ) : '₵0.00'}
+              {portfolioMetrics
+                ? formatCurrency(
+                    portfolioMetrics.current_value,
+                    portfolioMetrics.currency,
+                    portfolioMetrics.currency_symbol,
+                  )
+                : '₵0.00'}
             </div>
             <div className="flex items-center text-sm">
-              <span className={`font-medium ${portfolioMetrics?.total_returns && portfolioMetrics.total_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {portfolioMetrics?.total_returns && portfolioMetrics.total_returns >= 0 ? '+' : ''}
-                {portfolioMetrics ? formatCurrency(
-                  portfolioMetrics.total_returns,
-                  portfolioMetrics.currency,
-                  portfolioMetrics.currency_symbol
-                ) : '₵0.00'}
+              <span
+                className={`font-medium ${portfolioMetrics?.total_returns && portfolioMetrics.total_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
+                {portfolioMetrics?.total_returns &&
+                portfolioMetrics.total_returns >= 0
+                  ? '+'
+                  : ''}
+                {portfolioMetrics
+                  ? formatCurrency(
+                      portfolioMetrics.total_returns,
+                      portfolioMetrics.currency,
+                      portfolioMetrics.currency_symbol,
+                    )
+                  : '₵0.00'}
               </span>
-              <span className={`ml-2 ${portfolioMetrics?.roi && portfolioMetrics.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                ({portfolioMetrics?.roi ? portfolioMetrics.roi.toFixed(2) : '0.00'}%)
+              <span
+                className={`ml-2 ${portfolioMetrics?.roi && portfolioMetrics.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
+                (
+                {portfolioMetrics?.roi
+                  ? portfolioMetrics.roi.toFixed(2)
+                  : '0.00'}
+                %)
               </span>
             </div>
           </CardContent>
@@ -274,7 +312,9 @@ const InvestorReportingDashboard: React.FC = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Performance Metrics</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Performance Metrics
+            </CardTitle>
             <PieChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -282,13 +322,19 @@ const InvestorReportingDashboard: React.FC = () => {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">IRR</span>
                 <span className="font-medium">
-                  {portfolioMetrics?.irr ? portfolioMetrics.irr.toFixed(2) : '0.00'}%
+                  {portfolioMetrics?.irr
+                    ? portfolioMetrics.irr.toFixed(2)
+                    : '0.00'}
+                  %
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">MOIC</span>
                 <span className="font-medium">
-                  {portfolioMetrics?.moic ? portfolioMetrics.moic.toFixed(2) : '0.00'}x
+                  {portfolioMetrics?.moic
+                    ? portfolioMetrics.moic.toFixed(2)
+                    : '0.00'}
+                  x
                 </span>
               </div>
             </div>
@@ -324,46 +370,61 @@ const InvestorReportingDashboard: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 {campaignPerformance.slice(0, 5).map((campaign) => (
-                  <div key={campaign.campaign_id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                  <div
+                    key={campaign.campaign_id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
                     <div className="flex items-center space-x-4">
                       <Building className="h-8 w-8 text-muted-foreground" />
                       <div>
                         <h4 className="font-medium">{campaign.company_name}</h4>
                         <p className="text-sm text-muted-foreground">
-                          {campaign.investment_count} investment{campaign.investment_count !== 1 ? 's' : ''}
+                          {campaign.investment_count} investment
+                          {campaign.investment_count !== 1 ? 's' : ''}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="font-medium">
-                        {formatCurrency(campaign.current_value, portfolioMetrics?.currency, portfolioMetrics?.currency_symbol)}
+                        {formatCurrency(
+                          campaign.current_value,
+                          portfolioMetrics?.currency,
+                          portfolioMetrics?.currency_symbol,
+                        )}
                       </div>
-                      <div className={`text-sm ${campaign.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {campaign.roi >= 0 ? '+' : ''}{campaign.roi.toFixed(2)}% ROI
+                      <div
+                        className={`text-sm ${campaign.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                      >
+                        {campaign.roi >= 0 ? '+' : ''}
+                        {campaign.roi.toFixed(2)}% ROI
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={() => handleViewCampaignDetails(campaign.campaign_id)}
+                      onClick={() =>
+                        handleViewCampaignDetails(campaign.campaign_id)
+                      }
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
                   </div>
                 ))}
-                
+
                 {campaignPerformance.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No investment data available yet</p>
-                    <p className="text-sm">Start investing to see your portfolio performance</p>
+                    <p className="text-sm">
+                      Start investing to see your portfolio performance
+                    </p>
                   </div>
                 )}
               </div>
-              
+
               {campaignPerformance.length > 0 && (
                 <div className="mt-6 flex justify-end">
-                  <Button 
+                  <Button
                     variant="outline"
                     onClick={() => setShowPortfolioOverview(true)}
                   >
@@ -385,7 +446,10 @@ const InvestorReportingDashboard: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 {recentReports.map((report) => (
-                  <div key={report.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={report.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex items-center space-x-4">
                       <FileText className="h-8 w-8 text-blue-500" />
                       <div>
@@ -407,19 +471,21 @@ const InvestorReportingDashboard: React.FC = () => {
                     </div>
                   </div>
                 ))}
-                
+
                 {recentReports.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No reports available yet</p>
-                    <p className="text-sm">Reports will appear here as companies publish them</p>
+                    <p className="text-sm">
+                      Reports will appear here as companies publish them
+                    </p>
                   </div>
                 )}
               </div>
-              
+
               {recentReports.length > 0 && (
                 <div className="mt-6 flex justify-end">
-                  <Button 
+                  <Button
                     variant="outline"
                     onClick={() => setShowInvestorReports(true)}
                   >
@@ -437,7 +503,9 @@ const InvestorReportingDashboard: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Risk Analysis</CardTitle>
-                <CardDescription>Portfolio concentration and risk metrics</CardDescription>
+                <CardDescription>
+                  Portfolio concentration and risk metrics
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -448,20 +516,27 @@ const InvestorReportingDashboard: React.FC = () => {
                     </div>
                     <Progress value={35} className="h-2" />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Moderate concentration - Top 3 holdings represent 35% of portfolio
+                      Moderate concentration - Top 3 holdings represent 35% of
+                      portfolio
                     </p>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Sector Diversification</span>
-                      <Badge variant="outline" className="bg-green-50 text-green-700">
+                      <Badge
+                        variant="outline"
+                        className="bg-green-50 text-green-700"
+                      >
                         Good
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Liquidity Risk</span>
-                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
+                      <Badge
+                        variant="outline"
+                        className="bg-yellow-50 text-yellow-700"
+                      >
                         Medium
                       </Badge>
                     </div>
@@ -483,7 +558,10 @@ const InvestorReportingDashboard: React.FC = () => {
                     { month: 'Feb 2024', invested: 3000, current: 3200 },
                     { month: 'Mar 2024', invested: 7000, current: 7500 },
                   ].map((item, index) => (
-                    <div key={index} className="flex items-center justify-between">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between"
+                    >
                       <div>
                         <p className="font-medium">{item.month}</p>
                         <p className="text-sm text-muted-foreground">
@@ -495,7 +573,12 @@ const InvestorReportingDashboard: React.FC = () => {
                           {formatCurrency(item.current, 'GHS', '₵')}
                         </p>
                         <p className="text-sm text-green-600">
-                          +{formatCurrency(item.current - item.invested, 'GHS', '₵')}
+                          +
+                          {formatCurrency(
+                            item.current - item.invested,
+                            'GHS',
+                            '₵',
+                          )}
                         </p>
                       </div>
                     </div>
@@ -512,17 +595,42 @@ const InvestorReportingDashboard: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Report Types</CardTitle>
-                <CardDescription>Different types of investor reports</CardDescription>
+                <CardDescription>
+                  Different types of investor reports
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {[
-                    { type: 'Quarterly Reports', icon: FileText, count: 12, color: 'text-blue-500' },
-                    { type: 'Annual Reports', icon: FileText, count: 3, color: 'text-green-500' },
-                    { type: 'Valuation Updates', icon: TrendingUp, count: 8, color: 'text-purple-500' },
-                    { type: 'Financial Statements', icon: BarChart3, count: 24, color: 'text-orange-500' },
+                    {
+                      type: 'Quarterly Reports',
+                      icon: FileText,
+                      count: 12,
+                      color: 'text-blue-500',
+                    },
+                    {
+                      type: 'Annual Reports',
+                      icon: FileText,
+                      count: 3,
+                      color: 'text-green-500',
+                    },
+                    {
+                      type: 'Valuation Updates',
+                      icon: TrendingUp,
+                      count: 8,
+                      color: 'text-purple-500',
+                    },
+                    {
+                      type: 'Financial Statements',
+                      icon: BarChart3,
+                      count: 24,
+                      color: 'text-orange-500',
+                    },
                   ].map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex items-center space-x-3">
                         <item.icon className={`h-5 w-5 ${item.color}`} />
                         <span className="font-medium">{item.type}</span>
@@ -542,24 +650,24 @@ const InvestorReportingDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start"
                     onClick={() => setShowInvestorReports(true)}
                   >
                     <FileText className="mr-2 h-4 w-4" />
                     View All Reports
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start"
                     onClick={() => setShowPortfolioStatement(true)}
                   >
                     <Download className="mr-2 h-4 w-4" />
                     Download Portfolio Statement
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start"
                     onClick={() => setShowFinancialStatements(true)}
                   >
@@ -579,10 +687,11 @@ const InvestorReportingDashboard: React.FC = () => {
                 <div>
                   <CardTitle>Notification Preferences</CardTitle>
                   <CardDescription>
-                    Control how and when you receive updates about your investments
+                    Control how and when you receive updates about your
+                    investments
                   </CardDescription>
                 </div>
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => setShowNotificationPreferences(true)}
                 >
@@ -599,7 +708,8 @@ const InvestorReportingDashboard: React.FC = () => {
                       <AlertCircle className="h-5 w-5 text-blue-600 mr-3" />
                       <div>
                         <h4 className="font-medium text-blue-900">
-                          {unreadNotifications} unread notification{unreadNotifications !== 1 ? 's' : ''}
+                          {unreadNotifications} unread notification
+                          {unreadNotifications !== 1 ? 's' : ''}
                         </h4>
                         <p className="text-sm text-blue-700">
                           You have unread updates from your portfolio companies
@@ -626,39 +736,44 @@ const InvestorReportingDashboard: React.FC = () => {
                 <div className="space-y-3">
                   <h4 className="font-medium">Recent Notifications</h4>
                   {[
-                    { 
-                      title: 'Valuation Update: TechStart Inc.', 
-                      message: 'Company valuation increased by 15%', 
+                    {
+                      title: 'Valuation Update: TechStart Inc.',
+                      message: 'Company valuation increased by 15%',
                       time: '2 hours ago',
-                      read: false
+                      read: false,
                     },
-                    { 
-                      title: 'Q3 Report Published', 
-                      message: 'Financial statements are now available', 
+                    {
+                      title: 'Q3 Report Published',
+                      message: 'Financial statements are now available',
                       time: '1 day ago',
-                      read: true
+                      read: true,
                     },
-                    { 
-                      title: 'Monthly KPI Update', 
-                      message: 'New KPIs have been added to dashboard', 
+                    {
+                      title: 'Monthly KPI Update',
+                      message: 'New KPIs have been added to dashboard',
                       time: '3 days ago',
-                      read: true
+                      read: true,
                     },
                   ].map((notification, index) => (
-                    <div 
-                      key={index} 
+                    <div
+                      key={index}
                       className={`flex items-start p-3 border rounded-lg ${!notification.read ? 'bg-blue-50 border-blue-200' : ''}`}
                     >
                       <div className="flex-1">
                         <div className="flex items-center">
                           <h5 className="font-medium">{notification.title}</h5>
                           {!notification.read && (
-                            <Badge variant="default" className="ml-2 bg-blue-600">
+                            <Badge
+                              variant="default"
+                              className="ml-2 bg-blue-600"
+                            >
                               New
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">{notification.message}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {notification.message}
+                        </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           <Clock className="inline h-3 w-3 mr-1" />
                           {notification.time}
@@ -677,7 +792,7 @@ const InvestorReportingDashboard: React.FC = () => {
       </Tabs>
 
       {/* Modals */}
-      <PortfolioOverviewModal 
+      <PortfolioOverviewModal
         isOpen={showPortfolioOverview}
         onClose={() => setShowPortfolioOverview(false)}
         portfolioData={{
@@ -686,11 +801,11 @@ const InvestorReportingDashboard: React.FC = () => {
           performance_metrics: {},
           risk_analysis: {},
           cash_flow: [],
-          projections: []
+          projections: [],
         }}
       />
 
-      <FinancialStatementsModal 
+      <FinancialStatementsModal
         isOpen={showFinancialStatements}
         onClose={() => {
           setShowFinancialStatements(false);
@@ -699,23 +814,23 @@ const InvestorReportingDashboard: React.FC = () => {
         campaignId={selectedCampaignId}
       />
 
-      <KPIDashboardModal 
+      <KPIDashboardModal
         isOpen={showKPIDashboard}
         onClose={() => setShowKPIDashboard(false)}
         campaignId={selectedCampaignId}
       />
 
-      <InvestorReportsModal 
+      <InvestorReportsModal
         isOpen={showInvestorReports}
         onClose={() => setShowInvestorReports(false)}
       />
 
-      <NotificationPreferencesModal 
+      <NotificationPreferencesModal
         isOpen={showNotificationPreferences}
         onClose={() => setShowNotificationPreferences(false)}
       />
 
-      <PortfolioStatementModal 
+      <PortfolioStatementModal
         isOpen={showPortfolioStatement}
         onClose={() => setShowPortfolioStatement(false)}
         onDownload={handleDownloadStatement}

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   Bell,
   Mail,
   BellRing,
@@ -15,15 +15,27 @@ import {
   Shield,
   Zap,
   Globe,
-  Moon
+  Moon,
 } from 'lucide-react';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '@/app/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
 import { Label } from '@/app/components/ui/label';
 import { Switch } from '@/app/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/app/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
 import { Separator } from '@/app/components/ui/separator';
 import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
@@ -50,10 +62,9 @@ interface NotificationPreferences {
   preferred_time: string;
 }
 
-const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> = ({
-  isOpen,
-  onClose
-}) => {
+const NotificationPreferencesModal: React.FC<
+  NotificationPreferencesModalProps
+> = ({ isOpen, onClose }) => {
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     financial_statements: true,
     valuation_updates: true,
@@ -66,12 +77,13 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
     push_notifications: true,
     in_app_notifications: true,
     summary_frequency: 'weekly',
-    preferred_time: '09:00'
+    preferred_time: '09:00',
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [originalPreferences, setOriginalPreferences] = useState<NotificationPreferences | null>(null);
+  const [originalPreferences, setOriginalPreferences] =
+    useState<NotificationPreferences | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -84,7 +96,7 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
       setLoading(true);
       const service = new InvestorReportingService();
       const response = await service.getNotificationPreferences();
-      
+
       if (response.success) {
         setPreferences(response.preferences);
         setOriginalPreferences(response.preferences);
@@ -98,10 +110,13 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
     }
   };
 
-  const handlePreferenceChange = (key: keyof NotificationPreferences, value: any) => {
-    setPreferences(prev => ({
+  const handlePreferenceChange = (
+    key: keyof NotificationPreferences,
+    value: any,
+  ) => {
+    setPreferences((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
     setHasChanges(true);
   };
@@ -111,7 +126,7 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
       setSaving(true);
       const service = new InvestorReportingService();
       const response = await service.updateNotificationPreferences(preferences);
-      
+
       if (response.success) {
         toast.success('Notification preferences updated successfully');
         setOriginalPreferences(preferences);
@@ -140,50 +155,50 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
       label: 'Financial Statements',
       description: 'Get notified when new financial statements are published',
       icon: <Bell className="h-4 w-4" />,
-      default: true
+      default: true,
     },
     {
       id: 'valuation_updates',
       label: 'Valuation Updates',
       description: 'Receive updates when company valuations change',
       icon: <Zap className="h-4 w-4" />,
-      default: true
+      default: true,
     },
     {
       id: 'monthly_reports',
       label: 'Monthly Reports',
       description: 'Monthly performance reports from portfolio companies',
       icon: <BellRing className="h-4 w-4" />,
-      default: true
+      default: true,
     },
     {
       id: 'quarterly_reports',
       label: 'Quarterly Reports',
       description: 'Quarterly financial and operational reports',
       icon: <Globe className="h-4 w-4" />,
-      default: true
+      default: true,
     },
     {
       id: 'annual_reports',
       label: 'Annual Reports',
       description: 'Comprehensive annual performance reviews',
       icon: <CheckCircle className="h-4 w-4" />,
-      default: true
+      default: true,
     },
     {
       id: 'campaign_updates',
       label: 'Campaign Updates',
       description: 'Important updates from individual campaigns',
       icon: <AlertCircle className="h-4 w-4" />,
-      default: true
+      default: true,
     },
     {
       id: 'portfolio_updates',
       label: 'Portfolio Updates',
       description: 'Overall portfolio performance and insights',
       icon: <Shield className="h-4 w-4" />,
-      default: true
-    }
+      default: true,
+    },
   ];
 
   const deliveryMethods = [
@@ -192,35 +207,63 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
       label: 'Email',
       description: 'Receive notifications via email',
       icon: <Mail className="h-4 w-4" />,
-      default: true
+      default: true,
     },
     {
       id: 'push_notifications',
       label: 'Push',
       description: 'Receive push notifications on your device',
       icon: <Smartphone className="h-4 w-4" />,
-      default: true
+      default: true,
     },
     {
       id: 'in_app_notifications',
       label: 'In-App',
       description: 'See notifications within the platform',
       icon: <Inbox className="h-4 w-4" />,
-      default: true
-    }
+      default: true,
+    },
   ];
 
   const summaryFrequencies = [
-    { value: 'daily', label: 'Daily', description: 'Receive daily portfolio summaries' },
-    { value: 'weekly', label: 'Weekly', description: 'Receive weekly portfolio summaries' },
-    { value: 'monthly', label: 'Monthly', description: 'Receive monthly portfolio summaries' },
-    { value: 'none', label: 'Never', description: 'Do not receive summary emails' }
+    {
+      value: 'daily',
+      label: 'Daily',
+      description: 'Receive daily portfolio summaries',
+    },
+    {
+      value: 'weekly',
+      label: 'Weekly',
+      description: 'Receive weekly portfolio summaries',
+    },
+    {
+      value: 'monthly',
+      label: 'Monthly',
+      description: 'Receive monthly portfolio summaries',
+    },
+    {
+      value: 'none',
+      label: 'Never',
+      description: 'Do not receive summary emails',
+    },
   ];
 
   const timeSlots = [
-    '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
-    '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
-    '18:00', '19:00', '20:00'
+    '06:00',
+    '07:00',
+    '08:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '13:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+    '19:00',
+    '20:00',
   ];
 
   return (
@@ -270,7 +313,10 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
               <CardContent>
                 <div className="space-y-6">
                   {notificationTypes.map((type) => (
-                    <div key={type.id} className="flex items-start justify-between">
+                    <div
+                      key={type.id}
+                      className="flex items-start justify-between"
+                    >
                       <div className="flex items-start space-x-4">
                         <div className="mt-1">
                           <div className="p-2 rounded-full bg-muted">
@@ -288,9 +334,16 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                       </div>
                       <Switch
                         id={type.id}
-                        checked={preferences[type.id as keyof NotificationPreferences] as boolean}
-                        onCheckedChange={(checked) => 
-                          handlePreferenceChange(type.id as keyof NotificationPreferences, checked)
+                        checked={
+                          preferences[
+                            type.id as keyof NotificationPreferences
+                          ] as boolean
+                        }
+                        onCheckedChange={(checked) =>
+                          handlePreferenceChange(
+                            type.id as keyof NotificationPreferences,
+                            checked,
+                          )
                         }
                       />
                     </div>
@@ -310,7 +363,10 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
               <CardContent>
                 <div className="space-y-6">
                   {deliveryMethods.map((method) => (
-                    <div key={method.id} className="flex items-start justify-between">
+                    <div
+                      key={method.id}
+                      className="flex items-start justify-between"
+                    >
                       <div className="flex items-start space-x-4">
                         <div className="mt-1">
                           <div className="p-2 rounded-full bg-muted">
@@ -328,9 +384,16 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                       </div>
                       <Switch
                         id={method.id}
-                        checked={preferences[method.id as keyof NotificationPreferences] as boolean}
-                        onCheckedChange={(checked) => 
-                          handlePreferenceChange(method.id as keyof NotificationPreferences, checked)
+                        checked={
+                          preferences[
+                            method.id as keyof NotificationPreferences
+                          ] as boolean
+                        }
+                        onCheckedChange={(checked) =>
+                          handlePreferenceChange(
+                            method.id as keyof NotificationPreferences,
+                            checked,
+                          )
                         }
                       />
                     </div>
@@ -351,15 +414,28 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                 <CardContent>
                   <RadioGroup
                     value={preferences.summary_frequency}
-                    onValueChange={(value) => handlePreferenceChange('summary_frequency', value)}
+                    onValueChange={(value) =>
+                      handlePreferenceChange('summary_frequency', value)
+                    }
                     className="space-y-3"
                   >
                     {summaryFrequencies.map((freq) => (
-                      <div key={freq.value} className="flex items-center space-x-3">
-                        <RadioGroupItem value={freq.value} id={`freq-${freq.value}`} />
-                        <Label htmlFor={`freq-${freq.value}`} className="cursor-pointer">
+                      <div
+                        key={freq.value}
+                        className="flex items-center space-x-3"
+                      >
+                        <RadioGroupItem
+                          value={freq.value}
+                          id={`freq-${freq.value}`}
+                        />
+                        <Label
+                          htmlFor={`freq-${freq.value}`}
+                          className="cursor-pointer"
+                        >
                           <div className="font-medium">{freq.label}</div>
-                          <div className="text-sm text-muted-foreground">{freq.description}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {freq.description}
+                          </div>
                         </Label>
                       </div>
                     ))}
@@ -379,16 +455,20 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                     <div className="flex items-center space-x-3">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <div className="flex-1">
-                        <Label htmlFor="preferred-time">Daily Notification Time</Label>
+                        <Label htmlFor="preferred-time">
+                          Daily Notification Time
+                        </Label>
                         <p className="text-sm text-muted-foreground">
                           Select your preferred time for daily notifications
                         </p>
                       </div>
                     </div>
-                    
+
                     <Select
                       value={preferences.preferred_time}
-                      onValueChange={(value) => handlePreferenceChange('preferred_time', value)}
+                      onValueChange={(value) =>
+                        handlePreferenceChange('preferred_time', value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select time" />
@@ -444,7 +524,7 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                         push_notifications: true,
                         in_app_notifications: true,
                         summary_frequency: 'weekly',
-                        preferred_time: '09:00'
+                        preferred_time: '09:00',
                       };
                       setPreferences(allOn);
                       setHasChanges(true);
@@ -453,10 +533,12 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                     <Volume2 className="mr-2 h-4 w-4" />
                     <div className="text-left">
                       <div className="font-medium">Enable All</div>
-                      <div className="text-xs text-muted-foreground">Turn on all notifications</div>
+                      <div className="text-xs text-muted-foreground">
+                        Turn on all notifications
+                      </div>
                     </div>
                   </Button>
-                  
+
                   <Button
                     variant="outline"
                     className="justify-start h-auto py-4"
@@ -473,7 +555,7 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                         push_notifications: false,
                         in_app_notifications: false,
                         summary_frequency: 'none',
-                        preferred_time: '09:00'
+                        preferred_time: '09:00',
                       };
                       setPreferences(allOff);
                       setHasChanges(true);
@@ -482,17 +564,19 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                     <Bell className="mr-2 h-4 w-4" />
                     <div className="text-left">
                       <div className="font-medium">Mute All</div>
-                      <div className="text-xs text-muted-foreground">Turn off all notifications</div>
+                      <div className="text-xs text-muted-foreground">
+                        Turn off all notifications
+                      </div>
                     </div>
                   </Button>
-                  
+
                   <Button
                     variant="outline"
                     className="justify-start h-auto py-4"
                     onClick={() => {
                       const businessHours = {
                         ...preferences,
-                        preferred_time: '09:00'
+                        preferred_time: '09:00',
                       };
                       setPreferences(businessHours);
                       setHasChanges(true);
@@ -501,7 +585,9 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                     <Clock className="mr-2 h-4 w-4" />
                     <div className="text-left">
                       <div className="font-medium">Business Hours</div>
-                      <div className="text-xs text-muted-foreground">Set to 9 AM business hours</div>
+                      <div className="text-xs text-muted-foreground">
+                        Set to 9 AM business hours
+                      </div>
                     </div>
                   </Button>
                 </div>
@@ -523,21 +609,31 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                       <div className="font-medium">Enabled Notifications</div>
                       <div className="flex flex-wrap gap-2">
                         {notificationTypes
-                          .filter(type => preferences[type.id as keyof NotificationPreferences])
-                          .map(type => (
+                          .filter(
+                            (type) =>
+                              preferences[
+                                type.id as keyof NotificationPreferences
+                              ],
+                          )
+                          .map((type) => (
                             <Badge key={type.id} variant="secondary">
                               {type.label}
                             </Badge>
                           ))}
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="font-medium">Delivery Methods</div>
                       <div className="flex flex-wrap gap-2">
                         {deliveryMethods
-                          .filter(method => preferences[method.id as keyof NotificationPreferences])
-                          .map(method => (
+                          .filter(
+                            (method) =>
+                              preferences[
+                                method.id as keyof NotificationPreferences
+                              ],
+                          )
+                          .map((method) => (
                             <Badge key={method.id} variant="outline">
                               {method.label}
                             </Badge>
@@ -545,17 +641,19 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                       </div>
                     </div>
                   </div>
-                  
+
                   <Separator />
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <div className="font-medium">Summary Frequency</div>
                       <div className="text-muted-foreground">
-                        {summaryFrequencies.find(f => f.value === preferences.summary_frequency)?.label || 'Not set'}
+                        {summaryFrequencies.find(
+                          (f) => f.value === preferences.summary_frequency,
+                        )?.label || 'Not set'}
                       </div>
                     </div>
-                    
+
                     <div>
                       <div className="font-medium">Preferred Time</div>
                       <div className="text-muted-foreground">

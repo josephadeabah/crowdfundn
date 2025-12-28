@@ -2,8 +2,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  Download, 
+import {
+  Download,
   Calendar,
   FileText,
   Printer,
@@ -14,14 +14,31 @@ import {
   AlertCircle,
   TrendingUp,
   PieChart,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '@/app/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/app/components/ui/tabs';
 import { Badge } from '@/app/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
 import { toast } from 'sonner';
 // Add missing Label import
 import { Label } from '@/app/components/ui/label';
@@ -38,7 +55,7 @@ interface PortfolioStatementModalProps {
 const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
   isOpen,
   onClose,
-  onDownload
+  onDownload,
 }) => {
   const [period, setPeriod] = useState('current');
   const [format, setFormat] = useState('pdf');
@@ -47,15 +64,14 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
   const handleGenerateStatement = async () => {
     try {
       setGenerating(true);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       toast.success('Portfolio statement generated successfully');
-      
+
       // Trigger download
       onDownload();
-      
     } catch (error) {
       console.error('Error generating statement:', error);
       toast.error('Failed to generate portfolio statement');
@@ -65,18 +81,42 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
   };
 
   const periods = [
-    { value: 'current', label: 'Current Month', description: 'Statement for current month' },
-    { value: 'last_month', label: 'Last Month', description: 'Statement for previous month' },
-    { value: 'quarter', label: 'This Quarter', description: 'Q1 2024 statement' },
-    { value: 'year', label: 'Year to Date', description: 'January 2024 to present' },
-    { value: 'custom', label: 'Custom Period', description: 'Select custom dates' }
+    {
+      value: 'current',
+      label: 'Current Month',
+      description: 'Statement for current month',
+    },
+    {
+      value: 'last_month',
+      label: 'Last Month',
+      description: 'Statement for previous month',
+    },
+    {
+      value: 'quarter',
+      label: 'This Quarter',
+      description: 'Q1 2024 statement',
+    },
+    {
+      value: 'year',
+      label: 'Year to Date',
+      description: 'January 2024 to present',
+    },
+    {
+      value: 'custom',
+      label: 'Custom Period',
+      description: 'Select custom dates',
+    },
   ];
 
   const formats = [
     { value: 'pdf', label: 'PDF', description: 'Standard PDF format' },
     { value: 'excel', label: 'Excel', description: 'Spreadsheet for analysis' },
     { value: 'csv', label: 'CSV', description: 'Comma-separated values' },
-    { value: 'print', label: 'Print Format', description: 'Optimized for printing' }
+    {
+      value: 'print',
+      label: 'Print Format',
+      description: 'Optimized for printing',
+    },
   ];
 
   return (
@@ -119,38 +159,46 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <Label className="text-sm font-medium mb-2">Statement Period</Label>
+                  <Label className="text-sm font-medium mb-2">
+                    Statement Period
+                  </Label>
                   <Select value={period} onValueChange={setPeriod}>
                     <SelectTrigger>
                       <Calendar className="mr-2 h-4 w-4" />
                       <SelectValue placeholder="Select period" />
                     </SelectTrigger>
                     <SelectContent>
-                      {periods.map(p => (
+                      {periods.map((p) => (
                         <SelectItem key={p.value} value={p.value}>
                           <div>
                             <div className="font-medium">{p.label}</div>
-                            <div className="text-xs text-muted-foreground">{p.description}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {p.description}
+                            </div>
                           </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
-                  <Label className="text-sm font-medium mb-2">Statement Format</Label>
+                  <Label className="text-sm font-medium mb-2">
+                    Statement Format
+                  </Label>
                   <Select value={format} onValueChange={setFormat}>
                     <SelectTrigger>
                       <FileText className="mr-2 h-4 w-4" />
                       <SelectValue placeholder="Select format" />
                     </SelectTrigger>
                     <SelectContent>
-                      {formats.map(f => (
+                      {formats.map((f) => (
                         <SelectItem key={f.value} value={f.value}>
                           <div>
                             <div className="font-medium">{f.label}</div>
-                            <div className="text-xs text-muted-foreground">{f.description}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {f.description}
+                            </div>
                           </div>
                         </SelectItem>
                       ))}
@@ -158,30 +206,38 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                   </Select>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
-                  <Label className="text-sm font-medium mb-2">Include Sections</Label>
+                  <Label className="text-sm font-medium mb-2">
+                    Include Sections
+                  </Label>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <div>
                         <div className="font-medium">Portfolio Summary</div>
-                        <div className="text-sm text-muted-foreground">Investment overview and totals</div>
+                        <div className="text-sm text-muted-foreground">
+                          Investment overview and totals
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <div>
                         <div className="font-medium">Performance Analysis</div>
-                        <div className="text-sm text-muted-foreground">ROI, returns, and growth metrics</div>
+                        <div className="text-sm text-muted-foreground">
+                          ROI, returns, and growth metrics
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <div>
                         <div className="font-medium">Campaign Details</div>
-                        <div className="text-sm text-muted-foreground">Individual investment breakdowns</div>
+                        <div className="text-sm text-muted-foreground">
+                          Individual investment breakdowns
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -205,31 +261,41 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
               <div className="text-center">
                 <div className="flex items-center justify-center space-x-3 mb-4">
                   <BarChart3 className="h-8 w-8 text-primary" />
-                  <h3 className="text-xl font-bold">INVESTMENT PORTFOLIO STATEMENT</h3>
+                  <h3 className="text-xl font-bold">
+                    INVESTMENT PORTFOLIO STATEMENT
+                  </h3>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Generated on {formatDate(new Date().toISOString())} | Period: {
-                    periods.find(p => p.value === period)?.label || 'Current Month'
-                  }
+                  Generated on {formatDate(new Date().toISOString())} | Period:{' '}
+                  {periods.find((p) => p.value === period)?.label ||
+                    'Current Month'}
                 </div>
               </div>
-              
+
               {/* Summary */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 border rounded-lg">
-                  <div className="text-sm text-muted-foreground mb-2">Total Invested</div>
+                  <div className="text-sm text-muted-foreground mb-2">
+                    Total Invested
+                  </div>
                   <div className="text-2xl font-bold">₵125,000</div>
                 </div>
                 <div className="text-center p-4 border rounded-lg">
-                  <div className="text-sm text-muted-foreground mb-2">Current Value</div>
+                  <div className="text-sm text-muted-foreground mb-2">
+                    Current Value
+                  </div>
                   <div className="text-2xl font-bold">₵145,250</div>
                 </div>
                 <div className="text-center p-4 border rounded-lg">
-                  <div className="text-sm text-muted-foreground mb-2">Total Returns</div>
-                  <div className="text-2xl font-bold text-green-600">₵20,250</div>
+                  <div className="text-sm text-muted-foreground mb-2">
+                    Total Returns
+                  </div>
+                  <div className="text-2xl font-bold text-green-600">
+                    ₵20,250
+                  </div>
                 </div>
               </div>
-              
+
               {/* Performance */}
               <div>
                 <h4 className="font-medium mb-3">Performance Metrics</h4>
@@ -239,16 +305,20 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                     <span className="font-medium text-green-600">16.2%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm">Internal Rate of Return (IRR)</span>
+                    <span className="text-sm">
+                      Internal Rate of Return (IRR)
+                    </span>
                     <span className="font-medium">12.5%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm">Multiple on Invested Capital (MOIC)</span>
+                    <span className="text-sm">
+                      Multiple on Invested Capital (MOIC)
+                    </span>
                     <span className="font-medium">1.16x</span>
                   </div>
                 </div>
               </div>
-              
+
               {/* Campaigns */}
               <div>
                 <h4 className="font-medium mb-3">Portfolio Holdings</h4>
@@ -267,9 +337,10 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                   </div>
                 </div>
               </div>
-              
+
               <div className="pt-4 border-t text-center text-sm text-muted-foreground">
-                This is a preview. The full statement will include detailed breakdowns and analysis.
+                This is a preview. The full statement will include detailed
+                breakdowns and analysis.
               </div>
             </div>
           </CardContent>
@@ -295,10 +366,12 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                 <Mail className="h-8 w-8" />
                 <div>
                   <div className="font-medium">Email Delivery</div>
-                  <div className="text-xs text-muted-foreground">Receive via email</div>
+                  <div className="text-xs text-muted-foreground">
+                    Receive via email
+                  </div>
                 </div>
               </Button>
-              
+
               <Button
                 variant="outline"
                 className="h-auto py-6 flex-col gap-3"
@@ -312,10 +385,12 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                 )}
                 <div>
                   <div className="font-medium">Download Now</div>
-                  <div className="text-xs text-muted-foreground">Direct download</div>
+                  <div className="text-xs text-muted-foreground">
+                    Direct download
+                  </div>
                 </div>
               </Button>
-              
+
               <Button
                 variant="outline"
                 className="h-auto py-6 flex-col gap-3"
@@ -326,7 +401,9 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                 <Printer className="h-8 w-8" />
                 <div>
                   <div className="font-medium">Print Directly</div>
-                  <div className="text-xs text-muted-foreground">Send to printer</div>
+                  <div className="text-xs text-muted-foreground">
+                    Send to printer
+                  </div>
                 </div>
               </Button>
             </div>
@@ -344,17 +421,36 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
           <CardContent>
             <div className="space-y-4">
               {[
-                { date: '2024-03-01', period: 'February 2024', format: 'PDF', size: '1.2 MB' },
-                { date: '2024-02-01', period: 'January 2024', format: 'PDF', size: '1.1 MB' },
-                { date: '2024-01-01', period: 'Q4 2023', format: 'PDF', size: '2.3 MB' },
+                {
+                  date: '2024-03-01',
+                  period: 'February 2024',
+                  format: 'PDF',
+                  size: '1.2 MB',
+                },
+                {
+                  date: '2024-02-01',
+                  period: 'January 2024',
+                  format: 'PDF',
+                  size: '1.1 MB',
+                },
+                {
+                  date: '2024-01-01',
+                  period: 'Q4 2023',
+                  format: 'PDF',
+                  size: '2.3 MB',
+                },
               ].map((stmt, index) => (
-                <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
                   <div className="flex items-center space-x-4">
                     <FileText className="h-8 w-8 text-blue-500" />
                     <div>
                       <div className="font-medium">{stmt.period} Statement</div>
                       <div className="text-sm text-muted-foreground">
-                        Generated {formatDate(stmt.date)} • {stmt.format} • {stmt.size}
+                        Generated {formatDate(stmt.date)} • {stmt.format} •{' '}
+                        {stmt.size}
                       </div>
                     </div>
                   </div>
@@ -400,7 +496,5 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
     </Modal>
   );
 };
-
-
 
 export default PortfolioStatementModal;
