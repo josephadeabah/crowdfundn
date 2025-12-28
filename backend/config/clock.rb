@@ -79,23 +79,19 @@ module Clockwork
   end
 
   # Auto-generate quarterly reports on first day of quarter
-  every(1.quarter, 'generate_quarterly_reports', at: '00:00') do
+  every(3.months, 'generate_quarterly_reports', at: '00:00') do
     EquityCampaign.live.find_each do |campaign|
       campaign.generate_quarterly_report(Date.current)
     end
   end
 
-
-  # every(5.minutes, 'send_meeting_reminders_every_five_mins') do
-  #   SendMeetingRemindersJob.perform_later
-  # rescue => e
-  #   Rails.logger.error "[Clockwork] Failed to enqueue SendMeetingRemindersJob: #{e.message}"
-  # end
-
-  # # Also schedule for morning reminders
-  # every(1.day, at: 'send_morning_meeting_reminders') do
-  #   SendMorningMeetingRemindersJob.perform_later
-  # rescue => e
-  #   Rails.logger.error "[Clockwork] Failed to enqueue SendMorningMeetingRemindersJob: #{e.message}"
+  # Optionally, you could also use cron-style scheduling for quarterly reports:
+  # every(1.day, 'check_for_quarterly_reports', at: '00:00') do
+  #   # Check if today is first day of quarter
+  #   if Date.current == Date.current.beginning_of_quarter
+  #     EquityCampaign.live.find_each do |campaign|
+  #       campaign.generate_quarterly_report(Date.current)
+  #     end
+  #   end
   # end
 end
