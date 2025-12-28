@@ -39,18 +39,19 @@ import {
 import { Badge } from '@/app/components/ui/badge';
 import { Progress } from '@/app/components/ui/progress';
 import { useAuth } from '@/app/context/auth/AuthContext';
-import Modal from '@/app/components/modal/Modal';
 import { toast } from 'sonner';
 import { Skeleton } from '../ui/Skeleton';
-import { formatCurrency } from '@/app/utils/helpers/calculate.days';
+import { formatCurrency } from '@/app/utils/helpers/formatters';
 import InvestorReportsModal from './InvestorReportsModal';
 import PortfolioOverviewModal from './PortfolioOverviewModal';
 import FinancialStatementsModal from './FinancialStatementsModal';
 import KPIDashboardModal from './KPIDashboardModal';
 import NotificationPreferencesModal from './NotificationPreferencesModal';
 import PortfolioStatementModal from './PortfolioStatementModal';
-import { InvestorReportingService } from './services/investor-reporting.service';
-import { formatDate } from '@/app/utils/helpers/formatters';
+import {
+  InvestorReportingService,
+  PortfolioData,
+} from './services/investor-reporting.service';
 
 interface PortfolioMetrics {
   total_invested: number;
@@ -93,7 +94,7 @@ interface InvestorReport {
 }
 
 const InvestorReportingDashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [loading, setLoading] = useState(true);
   const [portfolioMetrics, setPortfolioMetrics] =
     useState<PortfolioMetrics | null>(null);
@@ -102,6 +103,7 @@ const InvestorReportingDashboard: React.FC = () => {
   >([]);
   const [recentReports, setRecentReports] = useState<InvestorReport[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [service] = useState(new InvestorReportingService());
 
   // Modal states
   const [showPortfolioOverview, setShowPortfolioOverview] = useState(false);
@@ -116,35 +118,58 @@ const InvestorReportingDashboard: React.FC = () => {
   );
 
   useEffect(() => {
-    if (user) {
+    if (user && token) {
       fetchDashboardData();
     }
-  }, [user]);
+  }, [user, token]);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const service = new InvestorReportingService();
+
+      // Store token for API calls
+      if (token) {
+        localStorage.setItem('token', token);
+      }
 
       // Fetch portfolio data
-      const portfolioData = await service.getPortfolio();
-      if (portfolioData.success) {
-        setPortfolioMetrics(portfolioData.portfolio.summary);
-        setCampaignPerformance(portfolioData.portfolio.by_campaign || []);
+      const portfolioResponse = await service.getPortfolio();
+      if (portfolioResponse.success) {
+        const portfolioData = portfolioResponse.portfolio as PortfolioData;
+        setPortfolioMetrics(portfolioData.summary);
+        setCampaignPerformance(portfolioData.by_campaign || []);
       }
 
       // Fetch recent reports
-      const reportsData = await service.getRecentReports();
-      if (reportsData.success) {
-        setRecentReports(reportsData.reports.slice(0, 5));
+      const reportsResponse = await service.getRecentReports(5);
+      if (reportsResponse.success) {
+        setRecentReports(reportsResponse.reports);
       }
 
       // Fetch notification count
-      const notificationsData = await service.getUnreadNotificationCount();
-      setUnreadNotifications(notificationsData.count || 0);
-    } catch (error) {
+      const notificationsResponse = await service.getUnreadNotificationCount();
+      setUnreadNotifications(notificationsResponse.count || 0);
+    } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
-      toast.error('Failed to load investor dashboard data');
+      toast.error(error.message || 'Failed to load investor dashboard data');
+
+      // Set default empty state for development
+      if (process.env.NODE_ENV === 'development') {
+        setPortfolioMetrics({
+          total_invested: 0,
+          current_value: 0,
+          total_returns: 0,
+          roi: 0,
+          moic: 0,
+          irr: 0,
+          invested_campaigns: 0,
+          active_investments: 0,
+          currency: 'GHS',
+          currency_symbol: '₵',
+        });
+        setCampaignPerformance([]);
+        setRecentReports([]);
+      }
     } finally {
       setLoading(false);
     }
@@ -152,21 +177,27 @@ const InvestorReportingDashboard: React.FC = () => {
 
   const handleDownloadStatement = async () => {
     try {
-      const service = new InvestorReportingService();
-      const response = await service.downloadPortfolioStatement();
-
-      if (response.success && response.url) {
-        window.open(response.url, '_blank');
-      }
-    } catch (error) {
+      await service.downloadPortfolioStatement();
+      toast.success('Portfolio statement downloaded successfully');
+    } catch (error: any) {
       console.error('Error downloading statement:', error);
-      toast.error('Failed to download portfolio statement');
+      toast.error(error.message || 'Failed to download portfolio statement');
     }
   };
 
   const handleViewCampaignDetails = (campaignId: number) => {
     setSelectedCampaignId(campaignId);
     setShowFinancialStatements(true);
+  };
+
+  const handleDownloadReport = async (reportId: number) => {
+    try {
+      await service.downloadReport(reportId);
+      toast.success('Report downloaded successfully');
+    } catch (error: any) {
+      console.error('Error downloading report:', error);
+      toast.error(error.message || 'Failed to download report');
+    }
   };
 
   if (loading) {
@@ -234,7 +265,7 @@ const InvestorReportingDashboard: React.FC = () => {
             <Download className="mr-2 h-4 w-4" />
             Download Statement
           </Button>
-          <Button onClick={() => setShowPortfolioOverview(true)} variant='success'>
+          <Button onClick={() => setShowPortfolioOverview(true)}>
             <BarChart3 className="mr-2 h-4 w-4" />
             Portfolio Analytics
           </Button>
@@ -456,8 +487,12 @@ const InvestorReportingDashboard: React.FC = () => {
                         <h4 className="font-medium">{report.title}</h4>
                         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                           <Calendar className="h-3 w-3" />
-                          <span>{formatDate(report.report_date)}</span>
-                          <Badge variant="outline">{report.report_type}</Badge>
+                          <span>
+                            {new Date(report.report_date).toLocaleDateString()}
+                          </span>
+                          <Badge variant="outline" className="capitalize">
+                            {report.report_type.replace('_', ' ')}
+                          </Badge>
                         </div>
                       </div>
                     </div>
@@ -465,7 +500,11 @@ const InvestorReportingDashboard: React.FC = () => {
                       <Badge variant="secondary">
                         {report.download_count} downloads
                       </Badge>
-                      <Button size="sm" variant="outline">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDownloadReport(report.id)}
+                      >
                         <Download className="h-4 w-4" />
                       </Button>
                     </div>
@@ -553,31 +592,38 @@ const InvestorReportingDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[
-                    { month: 'Jan 2024', invested: 5000, current: 5500 },
-                    { month: 'Feb 2024', invested: 3000, current: 3200 },
-                    { month: 'Mar 2024', invested: 7000, current: 7500 },
-                  ].map((item, index) => (
+                  {campaignPerformance.slice(0, 3).map((campaign, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between"
                     >
                       <div>
-                        <p className="font-medium">{item.month}</p>
+                        <p className="font-medium">{campaign.company_name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Invested: {formatCurrency(item.invested, 'GHS', '₵')}
+                          Invested:{' '}
+                          {formatCurrency(
+                            campaign.invested,
+                            portfolioMetrics?.currency,
+                            portfolioMetrics?.currency_symbol,
+                          )}
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="font-medium">
-                          {formatCurrency(item.current, 'GHS', '₵')}
-                        </p>
-                        <p className="text-sm text-green-600">
-                          +
                           {formatCurrency(
-                            item.current - item.invested,
-                            'GHS',
-                            '₵',
+                            campaign.current_value,
+                            portfolioMetrics?.currency,
+                            portfolioMetrics?.currency_symbol,
+                          )}
+                        </p>
+                        <p
+                          className={`text-sm ${campaign.returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                        >
+                          {campaign.returns >= 0 ? '+' : ''}
+                          {formatCurrency(
+                            campaign.returns,
+                            portfolioMetrics?.currency,
+                            portfolioMetrics?.currency_symbol,
                           )}
                         </p>
                       </div>
@@ -605,25 +651,31 @@ const InvestorReportingDashboard: React.FC = () => {
                     {
                       type: 'Quarterly Reports',
                       icon: FileText,
-                      count: 12,
+                      count: recentReports.filter(
+                        (r) => r.report_type === 'quarterly',
+                      ).length,
                       color: 'text-blue-500',
                     },
                     {
                       type: 'Annual Reports',
                       icon: FileText,
-                      count: 3,
+                      count: recentReports.filter(
+                        (r) => r.report_type === 'annual',
+                      ).length,
                       color: 'text-green-500',
                     },
                     {
                       type: 'Valuation Updates',
                       icon: TrendingUp,
-                      count: 8,
+                      count: recentReports.filter(
+                        (r) => r.report_type === 'valuation_update',
+                      ).length,
                       color: 'text-purple-500',
                     },
                     {
                       type: 'Financial Statements',
                       icon: BarChart3,
-                      count: 24,
+                      count: 0, // You might need to fetch this separately
                       color: 'text-orange-500',
                     },
                   ].map((item, index) => (
@@ -669,7 +721,14 @@ const InvestorReportingDashboard: React.FC = () => {
                   <Button
                     variant="outline"
                     className="w-full justify-start"
-                    onClick={() => setShowFinancialStatements(true)}
+                    onClick={() => {
+                      if (campaignPerformance.length > 0) {
+                        setSelectedCampaignId(
+                          campaignPerformance[0].campaign_id,
+                        );
+                        setShowFinancialStatements(true);
+                      }
+                    }}
                   >
                     <BarChart3 className="mr-2 h-4 w-4" />
                     View Financial Statements
@@ -735,48 +794,22 @@ const InvestorReportingDashboard: React.FC = () => {
 
                 <div className="space-y-3">
                   <h4 className="font-medium">Recent Notifications</h4>
-                  {[
-                    {
-                      title: 'Valuation Update: TechStart Inc.',
-                      message: 'Company valuation increased by 15%',
-                      time: '2 hours ago',
-                      read: false,
-                    },
-                    {
-                      title: 'Q3 Report Published',
-                      message: 'Financial statements are now available',
-                      time: '1 day ago',
-                      read: true,
-                    },
-                    {
-                      title: 'Monthly KPI Update',
-                      message: 'New KPIs have been added to dashboard',
-                      time: '3 days ago',
-                      read: true,
-                    },
-                  ].map((notification, index) => (
+                  {recentReports.slice(0, 3).map((report, index) => (
                     <div
                       key={index}
-                      className={`flex items-start p-3 border rounded-lg ${!notification.read ? 'bg-blue-50 border-blue-200' : ''}`}
+                      className="flex items-start p-3 border rounded-lg"
                     >
                       <div className="flex-1">
                         <div className="flex items-center">
-                          <h5 className="font-medium">{notification.title}</h5>
-                          {!notification.read && (
-                            <Badge
-                              variant="default"
-                              className="ml-2 bg-blue-600"
-                            >
-                              New
-                            </Badge>
-                          )}
+                          <h5 className="font-medium">{report.title}</h5>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {notification.message}
+                          {report.campaign.name} published a new{' '}
+                          {report.report_type} report
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           <Clock className="inline h-3 w-3 mr-1" />
-                          {notification.time}
+                          {new Date(report.report_date).toLocaleDateString()}
                         </p>
                       </div>
                       <Button variant="ghost" size="sm">
@@ -792,18 +825,20 @@ const InvestorReportingDashboard: React.FC = () => {
       </Tabs>
 
       {/* Modals */}
-      <PortfolioOverviewModal
-        isOpen={showPortfolioOverview}
-        onClose={() => setShowPortfolioOverview(false)}
-        portfolioData={{
-          summary: portfolioMetrics,
-          by_campaign: campaignPerformance,
-          performance_metrics: {},
-          risk_analysis: {},
-          cash_flow: [],
-          projections: [],
-        }}
-      />
+      {portfolioMetrics && (
+        <PortfolioOverviewModal
+          isOpen={showPortfolioOverview}
+          onClose={() => setShowPortfolioOverview(false)}
+          portfolioData={{
+            summary: portfolioMetrics,
+            by_campaign: campaignPerformance,
+            performance_metrics: {},
+            risk_analysis: {},
+            cash_flow: [],
+            projections: [],
+          }}
+        />
+      )}
 
       <FinancialStatementsModal
         isOpen={showFinancialStatements}

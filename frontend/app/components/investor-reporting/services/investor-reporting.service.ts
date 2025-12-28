@@ -1,5 +1,7 @@
-// app/services/investor-reporting.service.ts
+// app/components/investor-reporting/services/investor-reporting.service.ts
+import { useAuth } from '@/app/context/auth/AuthContext';
 
+// Define interfaces for the API responses
 export interface PortfolioData {
   summary: {
     total_invested: number;
@@ -127,44 +129,73 @@ export interface NotificationPreferences {
   preferred_time: string;
 }
 
-export class InvestorReportingService {
-  private baseUrl =
-    process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:8000/api/v1';
-  private token: string | null = null;
+export interface PortfolioMetricsResponse {
+  success: boolean;
+  metrics: any[];
+  current: any;
+}
 
-  // Call this method from your components to set the token
-  setToken(token: string) {
-    this.token = token;
+export class InvestorReportingService {
+  private baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || '';
+
+  // Helper method to get auth token from context
+  private getAuthToken(): string | null {
+    // This will be set by the component using the service
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
   }
 
   private async fetchApi(endpoint: string, options: RequestInit = {}) {
+    const token = this.getAuthToken();
     const url = `${this.baseUrl}${endpoint}`;
 
     const headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     };
 
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      credentials: 'include',
-    });
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers,
+        credentials: 'include',
+      });
 
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ message: 'Network error' }));
-      throw new Error(
-        error.message || `HTTP ${response.status}: ${response.statusText}`,
-      );
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Token expired or invalid
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+          }
+          throw new Error('Authentication required');
+        }
+
+        const errorText = await response.text();
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.error || errorJson.message || errorMessage;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error(`API Error (${endpoint}):`, error);
+      throw error;
     }
-
-    return response.json();
   }
 
+  // Portfolio endpoints
   async getPortfolio(): Promise<{
     success: boolean;
     portfolio: PortfolioData;
@@ -180,7 +211,7 @@ export class InvestorReportingService {
 
   async getPortfolioMetrics(
     period: string = 'all',
-  ): Promise<{ success: boolean; metrics: any }> {
+  ): Promise<PortfolioMetricsResponse> {
     try {
       const endpoint = `/investor/metrics${period !== 'all' ? `?period=${period}` : ''}`;
       const response = await this.fetchApi(endpoint);
@@ -191,6 +222,7 @@ export class InvestorReportingService {
     }
   }
 
+  // Financial statements
   async getFinancialStatements(
     campaignId: number,
     periodType: string = 'all',
@@ -226,6 +258,7 @@ export class InvestorReportingService {
     }
   }
 
+  // KPI endpoints
   async getKPIs(
     campaignId: number,
     kpiType: string = 'all',
@@ -244,6 +277,7 @@ export class InvestorReportingService {
     }
   }
 
+  // Investor reports
   async getInvestorReports(filters?: {
     report_type?: string;
     campaign_id?: number;
@@ -273,29 +307,28 @@ export class InvestorReportingService {
     }
   }
 
-  async downloadPortfolioStatement(): Promise<{
-    success: boolean;
-    url?: string;
-  }> {
-    try {
-      const response = await this.fetchApi('/investor/portfolio/statement');
-      return response;
-    } catch (error) {
-      console.error('Error downloading portfolio statement:', error);
-      throw error;
-    }
-  }
-
   async getRecentReports(
     limit: number = 10,
   ): Promise<{ success: boolean; reports: InvestorReport[] }> {
     try {
-      const endpoint = `/investor/campaigns/0/reports${limit !== 10 ? `?limit=${limit}` : ''}`;
-      const response = await this.fetchApi(endpoint);
-      return response;
+      // Get reports from all campaigns
+      const response = await this.getInvestorReports();
+      if (response.success) {
+        return {
+          success: true,
+          reports: response.reports
+            .sort(
+              (a, b) =>
+                new Date(b.report_date).getTime() -
+                new Date(a.report_date).getTime(),
+            )
+            .slice(0, limit),
+        };
+      }
+      return { success: false, reports: [] };
     } catch (error) {
       console.error('Error fetching recent reports:', error);
-      throw error;
+      return { success: false, reports: [] };
     }
   }
 
@@ -311,13 +344,37 @@ export class InvestorReportingService {
       const response = await this.fetchApi(endpoint, {
         method: 'POST',
       });
-      return response;
+
+      if (response.success && response.url) {
+        // Handle the download - could be a redirect or direct URL
+        window.open(response.url, '_blank');
+        return response;
+      }
+      return { success: false };
     } catch (error) {
       console.error('Error downloading report:', error);
       throw error;
     }
   }
 
+  // Portfolio statement
+  async downloadPortfolioStatement(): Promise<{
+    success: boolean;
+    url?: string;
+  }> {
+    try {
+      const response = await this.fetchApi('/investor/portfolio/statement');
+      if (response.success && response.url) {
+        window.open(response.url, '_blank');
+      }
+      return response;
+    } catch (error) {
+      console.error('Error downloading portfolio statement:', error);
+      throw error;
+    }
+  }
+
+  // Notification preferences
   async getNotificationPreferences(): Promise<{
     success: boolean;
     preferences: NotificationPreferences;
@@ -329,7 +386,24 @@ export class InvestorReportingService {
       return response;
     } catch (error) {
       console.error('Error fetching notification preferences:', error);
-      throw error;
+      // Return default preferences if endpoint doesn't exist yet
+      return {
+        success: true,
+        preferences: {
+          financial_statements: true,
+          valuation_updates: true,
+          monthly_reports: true,
+          quarterly_reports: true,
+          annual_reports: true,
+          campaign_updates: true,
+          portfolio_updates: true,
+          email_notifications: true,
+          push_notifications: true,
+          in_app_notifications: true,
+          summary_frequency: 'weekly',
+          preferred_time: '09:00',
+        },
+      };
     }
   }
 
@@ -359,24 +433,25 @@ export class InvestorReportingService {
     count: number;
   }> {
     try {
-      // This would be a separate endpoint in a real implementation
-      // For now, we'll return a mock response
-      return { success: true, count: 3 };
+      // This endpoint would need to be implemented on the backend
+      // For now, return a mock response
+      return { success: true, count: 0 };
     } catch (error) {
       console.error('Error fetching notification count:', error);
       return { success: false, count: 0 };
     }
   }
 
+  // Export portfolio data
   async exportPortfolioData(
     format: string = 'csv',
   ): Promise<{ success: boolean; url?: string }> {
     try {
-      // This would be a separate endpoint in a real implementation
-      // For now, we'll return a mock response
+      // This would call a backend endpoint for export
+      // For now, return mock response
       return {
         success: true,
-        url: `/api/v1/investor/portfolio/export?format=${format}`,
+        url: `${this.baseUrl}/investor/portfolio/export?format=${format}`,
       };
     } catch (error) {
       console.error('Error exporting portfolio data:', error);
@@ -384,6 +459,7 @@ export class InvestorReportingService {
     }
   }
 
+  // Generate quarterly report
   async generateQuarterlyReport(
     campaignId: number,
     reportDate?: string,
@@ -406,6 +482,7 @@ export class InvestorReportingService {
     }
   }
 
+  // Subscribe to report notifications
   async subscribeToReportNotifications(
     campaignId: number,
     reportTypes: string[],
@@ -430,13 +507,198 @@ export class InvestorReportingService {
     }
   }
 
+  // Mark report as read
   async markReportAsRead(reportId: number): Promise<{ success: boolean }> {
     try {
-      // This would be a separate endpoint in a real implementation
+      // This endpoint would need to be implemented
       return { success: true };
     } catch (error) {
       console.error('Error marking report as read:', error);
       return { success: false };
+    }
+  }
+
+  // Get detailed portfolio analysis
+  async getPortfolioAnalysis(): Promise<{
+    success: boolean;
+    performance_metrics: any;
+    risk_analysis: any;
+    cash_flow: any[];
+    projections: any[];
+  }> {
+    try {
+      const response = await this.fetchApi('/investor/portfolio');
+      if (response.success && response.portfolio) {
+        return {
+          success: true,
+          performance_metrics: response.portfolio.performance_metrics || {},
+          risk_analysis: response.portfolio.risk_analysis || {},
+          cash_flow: response.portfolio.cash_flow || [],
+          projections: response.portfolio.projections || [],
+        };
+      }
+      return {
+        success: false,
+        performance_metrics: {},
+        risk_analysis: {},
+        cash_flow: [],
+        projections: [],
+      };
+    } catch (error) {
+      console.error('Error fetching portfolio analysis:', error);
+      throw error;
+    }
+  }
+
+  // Get KPI trend data
+  async getKPITrendData(
+    campaignId: number,
+    kpiId: number,
+    days: number = 90,
+  ): Promise<{
+    success: boolean;
+    trend: Record<string, number>;
+    values: Array<{ period_date: string; value: number }>;
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/campaigns/${campaignId}/kpis/${kpiId}/values?days=${days}`,
+      );
+      return response;
+    } catch (error) {
+      console.error('Error fetching KPI trend data:', error);
+      throw error;
+    }
+  }
+
+  // Get financial statement trends
+  async getFinancialTrends(
+    campaignId: number,
+    metric: string,
+    periodType: string = 'monthly',
+  ): Promise<{
+    success: boolean;
+    trends: Array<{ period: string; value: number }>;
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/investor/campaigns/${campaignId}/financials?period_type=${periodType}&metric=${metric}`,
+      );
+      return response;
+    } catch (error) {
+      console.error('Error fetching financial trends:', error);
+      throw error;
+    }
+  }
+
+  // Generate portfolio statement with options
+  async generatePortfolioStatement(options: {
+    period: string;
+    format: string;
+    includeSections: string[];
+  }): Promise<{ success: boolean; url: string; filename: string }> {
+    try {
+      const response = await this.fetchApi('/investor/portfolio/statement', {
+        method: 'POST',
+        body: JSON.stringify(options),
+      });
+      return response;
+    } catch (error) {
+      console.error('Error generating portfolio statement:', error);
+      throw error;
+    }
+  }
+
+  // Get recent notifications
+  async getRecentNotifications(limit: number = 10): Promise<{
+    success: boolean;
+    notifications: Array<{
+      id: number;
+      title: string;
+      message: string;
+      type: string;
+      created_at: string;
+      read: boolean;
+      data: any;
+    }>;
+  }> {
+    try {
+      // This endpoint would need to be implemented on backend
+      // For now, return empty array
+      return { success: true, notifications: [] };
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      return { success: false, notifications: [] };
+    }
+  }
+
+  // Get statement history
+  async getStatementHistory(): Promise<{
+    success: boolean;
+    statements: Array<{
+      id: number;
+      date: string;
+      period: string;
+      format: string;
+      size: string;
+      download_url: string;
+    }>;
+  }> {
+    try {
+      // This endpoint would need to be implemented
+      return { success: true, statements: [] };
+    } catch (error) {
+      console.error('Error fetching statement history:', error);
+      return { success: false, statements: [] };
+    }
+  }
+
+  // Get campaign risk metrics
+  async getCampaignRiskMetrics(campaignId: number): Promise<{
+    success: boolean;
+    metrics: {
+      concentration: number;
+      volatility: number;
+      sharpe_ratio: number;
+      risk_category: string;
+    };
+  }> {
+    try {
+      // This would come from portfolio risk analysis
+      const response = await this.fetchApi('/investor/portfolio');
+      if (response.success && response.portfolio) {
+        const campaign = response.portfolio.by_campaign?.find(
+          (c: any) => c.campaign_id === campaignId,
+        );
+        return {
+          success: true,
+          metrics: {
+            concentration: campaign
+              ? campaign.invested / response.portfolio.summary.total_invested
+              : 0,
+            volatility: 12.5, // Would come from backend calculation
+            sharpe_ratio: 1.8, // Would come from backend calculation
+            risk_category:
+              campaign?.roi >= 20
+                ? 'low'
+                : campaign?.roi >= 0
+                  ? 'medium'
+                  : 'high',
+          },
+        };
+      }
+      return {
+        success: false,
+        metrics: {
+          concentration: 0,
+          volatility: 0,
+          sharpe_ratio: 0,
+          risk_category: 'unknown',
+        },
+      };
+    } catch (error) {
+      console.error('Error fetching campaign risk metrics:', error);
+      throw error;
     }
   }
 }

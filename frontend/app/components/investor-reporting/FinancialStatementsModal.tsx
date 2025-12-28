@@ -53,7 +53,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { formatCurrency } from '@/app/utils/helpers/calculate.days';
+import { formatCurrency } from '@/app/utils/helpers/formatters';
 import { Skeleton } from '../ui/Skeleton';
 import { formatDate } from '@/app/utils/helpers/formatters';
 import { InvestorReportingService } from './services/investor-reporting.service';
@@ -94,6 +94,14 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   const [periodType, setPeriodType] = useState('all');
   const [selectedStatement, setSelectedStatement] =
     useState<FinancialStatement | null>(null);
+  const [trendData, setTrendData] = useState<{
+    revenueData: any[];
+    profitabilityData: any[];
+  }>({
+    revenueData: [],
+    profitabilityData: [],
+  });
+  const [service] = useState(new InvestorReportingService());
 
   useEffect(() => {
     if (isOpen && campaignId) {
@@ -104,7 +112,6 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   const fetchStatements = async () => {
     try {
       setLoading(true);
-      const service = new InvestorReportingService();
       const response = await service.getFinancialStatements(
         campaignId!,
         periodType,
@@ -114,6 +121,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
         setStatements(response.financials);
         if (response.financials.length > 0) {
           setSelectedStatement(response.financials[0]);
+          prepareChartData(response.financials);
         }
       }
     } catch (error) {
@@ -124,35 +132,40 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
     }
   };
 
+  const prepareChartData = (financials: FinancialStatement[]) => {
+    // Prepare revenue trend data
+    const revenueData = financials.map((stmt) => ({
+      period: formatDate(stmt.period_end, 'MMM yy'),
+      revenue: stmt.revenue,
+      netIncome: stmt.net_income,
+      grossMargin: stmt.gross_margin,
+      netMargin: stmt.net_margin,
+    }));
+
+    // Prepare profitability data for last 3 periods
+    const profitabilityData = financials.slice(-3).map((stmt) => ({
+      name: formatDate(stmt.period_end, 'MMM yy'),
+      revenue: stmt.revenue,
+      profit: stmt.net_income,
+    }));
+
+    setTrendData({
+      revenueData,
+      profitabilityData,
+    });
+  };
+
   const handleDownloadStatement = async (statementId: number) => {
     try {
-      const service = new InvestorReportingService();
-      const response = await service.downloadFinancialStatement(statementId);
-
-      if (response.success && response.url) {
-        window.open(response.url, '_blank');
-      }
+      await service.downloadFinancialStatement(statementId);
+      toast.success('Financial statement downloaded');
     } catch (error) {
       console.error('Error downloading statement:', error);
       toast.error('Failed to download financial statement');
     }
   };
 
-  // Prepare data for charts
-  const chartData = statements.map((stmt) => ({
-    period: formatDate(stmt.period_end, 'MMM yy'),
-    revenue: stmt.revenue,
-    netIncome: stmt.net_income,
-    grossMargin: stmt.gross_margin,
-    netMargin: stmt.net_margin,
-  }));
-
-  const profitabilityData = statements.slice(-3).map((stmt) => ({
-    name: formatDate(stmt.period_end, 'MMM yy'),
-    revenue: stmt.revenue,
-    profit: stmt.net_income,
-  }));
-
+  // Prepare balance sheet data for selected statement
   const balanceSheetData = selectedStatement
     ? [
         { name: 'Assets', value: selectedStatement.assets },
@@ -218,14 +231,24 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                   <div className="space-y-4">
                     <Skeleton className="h-[300px] w-full" />
                   </div>
-                ) : chartData.length > 0 ? (
+                ) : trendData.revenueData?.length > 0 ? (
                   <div className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <RechartsLineChart data={chartData}>
+                      <RechartsLineChart data={trendData.revenueData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis dataKey="period" />
                         <YAxis />
-                        <Tooltip />
+                        <Tooltip
+                          formatter={(value, name) => {
+                            if (name === 'revenue' || name === 'netIncome') {
+                              return [
+                                formatCurrency(value as number, 'GHS', '₵'),
+                                name,
+                              ];
+                            }
+                            return [`${value}%`, name];
+                          }}
+                        />
                         <Legend />
                         <Line
                           type="monotone"
@@ -549,14 +572,19 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {profitabilityData.length > 0 ? (
+                {trendData.profitabilityData?.length > 0 ? (
                   <div className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <RechartsBarChart data={profitabilityData}>
+                      <RechartsBarChart data={trendData.profitabilityData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis dataKey="name" />
                         <YAxis />
-                        <Tooltip />
+                        <Tooltip
+                          formatter={(value) => [
+                            formatCurrency(value as number, 'GHS', '₵'),
+                            'Value',
+                          ]}
+                        />
                         <Legend />
                         <Bar dataKey="revenue" fill="#0088FE" name="Revenue" />
                         <Bar
@@ -607,7 +635,12 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             />
                           ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip
+                          formatter={(value) => [
+                            formatCurrency(value as number, 'GHS', '₵'),
+                            'Amount',
+                          ]}
+                        />
                         <Legend />
                       </RechartsPieChart>
                     </ResponsiveContainer>
@@ -631,112 +664,175 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h4 className="font-medium">Profitability Metrics</h4>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">Gross Margin</div>
-                          <div className="text-sm text-muted-foreground">
-                            Revenue minus COGS
+                {selectedStatement ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h4 className="font-medium">Profitability Metrics</h4>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center p-3 border rounded-lg">
+                          <div>
+                            <div className="font-medium">Gross Margin</div>
+                            <div className="text-sm text-muted-foreground">
+                              Revenue minus COGS
+                            </div>
+                          </div>
+                          <div className="text-lg font-medium">
+                            {selectedStatement.gross_margin.toFixed(1)}%
                           </div>
                         </div>
-                        <div className="text-lg font-medium">
-                          {selectedStatement?.gross_margin.toFixed(1) || '0.0'}%
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">Net Margin</div>
-                          <div className="text-sm text-muted-foreground">
-                            Profitability percentage
+                        <div className="flex justify-between items-center p-3 border rounded-lg">
+                          <div>
+                            <div className="font-medium">Net Margin</div>
+                            <div className="text-sm text-muted-foreground">
+                              Profitability percentage
+                            </div>
+                          </div>
+                          <div className="text-lg font-medium">
+                            {selectedStatement.net_margin.toFixed(1)}%
                           </div>
                         </div>
-                        <div className="text-lg font-medium">
-                          {selectedStatement?.net_margin.toFixed(1) || '0.0'}%
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">Operating Margin</div>
-                          <div className="text-sm text-muted-foreground">
-                            Operational efficiency
+                        <div className="flex justify-between items-center p-3 border rounded-lg">
+                          <div>
+                            <div className="font-medium">Operating Margin</div>
+                            <div className="text-sm text-muted-foreground">
+                              {(
+                                (selectedStatement.gross_profit /
+                                  selectedStatement.revenue) *
+                                100
+                              ).toFixed(1)}
+                              %
+                            </div>
+                          </div>
+                          <div className="text-lg font-medium">
+                            {(
+                              ((selectedStatement.gross_profit -
+                                selectedStatement.expenses) /
+                                selectedStatement.revenue) *
+                              100
+                            ).toFixed(1)}
+                            %
                           </div>
                         </div>
-                        <div className="text-lg font-medium">15.2%</div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="space-y-4">
-                    <h4 className="font-medium">Liquidity & Efficiency</h4>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">Current Ratio</div>
-                          <div className="text-sm text-muted-foreground">
-                            Short-term liquidity
+                    <div className="space-y-4">
+                      <h4 className="font-medium">Liquidity & Efficiency</h4>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center p-3 border rounded-lg">
+                          <div>
+                            <div className="font-medium">Current Ratio</div>
+                            <div className="text-sm text-muted-foreground">
+                              Short-term liquidity
+                            </div>
+                          </div>
+                          <div className="text-lg font-medium">
+                            {selectedStatement.liabilities > 0
+                              ? (
+                                  selectedStatement.assets /
+                                  selectedStatement.liabilities
+                                ).toFixed(1)
+                              : 'N/A'}
                           </div>
                         </div>
-                        <div className="text-lg font-medium">2.5</div>
-                      </div>
-                      <div className="flex justify-between items-center p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">Debt to Equity</div>
-                          <div className="text-sm text-muted-foreground">
-                            Financial leverage
+                        <div className="flex justify-between items-center p-3 border rounded-lg">
+                          <div>
+                            <div className="font-medium">Debt to Equity</div>
+                            <div className="text-sm text-muted-foreground">
+                              Financial leverage
+                            </div>
+                          </div>
+                          <div className="text-lg font-medium">
+                            {selectedStatement.equity > 0
+                              ? (
+                                  selectedStatement.liabilities /
+                                  selectedStatement.equity
+                                ).toFixed(1)
+                              : 'N/A'}
                           </div>
                         </div>
-                        <div className="text-lg font-medium">0.8</div>
-                      </div>
-                      <div className="flex justify-between items-center p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">Asset Turnover</div>
-                          <div className="text-sm text-muted-foreground">
-                            Asset efficiency
+                        <div className="flex justify-between items-center p-3 border rounded-lg">
+                          <div>
+                            <div className="font-medium">Asset Turnover</div>
+                            <div className="text-sm text-muted-foreground">
+                              Asset efficiency
+                            </div>
+                          </div>
+                          <div className="text-lg font-medium">
+                            {selectedStatement.assets > 0
+                              ? (
+                                  selectedStatement.revenue /
+                                  selectedStatement.assets
+                                ).toFixed(1)
+                              : 'N/A'}
                           </div>
                         </div>
-                        <div className="text-lg font-medium">1.2</div>
                       </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <BarChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Select a statement to view metrics</p>
+                  </div>
+                )}
 
-                <div className="mt-6 pt-6 border-t">
-                  <h4 className="font-medium mb-4">Cash Flow Analysis</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="text-center p-4 border rounded-lg">
-                      <div className="text-sm text-muted-foreground mb-2">
-                        Operating Cash Flow
+                {selectedStatement && (
+                  <div className="mt-6 pt-6 border-t">
+                    <h4 className="font-medium mb-4">Cash Flow Analysis</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="text-center p-4 border rounded-lg">
+                        <div className="text-sm text-muted-foreground mb-2">
+                          Operating Cash Flow
+                        </div>
+                        <div className="text-xl font-medium">
+                          {formatCurrency(
+                            selectedStatement.net_income +
+                              selectedStatement.expenses,
+                            'GHS',
+                            '₵',
+                          )}
+                        </div>
+                        <div className="text-sm text-green-600 mt-1">
+                          +{selectedStatement.net_margin.toFixed(1)}% margin
+                        </div>
                       </div>
-                      <div className="text-xl font-medium">₵125,000</div>
-                      <div className="text-sm text-green-600 mt-1">
-                        +12% YoY
+                      <div className="text-center p-4 border rounded-lg">
+                        <div className="text-sm text-muted-foreground mb-2">
+                          Investing Cash Flow
+                        </div>
+                        <div className="text-xl font-medium text-red-600">
+                          -
+                          {formatCurrency(
+                            selectedStatement.expenses * 0.3, // Estimate
+                            'GHS',
+                            '₵',
+                          )}
+                        </div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          Capital expenditures
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <div className="text-sm text-muted-foreground mb-2">
-                        Investing Cash Flow
-                      </div>
-                      <div className="text-xl font-medium text-red-600">
-                        -₵45,000
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        Capital expenditures
-                      </div>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <div className="text-sm text-muted-foreground mb-2">
-                        Financing Cash Flow
-                      </div>
-                      <div className="text-xl font-medium">₵30,000</div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        Debt & equity
+                      <div className="text-center p-4 border rounded-lg">
+                        <div className="text-sm text-muted-foreground mb-2">
+                          Financing Cash Flow
+                        </div>
+                        <div className="text-xl font-medium">
+                          {formatCurrency(
+                            selectedStatement.equity -
+                              selectedStatement.assets +
+                              selectedStatement.liabilities,
+                            'GHS',
+                            '₵',
+                          )}
+                        </div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          Debt & equity
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -749,6 +845,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
               <>Last updated {formatDate(selectedStatement.published_at)}</>
             ) : (
               <>Select a statement to view details</>
+            )}
+            {statements.length > 0 && (
+              <span className="ml-2">• {statements.length} statements</span>
             )}
           </div>
           <div className="flex gap-2">

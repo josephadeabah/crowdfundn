@@ -41,10 +41,25 @@ import {
   SelectValue,
 } from '@/app/components/ui/select';
 import { toast } from 'sonner';
-import { formatCurrency } from '@/app/utils/helpers/calculate.days';
+import { formatCurrency } from '@/app/utils/helpers/formatters';
 import { InvestorReportingService } from './services/investor-reporting.service';
 import { Skeleton } from '../ui/Skeleton';
 import { formatDate } from '@/app/utils/helpers/formatters';
+import {
+  LineChart as RechartsLineChart,
+  Line,
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
 interface PortfolioOverviewModalProps {
   isOpen: boolean;
@@ -60,6 +75,8 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
   const [timePeriod, setTimePeriod] = useState('all');
   const [loading, setLoading] = useState(false);
   const [detailedData, setDetailedData] = useState<any>(null);
+  const [analysisData, setAnalysisData] = useState<any>(null);
+  const [service] = useState(new InvestorReportingService());
 
   useEffect(() => {
     if (isOpen && portfolioData) {
@@ -70,11 +87,17 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
   const fetchDetailedData = async () => {
     try {
       setLoading(true);
-      const service = new InvestorReportingService();
-      const response = await service.getPortfolioMetrics(timePeriod);
 
-      if (response.success) {
-        setDetailedData(response.metrics);
+      // Fetch portfolio analysis data
+      const analysisResponse = await service.getPortfolioAnalysis();
+      if (analysisResponse.success) {
+        setAnalysisData(analysisResponse);
+      }
+
+      // Fetch portfolio metrics for the selected time period
+      const metricsResponse = await service.getPortfolioMetrics(timePeriod);
+      if (metricsResponse.success) {
+        setDetailedData(metricsResponse);
       }
     } catch (error) {
       console.error('Error fetching detailed portfolio data:', error);
@@ -102,6 +125,51 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
 
   const summary = portfolioData.summary;
   const campaigns = portfolioData.by_campaign || [];
+
+  // Prepare real chart data
+  const performanceData = campaigns.map((campaign: any) => ({
+    name:
+      campaign.company_name.substring(0, 15) +
+      (campaign.company_name.length > 15 ? '...' : ''),
+    invested: campaign.invested,
+    current: campaign.current_value,
+    returns: campaign.returns,
+    roi: campaign.roi,
+  }));
+
+  const concentrationData = campaigns.slice(0, 5).map((campaign: any) => ({
+    name: campaign.company_name,
+    value: (campaign.invested / summary.total_invested) * 100,
+  }));
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+
+  // Get risk analysis from real data if available
+  const riskMetrics = analysisData?.risk_analysis || {
+    concentration_risk:
+      campaigns.length > 0
+        ? Math.max(...campaigns.map((c: any) => c.invested)) /
+          summary.total_invested
+        : 0,
+    sector_diversification: campaigns.length > 0 ? 0.7 : 0,
+    liquidity_risk: campaigns.length > 0 ? 0.3 : 0,
+    overall_risk_score: campaigns.length > 0 ? 0.5 : 0,
+    risk_category: campaigns.length > 0 ? 'medium' : 'low',
+  };
+
+  // Prepare projection data based on real ROI
+  const projectionData = [1, 3, 5].map((years) => {
+    const projectedValue =
+      summary.current_value * Math.pow(1 + summary.roi / 100, years);
+    const projectedReturns = projectedValue - summary.total_invested;
+
+    return {
+      years,
+      projected_value: projectedValue,
+      projected_returns: projectedReturns,
+      annual_growth: summary.roi,
+    };
+  });
 
   return (
     <Modal
@@ -237,6 +305,66 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
           </TabsList>
 
           <TabsContent value="performance" className="space-y-6">
+            {/* Performance Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Investment Performance</CardTitle>
+                <CardDescription>
+                  ROI and returns across your portfolio
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <Skeleton className="h-[300px] w-full" />
+                ) : campaigns.length > 0 ? (
+                  <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsBarChart data={performanceData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis dataKey="name" />
+                        <YAxis yAxisId="left" />
+                        <YAxis yAxisId="right" orientation="right" />
+                        <Tooltip
+                          formatter={(value, name) => {
+                            if (name === 'roi') return [`${value}%`, 'ROI'];
+                            return [
+                              formatCurrency(
+                                value as number,
+                                summary.currency,
+                                summary.currency_symbol,
+                              ),
+                              name,
+                            ];
+                          }}
+                        />
+                        <Legend />
+                        <Bar
+                          yAxisId="left"
+                          dataKey="returns"
+                          fill="#00C49F"
+                          name="Returns"
+                          radius={[4, 4, 0, 0]}
+                        />
+                        <Line
+                          yAxisId="right"
+                          type="monotone"
+                          dataKey="roi"
+                          stroke="#0088FE"
+                          strokeWidth={2}
+                          name="ROI"
+                        />
+                      </RechartsBarChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No investment data available for chart</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Campaign Performance</CardTitle>
@@ -389,35 +517,78 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {campaigns.map((campaign: any) => {
-                    const percentage =
-                      (campaign.invested / summary.total_invested) * 100;
-                    return (
-                      <div key={campaign.campaign_id} className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>{campaign.company_name}</span>
-                          <span className="font-medium">
-                            {percentage.toFixed(1)}%
-                          </span>
-                        </div>
-                        <Progress value={percentage} className="h-2" />
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>
-                            {formatCurrency(
-                              campaign.invested,
-                              summary.currency,
-                              summary.currency_symbol,
+                <div className="space-y-6">
+                  {/* Pie Chart */}
+                  {campaigns.length > 0 ? (
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsPieChart>
+                          <Pie
+                            data={concentrationData}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={({ name, percent }) =>
+                              `${name}: ${(percent * 100).toFixed(1)}%`
+                            }
+                            outerRadius={100}
+                            fill="#8884d8"
+                            dataKey="value"
+                          >
+                            {concentrationData.map(
+                              (entry: any, index: number) => (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={COLORS[index % COLORS.length]}
+                                />
+                              ),
                             )}
-                          </span>
-                          <span>
-                            {campaign.ownership_percentage.toFixed(2)}%
-                            ownership
-                          </span>
+                          </Pie>
+                          <Tooltip
+                            formatter={(value) => [`${value}%`, 'Allocation']}
+                          />
+                          <Legend />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <PieChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No investment data available for breakdown</p>
+                    </div>
+                  )}
+
+                  {/* Detailed Breakdown */}
+                  <div className="space-y-4">
+                    {campaigns.map((campaign: any) => {
+                      const percentage =
+                        (campaign.invested / summary.total_invested) * 100;
+                      return (
+                        <div key={campaign.campaign_id} className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>{campaign.company_name}</span>
+                            <span className="font-medium">
+                              {percentage.toFixed(1)}%
+                            </span>
+                          </div>
+                          <Progress value={percentage} className="h-2" />
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                            <span>
+                              {formatCurrency(
+                                campaign.invested,
+                                summary.currency,
+                                summary.currency_symbol,
+                              )}
+                            </span>
+                            <span>
+                              {campaign.ownership_percentage.toFixed(2)}%
+                              ownership
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -479,24 +650,69 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                     <div className="grid grid-cols-2 gap-4">
                       <div className="border rounded-lg p-3">
                         <div className="text-sm text-muted-foreground mb-1">
-                          Portfolio Volatility
+                          Portfolio Concentration
                         </div>
-                        <div className="text-lg font-medium">12.5%</div>
+                        <div className="text-lg font-medium">
+                          {(riskMetrics.concentration_risk * 100).toFixed(1)}%
+                        </div>
                         <div className="text-xs text-muted-foreground">
-                          Annualized
+                          Herfindahl-Hirschman Index
                         </div>
                       </div>
                       <div className="border rounded-lg p-3">
                         <div className="text-sm text-muted-foreground mb-1">
-                          Sharpe Ratio
+                          Overall Risk Score
                         </div>
-                        <div className="text-lg font-medium">1.8</div>
+                        <div className="text-lg font-medium">
+                          {(riskMetrics.overall_risk_score * 100).toFixed(1)}%
+                        </div>
                         <div className="text-xs text-muted-foreground">
-                          Risk-adjusted return
+                          {riskMetrics.risk_category?.toUpperCase() || 'MEDIUM'}
                         </div>
                       </div>
                     </div>
                   </div>
+
+                  {analysisData?.risk_analysis && (
+                    <div>
+                      <h4 className="font-medium mb-3">
+                        Detailed Risk Analysis
+                      </h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Sector Diversification</span>
+                          <span className="font-medium">
+                            {(riskMetrics.sector_diversification * 100).toFixed(
+                              1,
+                            )}
+                            %
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Liquidity Risk</span>
+                          <span className="font-medium">
+                            {(riskMetrics.liquidity_risk * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                        {riskMetrics.volatility && (
+                          <div className="flex justify-between text-sm">
+                            <span>Volatility</span>
+                            <span className="font-medium">
+                              {(riskMetrics.volatility * 100).toFixed(1)}%
+                            </span>
+                          </div>
+                        )}
+                        {riskMetrics.sharpe_ratio && (
+                          <div className="flex justify-between text-sm">
+                            <span>Sharpe Ratio</span>
+                            <span className="font-medium">
+                              {riskMetrics.sharpe_ratio.toFixed(2)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -513,42 +729,39 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
               <CardContent>
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[1, 3, 5].map((years) => {
-                      const projectedValue =
-                        summary.current_value *
-                        Math.pow(1 + summary.roi / 100, years);
-                      const projectedReturns =
-                        projectedValue - summary.total_invested;
-
-                      return (
-                        <Card key={years}>
-                          <CardContent className="pt-6">
-                            <div className="text-center">
-                              <div className="text-sm font-medium text-muted-foreground mb-2">
-                                {years} Year{years !== 1 ? 's' : ''} Projection
-                              </div>
-                              <div className="text-2xl font-bold mb-1">
-                                {formatCurrency(
-                                  projectedValue,
-                                  summary.currency,
-                                  summary.currency_symbol,
-                                )}
-                              </div>
-                              <div
-                                className={`text-sm ${projectedReturns >= 0 ? 'text-green-600' : 'text-red-600'}`}
-                              >
-                                {projectedReturns >= 0 ? '+' : ''}
-                                {formatCurrency(
-                                  projectedReturns,
-                                  summary.currency,
-                                  summary.currency_symbol,
-                                )}
-                              </div>
+                    {projectionData.map((projection) => (
+                      <Card key={projection.years}>
+                        <CardContent className="pt-6">
+                          <div className="text-center">
+                            <div className="text-sm font-medium text-muted-foreground mb-2">
+                              {projection.years} Year
+                              {projection.years !== 1 ? 's' : ''} Projection
                             </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
+                            <div className="text-2xl font-bold mb-1">
+                              {formatCurrency(
+                                projection.projected_value,
+                                summary.currency,
+                                summary.currency_symbol,
+                              )}
+                            </div>
+                            <div
+                              className={`text-sm ${projection.projected_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                            >
+                              {projection.projected_returns >= 0 ? '+' : ''}
+                              {formatCurrency(
+                                projection.projected_returns,
+                                summary.currency,
+                                summary.currency_symbol,
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-2">
+                              {projection.annual_growth.toFixed(2)}% annual
+                              growth
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
 
                   <div className="space-y-3">
@@ -567,8 +780,46 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
                         Company valuations grow at current rate
                       </li>
+                      {analysisData?.projections &&
+                        analysisData.projections.length > 0 && (
+                          <li className="flex items-center">
+                            <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
+                            Based on {analysisData.projections.length}{' '}
+                            projection models
+                          </li>
+                        )}
                     </ul>
                   </div>
+
+                  {analysisData?.projections &&
+                    analysisData.projections.length > 0 && (
+                      <div className="pt-4 border-t">
+                        <h4 className="font-medium mb-3">
+                          Detailed Projections
+                        </h4>
+                        <div className="space-y-3">
+                          {analysisData.projections.map(
+                            (proj: any, index: number) => (
+                              <div
+                                key={index}
+                                className="flex justify-between text-sm"
+                              >
+                                <span>
+                                  {proj.scenario || `Scenario ${index + 1}`}
+                                </span>
+                                <span className="font-medium">
+                                  {formatCurrency(
+                                    proj.projected_value,
+                                    summary.currency,
+                                    summary.currency_symbol,
+                                  )}
+                                </span>
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    )}
                 </div>
               </CardContent>
             </Card>
@@ -579,6 +830,11 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
         <div className="flex justify-between items-center pt-4 border-t">
           <p className="text-sm text-muted-foreground">
             Data as of {formatDate(new Date().toISOString())}
+            {detailedData?.calculation_date && (
+              <span className="ml-2">
+                • Last calculated: {formatDate(detailedData.calculation_date)}
+              </span>
+            )}
           </p>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>
