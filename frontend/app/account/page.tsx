@@ -192,6 +192,12 @@ const ProfileTabs = () => {
       icon: <FaChartLine className="w-4 h-4" />,
       tabs: [
         {
+          label: 'Investments',
+          icon: <MaskOffIcon className="w-4 h-4" />,
+          component: <EquityInvestments />,
+          description: 'Manage your equity investments and portfolio.',
+        },
+        {
           label: 'Reporting',
           icon: <BarChart3 className="w-4 h-4" />,
           component: <InvestorReportingDashboard />,
@@ -199,12 +205,6 @@ const ProfileTabs = () => {
             'Track investments, view reports, and manage notifications',
           badge: 'New',
           badgeColor: 'bg-green-100 text-green-800',
-        },
-        {
-          label: 'Investments',
-          icon: <MaskOffIcon className="w-4 h-4" />,
-          component: <EquityInvestments />,
-          description: 'Manage your equity investments and portfolio.',
         },
         {
           label: 'Your Clubs',
