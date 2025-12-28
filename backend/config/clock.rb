@@ -70,6 +70,21 @@ module Clockwork
     Rails.logger.error "[Clockwork] Failed to enqueue GenerateCampaignSitemapJob: #{e.message}"
   end
 
+  every(1.day, 'generate_portfolio_metrics', at: '02:00') do
+    GeneratePortfolioMetricsJob.perform_later
+  end
+
+  every(1.day, 'send_portfolio_summaries', at: '09:00') do
+    SendPortfolioSummariesJob.perform_later
+  end
+
+  # Auto-generate quarterly reports on first day of quarter
+  every(1.quarter, 'generate_quarterly_reports', at: '00:00') do
+    EquityCampaign.live.find_each do |campaign|
+      campaign.generate_quarterly_report(Date.current)
+    end
+  end
+
 
   # every(5.minutes, 'send_meeting_reminders_every_five_mins') do
   #   SendMeetingRemindersJob.perform_later

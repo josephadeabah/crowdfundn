@@ -489,8 +489,108 @@ class EquityCampaign < Campaign
     end
   end
 
+  # Add this method to override update_investor_metrics_for_valuation_change
+  def update_investor_metrics_for_valuation_change(old_valuation)
+    super
+    
+    # Also update individual investment current values
+    equity_investments.successful.find_each do |investment|
+      investment.update_current_value
+      investment.save!
+    end
+  end
+  
+  # Add this method to generate investor reports
+  def generate_quarterly_report(report_date = Date.current)
+    period_end = report_date.end_of_quarter
+    period_start = report_date.beginning_of_quarter
+    
+    report = investor_reports.create!(
+      report_type: 'quarterly',
+      title: "Q#{report_date.quarter} #{report_date.year} Quarterly Report - #{company_name}",
+      report_date: report_date,
+      period_start: period_start,
+      period_end: period_end,
+      executive_summary: generate_executive_summary(period_start, period_end),
+      key_highlights: generate_key_highlights(period_start, period_end),
+      status: 'draft'
+    )
+    
+    report
+  end
+
   # ========== PRIVATE METHODS ==========
   private
+  
+  def generate_executive_summary(start_date, end_date)
+    # Generate executive summary based on financial performance
+    financials = financial_statements.published
+                                     .where(period_end: start_date..end_date)
+                                     .order(period_end: :desc)
+    
+    return "Quarterly report for #{start_date.to_s(:short)} - #{end_date.to_s(:short)}." if financials.empty?
+    
+    latest = financials.first
+    
+    summary = "During Q#{start_date.quarter} #{start_date.year}, #{company_name} "
+    summary += "achieved revenue of #{currency_symbol}#{latest.revenue.round(2)} "
+    summary += "with a net income of #{currency_symbol}#{latest.net_income.round(2)}. "
+    summary += "Gross margin was #{latest.gross_margin.round(2)}% and net margin was #{latest.net_margin.round(2)}%. "
+    
+    if latest.burn_rate.present?
+      summary += "Monthly burn rate was #{currency_symbol}#{latest.burn_rate.round(2)} "
+      summary += "with a runway of #{latest.runway_months.round(1)} months. "
+    end
+    
+    summary
+  end
+  
+  def generate_key_highlights(start_date, end_date)
+    highlights = []
+    
+    # Financial highlights
+    financials = financial_statements.published
+                                     .where(period_end: start_date..end_date)
+    
+    unless financials.empty?
+      revenue_growth = calculate_revenue_growth(financials)
+      highlights << "Revenue #{revenue_growth >= 0 ? 'increased' : 'decreased'} by #{(revenue_growth * 100).round(2)}%" if revenue_growth.abs > 0.01
+      
+      if valuation.present?
+        highlights << "Company valuation: #{currency_symbol}#{valuation.round(2)}"
+      end
+    end
+    
+    # Investment highlights
+    investments_count = equity_investments.successful
+                                         .where(created_at: start_date..end_date)
+                                         .count
+    if investments_count > 0
+      highlights << "Attracted #{investments_count} new investors"
+    end
+    
+    # KPI highlights
+    primary_kpis = campaign_kpis.primary
+    primary_kpis.each do |kpi|
+      values = kpi.kpi_values.where(period_date: start_date..end_date).order(:period_date)
+      next if values.size < 2
+      
+      change = values.last.value - values.first.value
+      if change.abs > (kpi.target_value.to_f * 0.1) # Significant change (>10% of target)
+        direction = change >= 0 ? "improved" : "declined"
+        highlights << "#{kpi.name} #{direction} by #{(change / values.first.value.abs * 100).round(2)}%"
+      end
+    end
+    
+    highlights.join(". ")
+  end
+  
+  def calculate_revenue_growth(financials)
+    return 0 if financials.size < 2
+    
+    revenues = financials.order(:period_end).pluck(:revenue)
+    (revenues.last - revenues.first) / revenues.first.abs
+  end
 
   # Calculation Methods
   def run_initial_calculations

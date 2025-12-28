@@ -23,6 +23,12 @@ class Campaign < ApplicationRecord
   has_many :reports, dependent: :destroy
   has_many :mentor_assignments, dependent: :destroy
   has_many :mentors, through: :mentor_assignments
+  # Add these associations to existing ones
+  has_many :financial_statements, dependent: :destroy
+  has_many :campaign_kpis, dependent: :destroy
+  has_many :kpi_values, through: :campaign_kpis
+  has_many :investor_reports, dependent: :destroy
+  has_many :investor_portfolio_metrics, dependent: :nullify
   has_one :deal_room, dependent: :destroy
 
   has_rich_text :description
@@ -305,6 +311,65 @@ class Campaign < ApplicationRecord
 
   def canonical_url
     "https://www.bantuhive.com/campaign/#{slug}"
+  end
+  
+  # Add this method to update investor metrics when valuation changes
+  def update_investor_metrics_for_valuation_change(old_valuation)
+    return unless valuation.present? && old_valuation.present?
+    return if valuation == old_valuation
+    
+    # Update all investor portfolio metrics
+    equity_investments.successful.distinct.pluck(:user_id).each do |user_id|
+      InvestorPortfolioMetric.calculate_for_user(user_id)
+      
+      # Send notification
+      user = User.find(user_id)
+      InvestorReporting::NotificationService.new(user).notify_valuation_update(self, old_valuation, valuation)
+    end
+  end
+  
+  # Add this method to get financial performance summary
+  def financial_performance_summary(periods = 4)
+    financial_statements.published
+                        .order(period_end: :desc)
+                        .limit(periods)
+                        .map do |statement|
+      {
+        period: "#{statement.period_type.capitalize} #{statement.period_end.year}",
+        period_start: statement.period_start,
+        period_end: statement.period_end,
+        revenue: statement.revenue,
+        net_income: statement.net_income,
+        gross_margin: statement.gross_margin,
+        net_margin: statement.net_margin,
+        burn_rate: statement.burn_rate,
+        runway_months: statement.runway_months
+      }
+    end
+  end
+  
+  # Add this method to get KPI dashboard
+  def kpi_dashboard
+    primary_kpis = campaign_kpis.primary.includes(:kpi_values).ordered
+    
+    {
+      primary_metrics: primary_kpis.map do |kpi|
+        latest = kpi.latest_value
+        {
+          id: kpi.id,
+          name: kpi.name,
+          value: latest&.value,
+          formatted_value: latest&.format_value,
+          unit: kpi.unit,
+          trend: kpi.trend(days: 90),
+          target: kpi.target_value,
+          performance_vs_target: kpi.performance_vs_target
+        }
+      end,
+      categories: campaign_kpis.group_by(&:kpi_type).transform_values do |kpis|
+        kpis.map { |kpi| { id: kpi.id, name: kpi.name, value: kpi.latest_value&.value } }
+      end
+    }
   end
 
   # app/models/campaign.rb

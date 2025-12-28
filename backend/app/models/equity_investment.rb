@@ -73,6 +73,8 @@ class EquityInvestment < ApplicationRecord
   after_save :update_campaign_shares, if: -> { saved_change_to_status? && successful? }
   before_save :update_current_value, if: -> { campaign_id_changed? || percentage_changed? || will_save_change_to_percentage? }
   before_save :set_commitment_timestamps, if: -> { will_save_change_to_status?(to: STATUS_COMMITTED) }
+  # Add this callback to update portfolio metrics when investment status changes
+  after_save :update_portfolio_metrics, if: -> { saved_change_to_status?(to: 'successful') || saved_change_to_current_value? }
 
   # ========== STATUS QUERY METHODS ==========
   def pending?
@@ -419,9 +421,28 @@ class EquityInvestment < ApplicationRecord
     scope = scope.where(user_id: user_id) if user_id
     scope.sum { |investment| investment.current_value }
   end
+  
+  # Add this method to calculate current value based on campaign valuation
+  def calculate_current_value
+    return amount unless campaign && campaign.valuation && percentage
+    
+    (campaign.valuation * percentage / 100).round(2)
+  end
+  
+  # Add this method to update current value
+  def update_current_value
+    self.current_value = calculate_current_value
+  end
 
   # ========== PRIVATE METHODS ==========
   private
+  
+  def update_portfolio_metrics
+    return unless user_id
+    
+    # Delay metric generation to avoid race conditions
+    GeneratePortfolioMetricsJob.perform_later(user_id)
+  end
 
   # NEW: Custom validation for investor presence
   def validate_investor_presence

@@ -7,6 +7,50 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+
+      # Investor Reporting Routes
+      namespace :investor do
+        get 'portfolio', to: 'investor_reporting#portfolio'
+        get 'portfolio/statement', to: 'investor_reporting#portfolio_statement'
+        get 'metrics', to: 'investor_reporting#metrics'
+        get 'notifications/preferences', to: 'investor_reporting#notification_preferences'
+        put 'notifications/preferences', to: 'investor_reporting#update_notification_preferences'
+        post 'documents/:id/download', to: 'investor_reporting#download_document'
+        
+        # Campaign-specific investor routes
+        resources :campaigns, only: [] do
+          get 'financials', to: 'investor_reporting#campaign_financials'
+          get 'kpis', to: 'investor_reporting#campaign_kpis'
+          get 'reports', to: 'investor_reporting#campaign_reports'
+        end
+      end
+      
+      # Campaign Financial Management Routes (for fundraisers)
+      resources :campaigns, only: [] do
+        resources :financials, controller: 'campaigns/financials', only: [:index, :show, :create, :update, :destroy] do
+          member do
+            post :publish
+          end
+          collection do
+            post :import
+          end
+        end
+        
+        resources :kpis, controller: 'campaigns/kpis', only: [:index, :show, :create, :update, :destroy] do
+          member do
+            post :add_value
+            get :values
+          end
+        end
+        
+        resources :investor_reports, controller: 'campaigns/investor_reports', only: [:index, :show, :create, :update, :destroy] do
+          member do
+            post :publish
+            post :generate_quarterly
+          end
+        end
+      end
+
       # ========== MENTOR ROUTES ==========
       namespace :mentor do
         # Mentor applications

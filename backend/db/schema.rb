@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_23_234213) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_28_023540) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -116,6 +116,28 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_23_234213) do
     t.datetime "updated_at", null: false
     t.string "level"
     t.index ["user_id"], name: "index_backer_rewards_on_user_id"
+  end
+
+  create_table "campaign_kpis", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.string "kpi_type", null: false
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.text "description"
+    t.string "unit"
+    t.decimal "target_value", precision: 20, scale: 4
+    t.string "target_period"
+    t.boolean "is_primary", default: false
+    t.boolean "is_public", default: false
+    t.integer "display_order", default: 0
+    t.jsonb "calculation_config", default: {}
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id", "kpi_type"], name: "index_campaign_kpis_on_campaign_id_and_kpi_type"
+    t.index ["campaign_id", "slug"], name: "index_campaign_kpis_on_campaign_id_and_slug", unique: true
+    t.index ["campaign_id"], name: "index_campaign_kpis_on_campaign_id"
+    t.index ["is_primary"], name: "index_campaign_kpis_on_is_primary"
   end
 
   create_table "campaign_shares", force: :cascade do |t|
@@ -589,6 +611,41 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_23_234213) do
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
+  create_table "financial_statements", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.string "period_type", null: false
+    t.date "period_start", null: false
+    t.date "period_end", null: false
+    t.decimal "revenue", precision: 20, scale: 2, default: "0.0"
+    t.decimal "expenses", precision: 20, scale: 2, default: "0.0"
+    t.decimal "gross_profit", precision: 20, scale: 2, default: "0.0"
+    t.decimal "net_income", precision: 20, scale: 2, default: "0.0"
+    t.decimal "cash_flow", precision: 20, scale: 2, default: "0.0"
+    t.decimal "assets", precision: 20, scale: 2, default: "0.0"
+    t.decimal "liabilities", precision: 20, scale: 2, default: "0.0"
+    t.decimal "equity", precision: 20, scale: 2, default: "0.0"
+    t.decimal "burn_rate", precision: 20, scale: 2, default: "0.0"
+    t.decimal "runway_months", precision: 5, scale: 2, default: "0.0"
+    t.decimal "mrr", precision: 20, scale: 2, default: "0.0"
+    t.decimal "arr", precision: 20, scale: 2, default: "0.0"
+    t.decimal "customer_acquisition_cost", precision: 10, scale: 2, default: "0.0"
+    t.decimal "lifetime_value", precision: 10, scale: 2, default: "0.0"
+    t.decimal "churn_rate", precision: 5, scale: 4, default: "0.0"
+    t.decimal "gmv", precision: 20, scale: 2, default: "0.0"
+    t.integer "active_customers"
+    t.decimal "average_order_value", precision: 10, scale: 2, default: "0.0"
+    t.string "status", default: "draft"
+    t.boolean "is_public", default: false
+    t.datetime "published_at"
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id", "period_type", "period_start"], name: "idx_financial_statements_campaign_period", unique: true
+    t.index ["campaign_id"], name: "index_financial_statements_on_campaign_id"
+    t.index ["published_at"], name: "index_financial_statements_on_published_at"
+    t.index ["status"], name: "index_financial_statements_on_status"
+  end
+
   create_table "fundraiser_leaderboard_entries", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.decimal "total_raised"
@@ -672,6 +729,96 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_23_234213) do
     t.index ["campaign_id"], name: "index_investor_documents_on_campaign_id"
     t.index ["user_id", "campaign_id", "document_type"], name: "index_investor_docs_on_user_campaign_and_type"
     t.index ["user_id"], name: "index_investor_documents_on_user_id"
+  end
+
+  create_table "investor_portfolio_metrics", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "campaign_id"
+    t.bigint "equity_investment_id"
+    t.decimal "total_invested", precision: 20, scale: 2, default: "0.0"
+    t.decimal "current_value", precision: 20, scale: 2, default: "0.0"
+    t.decimal "total_returns", precision: 20, scale: 2, default: "0.0"
+    t.decimal "roi", precision: 10, scale: 2, default: "0.0"
+    t.decimal "moic", precision: 10, scale: 2, default: "0.0"
+    t.decimal "irr", precision: 10, scale: 2, default: "0.0"
+    t.decimal "portfolio_concentration", precision: 5, scale: 4, default: "0.0"
+    t.decimal "volatility", precision: 5, scale: 4, default: "0.0"
+    t.decimal "sharpe_ratio", precision: 5, scale: 4, default: "0.0"
+    t.string "risk_category"
+    t.date "calculation_date", null: false
+    t.string "period"
+    t.jsonb "breakdown", default: {}
+    t.jsonb "trend_data", default: {}
+    t.jsonb "benchmarks", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["calculation_date"], name: "index_investor_portfolio_metrics_on_calculation_date"
+    t.index ["campaign_id"], name: "index_investor_portfolio_metrics_on_campaign_id"
+    t.index ["equity_investment_id"], name: "index_investor_portfolio_metrics_on_equity_investment_id"
+    t.index ["user_id", "calculation_date", "campaign_id"], name: "idx_investor_metrics_user_date_campaign", unique: true
+    t.index ["user_id", "period"], name: "index_investor_portfolio_metrics_on_user_id_and_period"
+    t.index ["user_id"], name: "index_investor_portfolio_metrics_on_user_id"
+  end
+
+  create_table "investor_report_documents", force: :cascade do |t|
+    t.bigint "investor_report_id", null: false
+    t.string "document_type", null: false
+    t.string "title"
+    t.text "description"
+    t.string "file_format"
+    t.integer "file_size"
+    t.string "language", default: "en"
+    t.boolean "is_public", default: false
+    t.integer "download_count", default: 0
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["investor_report_id", "document_type"], name: "idx_report_documents_report_type", unique: true
+    t.index ["investor_report_id"], name: "index_investor_report_documents_on_investor_report_id"
+  end
+
+  create_table "investor_reports", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.string "report_type", null: false
+    t.string "title", null: false
+    t.text "executive_summary"
+    t.text "key_highlights"
+    t.text "challenges_risks"
+    t.text "forward_outlook"
+    t.date "report_date", null: false
+    t.date "period_start"
+    t.date "period_end"
+    t.string "status", default: "draft"
+    t.boolean "notify_investors", default: true
+    t.datetime "published_at"
+    t.bigint "published_by_id"
+    t.integer "download_count", default: 0
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id", "report_type", "report_date"], name: "idx_investor_reports_campaign_type_date", unique: true
+    t.index ["campaign_id"], name: "index_investor_reports_on_campaign_id"
+    t.index ["published_at"], name: "index_investor_reports_on_published_at"
+    t.index ["published_by_id"], name: "index_investor_reports_on_published_by_id"
+    t.index ["status"], name: "index_investor_reports_on_status"
+  end
+
+  create_table "kpi_values", force: :cascade do |t|
+    t.bigint "campaign_kpi_id", null: false
+    t.bigint "financial_statement_id"
+    t.date "period_date", null: false
+    t.decimal "value", precision: 20, scale: 4, null: false
+    t.decimal "previous_value", precision: 20, scale: 4
+    t.decimal "change_percentage", precision: 10, scale: 4
+    t.boolean "is_actual", default: true
+    t.string "data_source"
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_kpi_id", "period_date"], name: "index_kpi_values_on_campaign_kpi_id_and_period_date", unique: true
+    t.index ["campaign_kpi_id"], name: "index_kpi_values_on_campaign_kpi_id"
+    t.index ["financial_statement_id"], name: "index_kpi_values_on_financial_statement_id"
+    t.index ["period_date"], name: "index_kpi_values_on_period_date"
   end
 
   create_table "kyc_addresses", force: :cascade do |t|
@@ -876,6 +1023,25 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_23_234213) do
     t.index ["rating"], name: "index_mentors_on_rating"
     t.index ["status"], name: "index_mentors_on_status"
     t.index ["user_id"], name: "index_mentors_on_user_id"
+  end
+
+  create_table "notification_preferences", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.boolean "financial_statements", default: true
+    t.boolean "valuation_updates", default: true
+    t.boolean "monthly_reports", default: true
+    t.boolean "quarterly_reports", default: true
+    t.boolean "annual_reports", default: true
+    t.boolean "campaign_updates", default: true
+    t.boolean "portfolio_updates", default: true
+    t.boolean "email_notifications", default: true
+    t.boolean "push_notifications", default: true
+    t.boolean "in_app_notifications", default: true
+    t.string "summary_frequency", default: "weekly"
+    t.time "preferred_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id"
   end
 
   create_table "pledges", force: :cascade do |t|
@@ -1186,6 +1352,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_23_234213) do
   add_foreign_key "archived_campaigns", "campaigns"
   add_foreign_key "archived_campaigns", "users"
   add_foreign_key "backer_rewards", "users"
+  add_foreign_key "campaign_kpis", "campaigns"
   add_foreign_key "campaign_shares", "campaigns"
   add_foreign_key "campaign_shares", "users"
   add_foreign_key "campaign_team_members", "campaigns"
@@ -1223,11 +1390,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_23_234213) do
   add_foreign_key "external_meeting_invitations", "deal_room_meetings"
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
+  add_foreign_key "financial_statements", "campaigns"
   add_foreign_key "fundraiser_leaderboard_entries", "users"
   add_foreign_key "fundraisers", "users"
   add_foreign_key "investment_clubs", "users", column: "creator_id"
   add_foreign_key "investor_documents", "campaigns"
   add_foreign_key "investor_documents", "users"
+  add_foreign_key "investor_portfolio_metrics", "campaigns"
+  add_foreign_key "investor_portfolio_metrics", "equity_investments"
+  add_foreign_key "investor_portfolio_metrics", "users"
+  add_foreign_key "investor_report_documents", "investor_reports"
+  add_foreign_key "investor_reports", "campaigns"
+  add_foreign_key "investor_reports", "users", column: "published_by_id"
+  add_foreign_key "kpi_values", "campaign_kpis"
+  add_foreign_key "kpi_values", "financial_statements"
   add_foreign_key "kyc_addresses", "kycs"
   add_foreign_key "kyc_documents", "kycs"
   add_foreign_key "kycs", "users"
@@ -1247,6 +1423,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_23_234213) do
   add_foreign_key "mentor_expertise_tags", "expertise_tags"
   add_foreign_key "mentor_expertise_tags", "mentors"
   add_foreign_key "mentors", "users"
+  add_foreign_key "notification_preferences", "users"
   add_foreign_key "pledges", "donations"
   add_foreign_key "pledges", "rewards"
   add_foreign_key "points", "donations"
