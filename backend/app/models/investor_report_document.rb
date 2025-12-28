@@ -10,7 +10,8 @@ class InvestorReportDocument < ApplicationRecord
   
   before_save :extract_file_metadata, if: -> { file.attached? && file_changed? }
   
-  scope :public, -> { where(is_public: true) }
+  # CHANGE THIS LINE:
+  scope :publicly_accessible, -> { where(is_public: true) }  # Changed from 'public' to 'publicly_accessible'
   
   def file_url
     if file.attached?
