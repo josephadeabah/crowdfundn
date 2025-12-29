@@ -91,6 +91,36 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   onClose,
   campaignId,
 }) => {
+  console.log('FinancialStatementsModal rendered with:', {
+    isOpen,
+    campaignId,
+  });
+
+  // Show a message if modal is open but no campaignId is provided
+  if (isOpen && !campaignId) {
+    return (
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="xxxlarge"
+        closeOnBackdropClick={true}
+      >
+        <div className="space-y-6 p-6">
+          <div className="text-center">
+            <BarChart className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <h2 className="text-2xl font-bold">No Campaign Selected</h2>
+            <p className="text-muted-foreground mt-2">
+              Please select a campaign from your portfolio to view financial statements.
+            </p>
+            <Button onClick={onClose} className="mt-4">
+              Close
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
+
   const [statements, setStatements] = useState<FinancialStatement[]>([]);
   const [loading, setLoading] = useState(false);
   const [periodType, setPeriodType] = useState('all');
@@ -105,13 +135,18 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   });
 
   useEffect(() => {
+    console.log('useEffect triggered with isOpen:', isOpen, 'campaignId:', campaignId);
     if (isOpen && campaignId) {
+      console.log('Fetching statements for campaignId:', campaignId);
       fetchStatements();
+    } else {
+      console.log('Not fetching statements - conditions not met');
     }
   }, [isOpen, campaignId, periodType]);
 
   const fetchStatements = async () => {
     try {
+      console.log('Starting fetchStatements for campaignId:', campaignId);
       setLoading(true);
       // Use investor endpoint for read-only access
       const response =
@@ -120,12 +155,20 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
           periodType !== 'all' ? periodType : undefined,
         );
 
+      console.log('Response received:', response);
       if (response?.success) {
+        console.log('Setting statements:', response?.financials);
         setStatements(response?.financials ?? []);
         if (response?.financials?.length > 0) {
           setSelectedStatement(response?.financials?.[0] ?? null);
           prepareChartData(response?.financials ?? []);
+        } else {
+          console.log('No financial statements found');
+          toast.info('No financial statements available for this campaign');
         }
+      } else {
+        console.log('Response not successful:', response);
+        toast.error('Failed to load financial statements');
       }
     } catch (error: any) {
       console.error('Error fetching financial statements:', error);
@@ -136,6 +179,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   };
 
   const prepareChartData = (financials: FinancialStatement[]) => {
+    console.log('Preparing chart data for', financials.length, 'statements');
     // Prepare revenue trend data
     const revenueData =
       financials?.map((stmt) => ({
@@ -196,6 +240,11 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
             <p className="text-muted-foreground">
               Detailed financial performance and statements
             </p>
+            {campaignId && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Campaign ID: {campaignId}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Select value={periodType} onValueChange={setPeriodType}>
@@ -276,6 +325,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                   <div className="text-center py-12 text-muted-foreground">
                     <BarChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No financial data available</p>
+                    <p className="text-sm">
+                      {statements.length === 0 ? 'No financial statements found for this campaign' : 'Select a statement to view data'}
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -427,6 +479,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                   <div className="text-center py-12 text-muted-foreground">
                     <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No financial statements available</p>
+                    <p className="text-sm">
+                      This campaign has not published any financial statements yet
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -615,6 +670,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                   <div className="text-center py-12 text-muted-foreground">
                     <LineChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No chart data available</p>
+                    <p className="text-sm">
+                      Select a statement to view chart data
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -665,6 +723,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                   <div className="text-center py-12 text-muted-foreground">
                     <PieChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No balance sheet data available</p>
+                    <p className="text-sm">
+                      Select a statement to view balance sheet data
+                    </p>
                   </div>
                 )}
               </CardContent>
