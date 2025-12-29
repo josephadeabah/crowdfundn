@@ -288,7 +288,11 @@ const NotificationPreferencesModal: React.FC<
                 Reset Changes
               </Button>
             )}
-            <Button onClick={handleSave} disabled={!hasChanges || saving} variant="success">
+            <Button
+              onClick={handleSave}
+              disabled={!hasChanges || saving}
+              variant="success"
+            >
               {saving ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
