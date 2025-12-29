@@ -51,6 +51,7 @@ import PortfolioStatementModal from './PortfolioStatementModal';
 import {
   InvestorReportingService,
   PortfolioData,
+  InvestorReport,
 } from './services/investor-reporting.service';
 
 interface PortfolioMetrics {
@@ -79,43 +80,23 @@ interface CampaignPerformance {
   latest_valuation: number;
 }
 
-interface InvestorReport {
-  id: number;
-  title: string;
-  report_type: string;
-  report_date: string;
-  period_description: string;
-  status: string;
-  download_count: number;
-  campaign: {
-    id: number;
-    name: string;
-  };
-}
-
 const InvestorReportingDashboard: React.FC = () => {
   const { user, token } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [portfolioMetrics, setPortfolioMetrics] =
-    useState<PortfolioMetrics | null>(null);
-  const [campaignPerformance, setCampaignPerformance] = useState<
-    CampaignPerformance[]
-  >([]);
+  const [portfolioMetrics, setPortfolioMetrics] = useState<PortfolioMetrics | null>(null);
+  const [campaignPerformance, setCampaignPerformance] = useState<CampaignPerformance[]>([]);
   const [recentReports, setRecentReports] = useState<InvestorReport[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
-  const [service] = useState(new InvestorReportingService());
+  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
 
   // Modal states
   const [showPortfolioOverview, setShowPortfolioOverview] = useState(false);
   const [showFinancialStatements, setShowFinancialStatements] = useState(false);
   const [showKPIDashboard, setShowKPIDashboard] = useState(false);
   const [showInvestorReports, setShowInvestorReports] = useState(false);
-  const [showNotificationPreferences, setShowNotificationPreferences] =
-    useState(false);
+  const [showNotificationPreferences, setShowNotificationPreferences] = useState(false);
   const [showPortfolioStatement, setShowPortfolioStatement] = useState(false);
-  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(
-    null,
-  );
+  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
 
   useEffect(() => {
     if (user && token) {
@@ -132,10 +113,13 @@ const InvestorReportingDashboard: React.FC = () => {
         localStorage.setItem('token', token);
       }
 
+      const service = new InvestorReportingService();
+
       // Fetch portfolio data
       const portfolioResponse = await service.getPortfolio();
       if (portfolioResponse.success) {
-        const portfolioData = portfolioResponse.portfolio as PortfolioData;
+        const portfolioData = portfolioResponse.portfolio;
+        setPortfolioData(portfolioData);
         setPortfolioMetrics(portfolioData.summary);
         setCampaignPerformance(portfolioData.by_campaign || []);
       }
@@ -152,24 +136,6 @@ const InvestorReportingDashboard: React.FC = () => {
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
       toast.error(error.message || 'Failed to load investor dashboard data');
-
-      // Set default empty state for development
-      if (process.env.NODE_ENV === 'development') {
-        setPortfolioMetrics({
-          total_invested: 0,
-          current_value: 0,
-          total_returns: 0,
-          roi: 0,
-          moic: 0,
-          irr: 0,
-          invested_campaigns: 0,
-          active_investments: 0,
-          currency: 'GHS',
-          currency_symbol: '₵',
-        });
-        setCampaignPerformance([]);
-        setRecentReports([]);
-      }
     } finally {
       setLoading(false);
     }
@@ -177,6 +143,7 @@ const InvestorReportingDashboard: React.FC = () => {
 
   const handleDownloadStatement = async () => {
     try {
+      const service = new InvestorReportingService();
       await service.downloadPortfolioStatement();
       toast.success('Portfolio statement downloaded successfully');
     } catch (error: any) {
@@ -192,6 +159,7 @@ const InvestorReportingDashboard: React.FC = () => {
 
   const handleDownloadReport = async (reportId: number) => {
     try {
+      const service = new InvestorReportingService();
       await service.downloadReport(reportId);
       toast.success('Report downloaded successfully');
     } catch (error: any) {
@@ -548,38 +516,52 @@ const InvestorReportingDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Portfolio Concentration</span>
-                      <span className="font-medium">35%</span>
-                    </div>
-                    <Progress value={35} className="h-2" />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Moderate concentration - Top 3 holdings represent 35% of
-                      portfolio
-                    </p>
-                  </div>
+                  {portfolioData?.risk_analysis && (
+                    <>
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Portfolio Concentration</span>
+                          <span className="font-medium">
+                            {(portfolioData.risk_analysis.concentration_risk * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                        <Progress 
+                          value={portfolioData.risk_analysis.concentration_risk * 100} 
+                          className="h-2" 
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {portfolioData.risk_analysis.concentration_risk > 0.5 
+                            ? 'High concentration - Top holdings represent significant portion'
+                            : portfolioData.risk_analysis.concentration_risk > 0.3
+                            ? 'Moderate concentration'
+                            : 'Well diversified portfolio'}
+                        </p>
+                      </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Sector Diversification</span>
-                      <Badge
-                        variant="outline"
-                        className="bg-green-50 text-green-700"
-                      >
-                        Good
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Liquidity Risk</span>
-                      <Badge
-                        variant="outline"
-                        className="bg-yellow-50 text-yellow-700"
-                      >
-                        Medium
-                      </Badge>
-                    </div>
-                  </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Risk Category</span>
+                          <Badge
+                            variant={
+                              portfolioData.risk_analysis.risk_category === 'high'
+                                ? 'destructive'
+                                : portfolioData.risk_analysis.risk_category === 'medium'
+                                ? 'outline'
+                                : 'secondary'
+                            }
+                          >
+                            {portfolioData.risk_analysis.risk_category?.toUpperCase()}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Overall Risk Score</span>
+                          <span className="font-medium">
+                            {(portfolioData.risk_analysis.overall_risk_score * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -587,22 +569,22 @@ const InvestorReportingDashboard: React.FC = () => {
             {/* Cash Flow */}
             <Card>
               <CardHeader>
-                <CardTitle>Cash Flow</CardTitle>
-                <CardDescription>Investment activity over time</CardDescription>
+                <CardTitle>Investment Activity</CardTitle>
+                <CardDescription>Recent investment activity</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {campaignPerformance.slice(0, 3).map((campaign, index) => (
+                  {portfolioData?.cash_flow?.slice(0, 3).map((cashflow: any, index: number) => (
                     <div
                       key={index}
                       className="flex items-center justify-between"
                     >
                       <div>
-                        <p className="font-medium">{campaign.company_name}</p>
+                        <p className="font-medium">{cashflow.month}</p>
                         <p className="text-sm text-muted-foreground">
                           Invested:{' '}
                           {formatCurrency(
-                            campaign.invested,
+                            cashflow.invested,
                             portfolioMetrics?.currency,
                             portfolioMetrics?.currency_symbol,
                           )}
@@ -611,17 +593,17 @@ const InvestorReportingDashboard: React.FC = () => {
                       <div className="text-right">
                         <p className="font-medium">
                           {formatCurrency(
-                            campaign.current_value,
+                            cashflow.current_value,
                             portfolioMetrics?.currency,
                             portfolioMetrics?.currency_symbol,
                           )}
                         </p>
                         <p
-                          className={`text-sm ${campaign.returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                          className={`text-sm ${cashflow.returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
                         >
-                          {campaign.returns >= 0 ? '+' : ''}
+                          {cashflow.returns >= 0 ? '+' : ''}
                           {formatCurrency(
-                            campaign.returns,
+                            cashflow.returns,
                             portfolioMetrics?.currency,
                             portfolioMetrics?.currency_symbol,
                           )}
@@ -629,6 +611,12 @@ const InvestorReportingDashboard: React.FC = () => {
                       </div>
                     </div>
                   ))}
+                  
+                  {(!portfolioData?.cash_flow || portfolioData.cash_flow.length === 0) && (
+                    <p className="text-center text-muted-foreground py-4">
+                      No recent investment activity
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -804,7 +792,7 @@ const InvestorReportingDashboard: React.FC = () => {
                           <h5 className="font-medium">{report.title}</h5>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {report.campaign.name} published a new{' '}
+                          {report.campaign.company_name} published a new{' '}
                           {report.report_type} report
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -825,18 +813,11 @@ const InvestorReportingDashboard: React.FC = () => {
       </Tabs>
 
       {/* Modals */}
-      {portfolioMetrics && (
+      {portfolioData && (
         <PortfolioOverviewModal
           isOpen={showPortfolioOverview}
           onClose={() => setShowPortfolioOverview(false)}
-          portfolioData={{
-            summary: portfolioMetrics,
-            by_campaign: campaignPerformance,
-            performance_metrics: {},
-            risk_analysis: {},
-            cash_flow: [],
-            projections: [],
-          }}
+          portfolioData={portfolioData}
         />
       )}
 

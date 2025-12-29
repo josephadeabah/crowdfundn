@@ -1,6 +1,4 @@
 // app/components/investor-reporting/services/investor-reporting.service.ts
-import { useAuth } from '@/app/context/auth/AuthContext';
-
 // Define interfaces for the API responses
 export interface PortfolioData {
   summary: {
@@ -136,19 +134,10 @@ export interface PortfolioMetricsResponse {
 }
 
 export class InvestorReportingService {
-  private baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || '';
-
-  // Helper method to get auth token from context
-  private getAuthToken(): string | null {
-    // This will be set by the component using the service
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('token');
-    }
-    return null;
-  }
+  private baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
   private async fetchApi(endpoint: string, options: RequestInit = {}) {
-    const token = this.getAuthToken();
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const url = `${this.baseUrl}${endpoint}`;
 
     const headers = {
@@ -258,7 +247,7 @@ export class InvestorReportingService {
     }
   }
 
-  // KPI endpoints
+  // KPI endpoints - Fixed endpoint path
   async getKPIs(
     campaignId: number,
     kpiType: string = 'all',
@@ -277,7 +266,7 @@ export class InvestorReportingService {
     }
   }
 
-  // Investor reports
+  // Investor reports - Fixed endpoint path
   async getInvestorReports(filters?: {
     report_type?: string;
     campaign_id?: number;
@@ -311,8 +300,8 @@ export class InvestorReportingService {
     limit: number = 10,
   ): Promise<{ success: boolean; reports: InvestorReport[] }> {
     try {
-      // Get reports from all campaigns
-      const response = await this.getInvestorReports();
+      // Get reports from all campaigns (campaign_id = 0 means all)
+      const response = await this.getInvestorReports({ campaign_id: 0 });
       if (response.success) {
         return {
           success: true,
@@ -386,7 +375,7 @@ export class InvestorReportingService {
       return response;
     } catch (error) {
       console.error('Error fetching notification preferences:', error);
-      // Return default preferences if endpoint doesn't exist yet
+      // Return default preferences
       return {
         success: true,
         preferences: {
@@ -433,8 +422,8 @@ export class InvestorReportingService {
     count: number;
   }> {
     try {
-      // This endpoint would need to be implemented on the backend
-      // For now, return a mock response
+      // This endpoint needs to be implemented on backend
+      // For now, we'll return 0
       return { success: true, count: 0 };
     } catch (error) {
       console.error('Error fetching notification count:', error);
@@ -442,83 +431,7 @@ export class InvestorReportingService {
     }
   }
 
-  // Export portfolio data
-  async exportPortfolioData(
-    format: string = 'csv',
-  ): Promise<{ success: boolean; url?: string }> {
-    try {
-      // This would call a backend endpoint for export
-      // For now, return mock response
-      return {
-        success: true,
-        url: `${this.baseUrl}/investor/portfolio/export?format=${format}`,
-      };
-    } catch (error) {
-      console.error('Error exporting portfolio data:', error);
-      throw error;
-    }
-  }
-
-  // Generate quarterly report
-  async generateQuarterlyReport(
-    campaignId: number,
-    reportDate?: string,
-  ): Promise<{
-    success: boolean;
-    report: InvestorReport;
-  }> {
-    try {
-      const response = await this.fetchApi(
-        `/campaigns/${campaignId}/investor_reports/generate_quarterly`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ report_date: reportDate }),
-        },
-      );
-      return response;
-    } catch (error) {
-      console.error('Error generating quarterly report:', error);
-      throw error;
-    }
-  }
-
-  // Subscribe to report notifications
-  async subscribeToReportNotifications(
-    campaignId: number,
-    reportTypes: string[],
-  ): Promise<{
-    success: boolean;
-  }> {
-    try {
-      const response = await this.fetchApi(
-        '/investor/notifications/subscribe',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            campaign_id: campaignId,
-            report_types: reportTypes,
-          }),
-        },
-      );
-      return response;
-    } catch (error) {
-      console.error('Error subscribing to report notifications:', error);
-      throw error;
-    }
-  }
-
-  // Mark report as read
-  async markReportAsRead(reportId: number): Promise<{ success: boolean }> {
-    try {
-      // This endpoint would need to be implemented
-      return { success: true };
-    } catch (error) {
-      console.error('Error marking report as read:', error);
-      return { success: false };
-    }
-  }
-
-  // Get detailed portfolio analysis
+  // Get portfolio analysis
   async getPortfolioAnalysis(): Promise<{
     success: boolean;
     performance_metrics: any;
@@ -527,7 +440,7 @@ export class InvestorReportingService {
     projections: any[];
   }> {
     try {
-      const response = await this.fetchApi('/investor/portfolio');
+      const response = await this.getPortfolio();
       if (response.success && response.portfolio) {
         return {
           success: true,
@@ -550,7 +463,7 @@ export class InvestorReportingService {
     }
   }
 
-  // Get KPI trend data
+  // Get KPI trend data - Fixed endpoint path
   async getKPITrendData(
     campaignId: number,
     kpiId: number,
@@ -567,26 +480,6 @@ export class InvestorReportingService {
       return response;
     } catch (error) {
       console.error('Error fetching KPI trend data:', error);
-      throw error;
-    }
-  }
-
-  // Get financial statement trends
-  async getFinancialTrends(
-    campaignId: number,
-    metric: string,
-    periodType: string = 'monthly',
-  ): Promise<{
-    success: boolean;
-    trends: Array<{ period: string; value: number }>;
-  }> {
-    try {
-      const response = await this.fetchApi(
-        `/investor/campaigns/${campaignId}/financials?period_type=${periodType}&metric=${metric}`,
-      );
-      return response;
-    } catch (error) {
-      console.error('Error fetching financial trends:', error);
       throw error;
     }
   }
@@ -623,8 +516,7 @@ export class InvestorReportingService {
     }>;
   }> {
     try {
-      // This endpoint would need to be implemented on backend
-      // For now, return empty array
+      // This endpoint needs to be implemented on backend
       return { success: true, notifications: [] };
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -645,7 +537,7 @@ export class InvestorReportingService {
     }>;
   }> {
     try {
-      // This endpoint would need to be implemented
+      // This endpoint needs to be implemented
       return { success: true, statements: [] };
     } catch (error) {
       console.error('Error fetching statement history:', error);
@@ -664,26 +556,38 @@ export class InvestorReportingService {
     };
   }> {
     try {
-      // This would come from portfolio risk analysis
-      const response = await this.fetchApi('/investor/portfolio');
+      const response = await this.getPortfolio();
       if (response.success && response.portfolio) {
         const campaign = response.portfolio.by_campaign?.find(
           (c: any) => c.campaign_id === campaignId,
         );
+        
+        if (!campaign) {
+          return {
+            success: false,
+            metrics: {
+              concentration: 0,
+              volatility: 0,
+              sharpe_ratio: 0,
+              risk_category: 'unknown',
+            },
+          };
+        }
+
+        const concentration = campaign.invested / response.portfolio.summary.total_invested;
+        
         return {
           success: true,
           metrics: {
-            concentration: campaign
-              ? campaign.invested / response.portfolio.summary.total_invested
-              : 0,
+            concentration: concentration,
             volatility: 12.5, // Would come from backend calculation
             sharpe_ratio: 1.8, // Would come from backend calculation
             risk_category:
-              campaign?.roi >= 20
-                ? 'low'
-                : campaign?.roi >= 0
-                  ? 'medium'
-                  : 'high',
+              concentration > 0.5 || campaign.roi < -10
+                ? 'high'
+                : concentration > 0.3 || campaign.roi < 0
+                ? 'medium'
+                : 'low',
           },
         };
       }

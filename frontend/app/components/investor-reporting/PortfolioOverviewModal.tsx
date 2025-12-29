@@ -110,10 +110,15 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
   const handleExportData = async () => {
     try {
       const service = new InvestorReportingService();
-      const response = await service.exportPortfolioData();
+      const response = await service.generatePortfolioStatement({
+        period: timePeriod,
+        format: 'pdf',
+        includeSections: ['summary', 'performance', 'breakdown', 'risk']
+      });
 
       if (response.success && response.url) {
         window.open(response.url, '_blank');
+        toast.success('Portfolio statement generated successfully');
       }
     } catch (error) {
       console.error('Error exporting data:', error);
@@ -125,6 +130,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
 
   const summary = portfolioData.summary;
   const campaigns = portfolioData.by_campaign || [];
+  const performanceMetrics = portfolioData.performance_metrics || {};
+  const riskAnalysis = portfolioData.risk_analysis || {};
+  const projections = portfolioData.projections || [];
 
   // Prepare real chart data
   const performanceData = campaigns.map((campaign: any) => ({
@@ -143,33 +151,6 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
   }));
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
-
-  // Get risk analysis from real data if available
-  const riskMetrics = analysisData?.risk_analysis || {
-    concentration_risk:
-      campaigns.length > 0
-        ? Math.max(...campaigns.map((c: any) => c.invested)) /
-          summary.total_invested
-        : 0,
-    sector_diversification: campaigns.length > 0 ? 0.7 : 0,
-    liquidity_risk: campaigns.length > 0 ? 0.3 : 0,
-    overall_risk_score: campaigns.length > 0 ? 0.5 : 0,
-    risk_category: campaigns.length > 0 ? 'medium' : 'low',
-  };
-
-  // Prepare projection data based on real ROI
-  const projectionData = [1, 3, 5].map((years) => {
-    const projectedValue =
-      summary.current_value * Math.pow(1 + summary.roi / 100, years);
-    const projectedReturns = projectedValue - summary.total_invested;
-
-    return {
-      years,
-      projected_value: projectedValue,
-      projected_returns: projectedReturns,
-      annual_growth: summary.roi,
-    };
-  });
 
   return (
     <Modal
@@ -653,7 +634,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                           Portfolio Concentration
                         </div>
                         <div className="text-lg font-medium">
-                          {(riskMetrics.concentration_risk * 100).toFixed(1)}%
+                          {(riskAnalysis.concentration_risk * 100).toFixed(1)}%
                         </div>
                         <div className="text-xs text-muted-foreground">
                           Herfindahl-Hirschman Index
@@ -664,16 +645,16 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                           Overall Risk Score
                         </div>
                         <div className="text-lg font-medium">
-                          {(riskMetrics.overall_risk_score * 100).toFixed(1)}%
+                          {(riskAnalysis.overall_risk_score * 100).toFixed(1)}%
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {riskMetrics.risk_category?.toUpperCase() || 'MEDIUM'}
+                          {riskAnalysis.risk_category?.toUpperCase() || 'MEDIUM'}
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {analysisData?.risk_analysis && (
+                  {riskAnalysis && (
                     <div>
                       <h4 className="font-medium mb-3">
                         Detailed Risk Analysis
@@ -682,7 +663,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         <div className="flex justify-between text-sm">
                           <span>Sector Diversification</span>
                           <span className="font-medium">
-                            {(riskMetrics.sector_diversification * 100).toFixed(
+                            {(riskAnalysis.sector_diversification * 100).toFixed(
                               1,
                             )}
                             %
@@ -691,22 +672,22 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         <div className="flex justify-between text-sm">
                           <span>Liquidity Risk</span>
                           <span className="font-medium">
-                            {(riskMetrics.liquidity_risk * 100).toFixed(1)}%
+                            {(riskAnalysis.liquidity_risk * 100).toFixed(1)}%
                           </span>
                         </div>
-                        {riskMetrics.volatility && (
+                        {riskAnalysis.volatility && (
                           <div className="flex justify-between text-sm">
                             <span>Volatility</span>
                             <span className="font-medium">
-                              {(riskMetrics.volatility * 100).toFixed(1)}%
+                              {(riskAnalysis.volatility * 100).toFixed(1)}%
                             </span>
                           </div>
                         )}
-                        {riskMetrics.sharpe_ratio && (
+                        {riskAnalysis.sharpe_ratio && (
                           <div className="flex justify-between text-sm">
                             <span>Sharpe Ratio</span>
                             <span className="font-medium">
-                              {riskMetrics.sharpe_ratio.toFixed(2)}
+                              {riskAnalysis.sharpe_ratio.toFixed(2)}
                             </span>
                           </div>
                         )}
@@ -729,7 +710,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
               <CardContent>
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {projectionData.map((projection) => (
+                    {projections.slice(0, 3).map((projection: any) => (
                       <Card key={projection.years}>
                         <CardContent className="pt-6">
                           <div className="text-center">
@@ -780,46 +761,43 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
                         Company valuations grow at current rate
                       </li>
-                      {analysisData?.projections &&
-                        analysisData.projections.length > 0 && (
-                          <li className="flex items-center">
-                            <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                            Based on {analysisData.projections.length}{' '}
-                            projection models
-                          </li>
-                        )}
+                      {projections.length > 0 && (
+                        <li className="flex items-center">
+                          <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
+                          Based on {projections.length} projection models
+                        </li>
+                      )}
                     </ul>
                   </div>
 
-                  {analysisData?.projections &&
-                    analysisData.projections.length > 0 && (
-                      <div className="pt-4 border-t">
-                        <h4 className="font-medium mb-3">
-                          Detailed Projections
-                        </h4>
-                        <div className="space-y-3">
-                          {analysisData.projections.map(
-                            (proj: any, index: number) => (
-                              <div
-                                key={index}
-                                className="flex justify-between text-sm"
-                              >
-                                <span>
-                                  {proj.scenario || `Scenario ${index + 1}`}
-                                </span>
-                                <span className="font-medium">
-                                  {formatCurrency(
-                                    proj.projected_value,
-                                    summary.currency,
-                                    summary.currency_symbol,
-                                  )}
-                                </span>
-                              </div>
-                            ),
-                          )}
-                        </div>
+                  {projections.length > 0 && (
+                    <div className="pt-4 border-t">
+                      <h4 className="font-medium mb-3">
+                        Detailed Projections
+                      </h4>
+                      <div className="space-y-3">
+                        {projections.map(
+                          (proj: any, index: number) => (
+                            <div
+                              key={index}
+                              className="flex justify-between text-sm"
+                            >
+                              <span>
+                                {proj.scenario || `Scenario ${index + 1}`}
+                              </span>
+                              <span className="font-medium">
+                                {formatCurrency(
+                                  proj.projected_value,
+                                  summary.currency,
+                                  summary.currency_symbol,
+                                )}
+                              </span>
+                            </div>
+                          ),
+                        )}
                       </div>
-                    )}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
