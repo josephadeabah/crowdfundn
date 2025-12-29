@@ -143,7 +143,6 @@ export class InvestorReportingService {
 
     const headers = {
       'Content-Type': 'application/json',
-      // Accept: 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     };
@@ -152,7 +151,6 @@ export class InvestorReportingService {
       const response = await fetch(url, {
         ...options,
         headers,
-        // credentials: 'include',
       });
 
       if (!response.ok) {
