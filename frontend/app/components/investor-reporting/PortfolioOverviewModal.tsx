@@ -729,7 +729,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
               <CardContent>
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {projections?.slice(0, 3)?.map((projection: any) => (
+                    {(projections || [])?.slice(0, 3)?.map((projection: any) => (
                       <Card key={projection?.years}>
                         <CardContent className="pt-6">
                           <div className="text-center">
