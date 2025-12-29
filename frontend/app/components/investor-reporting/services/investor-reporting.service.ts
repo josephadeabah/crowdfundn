@@ -385,6 +385,43 @@ export class InvestorReportingService {
     }
   }
 
+  async generatePortfolioStatement(options: {
+    period: string;
+    format: string;
+    includeSections: string[];
+  }): Promise<{ success: boolean; url?: string; message?: string }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/investor/portfolio/statement`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          period: options.period,
+          format: options.format,
+          include_sections: options.includeSections,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success && result.download_url) {
+        return { success: true, url: result.download_url };
+      } else if (result.success && result.url) {
+        return { success: true, url: result.url };
+      }
+      
+      return result;
+    } catch (error: any) {
+      console.error('Error generating portfolio statement:', error);
+      return { 
+        success: false, 
+        message: error.message || 'Failed to generate portfolio statement' 
+      };
+    }
+  }
+
   // Notification preferences
   async getNotificationPreferences(): Promise<{
     success: boolean;
