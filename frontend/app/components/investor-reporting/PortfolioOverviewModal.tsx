@@ -135,14 +135,14 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
   const projections = portfolioData.projections || [];
 
   // Prepare real chart data
-  const performanceData = campaigns.map((campaign: any) => ({
+  const performanceData = (campaigns || []).map((campaign: any) => ({
     name:
-      campaign.company_name.substring(0, 15) +
-      (campaign.company_name.length > 15 ? '...' : ''),
-    invested: campaign.invested,
-    current: campaign.current_value,
-    returns: campaign.returns,
-    roi: campaign.roi,
+      (campaign.company_name || '').substring(0, 15) +
+      ((campaign.company_name || '').length > 15 ? '...' : ''),
+    invested: campaign.invested || 0,
+    current: campaign.current_value || 0,
+    returns: campaign.returns || 0,
+    roi: campaign.roi || 0,
   }));
 
   const concentrationData = campaigns.slice(0, 5).map((campaign: any) => ({

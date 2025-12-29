@@ -193,10 +193,56 @@ export class InvestorReportingService {
   }> {
     try {
       const response = await this.fetchApi('/investor/portfolio');
-      return response;
+      
+      // Ensure portfolio data has proper structure
+      const portfolioData = response.portfolio || {};
+      return {
+        success: true,
+        portfolio: {
+          summary: portfolioData.summary || {
+            total_invested: 0,
+            current_value: 0,
+            total_returns: 0,
+            roi: 0,
+            moic: 0,
+            irr: 0,
+            invested_campaigns: 0,
+            active_investments: 0,
+            currency: 'GHS',
+            currency_symbol: '₵',
+          },
+          by_campaign: portfolioData.by_campaign || [],
+          performance_metrics: portfolioData.performance_metrics || {},
+          risk_analysis: portfolioData.risk_analysis || {},
+          cash_flow: portfolioData.cash_flow || [],
+          projections: portfolioData.projections || [],
+        },
+      };
     } catch (error) {
       console.error('Error fetching portfolio:', error);
-      throw error;
+      // Return empty structure
+      return {
+        success: false,
+        portfolio: {
+          summary: {
+            total_invested: 0,
+            current_value: 0,
+            total_returns: 0,
+            roi: 0,
+            moic: 0,
+            irr: 0,
+            invested_campaigns: 0,
+            active_investments: 0,
+            currency: 'GHS',
+            currency_symbol: '₵',
+          },
+          by_campaign: [],
+          performance_metrics: {},
+          risk_analysis: {},
+          cash_flow: [],
+          projections: [],
+        },
+      };
     }
   }
 
