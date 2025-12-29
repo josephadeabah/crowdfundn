@@ -134,7 +134,8 @@ export interface PortfolioMetricsResponse {
 }
 
 export class InvestorReportingService {
-  private baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || '';
+  private baseUrl =
+    process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
 
   private async fetchApi(endpoint: string, options: RequestInit = {}) {
     const token =
@@ -183,6 +184,8 @@ export class InvestorReportingService {
     }
   }
 
+  // ========== INVESTOR ROUTES ==========
+
   // Portfolio endpoints
   async getPortfolio(): Promise<{
     success: boolean;
@@ -210,8 +213,8 @@ export class InvestorReportingService {
     }
   }
 
-  // Financial statements
-  async getFinancialStatements(
+  // Financial statements - Investor endpoint (read-only access)
+  async getInvestorFinancialStatements(
     campaignId: number,
     periodType: string = 'all',
   ): Promise<{
@@ -224,30 +227,13 @@ export class InvestorReportingService {
       const response = await this.fetchApi(endpoint);
       return response;
     } catch (error) {
-      console.error('Error fetching financial statements:', error);
+      console.error('Error fetching investor financial statements:', error);
       throw error;
     }
   }
 
-  async downloadFinancialStatement(
-    statementId: number,
-  ): Promise<{ success: boolean; url?: string }> {
-    try {
-      const response = await this.fetchApi(
-        `/investor/documents/${statementId}/download`,
-        {
-          method: 'POST',
-        },
-      );
-      return response;
-    } catch (error) {
-      console.error('Error downloading financial statement:', error);
-      throw error;
-    }
-  }
-
-  // KPI endpoints - Fixed endpoint path
-  async getKPIs(
+  // KPI endpoints - Investor endpoint (read-only access)
+  async getInvestorKPIs(
     campaignId: number,
     kpiType: string = 'all',
   ): Promise<{
@@ -260,12 +246,12 @@ export class InvestorReportingService {
       const response = await this.fetchApi(endpoint);
       return response;
     } catch (error) {
-      console.error('Error fetching KPIs:', error);
+      console.error('Error fetching investor KPIs:', error);
       throw error;
     }
   }
 
-  // Investor reports - Fixed endpoint path
+  // Investor reports - Investor endpoint (read-only access)
   async getInvestorReports(filters?: {
     report_type?: string;
     campaign_id?: number;
@@ -274,6 +260,51 @@ export class InvestorReportingService {
   }): Promise<{ success: boolean; reports: InvestorReport[] }> {
     try {
       const campaignId = filters?.campaign_id || 0;
+
+      if (campaignId === 0) {
+        // Cannot use campaign_id=0 in investor routes - need to get all campaigns first
+        const portfolio = await this.getPortfolio();
+        if (!portfolio.success || !portfolio.portfolio.by_campaign) {
+          return { success: true, reports: [] };
+        }
+
+        // Get reports for each campaign
+        const allReports: InvestorReport[] = [];
+        for (const campaign of portfolio.portfolio.by_campaign) {
+          const response = await this.getInvestorReports({
+            campaign_id: campaign.campaign_id,
+            report_type: filters?.report_type,
+          });
+          if (response.success) {
+            allReports.push(...response.reports);
+          }
+        }
+
+        // Filter by date if provided
+        let filteredReports = allReports;
+        if (filters?.start_date) {
+          filteredReports = filteredReports.filter(
+            (report) =>
+              new Date(report.report_date) >= new Date(filters.start_date!),
+          );
+        }
+        if (filters?.end_date) {
+          filteredReports = filteredReports.filter(
+            (report) =>
+              new Date(report.report_date) <= new Date(filters.end_date!),
+          );
+        }
+
+        // Sort by date
+        filteredReports.sort(
+          (a, b) =>
+            new Date(b.report_date).getTime() -
+            new Date(a.report_date).getTime(),
+        );
+
+        return { success: true, reports: filteredReports };
+      }
+
       let endpoint = `/investor/campaigns/${campaignId}/reports`;
 
       const params = new URLSearchParams();
@@ -291,71 +322,63 @@ export class InvestorReportingService {
       return response;
     } catch (error) {
       console.error('Error fetching investor reports:', error);
-      throw error;
+      return { success: false, reports: [] };
     }
   }
 
-  async getRecentReports(
+  async getRecentInvestorReports(
     limit: number = 10,
   ): Promise<{ success: boolean; reports: InvestorReport[] }> {
     try {
-      // Get reports from all campaigns (campaign_id = 0 means all)
-      const response = await this.getInvestorReports({ campaign_id: 0 });
+      const response = await this.getInvestorReports({});
       if (response.success) {
         return {
           success: true,
-          reports: response.reports
-            .sort(
-              (a, b) =>
-                new Date(b.report_date).getTime() -
-                new Date(a.report_date).getTime(),
-            )
-            .slice(0, limit),
+          reports: response.reports.slice(0, limit),
         };
       }
       return { success: false, reports: [] };
     } catch (error) {
-      console.error('Error fetching recent reports:', error);
+      console.error('Error fetching recent investor reports:', error);
       return { success: false, reports: [] };
     }
   }
 
-  async downloadReport(
-    reportId: number,
-    documentId?: number,
+  // Download document
+  async downloadDocument(
+    documentId: number,
   ): Promise<{ success: boolean; url?: string }> {
     try {
-      const endpoint = documentId
-        ? `/investor/documents/${documentId}/download`
-        : `/investor/documents/${reportId}/download`;
-
-      const response = await this.fetchApi(endpoint, {
-        method: 'POST',
-      });
-
-      if (response.success && response.url) {
-        // Handle the download - could be a redirect or direct URL
-        window.open(response.url, '_blank');
-        return response;
-      }
-      return { success: false };
+      const response = await this.fetchApi(
+        `/investor/documents/${documentId}/download`,
+        {
+          method: 'POST',
+        },
+      );
+      return response;
     } catch (error) {
-      console.error('Error downloading report:', error);
+      console.error('Error downloading document:', error);
       throw error;
     }
   }
 
   // Portfolio statement
-  async downloadPortfolioStatement(): Promise<{
+  async downloadPortfolioStatement(period?: string): Promise<{
     success: boolean;
     url?: string;
   }> {
     try {
-      const response = await this.fetchApi('/investor/portfolio/statement');
-      if (response.success && response.url) {
-        window.open(response.url, '_blank');
+      let endpoint = '/investor/portfolio/statement';
+      if (period) {
+        endpoint += `?period=${encodeURIComponent(period)}`;
       }
-      return response;
+      const response = await this.fetchApi(endpoint);
+
+      if (response.success) {
+        // This endpoint returns PDF directly, not a JSON response
+        return { success: true };
+      }
+      return { success: false };
     } catch (error) {
       console.error('Error downloading portfolio statement:', error);
       throw error;
@@ -416,6 +439,366 @@ export class InvestorReportingService {
     }
   }
 
+  // ========== CAMPAIGN MANAGEMENT ROUTES (for fundraisers) ==========
+
+  // Campaign financials management (full CRUD)
+  async getCampaignFinancials(
+    campaignId: number,
+    filters?: { status?: string },
+  ): Promise<{
+    success: boolean;
+    financials: FinancialStatement[];
+    summary?: any;
+  }> {
+    try {
+      let endpoint = `/campaigns/${campaignId}/financials`;
+      const params = new URLSearchParams();
+      if (filters?.status) params.append('status', filters.status);
+
+      const queryString = params.toString();
+      if (queryString) {
+        endpoint += `?${queryString}`;
+      }
+
+      const response = await this.fetchApi(endpoint);
+      return response;
+    } catch (error) {
+      console.error('Error fetching campaign financials:', error);
+      throw error;
+    }
+  }
+
+  async getCampaignFinancial(
+    campaignId: number,
+    financialId: number,
+  ): Promise<{
+    success: boolean;
+    financial: FinancialStatement;
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/campaigns/${campaignId}/financials/${financialId}`,
+      );
+      return response;
+    } catch (error) {
+      console.error('Error fetching campaign financial:', error);
+      throw error;
+    }
+  }
+
+  async createCampaignFinancial(
+    campaignId: number,
+    financialData: Partial<FinancialStatement>,
+  ): Promise<{
+    success: boolean;
+    financial: FinancialStatement;
+    errors?: string[];
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/campaigns/${campaignId}/financials`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ financial: financialData }),
+        },
+      );
+      return response;
+    } catch (error) {
+      console.error('Error creating campaign financial:', error);
+      throw error;
+    }
+  }
+
+  async updateCampaignFinancial(
+    campaignId: number,
+    financialId: number,
+    financialData: Partial<FinancialStatement>,
+  ): Promise<{
+    success: boolean;
+    financial: FinancialStatement;
+    errors?: string[];
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/campaigns/${campaignId}/financials/${financialId}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({ financial: financialData }),
+        },
+      );
+      return response;
+    } catch (error) {
+      console.error('Error updating campaign financial:', error);
+      throw error;
+    }
+  }
+
+  async deleteCampaignFinancial(
+    campaignId: number,
+    financialId: number,
+  ): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/campaigns/${campaignId}/financials/${financialId}`,
+        {
+          method: 'DELETE',
+        },
+      );
+      return response;
+    } catch (error) {
+      console.error('Error deleting campaign financial:', error);
+      throw error;
+    }
+  }
+
+  async publishCampaignFinancial(
+    campaignId: number,
+    financialId: number,
+  ): Promise<{
+    success: boolean;
+    financial: FinancialStatement;
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/campaigns/${campaignId}/financials/${financialId}/publish`,
+        {
+          method: 'POST',
+        },
+      );
+      return response;
+    } catch (error) {
+      console.error('Error publishing campaign financial:', error);
+      throw error;
+    }
+  }
+
+  async importCampaignFinancials(
+    campaignId: number,
+    file: File,
+  ): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(
+        `${this.baseUrl}/campaigns/${campaignId}/financials/import`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: formData,
+        },
+      );
+
+      return response.json();
+    } catch (error) {
+      console.error('Error importing campaign financials:', error);
+      throw error;
+    }
+  }
+
+  // Campaign KPIs management
+  async getCampaignKPIs(
+    campaignId: number,
+    filters?: { kpi_type?: string; is_primary?: boolean },
+  ): Promise<{
+    success: boolean;
+    kpis: KPI[];
+    dashboard?: any;
+  }> {
+    try {
+      let endpoint = `/campaigns/${campaignId}/kpis`;
+      const params = new URLSearchParams();
+      if (filters?.kpi_type) params.append('kpi_type', filters.kpi_type);
+      if (filters?.is_primary !== undefined)
+        params.append('is_primary', filters.is_primary.toString());
+
+      const queryString = params.toString();
+      if (queryString) {
+        endpoint += `?${queryString}`;
+      }
+
+      const response = await this.fetchApi(endpoint);
+      return response;
+    } catch (error) {
+      console.error('Error fetching campaign KPIs:', error);
+      throw error;
+    }
+  }
+
+  async createCampaignKPI(
+    campaignId: number,
+    kpiData: Partial<KPI>,
+  ): Promise<{
+    success: boolean;
+    kpi: KPI;
+    errors?: string[];
+  }> {
+    try {
+      const response = await this.fetchApi(`/campaigns/${campaignId}/kpis`, {
+        method: 'POST',
+        body: JSON.stringify({ kpi: kpiData }),
+      });
+      return response;
+    } catch (error) {
+      console.error('Error creating campaign KPI:', error);
+      throw error;
+    }
+  }
+
+  async addKPIValue(
+    campaignId: number,
+    kpiId: number,
+    valueData: { period_date: string; value: number; is_actual?: boolean },
+  ): Promise<{
+    success: boolean;
+    value: any;
+    errors?: string[];
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/campaigns/${campaignId}/kpis/${kpiId}/add_value`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ value: valueData }),
+        },
+      );
+      return response;
+    } catch (error) {
+      console.error('Error adding KPI value:', error);
+      throw error;
+    }
+  }
+
+  async getKPIValues(
+    campaignId: number,
+    kpiId: number,
+    periodStart?: string,
+    periodEnd?: string,
+  ): Promise<{
+    success: boolean;
+    values: Array<{ period_date: string; value: number }>;
+    trend: Record<string, number>;
+  }> {
+    try {
+      let endpoint = `/campaigns/${campaignId}/kpis/${kpiId}/values`;
+      const params = new URLSearchParams();
+      if (periodStart) params.append('period_start', periodStart);
+      if (periodEnd) params.append('period_end', periodEnd);
+
+      const queryString = params.toString();
+      if (queryString) {
+        endpoint += `?${queryString}`;
+      }
+
+      const response = await this.fetchApi(endpoint);
+      return response;
+    } catch (error) {
+      console.error('Error fetching KPI values:', error);
+      throw error;
+    }
+  }
+
+  // Campaign investor reports management
+  async getCampaignInvestorReports(
+    campaignId: number,
+    filters?: { report_type?: string; status?: string },
+  ): Promise<{ success: boolean; reports: InvestorReport[] }> {
+    try {
+      let endpoint = `/campaigns/${campaignId}/investor_reports`;
+      const params = new URLSearchParams();
+      if (filters?.report_type)
+        params.append('report_type', filters.report_type);
+      if (filters?.status) params.append('status', filters.status);
+
+      const queryString = params.toString();
+      if (queryString) {
+        endpoint += `?${queryString}`;
+      }
+
+      const response = await this.fetchApi(endpoint);
+      return response;
+    } catch (error) {
+      console.error('Error fetching campaign investor reports:', error);
+      throw error;
+    }
+  }
+
+  async createCampaignInvestorReport(
+    campaignId: number,
+    reportData: Partial<InvestorReport>,
+  ): Promise<{
+    success: boolean;
+    report: InvestorReport;
+    errors?: string[];
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/campaigns/${campaignId}/investor_reports`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ report: reportData }),
+        },
+      );
+      return response;
+    } catch (error) {
+      console.error('Error creating campaign investor report:', error);
+      throw error;
+    }
+  }
+
+  async publishCampaignInvestorReport(
+    campaignId: number,
+    reportId: number,
+  ): Promise<{
+    success: boolean;
+    report: InvestorReport;
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/campaigns/${campaignId}/investor_reports/${reportId}/publish`,
+        {
+          method: 'POST',
+        },
+      );
+      return response;
+    } catch (error) {
+      console.error('Error publishing campaign investor report:', error);
+      throw error;
+    }
+  }
+
+  async generateQuarterlyReport(
+    campaignId: number,
+    reportDate?: string,
+  ): Promise<{
+    success: boolean;
+    report: InvestorReport;
+  }> {
+    try {
+      const endpoint = reportDate
+        ? `/campaigns/${campaignId}/investor_reports/generate_quarterly?report_date=${reportDate}`
+        : `/campaigns/${campaignId}/investor_reports/generate_quarterly`;
+
+      const response = await this.fetchApi(endpoint, {
+        method: 'POST',
+      });
+      return response;
+    } catch (error) {
+      console.error('Error generating quarterly report:', error);
+      throw error;
+    }
+  }
+
+  // ========== HELPER METHODS ==========
+
   async getUnreadNotificationCount(): Promise<{
     success: boolean;
     count: number;
@@ -430,7 +813,6 @@ export class InvestorReportingService {
     }
   }
 
-  // Get portfolio analysis
   async getPortfolioAnalysis(): Promise<{
     success: boolean;
     performance_metrics: any;
@@ -462,89 +844,6 @@ export class InvestorReportingService {
     }
   }
 
-  // Get KPI trend data - Fixed endpoint path
-  async getKPITrendData(
-    campaignId: number,
-    kpiId: number,
-    days: number = 90,
-  ): Promise<{
-    success: boolean;
-    trend: Record<string, number>;
-    values: Array<{ period_date: string; value: number }>;
-  }> {
-    try {
-      const response = await this.fetchApi(
-        `/campaigns/${campaignId}/kpis/${kpiId}/values?days=${days}`,
-      );
-      return response;
-    } catch (error) {
-      console.error('Error fetching KPI trend data:', error);
-      throw error;
-    }
-  }
-
-  // Generate portfolio statement with options
-  async generatePortfolioStatement(options: {
-    period: string;
-    format: string;
-    includeSections: string[];
-  }): Promise<{ success: boolean; url: string; filename: string }> {
-    try {
-      const response = await this.fetchApi('/investor/portfolio/statement', {
-        method: 'POST',
-        body: JSON.stringify(options),
-      });
-      return response;
-    } catch (error) {
-      console.error('Error generating portfolio statement:', error);
-      throw error;
-    }
-  }
-
-  // Get recent notifications
-  async getRecentNotifications(limit: number = 10): Promise<{
-    success: boolean;
-    notifications: Array<{
-      id: number;
-      title: string;
-      message: string;
-      type: string;
-      created_at: string;
-      read: boolean;
-      data: any;
-    }>;
-  }> {
-    try {
-      // This endpoint needs to be implemented on backend
-      return { success: true, notifications: [] };
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-      return { success: false, notifications: [] };
-    }
-  }
-
-  // Get statement history
-  async getStatementHistory(): Promise<{
-    success: boolean;
-    statements: Array<{
-      id: number;
-      date: string;
-      period: string;
-      format: string;
-      size: string;
-      download_url: string;
-    }>;
-  }> {
-    try {
-      // This endpoint needs to be implemented
-      return { success: true, statements: [] };
-    } catch (error) {
-      console.error('Error fetching statement history:', error);
-      return { success: false, statements: [] };
-    }
-  }
-
-  // Get campaign risk metrics
   async getCampaignRiskMetrics(campaignId: number): Promise<{
     success: boolean;
     metrics: {
@@ -603,6 +902,49 @@ export class InvestorReportingService {
     } catch (error) {
       console.error('Error fetching campaign risk metrics:', error);
       throw error;
+    }
+  }
+
+  // Get recent notifications
+  async getRecentNotifications(limit: number = 10): Promise<{
+    success: boolean;
+    notifications: Array<{
+      id: number;
+      title: string;
+      message: string;
+      type: string;
+      created_at: string;
+      read: boolean;
+      data: any;
+    }>;
+  }> {
+    try {
+      // This endpoint needs to be implemented on backend
+      return { success: true, notifications: [] };
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      return { success: false, notifications: [] };
+    }
+  }
+
+  // Get statement history
+  async getStatementHistory(): Promise<{
+    success: boolean;
+    statements: Array<{
+      id: number;
+      date: string;
+      period: string;
+      format: string;
+      size: string;
+      download_url: string;
+    }>;
+  }> {
+    try {
+      // This endpoint needs to be implemented
+      return { success: true, statements: [] };
+    } catch (error) {
+      console.error('Error fetching statement history:', error);
+      return { success: false, statements: [] };
     }
   }
 }

@@ -58,7 +58,7 @@ import {
   PolarRadiusAxis,
   Radar,
 } from 'recharts';
-import { InvestorReportingService } from './services/investor-reporting.service';
+import { investorReportingService } from './services/investor-reporting.service';
 import { Skeleton } from '../ui/Skeleton';
 import { formatDate } from '@/app/utils/helpers/formatters';
 
@@ -81,7 +81,6 @@ interface KPI {
   };
   trend: Record<string, number>;
   performance_vs_target?: {
-    // Change from null to optional
     current_value: number;
     target_value: number;
     difference: number;
@@ -108,15 +107,17 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
   const fetchKPIs = async () => {
     try {
       setLoading(true);
-      const service = new InvestorReportingService();
-      const response = await service.getKPIs(campaignId!, selectedKpiType);
+      const response = await investorReportingService.getInvestorKPIs(
+        campaignId!,
+        selectedKpiType !== 'all' ? selectedKpiType : undefined,
+      );
 
       if (response.success) {
         setKpis(response.kpis);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching KPIs:', error);
-      toast.error('Failed to load KPI dashboard');
+      toast.error(error.message || 'Failed to load KPI dashboard');
     } finally {
       setLoading(false);
     }

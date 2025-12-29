@@ -56,7 +56,7 @@ import {
 import { formatCurrency } from '@/app/utils/helpers/formatters';
 import { Skeleton } from '../ui/Skeleton';
 import { formatDate } from '@/app/utils/helpers/formatters';
-import { InvestorReportingService } from './services/investor-reporting.service';
+import { investorReportingService } from './services/investor-reporting.service';
 
 interface FinancialStatementsModalProps {
   isOpen: boolean;
@@ -82,6 +82,8 @@ interface FinancialStatement {
   net_margin: number;
   status: string;
   published_at: string;
+  source_file_url?: string;
+  source_file_name?: string;
 }
 
 const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
@@ -101,7 +103,6 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
     revenueData: [],
     profitabilityData: [],
   });
-  const [service] = useState(new InvestorReportingService());
 
   useEffect(() => {
     if (isOpen && campaignId) {
@@ -112,10 +113,12 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   const fetchStatements = async () => {
     try {
       setLoading(true);
-      const response = await service.getFinancialStatements(
-        campaignId!,
-        periodType,
-      );
+      // Use investor endpoint for read-only access
+      const response =
+        await investorReportingService.getInvestorFinancialStatements(
+          campaignId!,
+          periodType !== 'all' ? periodType : undefined,
+        );
 
       if (response.success) {
         setStatements(response.financials);
@@ -124,9 +127,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
           prepareChartData(response.financials);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching financial statements:', error);
-      toast.error('Failed to load financial statements');
+      toast.error(error.message || 'Failed to load financial statements');
     } finally {
       setLoading(false);
     }
@@ -157,11 +160,11 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
 
   const handleDownloadStatement = async (statementId: number) => {
     try {
-      await service.downloadFinancialStatement(statementId);
+      await investorReportingService.downloadDocument(statementId);
       toast.success('Financial statement downloaded');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error downloading statement:', error);
-      toast.error('Failed to download financial statement');
+      toast.error(error.message || 'Failed to download financial statement');
     }
   };
 

@@ -48,11 +48,7 @@ import FinancialStatementsModal from './FinancialStatementsModal';
 import KPIDashboardModal from './KPIDashboardModal';
 import NotificationPreferencesModal from './NotificationPreferencesModal';
 import PortfolioStatementModal from './PortfolioStatementModal';
-import {
-  InvestorReportingService,
-  PortfolioData,
-  InvestorReport,
-} from './services/investor-reporting.service';
+import { investorReportingService } from './services/investor-reporting.service';
 
 interface PortfolioMetrics {
   total_invested: number;
@@ -88,11 +84,9 @@ const InvestorReportingDashboard: React.FC = () => {
   const [campaignPerformance, setCampaignPerformance] = useState<
     CampaignPerformance[]
   >([]);
-  const [recentReports, setRecentReports] = useState<InvestorReport[]>([]);
+  const [recentReports, setRecentReports] = useState<any[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
-  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(
-    null,
-  );
+  const [portfolioData, setPortfolioData] = useState<any>(null);
 
   // Modal states
   const [showPortfolioOverview, setShowPortfolioOverview] = useState(false);
@@ -121,10 +115,8 @@ const InvestorReportingDashboard: React.FC = () => {
         localStorage.setItem('token', token);
       }
 
-      const service = new InvestorReportingService();
-
       // Fetch portfolio data
-      const portfolioResponse = await service.getPortfolio();
+      const portfolioResponse = await investorReportingService.getPortfolio();
       if (portfolioResponse.success) {
         const portfolioData = portfolioResponse.portfolio;
         setPortfolioData(portfolioData);
@@ -133,13 +125,15 @@ const InvestorReportingDashboard: React.FC = () => {
       }
 
       // Fetch recent reports
-      const reportsResponse = await service.getRecentReports(5);
+      const reportsResponse =
+        await investorReportingService.getRecentInvestorReports(5);
       if (reportsResponse.success) {
         setRecentReports(reportsResponse.reports);
       }
 
       // Fetch notification count
-      const notificationsResponse = await service.getUnreadNotificationCount();
+      const notificationsResponse =
+        await investorReportingService.getUnreadNotificationCount();
       setUnreadNotifications(notificationsResponse.count || 0);
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
@@ -151,8 +145,7 @@ const InvestorReportingDashboard: React.FC = () => {
 
   const handleDownloadStatement = async () => {
     try {
-      const service = new InvestorReportingService();
-      await service.downloadPortfolioStatement();
+      await investorReportingService.downloadPortfolioStatement();
       toast.success('Portfolio statement downloaded successfully');
     } catch (error: any) {
       console.error('Error downloading statement:', error);
@@ -167,8 +160,7 @@ const InvestorReportingDashboard: React.FC = () => {
 
   const handleDownloadReport = async (reportId: number) => {
     try {
-      const service = new InvestorReportingService();
-      await service.downloadReport(reportId);
+      await investorReportingService.downloadDocument(reportId);
       toast.success('Report downloaded successfully');
     } catch (error: any) {
       console.error('Error downloading report:', error);

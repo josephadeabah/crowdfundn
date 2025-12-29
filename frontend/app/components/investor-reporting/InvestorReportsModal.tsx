@@ -44,40 +44,42 @@ import {
 import { toast } from 'sonner';
 import { Skeleton } from '../ui/Skeleton';
 import { formatDate } from '@/app/utils/helpers/formatters';
-import { InvestorReportingService } from './services/investor-reporting.service';
+import { investorReportingService } from './services/investor-reporting.service';
 
 interface InvestorReportsModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// In InvestorReportsModal.tsx, update the interface:
 interface InvestorReport {
   id: number;
   title: string;
   report_type: string;
   report_date: string;
-  period_start?: string; // Change from string to string | undefined
-  period_end?: string; // Change from string to string | undefined
+  period_start?: string;
+  period_end?: string;
   period_description: string;
-  executive_summary?: string; // Make optional
-  key_highlights?: string; // Make optional
+  executive_summary?: string;
+  key_highlights?: string;
+  challenges_risks?: string;
+  forward_outlook?: string;
   status: string;
+  notify_investors: boolean;
+  published_at: string;
+  published_by_name?: string;
   download_count: number;
   campaign: {
     id: number;
     name: string;
     company_name: string;
   };
-  published_by_name?: string; // Make optional
-  published_at: string;
   documents: Array<{
     id: number;
     document_type: string;
     title: string;
-    file_url?: string; // Make optional
-    file_name?: string; // Make optional
-    file_size?: string; // Make optional
+    file_url?: string;
+    file_name?: string;
+    file_size?: string;
   }>;
 }
 
@@ -109,8 +111,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const service = new InvestorReportingService();
-      const response = await service.getInvestorReports();
+      const response = await investorReportingService.getInvestorReports();
 
       if (response.success) {
         setReports(response.reports);
@@ -118,9 +119,9 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
           setSelectedReport(response.reports[0]);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching reports:', error);
-      toast.error('Failed to load investor reports');
+      toast.error(error.message || 'Failed to load investor reports');
     } finally {
       setLoading(false);
     }
@@ -181,15 +182,16 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
     documentId?: number,
   ) => {
     try {
-      const service = new InvestorReportingService();
-      const response = await service.downloadReport(reportId, documentId);
+      const response = await investorReportingService.downloadDocument(
+        documentId || reportId,
+      );
 
       if (response.success && response.url) {
         window.open(response.url, '_blank');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error downloading report:', error);
-      toast.error('Failed to download report');
+      toast.error(error.message || 'Failed to download report');
     }
   };
 
@@ -515,7 +517,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                             Published By
                           </span>
                           <span className="font-medium">
-                            {selectedReport.published_by_name}
+                            {selectedReport.published_by_name || 'System'}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
