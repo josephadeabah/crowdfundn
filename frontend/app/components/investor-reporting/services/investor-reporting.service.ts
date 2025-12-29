@@ -134,8 +134,7 @@ export interface PortfolioMetricsResponse {
 }
 
 export class InvestorReportingService {
-  private baseUrl =
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+  private baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   private async fetchApi(endpoint: string, options: RequestInit = {}) {
     const token =
