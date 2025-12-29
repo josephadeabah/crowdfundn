@@ -90,13 +90,13 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
 
       // Fetch portfolio analysis data
       const analysisResponse = await service.getPortfolioAnalysis();
-      if (analysisResponse.success) {
+      if (analysisResponse?.success) {
         setAnalysisData(analysisResponse);
       }
 
       // Fetch portfolio metrics for the selected time period
       const metricsResponse = await service.getPortfolioMetrics(timePeriod);
-      if (metricsResponse.success) {
+      if (metricsResponse?.success) {
         setDetailedData(metricsResponse);
       }
     } catch (error) {
@@ -116,8 +116,8 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
         includeSections: ['summary', 'performance', 'breakdown', 'risk'],
       });
 
-      if (response.success && response.url) {
-        window.open(response.url, '_blank');
+      if (response?.success && response?.url) {
+        window.open(response?.url, '_blank');
         toast.success('Portfolio statement generated successfully');
       }
     } catch (error) {
@@ -128,26 +128,26 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
 
   if (!portfolioData?.summary) return null;
 
-  const summary = portfolioData.summary;
-  const campaigns = portfolioData.by_campaign || [];
-  const performanceMetrics = portfolioData.performance_metrics || {};
-  const riskAnalysis = portfolioData.risk_analysis || {};
-  const projections = portfolioData.projections || [];
+  const summary = portfolioData?.summary;
+  const campaigns = portfolioData?.by_campaign || [];
+  const performanceMetrics = portfolioData?.performance_metrics || {};
+  const riskAnalysis = portfolioData?.risk_analysis || {};
+  const projections = portfolioData?.projections || [];
 
   // Prepare real chart data
-  const performanceData = (campaigns || []).map((campaign: any) => ({
+  const performanceData = (campaigns || [])?.map((campaign: any) => ({
     name:
-      (campaign.company_name || '').substring(0, 15) +
-      ((campaign.company_name || '').length > 15 ? '...' : ''),
-    invested: campaign.invested || 0,
-    current: campaign.current_value || 0,
-    returns: campaign.returns || 0,
-    roi: campaign.roi || 0,
+      (campaign?.company_name || '')?.substring(0, 15) +
+      ((campaign?.company_name || '')?.length > 15 ? '...' : ''),
+    invested: campaign?.invested ?? 0,
+    current: campaign?.current_value ?? 0,
+    returns: campaign?.returns ?? 0,
+    roi: campaign?.roi ?? 0,
   }));
 
-  const concentrationData = campaigns.slice(0, 5).map((campaign: any) => ({
-    name: campaign.company_name,
-    value: (campaign.invested / summary.total_invested) * 100,
+  const concentrationData = campaigns?.slice(0, 5)?.map((campaign: any) => ({
+    name: campaign?.company_name,
+    value: ((campaign?.invested ?? 0) / (summary?.total_invested ?? 1)) * 100,
   }));
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
@@ -200,9 +200,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                   </p>
                   <p className="text-2xl font-bold">
                     {formatCurrency(
-                      summary.total_invested,
-                      summary.currency,
-                      summary.currency_symbol,
+                      summary?.total_invested ?? 0,
+                      summary?.currency,
+                      summary?.currency_symbol,
                     )}
                   </p>
                 </div>
@@ -220,9 +220,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                   </p>
                   <p className="text-2xl font-bold">
                     {formatCurrency(
-                      summary.current_value,
-                      summary.currency,
-                      summary.currency_symbol,
+                      summary?.current_value ?? 0,
+                      summary?.currency,
+                      summary?.currency_symbol,
                     )}
                   </p>
                 </div>
@@ -239,16 +239,16 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                     Total Returns
                   </p>
                   <p
-                    className={`text-2xl font-bold ${summary.total_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                    className={`text-2xl font-bold ${(summary?.total_returns ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                   >
                     {formatCurrency(
-                      summary.total_returns,
-                      summary.currency,
-                      summary.currency_symbol,
+                      summary?.total_returns ?? 0,
+                      summary?.currency,
+                      summary?.currency_symbol,
                     )}
                   </p>
                 </div>
-                {summary.total_returns >= 0 ? (
+                {(summary?.total_returns ?? 0) >= 0 ? (
                   <TrendingUp className="h-8 w-8 text-green-500" />
                 ) : (
                   <TrendingDown className="h-8 w-8 text-red-500" />
@@ -265,9 +265,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                     ROI
                   </p>
                   <p
-                    className={`text-2xl font-bold ${summary.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                    className={`text-2xl font-bold ${(summary?.roi ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                   >
-                    {summary.roi.toFixed(2)}%
+                    {(summary?.roi?.toFixed(2) ?? '0.00')}%
                   </p>
                 </div>
                 <Percent className="h-8 w-8 text-purple-500" />
@@ -297,7 +297,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
               <CardContent>
                 {loading ? (
                   <Skeleton className="h-[300px] w-full" />
-                ) : campaigns.length > 0 ? (
+                ) : campaigns?.length > 0 ? (
                   <div className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsBarChart data={performanceData}>
@@ -311,8 +311,8 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                             return [
                               formatCurrency(
                                 value as number,
-                                summary.currency,
-                                summary.currency_symbol,
+                                summary?.currency,
+                                summary?.currency_symbol,
                               ),
                               name,
                             ];
@@ -362,26 +362,26 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {campaigns.map((campaign: any) => (
+                    {campaigns?.map((campaign: any) => (
                       <div
-                        key={campaign.campaign_id}
+                        key={campaign?.campaign_id}
                         className="flex items-center justify-between p-4 border rounded-lg"
                       >
                         <div className="flex items-center space-x-4">
                           <Building className="h-10 w-10 text-muted-foreground" />
                           <div>
                             <h4 className="font-medium">
-                              {campaign.company_name}
+                              {campaign?.company_name}
                             </h4>
                             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                               <Users className="h-3 w-3" />
                               <span>
-                                {campaign.investment_count} investment
-                                {campaign.investment_count !== 1 ? 's' : ''}
+                                {campaign?.investment_count} investment
+                                {campaign?.investment_count !== 1 ? 's' : ''}
                               </span>
                               <span>•</span>
                               <span>
-                                {campaign.ownership_percentage.toFixed(2)}%
+                                {(campaign?.ownership_percentage?.toFixed(2) ?? '0.00')}%
                                 ownership
                               </span>
                             </div>
@@ -390,30 +390,30 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         <div className="text-right">
                           <div className="font-medium">
                             {formatCurrency(
-                              campaign.current_value,
-                              summary.currency,
-                              summary.currency_symbol,
+                              campaign?.current_value ?? 0,
+                              summary?.currency,
+                              summary?.currency_symbol,
                             )}
                           </div>
                           <div className="text-sm text-muted-foreground">
                             Invested:{' '}
                             {formatCurrency(
-                              campaign.invested,
-                              summary.currency,
-                              summary.currency_symbol,
+                              campaign?.invested ?? 0,
+                              summary?.currency,
+                              summary?.currency_symbol,
                             )}
                           </div>
                           <div
-                            className={`text-sm font-medium ${campaign.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                            className={`text-sm font-medium ${(campaign?.roi ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                           >
-                            {campaign.roi >= 0 ? '+' : ''}
-                            {campaign.roi.toFixed(2)}% ROI
+                            {(campaign?.roi ?? 0) >= 0 ? '+' : ''}
+                            {(campaign?.roi?.toFixed(2) ?? '0.00')}% ROI
                           </div>
                         </div>
                       </div>
                     ))}
 
-                    {campaigns.length === 0 && (
+                    {campaigns?.length === 0 && (
                       <div className="text-center py-12 text-muted-foreground">
                         <Building className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No investment data available</p>
@@ -438,11 +438,11 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                       <div className="flex justify-between text-sm mb-1">
                         <span>Internal Rate of Return (IRR)</span>
                         <span className="font-medium">
-                          {summary.irr?.toFixed(2) || '0.00'}%
+                          {(summary?.irr?.toFixed(2) ?? '0.00')}%
                         </span>
                       </div>
                       <Progress
-                        value={Math.min(summary.irr || 0, 100)}
+                        value={Math.min(summary?.irr ?? 0, 100)}
                         className="h-2"
                       />
                     </div>
@@ -450,11 +450,11 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                       <div className="flex justify-between text-sm mb-1">
                         <span>Multiple on Invested Capital (MOIC)</span>
                         <span className="font-medium">
-                          {summary.moic?.toFixed(2) || '0.00'}x
+                          {(summary?.moic?.toFixed(2) ?? '0.00')}x
                         </span>
                       </div>
                       <Progress
-                        value={Math.min((summary.moic || 0) * 50, 100)}
+                        value={Math.min(((summary?.moic ?? 0) * 50), 100)}
                         className="h-2"
                       />
                     </div>
@@ -463,23 +463,23 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                     <div className="flex items-center justify-between p-3 border rounded-lg">
                       <span className="text-sm">Active Investments</span>
                       <Badge variant="secondary">
-                        {summary.active_investments}
+                        {summary?.active_investments}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between p-3 border rounded-lg">
                       <span className="text-sm">Campaigns Invested</span>
                       <Badge variant="secondary">
-                        {summary.invested_campaigns}
+                        {summary?.invested_campaigns}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between p-3 border rounded-lg">
                       <span className="text-sm">Average Investment Size</span>
                       <span className="font-medium">
                         {formatCurrency(
-                          summary.total_invested /
-                            Math.max(summary.active_investments, 1),
-                          summary.currency,
-                          summary.currency_symbol,
+                          (summary?.total_invested ?? 0) /
+                            Math.max(summary?.active_investments ?? 1, 1),
+                          summary?.currency,
+                          summary?.currency_symbol,
                         )}
                       </span>
                     </div>
@@ -500,7 +500,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
               <CardContent>
                 <div className="space-y-6">
                   {/* Pie Chart */}
-                  {campaigns.length > 0 ? (
+                  {campaigns?.length > 0 ? (
                     <div className="h-[300px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <RechartsPieChart>
@@ -510,13 +510,13 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                             cy="50%"
                             labelLine={false}
                             label={({ name, percent }) =>
-                              `${name}: ${(percent * 100).toFixed(1)}%`
+                              `${name}: ${((percent ?? 0) * 100)?.toFixed(1)}%`
                             }
                             outerRadius={100}
                             fill="#8884d8"
                             dataKey="value"
                           >
-                            {concentrationData.map(
+                            {concentrationData?.map(
                               (entry: any, index: number) => (
                                 <Cell
                                   key={`cell-${index}`}
@@ -541,28 +541,28 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
 
                   {/* Detailed Breakdown */}
                   <div className="space-y-4">
-                    {campaigns.map((campaign: any) => {
+                    {campaigns?.map((campaign: any) => {
                       const percentage =
-                        (campaign.invested / summary.total_invested) * 100;
+                        ((campaign?.invested ?? 0) / (summary?.total_invested ?? 1)) * 100;
                       return (
-                        <div key={campaign.campaign_id} className="space-y-2">
+                        <div key={campaign?.campaign_id} className="space-y-2">
                           <div className="flex justify-between text-sm">
-                            <span>{campaign.company_name}</span>
+                            <span>{campaign?.company_name}</span>
                             <span className="font-medium">
-                              {percentage.toFixed(1)}%
+                              {percentage?.toFixed(1)}%
                             </span>
                           </div>
                           <Progress value={percentage} className="h-2" />
                           <div className="flex justify-between text-xs text-muted-foreground">
                             <span>
                               {formatCurrency(
-                                campaign.invested,
-                                summary.currency,
-                                summary.currency_symbol,
+                                campaign?.invested ?? 0,
+                                summary?.currency,
+                                summary?.currency_symbol,
                               )}
                             </span>
                             <span>
-                              {campaign.ownership_percentage.toFixed(2)}%
+                              {(campaign?.ownership_percentage?.toFixed(2) ?? '0.00')}%
                               ownership
                             </span>
                           </div>
@@ -589,13 +589,13 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                     <h4 className="font-medium mb-3">Concentration Risk</h4>
                     <div className="space-y-3">
                       {campaigns
-                        .slice(0, 3)
-                        .map((campaign: any, index: number) => {
+                        ?.slice(0, 3)
+                        ?.map((campaign: any, index: number) => {
                           const percentage =
-                            (campaign.invested / summary.total_invested) * 100;
+                            ((campaign?.invested ?? 0) / (summary?.total_invested ?? 1)) * 100;
                           return (
                             <div
-                              key={campaign.campaign_id}
+                              key={campaign?.campaign_id}
                               className="flex items-center justify-between"
                             >
                               <div className="flex items-center space-x-3">
@@ -605,18 +605,18 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                                   </span>
                                 </div>
                                 <span className="text-sm">
-                                  {campaign.company_name}
+                                  {campaign?.company_name}
                                 </span>
                               </div>
                               <div className="text-right">
                                 <div className="font-medium">
-                                  {percentage.toFixed(1)}%
+                                  {percentage?.toFixed(1)}%
                                 </div>
                                 <div className="text-xs text-muted-foreground">
                                   {formatCurrency(
-                                    campaign.invested,
-                                    summary.currency,
-                                    summary.currency_symbol,
+                                    campaign?.invested ?? 0,
+                                    summary?.currency,
+                                    summary?.currency_symbol,
                                   )}
                                 </div>
                               </div>
@@ -634,7 +634,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                           Portfolio Concentration
                         </div>
                         <div className="text-lg font-medium">
-                          {(riskAnalysis.concentration_risk * 100).toFixed(1)}%
+                          {((riskAnalysis?.concentration_risk ?? 0) * 100)?.toFixed(1)}%
                         </div>
                         <div className="text-xs text-muted-foreground">
                           Herfindahl-Hirschman Index
@@ -645,11 +645,11 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                           Overall Risk Score
                         </div>
                         <div className="text-lg font-medium">
-                          {(riskAnalysis.overall_risk_score * 100).toFixed(1)}%
+                          {((riskAnalysis?.overall_risk_score ?? 0) * 100)?.toFixed(1)}%
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {riskAnalysis.risk_category?.toUpperCase() ||
-                            'MEDIUM'}
+                          {(riskAnalysis?.risk_category?.toUpperCase() ||
+                            'MEDIUM')}
                         </div>
                       </div>
                     </div>
@@ -665,30 +665,30 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                           <span>Sector Diversification</span>
                           <span className="font-medium">
                             {(
-                              riskAnalysis.sector_diversification * 100
-                            ).toFixed(1)}
+                              (riskAnalysis?.sector_diversification ?? 0) * 100
+                            )?.toFixed(1)}
                             %
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span>Liquidity Risk</span>
                           <span className="font-medium">
-                            {(riskAnalysis.liquidity_risk * 100).toFixed(1)}%
+                            {((riskAnalysis?.liquidity_risk ?? 0) * 100)?.toFixed(1)}%
                           </span>
                         </div>
-                        {riskAnalysis.volatility && (
+                        {riskAnalysis?.volatility && (
                           <div className="flex justify-between text-sm">
                             <span>Volatility</span>
                             <span className="font-medium">
-                              {(riskAnalysis.volatility * 100).toFixed(1)}%
+                              {((riskAnalysis?.volatility ?? 0) * 100)?.toFixed(1)}%
                             </span>
                           </div>
                         )}
-                        {riskAnalysis.sharpe_ratio && (
+                        {riskAnalysis?.sharpe_ratio && (
                           <div className="flex justify-between text-sm">
                             <span>Sharpe Ratio</span>
                             <span className="font-medium">
-                              {riskAnalysis.sharpe_ratio.toFixed(2)}
+                              {(riskAnalysis?.sharpe_ratio?.toFixed(2) ?? '0.00')}
                             </span>
                           </div>
                         )}
@@ -711,33 +711,33 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
               <CardContent>
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {projections.slice(0, 3).map((projection: any) => (
-                      <Card key={projection.years}>
+                    {projections?.slice(0, 3)?.map((projection: any) => (
+                      <Card key={projection?.years}>
                         <CardContent className="pt-6">
                           <div className="text-center">
                             <div className="text-sm font-medium text-muted-foreground mb-2">
-                              {projection.years} Year
-                              {projection.years !== 1 ? 's' : ''} Projection
+                              {projection?.years} Year
+                              {projection?.years !== 1 ? 's' : ''} Projection
                             </div>
                             <div className="text-2xl font-bold mb-1">
                               {formatCurrency(
-                                projection.projected_value,
-                                summary.currency,
-                                summary.currency_symbol,
+                                projection?.projected_value ?? 0,
+                                summary?.currency,
+                                summary?.currency_symbol,
                               )}
                             </div>
                             <div
-                              className={`text-sm ${projection.projected_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                              className={`text-sm ${(projection?.projected_returns ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                             >
-                              {projection.projected_returns >= 0 ? '+' : ''}
+                              {(projection?.projected_returns ?? 0) >= 0 ? '+' : ''}
                               {formatCurrency(
-                                projection.projected_returns,
-                                summary.currency,
-                                summary.currency_symbol,
+                                projection?.projected_returns ?? 0,
+                                summary?.currency,
+                                summary?.currency_symbol,
                               )}
                             </div>
                             <div className="text-xs text-muted-foreground mt-2">
-                              {projection.annual_growth.toFixed(2)}% annual
+                              {(projection?.annual_growth?.toFixed(2) ?? '0.00')}% annual
                               growth
                             </div>
                           </div>
@@ -751,7 +751,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                     <ul className="space-y-2 text-sm text-muted-foreground">
                       <li className="flex items-center">
                         <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                        Current ROI of {summary.roi.toFixed(2)}% remains
+                        Current ROI of {(summary?.roi?.toFixed(2) ?? '0.00')}% remains
                         constant
                       </li>
                       <li className="flex items-center">
@@ -762,32 +762,32 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
                         Company valuations grow at current rate
                       </li>
-                      {projections.length > 0 && (
+                      {projections?.length > 0 && (
                         <li className="flex items-center">
                           <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                          Based on {projections.length} projection models
+                          Based on {projections?.length} projection models
                         </li>
                       )}
                     </ul>
                   </div>
 
-                  {projections.length > 0 && (
+                  {projections?.length > 0 && (
                     <div className="pt-4 border-t">
                       <h4 className="font-medium mb-3">Detailed Projections</h4>
                       <div className="space-y-3">
-                        {projections.map((proj: any, index: number) => (
+                        {projections?.map((proj: any, index: number) => (
                           <div
                             key={index}
                             className="flex justify-between text-sm"
                           >
                             <span>
-                              {proj.scenario || `Scenario ${index + 1}`}
+                              {proj?.scenario || `Scenario ${index + 1}`}
                             </span>
                             <span className="font-medium">
                               {formatCurrency(
-                                proj.projected_value,
-                                summary.currency,
-                                summary.currency_symbol,
+                                proj?.projected_value ?? 0,
+                                summary?.currency,
+                                summary?.currency_symbol,
                               )}
                             </span>
                           </div>
@@ -807,7 +807,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
             Data as of {formatDate(new Date().toISOString())}
             {detailedData?.calculation_date && (
               <span className="ml-2">
-                • Last calculated: {formatDate(detailedData.calculation_date)}
+                • Last calculated: {formatDate(detailedData?.calculation_date)}
               </span>
             )}
           </p>

@@ -130,10 +130,10 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
       setLoading(true);
       const response = await service.getPortfolio();
 
-      if (response.success && response.portfolio) {
+      if (response?.success && response?.portfolio) {
         setPortfolioData({
-          summary: response.portfolio.summary,
-          campaigns: response.portfolio.by_campaign || [],
+          summary: response?.portfolio?.summary ?? null,
+          campaigns: response?.portfolio?.by_campaign ?? [],
         });
       }
     } catch (error) {
@@ -147,8 +147,8 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
   const fetchStatementHistory = async () => {
     try {
       const response = await service.getStatementHistory();
-      if (response.success) {
-        setStatementHistory(response.statements);
+      if (response?.success) {
+        setStatementHistory(response?.statements ?? []);
       }
     } catch (error) {
       console.error('Error fetching statement history:', error);
@@ -168,10 +168,10 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
 
       const response = await service.generatePortfolioStatement(options);
 
-      if (response.success) {
+      if (response?.success) {
         toast.success('Portfolio statement generated successfully');
-        if (response.url) {
-          window.open(response.url, '_blank');
+        if (response?.url) {
+          window.open(response?.url, '_blank');
         }
         onDownload();
 
@@ -182,7 +182,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
       }
     } catch (error: any) {
       console.error('Error generating statement:', error);
-      toast.error(error.message || 'Failed to generate portfolio statement');
+      toast.error(error?.message || 'Failed to generate portfolio statement');
     } finally {
       setGenerating(false);
     }
@@ -190,8 +190,8 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
 
   const handleSectionToggle = (section: string) => {
     setIncludeSections((prev) =>
-      prev.includes(section)
-        ? prev.filter((s) => s !== section)
+      prev?.includes(section)
+        ? prev?.filter((s) => s !== section)
         : [...prev, section],
     );
   };
@@ -270,9 +270,9 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
   ];
 
   // Calculate top 3 campaigns for preview
-  const topCampaigns = portfolioData.campaigns
-    .sort((a, b) => b.invested - a.invested)
-    .slice(0, 3);
+  const topCampaigns = portfolioData?.campaigns
+    ?.sort((a, b) => (b?.invested ?? 0) - (a?.invested ?? 0))
+    ?.slice(0, 3);
 
   return (
     <Modal
@@ -326,11 +326,11 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                       </SelectTrigger>
                       <SelectContent>
                         {periods.map((p) => (
-                          <SelectItem key={p.value} value={p.value}>
+                          <SelectItem key={p?.value} value={p?.value}>
                             <div>
-                              <div className="font-medium">{p.label}</div>
+                              <div className="font-medium">{p?.label}</div>
                               <div className="text-xs text-muted-foreground">
-                                {p.description}
+                                {p?.description}
                               </div>
                             </div>
                           </SelectItem>
@@ -350,11 +350,11 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                       </SelectTrigger>
                       <SelectContent>
                         {formats.map((f) => (
-                          <SelectItem key={f.value} value={f.value}>
+                          <SelectItem key={f?.value} value={f?.value}>
                             <div>
-                              <div className="font-medium">{f.label}</div>
+                              <div className="font-medium">{f?.label}</div>
                               <div className="text-xs text-muted-foreground">
-                                {f.description}
+                                {f?.description}
                               </div>
                             </div>
                           </SelectItem>
@@ -372,21 +372,21 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                     <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
                       {sections.map((section) => (
                         <div
-                          key={section.id}
+                          key={section?.id}
                           className="flex items-start space-x-3 cursor-pointer"
                           onClick={() =>
-                            !section.required && handleSectionToggle(section.id)
+                            !section?.required && handleSectionToggle(section?.id)
                           }
                         >
                           <div
-                            className={`mt-1 ${section.required ? 'text-green-500' : includeSections.includes(section.id) ? 'text-green-500' : 'text-gray-300'}`}
+                            className={`mt-1 ${section?.required ? 'text-green-500' : includeSections?.includes(section?.id) ? 'text-green-500' : 'text-gray-300'}`}
                           >
                             <CheckCircle className="h-4 w-4" />
                           </div>
                           <div className="flex-1">
                             <div className="font-medium flex items-center">
-                              {section.name}
-                              {section.required && (
+                              {section?.name}
+                              {section?.required && (
                                 <Badge
                                   variant="outline"
                                   className="ml-2 text-xs"
@@ -396,7 +396,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                               )}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {section.description}
+                              {section?.description}
                             </div>
                           </div>
                         </div>
@@ -424,7 +424,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                 <Skeleton className="h-32 w-full" />
                 <Skeleton className="h-24 w-full" />
               </div>
-            ) : portfolioData.summary ? (
+            ) : portfolioData?.summary ? (
               <div className="border rounded-lg p-6 space-y-6">
                 {/* Header */}
                 <div className="text-center">
@@ -437,7 +437,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                   <div className="text-sm text-muted-foreground">
                     Generated on {formatDate(new Date().toISOString())} |
                     Period:{' '}
-                    {periods.find((p) => p.value === period)?.label ||
+                    {periods?.find((p) => p?.value === period)?.label ||
                       'Current Month'}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
@@ -453,9 +453,9 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                     </div>
                     <div className="text-2xl font-bold">
                       {formatCurrency(
-                        portfolioData.summary.total_invested,
-                        portfolioData.summary.currency,
-                        portfolioData.summary.currency_symbol,
+                        portfolioData?.summary?.total_invested ?? 0,
+                        portfolioData?.summary?.currency,
+                        portfolioData?.summary?.currency_symbol,
                       )}
                     </div>
                   </div>
@@ -465,9 +465,9 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                     </div>
                     <div className="text-2xl font-bold">
                       {formatCurrency(
-                        portfolioData.summary.current_value,
-                        portfolioData.summary.currency,
-                        portfolioData.summary.currency_symbol,
+                        portfolioData?.summary?.current_value ?? 0,
+                        portfolioData?.summary?.currency,
+                        portfolioData?.summary?.currency_symbol,
                       )}
                     </div>
                   </div>
@@ -476,19 +476,19 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                       Total Returns
                     </div>
                     <div
-                      className={`text-2xl font-bold ${portfolioData.summary.total_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                      className={`text-2xl font-bold ${(portfolioData?.summary?.total_returns ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                     >
                       {formatCurrency(
-                        portfolioData.summary.total_returns,
-                        portfolioData.summary.currency,
-                        portfolioData.summary.currency_symbol,
+                        portfolioData?.summary?.total_returns ?? 0,
+                        portfolioData?.summary?.currency,
+                        portfolioData?.summary?.currency_symbol,
                       )}
                     </div>
                   </div>
                 </div>
 
                 {/* Performance */}
-                {includeSections.includes('performance') && (
+                {includeSections?.includes('performance') && (
                   <div>
                     <h4 className="font-medium mb-3">Performance Metrics</h4>
                     <div className="space-y-3">
@@ -497,9 +497,9 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                           Return on Investment (ROI)
                         </span>
                         <span
-                          className={`font-medium ${portfolioData.summary.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                          className={`font-medium ${(portfolioData?.summary?.roi ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                         >
-                          {portfolioData.summary.roi.toFixed(2)}%
+                          {(portfolioData?.summary?.roi?.toFixed(2) ?? '0.00')}%
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -507,7 +507,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                           Internal Rate of Return (IRR)
                         </span>
                         <span className="font-medium">
-                          {portfolioData.summary.irr?.toFixed(2) || '0.00'}%
+                          {(portfolioData?.summary?.irr?.toFixed(2) ?? '0.00')}%
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -515,7 +515,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                           Multiple on Invested Capital (MOIC)
                         </span>
                         <span className="font-medium">
-                          {portfolioData.summary.moic?.toFixed(2) || '0.00'}x
+                          {(portfolioData?.summary?.moic?.toFixed(2) ?? '0.00')}x
                         </span>
                       </div>
                     </div>
@@ -523,15 +523,15 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                 )}
 
                 {/* Campaigns */}
-                {includeSections.includes('campaigns') &&
-                  portfolioData.campaigns.length > 0 && (
+                {includeSections?.includes('campaigns') &&
+                  portfolioData?.campaigns?.length > 0 && (
                     <div>
                       <h4 className="font-medium mb-3">Portfolio Holdings</h4>
                       <div className="space-y-2">
-                        {topCampaigns.map((campaign, index) => {
+                        {topCampaigns?.map((campaign, index) => {
                           const percentage =
-                            (campaign.invested /
-                              portfolioData.summary!.total_invested) *
+                            ((campaign?.invested ?? 0) /
+                              (portfolioData?.summary?.total_invested ?? 1)) *
                             100;
                           return (
                             <div
@@ -540,22 +540,22 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                             >
                               <span className="flex items-center">
                                 <Building className="h-3 w-3 mr-2 text-muted-foreground" />
-                                {campaign.company_name}
+                                {campaign?.company_name}
                               </span>
                               <span>
                                 {formatCurrency(
-                                  campaign.invested,
-                                  portfolioData.summary!.currency,
-                                  portfolioData.summary!.currency_symbol,
+                                  campaign?.invested ?? 0,
+                                  portfolioData?.summary?.currency,
+                                  portfolioData?.summary?.currency_symbol,
                                 )}{' '}
-                                ({percentage.toFixed(1)}%)
+                                ({percentage?.toFixed(1)}%)
                               </span>
                             </div>
                           );
                         })}
-                        {portfolioData.campaigns.length > 3 && (
+                        {portfolioData?.campaigns?.length > 3 && (
                           <div className="text-sm text-muted-foreground pt-2">
-                            ...and {portfolioData.campaigns.length - 3} more
+                            ...and {portfolioData?.campaigns?.length - 3} more
                             campaigns
                           </div>
                         )}
@@ -596,7 +596,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                 onClick={() => {
                   toast.info('Email delivery feature coming soon');
                 }}
-                disabled={!portfolioData.summary}
+                disabled={!portfolioData?.summary}
               >
                 <Mail className="h-8 w-8" />
                 <div>
@@ -611,7 +611,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                 variant="outline"
                 className="h-auto py-6 flex-col gap-3"
                 onClick={handleGenerateStatement}
-                disabled={generating || !portfolioData.summary}
+                disabled={generating || !portfolioData?.summary}
               >
                 {generating ? (
                   <Clock className="h-8 w-8 animate-spin" />
@@ -630,13 +630,13 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                 variant="outline"
                 className="h-auto py-6 flex-col gap-3"
                 onClick={() => {
-                  if (portfolioData.summary) {
+                  if (portfolioData?.summary) {
                     window.print();
                   } else {
                     toast.error('No portfolio data to print');
                   }
                 }}
-                disabled={!portfolioData.summary}
+                disabled={!portfolioData?.summary}
               >
                 <Printer className="h-8 w-8" />
                 <div>
@@ -659,9 +659,9 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {statementHistory.length > 0 ? (
+            {statementHistory?.length > 0 ? (
               <div className="space-y-4">
-                {statementHistory.map((stmt, index) => (
+                {statementHistory?.map((stmt, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between p-4 border rounded-lg"
@@ -670,11 +670,11 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                       <FileText className="h-8 w-8 text-blue-500" />
                       <div>
                         <div className="font-medium">
-                          {stmt.period} Statement
+                          {stmt?.period} Statement
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          Generated {formatDate(stmt.date)} • {stmt.format} •{' '}
-                          {stmt.size}
+                          Generated {formatDate(stmt?.date)} • {stmt?.format} •{' '}
+                          {stmt?.size}
                         </div>
                       </div>
                     </div>
@@ -682,14 +682,14 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => window.open(stmt.download_url, '_blank')}
+                        onClick={() => window.open(stmt?.download_url, '_blank')}
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => window.open(stmt.download_url, '_blank')}
+                        onClick={() => window.open(stmt?.download_url, '_blank')}
                       >
                         <Download className="h-4 w-4" />
                       </Button>
@@ -712,10 +712,10 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
         {/* Footer */}
         <div className="flex justify-between items-center pt-4 border-t">
           <div className="text-sm text-muted-foreground">
-            {portfolioData.summary ? (
+            {portfolioData?.summary ? (
               <>
                 Data as of {formatDate(new Date().toISOString())} •{' '}
-                {portfolioData.summary.active_investments} active investments
+                {portfolioData?.summary?.active_investments} active investments
               </>
             ) : (
               'No portfolio data available'
@@ -727,7 +727,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
             </Button>
             <Button
               onClick={handleGenerateStatement}
-              disabled={generating || !portfolioData.summary}
+              disabled={generating || !portfolioData?.summary}
               variant="success"
             >
               {generating ? (

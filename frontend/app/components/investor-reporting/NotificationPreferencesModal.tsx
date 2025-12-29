@@ -97,9 +97,22 @@ const NotificationPreferencesModal: React.FC<
       const service = new InvestorReportingService();
       const response = await service.getNotificationPreferences();
 
-      if (response.success) {
-        setPreferences(response.preferences);
-        setOriginalPreferences(response.preferences);
+      if (response?.success) {
+        setPreferences(response?.preferences ?? {
+          financial_statements: true,
+          valuation_updates: true,
+          monthly_reports: true,
+          quarterly_reports: true,
+          annual_reports: true,
+          campaign_updates: true,
+          portfolio_updates: true,
+          email_notifications: true,
+          push_notifications: true,
+          in_app_notifications: true,
+          summary_frequency: 'weekly',
+          preferred_time: '09:00',
+        });
+        setOriginalPreferences(response?.preferences ?? null);
         setHasChanges(false);
       }
     } catch (error) {
@@ -127,7 +140,7 @@ const NotificationPreferencesModal: React.FC<
       const service = new InvestorReportingService();
       const response = await service.updateNotificationPreferences(preferences);
 
-      if (response.success) {
+      if (response?.success) {
         toast.success('Notification preferences updated successfully');
         setOriginalPreferences(preferences);
         setHasChanges(false);
@@ -318,34 +331,34 @@ const NotificationPreferencesModal: React.FC<
                 <div className="space-y-6">
                   {notificationTypes.map((type) => (
                     <div
-                      key={type.id}
+                      key={type?.id}
                       className="flex items-start justify-between"
                     >
                       <div className="flex items-start space-x-4">
                         <div className="mt-1">
                           <div className="p-2 rounded-full bg-muted">
-                            {type.icon}
+                            {type?.icon}
                           </div>
                         </div>
                         <div className="space-y-1">
-                          <Label htmlFor={type.id} className="font-medium">
-                            {type.label}
+                          <Label htmlFor={type?.id} className="font-medium">
+                            {type?.label}
                           </Label>
                           <p className="text-sm text-muted-foreground">
-                            {type.description}
+                            {type?.description}
                           </p>
                         </div>
                       </div>
                       <Switch
-                        id={type.id}
+                        id={type?.id}
                         checked={
-                          preferences[
-                            type.id as keyof NotificationPreferences
+                          preferences?.[
+                            type?.id as keyof NotificationPreferences
                           ] as boolean
                         }
                         onCheckedChange={(checked) =>
                           handlePreferenceChange(
-                            type.id as keyof NotificationPreferences,
+                            type?.id as keyof NotificationPreferences,
                             checked,
                           )
                         }
@@ -368,34 +381,34 @@ const NotificationPreferencesModal: React.FC<
                 <div className="space-y-6">
                   {deliveryMethods.map((method) => (
                     <div
-                      key={method.id}
+                      key={method?.id}
                       className="flex items-start justify-between"
                     >
                       <div className="flex items-start space-x-4">
                         <div className="mt-1">
                           <div className="p-2 rounded-full bg-muted">
-                            {method.icon}
+                            {method?.icon}
                           </div>
                         </div>
                         <div className="space-y-1">
-                          <Label htmlFor={method.id} className="font-medium">
-                            {method.label}
+                          <Label htmlFor={method?.id} className="font-medium">
+                            {method?.label}
                           </Label>
                           <p className="text-sm text-muted-foreground">
-                            {method.description}
+                            {method?.description}
                           </p>
                         </div>
                       </div>
                       <Switch
-                        id={method.id}
+                        id={method?.id}
                         checked={
-                          preferences[
-                            method.id as keyof NotificationPreferences
+                          preferences?.[
+                            method?.id as keyof NotificationPreferences
                           ] as boolean
                         }
                         onCheckedChange={(checked) =>
                           handlePreferenceChange(
-                            method.id as keyof NotificationPreferences,
+                            method?.id as keyof NotificationPreferences,
                             checked,
                           )
                         }
@@ -417,7 +430,7 @@ const NotificationPreferencesModal: React.FC<
                 </CardHeader>
                 <CardContent>
                   <RadioGroup
-                    value={preferences.summary_frequency}
+                    value={preferences?.summary_frequency}
                     onValueChange={(value) =>
                       handlePreferenceChange('summary_frequency', value)
                     }
@@ -425,20 +438,20 @@ const NotificationPreferencesModal: React.FC<
                   >
                     {summaryFrequencies.map((freq) => (
                       <div
-                        key={freq.value}
+                        key={freq?.value}
                         className="flex items-center space-x-3"
                       >
                         <RadioGroupItem
-                          value={freq.value}
-                          id={`freq-${freq.value}`}
+                          value={freq?.value}
+                          id={`freq-${freq?.value}`}
                         />
                         <Label
-                          htmlFor={`freq-${freq.value}`}
+                          htmlFor={`freq-${freq?.value}`}
                           className="cursor-pointer"
                         >
-                          <div className="font-medium">{freq.label}</div>
+                          <div className="font-medium">{freq?.label}</div>
                           <div className="text-sm text-muted-foreground">
-                            {freq.description}
+                            {freq?.description}
                           </div>
                         </Label>
                       </div>
@@ -469,7 +482,7 @@ const NotificationPreferencesModal: React.FC<
                     </div>
 
                     <Select
-                      value={preferences.preferred_time}
+                      value={preferences?.preferred_time}
                       onValueChange={(value) =>
                         handlePreferenceChange('preferred_time', value)
                       }
@@ -613,15 +626,15 @@ const NotificationPreferencesModal: React.FC<
                       <div className="font-medium">Enabled Notifications</div>
                       <div className="flex flex-wrap gap-2">
                         {notificationTypes
-                          .filter(
+                          ?.filter(
                             (type) =>
-                              preferences[
-                                type.id as keyof NotificationPreferences
+                              preferences?.[
+                                type?.id as keyof NotificationPreferences
                               ],
                           )
-                          .map((type) => (
-                            <Badge key={type.id} variant="secondary">
-                              {type.label}
+                          ?.map((type) => (
+                            <Badge key={type?.id} variant="secondary">
+                              {type?.label}
                             </Badge>
                           ))}
                       </div>
@@ -631,15 +644,15 @@ const NotificationPreferencesModal: React.FC<
                       <div className="font-medium">Delivery Methods</div>
                       <div className="flex flex-wrap gap-2">
                         {deliveryMethods
-                          .filter(
+                          ?.filter(
                             (method) =>
-                              preferences[
-                                method.id as keyof NotificationPreferences
+                              preferences?.[
+                                method?.id as keyof NotificationPreferences
                               ],
                           )
-                          .map((method) => (
-                            <Badge key={method.id} variant="outline">
-                              {method.label}
+                          ?.map((method) => (
+                            <Badge key={method?.id} variant="outline">
+                              {method?.label}
                             </Badge>
                           ))}
                       </div>
@@ -652,8 +665,8 @@ const NotificationPreferencesModal: React.FC<
                     <div>
                       <div className="font-medium">Summary Frequency</div>
                       <div className="text-muted-foreground">
-                        {summaryFrequencies.find(
-                          (f) => f.value === preferences.summary_frequency,
+                        {summaryFrequencies?.find(
+                          (f) => f?.value === preferences?.summary_frequency,
                         )?.label || 'Not set'}
                       </div>
                     </div>
@@ -661,7 +674,7 @@ const NotificationPreferencesModal: React.FC<
                     <div>
                       <div className="font-medium">Preferred Time</div>
                       <div className="text-muted-foreground">
-                        {preferences.preferred_time || 'Not set'}
+                        {preferences?.preferred_time || 'Not set'}
                       </div>
                     </div>
                   </div>

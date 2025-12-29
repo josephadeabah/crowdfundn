@@ -134,13 +134,15 @@ const InvestorReportingDashboard: React.FC = () => {
       }
 
       // Fetch recent reports with optional chaining
-      const reportsResponse = await investorReportingService.getRecentInvestorReports(5);
+      const reportsResponse =
+        await investorReportingService.getRecentInvestorReports(5);
       if (reportsResponse?.success) {
         setRecentReports(reportsResponse?.reports || []);
       }
 
       // Fetch notification count
-      const notificationsResponse = await investorReportingService.getUnreadNotificationCount();
+      const notificationsResponse =
+        await investorReportingService.getUnreadNotificationCount();
       setUnreadNotifications(notificationsResponse?.count || 0);
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
@@ -228,7 +230,8 @@ const InvestorReportingDashboard: React.FC = () => {
             Investor Dashboard
           </h1>
           <p className="text-muted-foreground">
-            Track your investments, performance, and receive updates from portfolio companies
+            Track your investments, performance, and receive updates from
+            portfolio companies
           </p>
         </div>
         <div className="flex gap-2">
@@ -263,7 +266,7 @@ const InvestorReportingDashboard: React.FC = () => {
               {formatCurrency(
                 portfolioMetrics?.total_invested || 0,
                 portfolioMetrics?.currency || 'GHS',
-                portfolioMetrics?.currency_symbol || '₵'
+                portfolioMetrics?.currency_symbol || '₵',
               )}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -282,7 +285,7 @@ const InvestorReportingDashboard: React.FC = () => {
               {formatCurrency(
                 portfolioMetrics?.current_value || 0,
                 portfolioMetrics?.currency || 'GHS',
-                portfolioMetrics?.currency_symbol || '₵'
+                portfolioMetrics?.currency_symbol || '₵',
               )}
             </div>
             <div className="flex items-center text-sm">
@@ -297,7 +300,7 @@ const InvestorReportingDashboard: React.FC = () => {
                 {formatCurrency(
                   portfolioMetrics?.total_returns || 0,
                   portfolioMetrics?.currency || 'GHS',
-                  portfolioMetrics?.currency_symbol || '₵'
+                  portfolioMetrics?.currency_symbol || '₵',
                 )}
               </span>
               <span
@@ -307,8 +310,7 @@ const InvestorReportingDashboard: React.FC = () => {
                     : 'text-red-600'
                 }`}
               >
-                (
-                {portfolioMetrics?.roi?.toFixed(2) || '0.00'}
+                ({portfolioMetrics?.roi?.toFixed(2) || '0.00'}
                 %)
               </span>
             </div>
@@ -376,7 +378,9 @@ const InvestorReportingDashboard: React.FC = () => {
                     <div className="flex items-center space-x-4">
                       <Building className="h-8 w-8 text-muted-foreground" />
                       <div>
-                        <h4 className="font-medium">{campaign?.company_name}</h4>
+                        <h4 className="font-medium">
+                          {campaign?.company_name}
+                        </h4>
                         <p className="text-sm text-muted-foreground">
                           {campaign?.investment_count || 0} investment
                           {campaign?.investment_count !== 1 ? 's' : ''}
@@ -388,7 +392,7 @@ const InvestorReportingDashboard: React.FC = () => {
                         {formatCurrency(
                           campaign?.current_value || 0,
                           portfolioMetrics?.currency || 'GHS',
-                          portfolioMetrics?.currency_symbol || '₵'
+                          portfolioMetrics?.currency_symbol || '₵',
                         )}
                       </div>
                       <div
@@ -461,7 +465,9 @@ const InvestorReportingDashboard: React.FC = () => {
                           <Calendar className="h-3 w-3" />
                           <span>
                             {report?.report_date
-                              ? new Date(report.report_date).toLocaleDateString()
+                              ? new Date(
+                                  report.report_date,
+                                ).toLocaleDateString()
                               : 'N/A'}
                           </span>
                           <Badge variant="outline" className="capitalize">
@@ -529,27 +535,27 @@ const InvestorReportingDashboard: React.FC = () => {
                           <span>Portfolio Concentration</span>
                           <span className="font-medium">
                             {(
-                              (portfolioData?.risk_analysis?.concentration_risk || 0) *
-                              100
+                              (portfolioData?.risk_analysis
+                                ?.concentration_risk || 0) * 100
                             ).toFixed(1)}
                             %
                           </span>
                         </div>
                         <Progress
                           value={
-                            (portfolioData?.risk_analysis?.concentration_risk || 0) *
-                            100
+                            (portfolioData?.risk_analysis?.concentration_risk ||
+                              0) * 100
                           }
                           className="h-2"
                         />
                         <p className="text-xs text-muted-foreground mt-1">
-                          {(portfolioData?.risk_analysis?.concentration_risk || 0) >
-                          0.5
+                          {(portfolioData?.risk_analysis?.concentration_risk ||
+                            0) > 0.5
                             ? 'High concentration - Top holdings represent significant portion'
-                            : (portfolioData?.risk_analysis?.concentration_risk || 0) >
-                              0.3
-                            ? 'Moderate concentration'
-                            : 'Well diversified portfolio'}
+                            : (portfolioData?.risk_analysis
+                                  ?.concentration_risk || 0) > 0.3
+                              ? 'Moderate concentration'
+                              : 'Well diversified portfolio'}
                         </p>
                       </div>
 
@@ -561,21 +567,22 @@ const InvestorReportingDashboard: React.FC = () => {
                               portfolioData?.risk_analysis?.risk_category ===
                               'high'
                                 ? 'destructive'
-                                : portfolioData?.risk_analysis?.risk_category ===
-                                  'medium'
-                                ? 'outline'
-                                : 'secondary'
+                                : portfolioData?.risk_analysis
+                                      ?.risk_category === 'medium'
+                                  ? 'outline'
+                                  : 'secondary'
                             }
                           >
-                            {portfolioData?.risk_analysis?.risk_category?.toUpperCase() || 'MEDIUM'}
+                            {portfolioData?.risk_analysis?.risk_category?.toUpperCase() ||
+                              'MEDIUM'}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-sm">Overall Risk Score</span>
                           <span className="font-medium">
                             {(
-                              (portfolioData?.risk_analysis?.overall_risk_score || 0) *
-                              100
+                              (portfolioData?.risk_analysis
+                                ?.overall_risk_score || 0) * 100
                             ).toFixed(1)}
                             %
                           </span>
@@ -609,7 +616,7 @@ const InvestorReportingDashboard: React.FC = () => {
                             {formatCurrency(
                               cashflow?.invested || 0,
                               portfolioMetrics?.currency || 'GHS',
-                              portfolioMetrics?.currency_symbol || '₵'
+                              portfolioMetrics?.currency_symbol || '₵',
                             )}
                           </p>
                         </div>
@@ -618,7 +625,7 @@ const InvestorReportingDashboard: React.FC = () => {
                             {formatCurrency(
                               cashflow?.current_value || 0,
                               portfolioMetrics?.currency || 'GHS',
-                              portfolioMetrics?.currency_symbol || '₵'
+                              portfolioMetrics?.currency_symbol || '₵',
                             )}
                           </p>
                           <p
@@ -632,7 +639,7 @@ const InvestorReportingDashboard: React.FC = () => {
                             {formatCurrency(
                               cashflow?.returns || 0,
                               portfolioMetrics?.currency || 'GHS',
-                              portfolioMetrics?.currency_symbol || '₵'
+                              portfolioMetrics?.currency_symbol || '₵',
                             )}
                           </p>
                         </div>
@@ -668,7 +675,7 @@ const InvestorReportingDashboard: React.FC = () => {
                       icon: FileText,
                       count:
                         recentReports?.filter(
-                          (r) => r?.report_type === 'quarterly'
+                          (r) => r?.report_type === 'quarterly',
                         )?.length || 0,
                       color: 'text-blue-500',
                     },
@@ -677,7 +684,7 @@ const InvestorReportingDashboard: React.FC = () => {
                       icon: FileText,
                       count:
                         recentReports?.filter(
-                          (r) => r?.report_type === 'annual'
+                          (r) => r?.report_type === 'annual',
                         )?.length || 0,
                       color: 'text-green-500',
                     },
@@ -686,7 +693,7 @@ const InvestorReportingDashboard: React.FC = () => {
                       icon: TrendingUp,
                       count:
                         recentReports?.filter(
-                          (r) => r?.report_type === 'valuation_update'
+                          (r) => r?.report_type === 'valuation_update',
                         )?.length || 0,
                       color: 'text-purple-500',
                     },
@@ -742,7 +749,7 @@ const InvestorReportingDashboard: React.FC = () => {
                     onClick={() => {
                       if (campaignPerformance?.length > 0) {
                         setSelectedCampaignId(
-                          campaignPerformance?.[0]?.campaign_id
+                          campaignPerformance?.[0]?.campaign_id,
                         );
                         setShowFinancialStatements(true);
                       }

@@ -120,16 +120,16 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
           periodType !== 'all' ? periodType : undefined,
         );
 
-      if (response.success) {
-        setStatements(response.financials);
-        if (response.financials.length > 0) {
-          setSelectedStatement(response.financials[0]);
-          prepareChartData(response.financials);
+      if (response?.success) {
+        setStatements(response?.financials ?? []);
+        if (response?.financials?.length > 0) {
+          setSelectedStatement(response?.financials?.[0] ?? null);
+          prepareChartData(response?.financials ?? []);
         }
       }
     } catch (error: any) {
       console.error('Error fetching financial statements:', error);
-      toast.error(error.message || 'Failed to load financial statements');
+      toast.error(error?.message || 'Failed to load financial statements');
     } finally {
       setLoading(false);
     }
@@ -137,20 +137,20 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
 
   const prepareChartData = (financials: FinancialStatement[]) => {
     // Prepare revenue trend data
-    const revenueData = financials.map((stmt) => ({
-      period: formatDate(stmt.period_end, 'MMM yy'),
-      revenue: stmt.revenue,
-      netIncome: stmt.net_income,
-      grossMargin: stmt.gross_margin,
-      netMargin: stmt.net_margin,
-    }));
+    const revenueData = financials?.map((stmt) => ({
+      period: formatDate(stmt?.period_end, 'MMM yy'),
+      revenue: stmt?.revenue ?? 0,
+      netIncome: stmt?.net_income ?? 0,
+      grossMargin: stmt?.gross_margin ?? 0,
+      netMargin: stmt?.net_margin ?? 0,
+    })) ?? [];
 
     // Prepare profitability data for last 3 periods
-    const profitabilityData = financials.slice(-3).map((stmt) => ({
-      name: formatDate(stmt.period_end, 'MMM yy'),
-      revenue: stmt.revenue,
-      profit: stmt.net_income,
-    }));
+    const profitabilityData = financials?.slice(-3)?.map((stmt) => ({
+      name: formatDate(stmt?.period_end, 'MMM yy'),
+      revenue: stmt?.revenue ?? 0,
+      profit: stmt?.net_income ?? 0,
+    })) ?? [];
 
     setTrendData({
       revenueData,
@@ -164,16 +164,16 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
       toast.success('Financial statement downloaded');
     } catch (error: any) {
       console.error('Error downloading statement:', error);
-      toast.error(error.message || 'Failed to download financial statement');
+      toast.error(error?.message || 'Failed to download financial statement');
     }
   };
 
   // Prepare balance sheet data for selected statement
   const balanceSheetData = selectedStatement
     ? [
-        { name: 'Assets', value: selectedStatement.assets },
-        { name: 'Liabilities', value: selectedStatement.liabilities },
-        { name: 'Equity', value: selectedStatement.equity },
+        { name: 'Assets', value: selectedStatement?.assets ?? 0 },
+        { name: 'Liabilities', value: selectedStatement?.liabilities ?? 0 },
+        { name: 'Equity', value: selectedStatement?.equity ?? 0 },
       ]
     : [];
 
@@ -234,10 +234,10 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                   <div className="space-y-4">
                     <Skeleton className="h-[300px] w-full" />
                   </div>
-                ) : trendData.revenueData?.length > 0 ? (
+                ) : (trendData?.revenueData?.length ?? 0) > 0 ? (
                   <div className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <RechartsLineChart data={trendData.revenueData}>
+                      <RechartsLineChart data={trendData?.revenueData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis dataKey="period" />
                         <YAxis />
@@ -289,10 +289,10 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         Revenue
                       </div>
                       <div className="text-2xl font-bold">
-                        {formatCurrency(selectedStatement.revenue, 'GHS', '₵')}
+                        {formatCurrency(selectedStatement?.revenue ?? 0, 'GHS', '₵')}
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
-                        {formatDate(selectedStatement.period_end, 'MMM yyyy')}
+                        {formatDate(selectedStatement?.period_end, 'MMM yyyy')}
                       </div>
                     </div>
                   </CardContent>
@@ -305,16 +305,16 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         Net Income
                       </div>
                       <div
-                        className={`text-2xl font-bold ${selectedStatement.net_income >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                        className={`text-2xl font-bold ${(selectedStatement?.net_income ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                       >
                         {formatCurrency(
-                          selectedStatement.net_income,
+                          selectedStatement?.net_income ?? 0,
                           'GHS',
                           '₵',
                         )}
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
-                        {selectedStatement.net_margin.toFixed(1)}% margin
+                        {(selectedStatement?.net_margin?.toFixed(1) ?? '0.0')}% margin
                       </div>
                     </div>
                   </CardContent>
@@ -327,12 +327,12 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         Runway
                       </div>
                       <div className="text-2xl font-bold">
-                        {selectedStatement.runway_months.toFixed(1)} months
+                        {(selectedStatement?.runway_months?.toFixed(1) ?? '0.0')} months
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         Burn rate:{' '}
                         {formatCurrency(
-                          selectedStatement.burn_rate,
+                          selectedStatement?.burn_rate ?? 0,
                           'GHS',
                           '₵',
                         )}
@@ -360,30 +360,30 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                       <Skeleton key={i} className="h-20 w-full" />
                     ))}
                   </div>
-                ) : statements.length > 0 ? (
+                ) : statements?.length > 0 ? (
                   <div className="space-y-4">
-                    {statements.map((statement) => (
+                    {statements?.map((statement) => (
                       <div
-                        key={statement.id}
-                        className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-colors hover:bg-muted/50 ${selectedStatement?.id === statement.id ? 'bg-muted border-primary' : ''}`}
+                        key={statement?.id}
+                        className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-colors hover:bg-muted/50 ${selectedStatement?.id === statement?.id ? 'bg-muted border-primary' : ''}`}
                         onClick={() => setSelectedStatement(statement)}
                       >
                         <div className="flex items-center space-x-4">
                           <FileText className="h-8 w-8 text-blue-500" />
                           <div>
                             <h4 className="font-medium">
-                              {statement.period_type.charAt(0).toUpperCase() +
-                                statement.period_type.slice(1)}{' '}
+                              {statement?.period_type?.charAt(0)?.toUpperCase() +
+                                statement?.period_type?.slice(1)}{' '}
                               Statement
                             </h4>
                             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                               <Calendar className="h-3 w-3" />
                               <span>
-                                {formatDate(statement.period_start)} -{' '}
-                                {formatDate(statement.period_end)}
+                                {formatDate(statement?.period_start)} -{' '}
+                                {formatDate(statement?.period_end)}
                               </span>
                               <Badge variant="outline">
-                                {statement.status}
+                                {statement?.status}
                               </Badge>
                             </div>
                           </div>
@@ -394,7 +394,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDownloadStatement(statement.id);
+                              handleDownloadStatement(statement?.id);
                             }}
                           >
                             <Download className="h-4 w-4" />
@@ -428,8 +428,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                 <CardHeader>
                   <CardTitle>Statement Details</CardTitle>
                   <CardDescription>
-                    {formatDate(selectedStatement.period_start)} -{' '}
-                    {formatDate(selectedStatement.period_end)}
+                    {formatDate(selectedStatement?.period_start)} -{' '}
+                    {formatDate(selectedStatement?.period_end)}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -441,7 +441,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           <span className="text-sm">Revenue</span>
                           <span className="font-medium">
                             {formatCurrency(
-                              selectedStatement.revenue,
+                              selectedStatement?.revenue ?? 0,
                               'GHS',
                               '₵',
                             )}
@@ -451,7 +451,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           <span className="text-sm">Expenses</span>
                           <span className="font-medium">
                             {formatCurrency(
-                              selectedStatement.expenses,
+                              selectedStatement?.expenses ?? 0,
                               'GHS',
                               '₵',
                             )}
@@ -461,7 +461,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           <span className="font-medium">Gross Profit</span>
                           <span className="font-medium">
                             {formatCurrency(
-                              selectedStatement.gross_profit,
+                              selectedStatement?.gross_profit ?? 0,
                               'GHS',
                               '₵',
                             )}
@@ -470,10 +470,10 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         <div className="flex justify-between border-t pt-2">
                           <span className="font-medium">Net Income</span>
                           <span
-                            className={`font-medium ${selectedStatement.net_income >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                            className={`font-medium ${(selectedStatement?.net_income ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                           >
                             {formatCurrency(
-                              selectedStatement.net_income,
+                              selectedStatement?.net_income ?? 0,
                               'GHS',
                               '₵',
                             )}
@@ -489,7 +489,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           <span className="text-sm">Assets</span>
                           <span className="font-medium">
                             {formatCurrency(
-                              selectedStatement.assets,
+                              selectedStatement?.assets ?? 0,
                               'GHS',
                               '₵',
                             )}
@@ -499,7 +499,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           <span className="text-sm">Liabilities</span>
                           <span className="font-medium">
                             {formatCurrency(
-                              selectedStatement.liabilities,
+                              selectedStatement?.liabilities ?? 0,
                               'GHS',
                               '₵',
                             )}
@@ -509,7 +509,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           <span className="font-medium">Equity</span>
                           <span className="font-medium">
                             {formatCurrency(
-                              selectedStatement.equity,
+                              selectedStatement?.equity ?? 0,
                               'GHS',
                               '₵',
                             )}
@@ -527,7 +527,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           Gross Margin
                         </div>
                         <div className="text-lg font-medium">
-                          {selectedStatement.gross_margin.toFixed(1)}%
+                          {(selectedStatement?.gross_margin?.toFixed(1) ?? '0.0')}%
                         </div>
                       </div>
                       <div className="text-center p-3 border rounded-lg">
@@ -535,7 +535,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           Net Margin
                         </div>
                         <div className="text-lg font-medium">
-                          {selectedStatement.net_margin.toFixed(1)}%
+                          {(selectedStatement?.net_margin?.toFixed(1) ?? '0.0')}%
                         </div>
                       </div>
                       <div className="text-center p-3 border rounded-lg">
@@ -544,7 +544,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         </div>
                         <div className="text-lg font-medium">
                           {formatCurrency(
-                            selectedStatement.burn_rate,
+                            selectedStatement?.burn_rate ?? 0,
                             'GHS',
                             '₵',
                           )}
@@ -556,7 +556,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           Runway
                         </div>
                         <div className="text-lg font-medium">
-                          {selectedStatement.runway_months.toFixed(1)} months
+                          {(selectedStatement?.runway_months?.toFixed(1) ?? '0.0')} months
                         </div>
                       </div>
                     </div>
@@ -575,10 +575,10 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {trendData.profitabilityData?.length > 0 ? (
+                {(trendData?.profitabilityData?.length ?? 0) > 0 ? (
                   <div className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <RechartsBarChart data={trendData.profitabilityData}>
+                      <RechartsBarChart data={trendData?.profitabilityData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis dataKey="name" />
                         <YAxis />
@@ -615,7 +615,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {selectedStatement && balanceSheetData.length > 0 ? (
+                {selectedStatement && balanceSheetData?.length > 0 ? (
                   <div className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsPieChart>
@@ -625,13 +625,13 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           cy="50%"
                           labelLine={false}
                           label={({ name, percent }) =>
-                            `${name}: ${(percent * 100).toFixed(0)}%`
+                            `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
                           }
                           outerRadius={80}
                           fill="#8884d8"
                           dataKey="value"
                         >
-                          {balanceSheetData.map((entry, index) => (
+                          {balanceSheetData?.map((entry, index) => (
                             <Cell
                               key={`cell-${index}`}
                               fill={COLORS[index % COLORS.length]}
@@ -680,7 +680,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {selectedStatement.gross_margin.toFixed(1)}%
+                            {(selectedStatement?.gross_margin?.toFixed(1) ?? '0.0')}%
                           </div>
                         </div>
                         <div className="flex justify-between items-center p-3 border rounded-lg">
@@ -691,7 +691,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {selectedStatement.net_margin.toFixed(1)}%
+                            {(selectedStatement?.net_margin?.toFixed(1) ?? '0.0')}%
                           </div>
                         </div>
                         <div className="flex justify-between items-center p-3 border rounded-lg">
@@ -699,8 +699,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             <div className="font-medium">Operating Margin</div>
                             <div className="text-sm text-muted-foreground">
                               {(
-                                (selectedStatement.gross_profit /
-                                  selectedStatement.revenue) *
+                                ((selectedStatement?.gross_profit ?? 0) /
+                                  (selectedStatement?.revenue ?? 1)) *
                                 100
                               ).toFixed(1)}
                               %
@@ -708,9 +708,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           </div>
                           <div className="text-lg font-medium">
                             {(
-                              ((selectedStatement.gross_profit -
-                                selectedStatement.expenses) /
-                                selectedStatement.revenue) *
+                              (((selectedStatement?.gross_profit ?? 0) -
+                                (selectedStatement?.expenses ?? 0)) /
+                                (selectedStatement?.revenue ?? 1)) *
                               100
                             ).toFixed(1)}
                             %
@@ -730,10 +730,10 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {selectedStatement.liabilities > 0
+                            {(selectedStatement?.liabilities ?? 0) > 0
                               ? (
-                                  selectedStatement.assets /
-                                  selectedStatement.liabilities
+                                  (selectedStatement?.assets ?? 0) /
+                                  (selectedStatement?.liabilities ?? 1)
                                 ).toFixed(1)
                               : 'N/A'}
                           </div>
@@ -746,10 +746,10 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {selectedStatement.equity > 0
+                            {(selectedStatement?.equity ?? 0) > 0
                               ? (
-                                  selectedStatement.liabilities /
-                                  selectedStatement.equity
+                                  (selectedStatement?.liabilities ?? 0) /
+                                  (selectedStatement?.equity ?? 1)
                                 ).toFixed(1)
                               : 'N/A'}
                           </div>
@@ -762,10 +762,10 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {selectedStatement.assets > 0
+                            {(selectedStatement?.assets ?? 0) > 0
                               ? (
-                                  selectedStatement.revenue /
-                                  selectedStatement.assets
+                                  (selectedStatement?.revenue ?? 0) /
+                                  (selectedStatement?.assets ?? 1)
                                 ).toFixed(1)
                               : 'N/A'}
                           </div>
@@ -790,14 +790,14 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         </div>
                         <div className="text-xl font-medium">
                           {formatCurrency(
-                            selectedStatement.net_income +
-                              selectedStatement.expenses,
+                            (selectedStatement?.net_income ?? 0) +
+                              (selectedStatement?.expenses ?? 0),
                             'GHS',
                             '₵',
                           )}
                         </div>
                         <div className="text-sm text-green-600 mt-1">
-                          +{selectedStatement.net_margin.toFixed(1)}% margin
+                          +{(selectedStatement?.net_margin?.toFixed(1) ?? '0.0')}% margin
                         </div>
                       </div>
                       <div className="text-center p-4 border rounded-lg">
@@ -807,7 +807,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         <div className="text-xl font-medium text-red-600">
                           -
                           {formatCurrency(
-                            selectedStatement.expenses * 0.3, // Estimate
+                            (selectedStatement?.expenses ?? 0) * 0.3, // Estimate
                             'GHS',
                             '₵',
                           )}
@@ -822,9 +822,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         </div>
                         <div className="text-xl font-medium">
                           {formatCurrency(
-                            selectedStatement.equity -
-                              selectedStatement.assets +
-                              selectedStatement.liabilities,
+                            (selectedStatement?.equity ?? 0) -
+                              (selectedStatement?.assets ?? 0) +
+                              (selectedStatement?.liabilities ?? 0),
                             'GHS',
                             '₵',
                           )}
@@ -845,12 +845,12 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
         <div className="flex justify-between items-center pt-4 border-t">
           <div className="text-sm text-muted-foreground">
             {selectedStatement ? (
-              <>Last updated {formatDate(selectedStatement.published_at)}</>
+              <>Last updated {formatDate(selectedStatement?.published_at)}</>
             ) : (
               <>Select a statement to view details</>
             )}
-            {statements.length > 0 && (
-              <span className="ml-2">• {statements.length} statements</span>
+            {statements?.length > 0 && (
+              <span className="ml-2">• {statements?.length} statements</span>
             )}
           </div>
           <div className="flex gap-2">
@@ -859,7 +859,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
             </Button>
             {selectedStatement && (
               <Button
-                onClick={() => handleDownloadStatement(selectedStatement.id)}
+                onClick={() => handleDownloadStatement(selectedStatement?.id)}
               >
                 <Download className="mr-2 h-4 w-4" />
                 Download Statement

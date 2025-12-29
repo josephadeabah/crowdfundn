@@ -113,15 +113,15 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
       setLoading(true);
       const response = await investorReportingService.getInvestorReports();
 
-      if (response.success) {
-        setReports(response.reports);
-        if (response.reports.length > 0) {
-          setSelectedReport(response.reports[0]);
+      if (response?.success) {
+        setReports(response?.reports ?? []);
+        if (response?.reports?.length > 0) {
+          setSelectedReport(response?.reports?.[0] ?? null);
         }
       }
     } catch (error: any) {
       console.error('Error fetching reports:', error);
-      toast.error(error.message || 'Failed to load investor reports');
+      toast.error(error?.message || 'Failed to load investor reports');
     } finally {
       setLoading(false);
     }
@@ -134,19 +134,19 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
     if (searchQuery) {
       filtered = filtered.filter(
         (report) =>
-          report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          report.campaign.company_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          report.executive_summary
+          report?.title?.toLowerCase()?.includes(searchQuery?.toLowerCase()) ||
+          report?.campaign?.company_name
             ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()),
+            ?.includes(searchQuery?.toLowerCase()) ||
+          report?.executive_summary
+            ?.toLowerCase()
+            ?.includes(searchQuery?.toLowerCase()),
       );
     }
 
     // Apply report type filter
     if (reportType !== 'all') {
-      filtered = filtered.filter((report) => report.report_type === reportType);
+      filtered = filtered.filter((report) => report?.report_type === reportType);
     }
 
     // Apply time period filter
@@ -170,7 +170,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
       }
 
       filtered = filtered.filter(
-        (report) => new Date(report.published_at) >= cutoffDate,
+        (report) => new Date(report?.published_at) >= cutoffDate,
       );
     }
 
@@ -186,12 +186,12 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
         documentId || reportId,
       );
 
-      if (response.success && response.url) {
-        window.open(response.url, '_blank');
+      if (response?.success && response?.url) {
+        window.open(response?.url, '_blank');
       }
     } catch (error: any) {
       console.error('Error downloading report:', error);
-      toast.error(error.message || 'Failed to download report');
+      toast.error(error?.message || 'Failed to download report');
     }
   };
 
@@ -313,13 +313,13 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                   <Skeleton key={i} className="h-32 w-full" />
                 ))}
               </div>
-            ) : filteredReports.length > 0 ? (
+            ) : filteredReports?.length > 0 ? (
               viewMode === 'list' ? (
                 <div className="space-y-4">
-                  {filteredReports.map((report) => (
+                  {filteredReports?.map((report) => (
                     <Card
-                      key={report.id}
-                      className={`cursor-pointer transition-all hover:shadow-lg ${selectedReport?.id === report.id ? 'ring-2 ring-primary' : ''}`}
+                      key={report?.id}
+                      className={`cursor-pointer transition-all hover:shadow-lg ${selectedReport?.id === report?.id ? 'ring-2 ring-primary' : ''}`}
                       onClick={() => setSelectedReport(report)}
                     >
                       <CardContent className="pt-6">
@@ -331,37 +331,37 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                                   <Badge
                                     variant="outline"
                                     className={getReportTypeColor(
-                                      report.report_type,
+                                      report?.report_type,
                                     )}
                                   >
                                     <span className="flex items-center gap-1">
-                                      {getReportTypeIcon(report.report_type)}
-                                      {report.report_type
-                                        .replace('_', ' ')
-                                        .charAt(0)
-                                        .toUpperCase() +
-                                        report.report_type
-                                          .replace('_', ' ')
-                                          .slice(1)}
+                                      {getReportTypeIcon(report?.report_type)}
+                                      {report?.report_type
+                                        ?.replace('_', ' ')
+                                        ?.charAt(0)
+                                        ?.toUpperCase() +
+                                        report?.report_type
+                                          ?.replace('_', ' ')
+                                          ?.slice(1)}
                                     </span>
                                   </Badge>
                                   <Badge variant="secondary">
-                                    {report.download_count} downloads
+                                    {report?.download_count} downloads
                                   </Badge>
                                 </div>
                                 <h3 className="font-semibold text-lg mb-2">
-                                  {report.title}
+                                  {report?.title}
                                 </h3>
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                                   <Building className="h-3 w-3" />
-                                  <span>{report.campaign.company_name}</span>
+                                  <span>{report?.campaign?.company_name}</span>
                                   <span>•</span>
                                   <Calendar className="h-3 w-3" />
-                                  <span>{formatDate(report.report_date)}</span>
+                                  <span>{formatDate(report?.report_date)}</span>
                                 </div>
                                 <p className="text-sm text-muted-foreground line-clamp-2">
-                                  {report.executive_summary ||
-                                    report.key_highlights}
+                                  {report?.executive_summary ||
+                                    report?.key_highlights}
                                 </p>
                               </div>
                             </div>
@@ -372,7 +372,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDownloadReport(report.id);
+                                handleDownloadReport(report?.id);
                               }}
                             >
                               <Download className="h-4 w-4" />
@@ -395,9 +395,9 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {filteredReports.map((report) => (
+                  {filteredReports?.map((report) => (
                     <Card
-                      key={report.id}
+                      key={report?.id}
                       className="cursor-pointer hover:shadow-lg transition-all"
                       onClick={() => setSelectedReport(report)}
                     >
@@ -406,11 +406,11 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                           <div className="flex items-center justify-between">
                             <Badge
                               variant="outline"
-                              className={getReportTypeColor(report.report_type)}
+                              className={getReportTypeColor(report?.report_type)}
                             >
                               <span className="flex items-center gap-1">
-                                {getReportTypeIcon(report.report_type)}
-                                {report.report_type.charAt(0).toUpperCase()}
+                                {getReportTypeIcon(report?.report_type)}
+                                {report?.report_type?.charAt(0)?.toUpperCase()}
                               </span>
                             </Badge>
                             <Button variant="ghost" size="sm">
@@ -419,23 +419,23 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                           </div>
                           <div>
                             <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                              {report.title}
+                              {report?.title}
                             </h3>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                               <Building className="h-3 w-3" />
                               <span className="line-clamp-1">
-                                {report.campaign.company_name}
+                                {report?.campaign?.company_name}
                               </span>
                             </div>
                             <p className="text-sm text-muted-foreground line-clamp-3">
-                              {report.executive_summary ||
-                                report.key_highlights}
+                              {report?.executive_summary ||
+                                report?.key_highlights}
                             </p>
                           </div>
                           <div className="flex items-center justify-between pt-2 border-t">
                             <div className="text-sm text-muted-foreground">
                               <Calendar className="inline h-3 w-3 mr-1" />
-                              {formatDate(report.report_date, 'MMM dd')}
+                              {formatDate(report?.report_date, 'MMM dd')}
                             </div>
                             <Button variant="ghost" size="sm">
                               <Download className="h-4 w-4" />
@@ -476,7 +476,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                   <CardHeader>
                     <CardTitle>Report Details</CardTitle>
                     <CardDescription>
-                      {selectedReport.campaign.company_name}
+                      {selectedReport?.campaign?.company_name}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -484,8 +484,8 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                       <div>
                         <h4 className="font-medium mb-2">Overview</h4>
                         <p className="text-sm text-muted-foreground">
-                          {selectedReport.executive_summary ||
-                            selectedReport.key_highlights}
+                          {selectedReport?.executive_summary ||
+                            selectedReport?.key_highlights}
                         </p>
                       </div>
 
@@ -495,13 +495,13 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                             Report Type
                           </span>
                           <span className="font-medium capitalize">
-                            {selectedReport.report_type.replace('_', ' ')}
+                            {selectedReport?.report_type?.replace('_', ' ')}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Period</span>
                           <span className="font-medium">
-                            {selectedReport.period_description}
+                            {selectedReport?.period_description}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
@@ -509,7 +509,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                             Published
                           </span>
                           <span className="font-medium">
-                            {formatDate(selectedReport.published_at)}
+                            {formatDate(selectedReport?.published_at)}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
@@ -517,7 +517,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                             Published By
                           </span>
                           <span className="font-medium">
-                            {selectedReport.published_by_name || 'System'}
+                            {selectedReport?.published_by_name || 'System'}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
@@ -525,25 +525,25 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                             Downloads
                           </span>
                           <span className="font-medium">
-                            {selectedReport.download_count}
+                            {selectedReport?.download_count}
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    {selectedReport.documents &&
-                      selectedReport.documents.length > 0 && (
+                    {selectedReport?.documents &&
+                      selectedReport?.documents?.length > 0 && (
                         <div className="space-y-3">
                           <h4 className="font-medium">Available Documents</h4>
                           <div className="space-y-2">
-                            {selectedReport.documents.map((doc) => (
+                            {selectedReport?.documents?.map((doc) => (
                               <div
-                                key={doc.id}
+                                key={doc?.id}
                                 className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 cursor-pointer"
                                 onClick={() =>
                                   handleDownloadReport(
-                                    selectedReport.id,
-                                    doc.id,
+                                    selectedReport?.id,
+                                    doc?.id,
                                   )
                                 }
                               >
@@ -551,10 +551,10 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                                   <FileText className="h-4 w-4 text-blue-500" />
                                   <div>
                                     <div className="text-sm font-medium">
-                                      {doc.title}
+                                      {doc?.title}
                                     </div>
                                     <div className="text-xs text-muted-foreground">
-                                      {doc.file_size}
+                                      {doc?.file_size}
                                     </div>
                                   </div>
                                 </div>
@@ -568,9 +568,9 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                     <div className="space-y-3">
                       <h4 className="font-medium">Key Highlights</h4>
                       <div className="space-y-2">
-                        {selectedReport.key_highlights ? (
+                        {selectedReport?.key_highlights ? (
                           <div className="text-sm text-muted-foreground">
-                            {selectedReport.key_highlights}
+                            {selectedReport?.key_highlights}
                           </div>
                         ) : (
                           <div className="text-sm text-muted-foreground italic">
@@ -583,7 +583,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                     <div className="flex gap-2">
                       <Button
                         className="flex-1"
-                        onClick={() => handleDownloadReport(selectedReport.id)}
+                        onClick={() => handleDownloadReport(selectedReport?.id)}
                         variant="success"
                       >
                         <Download className="mr-2 h-4 w-4" />
@@ -620,7 +620,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
         {/* Footer */}
         <div className="flex justify-between items-center pt-4 border-t">
           <div className="text-sm text-muted-foreground">
-            Showing {filteredReports.length} of {reports.length} reports
+            Showing {filteredReports?.length} of {reports?.length} reports
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>
