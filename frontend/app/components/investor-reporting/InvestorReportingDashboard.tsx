@@ -106,16 +106,6 @@ const InvestorReportingDashboard: React.FC = () => {
     }
   }, [user, token]);
 
-  // Add this debug effect
-  useEffect(() => {
-    if (portfolioData) {
-      console.log('Portfolio Data:', portfolioData);
-      console.log('Campaign Performance:', campaignPerformance);
-      console.log('Type of campaignPerformance:', typeof campaignPerformance);
-      console.log('Is Array?', Array.isArray(campaignPerformance));
-    }
-  }, [portfolioData, campaignPerformance]);
-
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
