@@ -120,34 +120,31 @@ const InvestorReportingDashboard: React.FC = () => {
     try {
       setLoading(true);
 
-      // Store token for API calls
       if (token) {
         localStorage.setItem('token', token);
       }
 
-      // Fetch portfolio data
+      // Fetch portfolio data with optional chaining
       const portfolioResponse = await investorReportingService.getPortfolio();
-      if (portfolioResponse.success) {
-        const portfolioData = portfolioResponse.portfolio;
+      if (portfolioResponse?.success) {
+        const portfolioData = portfolioResponse?.portfolio;
         setPortfolioData(portfolioData);
-        setPortfolioMetrics(portfolioData.summary);
-        setCampaignPerformance(portfolioData.by_campaign || []);
+        setPortfolioMetrics(portfolioData?.summary || null);
+        setCampaignPerformance(portfolioData?.by_campaign || []);
       }
 
-      // Fetch recent reports
-      const reportsResponse =
-        await investorReportingService.getRecentInvestorReports(5);
-      if (reportsResponse.success) {
-        setRecentReports(reportsResponse.reports);
+      // Fetch recent reports with optional chaining
+      const reportsResponse = await investorReportingService.getRecentInvestorReports(5);
+      if (reportsResponse?.success) {
+        setRecentReports(reportsResponse?.reports || []);
       }
 
       // Fetch notification count
-      const notificationsResponse =
-        await investorReportingService.getUnreadNotificationCount();
-      setUnreadNotifications(notificationsResponse.count || 0);
+      const notificationsResponse = await investorReportingService.getUnreadNotificationCount();
+      setUnreadNotifications(notificationsResponse?.count || 0);
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
-      toast.error(error.message || 'Failed to load investor dashboard data');
+      toast.error(error?.message || 'Failed to load investor dashboard data');
     } finally {
       setLoading(false);
     }
@@ -224,15 +221,14 @@ const InvestorReportingDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header - with optional chaining */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Investor Dashboard
           </h1>
           <p className="text-muted-foreground">
-            Track your investments, performance, and receive updates from
-            portfolio companies
+            Track your investments, performance, and receive updates from portfolio companies
           </p>
         </div>
         <div className="flex gap-2">
@@ -253,7 +249,7 @@ const InvestorReportingDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Portfolio Summary Cards */}
+      {/* Portfolio Summary Cards - with optional chaining */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -264,13 +260,11 @@ const InvestorReportingDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {portfolioMetrics
-                ? formatCurrency(
-                    portfolioMetrics.total_invested,
-                    portfolioMetrics.currency,
-                    portfolioMetrics.currency_symbol,
-                  )
-                : '₵0.00'}
+              {formatCurrency(
+                portfolioMetrics?.total_invested || 0,
+                portfolioMetrics?.currency || 'GHS',
+                portfolioMetrics?.currency_symbol || '₵'
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
               Across {portfolioMetrics?.invested_campaigns || 0} campaigns
@@ -285,37 +279,36 @@ const InvestorReportingDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {portfolioMetrics
-                ? formatCurrency(
-                    portfolioMetrics.current_value,
-                    portfolioMetrics.currency,
-                    portfolioMetrics.currency_symbol,
-                  )
-                : '₵0.00'}
+              {formatCurrency(
+                portfolioMetrics?.current_value || 0,
+                portfolioMetrics?.currency || 'GHS',
+                portfolioMetrics?.currency_symbol || '₵'
+              )}
             </div>
             <div className="flex items-center text-sm">
               <span
-                className={`font-medium ${portfolioMetrics?.total_returns && portfolioMetrics.total_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                className={`font-medium ${
+                  (portfolioMetrics?.total_returns || 0) >= 0
+                    ? 'text-green-600'
+                    : 'text-red-600'
+                }`}
               >
-                {portfolioMetrics?.total_returns &&
-                portfolioMetrics.total_returns >= 0
-                  ? '+'
-                  : ''}
-                {portfolioMetrics
-                  ? formatCurrency(
-                      portfolioMetrics.total_returns,
-                      portfolioMetrics.currency,
-                      portfolioMetrics.currency_symbol,
-                    )
-                  : '₵0.00'}
+                {(portfolioMetrics?.total_returns || 0) >= 0 ? '+' : ''}
+                {formatCurrency(
+                  portfolioMetrics?.total_returns || 0,
+                  portfolioMetrics?.currency || 'GHS',
+                  portfolioMetrics?.currency_symbol || '₵'
+                )}
               </span>
               <span
-                className={`ml-2 ${portfolioMetrics?.roi && portfolioMetrics.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                className={`ml-2 ${
+                  (portfolioMetrics?.roi || 0) >= 0
+                    ? 'text-green-600'
+                    : 'text-red-600'
+                }`}
               >
                 (
-                {portfolioMetrics?.roi
-                  ? portfolioMetrics.roi.toFixed(2)
-                  : '0.00'}
+                {portfolioMetrics?.roi?.toFixed(2) || '0.00'}
                 %)
               </span>
             </div>
@@ -334,19 +327,13 @@ const InvestorReportingDashboard: React.FC = () => {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">IRR</span>
                 <span className="font-medium">
-                  {portfolioMetrics?.irr
-                    ? portfolioMetrics.irr.toFixed(2)
-                    : '0.00'}
-                  %
+                  {portfolioMetrics?.irr?.toFixed(2) || '0.00'}%
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">MOIC</span>
                 <span className="font-medium">
-                  {portfolioMetrics?.moic
-                    ? portfolioMetrics.moic.toFixed(2)
-                    : '0.00'}
-                  x
+                  {portfolioMetrics?.moic?.toFixed(2) || '0.00'}x
                 </span>
               </div>
             </div>
@@ -371,7 +358,7 @@ const InvestorReportingDashboard: React.FC = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          {/* Campaign Performance */}
+          {/* Campaign Performance - with optional chaining */}
           <Card>
             <CardHeader>
               <CardTitle>Campaign Performance</CardTitle>
@@ -383,39 +370,43 @@ const InvestorReportingDashboard: React.FC = () => {
               <div className="space-y-4">
                 {(campaignPerformance || [])?.slice(0, 5)?.map((campaign) => (
                   <div
-                    key={campaign.campaign_id}
+                    key={campaign?.campaign_id}
                     className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center space-x-4">
                       <Building className="h-8 w-8 text-muted-foreground" />
                       <div>
-                        <h4 className="font-medium">{campaign.company_name}</h4>
+                        <h4 className="font-medium">{campaign?.company_name}</h4>
                         <p className="text-sm text-muted-foreground">
-                          {campaign.investment_count} investment
-                          {campaign.investment_count !== 1 ? 's' : ''}
+                          {campaign?.investment_count || 0} investment
+                          {campaign?.investment_count !== 1 ? 's' : ''}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="font-medium">
                         {formatCurrency(
-                          campaign.current_value,
-                          portfolioMetrics?.currency,
-                          portfolioMetrics?.currency_symbol,
+                          campaign?.current_value || 0,
+                          portfolioMetrics?.currency || 'GHS',
+                          portfolioMetrics?.currency_symbol || '₵'
                         )}
                       </div>
                       <div
-                        className={`text-sm ${campaign.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                        className={`text-sm ${
+                          (campaign?.roi || 0) >= 0
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }`}
                       >
-                        {campaign.roi >= 0 ? '+' : ''}
-                        {campaign.roi.toFixed(2)}% ROI
+                        {(campaign?.roi || 0) >= 0 ? '+' : ''}
+                        {campaign?.roi?.toFixed(2) || '0.00'}% ROI
                       </div>
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        handleViewCampaignDetails(campaign.campaign_id)
+                        handleViewCampaignDetails(campaign?.campaign_id)
                       }
                     >
                       <Eye className="h-4 w-4" />
@@ -423,7 +414,7 @@ const InvestorReportingDashboard: React.FC = () => {
                   </div>
                 ))}
 
-                {campaignPerformance.length === 0 && (
+                {!campaignPerformance?.length && (
                   <div className="text-center py-8 text-muted-foreground">
                     <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No investment data available yet</p>
@@ -434,7 +425,7 @@ const InvestorReportingDashboard: React.FC = () => {
                 )}
               </div>
 
-              {campaignPerformance.length > 0 && (
+              {campaignPerformance?.length > 0 && (
                 <div className="mt-6 flex justify-end">
                   <Button
                     variant="outline"
@@ -447,7 +438,7 @@ const InvestorReportingDashboard: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Recent Reports */}
+          {/* Recent Reports - with optional chaining */}
           <Card>
             <CardHeader>
               <CardTitle>Recent Reports</CardTitle>
@@ -457,34 +448,36 @@ const InvestorReportingDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentReports.map((report) => (
+                {recentReports?.map((report) => (
                   <div
-                    key={report.id}
+                    key={report?.id}
                     className="flex items-center justify-between p-4 border rounded-lg"
                   >
                     <div className="flex items-center space-x-4">
                       <FileText className="h-8 w-8 text-blue-500" />
                       <div>
-                        <h4 className="font-medium">{report.title}</h4>
+                        <h4 className="font-medium">{report?.title}</h4>
                         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                           <Calendar className="h-3 w-3" />
                           <span>
-                            {new Date(report.report_date).toLocaleDateString()}
+                            {report?.report_date
+                              ? new Date(report.report_date).toLocaleDateString()
+                              : 'N/A'}
                           </span>
                           <Badge variant="outline" className="capitalize">
-                            {report.report_type.replace('_', ' ')}
+                            {report?.report_type?.replace('_', ' ') || 'Report'}
                           </Badge>
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Badge variant="secondary">
-                        {report.download_count} downloads
+                        {report?.download_count || 0} downloads
                       </Badge>
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleDownloadReport(report.id)}
+                        onClick={() => handleDownloadReport(report?.id)}
                       >
                         <Download className="h-4 w-4" />
                       </Button>
@@ -492,7 +485,7 @@ const InvestorReportingDashboard: React.FC = () => {
                   </div>
                 ))}
 
-                {recentReports.length === 0 && (
+                {!recentReports?.length && (
                   <div className="text-center py-8 text-muted-foreground">
                     <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No reports available yet</p>
@@ -503,7 +496,7 @@ const InvestorReportingDashboard: React.FC = () => {
                 )}
               </div>
 
-              {recentReports.length > 0 && (
+              {recentReports?.length > 0 && (
                 <div className="mt-6 flex justify-end">
                   <Button
                     variant="outline"
@@ -519,7 +512,7 @@ const InvestorReportingDashboard: React.FC = () => {
 
         <TabsContent value="portfolio">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Risk Analysis */}
+            {/* Risk Analysis - with optional chaining */}
             <Card>
               <CardHeader>
                 <CardTitle>Risk Analysis</CardTitle>
@@ -536,7 +529,7 @@ const InvestorReportingDashboard: React.FC = () => {
                           <span>Portfolio Concentration</span>
                           <span className="font-medium">
                             {(
-                              portfolioData.risk_analysis.concentration_risk *
+                              (portfolioData?.risk_analysis?.concentration_risk || 0) *
                               100
                             ).toFixed(1)}
                             %
@@ -544,17 +537,19 @@ const InvestorReportingDashboard: React.FC = () => {
                         </div>
                         <Progress
                           value={
-                            portfolioData.risk_analysis.concentration_risk * 100
+                            (portfolioData?.risk_analysis?.concentration_risk || 0) *
+                            100
                           }
                           className="h-2"
                         />
                         <p className="text-xs text-muted-foreground mt-1">
-                          {portfolioData.risk_analysis.concentration_risk > 0.5
+                          {(portfolioData?.risk_analysis?.concentration_risk || 0) >
+                          0.5
                             ? 'High concentration - Top holdings represent significant portion'
-                            : portfolioData.risk_analysis.concentration_risk >
-                                0.3
-                              ? 'Moderate concentration'
-                              : 'Well diversified portfolio'}
+                            : (portfolioData?.risk_analysis?.concentration_risk || 0) >
+                              0.3
+                            ? 'Moderate concentration'
+                            : 'Well diversified portfolio'}
                         </p>
                       </div>
 
@@ -563,23 +558,23 @@ const InvestorReportingDashboard: React.FC = () => {
                           <span className="text-sm">Risk Category</span>
                           <Badge
                             variant={
-                              portfolioData.risk_analysis.risk_category ===
+                              portfolioData?.risk_analysis?.risk_category ===
                               'high'
                                 ? 'destructive'
-                                : portfolioData.risk_analysis.risk_category ===
-                                    'medium'
-                                  ? 'outline'
-                                  : 'secondary'
+                                : portfolioData?.risk_analysis?.risk_category ===
+                                  'medium'
+                                ? 'outline'
+                                : 'secondary'
                             }
                           >
-                            {portfolioData.risk_analysis.risk_category?.toUpperCase()}
+                            {portfolioData?.risk_analysis?.risk_category?.toUpperCase() || 'MEDIUM'}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-sm">Overall Risk Score</span>
                           <span className="font-medium">
                             {(
-                              portfolioData.risk_analysis.overall_risk_score *
+                              (portfolioData?.risk_analysis?.overall_risk_score || 0) *
                               100
                             ).toFixed(1)}
                             %
@@ -592,7 +587,7 @@ const InvestorReportingDashboard: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* Cash Flow */}
+            {/* Cash Flow - with optional chaining */}
             <Card>
               <CardHeader>
                 <CardTitle>Investment Activity</CardTitle>
@@ -608,40 +603,43 @@ const InvestorReportingDashboard: React.FC = () => {
                         className="flex items-center justify-between"
                       >
                         <div>
-                          <p className="font-medium">{cashflow.month}</p>
+                          <p className="font-medium">{cashflow?.month}</p>
                           <p className="text-sm text-muted-foreground">
                             Invested:{' '}
                             {formatCurrency(
-                              cashflow.invested,
-                              portfolioMetrics?.currency,
-                              portfolioMetrics?.currency_symbol,
+                              cashflow?.invested || 0,
+                              portfolioMetrics?.currency || 'GHS',
+                              portfolioMetrics?.currency_symbol || '₵'
                             )}
                           </p>
                         </div>
                         <div className="text-right">
                           <p className="font-medium">
                             {formatCurrency(
-                              cashflow.current_value,
-                              portfolioMetrics?.currency,
-                              portfolioMetrics?.currency_symbol,
+                              cashflow?.current_value || 0,
+                              portfolioMetrics?.currency || 'GHS',
+                              portfolioMetrics?.currency_symbol || '₵'
                             )}
                           </p>
                           <p
-                            className={`text-sm ${cashflow.returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                            className={`text-sm ${
+                              (cashflow?.returns || 0) >= 0
+                                ? 'text-green-600'
+                                : 'text-red-600'
+                            }`}
                           >
-                            {cashflow.returns >= 0 ? '+' : ''}
+                            {(cashflow?.returns || 0) >= 0 ? '+' : ''}
                             {formatCurrency(
-                              cashflow.returns,
-                              portfolioMetrics?.currency,
-                              portfolioMetrics?.currency_symbol,
+                              cashflow?.returns || 0,
+                              portfolioMetrics?.currency || 'GHS',
+                              portfolioMetrics?.currency_symbol || '₵'
                             )}
                           </p>
                         </div>
                       </div>
                     ))}
 
-                  {(!portfolioData?.cash_flow ||
-                    portfolioData.cash_flow.length === 0) && (
+                  {!portfolioData?.cash_flow?.length && (
                     <p className="text-center text-muted-foreground py-4">
                       No recent investment activity
                     </p>
@@ -654,7 +652,7 @@ const InvestorReportingDashboard: React.FC = () => {
 
         <TabsContent value="reports">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Report Types */}
+            {/* Report Types - with optional chaining */}
             <Card>
               <CardHeader>
                 <CardTitle>Report Types</CardTitle>
@@ -668,31 +666,34 @@ const InvestorReportingDashboard: React.FC = () => {
                     {
                       type: 'Quarterly Reports',
                       icon: FileText,
-                      count: recentReports.filter(
-                        (r) => r.report_type === 'quarterly',
-                      ).length,
+                      count:
+                        recentReports?.filter(
+                          (r) => r?.report_type === 'quarterly'
+                        )?.length || 0,
                       color: 'text-blue-500',
                     },
                     {
                       type: 'Annual Reports',
                       icon: FileText,
-                      count: recentReports.filter(
-                        (r) => r.report_type === 'annual',
-                      ).length,
+                      count:
+                        recentReports?.filter(
+                          (r) => r?.report_type === 'annual'
+                        )?.length || 0,
                       color: 'text-green-500',
                     },
                     {
                       type: 'Valuation Updates',
                       icon: TrendingUp,
-                      count: recentReports.filter(
-                        (r) => r.report_type === 'valuation_update',
-                      ).length,
+                      count:
+                        recentReports?.filter(
+                          (r) => r?.report_type === 'valuation_update'
+                        )?.length || 0,
                       color: 'text-purple-500',
                     },
                     {
                       type: 'Financial Statements',
                       icon: BarChart3,
-                      count: 0, // You might need to fetch this separately
+                      count: 0,
                       color: 'text-orange-500',
                     },
                   ].map((item, index) => (
@@ -711,7 +712,7 @@ const InvestorReportingDashboard: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
+            {/* Quick Actions - with optional chaining */}
             <Card>
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
@@ -739,9 +740,9 @@ const InvestorReportingDashboard: React.FC = () => {
                     variant="outline"
                     className="w-full justify-start"
                     onClick={() => {
-                      if (campaignPerformance.length > 0) {
+                      if (campaignPerformance?.length > 0) {
                         setSelectedCampaignId(
-                          campaignPerformance[0].campaign_id,
+                          campaignPerformance?.[0]?.campaign_id
                         );
                         setShowFinancialStatements(true);
                       }
@@ -811,22 +812,24 @@ const InvestorReportingDashboard: React.FC = () => {
 
                 <div className="space-y-3">
                   <h4 className="font-medium">Recent Notifications</h4>
-                  {recentReports.slice(0, 3).map((report, index) => (
+                  {recentReports?.slice(0, 3).map((report, index) => (
                     <div
                       key={index}
                       className="flex items-start p-3 border rounded-lg"
                     >
                       <div className="flex-1">
                         <div className="flex items-center">
-                          <h5 className="font-medium">{report.title}</h5>
+                          <h5 className="font-medium">{report?.title}</h5>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {report.campaign.company_name} published a new{' '}
-                          {report.report_type} report
+                          {report?.campaign?.company_name} published a new{' '}
+                          {report?.report_type} report
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           <Clock className="inline h-3 w-3 mr-1" />
-                          {new Date(report.report_date).toLocaleDateString()}
+                          {report?.report_date
+                            ? new Date(report.report_date).toLocaleDateString()
+                            : 'N/A'}
                         </p>
                       </div>
                       <Button variant="ghost" size="sm">
@@ -841,7 +844,7 @@ const InvestorReportingDashboard: React.FC = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Modals */}
+      {/* Modals - with optional chaining */}
       {portfolioData && (
         <PortfolioOverviewModal
           isOpen={showPortfolioOverview}
