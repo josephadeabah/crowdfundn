@@ -729,41 +729,56 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
               <CardContent>
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {(projections || [])?.slice(0, 3)?.map((projection: any) => (
-                      <Card key={projection?.years}>
-                        <CardContent className="pt-6">
-                          <div className="text-center">
-                            <div className="text-sm font-medium text-muted-foreground mb-2">
-                              {projection?.years} Year
-                              {projection?.years !== 1 ? 's' : ''} Projection
+                    {Array.isArray(projections) && projections.length > 0 ? (
+                      projections.slice(0, 3).map((projection: any) => (
+                        <Card key={projection?.years}>
+                          <CardContent className="pt-6">
+                            <div className="text-center">
+                              <div className="text-sm font-medium text-muted-foreground mb-2">
+                                {projection?.years} Year
+                                {projection?.years !== 1 ? 's' : ''} Projection
+                              </div>
+                              <div className="text-2xl font-bold mb-1">
+                                {formatCurrency(
+                                  projection?.projected_value ?? 0,
+                                  summary?.currency,
+                                  summary?.currency_symbol,
+                                )}
+                              </div>
+                              <div
+                                className={`text-sm ${
+                                  (projection?.projected_returns ?? 0) >= 0
+                                    ? 'text-green-600'
+                                    : 'text-red-600'
+                                }`}
+                              >
+                                {(projection?.projected_returns ?? 0) >= 0
+                                  ? '+'
+                                  : ''}
+                                {formatCurrency(
+                                  projection?.projected_returns ?? 0,
+                                  summary?.currency,
+                                  summary?.currency_symbol,
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-2">
+                                {projection?.annual_growth?.toFixed(2) ??
+                                  '0.00'}
+                                % annual growth
+                              </div>
                             </div>
-                            <div className="text-2xl font-bold mb-1">
-                              {formatCurrency(
-                                projection?.projected_value ?? 0,
-                                summary?.currency,
-                                summary?.currency_symbol,
-                              )}
-                            </div>
-                            <div
-                              className={`text-sm ${(projection?.projected_returns ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
-                            >
-                              {(projection?.projected_returns ?? 0) >= 0
-                                ? '+'
-                                : ''}
-                              {formatCurrency(
-                                projection?.projected_returns ?? 0,
-                                summary?.currency,
-                                summary?.currency_symbol,
-                              )}
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-2">
-                              {projection?.annual_growth?.toFixed(2) ?? '0.00'}%
-                              annual growth
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                          </CardContent>
+                        </Card>
+                      ))
+                    ) : (
+                      <div className="col-span-3 text-center py-8 text-muted-foreground">
+                        <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No projection data available</p>
+                        <p className="text-sm">
+                          Projections will be available with more data
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-3">
@@ -782,20 +797,20 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
                         Company valuations grow at current rate
                       </li>
-                      {projections?.length > 0 && (
+                      {Array.isArray(projections) && projections.length > 0 && (
                         <li className="flex items-center">
                           <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                          Based on {projections?.length} projection models
+                          Based on {projections.length} projection models
                         </li>
                       )}
                     </ul>
                   </div>
 
-                  {projections?.length > 0 && (
+                  {Array.isArray(projections) && projections.length > 0 && (
                     <div className="pt-4 border-t">
                       <h4 className="font-medium mb-3">Detailed Projections</h4>
                       <div className="space-y-3">
-                        {projections?.map((proj: any, index: number) => (
+                        {projections.map((proj: any, index: number) => (
                           <div
                             key={index}
                             className="flex justify-between text-sm"
