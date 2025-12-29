@@ -582,7 +582,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                       <Button
                         className="flex-1"
                         onClick={() => handleDownloadReport(selectedReport.id)}
-                        variant='success'
+                        variant="success"
                       >
                         <Download className="mr-2 h-4 w-4" />
                         Download Report
@@ -624,7 +624,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
-            <Button variant='success'>
+            <Button variant="success">
               <Bell className="mr-2 h-4 w-4" />
               Manage Notifications
             </Button>

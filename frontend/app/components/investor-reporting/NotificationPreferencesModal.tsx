@@ -680,7 +680,11 @@ const NotificationPreferencesModal: React.FC<
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
-            <Button onClick={handleSave} disabled={!hasChanges || saving} variant='success'>
+            <Button
+              onClick={handleSave}
+              disabled={!hasChanges || saving}
+              variant="success"
+            >
               {saving ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>

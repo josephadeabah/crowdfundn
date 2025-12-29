@@ -728,7 +728,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
             <Button
               onClick={handleGenerateStatement}
               disabled={generating || !portfolioData.summary}
-              variant='success'
+              variant="success"
             >
               {generating ? (
                 <>
