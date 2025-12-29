@@ -106,12 +106,14 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
     summary: null,
     campaigns: [],
   });
-  const [statementHistory, setStatementHistory] = useState<StatementHistory[]>([]);
+  const [statementHistory, setStatementHistory] = useState<StatementHistory[]>(
+    [],
+  );
   const [includeSections, setIncludeSections] = useState<string[]>([
     'summary',
     'performance',
     'campaigns',
-    'risk'
+    'risk',
   ]);
 
   const service = new InvestorReportingService();
@@ -127,11 +129,11 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
     try {
       setLoading(true);
       const response = await service.getPortfolio();
-      
+
       if (response.success && response.portfolio) {
         setPortfolioData({
           summary: response.portfolio.summary,
-          campaigns: response.portfolio.by_campaign || []
+          campaigns: response.portfolio.by_campaign || [],
         });
       }
     } catch (error) {
@@ -161,7 +163,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
       const options = {
         period: period,
         format: format,
-        includeSections: includeSections
+        includeSections: includeSections,
       };
 
       const response = await service.generatePortfolioStatement(options);
@@ -172,7 +174,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
           window.open(response.url, '_blank');
         }
         onDownload();
-        
+
         // Refresh statement history
         fetchStatementHistory();
       } else {
@@ -187,10 +189,10 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
   };
 
   const handleSectionToggle = (section: string) => {
-    setIncludeSections(prev => 
-      prev.includes(section) 
-        ? prev.filter(s => s !== section)
-        : [...prev, section]
+    setIncludeSections((prev) =>
+      prev.includes(section)
+        ? prev.filter((s) => s !== section)
+        : [...prev, section],
     );
   };
 
@@ -233,38 +235,38 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
       id: 'summary',
       name: 'Portfolio Summary',
       description: 'Investment overview and totals',
-      required: true
+      required: true,
     },
     {
       id: 'performance',
       name: 'Performance Analysis',
       description: 'ROI, returns, and growth metrics',
-      required: true
+      required: true,
     },
     {
       id: 'campaigns',
       name: 'Campaign Details',
       description: 'Individual investment breakdowns',
-      required: false
+      required: false,
     },
     {
       id: 'risk',
       name: 'Risk Analysis',
       description: 'Portfolio risk metrics',
-      required: false
+      required: false,
     },
     {
       id: 'cashflow',
       name: 'Cash Flow',
       description: 'Investment activity over time',
-      required: false
+      required: false,
     },
     {
       id: 'projections',
       name: 'Future Projections',
       description: 'Portfolio growth projections',
-      required: false
-    }
+      required: false,
+    },
   ];
 
   // Calculate top 3 campaigns for preview
@@ -372,16 +374,23 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                         <div
                           key={section.id}
                           className="flex items-start space-x-3 cursor-pointer"
-                          onClick={() => !section.required && handleSectionToggle(section.id)}
+                          onClick={() =>
+                            !section.required && handleSectionToggle(section.id)
+                          }
                         >
-                          <div className={`mt-1 ${section.required ? 'text-green-500' : includeSections.includes(section.id) ? 'text-green-500' : 'text-gray-300'}`}>
+                          <div
+                            className={`mt-1 ${section.required ? 'text-green-500' : includeSections.includes(section.id) ? 'text-green-500' : 'text-gray-300'}`}
+                          >
                             <CheckCircle className="h-4 w-4" />
                           </div>
                           <div className="flex-1">
                             <div className="font-medium flex items-center">
                               {section.name}
                               {section.required && (
-                                <Badge variant="outline" className="ml-2 text-xs">
+                                <Badge
+                                  variant="outline"
+                                  className="ml-2 text-xs"
+                                >
                                   Required
                                 </Badge>
                               )}
@@ -426,7 +435,8 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                     </h3>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Generated on {formatDate(new Date().toISOString())} | Period:{' '}
+                    Generated on {formatDate(new Date().toISOString())} |
+                    Period:{' '}
                     {periods.find((p) => p.value === period)?.label ||
                       'Current Month'}
                   </div>
@@ -445,7 +455,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                       {formatCurrency(
                         portfolioData.summary.total_invested,
                         portfolioData.summary.currency,
-                        portfolioData.summary.currency_symbol
+                        portfolioData.summary.currency_symbol,
                       )}
                     </div>
                   </div>
@@ -457,7 +467,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                       {formatCurrency(
                         portfolioData.summary.current_value,
                         portfolioData.summary.currency,
-                        portfolioData.summary.currency_symbol
+                        portfolioData.summary.currency_symbol,
                       )}
                     </div>
                   </div>
@@ -465,11 +475,13 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                     <div className="text-sm text-muted-foreground mb-2">
                       Total Returns
                     </div>
-                    <div className={`text-2xl font-bold ${portfolioData.summary.total_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <div
+                      className={`text-2xl font-bold ${portfolioData.summary.total_returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                    >
                       {formatCurrency(
                         portfolioData.summary.total_returns,
                         portfolioData.summary.currency,
-                        portfolioData.summary.currency_symbol
+                        portfolioData.summary.currency_symbol,
                       )}
                     </div>
                   </div>
@@ -481,8 +493,12 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                     <h4 className="font-medium mb-3">Performance Metrics</h4>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-sm">Return on Investment (ROI)</span>
-                        <span className={`font-medium ${portfolioData.summary.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <span className="text-sm">
+                          Return on Investment (ROI)
+                        </span>
+                        <span
+                          className={`font-medium ${portfolioData.summary.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                        >
                           {portfolioData.summary.roi.toFixed(2)}%
                         </span>
                       </div>
@@ -507,36 +523,45 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                 )}
 
                 {/* Campaigns */}
-                {includeSections.includes('campaigns') && portfolioData.campaigns.length > 0 && (
-                  <div>
-                    <h4 className="font-medium mb-3">Portfolio Holdings</h4>
-                    <div className="space-y-2">
-                      {topCampaigns.map((campaign, index) => {
-                        const percentage = (campaign.invested / portfolioData.summary!.total_invested) * 100;
-                        return (
-                          <div key={index} className="flex justify-between text-sm">
-                            <span className="flex items-center">
-                              <Building className="h-3 w-3 mr-2 text-muted-foreground" />
-                              {campaign.company_name}
-                            </span>
-                            <span>
-                              {formatCurrency(
-                                campaign.invested,
-                                portfolioData.summary!.currency,
-                                portfolioData.summary!.currency_symbol
-                              )} ({percentage.toFixed(1)}%)
-                            </span>
+                {includeSections.includes('campaigns') &&
+                  portfolioData.campaigns.length > 0 && (
+                    <div>
+                      <h4 className="font-medium mb-3">Portfolio Holdings</h4>
+                      <div className="space-y-2">
+                        {topCampaigns.map((campaign, index) => {
+                          const percentage =
+                            (campaign.invested /
+                              portfolioData.summary!.total_invested) *
+                            100;
+                          return (
+                            <div
+                              key={index}
+                              className="flex justify-between text-sm"
+                            >
+                              <span className="flex items-center">
+                                <Building className="h-3 w-3 mr-2 text-muted-foreground" />
+                                {campaign.company_name}
+                              </span>
+                              <span>
+                                {formatCurrency(
+                                  campaign.invested,
+                                  portfolioData.summary!.currency,
+                                  portfolioData.summary!.currency_symbol,
+                                )}{' '}
+                                ({percentage.toFixed(1)}%)
+                              </span>
+                            </div>
+                          );
+                        })}
+                        {portfolioData.campaigns.length > 3 && (
+                          <div className="text-sm text-muted-foreground pt-2">
+                            ...and {portfolioData.campaigns.length - 3} more
+                            campaigns
                           </div>
-                        );
-                      })}
-                      {portfolioData.campaigns.length > 3 && (
-                        <div className="text-sm text-muted-foreground pt-2">
-                          ...and {portfolioData.campaigns.length - 3} more campaigns
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 <div className="pt-4 border-t text-center text-sm text-muted-foreground">
                   This is a preview. The full statement will include detailed
@@ -547,7 +572,9 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
               <div className="text-center py-8 text-muted-foreground">
                 <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>No portfolio data available</p>
-                <p className="text-sm">Start investing to generate portfolio statements</p>
+                <p className="text-sm">
+                  Start investing to generate portfolio statements
+                </p>
               </div>
             )}
           </CardContent>
@@ -642,7 +669,9 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                     <div className="flex items-center space-x-4">
                       <FileText className="h-8 w-8 text-blue-500" />
                       <div>
-                        <div className="font-medium">{stmt.period} Statement</div>
+                        <div className="font-medium">
+                          {stmt.period} Statement
+                        </div>
                         <div className="text-sm text-muted-foreground">
                           Generated {formatDate(stmt.date)} • {stmt.format} •{' '}
                           {stmt.size}
@@ -672,7 +701,9 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
               <div className="text-center py-8 text-muted-foreground">
                 <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>No statements generated yet</p>
-                <p className="text-sm">Generate your first portfolio statement</p>
+                <p className="text-sm">
+                  Generate your first portfolio statement
+                </p>
               </div>
             )}
           </CardContent>
@@ -694,8 +725,8 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleGenerateStatement} 
+            <Button
+              onClick={handleGenerateStatement}
               disabled={generating || !portfolioData.summary}
             >
               {generating ? (
