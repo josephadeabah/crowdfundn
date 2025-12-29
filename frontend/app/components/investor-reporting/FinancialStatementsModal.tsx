@@ -137,20 +137,22 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
 
   const prepareChartData = (financials: FinancialStatement[]) => {
     // Prepare revenue trend data
-    const revenueData = financials?.map((stmt) => ({
-      period: formatDate(stmt?.period_end, 'MMM yy'),
-      revenue: stmt?.revenue ?? 0,
-      netIncome: stmt?.net_income ?? 0,
-      grossMargin: stmt?.gross_margin ?? 0,
-      netMargin: stmt?.net_margin ?? 0,
-    })) ?? [];
+    const revenueData =
+      financials?.map((stmt) => ({
+        period: formatDate(stmt?.period_end, 'MMM yy'),
+        revenue: stmt?.revenue ?? 0,
+        netIncome: stmt?.net_income ?? 0,
+        grossMargin: stmt?.gross_margin ?? 0,
+        netMargin: stmt?.net_margin ?? 0,
+      })) ?? [];
 
     // Prepare profitability data for last 3 periods
-    const profitabilityData = financials?.slice(-3)?.map((stmt) => ({
-      name: formatDate(stmt?.period_end, 'MMM yy'),
-      revenue: stmt?.revenue ?? 0,
-      profit: stmt?.net_income ?? 0,
-    })) ?? [];
+    const profitabilityData =
+      financials?.slice(-3)?.map((stmt) => ({
+        name: formatDate(stmt?.period_end, 'MMM yy'),
+        revenue: stmt?.revenue ?? 0,
+        profit: stmt?.net_income ?? 0,
+      })) ?? [];
 
     setTrendData({
       revenueData,
@@ -289,7 +291,11 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         Revenue
                       </div>
                       <div className="text-2xl font-bold">
-                        {formatCurrency(selectedStatement?.revenue ?? 0, 'GHS', '₵')}
+                        {formatCurrency(
+                          selectedStatement?.revenue ?? 0,
+                          'GHS',
+                          '₵',
+                        )}
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         {formatDate(selectedStatement?.period_end, 'MMM yyyy')}
@@ -314,7 +320,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         )}
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
-                        {(selectedStatement?.net_margin?.toFixed(1) ?? '0.0')}% margin
+                        {selectedStatement?.net_margin?.toFixed(1) ?? '0.0'}%
+                        margin
                       </div>
                     </div>
                   </CardContent>
@@ -327,7 +334,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         Runway
                       </div>
                       <div className="text-2xl font-bold">
-                        {(selectedStatement?.runway_months?.toFixed(1) ?? '0.0')} months
+                        {selectedStatement?.runway_months?.toFixed(1) ?? '0.0'}{' '}
+                        months
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         Burn rate:{' '}
@@ -372,7 +380,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           <FileText className="h-8 w-8 text-blue-500" />
                           <div>
                             <h4 className="font-medium">
-                              {statement?.period_type?.charAt(0)?.toUpperCase() +
+                              {statement?.period_type
+                                ?.charAt(0)
+                                ?.toUpperCase() +
                                 statement?.period_type?.slice(1)}{' '}
                               Statement
                             </h4>
@@ -527,7 +537,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           Gross Margin
                         </div>
                         <div className="text-lg font-medium">
-                          {(selectedStatement?.gross_margin?.toFixed(1) ?? '0.0')}%
+                          {selectedStatement?.gross_margin?.toFixed(1) ?? '0.0'}
+                          %
                         </div>
                       </div>
                       <div className="text-center p-3 border rounded-lg">
@@ -535,7 +546,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           Net Margin
                         </div>
                         <div className="text-lg font-medium">
-                          {(selectedStatement?.net_margin?.toFixed(1) ?? '0.0')}%
+                          {selectedStatement?.net_margin?.toFixed(1) ?? '0.0'}%
                         </div>
                       </div>
                       <div className="text-center p-3 border rounded-lg">
@@ -556,7 +567,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           Runway
                         </div>
                         <div className="text-lg font-medium">
-                          {(selectedStatement?.runway_months?.toFixed(1) ?? '0.0')} months
+                          {selectedStatement?.runway_months?.toFixed(1) ??
+                            '0.0'}{' '}
+                          months
                         </div>
                       </div>
                     </div>
@@ -680,7 +693,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {(selectedStatement?.gross_margin?.toFixed(1) ?? '0.0')}%
+                            {selectedStatement?.gross_margin?.toFixed(1) ??
+                              '0.0'}
+                            %
                           </div>
                         </div>
                         <div className="flex justify-between items-center p-3 border rounded-lg">
@@ -691,7 +706,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {(selectedStatement?.net_margin?.toFixed(1) ?? '0.0')}%
+                            {selectedStatement?.net_margin?.toFixed(1) ?? '0.0'}
+                            %
                           </div>
                         </div>
                         <div className="flex justify-between items-center p-3 border rounded-lg">
@@ -797,7 +813,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           )}
                         </div>
                         <div className="text-sm text-green-600 mt-1">
-                          +{(selectedStatement?.net_margin?.toFixed(1) ?? '0.0')}% margin
+                          +{selectedStatement?.net_margin?.toFixed(1) ?? '0.0'}%
+                          margin
                         </div>
                       </div>
                       <div className="text-center p-4 border rounded-lg">

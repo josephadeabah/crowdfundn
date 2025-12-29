@@ -146,7 +146,9 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
 
     // Apply report type filter
     if (reportType !== 'all') {
-      filtered = filtered.filter((report) => report?.report_type === reportType);
+      filtered = filtered.filter(
+        (report) => report?.report_type === reportType,
+      );
     }
 
     // Apply time period filter
@@ -406,7 +408,9 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
                           <div className="flex items-center justify-between">
                             <Badge
                               variant="outline"
-                              className={getReportTypeColor(report?.report_type)}
+                              className={getReportTypeColor(
+                                report?.report_type,
+                              )}
                             >
                               <span className="flex items-center gap-1">
                                 {getReportTypeIcon(report?.report_type)}

@@ -146,33 +146,36 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
   // Prepare data for charts
   const primaryKpis = kpis?.filter((kpi) => kpi?.is_primary);
 
-  const performanceData = primaryKpis?.map((kpi) => ({
-    name: kpi?.name,
-    current: kpi?.latest_value?.value ?? 0,
-    target: kpi?.target_value ?? 0,
-    achievement: kpi?.performance_vs_target?.percentage ?? 0,
-  })) ?? [];
+  const performanceData =
+    primaryKpis?.map((kpi) => ({
+      name: kpi?.name,
+      current: kpi?.latest_value?.value ?? 0,
+      target: kpi?.target_value ?? 0,
+      achievement: kpi?.performance_vs_target?.percentage ?? 0,
+    })) ?? [];
 
-  const trendData = kpis
-    ?.filter((kpi) => kpi?.trend && Object.keys(kpi?.trend)?.length > 0)
-    ?.slice(0, 3)
-    ?.flatMap((kpi) =>
-      Object.entries(kpi?.trend ?? {})?.map(([date, value]) => ({
-        date,
-        value,
-        name: kpi?.name,
-      })),
-    ) ?? [];
+  const trendData =
+    kpis
+      ?.filter((kpi) => kpi?.trend && Object.keys(kpi?.trend)?.length > 0)
+      ?.slice(0, 3)
+      ?.flatMap((kpi) =>
+        Object.entries(kpi?.trend ?? {})?.map(([date, value]) => ({
+          date,
+          value,
+          name: kpi?.name,
+        })),
+      ) ?? [];
 
-  const radarData = primaryKpis?.map((kpi) => ({
-    subject: kpi?.name,
-    A: kpi?.latest_value?.value ?? 0,
-    B: kpi?.target_value ?? 0,
-    fullMark: Math.max(
-      (kpi?.target_value ?? 0) * 1.5,
-      (kpi?.latest_value?.value ?? 0) * 1.5,
-    ),
-  })) ?? [];
+  const radarData =
+    primaryKpis?.map((kpi) => ({
+      subject: kpi?.name,
+      A: kpi?.latest_value?.value ?? 0,
+      B: kpi?.target_value ?? 0,
+      fullMark: Math.max(
+        (kpi?.target_value ?? 0) * 1.5,
+        (kpi?.latest_value?.value ?? 0) * 1.5,
+      ),
+    })) ?? [];
 
   return (
     <Modal
@@ -260,7 +263,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                       <div className="flex justify-between text-sm mb-1">
                         <span>Current Value</span>
                         <span className="font-medium">
-                          {(kpi?.latest_value?.value?.toLocaleString() ?? 'N/A')}{' '}
+                          {kpi?.latest_value?.value?.toLocaleString() ?? 'N/A'}{' '}
                           {kpi?.unit}
                         </span>
                       </div>
@@ -273,7 +276,8 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                     <div className="flex justify-between text-sm">
                       <span>Target</span>
                       <span className="font-medium">
-                        {(kpi?.target_value?.toLocaleString() ?? 'N/A')} {kpi?.unit}
+                        {kpi?.target_value?.toLocaleString() ?? 'N/A'}{' '}
+                        {kpi?.unit}
                       </span>
                     </div>
 
@@ -397,13 +401,13 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                           <div className="flex items-center space-x-4">
                             <div className="text-right">
                               <div className="font-medium">
-                                {(kpi?.latest_value?.value?.toLocaleString() ??
-                                  'N/A')}{' '}
+                                {kpi?.latest_value?.value?.toLocaleString() ??
+                                  'N/A'}{' '}
                                 {kpi?.unit}
                               </div>
                               <div className="text-sm text-muted-foreground">
                                 Target:{' '}
-                                {(kpi?.target_value?.toLocaleString() ?? 'N/A')}
+                                {kpi?.target_value?.toLocaleString() ?? 'N/A'}
                               </div>
                             </div>
 
@@ -538,13 +542,14 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                                   <div className="flex justify-between text-sm">
                                     <span>Target Value</span>
                                     <span className="font-medium">
-                                      {(kpi?.target_value?.toLocaleString() ?? 'N/A')}
+                                      {kpi?.target_value?.toLocaleString() ??
+                                        'N/A'}
                                     </span>
                                   </div>
                                   <div className="flex justify-between text-sm">
                                     <span>Current Value</span>
                                     <span className="font-medium">
-                                      {(latestValue?.toLocaleString() ?? 'N/A')}
+                                      {latestValue?.toLocaleString() ?? 'N/A'}
                                     </span>
                                   </div>
                                   <div className="flex justify-between text-sm">
@@ -552,7 +557,8 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                                     <span
                                       className={`font-medium ${kpi?.performance_vs_target?.difference && kpi?.performance_vs_target?.difference >= 0 ? 'text-green-600' : 'text-red-600'}`}
                                     >
-                                      {kpi?.performance_vs_target?.difference ? (
+                                      {kpi?.performance_vs_target
+                                        ?.difference ? (
                                         <>
                                           {kpi?.performance_vs_target
                                             ?.difference >= 0

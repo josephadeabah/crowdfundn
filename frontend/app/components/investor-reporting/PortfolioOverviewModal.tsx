@@ -267,7 +267,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                   <p
                     className={`text-2xl font-bold ${(summary?.roi ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                   >
-                    {(summary?.roi?.toFixed(2) ?? '0.00')}%
+                    {summary?.roi?.toFixed(2) ?? '0.00'}%
                   </p>
                 </div>
                 <Percent className="h-8 w-8 text-purple-500" />
@@ -381,8 +381,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                               </span>
                               <span>•</span>
                               <span>
-                                {(campaign?.ownership_percentage?.toFixed(2) ?? '0.00')}%
-                                ownership
+                                {campaign?.ownership_percentage?.toFixed(2) ??
+                                  '0.00'}
+                                % ownership
                               </span>
                             </div>
                           </div>
@@ -407,7 +408,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                             className={`text-sm font-medium ${(campaign?.roi ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                           >
                             {(campaign?.roi ?? 0) >= 0 ? '+' : ''}
-                            {(campaign?.roi?.toFixed(2) ?? '0.00')}% ROI
+                            {campaign?.roi?.toFixed(2) ?? '0.00'}% ROI
                           </div>
                         </div>
                       </div>
@@ -438,7 +439,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                       <div className="flex justify-between text-sm mb-1">
                         <span>Internal Rate of Return (IRR)</span>
                         <span className="font-medium">
-                          {(summary?.irr?.toFixed(2) ?? '0.00')}%
+                          {summary?.irr?.toFixed(2) ?? '0.00'}%
                         </span>
                       </div>
                       <Progress
@@ -450,11 +451,11 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                       <div className="flex justify-between text-sm mb-1">
                         <span>Multiple on Invested Capital (MOIC)</span>
                         <span className="font-medium">
-                          {(summary?.moic?.toFixed(2) ?? '0.00')}x
+                          {summary?.moic?.toFixed(2) ?? '0.00'}x
                         </span>
                       </div>
                       <Progress
-                        value={Math.min(((summary?.moic ?? 0) * 50), 100)}
+                        value={Math.min((summary?.moic ?? 0) * 50, 100)}
                         className="h-2"
                       />
                     </div>
@@ -543,7 +544,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                   <div className="space-y-4">
                     {campaigns?.map((campaign: any) => {
                       const percentage =
-                        ((campaign?.invested ?? 0) / (summary?.total_invested ?? 1)) * 100;
+                        ((campaign?.invested ?? 0) /
+                          (summary?.total_invested ?? 1)) *
+                        100;
                       return (
                         <div key={campaign?.campaign_id} className="space-y-2">
                           <div className="flex justify-between text-sm">
@@ -562,8 +565,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                               )}
                             </span>
                             <span>
-                              {(campaign?.ownership_percentage?.toFixed(2) ?? '0.00')}%
-                              ownership
+                              {campaign?.ownership_percentage?.toFixed(2) ??
+                                '0.00'}
+                              % ownership
                             </span>
                           </div>
                         </div>
@@ -592,7 +596,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         ?.slice(0, 3)
                         ?.map((campaign: any, index: number) => {
                           const percentage =
-                            ((campaign?.invested ?? 0) / (summary?.total_invested ?? 1)) * 100;
+                            ((campaign?.invested ?? 0) /
+                              (summary?.total_invested ?? 1)) *
+                            100;
                           return (
                             <div
                               key={campaign?.campaign_id}
@@ -634,7 +640,10 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                           Portfolio Concentration
                         </div>
                         <div className="text-lg font-medium">
-                          {((riskAnalysis?.concentration_risk ?? 0) * 100)?.toFixed(1)}%
+                          {(
+                            (riskAnalysis?.concentration_risk ?? 0) * 100
+                          )?.toFixed(1)}
+                          %
                         </div>
                         <div className="text-xs text-muted-foreground">
                           Herfindahl-Hirschman Index
@@ -645,11 +654,14 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                           Overall Risk Score
                         </div>
                         <div className="text-lg font-medium">
-                          {((riskAnalysis?.overall_risk_score ?? 0) * 100)?.toFixed(1)}%
+                          {(
+                            (riskAnalysis?.overall_risk_score ?? 0) * 100
+                          )?.toFixed(1)}
+                          %
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {(riskAnalysis?.risk_category?.toUpperCase() ||
-                            'MEDIUM')}
+                          {riskAnalysis?.risk_category?.toUpperCase() ||
+                            'MEDIUM'}
                         </div>
                       </div>
                     </div>
@@ -673,14 +685,20 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         <div className="flex justify-between text-sm">
                           <span>Liquidity Risk</span>
                           <span className="font-medium">
-                            {((riskAnalysis?.liquidity_risk ?? 0) * 100)?.toFixed(1)}%
+                            {(
+                              (riskAnalysis?.liquidity_risk ?? 0) * 100
+                            )?.toFixed(1)}
+                            %
                           </span>
                         </div>
                         {riskAnalysis?.volatility && (
                           <div className="flex justify-between text-sm">
                             <span>Volatility</span>
                             <span className="font-medium">
-                              {((riskAnalysis?.volatility ?? 0) * 100)?.toFixed(1)}%
+                              {((riskAnalysis?.volatility ?? 0) * 100)?.toFixed(
+                                1,
+                              )}
+                              %
                             </span>
                           </div>
                         )}
@@ -688,7 +706,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                           <div className="flex justify-between text-sm">
                             <span>Sharpe Ratio</span>
                             <span className="font-medium">
-                              {(riskAnalysis?.sharpe_ratio?.toFixed(2) ?? '0.00')}
+                              {riskAnalysis?.sharpe_ratio?.toFixed(2) ?? '0.00'}
                             </span>
                           </div>
                         )}
@@ -729,7 +747,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                             <div
                               className={`text-sm ${(projection?.projected_returns ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                             >
-                              {(projection?.projected_returns ?? 0) >= 0 ? '+' : ''}
+                              {(projection?.projected_returns ?? 0) >= 0
+                                ? '+'
+                                : ''}
                               {formatCurrency(
                                 projection?.projected_returns ?? 0,
                                 summary?.currency,
@@ -737,8 +757,8 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                               )}
                             </div>
                             <div className="text-xs text-muted-foreground mt-2">
-                              {(projection?.annual_growth?.toFixed(2) ?? '0.00')}% annual
-                              growth
+                              {projection?.annual_growth?.toFixed(2) ?? '0.00'}%
+                              annual growth
                             </div>
                           </div>
                         </CardContent>
@@ -751,8 +771,8 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                     <ul className="space-y-2 text-sm text-muted-foreground">
                       <li className="flex items-center">
                         <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                        Current ROI of {(summary?.roi?.toFixed(2) ?? '0.00')}% remains
-                        constant
+                        Current ROI of {summary?.roi?.toFixed(2) ?? '0.00'}%
+                        remains constant
                       </li>
                       <li className="flex items-center">
                         <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>

@@ -375,7 +375,8 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                           key={section?.id}
                           className="flex items-start space-x-3 cursor-pointer"
                           onClick={() =>
-                            !section?.required && handleSectionToggle(section?.id)
+                            !section?.required &&
+                            handleSectionToggle(section?.id)
                           }
                         >
                           <div
@@ -499,7 +500,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                         <span
                           className={`font-medium ${(portfolioData?.summary?.roi ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                         >
-                          {(portfolioData?.summary?.roi?.toFixed(2) ?? '0.00')}%
+                          {portfolioData?.summary?.roi?.toFixed(2) ?? '0.00'}%
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -507,7 +508,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                           Internal Rate of Return (IRR)
                         </span>
                         <span className="font-medium">
-                          {(portfolioData?.summary?.irr?.toFixed(2) ?? '0.00')}%
+                          {portfolioData?.summary?.irr?.toFixed(2) ?? '0.00'}%
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -515,7 +516,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                           Multiple on Invested Capital (MOIC)
                         </span>
                         <span className="font-medium">
-                          {(portfolioData?.summary?.moic?.toFixed(2) ?? '0.00')}x
+                          {portfolioData?.summary?.moic?.toFixed(2) ?? '0.00'}x
                         </span>
                       </div>
                     </div>
@@ -682,14 +683,18 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => window.open(stmt?.download_url, '_blank')}
+                        onClick={() =>
+                          window.open(stmt?.download_url, '_blank')
+                        }
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => window.open(stmt?.download_url, '_blank')}
+                        onClick={() =>
+                          window.open(stmt?.download_url, '_blank')
+                        }
                       >
                         <Download className="h-4 w-4" />
                       </Button>

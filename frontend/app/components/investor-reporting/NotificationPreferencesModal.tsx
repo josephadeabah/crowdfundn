@@ -98,20 +98,22 @@ const NotificationPreferencesModal: React.FC<
       const response = await service.getNotificationPreferences();
 
       if (response?.success) {
-        setPreferences(response?.preferences ?? {
-          financial_statements: true,
-          valuation_updates: true,
-          monthly_reports: true,
-          quarterly_reports: true,
-          annual_reports: true,
-          campaign_updates: true,
-          portfolio_updates: true,
-          email_notifications: true,
-          push_notifications: true,
-          in_app_notifications: true,
-          summary_frequency: 'weekly',
-          preferred_time: '09:00',
-        });
+        setPreferences(
+          response?.preferences ?? {
+            financial_statements: true,
+            valuation_updates: true,
+            monthly_reports: true,
+            quarterly_reports: true,
+            annual_reports: true,
+            campaign_updates: true,
+            portfolio_updates: true,
+            email_notifications: true,
+            push_notifications: true,
+            in_app_notifications: true,
+            summary_frequency: 'weekly',
+            preferred_time: '09:00',
+          },
+        );
         setOriginalPreferences(response?.preferences ?? null);
         setHasChanges(false);
       }
