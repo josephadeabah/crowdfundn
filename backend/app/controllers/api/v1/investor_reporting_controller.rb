@@ -1,7 +1,6 @@
 # app/controllers/api/v1/investor/investor_reporting_controller.rb
 module Api
   module V1
-    module Investor
       class InvestorReportingController < ApplicationController
         
         before_action :authenticate_request
@@ -202,6 +201,5 @@ module Api
           )
         end
       end
-    end
   end
 end
