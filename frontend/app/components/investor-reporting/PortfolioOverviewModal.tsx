@@ -815,7 +815,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
-            <Button onClick={handleExportData}>
+            <Button onClick={handleExportData} variant='success'>
               <Download className="mr-2 h-4 w-4" />
               Export Full Report
             </Button>

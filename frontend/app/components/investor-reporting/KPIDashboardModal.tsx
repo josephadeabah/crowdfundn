@@ -739,7 +739,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
-            <Button>
+            <Button variant='success'>
               <Download className="mr-2 h-4 w-4" />
               Export Dashboard
             </Button>

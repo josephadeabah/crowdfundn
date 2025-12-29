@@ -241,7 +241,7 @@ const InvestorReportingDashboard: React.FC = () => {
             <Download className="mr-2 h-4 w-4" />
             Download Statement
           </Button>
-          <Button onClick={() => setShowPortfolioOverview(true)}>
+          <Button onClick={() => setShowPortfolioOverview(true)} variant='success'>
             <BarChart3 className="mr-2 h-4 w-4" />
             Portfolio Analytics
           </Button>
