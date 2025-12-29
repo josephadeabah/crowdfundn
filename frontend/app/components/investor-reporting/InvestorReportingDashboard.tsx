@@ -381,7 +381,7 @@ const InvestorReportingDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {(campaignPerformance || []).slice(0, 5).map((campaign) => (
+                {(campaignPerformance || [])?.slice(0, 5)?.map((campaign) => (
                   <div
                     key={campaign.campaign_id}
                     className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
