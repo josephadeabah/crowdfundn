@@ -136,6 +136,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     Cookies.remove('user');
     Cookies.remove('token');
     Cookies.remove('roles');
+    localStorage.removeItem('token');
 
     if (logoutTimerRef.current) {
       clearTimeout(logoutTimerRef.current);

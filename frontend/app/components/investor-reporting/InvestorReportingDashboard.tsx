@@ -83,20 +83,28 @@ interface CampaignPerformance {
 const InvestorReportingDashboard: React.FC = () => {
   const { user, token } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [portfolioMetrics, setPortfolioMetrics] = useState<PortfolioMetrics | null>(null);
-  const [campaignPerformance, setCampaignPerformance] = useState<CampaignPerformance[]>([]);
+  const [portfolioMetrics, setPortfolioMetrics] =
+    useState<PortfolioMetrics | null>(null);
+  const [campaignPerformance, setCampaignPerformance] = useState<
+    CampaignPerformance[]
+  >([]);
   const [recentReports, setRecentReports] = useState<InvestorReport[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
-  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
+  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(
+    null,
+  );
 
   // Modal states
   const [showPortfolioOverview, setShowPortfolioOverview] = useState(false);
   const [showFinancialStatements, setShowFinancialStatements] = useState(false);
   const [showKPIDashboard, setShowKPIDashboard] = useState(false);
   const [showInvestorReports, setShowInvestorReports] = useState(false);
-  const [showNotificationPreferences, setShowNotificationPreferences] = useState(false);
+  const [showNotificationPreferences, setShowNotificationPreferences] =
+    useState(false);
   const [showPortfolioStatement, setShowPortfolioStatement] = useState(false);
-  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     if (user && token) {
@@ -522,19 +530,26 @@ const InvestorReportingDashboard: React.FC = () => {
                         <div className="flex justify-between text-sm mb-1">
                           <span>Portfolio Concentration</span>
                           <span className="font-medium">
-                            {(portfolioData.risk_analysis.concentration_risk * 100).toFixed(1)}%
+                            {(
+                              portfolioData.risk_analysis.concentration_risk *
+                              100
+                            ).toFixed(1)}
+                            %
                           </span>
                         </div>
-                        <Progress 
-                          value={portfolioData.risk_analysis.concentration_risk * 100} 
-                          className="h-2" 
+                        <Progress
+                          value={
+                            portfolioData.risk_analysis.concentration_risk * 100
+                          }
+                          className="h-2"
                         />
                         <p className="text-xs text-muted-foreground mt-1">
-                          {portfolioData.risk_analysis.concentration_risk > 0.5 
+                          {portfolioData.risk_analysis.concentration_risk > 0.5
                             ? 'High concentration - Top holdings represent significant portion'
-                            : portfolioData.risk_analysis.concentration_risk > 0.3
-                            ? 'Moderate concentration'
-                            : 'Well diversified portfolio'}
+                            : portfolioData.risk_analysis.concentration_risk >
+                                0.3
+                              ? 'Moderate concentration'
+                              : 'Well diversified portfolio'}
                         </p>
                       </div>
 
@@ -543,11 +558,13 @@ const InvestorReportingDashboard: React.FC = () => {
                           <span className="text-sm">Risk Category</span>
                           <Badge
                             variant={
-                              portfolioData.risk_analysis.risk_category === 'high'
+                              portfolioData.risk_analysis.risk_category ===
+                              'high'
                                 ? 'destructive'
-                                : portfolioData.risk_analysis.risk_category === 'medium'
-                                ? 'outline'
-                                : 'secondary'
+                                : portfolioData.risk_analysis.risk_category ===
+                                    'medium'
+                                  ? 'outline'
+                                  : 'secondary'
                             }
                           >
                             {portfolioData.risk_analysis.risk_category?.toUpperCase()}
@@ -556,7 +573,11 @@ const InvestorReportingDashboard: React.FC = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-sm">Overall Risk Score</span>
                           <span className="font-medium">
-                            {(portfolioData.risk_analysis.overall_risk_score * 100).toFixed(1)}%
+                            {(
+                              portfolioData.risk_analysis.overall_risk_score *
+                              100
+                            ).toFixed(1)}
+                            %
                           </span>
                         </div>
                       </div>
@@ -574,45 +595,48 @@ const InvestorReportingDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {portfolioData?.cash_flow?.slice(0, 3).map((cashflow: any, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between"
-                    >
-                      <div>
-                        <p className="font-medium">{cashflow.month}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Invested:{' '}
-                          {formatCurrency(
-                            cashflow.invested,
-                            portfolioMetrics?.currency,
-                            portfolioMetrics?.currency_symbol,
-                          )}
-                        </p>
+                  {portfolioData?.cash_flow
+                    ?.slice(0, 3)
+                    .map((cashflow: any, index: number) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between"
+                      >
+                        <div>
+                          <p className="font-medium">{cashflow.month}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Invested:{' '}
+                            {formatCurrency(
+                              cashflow.invested,
+                              portfolioMetrics?.currency,
+                              portfolioMetrics?.currency_symbol,
+                            )}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">
+                            {formatCurrency(
+                              cashflow.current_value,
+                              portfolioMetrics?.currency,
+                              portfolioMetrics?.currency_symbol,
+                            )}
+                          </p>
+                          <p
+                            className={`text-sm ${cashflow.returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                          >
+                            {cashflow.returns >= 0 ? '+' : ''}
+                            {formatCurrency(
+                              cashflow.returns,
+                              portfolioMetrics?.currency,
+                              portfolioMetrics?.currency_symbol,
+                            )}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">
-                          {formatCurrency(
-                            cashflow.current_value,
-                            portfolioMetrics?.currency,
-                            portfolioMetrics?.currency_symbol,
-                          )}
-                        </p>
-                        <p
-                          className={`text-sm ${cashflow.returns >= 0 ? 'text-green-600' : 'text-red-600'}`}
-                        >
-                          {cashflow.returns >= 0 ? '+' : ''}
-                          {formatCurrency(
-                            cashflow.returns,
-                            portfolioMetrics?.currency,
-                            portfolioMetrics?.currency_symbol,
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {(!portfolioData?.cash_flow || portfolioData.cash_flow.length === 0) && (
+                    ))}
+
+                  {(!portfolioData?.cash_flow ||
+                    portfolioData.cash_flow.length === 0) && (
                     <p className="text-center text-muted-foreground py-4">
                       No recent investment activity
                     </p>

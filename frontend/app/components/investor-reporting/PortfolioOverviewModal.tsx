@@ -113,7 +113,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
       const response = await service.generatePortfolioStatement({
         period: timePeriod,
         format: 'pdf',
-        includeSections: ['summary', 'performance', 'breakdown', 'risk']
+        includeSections: ['summary', 'performance', 'breakdown', 'risk'],
       });
 
       if (response.success && response.url) {
@@ -648,7 +648,8 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                           {(riskAnalysis.overall_risk_score * 100).toFixed(1)}%
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {riskAnalysis.risk_category?.toUpperCase() || 'MEDIUM'}
+                          {riskAnalysis.risk_category?.toUpperCase() ||
+                            'MEDIUM'}
                         </div>
                       </div>
                     </div>
@@ -663,9 +664,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         <div className="flex justify-between text-sm">
                           <span>Sector Diversification</span>
                           <span className="font-medium">
-                            {(riskAnalysis.sector_diversification * 100).toFixed(
-                              1,
-                            )}
+                            {(
+                              riskAnalysis.sector_diversification * 100
+                            ).toFixed(1)}
                             %
                           </span>
                         </div>
@@ -772,29 +773,25 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
 
                   {projections.length > 0 && (
                     <div className="pt-4 border-t">
-                      <h4 className="font-medium mb-3">
-                        Detailed Projections
-                      </h4>
+                      <h4 className="font-medium mb-3">Detailed Projections</h4>
                       <div className="space-y-3">
-                        {projections.map(
-                          (proj: any, index: number) => (
-                            <div
-                              key={index}
-                              className="flex justify-between text-sm"
-                            >
-                              <span>
-                                {proj.scenario || `Scenario ${index + 1}`}
-                              </span>
-                              <span className="font-medium">
-                                {formatCurrency(
-                                  proj.projected_value,
-                                  summary.currency,
-                                  summary.currency_symbol,
-                                )}
-                              </span>
-                            </div>
-                          ),
-                        )}
+                        {projections.map((proj: any, index: number) => (
+                          <div
+                            key={index}
+                            className="flex justify-between text-sm"
+                          >
+                            <span>
+                              {proj.scenario || `Scenario ${index + 1}`}
+                            </span>
+                            <span className="font-medium">
+                              {formatCurrency(
+                                proj.projected_value,
+                                summary.currency,
+                                summary.currency_symbol,
+                              )}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}

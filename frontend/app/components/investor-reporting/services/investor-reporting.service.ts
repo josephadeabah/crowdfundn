@@ -134,10 +134,12 @@ export interface PortfolioMetricsResponse {
 }
 
 export class InvestorReportingService {
-  private baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+  private baseUrl =
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
   private async fetchApi(endpoint: string, options: RequestInit = {}) {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const token =
+      typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const url = `${this.baseUrl}${endpoint}`;
 
     const headers = {
@@ -159,7 +161,7 @@ export class InvestorReportingService {
           // Token expired or invalid
           if (typeof window !== 'undefined') {
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            window.location.href = '/auth/login';
           }
           throw new Error('Authentication required');
         }
@@ -561,7 +563,7 @@ export class InvestorReportingService {
         const campaign = response.portfolio.by_campaign?.find(
           (c: any) => c.campaign_id === campaignId,
         );
-        
+
         if (!campaign) {
           return {
             success: false,
@@ -574,8 +576,9 @@ export class InvestorReportingService {
           };
         }
 
-        const concentration = campaign.invested / response.portfolio.summary.total_invested;
-        
+        const concentration =
+          campaign.invested / response.portfolio.summary.total_invested;
+
         return {
           success: true,
           metrics: {
@@ -586,8 +589,8 @@ export class InvestorReportingService {
               concentration > 0.5 || campaign.roi < -10
                 ? 'high'
                 : concentration > 0.3 || campaign.roi < 0
-                ? 'medium'
-                : 'low',
+                  ? 'medium'
+                  : 'low',
           },
         };
       }
