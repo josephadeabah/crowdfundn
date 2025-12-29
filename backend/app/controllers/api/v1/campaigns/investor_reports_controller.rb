@@ -24,6 +24,11 @@ module Api
             success: true,
             reports: reports.recent.as_json
           }
+        rescue => e
+          render json: {
+            success: false,
+            error: e.message
+          }, status: :internal_server_error
         end
         
         # GET /api/v1/campaigns/:campaign_id/investor_reports/:id
@@ -34,6 +39,8 @@ module Api
             success: true,
             report: report.as_json(include_documents: true)
           }
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'Report not found' }, status: :not_found
         end
         
         # POST /api/v1/campaigns/:campaign_id/investor_reports
@@ -104,6 +111,8 @@ module Api
               errors: report.errors.full_messages
             }, status: :unprocessable_entity
           end
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'Report not found' }, status: :not_found
         end
         
         # POST /api/v1/campaigns/:campaign_id/investor_reports/:id/generate_quarterly
@@ -123,12 +132,16 @@ module Api
               error: 'Only equity campaigns can generate quarterly reports'
             }, status: :unprocessable_entity
           end
+        rescue ArgumentError
+          render json: { error: 'Invalid date format' }, status: :bad_request
         end
         
         private
         
         def set_campaign
           @campaign = Campaign.find(params[:campaign_id])
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'Campaign not found' }, status: :not_found
         end
         
         def authorize_fundraiser_or_admin

@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
 
-      # Investor Reporting Routes
+      # Investor Reporting Routes - FIXED
       namespace :investor do
         get 'portfolio', to: 'investor_reporting#portfolio'
         get 'portfolio/statement', to: 'investor_reporting#portfolio_statement'
@@ -17,8 +17,8 @@ Rails.application.routes.draw do
         put 'notifications/preferences', to: 'investor_reporting#update_notification_preferences'
         post 'documents/:id/download', to: 'investor_reporting#download_document'
         
-        # Campaign-specific investor routes
-        resources :campaigns, only: [] do
+        # Campaign-specific investor routes - FIXED
+        scope 'campaigns/:campaign_id' do
           get 'financials', to: 'investor_reporting#campaign_financials'
           get 'kpis', to: 'investor_reporting#campaign_kpis'
           get 'reports', to: 'investor_reporting#campaign_reports'

@@ -25,6 +25,11 @@ module Api
             kpis: kpis.ordered.as_json,
             dashboard: @campaign.kpi_dashboard
           }
+        rescue => e
+          render json: {
+            success: false,
+            error: e.message
+          }, status: :internal_server_error
         end
         
         # GET /api/v1/campaigns/:campaign_id/kpis/:id
@@ -35,6 +40,8 @@ module Api
             success: true,
             kpi: kpi.as_json(include_values: true)
           }
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'KPI not found' }, status: :not_found
         end
         
         # POST /api/v1/campaigns/:campaign_id/kpis
@@ -88,7 +95,7 @@ module Api
           end
         end
         
-        # POST /api/v1/campaigns/:campaign_id/kpis/:id/values
+        # POST /api/v1/campaigns/:campaign_id/kpis/:id/add_value
         def add_value
           kpi = @campaign.campaign_kpis.find(params[:id])
           
@@ -105,6 +112,8 @@ module Api
               errors: value.errors.full_messages
             }, status: :unprocessable_entity
           end
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'KPI not found' }, status: :not_found
         end
         
         # GET /api/v1/campaigns/:campaign_id/kpis/:id/values
@@ -121,12 +130,18 @@ module Api
             values: values.as_json,
             trend: values.pluck(:period_date, :value).to_h
           }
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'KPI not found' }, status: :not_found
+        rescue ArgumentError
+          render json: { error: 'Invalid date format' }, status: :bad_request
         end
         
         private
         
         def set_campaign
           @campaign = Campaign.find(params[:campaign_id])
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'Campaign not found' }, status: :not_found
         end
         
         def authorize_fundraiser_or_admin
