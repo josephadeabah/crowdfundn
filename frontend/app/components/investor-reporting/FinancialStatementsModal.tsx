@@ -110,7 +110,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
             <BarChart className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
             <h2 className="text-2xl font-bold">No Campaign Selected</h2>
             <p className="text-muted-foreground mt-2">
-              Please select a campaign from your portfolio to view financial statements.
+              Please select a campaign from your portfolio to view financial
+              statements.
             </p>
             <Button onClick={onClose} className="mt-4">
               Close
@@ -135,7 +136,12 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   });
 
   useEffect(() => {
-    console.log('useEffect triggered with isOpen:', isOpen, 'campaignId:', campaignId);
+    console.log(
+      'useEffect triggered with isOpen:',
+      isOpen,
+      'campaignId:',
+      campaignId,
+    );
     if (isOpen && campaignId) {
       console.log('Fetching statements for campaignId:', campaignId);
       fetchStatements();
@@ -326,7 +332,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                     <BarChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No financial data available</p>
                     <p className="text-sm">
-                      {statements.length === 0 ? 'No financial statements found for this campaign' : 'Select a statement to view data'}
+                      {statements.length === 0
+                        ? 'No financial statements found for this campaign'
+                        : 'Select a statement to view data'}
                     </p>
                   </div>
                 )}
@@ -480,7 +488,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                     <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No financial statements available</p>
                     <p className="text-sm">
-                      This campaign has not published any financial statements yet
+                      This campaign has not published any financial statements
+                      yet
                     </p>
                   </div>
                 )}
