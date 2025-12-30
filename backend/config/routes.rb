@@ -48,8 +48,12 @@ Rails.application.routes.draw do
         resources :investor_reports, controller: 'campaigns/investor_reports', only: [:index, :show, :create, :update, :destroy] do
           member do
             post :publish
-            post :generate_quarterly
             post :upload_attachments  # NEW: Add attachments upload endpoint
+          end
+
+          # ADD THIS COLLECTION ROUTE:
+          collection do
+            post :generate_quarterly
           end
         end
       end

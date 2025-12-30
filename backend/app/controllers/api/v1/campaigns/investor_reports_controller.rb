@@ -129,25 +129,46 @@ module Api
           render json: { error: 'Report not found' }, status: :not_found
         end
         
-        # POST /api/v1/campaigns/:campaign_id/investor_reports/:id/generate_quarterly
+        # POST  /api/v1/campaigns/:campaign_id/investor_reports/generate_quarterly
         def generate_quarterly
           report_date = params[:report_date] ? Date.parse(params[:report_date]) : Date.current
           
-          if @campaign.is_a?(EquityCampaign)
-            report = @campaign.generate_quarterly_report(report_date)
-            
-            render json: {
-              success: true,
-              report: report.as_json
-            }
+          # Check if we're generating for a specific report (member route) or creating new (collection route)
+          if params[:id]
+            # Member route - update existing report
+            report = @campaign.investor_reports.find(params[:id])
+            if report.update(report_type: 'quarterly', report_date: report_date)
+              # Regenerate or update the report
+              render json: {
+                success: true,
+                report: report.as_json
+              }
+            else
+              render json: {
+                success: false,
+                errors: report.errors.full_messages
+              }, status: :unprocessable_entity
+            end
           else
-            render json: {
-              success: false,
-              error: 'Only equity campaigns can generate quarterly reports'
-            }, status: :unprocessable_entity
+            # Collection route - create new quarterly report
+            if @campaign.is_a?(EquityCampaign)
+              report = @campaign.generate_quarterly_report(report_date)
+              
+              render json: {
+                success: true,
+                report: report.as_json
+              }
+            else
+              render json: {
+                success: false,
+                error: 'Only equity campaigns can generate quarterly reports'
+              }, status: :unprocessable_entity
+            end
           end
         rescue ArgumentError
           render json: { error: 'Invalid date format' }, status: :bad_request
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'Report not found' }, status: :not_found
         end
         
         # POST /api/v1/campaigns/:campaign_id/investor_reports/:id/upload_attachments
