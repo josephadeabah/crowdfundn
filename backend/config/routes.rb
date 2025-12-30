@@ -49,6 +49,7 @@ Rails.application.routes.draw do
           member do
             post :publish
             post :generate_quarterly
+            post :upload_attachments  # NEW: Add attachments upload endpoint
           end
         end
       end

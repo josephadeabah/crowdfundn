@@ -45,10 +45,17 @@ module Api
         
         # POST /api/v1/campaigns/:campaign_id/investor_reports
         def create
-          report = @campaign.investor_reports.new(report_params)
+          report = @campaign.investor_reports.new(report_params.except(:attachments))
           report.published_by = @current_user if params[:status] == 'published'
           
           if report.save
+            # Attach uploaded files
+            if params[:report][:attachments].present?
+              params[:report][:attachments].each do |attachment|
+                report.attachments.attach(attachment)
+              end
+            end
+            
             render json: {
               success: true,
               report: report.as_json
@@ -65,7 +72,14 @@ module Api
         def update
           report = @campaign.investor_reports.find(params[:id])
           
-          if report.update(report_params)
+          if report.update(report_params.except(:attachments))
+            # Attach uploaded files
+            if params[:report][:attachments].present?
+              params[:report][:attachments].each do |attachment|
+                report.attachments.attach(attachment)
+              end
+            end
+            
             render json: {
               success: true,
               report: report.as_json
@@ -136,6 +150,28 @@ module Api
           render json: { error: 'Invalid date format' }, status: :bad_request
         end
         
+        # POST /api/v1/campaigns/:campaign_id/investor_reports/:id/upload_attachments
+        def upload_attachments
+          report = @campaign.investor_reports.find(params[:id])
+          
+          if params[:attachments].present?
+            params[:attachments].each do |attachment|
+              report.attachments.attach(attachment)
+            end
+            
+            render json: {
+              success: true,
+              message: 'Attachments uploaded successfully',
+              attachments: report.attachments_urls
+            }
+          else
+            render json: {
+              success: false,
+              error: 'No attachments provided'
+            }, status: :bad_request
+          end
+        end
+        
         private
         
         def set_campaign
@@ -163,7 +199,7 @@ module Api
             :period_end,
             :status,
             :notify_investors,
-            attachments: []
+            attachments: []  # Allow array of files
           )
         end
       end
