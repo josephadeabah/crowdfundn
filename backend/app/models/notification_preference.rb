@@ -5,7 +5,7 @@ class NotificationPreference < ApplicationRecord
   validates :user_id, uniqueness: true
   validates :summary_frequency, inclusion: { in: %w[daily weekly monthly none] }
   
-  after_create :send_welcome_notification
+  after_create :send_welcome_notification, if: -> { email_notifications }
   
   def self.defaults_for_user(user)
     find_or_create_by(user: user) do |pref|
@@ -21,7 +21,7 @@ class NotificationPreference < ApplicationRecord
       pref.push_notifications = true
       pref.in_app_notifications = true
       pref.summary_frequency = 'weekly'
-      pref.preferred_time = 9.hours # 9:00 AM
+      pref.preferred_time = 9.hours.to_i # 9:00 AM in seconds
     end
   end
   
@@ -65,11 +65,25 @@ class NotificationPreference < ApplicationRecord
   private
   
   def send_welcome_notification
-    # Use the namespaced service
-    InvestorReporting::NotificationService.new(user).send_welcome_notification
+    # Send welcome notification using the email service
+    InvestorNotificationEmailService.send_notification(
+      user, 
+      {
+        title: "Welcome to Investor Reporting",
+        message: "You're now set up to receive notifications about your investments. Manage your preferences anytime in your settings."
+      }
+    )
   rescue => e
     Rails.logger.error "Failed to send welcome notification: #{e.message}"
     # Don't fail the creation if notification fails
+  end
+  
+  def send_welcome_email
+    # Send a simple welcome email without dependencies
+    UserMailer.with(user: user).welcome_to_investor_reporting.deliver_later
+  rescue => e
+    Rails.logger.error "Failed to send welcome email: #{e.message}"
+    # Don't fail the creation if email fails
   end
   
   def next_summary_time
