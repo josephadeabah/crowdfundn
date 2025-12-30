@@ -435,39 +435,53 @@ export class InvestorReportingService {
     period: string;
     format: string;
     includeSections: string[];
-  }): Promise<{ success: boolean; url?: string; message?: string }> {
+  }): Promise<{ success: boolean; url?: string; filename?: string; expires_at?: string }> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}/investor/portfolio/statement`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: JSON.stringify({
-            period: options.period,
-            format: options.format,
-            include_sections: options.includeSections,
-          }),
-        },
-      );
+      const response = await this.fetchApi('/investor/portfolio/statement', {
+        method: 'POST',
+        body: JSON.stringify({
+          period: options.period,
+          format: options.format,
+          include_sections: options.includeSections,
+        }),
+      });
 
-      const result = await response.json();
-
-      if (result.success && result.download_url) {
-        return { success: true, url: result.download_url };
-      } else if (result.success && result.url) {
-        return { success: true, url: result.url };
+      if (response.success) {
+        return {
+          success: true,
+          url: response.download_url,
+          filename: response.filename,
+          expires_at: response.expires_at
+        };
       }
 
-      return result;
+      return response;
     } catch (error: any) {
       console.error('Error generating portfolio statement:', error);
       return {
         success: false,
         message: error.message || 'Failed to generate portfolio statement',
       };
+    }
+  }
+
+  async getStatementHistory(): Promise<{
+    success: boolean;
+    statements: Array<{
+      id: number;
+      date: string;
+      period: string;
+      format: string;
+      size: string;
+      download_url?: string;
+    }>;
+  }> {
+    try {
+      const response = await this.fetchApi('/investor/portfolio/statements/history');
+      return response;
+    } catch (error) {
+      console.error('Error fetching statement history:', error);
+      return { success: false, statements: [] };
     }
   }
 
