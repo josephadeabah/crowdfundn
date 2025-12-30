@@ -13,6 +13,7 @@ class InvestorReport < ApplicationRecord
   validate :validate_period_dates, if: -> { period_start.present? && period_end.present? }
   
   before_save :set_published_at, if: -> { status_changed?(to: 'published') && published_at.blank? }
+  before_create :set_initial_published_at, if: -> { status == 'published' && published_at.blank? }
   after_save :notify_investors, if: -> { saved_change_to_status?(to: 'published') && notify_investors? }
   after_save :generate_pdf_report, if: -> { saved_change_to_status?(to: 'published') }
   
@@ -27,6 +28,10 @@ class InvestorReport < ApplicationRecord
     valuation_update: 'Valuation Update',
     special: 'Special Announcement'
   }.freeze
+
+  def set_initial_published_at
+    self.published_at = Time.current
+  end
   
   def period_description
     if period_start.present? && period_end.present?
