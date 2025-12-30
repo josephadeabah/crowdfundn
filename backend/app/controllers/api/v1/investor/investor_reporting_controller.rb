@@ -212,23 +212,6 @@ module Api
             success: true,
             statements: []
           }
-          
-          # Option 2: Track in user's activity log (if you have one)
-          # activities = @current_user.activities.where(action: 'portfolio_statement_generated').order(created_at: :desc).limit(20)
-          # statements_data = activities.map do |activity|
-          #   {
-          #     id: activity.id,
-          #     date: activity.created_at,
-          #     period: activity.metadata['period'] || 'current',
-          #     format: activity.metadata['format'] || 'pdf',
-          #     size: activity.metadata['size'] || 'N/A'
-          #   }
-          # end
-          # 
-          # render json: {
-          #   success: true,
-          #   statements: statements_data
-          # }
         end
         
         # GET /api/v1/investor/metrics
