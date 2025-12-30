@@ -431,6 +431,7 @@ export class InvestorReportingService {
     }
   }
 
+  // app/components/investor-reporting/services/investor-reporting.service.ts - Fix the return type
   async generatePortfolioStatement(options: {
     period: string;
     format: string;
@@ -440,6 +441,7 @@ export class InvestorReportingService {
     url?: string;
     filename?: string;
     expires_at?: string;
+    message?: string; // ADD THIS LINE
   }> {
     try {
       const response = await this.fetchApi('/investor/portfolio/statement', {
@@ -460,6 +462,7 @@ export class InvestorReportingService {
         };
       }
 
+      // Return the response as-is if not successful
       return response;
     } catch (error: any) {
       console.error('Error generating portfolio statement:', error);
@@ -1034,26 +1037,6 @@ export class InvestorReportingService {
     }
   }
 
-  // Get statement history
-  async getStatementHistory(): Promise<{
-    success: boolean;
-    statements: Array<{
-      id: number;
-      date: string;
-      period: string;
-      format: string;
-      size: string;
-      download_url: string;
-    }>;
-  }> {
-    try {
-      // This endpoint needs to be implemented
-      return { success: true, statements: [] };
-    } catch (error) {
-      console.error('Error fetching statement history:', error);
-      return { success: false, statements: [] };
-    }
-  }
 }
 
 // Create a singleton instance

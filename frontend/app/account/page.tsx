@@ -67,6 +67,7 @@ import { DealRoom } from '../components/deal-room/DealRoom';
 import MentorDashboard from '../components/mentor/MentorDashboard';
 import MentorMarketplace from '../components/mentor/MentorMarketplace';
 import InvestorReportingDashboard from '../components/investor-reporting/InvestorReportingDashboard';
+import CampaignFinancialsPage from '../components/investor-reporting/financials/CampaignFinancialManagementPage';
 
 // Define proper TypeScript interfaces
 interface Tab {
@@ -291,6 +292,19 @@ const ProfileTabs = () => {
           description: 'Find and connect with mentors for your campaigns.',
           badge: 'New',
           badgeColor: 'bg-green-100 text-green-800',
+        },
+      ],
+    },
+    {
+      id: 'financials',
+      name: 'Financials',
+      icon: <BarChartIcon className="w-4 h-4" />,
+      tabs: [
+        {
+          label: 'Financials',
+          icon: <DashboardIcon className="w-4 h-4" />,
+          component: <CampaignFinancialsPage />,
+          description: 'Manage financial reporting for your investors.',
         },
       ],
     },
