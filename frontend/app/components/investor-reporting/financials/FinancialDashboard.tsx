@@ -46,9 +46,9 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [timeframe, setTimeframe] = useState<'monthly' | 'quarterly' | 'yearly'>(
-    'quarterly'
-  );
+  const [timeframe, setTimeframe] = useState<
+    'monthly' | 'quarterly' | 'yearly'
+  >('quarterly');
 
   useEffect(() => {
     fetchDashboardData();
@@ -57,9 +57,10 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await financialManagementService.getCampaignFinancialDashboard(
-        campaignId
-      );
+      const response =
+        await financialManagementService.getCampaignFinancialDashboard(
+          campaignId,
+        );
       if (response.success) {
         setDashboardData(response.dashboard);
       } else {
@@ -276,7 +277,10 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
                     tickFormatter={(value) => `$${value.toLocaleString()}`}
                   />
                   <Tooltip
-                    formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']}
+                    formatter={(value) => [
+                      `$${value.toLocaleString()}`,
+                      'Revenue',
+                    ]}
                   />
                   <Line
                     type="monotone"
@@ -321,7 +325,10 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
                     tickFormatter={(value) => `$${value.toLocaleString()}`}
                   />
                   <Tooltip
-                    formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']}
+                    formatter={(value) => [
+                      `$${value.toLocaleString()}`,
+                      'Amount',
+                    ]}
                   />
                   <Legend />
                   <Bar

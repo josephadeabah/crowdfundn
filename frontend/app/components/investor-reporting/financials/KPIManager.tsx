@@ -129,7 +129,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
 
       const response = await financialManagementService.createKPI(
         campaignId,
-        data
+        data,
       );
 
       if (response.success) {
@@ -159,7 +159,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
       const response = await financialManagementService.addKPIValue(
         campaignId,
         selectedKpi.id,
-        data
+        data,
       );
 
       if (response.success) {
@@ -168,9 +168,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
         resetValueForm();
         fetchKPIs();
       } else {
-        toast.error(
-          response.errors?.join(', ') || 'Failed to add KPI value'
-        );
+        toast.error(response.errors?.join(', ') || 'Failed to add KPI value');
       }
     } catch (error: any) {
       toast.error(error.message || 'Error adding KPI value');
@@ -229,10 +227,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             Track and manage important metrics for your campaign
           </p>
         </div>
-        <Dialog
-          open={isCreateDialogOpen}
-          onOpenChange={setIsCreateDialogOpen}
-        >
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <FiPlus className="mr-2 h-4 w-4" />
@@ -376,9 +371,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
                     <Label htmlFor="is_public" className="font-medium">
                       Public Visibility
                     </Label>
-                    <p className="text-sm text-gray-500">
-                      Show to investors
-                    </p>
+                    <p className="text-sm text-gray-500">Show to investors</p>
                   </div>
                   <Switch
                     id="is_public"
@@ -516,7 +509,9 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
                     <span>Last updated</span>
                     <span>
                       {kpi.latest_value?.period_date
-                        ? new Date(kpi.latest_value.period_date).toLocaleDateString()
+                        ? new Date(
+                            kpi.latest_value.period_date,
+                          ).toLocaleDateString()
                         : 'Never'}
                     </span>
                   </div>
@@ -528,7 +523,10 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
       )}
 
       {/* Add Value Dialog */}
-      <Dialog open={isAddValueDialogOpen} onOpenChange={setIsAddValueDialogOpen}>
+      <Dialog
+        open={isAddValueDialogOpen}
+        onOpenChange={setIsAddValueDialogOpen}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add KPI Value</DialogTitle>
@@ -544,7 +542,10 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
                 type="date"
                 value={valueFormData.period_date}
                 onChange={(e) =>
-                  setValueFormData({ ...valueFormData, period_date: e.target.value })
+                  setValueFormData({
+                    ...valueFormData,
+                    period_date: e.target.value,
+                  })
                 }
               />
             </div>
@@ -569,7 +570,10 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
                 id="data_source"
                 value={valueFormData.data_source}
                 onChange={(e) =>
-                  setValueFormData({ ...valueFormData, data_source: e.target.value })
+                  setValueFormData({
+                    ...valueFormData,
+                    data_source: e.target.value,
+                  })
                 }
                 placeholder="e.g., CRM, Analytics, Manual entry"
               />
@@ -581,7 +585,10 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
                 id="is_actual"
                 checked={valueFormData.is_actual}
                 onChange={(e) =>
-                  setValueFormData({ ...valueFormData, is_actual: e.target.checked })
+                  setValueFormData({
+                    ...valueFormData,
+                    is_actual: e.target.checked,
+                  })
                 }
                 className="rounded border-gray-300"
               />

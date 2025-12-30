@@ -30,14 +30,14 @@ const CampaignFinancialsPage = () => {
   const router = useRouter();
   const campaignId = params?.id as string;
   const { userCampaigns, loading: campaignsLoading } = useCampaignContext();
-  
+
   const [campaign, setCampaign] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
 
   useEffect(() => {
     if (userCampaigns && campaignId) {
       const foundCampaign = userCampaigns.find(
-        (c: any) => c.id === parseInt(campaignId)
+        (c: any) => c.id === parseInt(campaignId),
       );
       setCampaign(foundCampaign);
     }
@@ -65,7 +65,8 @@ const CampaignFinancialsPage = () => {
               Campaign Not Found
             </h2>
             <p className="text-gray-600 mb-6">
-              The campaign you're looking for doesn't exist or you don't have access to it.
+              The campaign you're looking for doesn't exist or you don't have
+              access to it.
             </p>
             <Button onClick={() => router.push('/account/dashboard/campaigns')}>
               <FiArrowLeft className="mr-2 h-4 w-4" />
@@ -91,14 +92,14 @@ const CampaignFinancialsPage = () => {
             Back to Campaigns
           </Button>
         </div>
-        
+
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           {campaign.title}
         </h1>
         <p className="text-gray-600 mb-6">
           Financial Management & Investor Reporting
         </p>
-        
+
         <div className="flex flex-wrap gap-4 mb-6">
           <div className="bg-blue-50 px-4 py-2 rounded-lg">
             <p className="text-sm text-blue-700">Valuation</p>

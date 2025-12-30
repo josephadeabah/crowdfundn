@@ -1036,7 +1036,6 @@ export class InvestorReportingService {
       return { success: false, notifications: [] };
     }
   }
-
 }
 
 // Create a singleton instance

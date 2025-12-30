@@ -73,9 +73,8 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
   const fetchFinancials = async () => {
     try {
       setLoading(true);
-      const response = await financialManagementService.getFinancialStatements(
-        campaignId
-      );
+      const response =
+        await financialManagementService.getFinancialStatements(campaignId);
       if (response.success) {
         setFinancials(response.financials || []);
       }
@@ -104,10 +103,11 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
         status: formData.status,
       };
 
-      const response = await financialManagementService.createFinancialStatement(
-        campaignId,
-        data
-      );
+      const response =
+        await financialManagementService.createFinancialStatement(
+          campaignId,
+          data,
+        );
 
       if (response.success) {
         toast.success('Financial statement created successfully');
@@ -116,7 +116,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
         fetchFinancials();
       } else {
         toast.error(
-          response.errors?.join(', ') || 'Failed to create financial statement'
+          response.errors?.join(', ') || 'Failed to create financial statement',
         );
       }
     } catch (error: any) {
@@ -144,11 +144,12 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
         status: formData.status,
       };
 
-      const response = await financialManagementService.updateFinancialStatement(
-        campaignId,
-        selectedFinancial.id,
-        data
-      );
+      const response =
+        await financialManagementService.updateFinancialStatement(
+          campaignId,
+          selectedFinancial.id,
+          data,
+        );
 
       if (response.success) {
         toast.success('Financial statement updated successfully');
@@ -157,7 +158,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
         fetchFinancials();
       } else {
         toast.error(
-          response.errors?.join(', ') || 'Failed to update financial statement'
+          response.errors?.join(', ') || 'Failed to update financial statement',
         );
       }
     } catch (error: any) {
@@ -171,10 +172,11 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
     }
 
     try {
-      const response = await financialManagementService.deleteFinancialStatement(
-        campaignId,
-        financialId
-      );
+      const response =
+        await financialManagementService.deleteFinancialStatement(
+          campaignId,
+          financialId,
+        );
 
       if (response.success) {
         toast.success('Financial statement deleted successfully');
@@ -189,10 +191,11 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
 
   const handlePublish = async (financialId: number) => {
     try {
-      const response = await financialManagementService.publishFinancialStatement(
-        campaignId,
-        financialId
-      );
+      const response =
+        await financialManagementService.publishFinancialStatement(
+          campaignId,
+          financialId,
+        );
 
       if (response.success) {
         toast.success('Financial statement published successfully');
@@ -287,10 +290,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             Manage and publish financial statements for investors
           </p>
         </div>
-        <Dialog
-          open={isCreateDialogOpen}
-          onOpenChange={setIsCreateDialogOpen}
-        >
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <FiPlus className="mr-2 h-4 w-4" />
@@ -468,10 +468,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
                       {getStatusBadge(financial.status)}
                     </div>
                     <p className="text-gray-600">
-                      {format(
-                        new Date(financial.period_start),
-                        'MMM dd, yyyy'
-                      )}{' '}
+                      {format(new Date(financial.period_start), 'MMM dd, yyyy')}{' '}
                       - {format(new Date(financial.period_end), 'MMM dd, yyyy')}
                     </p>
                     <div className="flex gap-4 mt-2 text-sm text-gray-500">
@@ -482,7 +479,10 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
                         Expenses: ${financial.expenses.toLocaleString()}
                       </span>
                       <span>
-                        Net Income: ${(financial.revenue - financial.expenses).toLocaleString()}
+                        Net Income: $
+                        {(
+                          financial.revenue - financial.expenses
+                        ).toLocaleString()}
                       </span>
                     </div>
                   </div>

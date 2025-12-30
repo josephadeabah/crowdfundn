@@ -48,10 +48,10 @@ export class FinancialManagementService {
   }
 
   // ========== FINANCIAL STATEMENTS ==========
-  
+
   async getFinancialStatements(
     campaignId: number,
-    filters?: { status?: string }
+    filters?: { status?: string },
   ): Promise<{
     success: boolean;
     financials: any[];
@@ -87,7 +87,7 @@ export class FinancialManagementService {
       liabilities?: number;
       cash_flow?: number;
       status?: string;
-    }
+    },
   ): Promise<{
     success: boolean;
     financial: any;
@@ -99,7 +99,7 @@ export class FinancialManagementService {
         {
           method: 'POST',
           body: JSON.stringify({ financial: data }),
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -111,7 +111,7 @@ export class FinancialManagementService {
   async updateFinancialStatement(
     campaignId: number,
     financialId: number,
-    data: Partial<any>
+    data: Partial<any>,
   ): Promise<{
     success: boolean;
     financial: any;
@@ -123,7 +123,7 @@ export class FinancialManagementService {
         {
           method: 'PUT',
           body: JSON.stringify({ financial: data }),
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -134,7 +134,7 @@ export class FinancialManagementService {
 
   async deleteFinancialStatement(
     campaignId: number,
-    financialId: number
+    financialId: number,
   ): Promise<{
     success: boolean;
     message: string;
@@ -144,7 +144,7 @@ export class FinancialManagementService {
         `/campaigns/${campaignId}/financials/${financialId}`,
         {
           method: 'DELETE',
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -155,7 +155,7 @@ export class FinancialManagementService {
 
   async publishFinancialStatement(
     campaignId: number,
-    financialId: number
+    financialId: number,
   ): Promise<{
     success: boolean;
     financial: any;
@@ -165,7 +165,7 @@ export class FinancialManagementService {
         `/campaigns/${campaignId}/financials/${financialId}/publish`,
         {
           method: 'POST',
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -178,7 +178,7 @@ export class FinancialManagementService {
 
   async getKPIs(
     campaignId: number,
-    filters?: { kpi_type?: string; is_primary?: boolean }
+    filters?: { kpi_type?: string; is_primary?: boolean },
   ): Promise<{
     success: boolean;
     kpis: any[];
@@ -215,20 +215,17 @@ export class FinancialManagementService {
       target_period?: string;
       is_primary?: boolean;
       is_public?: boolean;
-    }
+    },
   ): Promise<{
     success: boolean;
     kpi: any;
     errors?: string[];
   }> {
     try {
-      const response = await this.fetchApi(
-        `/campaigns/${campaignId}/kpis`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ kpi: data }),
-        }
-      );
+      const response = await this.fetchApi(`/campaigns/${campaignId}/kpis`, {
+        method: 'POST',
+        body: JSON.stringify({ kpi: data }),
+      });
       return response;
     } catch (error) {
       console.error('Error creating KPI:', error);
@@ -244,7 +241,7 @@ export class FinancialManagementService {
       value: number;
       is_actual?: boolean;
       data_source?: string;
-    }
+    },
   ): Promise<{
     success: boolean;
     value: any;
@@ -256,7 +253,7 @@ export class FinancialManagementService {
         {
           method: 'POST',
           body: JSON.stringify({ value: data }),
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -269,7 +266,7 @@ export class FinancialManagementService {
 
   async getInvestorReports(
     campaignId: number,
-    filters?: { report_type?: string; status?: string }
+    filters?: { report_type?: string; status?: string },
   ): Promise<{ success: boolean; reports: any[] }> {
     try {
       let endpoint = `/campaigns/${campaignId}/investor_reports`;
@@ -305,7 +302,7 @@ export class FinancialManagementService {
       period_end?: string;
       status?: string;
       notify_investors?: boolean;
-    }
+    },
   ): Promise<{
     success: boolean;
     report: any;
@@ -317,7 +314,7 @@ export class FinancialManagementService {
         {
           method: 'POST',
           body: JSON.stringify({ report: data }),
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -328,7 +325,7 @@ export class FinancialManagementService {
 
   async publishInvestorReport(
     campaignId: number,
-    reportId: number
+    reportId: number,
   ): Promise<{
     success: boolean;
     report: any;
@@ -338,7 +335,7 @@ export class FinancialManagementService {
         `/campaigns/${campaignId}/investor_reports/${reportId}/publish`,
         {
           method: 'POST',
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -349,7 +346,7 @@ export class FinancialManagementService {
 
   async generateQuarterlyReport(
     campaignId: number,
-    reportDate?: string
+    reportDate?: string,
   ): Promise<{
     success: boolean;
     report: any;
@@ -403,21 +400,21 @@ export class FinancialManagementService {
 
       const revenueTrend = financials.map((f: any) => ({
         period: `${f.period_type.charAt(0).toUpperCase()}${f.period_type.slice(
-          1
+          1,
         )} ${new Date(f.period_end).getFullYear()}`,
         revenue: f.revenue || 0,
       }));
 
       const expenseTrend = financials.map((f: any) => ({
         period: `${f.period_type.charAt(0).toUpperCase()}${f.period_type.slice(
-          1
+          1,
         )} ${new Date(f.period_end).getFullYear()}`,
         expenses: f.expenses || 0,
       }));
 
       const netIncomeTrend = financials.map((f: any) => ({
         period: `${f.period_type.charAt(0).toUpperCase()}${f.period_type.slice(
-          1
+          1,
         )} ${new Date(f.period_end).getFullYear()}`,
         net_income: f.net_income || 0,
       }));
@@ -454,7 +451,7 @@ export class FinancialManagementService {
   async uploadFinancialDocument(
     campaignId: number,
     financialId: number,
-    file: File
+    file: File,
   ): Promise<{
     success: boolean;
     message: string;
@@ -472,7 +469,7 @@ export class FinancialManagementService {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           body: formData,
-        }
+        },
       );
 
       return response.json();
@@ -486,7 +483,7 @@ export class FinancialManagementService {
     campaignId: number,
     reportId: number,
     file: File,
-    documentType: string = 'full_report'
+    documentType: string = 'full_report',
   ): Promise<{
     success: boolean;
     message: string;
@@ -505,7 +502,7 @@ export class FinancialManagementService {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           body: formData,
-        }
+        },
       );
 
       return response.json();

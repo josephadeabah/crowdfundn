@@ -86,7 +86,7 @@ interface StatementHistory {
   period: string;
   format: string;
   size: string;
-  download_url: string;
+  download_url?: string;
 }
 
 const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({

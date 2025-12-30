@@ -95,9 +95,8 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const response = await financialManagementService.getInvestorReports(
-        campaignId
-      );
+      const response =
+        await financialManagementService.getInvestorReports(campaignId);
       if (response.success) {
         setReports(response.reports || []);
       }
@@ -126,7 +125,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
 
       const response = await financialManagementService.createInvestorReport(
         campaignId,
-        data
+        data,
       );
 
       if (response.success) {
@@ -136,7 +135,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
         fetchReports();
       } else {
         toast.error(
-          response.errors?.join(', ') || 'Failed to create investor report'
+          response.errors?.join(', ') || 'Failed to create investor report',
         );
       }
     } catch (error: any) {
@@ -148,7 +147,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
     try {
       const response = await financialManagementService.publishInvestorReport(
         campaignId,
-        reportId
+        reportId,
       );
 
       if (response.success) {
@@ -164,9 +163,8 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
 
   const handleGenerateQuarterly = async () => {
     try {
-      const response = await financialManagementService.generateQuarterlyReport(
-        campaignId
-      );
+      const response =
+        await financialManagementService.generateQuarterlyReport(campaignId);
 
       if (response.success) {
         toast.success('Quarterly report generated successfully');
@@ -246,10 +244,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
           </p>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={handleGenerateQuarterly}
-          >
+          <Button variant="outline" onClick={handleGenerateQuarterly}>
             <FiCalendar className="mr-2 h-4 w-4" />
             Generate Quarterly
           </Button>
@@ -285,12 +280,16 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="monthly">Monthly Update</SelectItem>
-                        <SelectItem value="quarterly">Quarterly Report</SelectItem>
+                        <SelectItem value="quarterly">
+                          Quarterly Report
+                        </SelectItem>
                         <SelectItem value="annual">Annual Report</SelectItem>
                         <SelectItem value="valuation_update">
                           Valuation Update
                         </SelectItem>
-                        <SelectItem value="special">Special Announcement</SelectItem>
+                        <SelectItem value="special">
+                          Special Announcement
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -334,7 +333,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                       type="date"
                       value={formData.report_date}
                       onChange={(e) =>
-                        setFormData({ ...formData, report_date: e.target.value })
+                        setFormData({
+                          ...formData,
+                          report_date: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -342,13 +344,18 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="period_start">Period Start (Optional)</Label>
+                    <Label htmlFor="period_start">
+                      Period Start (Optional)
+                    </Label>
                     <Input
                       id="period_start"
                       type="date"
                       value={formData.period_start}
                       onChange={(e) =>
-                        setFormData({ ...formData, period_start: e.target.value })
+                        setFormData({
+                          ...formData,
+                          period_start: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -371,7 +378,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                     id="executive_summary"
                     value={formData.executive_summary}
                     onChange={(e) =>
-                      setFormData({ ...formData, executive_summary: e.target.value })
+                      setFormData({
+                        ...formData,
+                        executive_summary: e.target.value,
+                      })
                     }
                     placeholder="Provide a high-level overview of the report..."
                     rows={4}
@@ -384,7 +394,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                     id="key_highlights"
                     value={formData.key_highlights}
                     onChange={(e) =>
-                      setFormData({ ...formData, key_highlights: e.target.value })
+                      setFormData({
+                        ...formData,
+                        key_highlights: e.target.value,
+                      })
                     }
                     placeholder="List key achievements, milestones, and important updates..."
                     rows={3}
@@ -397,7 +410,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                     id="challenges_risks"
                     value={formData.challenges_risks}
                     onChange={(e) =>
-                      setFormData({ ...formData, challenges_risks: e.target.value })
+                      setFormData({
+                        ...formData,
+                        challenges_risks: e.target.value,
+                      })
                     }
                     placeholder="Discuss any challenges, risks, or obstacles..."
                     rows={3}
@@ -410,7 +426,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                     id="forward_outlook"
                     value={formData.forward_outlook}
                     onChange={(e) =>
-                      setFormData({ ...formData, forward_outlook: e.target.value })
+                      setFormData({
+                        ...formData,
+                        forward_outlook: e.target.value,
+                      })
                     }
                     placeholder="Share future plans, projections, and next steps..."
                     rows={3}
@@ -423,7 +442,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                     id="notify_investors"
                     checked={formData.notify_investors}
                     onChange={(e) =>
-                      setFormData({ ...formData, notify_investors: e.target.checked })
+                      setFormData({
+                        ...formData,
+                        notify_investors: e.target.checked,
+                      })
                     }
                     className="rounded border-gray-300"
                   />
@@ -487,17 +509,17 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                       </h3>
                       {getStatusBadge(report.status)}
                     </div>
-                    
+
                     <p className="text-gray-600 mb-3">
                       {report.period_description}
                     </p>
-                    
+
                     {report.executive_summary && (
                       <p className="text-sm text-gray-500 line-clamp-2">
                         {report.executive_summary}
                       </p>
                     )}
-                    
+
                     <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
                         <FiCalendar className="h-4 w-4" />
@@ -507,9 +529,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                       </div>
                       <div className="flex items-center gap-1">
                         <FiUsers className="h-4 w-4" />
-                        <span>
-                          {report.download_count || 0} downloads
-                        </span>
+                        <span>{report.download_count || 0} downloads</span>
                       </div>
                       {report.published_by_name && (
                         <div className="text-gray-500">
@@ -531,7 +551,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                         {doc.document_type}
                       </Button>
                     ))}
-                    
+
                     {report.status === 'draft' && (
                       <Button
                         variant="outline"
@@ -542,7 +562,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                         Publish
                       </Button>
                     )}
-                    
+
                     <Button
                       variant="outline"
                       size="sm"
