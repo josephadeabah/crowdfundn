@@ -27,51 +27,67 @@ module Api
           generator = InvestorReporting::DocumentGenerator.new
           
           if format == 'pdf'
-            pdf = generator.generate_portfolio_statement(@current_user, period)
-            
-            send_data pdf.render, 
-                      filename: "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}.pdf",
-                      type: 'application/pdf',
-                      disposition: 'attachment'
+            begin
+              pdf = generator.generate_portfolio_statement(@current_user, period)
+              
+              send_data pdf.render, 
+                        filename: "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}.pdf",
+                        type: 'application/pdf',
+                        disposition: 'attachment'
+            rescue => e
+              Rails.logger.error "Failed to generate PDF: #{e.message}"
+              render json: {
+                success: false,
+                error: "Failed to generate PDF statement: #{e.message}"
+              }, status: :internal_server_error
+            end
           else
             # For non-PDF formats, return JSON data
-            calculator = InvestorReporting::PortfolioCalculator.new(@current_user)
-            portfolio_data = calculator.calculate_detailed_portfolio
-            
-            # Filter data based on requested sections
-            filtered_data = {}
-            filtered_data[:summary] = portfolio_data[:summary] if include_sections.include?('summary')
-            filtered_data[:by_campaign] = portfolio_data[:by_campaign] if include_sections.include?('campaigns')
-            filtered_data[:performance_metrics] = portfolio_data[:performance_metrics] if include_sections.include?('performance')
-            filtered_data[:risk_analysis] = portfolio_data[:risk_analysis] if include_sections.include?('risk')
-            filtered_data[:cash_flow] = portfolio_data[:cash_flow] if include_sections.include?('cashflow')
-            filtered_data[:projections] = portfolio_data[:projections] if include_sections.include?('projections')
-            
-            if format == 'json'
-              render json: {
-                success: true,
-                statement: filtered_data,
-                period: period,
-                generated_at: Time.current,
-                user: {
-                  id: @current_user.id,
-                  name: @current_user.full_name,
-                  email: @current_user.email
+            begin
+              calculator = InvestorReporting::PortfolioCalculator.new(@current_user)
+              portfolio_data = calculator.calculate_detailed_portfolio
+              
+              # Filter data based on requested sections
+              filtered_data = {}
+              filtered_data[:summary] = portfolio_data[:summary] if include_sections.include?('summary')
+              filtered_data[:by_campaign] = portfolio_data[:by_campaign] if include_sections.include?('campaigns')
+              filtered_data[:performance_metrics] = portfolio_data[:performance_metrics] if include_sections.include?('performance')
+              filtered_data[:risk_analysis] = portfolio_data[:risk_analysis] if include_sections.include?('risk')
+              filtered_data[:cash_flow] = portfolio_data[:cash_flow] if include_sections.include?('cashflow')
+              filtered_data[:projections] = portfolio_data[:projections] if include_sections.include?('projections')
+              
+              if format == 'json'
+                render json: {
+                  success: true,
+                  statement: filtered_data,
+                  period: period,
+                  generated_at: Time.current,
+                  user: {
+                    id: @current_user.id,
+                    name: @current_user.full_name,
+                    email: @current_user.email
+                  }
                 }
-              }
-            elsif format == 'csv'
-              csv_data = generate_csv(filtered_data)
-              send_data csv_data,
-                        filename: "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}.csv",
-                        type: 'text/csv',
-                        disposition: 'attachment'
+              elsif format == 'csv'
+                csv_data = generate_csv(filtered_data)
+                send_data csv_data,
+                          filename: "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}.csv",
+                          type: 'text/csv',
+                          disposition: 'attachment'
+              else
+                render json: {
+                  success: false,
+                  error: "Unsupported format: #{format}"
+                }, status: :bad_request
+              end
+            rescue => e
+              Rails.logger.error "Failed to generate #{format}: #{e.message}"
+              render json: {
+                success: false,
+                error: "Failed to generate statement: #{e.message}"
+              }, status: :internal_server_error
             end
           end
-        rescue => e
-          render json: {
-            success: false,
-            error: "Failed to generate statement: #{e.message}"
-          }, status: :internal_server_error
         end
         
         # POST /api/v1/investor/portfolio/statement (for email delivery or storage)
@@ -88,23 +104,32 @@ module Api
             # Create a temp file and return download URL
             filename = "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}.pdf"
             
-            # Store in ActiveStorage temporarily
-            blob = ActiveStorage::Blob.create_and_upload!(
-              io: StringIO.new(pdf.render),
-              filename: filename,
-              content_type: 'application/pdf'
-            )
-            
-            # Make it expire after 24 hours
-            blob.update(expires_at: 24.hours.from_now)
-            
-            render json: {
-              success: true,
-              download_url: rails_blob_url(blob),
-              filename: filename,
-              generated_at: Time.current,
-              expires_at: 24.hours.from_now
-            }
+            begin
+              # Store in ActiveStorage temporarily
+              blob = ActiveStorage::Blob.create_and_upload!(
+                io: StringIO.new(pdf.render),
+                filename: filename,
+                content_type: 'application/pdf'
+              )
+              
+              # Make it expire after 24 hours
+              blob.update(expires_at: 24.hours.from_now) if blob.persisted?
+              
+              render json: {
+                success: true,
+                download_url: rails_blob_url(blob),
+                filename: filename,
+                generated_at: Time.current,
+                expires_at: 24.hours.from_now
+              }
+            rescue => e
+              Rails.logger.error "Failed to create blob: #{e.message}"
+              # Fallback: return the PDF directly
+              send_data pdf.render, 
+                        filename: filename,
+                        type: 'application/pdf',
+                        disposition: 'attachment'
+            end
           else
             # For other formats, generate and return as attachment
             calculator = InvestorReporting::PortfolioCalculator.new(@current_user)
@@ -121,34 +146,47 @@ module Api
             
             filename = "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}"
             
-            if format == 'csv'
-              csv_data = generate_csv(export_data)
-              blob = ActiveStorage::Blob.create_and_upload!(
-                io: StringIO.new(csv_data),
-                filename: "#{filename}.csv",
-                content_type: 'text/csv'
-              )
-            elsif format == 'excel'
-              # For Excel, we'll create JSON for now (you can add Excel generation later)
-              json_data = JSON.pretty_generate(export_data)
-              blob = ActiveStorage::Blob.create_and_upload!(
-                io: StringIO.new(json_data),
-                filename: "#{filename}.json",
-                content_type: 'application/json'
-              )
+            begin
+              if format == 'csv'
+                csv_data = generate_csv(export_data)
+                blob = ActiveStorage::Blob.create_and_upload!(
+                  io: StringIO.new(csv_data),
+                  filename: "#{filename}.csv",
+                  content_type: 'text/csv'
+                )
+              elsif format == 'excel'
+                # For Excel, we'll create JSON for now (you can add Excel generation later)
+                json_data = JSON.pretty_generate(export_data)
+                blob = ActiveStorage::Blob.create_and_upload!(
+                  io: StringIO.new(json_data),
+                  filename: "#{filename}.json",
+                  content_type: 'application/json'
+                )
+              end
+              
+              if blob && blob.persisted?
+                blob.update(expires_at: 24.hours.from_now)
+                
+                render json: {
+                  success: true,
+                  download_url: rails_blob_url(blob),
+                  filename: blob.filename.to_s,
+                  generated_at: Time.current,
+                  expires_at: 24.hours.from_now
+                }
+              else
+                # Fallback to direct download
+                send_fallback_download(format, export_data, filename)
+              end
+            rescue => e
+              Rails.logger.error "Failed to generate #{format}: #{e.message}"
+              send_fallback_download(format, export_data, filename)
             end
-            
-            blob.update(expires_at: 24.hours.from_now)
-            
-            render json: {
-              success: true,
-              download_url: rails_blob_url(blob),
-              filename: blob.filename.to_s,
-              generated_at: Time.current,
-              expires_at: 24.hours.from_now
-            }
           end
         rescue => e
+          Rails.logger.error "Error in generate_portfolio_statement: #{e.message}"
+          Rails.logger.error e.backtrace.join("\n")
+          
           render json: {
             success: false,
             error: "Failed to generate statement: #{e.message}"
@@ -496,6 +534,30 @@ module Api
             csv << ['Generated by Bantuhive Investment Platform']
           end
         end
+
+                def send_fallback_download(format, data, filename)
+          case format
+          when 'csv'
+            csv_data = generate_csv(data)
+            send_data csv_data,
+                      filename: "#{filename}.csv",
+                      type: 'text/csv',
+                      disposition: 'attachment'
+          when 'excel'
+            json_data = JSON.pretty_generate(data)
+            send_data json_data,
+                      filename: "#{filename}.json",
+                      type: 'application/json',
+                      disposition: 'attachment'
+          else
+            render json: {
+              success: false,
+              error: "Unsupported format: #{format}"
+            }, status: :bad_request
+          end
+        end
+
+        
       end
     end
   end
