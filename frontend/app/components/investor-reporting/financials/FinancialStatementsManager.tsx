@@ -282,10 +282,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             Manage and publish financial statements for investors
           </p>
         </div>
-        <Button 
-          variant="success" 
-          onClick={() => setIsCreateModalOpen(true)}
-        >
+        <Button variant="success" onClick={() => setIsCreateModalOpen(true)}>
           <FiPlus className="mr-2 h-4 w-4" />
           Add Financial Statement
         </Button>
@@ -302,8 +299,8 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
               Start by creating your first financial statement to share with
               investors
             </p>
-            <Button 
-              variant="success" 
+            <Button
+              variant="success"
               onClick={() => setIsCreateModalOpen(true)}
             >
               <FiPlus className="mr-2 h-4 w-4" />
@@ -535,7 +532,9 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             >
               Cancel
             </Button>
-            <Button variant="success" onClick={handleCreate}>Create</Button>
+            <Button variant="success" onClick={handleCreate}>
+              Create
+            </Button>
           </div>
         </div>
       </Modal>
@@ -650,7 +649,9 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             >
               Cancel
             </Button>
-            <Button variant="success" onClick={handleUpdate}>Update</Button>
+            <Button variant="success" onClick={handleUpdate}>
+              Update
+            </Button>
           </div>
         </div>
       </Modal>

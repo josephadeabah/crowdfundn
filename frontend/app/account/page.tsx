@@ -199,11 +199,11 @@ const ProfileTabs = () => {
           description: 'Manage your equity investments and portfolio.',
         },
         {
-          label: 'Reporting',
-          icon: <BarChart3 className="w-4 h-4" />,
+          label: 'Finacials',
+          icon: <BarChartIcon className="w-4 h-4" />,
           component: <InvestorReportingDashboard />,
           description:
-            'Track investments, view reports, and manage notifications',
+            'Track financials, view reports, and manage notifications',
           badge: 'New',
           badgeColor: 'bg-green-100 text-green-800',
         },
@@ -296,12 +296,12 @@ const ProfileTabs = () => {
       ],
     },
     {
-      id: 'financials',
-      name: 'Financials',
-      icon: <BarChartIcon className="w-4 h-4" />,
+      id: 'reporting',
+      name: 'Reporting',
+      icon: <BarChart3 className="w-4 h-4" />,
       tabs: [
         {
-          label: 'Financials',
+          label: 'Reporting',
           icon: <DashboardIcon className="w-4 h-4" />,
           component: <CampaignFinancialsPage />,
           description: 'Manage financial reporting for your investors.',

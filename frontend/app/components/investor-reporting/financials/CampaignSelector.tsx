@@ -150,8 +150,8 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                     {campaign.status || 'draft'}
                   </span>
                 </div>
-                <Button 
-                  variant="success" 
+                <Button
+                  variant="success"
                   onClick={() => onSelectCampaign(campaign.id)}
                 >
                   <FiArrowRight className="mr-2 h-4 w-4" />

@@ -124,8 +124,8 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
               access to it.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button 
-                variant="success" 
+              <Button
+                variant="success"
                 onClick={() => setLocalSelectedCampaignId(undefined)}
               >
                 <FiArrowLeft className="mr-2 h-4 w-4" />

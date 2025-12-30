@@ -152,7 +152,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
               Start by adding financial statements and KPIs
             </p>
             <div className="mt-4 space-x-2">
-              <Button 
+              <Button
                 variant="success"
                 onClick={() => handleQuickAction('statement')}
               >

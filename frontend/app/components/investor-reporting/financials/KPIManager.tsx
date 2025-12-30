@@ -218,10 +218,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             Track and manage important metrics for your campaign
           </p>
         </div>
-        <Button 
-          variant="success" 
-          onClick={() => setIsCreateModalOpen(true)}
-        >
+        <Button variant="success" onClick={() => setIsCreateModalOpen(true)}>
           <FiPlus className="mr-2 h-4 w-4" />
           Add KPI
         </Button>
@@ -237,8 +234,8 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             <p className="text-gray-500 mb-6">
               Start by creating KPIs to track your campaign's performance
             </p>
-            <Button 
-              variant="success" 
+            <Button
+              variant="success"
               onClick={() => setIsCreateModalOpen(true)}
             >
               <FiPlus className="mr-2 h-4 w-4" />
@@ -517,7 +514,9 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             >
               Cancel
             </Button>
-            <Button variant="success" onClick={handleCreate}>Create KPI</Button>
+            <Button variant="success" onClick={handleCreate}>
+              Create KPI
+            </Button>
           </div>
         </div>
       </Modal>
@@ -604,7 +603,9 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             >
               Cancel
             </Button>
-            <Button variant="success" onClick={handleAddValue}>Add Value</Button>
+            <Button variant="success" onClick={handleAddValue}>
+              Add Value
+            </Button>
           </div>
         </div>
       </Modal>

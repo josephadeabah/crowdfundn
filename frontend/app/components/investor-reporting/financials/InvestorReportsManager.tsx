@@ -238,10 +238,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
             <FiCalendar className="mr-2 h-4 w-4" />
             Generate Quarterly
           </Button>
-          <Button 
-            variant="success" 
-            onClick={() => setIsCreateModalOpen(true)}
-          >
+          <Button variant="success" onClick={() => setIsCreateModalOpen(true)}>
             <FiPlus className="mr-2 h-4 w-4" />
             Create Report
           </Button>
@@ -259,8 +256,8 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
               Create your first investor report to keep your investors informed
             </p>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
-              <Button 
-                variant="success" 
+              <Button
+                variant="success"
                 onClick={() => setIsCreateModalOpen(true)}
               >
                 <FiPlus className="mr-2 h-4 w-4" />
@@ -563,7 +560,9 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
             >
               Cancel
             </Button>
-            <Button variant="success" onClick={handleCreate}>Create Report</Button>
+            <Button variant="success" onClick={handleCreate}>
+              Create Report
+            </Button>
           </div>
         </div>
       </Modal>
