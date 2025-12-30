@@ -5,6 +5,21 @@ module InvestorReporting
       @user = user
       @preferences = NotificationPreference.defaults_for_user(user)
     end
+
+    def send_welcome_notification
+      return unless @preferences.email_notifications
+      
+      send_notification(
+        type: :welcome,
+        title: "Welcome to Investor Reporting",
+        message: "You're now set up to receive notifications about your investments. Manage your preferences anytime in your settings.",
+        data: {
+          welcome: true,
+          setup_date: Time.current
+        },
+        priority: :low
+      )
+    end
     
     def notify_valuation_update(campaign, old_valuation, new_valuation)
       return unless @preferences.enabled_for_report_type?(:valuation_updates)

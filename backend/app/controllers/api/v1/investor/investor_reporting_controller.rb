@@ -374,9 +374,11 @@ module Api
             preferences: preferences.as_json
           }
         rescue => e
+          Rails.logger.error "Error fetching notification preferences: #{e.message}"
           render json: {
             success: false,
-            error: e.message
+            error: "Failed to load notification preferences",
+            preferences: NotificationPreference.new(user: @current_user).as_json
           }, status: :internal_server_error
         end
         
@@ -447,7 +449,17 @@ module Api
             :in_app_notifications,
             :summary_frequency,
             :preferred_time
-          )
+          ).tap do |permitted|
+            # Convert preferred_time from string "HH:MM" to seconds since midnight
+            if permitted[:preferred_time].present? && permitted[:preferred_time].is_a?(String)
+              time_parts = permitted[:preferred_time].split(':')
+              if time_parts.length == 2
+                hours = time_parts[0].to_i
+                minutes = time_parts[1].to_i
+                permitted[:preferred_time] = (hours.hours + minutes.minutes).to_i
+              end
+            end
+          end
         end
         
         def generate_csv(data)
