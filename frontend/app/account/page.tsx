@@ -199,7 +199,7 @@ const ProfileTabs = () => {
           description: 'Manage your equity investments and portfolio.',
         },
         {
-          label: 'Finacials',
+          label: 'Financials',
           icon: <BarChartIcon className="w-4 h-4" />,
           component: <InvestorReportingDashboard />,
           description:
