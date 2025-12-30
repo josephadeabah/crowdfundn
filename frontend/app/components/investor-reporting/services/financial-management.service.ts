@@ -303,20 +303,55 @@ export class FinancialManagementService {
       status?: string;
       notify_investors?: boolean;
     },
+    attachments?: File[]
   ): Promise<{
     success: boolean;
     report: any;
     errors?: string[];
   }> {
     try {
-      const response = await this.fetchApi(
-        `/campaigns/${campaignId}/investor_reports`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ report: data }),
-        },
-      );
-      return response;
+      // If there are attachments, use FormData
+      if (attachments && attachments.length > 0) {
+        const formData = new FormData();
+        formData.append('report[report_type]', data.report_type);
+        formData.append('report[title]', data.title);
+        if (data.executive_summary) formData.append('report[executive_summary]', data.executive_summary);
+        if (data.key_highlights) formData.append('report[key_highlights]', data.key_highlights);
+        if (data.challenges_risks) formData.append('report[challenges_risks]', data.challenges_risks);
+        if (data.forward_outlook) formData.append('report[forward_outlook]', data.forward_outlook);
+        formData.append('report[report_date]', data.report_date);
+        if (data.period_start) formData.append('report[period_start]', data.period_start);
+        if (data.period_end) formData.append('report[period_end]', data.period_end);
+        if (data.status) formData.append('report[status]', data.status);
+        formData.append('report[notify_investors]', data.notify_investors?.toString() || 'true');
+        
+        attachments.forEach((file, index) => {
+          formData.append('report[attachments][]', file);
+        });
+
+        const response = await fetch(
+          `${this.baseUrl}/campaigns/${campaignId}/investor_reports`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            body: formData,
+          }
+        );
+
+        return response.json();
+      } else {
+        // No attachments, use JSON
+        const response = await this.fetchApi(
+          `/campaigns/${campaignId}/investor_reports`,
+          {
+            method: 'POST',
+            body: JSON.stringify({ report: data }),
+          },
+        );
+        return response;
+      }
     } catch (error) {
       console.error('Error creating investor report:', error);
       throw error;
@@ -362,6 +397,39 @@ export class FinancialManagementService {
       return response;
     } catch (error) {
       console.error('Error generating quarterly report:', error);
+      throw error;
+    }
+  }
+
+  async uploadReportAttachments(
+    campaignId: number,
+    reportId: number,
+    files: File[]
+  ): Promise<{
+    success: boolean;
+    message: string;
+    attachments?: any[];
+  }> {
+    try {
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('attachments[]', file);
+      });
+
+      const response = await fetch(
+        `${this.baseUrl}/campaigns/${campaignId}/investor_reports/${reportId}/upload_attachments`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: formData,
+        }
+      );
+
+      return response.json();
+    } catch (error) {
+      console.error('Error uploading attachments:', error);
       throw error;
     }
   }

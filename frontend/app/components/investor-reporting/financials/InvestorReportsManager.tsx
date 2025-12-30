@@ -30,6 +30,8 @@ import {
   FiDownload,
   FiCalendar,
   FiUsers,
+  FiPaperclip,
+  FiX,
 } from 'react-icons/fi';
 import { format } from 'date-fns';
 import { Skeleton } from '../../ui/Skeleton';
@@ -61,6 +63,8 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
     status: 'draft',
     notify_investors: true,
   });
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     fetchReports();
@@ -80,6 +84,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
       status: 'draft',
       notify_investors: true,
     });
+    setAttachments([]);
   };
 
   const fetchReports = async () => {
@@ -99,6 +104,8 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
 
   const handleCreate = async () => {
     try {
+      setIsUploading(true);
+      
       const data = {
         report_type: formData.report_type,
         title: formData.title,
@@ -116,6 +123,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
       const response = await financialManagementService.createInvestorReport(
         campaignId,
         data,
+        attachments.length > 0 ? attachments : undefined
       );
 
       if (response.success) {
@@ -130,6 +138,8 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
       }
     } catch (error: any) {
       toast.error(error.message || 'Error creating investor report');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -165,6 +175,40 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
     } catch (error: any) {
       toast.error(error.message || 'Error generating quarterly report');
     }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      
+      // Check file sizes (limit to 10MB per file)
+      const validFiles = newFiles.filter(file => {
+        if (file.size > 10 * 1024 * 1024) { // 10MB
+          toast.error(`File "${file.name}" is too large. Maximum size is 10MB.`);
+          return false;
+        }
+        return true;
+      });
+      
+      setAttachments(prev => [...prev, ...validFiles]);
+      
+      // Reset file input
+      e.target.value = '';
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDownload = (url: string, filename: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const getStatusBadge = (status: string) => {
@@ -314,6 +358,27 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                         </div>
                       )}
                     </div>
+
+                    {/* Show attachments if any */}
+                    {report.attachments && report.attachments.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-sm font-medium text-gray-700 mb-2">Attachments:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {report.attachments.map((attachment: any, index: number) => (
+                            <Button
+                              key={index}
+                              variant="outline"
+                              size="sm"
+                              className="text-xs"
+                              onClick={() => handleDownload(attachment.url, attachment.filename)}
+                            >
+                              <FiFileText className="mr-1 h-3 w-3" />
+                              {attachment.filename}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-2">
@@ -322,7 +387,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                         key={doc.id}
                         variant="outline"
                         size="sm"
-                        onClick={() => window.open(doc.file_url, '_blank')}
+                        onClick={() => handleDownload(doc.file_url, doc.file_name || 'document')}
                       >
                         <FiEye className="mr-2 h-4 w-4" />
                         {doc.document_type}
@@ -533,6 +598,73 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
             />
           </div>
 
+          {/* File Upload Section */}
+          <div className="space-y-2">
+            <Label htmlFor="attachments">Attachments (Optional)</Label>
+            <p className="text-sm text-gray-500 mb-2">
+              Upload additional supporting documents like spreadsheets, images, or other files (Max 10MB each)
+            </p>
+            
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <FiPaperclip className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 mb-3">
+                Drag and drop files here, or click to browse
+              </p>
+              <input
+                id="attachments"
+                type="file"
+                multiple
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById('attachments')?.click()}
+              >
+                <FiUpload className="mr-2 h-4 w-4" />
+                Select Files
+              </Button>
+            </div>
+
+            {/* File List */}
+            {attachments.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <p className="text-sm font-medium">Selected Files:</p>
+                <div className="space-y-2">
+                  {attachments.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FiFileText className="h-4 w-4 text-gray-500" />
+                        <div className="flex flex-col">
+                          <span className="text-sm truncate max-w-xs">
+                            {file.name}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {(file.size / 1024).toFixed(1)} KB
+                          </span>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => removeAttachment(index)}
+                      >
+                        <FiX className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -560,8 +692,12 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
             >
               Cancel
             </Button>
-            <Button variant="success" onClick={handleCreate}>
-              Create Report
+            <Button 
+              variant="success" 
+              onClick={handleCreate}
+              disabled={isUploading}
+            >
+              {isUploading ? 'Creating...' : 'Create Report'}
             </Button>
           </div>
         </div>
