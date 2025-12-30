@@ -407,7 +407,7 @@ export class FinancialManagementService {
   }> {
     try {
       let endpoint = `/campaigns/${campaignId}/investor_reports`;
-      
+
       // If we have an existing report ID, use member route
       // Otherwise use collection route
       if (existingReportId) {
@@ -415,7 +415,7 @@ export class FinancialManagementService {
       } else {
         endpoint += `/generate_quarterly`;
       }
-      
+
       if (reportDate) {
         endpoint += `?report_date=${reportDate}`;
       }
