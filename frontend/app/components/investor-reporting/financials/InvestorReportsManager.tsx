@@ -1,4 +1,4 @@
-// app/components/financials/InvestorReportsManager.tsx - Add resetForm function
+// app/components/financials/InvestorReportsManager.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -10,14 +10,6 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Button } from '@/app/components/button/Button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/app/components/ui/dialog';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import {
@@ -44,6 +36,7 @@ import { format } from 'date-fns';
 import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
 import { toast } from '../../ui/sonner';
+import Modal from '@/app/components/modal/Modal';
 
 interface InvestorReportsManagerProps {
   campaignId: number;
@@ -54,9 +47,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
 }) => {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     report_type: 'quarterly',
     title: '',
@@ -75,7 +66,6 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
     fetchReports();
   }, [campaignId]);
 
-  // ADD THIS FUNCTION
   const resetForm = () => {
     setFormData({
       report_type: 'quarterly',
@@ -130,7 +120,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
 
       if (response.success) {
         toast.success('Investor report created successfully');
-        setIsCreateDialogOpen(false);
+        setIsCreateModalOpen(false);
         resetForm();
         fetchReports();
       } else {
@@ -248,226 +238,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
             <FiCalendar className="mr-2 h-4 w-4" />
             Generate Quarterly
           </Button>
-          <Dialog
-            open={isCreateDialogOpen}
-            onOpenChange={setIsCreateDialogOpen}
-          >
-            <DialogTrigger asChild>
-              <Button>
-                <FiPlus className="mr-2 h-4 w-4" />
-                Create Report
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Create Investor Report</DialogTitle>
-                <DialogDescription>
-                  Create a new report to share with investors
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="report_type">Report Type</Label>
-                    <Select
-                      value={formData.report_type}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, report_type: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select report type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="monthly">Monthly Update</SelectItem>
-                        <SelectItem value="quarterly">
-                          Quarterly Report
-                        </SelectItem>
-                        <SelectItem value="annual">Annual Report</SelectItem>
-                        <SelectItem value="valuation_update">
-                          Valuation Update
-                        </SelectItem>
-                        <SelectItem value="special">
-                          Special Announcement
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="status">Status</Label>
-                    <Select
-                      value={formData.status}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, status: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="published">Published</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="title">Report Title</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    placeholder="e.g., Q3 2024 Financial Results"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="report_date">Report Date</Label>
-                    <Input
-                      id="report_date"
-                      type="date"
-                      value={formData.report_date}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          report_date: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="period_start">
-                      Period Start (Optional)
-                    </Label>
-                    <Input
-                      id="period_start"
-                      type="date"
-                      value={formData.period_start}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          period_start: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="period_end">Period End (Optional)</Label>
-                    <Input
-                      id="period_end"
-                      type="date"
-                      value={formData.period_end}
-                      onChange={(e) =>
-                        setFormData({ ...formData, period_end: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="executive_summary">Executive Summary</Label>
-                  <Textarea
-                    id="executive_summary"
-                    value={formData.executive_summary}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        executive_summary: e.target.value,
-                      })
-                    }
-                    placeholder="Provide a high-level overview of the report..."
-                    rows={4}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="key_highlights">Key Highlights</Label>
-                  <Textarea
-                    id="key_highlights"
-                    value={formData.key_highlights}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        key_highlights: e.target.value,
-                      })
-                    }
-                    placeholder="List key achievements, milestones, and important updates..."
-                    rows={3}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="challenges_risks">Challenges & Risks</Label>
-                  <Textarea
-                    id="challenges_risks"
-                    value={formData.challenges_risks}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        challenges_risks: e.target.value,
-                      })
-                    }
-                    placeholder="Discuss any challenges, risks, or obstacles..."
-                    rows={3}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="forward_outlook">Forward Outlook</Label>
-                  <Textarea
-                    id="forward_outlook"
-                    value={formData.forward_outlook}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        forward_outlook: e.target.value,
-                      })
-                    }
-                    placeholder="Share future plans, projections, and next steps..."
-                    rows={3}
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="notify_investors"
-                    checked={formData.notify_investors}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        notify_investors: e.target.checked,
-                      })
-                    }
-                    className="rounded border-gray-300"
-                  />
-                  <Label htmlFor="notify_investors" className="text-sm">
-                    Notify investors when published
-                  </Label>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsCreateDialogOpen(false);
-                    resetForm();
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleCreate}>Create Report</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button onClick={() => setIsCreateModalOpen(true)}>
+            <FiPlus className="mr-2 h-4 w-4" />
+            Create Report
+          </Button>
         </div>
       </div>
 
@@ -482,7 +256,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
               Create your first investor report to keep your investors informed
             </p>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
-              <Button onClick={() => setIsCreateDialogOpen(true)}>
+              <Button onClick={() => setIsCreateModalOpen(true)}>
                 <FiPlus className="mr-2 h-4 w-4" />
                 Create Report
               </Button>
@@ -580,6 +354,219 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
           ))}
         </div>
       )}
+
+      {/* Create Report Modal */}
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          resetForm();
+        }}
+        title="Create Investor Report"
+        size="xlarge"
+      >
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="report_type">Report Type</Label>
+              <Select
+                value={formData.report_type}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, report_type: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select report type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monthly">Monthly Update</SelectItem>
+                  <SelectItem value="quarterly">
+                    Quarterly Report
+                  </SelectItem>
+                  <SelectItem value="annual">Annual Report</SelectItem>
+                  <SelectItem value="valuation_update">
+                    Valuation Update
+                  </SelectItem>
+                  <SelectItem value="special">
+                    Special Announcement
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select
+                value={formData.status}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, status: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="published">Published</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="title">Report Title</Label>
+            <Input
+              id="title"
+              value={formData.title}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
+              placeholder="e.g., Q3 2024 Financial Results"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="report_date">Report Date</Label>
+              <Input
+                id="report_date"
+                type="date"
+                value={formData.report_date}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    report_date: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="period_start">
+                Period Start (Optional)
+              </Label>
+              <Input
+                id="period_start"
+                type="date"
+                value={formData.period_start}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    period_start: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="period_end">Period End (Optional)</Label>
+              <Input
+                id="period_end"
+                type="date"
+                value={formData.period_end}
+                onChange={(e) =>
+                  setFormData({ ...formData, period_end: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="executive_summary">Executive Summary</Label>
+            <Textarea
+              id="executive_summary"
+              value={formData.executive_summary}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  executive_summary: e.target.value,
+                })
+              }
+              placeholder="Provide a high-level overview of the report..."
+              rows={4}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="key_highlights">Key Highlights</Label>
+            <Textarea
+              id="key_highlights"
+              value={formData.key_highlights}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  key_highlights: e.target.value,
+                })
+              }
+              placeholder="List key achievements, milestones, and important updates..."
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="challenges_risks">Challenges & Risks</Label>
+            <Textarea
+              id="challenges_risks"
+              value={formData.challenges_risks}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  challenges_risks: e.target.value,
+                })
+              }
+              placeholder="Discuss any challenges, risks, or obstacles..."
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="forward_outlook">Forward Outlook</Label>
+            <Textarea
+              id="forward_outlook"
+              value={formData.forward_outlook}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  forward_outlook: e.target.value,
+                })
+              }
+              placeholder="Share future plans, projections, and next steps..."
+              rows={3}
+            />
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="notify_investors"
+              checked={formData.notify_investors}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  notify_investors: e.target.checked,
+                })
+              }
+              className="rounded border-gray-300"
+            />
+            <Label htmlFor="notify_investors" className="text-sm">
+              Notify investors when published
+            </Label>
+          </div>
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsCreateModalOpen(false);
+                resetForm();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleCreate}>Create Report</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

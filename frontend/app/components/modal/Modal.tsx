@@ -1,3 +1,4 @@
+// app/components/modal/Modal.tsx
 import React, { useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,6 +20,8 @@ interface ModalProps {
   isDraggable?: boolean;
   closeOnBackdropClick?: boolean;
   customStyles?: React.CSSProperties;
+  title?: string;
+  showCloseButton?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -29,6 +32,8 @@ const Modal: React.FC<ModalProps> = ({
   isDraggable = false,
   closeOnBackdropClick = true,
   customStyles = {},
+  title,
+  showCloseButton = true,
 }) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
 
@@ -72,7 +77,7 @@ const Modal: React.FC<ModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 flex items-center justify-center overflow-y-auto bg-black/60  z-[100]"
+          className="fixed inset-0 flex items-center justify-center overflow-y-auto bg-black/60 z-[100]"
           style={{
             position: 'fixed',
             top: 0,
@@ -109,15 +114,23 @@ const Modal: React.FC<ModalProps> = ({
             }}
           >
             <div className="p-6">
-              <button
-                className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors duration-200 z-10"
-                onClick={onClose}
-                aria-label="Close modal"
-              >
-                <FaTimes className="w-6 h-6" />
-              </button>
-
-              <div className="mt-4">{children}</div>
+              {(title || showCloseButton) && (
+                <div className="flex items-center justify-between mb-4">
+                  {title && (
+                    <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+                  )}
+                  {showCloseButton && (
+                    <button
+                      className="text-muted-foreground hover:text-foreground transition-colors duration-200 z-10 ml-auto"
+                      onClick={onClose}
+                      aria-label="Close modal"
+                    >
+                      <FaTimes className="w-6 h-6" />
+                    </button>
+                  )}
+                </div>
+              )}
+              <div className="mt-2">{children}</div>
             </div>
           </motion.div>
         </motion.div>
@@ -125,7 +138,6 @@ const Modal: React.FC<ModalProps> = ({
     </AnimatePresence>
   );
 
-  // Render modal using Portal to escape any stacking context issues
   return typeof document !== 'undefined'
     ? createPortal(modalContent, document.body)
     : null;

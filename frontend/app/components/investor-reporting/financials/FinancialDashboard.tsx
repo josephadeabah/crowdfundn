@@ -35,6 +35,7 @@ import {
 } from 'react-icons/fi';
 import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
+import Modal from '@/app/components/modal/Modal';
 
 interface FinancialDashboardProps {
   campaignId: number;
@@ -49,6 +50,10 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
   const [timeframe, setTimeframe] = useState<
     'monthly' | 'quarterly' | 'yearly'
   >('quarterly');
+  const [quickActionModal, setQuickActionModal] = useState<{
+    open: boolean;
+    type?: 'statement' | 'kpi' | 'report';
+  }>({ open: false });
 
   useEffect(() => {
     fetchDashboardData();
@@ -71,6 +76,12 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleQuickAction = (type: 'statement' | 'kpi' | 'report') => {
+    // This would typically open the specific component's modal
+    // For now, we'll show a generic modal
+    setQuickActionModal({ open: true, type });
   };
 
   if (loading) {
@@ -140,6 +151,14 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
             <p className="text-sm mt-2">
               Start by adding financial statements and KPIs
             </p>
+            <div className="mt-4 space-x-2">
+              <Button onClick={() => handleQuickAction('statement')}>
+                Add Financial Statement
+              </Button>
+              <Button variant="outline" onClick={() => handleQuickAction('kpi')}>
+                Create KPI
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -438,20 +457,23 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button className="flex flex-col items-center justify-center h-24">
+            <Button 
+              className="flex flex-col items-center justify-center h-24"
+              onClick={() => handleQuickAction('statement')}
+            >
               <FiFileText className="h-8 w-8 mb-2" />
               <span>Add Financial Statement</span>
             </Button>
             <Button
-              variant="outline"
               className="flex flex-col items-center justify-center h-24"
+              onClick={() => handleQuickAction('kpi')}
             >
               <FiBarChart2 className="h-8 w-8 mb-2" />
               <span>Create KPI</span>
             </Button>
             <Button
-              variant="outline"
               className="flex flex-col items-center justify-center h-24"
+              onClick={() => handleQuickAction('report')}
             >
               <FiFileText className="h-8 w-8 mb-2" />
               <span>Generate Quarterly Report</span>
@@ -459,6 +481,45 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Quick Action Modal */}
+      <Modal
+        isOpen={quickActionModal.open}
+        onClose={() => setQuickActionModal({ open: false })}
+        title={
+          quickActionModal.type === 'statement'
+            ? 'Add Financial Statement'
+            : quickActionModal.type === 'kpi'
+            ? 'Create KPI'
+            : 'Generate Quarterly Report'
+        }
+        size="medium"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            {quickActionModal.type === 'statement'
+              ? 'This would open the financial statement creation form.'
+              : quickActionModal.type === 'kpi'
+              ? 'This would open the KPI creation form.'
+              : 'This would generate a quarterly report based on your current data.'}
+          </p>
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setQuickActionModal({ open: false })}
+            >
+              Cancel
+            </Button>
+            <Button>
+              {quickActionModal.type === 'statement'
+                ? 'Go to Financial Statements'
+                : quickActionModal.type === 'kpi'
+                ? 'Go to KPIs'
+                : 'Generate Report'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

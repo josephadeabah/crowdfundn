@@ -1,7 +1,7 @@
+// app/components/financials/CampaignFinancialsPage.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import {
   Tabs,
   TabsContent,
@@ -24,28 +24,36 @@ import FinancialDashboard from './FinancialDashboard';
 import KPIManager from './KPIManager';
 import InvestorReportsManager from './InvestorReportsManager';
 import { Skeleton } from '../../ui/Skeleton';
+import Modal from '@/app/components/modal/Modal';
 
-const CampaignFinancialsPage = () => {
-  const params = useParams();
-  const router = useRouter();
-  const campaignId = params?.id as string;
+interface CampaignFinancialsPageProps {
+  onBackToCampaigns?: () => void;
+  selectedCampaignId?: number;
+}
+
+const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
+  onBackToCampaigns,
+  selectedCampaignId,
+}) => {
   const { userCampaigns, loading: campaignsLoading, fetchUserCampaigns } = useCampaignContext();
 
   const [campaign, setCampaign] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
 
-
-  useEffect(() => {    fetchUserCampaigns();
+  useEffect(() => {
+    fetchUserCampaigns();
   }, [fetchUserCampaigns]);
 
   useEffect(() => {
-    if (userCampaigns && campaignId) {
+    if (userCampaigns && selectedCampaignId) {
       const foundCampaign = userCampaigns.find(
-        (c: any) => c.id === parseInt(campaignId),
+        (c: any) => c.id === selectedCampaignId,
       );
       setCampaign(foundCampaign);
     }
-  }, [userCampaigns, campaignId]);
+  }, [userCampaigns, selectedCampaignId]);
+
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   if (campaignsLoading) {
     return (
@@ -60,7 +68,7 @@ const CampaignFinancialsPage = () => {
     );
   }
 
-  if (!campaign) {
+  if (!campaign && selectedCampaignId) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card>
@@ -72,7 +80,7 @@ const CampaignFinancialsPage = () => {
               The campaign you're looking for doesn't exist or you don't have
               access to it.
             </p>
-            <Button onClick={() => router.push('/account#Campaigns')}>
+            <Button onClick={onBackToCampaigns}>
               <FiArrowLeft className="mr-2 h-4 w-4" />
               Back to Campaigns
             </Button>
@@ -87,49 +95,53 @@ const CampaignFinancialsPage = () => {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push('/account#Campaigns')}
-          >
-            <FiArrowLeft className="mr-2 h-4 w-4" />
-            Back to Campaigns
-          </Button>
+          {onBackToCampaigns && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onBackToCampaigns}
+            >
+              <FiArrowLeft className="mr-2 h-4 w-4" />
+              Back to Campaigns
+            </Button>
+          )}
         </div>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {campaign.title}
+          {campaign?.title || 'Financial Management'}
         </h1>
         <p className="text-gray-600 mb-6">
           Financial Management & Investor Reporting
         </p>
 
-        <div className="flex flex-wrap gap-4 mb-6">
-          <div className="bg-blue-50 px-4 py-2 rounded-lg">
-            <p className="text-sm text-blue-700">Valuation</p>
-            <p className="text-lg font-semibold text-blue-900">
-              ${campaign.valuation?.toLocaleString() || '0'}
-            </p>
+        {campaign && (
+          <div className="flex flex-wrap gap-4 mb-6">
+            <div className="bg-blue-50 px-4 py-2 rounded-lg">
+              <p className="text-sm text-blue-700">Valuation</p>
+              <p className="text-lg font-semibold text-blue-900">
+                ${campaign.valuation?.toLocaleString() || '0'}
+              </p>
+            </div>
+            <div className="bg-green-50 px-4 py-2 rounded-lg">
+              <p className="text-sm text-green-700">Equity Offered</p>
+              <p className="text-lg font-semibold text-green-900">
+                {campaign.equity_offered || 0}%
+              </p>
+            </div>
+            <div className="bg-purple-50 px-4 py-2 rounded-lg">
+              <p className="text-sm text-purple-700">Total Raised</p>
+              <p className="text-lg font-semibold text-purple-900">
+                ${campaign.transferred_amount?.toLocaleString() || '0'}
+              </p>
+            </div>
+            <div className="bg-orange-50 px-4 py-2 rounded-lg">
+              <p className="text-sm text-orange-700">Investors</p>
+              <p className="text-lg font-semibold text-orange-900">
+                {campaign.total_investors || 0}
+              </p>
+            </div>
           </div>
-          <div className="bg-green-50 px-4 py-2 rounded-lg">
-            <p className="text-sm text-green-700">Equity Offered</p>
-            <p className="text-lg font-semibold text-green-900">
-              {campaign.equity_offered || 0}%
-            </p>
-          </div>
-          <div className="bg-purple-50 px-4 py-2 rounded-lg">
-            <p className="text-sm text-purple-700">Total Raised</p>
-            <p className="text-lg font-semibold text-purple-900">
-              ${campaign.transferred_amount?.toLocaleString() || '0'}
-            </p>
-          </div>
-          <div className="bg-orange-50 px-4 py-2 rounded-lg">
-            <p className="text-sm text-orange-700">Investors</p>
-            <p className="text-lg font-semibold text-orange-900">
-              {campaign.total_investors || 0}
-            </p>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Tabs */}
@@ -151,56 +163,77 @@ const CampaignFinancialsPage = () => {
             <FiUsers className="h-4 w-4" />
             <span className="hidden sm:inline">Investor Reports</span>
           </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="settings" 
+            className="flex items-center gap-2"
+            onClick={() => setShowSettingsModal(true)}
+          >
             <FiSettings className="h-4 w-4" />
             <span className="hidden sm:inline">Settings</span>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard">
-          <FinancialDashboard campaignId={parseInt(campaignId)} />
+          {selectedCampaignId && (
+            <FinancialDashboard campaignId={selectedCampaignId} />
+          )}
         </TabsContent>
 
         <TabsContent value="financials">
-          <FinancialStatementsManager campaignId={parseInt(campaignId)} />
+          {selectedCampaignId && (
+            <FinancialStatementsManager campaignId={selectedCampaignId} />
+          )}
         </TabsContent>
 
         <TabsContent value="kpis">
-          <KPIManager campaignId={parseInt(campaignId)} />
+          {selectedCampaignId && (
+            <KPIManager campaignId={selectedCampaignId} />
+          )}
         </TabsContent>
 
         <TabsContent value="reports">
-          <InvestorReportsManager campaignId={parseInt(campaignId)} />
-        </TabsContent>
-
-        <TabsContent value="settings">
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Reporting Settings</h3>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium mb-2">Notification Preferences</h4>
-                  <p className="text-sm text-gray-500">
-                    Configure how investors are notified about new reports
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Report Templates</h4>
-                  <p className="text-sm text-gray-500">
-                    Customize report formats and branding
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">Access Controls</h4>
-                  <p className="text-sm text-gray-500">
-                    Manage who can view financial information
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {selectedCampaignId && (
+            <InvestorReportsManager campaignId={selectedCampaignId} />
+          )}
         </TabsContent>
       </Tabs>
+
+      {/* Settings Modal */}
+      <Modal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        title="Reporting Settings"
+        size="large"
+      >
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium mb-2">Notification Preferences</h4>
+              <p className="text-sm text-gray-500">
+                Configure how investors are notified about new reports
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">Report Templates</h4>
+              <p className="text-sm text-gray-500">
+                Customize report formats and branding
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">Access Controls</h4>
+              <p className="text-sm text-gray-500">
+                Manage who can view financial information
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button variant="outline" onClick={() => setShowSettingsModal(false)}>
+              Cancel
+            </Button>
+            <Button>Save Settings</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

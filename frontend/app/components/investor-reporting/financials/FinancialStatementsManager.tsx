@@ -10,14 +10,6 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Button } from '@/app/components/button/Button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/app/components/ui/dialog';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import {
@@ -27,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/components/ui/select';
-import { Textarea } from '@/app/components/ui/textarea';
 import { Badge } from '@/app/components/ui/badge';
 import {
   FiFileText,
@@ -36,12 +27,13 @@ import {
   FiTrash2,
   FiUpload,
   FiEye,
-  FiDownload,
 } from 'react-icons/fi';
 import { format } from 'date-fns';
 import { toast } from '@/app/components/ui/sonner';
 import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
+import Modal from '@/app/components/modal/Modal';
+
 interface FinancialStatementsManagerProps {
   campaignId: number;
 }
@@ -51,8 +43,8 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
 }) => {
   const [financials, setFinancials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedFinancial, setSelectedFinancial] = useState<any>(null);
   const [formData, setFormData] = useState({
     period_type: 'monthly',
@@ -111,7 +103,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
 
       if (response.success) {
         toast.success('Financial statement created successfully');
-        setIsCreateDialogOpen(false);
+        setIsCreateModalOpen(false);
         resetForm();
         fetchFinancials();
       } else {
@@ -153,7 +145,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
 
       if (response.success) {
         toast.success('Financial statement updated successfully');
-        setIsEditDialogOpen(false);
+        setIsEditModalOpen(false);
         resetForm();
         fetchFinancials();
       } else {
@@ -221,7 +213,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
       cash_flow: financial.cash_flow?.toString() || '',
       status: financial.status,
     });
-    setIsEditDialogOpen(true);
+    setIsEditModalOpen(true);
   };
 
   const resetForm = () => {
@@ -290,149 +282,10 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             Manage and publish financial statements for investors
           </p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <FiPlus className="mr-2 h-4 w-4" />
-              Add Financial Statement
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Create Financial Statement</DialogTitle>
-              <DialogDescription>
-                Add a new financial statement for this period
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="period_type">Period Type</Label>
-                <Select
-                  value={formData.period_type}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, period_type: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select period type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="quarterly">Quarterly</SelectItem>
-                    <SelectItem value="annual">Annual</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, status: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="published">Published</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="period_start">Period Start</Label>
-                <Input
-                  id="period_start"
-                  type="date"
-                  value={formData.period_start}
-                  onChange={(e) =>
-                    setFormData({ ...formData, period_start: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="period_end">Period End</Label>
-                <Input
-                  id="period_end"
-                  type="date"
-                  value={formData.period_end}
-                  onChange={(e) =>
-                    setFormData({ ...formData, period_end: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="revenue">Revenue ($)</Label>
-                <Input
-                  id="revenue"
-                  type="number"
-                  step="0.01"
-                  value={formData.revenue}
-                  onChange={(e) =>
-                    setFormData({ ...formData, revenue: e.target.value })
-                  }
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="expenses">Expenses ($)</Label>
-                <Input
-                  id="expenses"
-                  type="number"
-                  step="0.01"
-                  value={formData.expenses}
-                  onChange={(e) =>
-                    setFormData({ ...formData, expenses: e.target.value })
-                  }
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="assets">Assets ($)</Label>
-                <Input
-                  id="assets"
-                  type="number"
-                  step="0.01"
-                  value={formData.assets}
-                  onChange={(e) =>
-                    setFormData({ ...formData, assets: e.target.value })
-                  }
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="liabilities">Liabilities ($)</Label>
-                <Input
-                  id="liabilities"
-                  type="number"
-                  step="0.01"
-                  value={formData.liabilities}
-                  onChange={(e) =>
-                    setFormData({ ...formData, liabilities: e.target.value })
-                  }
-                  placeholder="0.00"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsCreateDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleCreate}>Create</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
+          <FiPlus className="mr-2 h-4 w-4" />
+          Add Financial Statement
+        </Button>
       </div>
 
       {financials.length === 0 ? (
@@ -446,7 +299,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
               Start by creating your first financial statement to share with
               investors
             </p>
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Button onClick={() => setIsCreateModalOpen(true)}>
               <FiPlus className="mr-2 h-4 w-4" />
               Create First Statement
             </Button>
@@ -537,16 +390,162 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
         </div>
       )}
 
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Financial Statement</DialogTitle>
-            <DialogDescription>
-              Update financial statement details
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+      {/* Create Modal */}
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          resetForm();
+        }}
+        title="Create Financial Statement"
+        size="xlarge"
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="period_type">Period Type</Label>
+              <Select
+                value={formData.period_type}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, period_type: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select period type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="quarterly">Quarterly</SelectItem>
+                  <SelectItem value="annual">Annual</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select
+                value={formData.status}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, status: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="published">Published</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="period_start">Period Start</Label>
+              <Input
+                id="period_start"
+                type="date"
+                value={formData.period_start}
+                onChange={(e) =>
+                  setFormData({ ...formData, period_start: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="period_end">Period End</Label>
+              <Input
+                id="period_end"
+                type="date"
+                value={formData.period_end}
+                onChange={(e) =>
+                  setFormData({ ...formData, period_end: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="revenue">Revenue ($)</Label>
+              <Input
+                id="revenue"
+                type="number"
+                step="0.01"
+                value={formData.revenue}
+                onChange={(e) =>
+                  setFormData({ ...formData, revenue: e.target.value })
+                }
+                placeholder="0.00"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="expenses">Expenses ($)</Label>
+              <Input
+                id="expenses"
+                type="number"
+                step="0.01"
+                value={formData.expenses}
+                onChange={(e) =>
+                  setFormData({ ...formData, expenses: e.target.value })
+                }
+                placeholder="0.00"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="assets">Assets ($)</Label>
+              <Input
+                id="assets"
+                type="number"
+                step="0.01"
+                value={formData.assets}
+                onChange={(e) =>
+                  setFormData({ ...formData, assets: e.target.value })
+                }
+                placeholder="0.00"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="liabilities">Liabilities ($)</Label>
+              <Input
+                id="liabilities"
+                type="number"
+                step="0.01"
+                value={formData.liabilities}
+                onChange={(e) =>
+                  setFormData({ ...formData, liabilities: e.target.value })
+                }
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsCreateModalOpen(false);
+                resetForm();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleCreate}>Create</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          resetForm();
+        }}
+        title="Edit Financial Statement"
+        size="xlarge"
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="edit_period_type">Period Type</Label>
               <Select
@@ -635,17 +634,20 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
               />
             </div>
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 pt-4 border-t">
             <Button
               variant="outline"
-              onClick={() => setIsEditDialogOpen(false)}
+              onClick={() => {
+                setIsEditModalOpen(false);
+                resetForm();
+              }}
             >
               Cancel
             </Button>
             <Button onClick={handleUpdate}>Update</Button>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </Modal>
     </div>
   );
 };

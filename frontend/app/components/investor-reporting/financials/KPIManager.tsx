@@ -1,4 +1,4 @@
-// app/components/financials/KPIManager.tsx - Add these functions
+// app/components/financials/KPIManager.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -10,14 +10,6 @@ import {
   CardTitle,
 } from '@/app/components/ui/card';
 import { Button } from '@/app/components/button/Button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/app/components/ui/dialog';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import {
@@ -43,6 +35,7 @@ import {
 import { toast } from '@/app/components/ui/sonner';
 import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
+import Modal from '@/app/components/modal/Modal';
 
 interface KPIManagerProps {
   campaignId: number;
@@ -51,8 +44,8 @@ interface KPIManagerProps {
 const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
   const [kpis, setKpis] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isAddValueDialogOpen, setIsAddValueDialogOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isAddValueModalOpen, setIsAddValueModalOpen] = useState(false);
   const [selectedKpi, setSelectedKpi] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -75,7 +68,6 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
     fetchKPIs();
   }, [campaignId]);
 
-  // ADD THIS FUNCTION
   const resetForm = () => {
     setFormData({
       name: '',
@@ -89,7 +81,6 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
     });
   };
 
-  // ADD THIS FUNCTION
   const resetValueForm = () => {
     setValueFormData({
       period_date: '',
@@ -134,7 +125,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
 
       if (response.success) {
         toast.success('KPI created successfully');
-        setIsCreateDialogOpen(false);
+        setIsCreateModalOpen(false);
         resetForm();
         fetchKPIs();
       } else {
@@ -164,7 +155,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
 
       if (response.success) {
         toast.success('KPI value added successfully');
-        setIsAddValueDialogOpen(false);
+        setIsAddValueModalOpen(false);
         resetValueForm();
         fetchKPIs();
       } else {
@@ -227,173 +218,10 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             Track and manage important metrics for your campaign
           </p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <FiPlus className="mr-2 h-4 w-4" />
-              Add KPI
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Create New KPI</DialogTitle>
-              <DialogDescription>
-                Define a key performance indicator to track
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">KPI Name</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    placeholder="e.g., Monthly Recurring Revenue"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="kpi_type">KPI Type</Label>
-                  <Select
-                    value={formData.kpi_type}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, kpi_type: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="financial">Financial</SelectItem>
-                      <SelectItem value="operational">Operational</SelectItem>
-                      <SelectItem value="growth">Growth</SelectItem>
-                      <SelectItem value="engagement">Engagement</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  placeholder="Describe what this KPI measures..."
-                  rows={3}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="unit">Unit of Measurement</Label>
-                  <Select
-                    value={formData.unit}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, unit: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="currency">Currency ($)</SelectItem>
-                      <SelectItem value="percentage">Percentage (%)</SelectItem>
-                      <SelectItem value="number">Number</SelectItem>
-                      <SelectItem value="ratio">Ratio</SelectItem>
-                      <SelectItem value="custom">Custom</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="target_value">Target Value</Label>
-                  <Input
-                    id="target_value"
-                    type="number"
-                    step="0.01"
-                    value={formData.target_value}
-                    onChange={(e) =>
-                      setFormData({ ...formData, target_value: e.target.value })
-                    }
-                    placeholder="Enter target value"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="target_period">Target Period</Label>
-                  <Select
-                    value={formData.target_period}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, target_period: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select period" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="quarterly">Quarterly</SelectItem>
-                      <SelectItem value="annual">Annual</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor="is_primary" className="font-medium">
-                      Primary KPI
-                    </Label>
-                    <p className="text-sm text-gray-500">
-                      Show on dashboard as primary metric
-                    </p>
-                  </div>
-                  <Switch
-                    id="is_primary"
-                    checked={formData.is_primary}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, is_primary: checked })
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor="is_public" className="font-medium">
-                      Public Visibility
-                    </Label>
-                    <p className="text-sm text-gray-500">Show to investors</p>
-                  </div>
-                  <Switch
-                    id="is_public"
-                    checked={formData.is_public}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, is_public: checked })
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsCreateDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleCreate}>Create KPI</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
+          <FiPlus className="mr-2 h-4 w-4" />
+          Add KPI
+        </Button>
       </div>
 
       {kpis.length === 0 ? (
@@ -406,7 +234,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             <p className="text-gray-500 mb-6">
               Start by creating KPIs to track your campaign's performance
             </p>
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Button onClick={() => setIsCreateModalOpen(true)}>
               <FiPlus className="mr-2 h-4 w-4" />
               Create First KPI
             </Button>
@@ -439,7 +267,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
                       size="sm"
                       onClick={() => {
                         setSelectedKpi(kpi);
-                        setIsAddValueDialogOpen(true);
+                        setIsAddValueModalOpen(true);
                       }}
                     >
                       <FiPlus className="h-4 w-4" />
@@ -522,86 +350,249 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
         </div>
       )}
 
-      {/* Add Value Dialog */}
-      <Dialog
-        open={isAddValueDialogOpen}
-        onOpenChange={setIsAddValueDialogOpen}
+      {/* Create KPI Modal */}
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          resetForm();
+        }}
+        title="Create New KPI"
+        size="xlarge"
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add KPI Value</DialogTitle>
-            <DialogDescription>
-              Add a new value for {selectedKpi?.name}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="period_date">Date</Label>
+              <Label htmlFor="name">KPI Name</Label>
               <Input
-                id="period_date"
-                type="date"
-                value={valueFormData.period_date}
+                id="name"
+                value={formData.name}
                 onChange={(e) =>
-                  setValueFormData({
-                    ...valueFormData,
-                    period_date: e.target.value,
-                  })
+                  setFormData({ ...formData, name: e.target.value })
                 }
+                placeholder="e.g., Monthly Recurring Revenue"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="value">Value</Label>
-              <Input
-                id="value"
-                type="number"
-                step="0.01"
-                value={valueFormData.value}
-                onChange={(e) =>
-                  setValueFormData({ ...valueFormData, value: e.target.value })
+              <Label htmlFor="kpi_type">KPI Type</Label>
+              <Select
+                value={formData.kpi_type}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, kpi_type: value })
                 }
-                placeholder={`Enter value in ${selectedKpi?.unit}`}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="data_source">Data Source</Label>
-              <Input
-                id="data_source"
-                value={valueFormData.data_source}
-                onChange={(e) =>
-                  setValueFormData({
-                    ...valueFormData,
-                    data_source: e.target.value,
-                  })
-                }
-                placeholder="e.g., CRM, Analytics, Manual entry"
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="is_actual"
-                checked={valueFormData.is_actual}
-                onChange={(e) =>
-                  setValueFormData({
-                    ...valueFormData,
-                    is_actual: e.target.checked,
-                  })
-                }
-                className="rounded border-gray-300"
-              />
-              <Label htmlFor="is_actual" className="text-sm">
-                Actual value (not projected)
-              </Label>
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="financial">Financial</SelectItem>
+                  <SelectItem value="operational">Operational</SelectItem>
+                  <SelectItem value="growth">Growth</SelectItem>
+                  <SelectItem value="engagement">Engagement</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-          <div className="flex justify-end gap-2">
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              placeholder="Describe what this KPI measures..."
+              rows={3}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="unit">Unit of Measurement</Label>
+              <Select
+                value={formData.unit}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, unit: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select unit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="currency">Currency ($)</SelectItem>
+                  <SelectItem value="percentage">Percentage (%)</SelectItem>
+                  <SelectItem value="number">Number</SelectItem>
+                  <SelectItem value="ratio">Ratio</SelectItem>
+                  <SelectItem value="custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="target_value">Target Value</Label>
+              <Input
+                id="target_value"
+                type="number"
+                step="0.01"
+                value={formData.target_value}
+                onChange={(e) =>
+                  setFormData({ ...formData, target_value: e.target.value })
+                }
+                placeholder="Enter target value"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="target_period">Target Period</Label>
+              <Select
+                value={formData.target_period}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, target_period: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="quarterly">Quarterly</SelectItem>
+                  <SelectItem value="annual">Annual</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="is_primary" className="font-medium">
+                  Primary KPI
+                </Label>
+                <p className="text-sm text-gray-500">
+                  Show on dashboard as primary metric
+                </p>
+              </div>
+              <Switch
+                id="is_primary"
+                checked={formData.is_primary}
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, is_primary: checked })
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="is_public" className="font-medium">
+                  Public Visibility
+                </Label>
+                <p className="text-sm text-gray-500">Show to investors</p>
+              </div>
+              <Switch
+                id="is_public"
+                checked={formData.is_public}
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, is_public: checked })
+                }
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-4 border-t">
             <Button
               variant="outline"
               onClick={() => {
-                setIsAddValueDialogOpen(false);
+                setIsCreateModalOpen(false);
+                resetForm();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleCreate}>Create KPI</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Add Value Modal */}
+      <Modal
+        isOpen={isAddValueModalOpen}
+        onClose={() => {
+          setIsAddValueModalOpen(false);
+          resetValueForm();
+        }}
+        title="Add KPI Value"
+        size="medium"
+      >
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="period_date">Date</Label>
+            <Input
+              id="period_date"
+              type="date"
+              value={valueFormData.period_date}
+              onChange={(e) =>
+                setValueFormData({
+                  ...valueFormData,
+                  period_date: e.target.value,
+                })
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="value">Value</Label>
+            <Input
+              id="value"
+              type="number"
+              step="0.01"
+              value={valueFormData.value}
+              onChange={(e) =>
+                setValueFormData({ ...valueFormData, value: e.target.value })
+              }
+              placeholder={`Enter value in ${selectedKpi?.unit}`}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="data_source">Data Source</Label>
+            <Input
+              id="data_source"
+              value={valueFormData.data_source}
+              onChange={(e) =>
+                setValueFormData({
+                  ...valueFormData,
+                  data_source: e.target.value,
+                })
+              }
+              placeholder="e.g., CRM, Analytics, Manual entry"
+            />
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="is_actual"
+              checked={valueFormData.is_actual}
+              onChange={(e) =>
+                setValueFormData({
+                  ...valueFormData,
+                  is_actual: e.target.checked,
+                })
+              }
+              className="rounded border-gray-300"
+            />
+            <Label htmlFor="is_actual" className="text-sm">
+              Actual value (not projected)
+            </Label>
+          </div>
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsAddValueModalOpen(false);
                 resetValueForm();
               }}
             >
@@ -609,8 +600,8 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             </Button>
             <Button onClick={handleAddValue}>Add Value</Button>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </Modal>
     </div>
   );
 };
