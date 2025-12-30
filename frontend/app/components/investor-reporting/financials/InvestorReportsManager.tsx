@@ -176,8 +176,9 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
 
   const handleGenerateQuarterly = async () => {
     try {
-      const response =
-        await financialManagementService.generateQuarterlyReport(campaignId);
+      const response = await financialManagementService.generateQuarterlyReport(
+        campaignId
+      );
 
       if (response.success) {
         toast.success('Quarterly report generated successfully');
