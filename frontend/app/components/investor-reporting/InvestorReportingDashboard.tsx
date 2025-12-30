@@ -224,20 +224,24 @@ const InvestorReportingDashboard: React.FC = () => {
             portfolio companies
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button
             variant="outline"
             onClick={() => setShowPortfolioStatement(true)}
+            className="w-full sm:w-auto"
           >
             <Download className="mr-2 h-4 w-4" />
-            Download Statement
+            <span className="hidden sm:inline">Download</span>
+            <span className="sm:hidden">Download Statement</span>
           </Button>
           <Button
             onClick={() => setShowPortfolioOverview(true)}
             variant="success"
+            className="w-full sm:w-auto"
           >
             <BarChart3 className="mr-2 h-4 w-4" />
-            Portfolio Analytics
+            <span className="hidden sm:inline">Analytics</span>
+            <span className="sm:hidden">Portfolio Analytics</span>
           </Button>
         </div>
       </div>

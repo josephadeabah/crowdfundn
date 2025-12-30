@@ -435,7 +435,12 @@ export class InvestorReportingService {
     period: string;
     format: string;
     includeSections: string[];
-  }): Promise<{ success: boolean; url?: string; filename?: string; expires_at?: string }> {
+  }): Promise<{
+    success: boolean;
+    url?: string;
+    filename?: string;
+    expires_at?: string;
+  }> {
     try {
       const response = await this.fetchApi('/investor/portfolio/statement', {
         method: 'POST',
@@ -451,7 +456,7 @@ export class InvestorReportingService {
           success: true,
           url: response.download_url,
           filename: response.filename,
-          expires_at: response.expires_at
+          expires_at: response.expires_at,
         };
       }
 
@@ -477,7 +482,9 @@ export class InvestorReportingService {
     }>;
   }> {
     try {
-      const response = await this.fetchApi('/investor/portfolio/statements/history');
+      const response = await this.fetchApi(
+        '/investor/portfolio/statements/history',
+      );
       return response;
     } catch (error) {
       console.error('Error fetching statement history:', error);
