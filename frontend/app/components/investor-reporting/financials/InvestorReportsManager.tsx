@@ -380,16 +380,12 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="monthly">Monthly Update</SelectItem>
-                  <SelectItem value="quarterly">
-                    Quarterly Report
-                  </SelectItem>
+                  <SelectItem value="quarterly">Quarterly Report</SelectItem>
                   <SelectItem value="annual">Annual Report</SelectItem>
                   <SelectItem value="valuation_update">
                     Valuation Update
                   </SelectItem>
-                  <SelectItem value="special">
-                    Special Announcement
-                  </SelectItem>
+                  <SelectItem value="special">Special Announcement</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -444,9 +440,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="period_start">
-                Period Start (Optional)
-              </Label>
+              <Label htmlFor="period_start">Period Start (Optional)</Label>
               <Input
                 id="period_start"
                 type="date"

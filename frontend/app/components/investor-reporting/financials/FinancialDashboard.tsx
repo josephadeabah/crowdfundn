@@ -155,7 +155,10 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
               <Button onClick={() => handleQuickAction('statement')}>
                 Add Financial Statement
               </Button>
-              <Button variant="outline" onClick={() => handleQuickAction('kpi')}>
+              <Button
+                variant="outline"
+                onClick={() => handleQuickAction('kpi')}
+              >
                 Create KPI
               </Button>
             </div>
@@ -457,7 +460,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button 
+            <Button
               className="flex flex-col items-center justify-center h-24"
               onClick={() => handleQuickAction('statement')}
             >
@@ -490,8 +493,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
           quickActionModal.type === 'statement'
             ? 'Add Financial Statement'
             : quickActionModal.type === 'kpi'
-            ? 'Create KPI'
-            : 'Generate Quarterly Report'
+              ? 'Create KPI'
+              : 'Generate Quarterly Report'
         }
         size="medium"
       >
@@ -500,8 +503,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
             {quickActionModal.type === 'statement'
               ? 'This would open the financial statement creation form.'
               : quickActionModal.type === 'kpi'
-              ? 'This would open the KPI creation form.'
-              : 'This would generate a quarterly report based on your current data.'}
+                ? 'This would open the KPI creation form.'
+                : 'This would generate a quarterly report based on your current data.'}
           </p>
           <div className="flex justify-end gap-2 pt-4 border-t">
             <Button
@@ -514,8 +517,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
               {quickActionModal.type === 'statement'
                 ? 'Go to Financial Statements'
                 : quickActionModal.type === 'kpi'
-                ? 'Go to KPIs'
-                : 'Generate Report'}
+                  ? 'Go to KPIs'
+                  : 'Generate Report'}
             </Button>
           </div>
         </div>

@@ -35,7 +35,11 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
   onBackToCampaigns,
   selectedCampaignId,
 }) => {
-  const { userCampaigns, loading: campaignsLoading, fetchUserCampaigns } = useCampaignContext();
+  const {
+    userCampaigns,
+    loading: campaignsLoading,
+    fetchUserCampaigns,
+  } = useCampaignContext();
 
   const [campaign, setCampaign] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -96,11 +100,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-2">
           {onBackToCampaigns && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onBackToCampaigns}
-            >
+            <Button variant="outline" size="sm" onClick={onBackToCampaigns}>
               <FiArrowLeft className="mr-2 h-4 w-4" />
               Back to Campaigns
             </Button>
@@ -163,8 +163,8 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
             <FiUsers className="h-4 w-4" />
             <span className="hidden sm:inline">Investor Reports</span>
           </TabsTrigger>
-          <TabsTrigger 
-            value="settings" 
+          <TabsTrigger
+            value="settings"
             className="flex items-center gap-2"
             onClick={() => setShowSettingsModal(true)}
           >
@@ -186,9 +186,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
         </TabsContent>
 
         <TabsContent value="kpis">
-          {selectedCampaignId && (
-            <KPIManager campaignId={selectedCampaignId} />
-          )}
+          {selectedCampaignId && <KPIManager campaignId={selectedCampaignId} />}
         </TabsContent>
 
         <TabsContent value="reports">
@@ -227,7 +225,10 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
             </div>
           </div>
           <div className="flex justify-end gap-2 pt-4 border-t">
-            <Button variant="outline" onClick={() => setShowSettingsModal(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowSettingsModal(false)}
+            >
               Cancel
             </Button>
             <Button>Save Settings</Button>
