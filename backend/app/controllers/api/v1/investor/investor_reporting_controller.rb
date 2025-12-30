@@ -77,7 +77,7 @@ module Api
               else
                 render json: {
                   success: false,
-                  error: "Unsupported format: #{format}"
+                  error: "Unsupported format: #{format}. Supported formats: pdf, json, csv"
                 }, status: :bad_request
               end
             rescue => e
@@ -92,9 +92,13 @@ module Api
         
         # POST /api/v1/investor/portfolio/statement (for email delivery or storage)
         def generate_portfolio_statement
-          period = params[:period] || 'current'
-          format = params[:format] || 'pdf'
-          include_sections = params[:include_sections] || ['summary', 'performance', 'campaigns']
+          # Check both top-level and nested params
+          period = params[:period] || params.dig(:investor_reporting, :period) || 'current'
+          format = params[:format] || params.dig(:investor_reporting, :format) || 'pdf'
+          include_sections = params[:include_sections] || params.dig(:investor_reporting, :include_sections) || ['summary', 'performance', 'campaigns']
+          
+          # Log the format for debugging
+          Rails.logger.info "Generating portfolio statement with format: #{format}"
           
           generator = InvestorReporting::DocumentGenerator.new
           
@@ -147,21 +151,26 @@ module Api
             filename = "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}"
             
             begin
-              if format == 'csv'
-                csv_data = generate_csv(export_data)
-                blob = ActiveStorage::Blob.create_and_upload!(
-                  io: StringIO.new(csv_data),
-                  filename: "#{filename}.csv",
-                  content_type: 'text/csv'
-                )
-              elsif format == 'excel'
-                # For Excel, we'll create JSON for now (you can add Excel generation later)
+              if format == 'json'
                 json_data = JSON.pretty_generate(export_data)
                 blob = ActiveStorage::Blob.create_and_upload!(
                   io: StringIO.new(json_data),
                   filename: "#{filename}.json",
                   content_type: 'application/json'
                 )
+              elsif format == 'csv'
+                csv_data = generate_csv(export_data)
+                blob = ActiveStorage::Blob.create_and_upload!(
+                  io: StringIO.new(csv_data),
+                  filename: "#{filename}.csv",
+                  content_type: 'text/csv'
+                )
+              else
+                render json: {
+                  success: false,
+                  error: "Unsupported format: #{format}. Supported formats: pdf, json, csv"
+                }, status: :bad_request
+                return
               end
               
               if blob && blob.persisted?
@@ -535,29 +544,33 @@ module Api
           end
         end
 
-                def send_fallback_download(format, data, filename)
+        def send_fallback_download(format, data, filename)
           case format
+          when 'json'
+            json_data = JSON.pretty_generate(data)
+            send_data json_data,
+                      filename: "#{filename}.json",
+                      type: 'application/json',
+                      disposition: 'attachment'
           when 'csv'
             csv_data = generate_csv(data)
             send_data csv_data,
                       filename: "#{filename}.csv",
                       type: 'text/csv',
                       disposition: 'attachment'
-          when 'excel'
-            json_data = JSON.pretty_generate(data)
-            send_data json_data,
-                      filename: "#{filename}.json",
-                      type: 'application/json',
-                      disposition: 'attachment'
+          when 'pdf'
+            # This shouldn't happen since PDF is handled separately, but just in case
+            render json: {
+              success: false,
+              error: "PDF generation failed. Try downloading directly instead."
+            }, status: :internal_server_error
           else
             render json: {
               success: false,
-              error: "Unsupported format: #{format}"
+              error: "Unsupported format: #{format}. Supported formats: pdf, json, csv"
             }, status: :bad_request
           end
         end
-
-        
       end
     end
   end
