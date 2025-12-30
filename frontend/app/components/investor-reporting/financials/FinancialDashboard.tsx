@@ -36,6 +36,7 @@ import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '../../ui/button';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface FinancialDashboardProps {
   campaignId: number;
@@ -44,6 +45,7 @@ interface FinancialDashboardProps {
 const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
   campaignId,
 }) => {
+  const { token } = useAuth();
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,8 +58,19 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
   }>({ open: false });
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [campaignId, timeframe]);
+    if (token) {
+      financialManagementService.setToken(token);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchDashboardData();
+    } else {
+      setError('Authentication required. Please log in.');
+      setLoading(false);
+    }
+  }, [campaignId, timeframe, token]);
 
   const fetchDashboardData = async () => {
     try {

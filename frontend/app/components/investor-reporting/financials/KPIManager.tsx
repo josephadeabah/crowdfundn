@@ -36,12 +36,14 @@ import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '../../ui/button';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface KPIManagerProps {
   campaignId: number;
 }
 
 const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
+  const { token } = useAuth();
   const [kpis, setKpis] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -65,8 +67,19 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
   });
 
   useEffect(() => {
-    fetchKPIs();
-  }, [campaignId]);
+    if (token) {
+      financialManagementService.setToken(token);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchKPIs();
+    } else {
+      setLoading(false);
+      toast.error('Authentication required');
+    }
+  }, [campaignId, token]);
 
   const resetForm = () => {
     setFormData({

@@ -39,6 +39,7 @@ import { financialManagementService } from '../services/financial-management.ser
 import { toast } from '../../ui/sonner';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '../../ui/button';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface InvestorReportsManagerProps {
   campaignId: number;
@@ -47,6 +48,7 @@ interface InvestorReportsManagerProps {
 const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
   campaignId,
 }) => {
+  const { token } = useAuth();
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -67,8 +69,19 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
-    fetchReports();
-  }, [campaignId]);
+    if (token) {
+      financialManagementService.setToken(token);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchReports();
+    } else {
+      setLoading(false);
+      toast.error('Authentication required');
+    }
+  }, [campaignId, token]);
 
   const resetForm = () => {
     setFormData({
@@ -105,7 +118,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
   const handleCreate = async () => {
     try {
       setIsUploading(true);
-      
+
       const data = {
         report_type: formData.report_type,
         title: formData.title,
@@ -123,7 +136,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
       const response = await financialManagementService.createInvestorReport(
         campaignId,
         data,
-        attachments.length > 0 ? attachments : undefined
+        attachments.length > 0 ? attachments : undefined,
       );
 
       if (response.success) {
@@ -181,25 +194,28 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
     const files = e.target.files;
     if (files) {
       const newFiles = Array.from(files);
-      
+
       // Check file sizes (limit to 10MB per file)
-      const validFiles = newFiles.filter(file => {
-        if (file.size > 10 * 1024 * 1024) { // 10MB
-          toast.error(`File "${file.name}" is too large. Maximum size is 10MB.`);
+      const validFiles = newFiles.filter((file) => {
+        if (file.size > 10 * 1024 * 1024) {
+          // 10MB
+          toast.error(
+            `File "${file.name}" is too large. Maximum size is 10MB.`,
+          );
           return false;
         }
         return true;
       });
-      
-      setAttachments(prev => [...prev, ...validFiles]);
-      
+
+      setAttachments((prev) => [...prev, ...validFiles]);
+
       // Reset file input
       e.target.value = '';
     }
   };
 
   const removeAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleDownload = (url: string, filename: string) => {
@@ -362,20 +378,29 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                     {/* Show attachments if any */}
                     {report.attachments && report.attachments.length > 0 && (
                       <div className="mt-4">
-                        <p className="text-sm font-medium text-gray-700 mb-2">Attachments:</p>
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Attachments:
+                        </p>
                         <div className="flex flex-wrap gap-2">
-                          {report.attachments.map((attachment: any, index: number) => (
-                            <Button
-                              key={index}
-                              variant="outline"
-                              size="sm"
-                              className="text-xs"
-                              onClick={() => handleDownload(attachment.url, attachment.filename)}
-                            >
-                              <FiFileText className="mr-1 h-3 w-3" />
-                              {attachment.filename}
-                            </Button>
-                          ))}
+                          {report.attachments.map(
+                            (attachment: any, index: number) => (
+                              <Button
+                                key={index}
+                                variant="outline"
+                                size="sm"
+                                className="text-xs"
+                                onClick={() =>
+                                  handleDownload(
+                                    attachment.url,
+                                    attachment.filename,
+                                  )
+                                }
+                              >
+                                <FiFileText className="mr-1 h-3 w-3" />
+                                {attachment.filename}
+                              </Button>
+                            ),
+                          )}
                         </div>
                       </div>
                     )}
@@ -387,7 +412,12 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
                         key={doc.id}
                         variant="outline"
                         size="sm"
-                        onClick={() => handleDownload(doc.file_url, doc.file_name || 'document')}
+                        onClick={() =>
+                          handleDownload(
+                            doc.file_url,
+                            doc.file_name || 'document',
+                          )
+                        }
                       >
                         <FiEye className="mr-2 h-4 w-4" />
                         {doc.document_type}
@@ -602,9 +632,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
           <div className="space-y-2">
             <Label htmlFor="attachments">Attachments (Optional)</Label>
             <p className="text-sm text-gray-500 mb-2">
-              Upload additional supporting documents like spreadsheets, images, or other files (Max 10MB each)
+              Upload additional supporting documents like spreadsheets, images,
+              or other files (Max 10MB each)
             </p>
-            
+
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
               <FiPaperclip className="h-8 w-8 text-gray-400 mx-auto mb-2" />
               <p className="text-sm text-gray-600 mb-3">
@@ -692,8 +723,8 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
             >
               Cancel
             </Button>
-            <Button 
-              variant="success" 
+            <Button
+              variant="success"
               onClick={handleCreate}
               disabled={isUploading}
             >

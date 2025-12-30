@@ -33,6 +33,7 @@ import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
 import Modal from '@/app/components/modal/Modal';
 import { Button } from '../../ui/button';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface FinancialStatementsManagerProps {
   campaignId: number;
@@ -41,6 +42,7 @@ interface FinancialStatementsManagerProps {
 const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
   campaignId,
 }) => {
+  const { token } = useAuth();
   const [financials, setFinancials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -58,9 +60,18 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
     status: 'draft',
   });
 
+  // Set token in service
   useEffect(() => {
-    fetchFinancials();
-  }, [campaignId]);
+    if (token) {
+      financialManagementService.setToken(token);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchFinancials();
+    }
+  }, [campaignId, token]);
 
   const fetchFinancials = async () => {
     try {

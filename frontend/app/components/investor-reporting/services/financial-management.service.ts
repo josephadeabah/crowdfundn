@@ -2,17 +2,28 @@
 export class FinancialManagementService {
   private baseUrl =
     process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
+  private token: string | null = null;
+
+  // Set token when service is used
+  setToken(token: string | null) {
+    this.token = token;
+  }
 
   private async fetchApi(endpoint: string, options: RequestInit = {}) {
-    const token =
-      typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const url = `${this.baseUrl}${endpoint}`;
 
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    };
+    const headers = new Headers(options.headers as HeadersInit);
+
+    // Set default Content-Type for JSON requests (remove for FormData)
+    if (!(options.body instanceof FormData)) {
+      headers.set('Content-Type', 'application/json');
+    } else {
+      headers.delete('Content-Type');
+    }
+
+    if (this.token) {
+      headers.set('Authorization', `Bearer ${this.token}`);
+    }
 
     try {
       const response = await fetch(url, {
@@ -22,8 +33,6 @@ export class FinancialManagementService {
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem('token');
-          window.location.href = '/auth/login';
           throw new Error('Authentication required');
         }
 
@@ -303,7 +312,7 @@ export class FinancialManagementService {
       status?: string;
       notify_investors?: boolean;
     },
-    attachments?: File[]
+    attachments?: File[],
   ): Promise<{
     success: boolean;
     report: any;
@@ -315,16 +324,25 @@ export class FinancialManagementService {
         const formData = new FormData();
         formData.append('report[report_type]', data.report_type);
         formData.append('report[title]', data.title);
-        if (data.executive_summary) formData.append('report[executive_summary]', data.executive_summary);
-        if (data.key_highlights) formData.append('report[key_highlights]', data.key_highlights);
-        if (data.challenges_risks) formData.append('report[challenges_risks]', data.challenges_risks);
-        if (data.forward_outlook) formData.append('report[forward_outlook]', data.forward_outlook);
+        if (data.executive_summary)
+          formData.append('report[executive_summary]', data.executive_summary);
+        if (data.key_highlights)
+          formData.append('report[key_highlights]', data.key_highlights);
+        if (data.challenges_risks)
+          formData.append('report[challenges_risks]', data.challenges_risks);
+        if (data.forward_outlook)
+          formData.append('report[forward_outlook]', data.forward_outlook);
         formData.append('report[report_date]', data.report_date);
-        if (data.period_start) formData.append('report[period_start]', data.period_start);
-        if (data.period_end) formData.append('report[period_end]', data.period_end);
+        if (data.period_start)
+          formData.append('report[period_start]', data.period_start);
+        if (data.period_end)
+          formData.append('report[period_end]', data.period_end);
         if (data.status) formData.append('report[status]', data.status);
-        formData.append('report[notify_investors]', data.notify_investors?.toString() || 'true');
-        
+        formData.append(
+          'report[notify_investors]',
+          data.notify_investors?.toString() || 'true',
+        );
+
         attachments.forEach((file, index) => {
           formData.append('report[attachments][]', file);
         });
@@ -337,7 +355,7 @@ export class FinancialManagementService {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
             body: formData,
-          }
+          },
         );
 
         return response.json();
@@ -404,7 +422,7 @@ export class FinancialManagementService {
   async uploadReportAttachments(
     campaignId: number,
     reportId: number,
-    files: File[]
+    files: File[],
   ): Promise<{
     success: boolean;
     message: string;
@@ -412,7 +430,7 @@ export class FinancialManagementService {
   }> {
     try {
       const formData = new FormData();
-      files.forEach(file => {
+      files.forEach((file) => {
         formData.append('attachments[]', file);
       });
 
@@ -424,7 +442,7 @@ export class FinancialManagementService {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           body: formData,
-        }
+        },
       );
 
       return response.json();
