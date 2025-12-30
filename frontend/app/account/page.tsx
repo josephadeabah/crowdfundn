@@ -204,8 +204,8 @@ const ProfileTabs = () => {
           component: <InvestorReportingDashboard />,
           description:
             'Track financials, view reports, and manage notifications',
-          badge: 'New',
-          badgeColor: 'bg-green-100 text-green-800',
+          badge: 'Dev',
+          badgeColor: 'bg-yellow-100 text-yellow-800',
         },
         {
           label: 'Your Clubs',
@@ -305,6 +305,8 @@ const ProfileTabs = () => {
           icon: <DashboardIcon className="w-4 h-4" />,
           component: <CampaignFinancialsPage />,
           description: 'Manage financial reporting for your investors.',
+          badge: 'Dev',
+          badgeColor: 'bg-yellow-100 text-yellow-800',
         },
       ],
     },
