@@ -17,6 +17,7 @@ import {
   FiTrendingUp,
   FiUsers,
   FiSettings,
+  FiGrid,
 } from 'react-icons/fi';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
 import FinancialStatementsManager from './FinancialStatementsManager';
@@ -25,6 +26,7 @@ import KPIManager from './KPIManager';
 import InvestorReportsManager from './InvestorReportsManager';
 import { Skeleton } from '../../ui/Skeleton';
 import Modal from '@/app/components/modal/Modal';
+import CampaignSelector from './CampaignSelector';
 
 interface CampaignFinancialsPageProps {
   onBackToCampaigns?: () => void;
@@ -43,21 +45,55 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
 
   const [campaign, setCampaign] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showCampaignSelector, setShowCampaignSelector] = useState(false);
+  const [localSelectedCampaignId, setLocalSelectedCampaignId] = useState<number | undefined>(selectedCampaignId);
 
   useEffect(() => {
     fetchUserCampaigns();
   }, [fetchUserCampaigns]);
 
   useEffect(() => {
-    if (userCampaigns && selectedCampaignId) {
+    if (userCampaigns && localSelectedCampaignId) {
       const foundCampaign = userCampaigns.find(
-        (c: any) => c.id === selectedCampaignId,
+        (c: any) => c.id === localSelectedCampaignId,
       );
       setCampaign(foundCampaign);
+    } else {
+      setCampaign(null);
     }
-  }, [userCampaigns, selectedCampaignId]);
+  }, [userCampaigns, localSelectedCampaignId]);
 
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const handleSelectCampaign = (campaignId: number) => {
+    setLocalSelectedCampaignId(campaignId);
+    setShowCampaignSelector(false);
+    setActiveTab('dashboard');
+  };
+
+  const handleBackToCampaigns = () => {
+    setLocalSelectedCampaignId(undefined);
+    setCampaign(null);
+    if (onBackToCampaigns) {
+      onBackToCampaigns();
+    }
+  };
+
+  // If no campaign is selected, show the selector
+  if (!localSelectedCampaignId) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Financial Management
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Select a campaign to manage financial reports and investor updates
+          </p>
+        </div>
+        <CampaignSelector onSelectCampaign={handleSelectCampaign} />
+      </div>
+    );
+  }
 
   if (campaignsLoading) {
     return (
@@ -72,24 +108,43 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
     );
   }
 
-  if (!campaign && selectedCampaignId) {
+  if (!campaign) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card>
           <CardContent className="p-12 text-center">
+            <FiGrid className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Campaign Not Found
             </h2>
             <p className="text-gray-600 mb-6">
-              The campaign you're looking for doesn't exist or you don't have
-              access to it.
+              The campaign you're looking for doesn't exist or you don't have access to it.
             </p>
-            <Button onClick={onBackToCampaigns}>
-              <FiArrowLeft className="mr-2 h-4 w-4" />
-              Back to Campaigns
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={() => setLocalSelectedCampaignId(undefined)}>
+                <FiArrowLeft className="mr-2 h-4 w-4" />
+                Back to Campaigns
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowCampaignSelector(true)}
+              >
+                <FiGrid className="mr-2 h-4 w-4" />
+                Select Another Campaign
+              </Button>
+            </div>
           </CardContent>
         </Card>
+
+        {/* Campaign Selector Modal */}
+        <Modal
+          isOpen={showCampaignSelector}
+          onClose={() => setShowCampaignSelector(false)}
+          title="Select a Campaign"
+          size="xlarge"
+        >
+          <CampaignSelector onSelectCampaign={handleSelectCampaign} />
+        </Modal>
       </div>
     );
   }
@@ -98,115 +153,120 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-4 mb-2">
-          {onBackToCampaigns && (
-            <Button variant="outline" size="sm" onClick={onBackToCampaigns}>
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="sm" onClick={() => setLocalSelectedCampaignId(undefined)}>
               <FiArrowLeft className="mr-2 h-4 w-4" />
               Back to Campaigns
             </Button>
-          )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCampaignSelector(true)}
+            >
+              <FiGrid className="mr-2 h-4 w-4" />
+              Switch Campaign
+            </Button>
+          </div>
         </div>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {campaign?.title || 'Financial Management'}
+          {campaign.title}
         </h1>
         <p className="text-gray-600 mb-6">
           Financial Management & Investor Reporting
         </p>
 
-        {campaign && (
-          <div className="flex flex-wrap gap-4 mb-6">
+        <div className="flex flex-wrap gap-4 mb-6">
+          {campaign.valuation && campaign.valuation > 0 && (
             <div className="bg-blue-50 px-4 py-2 rounded-lg">
               <p className="text-sm text-blue-700">Valuation</p>
               <p className="text-lg font-semibold text-blue-900">
-                ${campaign.valuation?.toLocaleString() || '0'}
+                ${parseInt(campaign.valuation).toLocaleString()}
               </p>
             </div>
+          )}
+          
+          {campaign.equity_offered && campaign.equity_offered > 0 ? (
             <div className="bg-green-50 px-4 py-2 rounded-lg">
               <p className="text-sm text-green-700">Equity Offered</p>
               <p className="text-lg font-semibold text-green-900">
-                {campaign.equity_offered || 0}%
+                {campaign.equity_offered}%
               </p>
             </div>
-            <div className="bg-purple-50 px-4 py-2 rounded-lg">
-              <p className="text-sm text-purple-700">Total Raised</p>
-              <p className="text-lg font-semibold text-purple-900">
-                ${campaign.transferred_amount?.toLocaleString() || '0'}
+          ) : (
+            <div className="bg-green-50 px-4 py-2 rounded-lg">
+              <p className="text-sm text-green-700">Goal</p>
+              <p className="text-lg font-semibold text-green-900">
+                ${parseInt(campaign.goal_amount || '0').toLocaleString()}
               </p>
             </div>
-            <div className="bg-orange-50 px-4 py-2 rounded-lg">
-              <p className="text-sm text-orange-700">Investors</p>
-              <p className="text-lg font-semibold text-orange-900">
-                {campaign.total_investors || 0}
-              </p>
-            </div>
+          )}
+          
+          <div className="bg-purple-50 px-4 py-2 rounded-lg">
+            <p className="text-sm text-purple-700">Total Raised</p>
+            <p className="text-lg font-semibold text-purple-900">
+              ${parseInt(campaign.transferred_amount || campaign.current_amount || '0').toLocaleString()}
+            </p>
           </div>
-        )}
+          
+          <div className="bg-orange-50 px-4 py-2 rounded-lg">
+            <p className="text-sm text-orange-700">Investors</p>
+            <p className="text-lg font-semibold text-orange-900">
+              {campaign.total_investors || campaign.total_donors || 0}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-// In the TabsList section:
-<TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
-  <TabsTrigger value="dashboard" className="flex items-center gap-2">
-    <FiBarChart2 className="h-4 w-4" />
-    <span className="hidden sm:inline">Dashboard</span>
-  </TabsTrigger>
-  <TabsTrigger value="financials" className="flex items-center gap-2">
-    <FiFileText className="h-4 w-4" />
-    <span className="hidden sm:inline">Financials</span>
-  </TabsTrigger>
-  <TabsTrigger value="kpis" className="flex items-center gap-2">
-    <FiTrendingUp className="h-4 w-4" />
-    <span className="hidden sm:inline">KPIs</span>
-  </TabsTrigger>
-  <TabsTrigger value="reports" className="flex items-center gap-2">
-    <FiUsers className="h-4 w-4" />
-    <span className="hidden sm:inline">Investor Reports</span>
-  </TabsTrigger>
-  
-  {/* Settings as a button, not a tab trigger */}
-  <button
-    className={`flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium transition-colors ${
-      showSettingsModal 
-        ? 'bg-gray-100 text-gray-900' 
-        : 'text-gray-600 hover:text-gray-900'
-    }`}
-    onClick={() => setShowSettingsModal(true)}
-  >
-    <FiSettings className="h-4 w-4" />
-    <span className="hidden sm:inline">Settings</span>
-  </button>
-</TabsList>
+        <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
+          <TabsTrigger value="dashboard" className="flex items-center gap-2">
+            <FiBarChart2 className="h-4 w-4" />
+            <span className="hidden sm:inline">Dashboard</span>
+          </TabsTrigger>
+          <TabsTrigger value="financials" className="flex items-center gap-2">
+            <FiFileText className="h-4 w-4" />
+            <span className="hidden sm:inline">Financials</span>
+          </TabsTrigger>
+          <TabsTrigger value="kpis" className="flex items-center gap-2">
+            <FiTrendingUp className="h-4 w-4" />
+            <span className="hidden sm:inline">KPIs</span>
+          </TabsTrigger>
+          <TabsTrigger value="reports" className="flex items-center gap-2">
+            <FiUsers className="h-4 w-4" />
+            <span className="hidden sm:inline">Investor Reports</span>
+          </TabsTrigger>
+
+          {/* Settings as a button, not a tab trigger */}
+          <button
+            className={`flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium transition-colors ${
+              showSettingsModal
+                ? 'bg-gray-100 text-gray-900'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+            onClick={() => setShowSettingsModal(true)}
+          >
+            <FiSettings className="h-4 w-4" />
+            <span className="hidden sm:inline">Settings</span>
+          </button>
+        </TabsList>
 
         <TabsContent value="dashboard">
-          {selectedCampaignId && (
-            <FinancialDashboard campaignId={selectedCampaignId} />
-          )}
+          <FinancialDashboard campaignId={localSelectedCampaignId} />
         </TabsContent>
 
         <TabsContent value="financials">
-          {selectedCampaignId && (
-            <FinancialStatementsManager campaignId={selectedCampaignId} />
-          )}
+          <FinancialStatementsManager campaignId={localSelectedCampaignId} />
         </TabsContent>
 
         <TabsContent value="kpis">
-          {selectedCampaignId && <KPIManager campaignId={selectedCampaignId} />}
+          <KPIManager campaignId={localSelectedCampaignId} />
         </TabsContent>
 
         <TabsContent value="reports">
-          {selectedCampaignId && (
-            <InvestorReportsManager campaignId={selectedCampaignId} />
-          )}
-        </TabsContent>
-
-        {/* Settings tab content should be empty since it's handled by modal */}
-        <TabsContent value="settings">
-          <div className="text-center py-8 text-gray-500">
-            <FiSettings className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p>Settings are managed in the modal. Click the Settings tab to open it.</p>
-          </div>
+          <InvestorReportsManager campaignId={localSelectedCampaignId} />
         </TabsContent>
       </Tabs>
 
@@ -239,7 +299,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
                 </div>
               </div>
             </div>
-            
+
             <div>
               <h4 className="font-medium mb-2">Report Templates</h4>
               <p className="text-sm text-gray-500 mb-2">
@@ -252,7 +312,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
                 <option>Custom Template</option>
               </select>
             </div>
-            
+
             <div>
               <h4 className="font-medium mb-2">Access Controls</h4>
               <p className="text-sm text-gray-500 mb-2">
@@ -300,7 +360,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
               </select>
             </div>
           </div>
-          
+
           <div className="flex justify-end gap-2 pt-4 border-t">
             <Button
               variant="outline"
@@ -311,6 +371,16 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
             <Button>Save Settings</Button>
           </div>
         </div>
+      </Modal>
+
+      {/* Campaign Selector Modal */}
+      <Modal
+        isOpen={showCampaignSelector}
+        onClose={() => setShowCampaignSelector(false)}
+        title="Select a Campaign"
+        size="xlarge"
+      >
+        <CampaignSelector onSelectCampaign={handleSelectCampaign} />
       </Modal>
     </div>
   );
