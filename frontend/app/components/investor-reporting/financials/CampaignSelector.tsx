@@ -3,16 +3,18 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
-import { Button } from '@/app/components/button/Button';
 import { useCampaignContext } from '@/app/context/account/campaign/CampaignsContext';
-import { FiArrowRight, FiBarChart2, FiTrendingUp, FiDollarSign, FiUsers } from 'react-icons/fi';
+import { FiArrowRight, FiBarChart2 } from 'react-icons/fi';
 import { Skeleton } from '../../ui/Skeleton';
+import { Button } from '../../ui/button';
 
 interface CampaignSelectorProps {
   onSelectCampaign: (campaignId: number) => void;
 }
 
-const CampaignSelector: React.FC<CampaignSelectorProps> = ({ onSelectCampaign }) => {
+const CampaignSelector: React.FC<CampaignSelectorProps> = ({
+  onSelectCampaign,
+}) => {
   const { userCampaigns, loading: campaignsLoading } = useCampaignContext();
 
   if (campaignsLoading) {
@@ -71,13 +73,15 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({ onSelectCampaign })
                     {campaign.title}
                   </h3>
                   <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                    <span className="capitalize">{campaign.category?.replace('-', ' ') || 'General'}</span>
+                    <span className="capitalize">
+                      {campaign.category?.replace('-', ' ') || 'General'}
+                    </span>
                     <span>•</span>
                     <span>{campaign.location || 'Not specified'}</span>
                   </div>
                 </div>
                 {campaign.type === 'EquityCampaign' && (
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                  <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
                     Equity
                   </span>
                 )}
@@ -85,21 +89,21 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({ onSelectCampaign })
 
               <div className="grid grid-cols-2 gap-3 mb-4">
                 {campaign.valuation && campaign.valuation > 0 ? (
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <p className="text-xs text-blue-700">Valuation</p>
-                    <p className="font-semibold text-blue-900">
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-700">Valuation</p>
+                    <p className="font-semibold text-gray-900">
                       ${parseInt(campaign.valuation).toLocaleString()}
                     </p>
                   </div>
                 ) : (
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <p className="text-xs text-blue-700">Goal</p>
-                    <p className="font-semibold text-blue-900">
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-700">Goal</p>
+                    <p className="font-semibold text-gray-900">
                       ${parseInt(campaign.goal_amount || '0').toLocaleString()}
                     </p>
                   </div>
                 )}
-                
+
                 {campaign.equity_offered && campaign.equity_offered > 0 ? (
                   <div className="bg-green-50 p-3 rounded-lg">
                     <p className="text-xs text-green-700">Equity Offered</p>
@@ -111,18 +115,26 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({ onSelectCampaign })
                   <div className="bg-green-50 p-3 rounded-lg">
                     <p className="text-xs text-green-700">Raised</p>
                     <p className="font-semibold text-green-900">
-                      ${parseInt(campaign.current_amount || '0').toLocaleString()}
+                      $
+                      {parseInt(
+                        campaign.current_amount || '0',
+                      ).toLocaleString()}
                     </p>
                   </div>
                 )}
-                
-                <div className="bg-purple-50 p-3 rounded-lg">
-                  <p className="text-xs text-purple-700">Total Raised</p>
-                  <p className="font-semibold text-purple-900">
-                    ${parseInt(campaign.transferred_amount || campaign.current_amount || '0').toLocaleString()}
+
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-700">Total Raised</p>
+                  <p className="font-semibold text-gray-900">
+                    $
+                    {parseInt(
+                      campaign.transferred_amount ||
+                        campaign.current_amount ||
+                        '0',
+                    ).toLocaleString()}
                   </p>
                 </div>
-                
+
                 <div className="bg-orange-50 p-3 rounded-lg">
                   <p className="text-xs text-orange-700">Investors</p>
                   <p className="font-semibold text-orange-900">
@@ -133,9 +145,15 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({ onSelectCampaign })
 
               <div className="flex justify-between items-center pt-4 border-t">
                 <div className="text-sm text-gray-500">
-                  Status: <span className="capitalize">{campaign.status || 'draft'}</span>
+                  Status:{' '}
+                  <span className="capitalize">
+                    {campaign.status || 'draft'}
+                  </span>
                 </div>
-                <Button onClick={() => onSelectCampaign(campaign.id)}>
+                <Button 
+                  variant="success" 
+                  onClick={() => onSelectCampaign(campaign.id)}
+                >
                   <FiArrowRight className="mr-2 h-4 w-4" />
                   Manage Financials
                 </Button>

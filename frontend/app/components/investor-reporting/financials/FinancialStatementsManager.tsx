@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
-import { Button } from '@/app/components/button/Button';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import {
@@ -33,6 +32,7 @@ import { toast } from '@/app/components/ui/sonner';
 import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
 import Modal from '@/app/components/modal/Modal';
+import { Button } from '../../ui/button';
 
 interface FinancialStatementsManagerProps {
   campaignId: number;
@@ -282,7 +282,10 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             Manage and publish financial statements for investors
           </p>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button 
+          variant="success" 
+          onClick={() => setIsCreateModalOpen(true)}
+        >
           <FiPlus className="mr-2 h-4 w-4" />
           Add Financial Statement
         </Button>
@@ -299,7 +302,10 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
               Start by creating your first financial statement to share with
               investors
             </p>
-            <Button onClick={() => setIsCreateModalOpen(true)}>
+            <Button 
+              variant="success" 
+              onClick={() => setIsCreateModalOpen(true)}
+            >
               <FiPlus className="mr-2 h-4 w-4" />
               Create First Statement
             </Button>
@@ -529,7 +535,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             >
               Cancel
             </Button>
-            <Button onClick={handleCreate}>Create</Button>
+            <Button variant="success" onClick={handleCreate}>Create</Button>
           </div>
         </div>
       </Modal>
@@ -644,7 +650,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             >
               Cancel
             </Button>
-            <Button onClick={handleUpdate}>Update</Button>
+            <Button variant="success" onClick={handleUpdate}>Update</Button>
           </div>
         </div>
       </Modal>

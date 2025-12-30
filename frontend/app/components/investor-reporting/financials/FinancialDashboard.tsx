@@ -24,7 +24,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
-import { Button } from '@/app/components/button/Button';
 import {
   FiDollarSign,
   FiUsers,
@@ -36,6 +35,7 @@ import {
 import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
 import Modal from '@/app/components/modal/Modal';
+import { Button } from '../../ui/button';
 
 interface FinancialDashboardProps {
   campaignId: number;
@@ -152,7 +152,10 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
               Start by adding financial statements and KPIs
             </p>
             <div className="mt-4 space-x-2">
-              <Button onClick={() => handleQuickAction('statement')}>
+              <Button 
+                variant="success"
+                onClick={() => handleQuickAction('statement')}
+              >
                 Add Financial Statement
               </Button>
               <Button
@@ -182,16 +185,16 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
       value: dashboardData.summary.investors_count.toString(),
       change: '+3 this month',
       icon: <FiUsers className="h-5 w-5" />,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-50',
     },
     {
       title: 'Valuation',
       value: `$${dashboardData.summary.valuation.toLocaleString()}`,
       change: '+8.2%',
       icon: <FiTrendingUp className="h-5 w-5" />,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-50',
     },
     {
       title: 'Equity Offered',
@@ -217,21 +220,21 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
         </div>
         <div className="flex gap-2">
           <Button
-            variant={timeframe === 'monthly' ? 'default' : 'outline'}
+            variant={timeframe === 'monthly' ? 'success' : 'outline'}
             size="sm"
             onClick={() => setTimeframe('monthly')}
           >
             Monthly
           </Button>
           <Button
-            variant={timeframe === 'quarterly' ? 'default' : 'outline'}
+            variant={timeframe === 'quarterly' ? 'success' : 'outline'}
             size="sm"
             onClick={() => setTimeframe('quarterly')}
           >
             Quarterly
           </Button>
           <Button
-            variant={timeframe === 'yearly' ? 'default' : 'outline'}
+            variant={timeframe === 'yearly' ? 'success' : 'outline'}
             size="sm"
             onClick={() => setTimeframe('yearly')}
           >
@@ -461,6 +464,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button
+              variant="success"
               className="flex flex-col items-center justify-center h-24"
               onClick={() => handleQuickAction('statement')}
             >
@@ -468,6 +472,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
               <span>Add Financial Statement</span>
             </Button>
             <Button
+              variant="success"
               className="flex flex-col items-center justify-center h-24"
               onClick={() => handleQuickAction('kpi')}
             >
@@ -475,6 +480,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
               <span>Create KPI</span>
             </Button>
             <Button
+              variant="success"
               className="flex flex-col items-center justify-center h-24"
               onClick={() => handleQuickAction('report')}
             >
@@ -513,7 +519,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
             >
               Cancel
             </Button>
-            <Button>
+            <Button variant="success">
               {quickActionModal.type === 'statement'
                 ? 'Go to Financial Statements'
                 : quickActionModal.type === 'kpi'

@@ -9,7 +9,6 @@ import {
   TabsTrigger,
 } from '@/app/components/ui/tabs';
 import { Card, CardContent } from '@/app/components/ui/card';
-import { Button } from '@/app/components/button/Button';
 import {
   FiArrowLeft,
   FiBarChart2,
@@ -27,6 +26,7 @@ import InvestorReportsManager from './InvestorReportsManager';
 import { Skeleton } from '../../ui/Skeleton';
 import Modal from '@/app/components/modal/Modal';
 import CampaignSelector from './CampaignSelector';
+import { Button } from '../../ui/button';
 
 interface CampaignFinancialsPageProps {
   onBackToCampaigns?: () => void;
@@ -47,7 +47,9 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showCampaignSelector, setShowCampaignSelector] = useState(false);
-  const [localSelectedCampaignId, setLocalSelectedCampaignId] = useState<number | undefined>(selectedCampaignId);
+  const [localSelectedCampaignId, setLocalSelectedCampaignId] = useState<
+    number | undefined
+  >(selectedCampaignId);
 
   useEffect(() => {
     fetchUserCampaigns();
@@ -118,10 +120,14 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
               Campaign Not Found
             </h2>
             <p className="text-gray-600 mb-6">
-              The campaign you're looking for doesn't exist or you don't have access to it.
+              The campaign you're looking for doesn't exist or you don't have
+              access to it.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button onClick={() => setLocalSelectedCampaignId(undefined)}>
+              <Button 
+                variant="success" 
+                onClick={() => setLocalSelectedCampaignId(undefined)}
+              >
                 <FiArrowLeft className="mr-2 h-4 w-4" />
                 Back to Campaigns
               </Button>
@@ -155,7 +161,11 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
       <div className="mb-8">
         <div className="flex items-center justify-between gap-4 mb-2">
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" onClick={() => setLocalSelectedCampaignId(undefined)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocalSelectedCampaignId(undefined)}
+            >
               <FiArrowLeft className="mr-2 h-4 w-4" />
               Back to Campaigns
             </Button>
@@ -179,14 +189,14 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
 
         <div className="flex flex-wrap gap-4 mb-6">
           {campaign.valuation && campaign.valuation > 0 && (
-            <div className="bg-blue-50 px-4 py-2 rounded-lg">
-              <p className="text-sm text-blue-700">Valuation</p>
-              <p className="text-lg font-semibold text-blue-900">
+            <div className="bg-gray-50 px-4 py-2 rounded-lg">
+              <p className="text-sm text-gray-700">Valuation</p>
+              <p className="text-lg font-semibold text-gray-900">
                 ${parseInt(campaign.valuation).toLocaleString()}
               </p>
             </div>
           )}
-          
+
           {campaign.equity_offered && campaign.equity_offered > 0 ? (
             <div className="bg-green-50 px-4 py-2 rounded-lg">
               <p className="text-sm text-green-700">Equity Offered</p>
@@ -202,14 +212,17 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
               </p>
             </div>
           )}
-          
-          <div className="bg-purple-50 px-4 py-2 rounded-lg">
-            <p className="text-sm text-purple-700">Total Raised</p>
-            <p className="text-lg font-semibold text-purple-900">
-              ${parseInt(campaign.transferred_amount || campaign.current_amount || '0').toLocaleString()}
+
+          <div className="bg-gray-50 px-4 py-2 rounded-lg">
+            <p className="text-sm text-gray-700">Total Raised</p>
+            <p className="text-lg font-semibold text-gray-900">
+              $
+              {parseInt(
+                campaign.transferred_amount || campaign.current_amount || '0',
+              ).toLocaleString()}
             </p>
           </div>
-          
+
           <div className="bg-orange-50 px-4 py-2 rounded-lg">
             <p className="text-sm text-orange-700">Investors</p>
             <p className="text-lg font-semibold text-orange-900">
@@ -368,7 +381,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
             >
               Cancel
             </Button>
-            <Button>Save Settings</Button>
+            <Button variant="success">Save Settings</Button>
           </div>
         </div>
       </Modal>

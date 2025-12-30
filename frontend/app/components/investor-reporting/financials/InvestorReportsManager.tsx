@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
-import { Button } from '@/app/components/button/Button';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import {
@@ -37,6 +36,7 @@ import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
 import { toast } from '../../ui/sonner';
 import Modal from '@/app/components/modal/Modal';
+import { Button } from '../../ui/button';
 
 interface InvestorReportsManagerProps {
   campaignId: number;
@@ -238,7 +238,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
             <FiCalendar className="mr-2 h-4 w-4" />
             Generate Quarterly
           </Button>
-          <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Button 
+            variant="success" 
+            onClick={() => setIsCreateModalOpen(true)}
+          >
             <FiPlus className="mr-2 h-4 w-4" />
             Create Report
           </Button>
@@ -256,7 +259,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
               Create your first investor report to keep your investors informed
             </p>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
-              <Button onClick={() => setIsCreateModalOpen(true)}>
+              <Button 
+                variant="success" 
+                onClick={() => setIsCreateModalOpen(true)}
+              >
                 <FiPlus className="mr-2 h-4 w-4" />
                 Create Report
               </Button>
@@ -557,7 +563,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
             >
               Cancel
             </Button>
-            <Button onClick={handleCreate}>Create Report</Button>
+            <Button variant="success" onClick={handleCreate}>Create Report</Button>
           </div>
         </div>
       </Modal>

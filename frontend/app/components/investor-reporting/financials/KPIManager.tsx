@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/components/ui/card';
-import { Button } from '@/app/components/button/Button';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import {
@@ -36,6 +35,7 @@ import { toast } from '@/app/components/ui/sonner';
 import { Skeleton } from '../../ui/Skeleton';
 import { financialManagementService } from '../services/financial-management.service';
 import Modal from '@/app/components/modal/Modal';
+import { Button } from '../../ui/button';
 
 interface KPIManagerProps {
   campaignId: number;
@@ -169,11 +169,11 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
   const getKpiTypeColor = (type: string) => {
     switch (type) {
       case 'financial':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-gray-100 text-gray-800';
       case 'operational':
         return 'bg-green-100 text-green-800';
       case 'growth':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-gray-100 text-gray-800';
       case 'engagement':
         return 'bg-orange-100 text-orange-800';
       default:
@@ -218,7 +218,10 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             Track and manage important metrics for your campaign
           </p>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button 
+          variant="success" 
+          onClick={() => setIsCreateModalOpen(true)}
+        >
           <FiPlus className="mr-2 h-4 w-4" />
           Add KPI
         </Button>
@@ -234,7 +237,10 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             <p className="text-gray-500 mb-6">
               Start by creating KPIs to track your campaign's performance
             </p>
-            <Button onClick={() => setIsCreateModalOpen(true)}>
+            <Button 
+              variant="success" 
+              onClick={() => setIsCreateModalOpen(true)}
+            >
               <FiPlus className="mr-2 h-4 w-4" />
               Create First KPI
             </Button>
@@ -252,7 +258,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
                         {kpi.name}
                       </h3>
                       {kpi.is_primary && (
-                        <Badge className="bg-blue-100 text-blue-800">
+                        <Badge className="bg-gray-100 text-gray-800">
                           Primary
                         </Badge>
                       )}
@@ -511,7 +517,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             >
               Cancel
             </Button>
-            <Button onClick={handleCreate}>Create KPI</Button>
+            <Button variant="success" onClick={handleCreate}>Create KPI</Button>
           </div>
         </div>
       </Modal>
@@ -598,7 +604,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
             >
               Cancel
             </Button>
-            <Button onClick={handleAddValue}>Add Value</Button>
+            <Button variant="success" onClick={handleAddValue}>Add Value</Button>
           </div>
         </div>
       </Modal>
