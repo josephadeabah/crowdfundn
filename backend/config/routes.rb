@@ -8,16 +8,18 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
 
-      # Investor Reporting Routes - FIXED
+      # Investor Reporting Routes - UPDATED
       namespace :investor do
         get 'portfolio', to: 'investor_reporting#portfolio'
-        get 'portfolio/statement', to: 'investor_reporting#portfolio_statement'
+        get 'portfolio/statement', to: 'investor_reporting#portfolio_statement'  # GET for direct download
+        post 'portfolio/statement', to: 'investor_reporting#generate_portfolio_statement'  # POST for generating with options/email
+        get 'portfolio/statements/history', to: 'investor_reporting#statement_history'  # GET statement history
         get 'metrics', to: 'investor_reporting#metrics'
         get 'notifications/preferences', to: 'investor_reporting#notification_preferences'
         put 'notifications/preferences', to: 'investor_reporting#update_notification_preferences'
         post 'documents/:id/download', to: 'investor_reporting#download_document'
         
-        # Campaign-specific investor routes - FIXED
+        # Campaign-specific investor routes
         scope 'campaigns/:campaign_id' do
           get 'financials', to: 'investor_reporting#campaign_financials'
           get 'kpis', to: 'investor_reporting#campaign_kpis'

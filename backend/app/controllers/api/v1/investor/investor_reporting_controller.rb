@@ -20,15 +20,53 @@ module Api
         
         # GET /api/v1/investor/portfolio/statement
         def portfolio_statement
-          period = params[:period] || Date.current
+          period = params[:period] || 'current'
+          format = params[:format] || 'pdf'
+          include_sections = params[:include_sections] || ['summary', 'performance', 'campaigns']
           
           generator = InvestorReporting::DocumentGenerator.new
-          pdf = generator.generate_portfolio_statement(@current_user, period)
           
-          send_data pdf.render, 
-                    filename: "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}.pdf",
-                    type: 'application/pdf',
-                    disposition: 'inline'
+          if format == 'pdf'
+            pdf = generator.generate_portfolio_statement(@current_user, period)
+            
+            send_data pdf.render, 
+                      filename: "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}.pdf",
+                      type: 'application/pdf',
+                      disposition: 'attachment'
+          else
+            # For non-PDF formats, return JSON data
+            calculator = InvestorReporting::PortfolioCalculator.new(@current_user)
+            portfolio_data = calculator.calculate_detailed_portfolio
+            
+            # Filter data based on requested sections
+            filtered_data = {}
+            filtered_data[:summary] = portfolio_data[:summary] if include_sections.include?('summary')
+            filtered_data[:by_campaign] = portfolio_data[:by_campaign] if include_sections.include?('campaigns')
+            filtered_data[:performance_metrics] = portfolio_data[:performance_metrics] if include_sections.include?('performance')
+            filtered_data[:risk_analysis] = portfolio_data[:risk_analysis] if include_sections.include?('risk')
+            filtered_data[:cash_flow] = portfolio_data[:cash_flow] if include_sections.include?('cashflow')
+            filtered_data[:projections] = portfolio_data[:projections] if include_sections.include?('projections')
+            
+            if format == 'json'
+              render json: {
+                success: true,
+                statement: filtered_data,
+                period: period,
+                generated_at: Time.current,
+                user: {
+                  id: @current_user.id,
+                  name: @current_user.full_name,
+                  email: @current_user.email
+                }
+              }
+            elsif format == 'csv'
+              csv_data = generate_csv(filtered_data)
+              send_data csv_data,
+                        filename: "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}.csv",
+                        type: 'text/csv',
+                        disposition: 'attachment'
+            end
+          end
         rescue => e
           render json: {
             success: false,
@@ -36,16 +74,146 @@ module Api
           }, status: :internal_server_error
         end
         
+        # POST /api/v1/investor/portfolio/statement (for email delivery or storage)
+        def generate_portfolio_statement
+          period = params[:period] || 'current'
+          format = params[:format] || 'pdf'
+          include_sections = params[:include_sections] || ['summary', 'performance', 'campaigns']
+          
+          generator = InvestorReporting::DocumentGenerator.new
+          
+          if format == 'pdf'
+            pdf = generator.generate_portfolio_statement(@current_user, period)
+            
+            # Create a temp file and return download URL
+            filename = "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}.pdf"
+            
+            # Store in ActiveStorage temporarily
+            blob = ActiveStorage::Blob.create_and_upload!(
+              io: StringIO.new(pdf.render),
+              filename: filename,
+              content_type: 'application/pdf'
+            )
+            
+            # Make it expire after 24 hours
+            blob.update(expires_at: 24.hours.from_now)
+            
+            render json: {
+              success: true,
+              download_url: rails_blob_url(blob),
+              filename: filename,
+              generated_at: Time.current,
+              expires_at: 24.hours.from_now
+            }
+          else
+            # For other formats, generate and return as attachment
+            calculator = InvestorReporting::PortfolioCalculator.new(@current_user)
+            portfolio_data = calculator.calculate_detailed_portfolio
+            
+            # Prepare data based on requested sections
+            export_data = {}
+            export_data[:summary] = portfolio_data[:summary] if include_sections.include?('summary')
+            export_data[:campaigns] = portfolio_data[:by_campaign] if include_sections.include?('campaigns')
+            export_data[:performance] = portfolio_data[:performance_metrics] if include_sections.include?('performance')
+            export_data[:risk] = portfolio_data[:risk_analysis] if include_sections.include?('risk')
+            export_data[:cash_flow] = portfolio_data[:cash_flow] if include_sections.include?('cashflow')
+            export_data[:projections] = portfolio_data[:projections] if include_sections.include?('projections')
+            
+            filename = "portfolio_statement_#{@current_user.id}_#{Time.current.to_i}"
+            
+            if format == 'csv'
+              csv_data = generate_csv(export_data)
+              blob = ActiveStorage::Blob.create_and_upload!(
+                io: StringIO.new(csv_data),
+                filename: "#{filename}.csv",
+                content_type: 'text/csv'
+              )
+            elsif format == 'excel'
+              # For Excel, we'll create JSON for now (you can add Excel generation later)
+              json_data = JSON.pretty_generate(export_data)
+              blob = ActiveStorage::Blob.create_and_upload!(
+                io: StringIO.new(json_data),
+                filename: "#{filename}.json",
+                content_type: 'application/json'
+              )
+            end
+            
+            blob.update(expires_at: 24.hours.from_now)
+            
+            render json: {
+              success: true,
+              download_url: rails_blob_url(blob),
+              filename: blob.filename.to_s,
+              generated_at: Time.current,
+              expires_at: 24.hours.from_now
+            }
+          end
+        rescue => e
+          render json: {
+            success: false,
+            error: "Failed to generate statement: #{e.message}"
+          }, status: :internal_server_error
+        end
+        
+        # GET /api/v1/investor/portfolio/statements/history
+        def statement_history
+          # Since we're not storing portfolio statements permanently,
+          # we can return empty array or track via user activity
+          
+          # Option 1: Return empty (simplest)
+          render json: {
+            success: true,
+            statements: []
+          }
+          
+          # Option 2: Track in user's activity log (if you have one)
+          # activities = @current_user.activities.where(action: 'portfolio_statement_generated').order(created_at: :desc).limit(20)
+          # statements_data = activities.map do |activity|
+          #   {
+          #     id: activity.id,
+          #     date: activity.created_at,
+          #     period: activity.metadata['period'] || 'current',
+          #     format: activity.metadata['format'] || 'pdf',
+          #     size: activity.metadata['size'] || 'N/A'
+          #   }
+          # end
+          # 
+          # render json: {
+          #   success: true,
+          #   statements: statements_data
+          # }
+        end
+        
         # GET /api/v1/investor/metrics
         def metrics
-          metrics = InvestorPortfolioMetric.for_user(@current_user.id)
-                                           .recent(30)
-                                           .order(calculation_date: :asc)
+          period = params[:period] || 'all'
+          
+          metrics_query = InvestorPortfolioMetric.for_user(@current_user.id)
+          
+          case period
+          when '7d'
+            start_date = 7.days.ago.to_date
+            metrics_query = metrics_query.where('calculation_date >= ?', start_date)
+          when '30d'
+            start_date = 30.days.ago.to_date
+            metrics_query = metrics_query.where('calculation_date >= ?', start_date)
+          when '90d'
+            start_date = 90.days.ago.to_date
+            metrics_query = metrics_query.where('calculation_date >= ?', start_date)
+          when '1y'
+            start_date = 1.year.ago.to_date
+            metrics_query = metrics_query.where('calculation_date >= ?', start_date)
+          end
+          
+          metrics = metrics_query.order(calculation_date: :asc)
+          
+          # Ensure we have a current metric
+          current_metric = InvestorPortfolioMetric.calculate_for_user(@current_user.id)
           
           render json: {
             success: true,
             metrics: metrics.as_json,
-            current: InvestorPortfolioMetric.calculate_for_user(@current_user.id)&.as_json
+            current: current_metric&.as_json
           }
         rescue => e
           render json: {
@@ -63,12 +231,16 @@ module Api
             return render json: { error: 'Not authorized' }, status: :forbidden
           end
           
+          period_type = params[:period_type]
           financials = campaign.financial_statements.published.recent_first
-          periods = params[:periods] || 12
+          
+          if period_type.present? && period_type != 'all'
+            financials = financials.where(period_type: period_type)
+          end
           
           render json: {
             success: true,
-            financials: financials.limit(periods).as_json,
+            financials: financials.as_json,
             summary: campaign.financial_performance_summary(4)
           }
         rescue ActiveRecord::RecordNotFound
@@ -86,9 +258,37 @@ module Api
             return render json: { error: 'Not authorized' }, status: :forbidden
           end
           
+          kpi_type = params[:kpi_type]
+          kpis = campaign.campaign_kpis.includes(:kpi_values)
+          
+          if kpi_type.present? && kpi_type != 'all'
+            kpis = kpis.where(kpi_type: kpi_type)
+          end
+          
+          # Prepare response with latest values and trends
+          kpis_data = kpis.map do |kpi|
+            latest_value = kpi.kpi_values.order(period_date: :desc).first
+            trend = kpi.trend(days: 90)
+            
+            {
+              id: kpi.id,
+              name: kpi.name,
+              kpi_type: kpi.kpi_type,
+              unit: kpi.unit,
+              target_value: kpi.target_value,
+              is_primary: kpi.is_primary,
+              latest_value: latest_value ? {
+                value: latest_value.value,
+                period_date: latest_value.period_date
+              } : nil,
+              trend: trend,
+              performance_vs_target: kpi.performance_vs_target
+            }
+          end
+          
           render json: {
             success: true,
-            kpis: campaign.kpi_dashboard
+            kpis: kpis_data
           }
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found
@@ -105,11 +305,29 @@ module Api
             return render json: { error: 'Not authorized' }, status: :forbidden
           end
           
-          reports = campaign.investor_reports.published.recent
+          report_type = params[:report_type]
+          start_date = params[:start_date]
+          end_date = params[:end_date]
+          
+          reports = campaign.investor_reports.published.includes(:documents)
+          
+          if report_type.present? && report_type != 'all'
+            reports = reports.where(report_type: report_type)
+          end
+          
+          if start_date.present?
+            reports = reports.where('report_date >= ?', start_date)
+          end
+          
+          if end_date.present?
+            reports = reports.where('report_date <= ?', end_date)
+          end
+          
+          reports = reports.order(report_date: :desc)
           
           render json: {
             success: true,
-            reports: reports.as_json
+            reports: reports.as_json(include: { documents: {} })
           }
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found
@@ -200,6 +418,83 @@ module Api
             :summary_frequency,
             :preferred_time
           )
+        end
+        
+        def generate_csv(data)
+              CSV.generate(headers: true) do |csv|
+                # Summary section
+                csv << ['PORTFOLIO STATEMENT']
+                csv << ["Generated: #{Time.current.to_formatted_s(:long)}"]
+                csv << ['Investor ID:', @current_user.id]
+                csv << ['Investor Name:', @current_user.full_name]
+                csv << []
+                
+                csv << ['PORTFOLIO SUMMARY']
+                csv << ['Metric', 'Value']
+                if data[:summary]
+                  data[:summary].each do |key, value|
+                    formatted_key = key.to_s.humanize.titleize
+                    formatted_value = if [:total_invested, :current_value, :total_returns].include?(key)
+                      "#{@current_user.currency_symbol}#{value.round(2)}"
+                    elsif [:roi, :irr].include?(key)
+                      "#{value.round(2)}%"
+                    elsif key == :moic
+                      "#{value.round(2)}x"
+                    else
+                      value
+                    end
+                    csv << [formatted_key, formatted_value]
+                  end
+                end
+                csv << []
+                
+                # Campaigns section
+                if data[:campaigns] && data[:campaigns].any?
+                  csv << ['CAMPAIGN BREAKDOWN']
+                  csv << ['Company', 'Invested', 'Current Value', 'Returns', 'ROI', 'Ownership %']
+                  data[:campaigns].each do |campaign|
+                    csv << [
+                      campaign[:company_name],
+                      "#{@current_user.currency_symbol}#{campaign[:invested].round(2)}",
+                      "#{@current_user.currency_symbol}#{campaign[:current_value].round(2)}",
+                      "#{@current_user.currency_symbol}#{campaign[:returns].round(2)}",
+                      "#{campaign[:roi].round(2)}%",
+                      "#{campaign[:ownership_percentage].round(2)}%"
+                    ]
+                  end
+                  csv << []
+                end
+                
+                # Performance section
+                if data[:performance]
+                  csv << ['PERFORMANCE METRICS']
+                  data[:performance].each do |key, value|
+                    csv << [key.to_s.humanize.titleize, value]
+                  end
+                  csv << []
+                end
+                
+                # Risk section
+                if data[:risk]
+                  csv << ['RISK ANALYSIS']
+                  data[:risk].each do |key, value|
+                    if key == :risk_category
+                      csv << ['Risk Category', value.upcase]
+                    elsif [:concentration_risk, :sector_diversification, :liquidity_risk, :overall_risk_score].include?(key)
+                      csv << [key.to_s.humanize.titleize, "#{(value * 100).round(1)}%"]
+                    else
+                      csv << [key.to_s.humanize.titleize, value]
+                    end
+                  end
+                end
+                
+                csv << []
+                csv << ['CONFIDENTIAL']
+                csv << ['This statement contains confidential investor information.']
+                csv << ['Generated by Bantuhive Investment Platform']
+              end
+            end
+          end
         end
       end
     end
