@@ -29,10 +29,14 @@ const CampaignFinancialsPage = () => {
   const params = useParams();
   const router = useRouter();
   const campaignId = params?.id as string;
-  const { userCampaigns, loading: campaignsLoading } = useCampaignContext();
+  const { userCampaigns, loading: campaignsLoading, fetchUserCampaigns } = useCampaignContext();
 
   const [campaign, setCampaign] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
+
+
+  useEffect(() => {    fetchUserCampaigns();
+  }, [fetchUserCampaigns]);
 
   useEffect(() => {
     if (userCampaigns && campaignId) {
@@ -68,7 +72,7 @@ const CampaignFinancialsPage = () => {
               The campaign you're looking for doesn't exist or you don't have
               access to it.
             </p>
-            <Button onClick={() => router.push('/account/dashboard/campaigns')}>
+            <Button onClick={() => router.push('/account#Campaigns')}>
               <FiArrowLeft className="mr-2 h-4 w-4" />
               Back to Campaigns
             </Button>
@@ -86,7 +90,7 @@ const CampaignFinancialsPage = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => router.push('/account/dashboard/campaigns')}
+            onClick={() => router.push('/account#Campaigns')}
           >
             <FiArrowLeft className="mr-2 h-4 w-4" />
             Back to Campaigns
