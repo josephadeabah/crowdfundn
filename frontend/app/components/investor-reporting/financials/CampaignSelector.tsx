@@ -143,21 +143,23 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                 </div>
               </div>
 
-              <div className="flex justify-between items-center pt-4 border-t">
-                <div className="text-sm text-gray-500">
-                  Status:{' '}
-                  <span className="capitalize">
+                <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 pt-4 border-t">
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">Status:</span>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
                     {campaign.status || 'draft'}
-                  </span>
+                    </span>
                 </div>
                 <Button
-                  variant="success"
-                  onClick={() => onSelectCampaign(campaign.id)}
+                    variant="success"
+                    size="sm"
+                    className="w-full xs:w-auto shrink-0 min-w-[140px]"
+                    onClick={() => onSelectCampaign(campaign.id)}
                 >
-                  <FiArrowRight className="mr-2 h-4 w-4" />
-                  Manage Financials
+                    <FiArrowRight className="mr-2 h-4 w-4" />
+                    Manage Financials
                 </Button>
-              </div>
+                </div>
             </CardContent>
           </Card>
         ))}
