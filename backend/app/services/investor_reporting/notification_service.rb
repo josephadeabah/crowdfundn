@@ -5,10 +5,6 @@ module InvestorReporting
       @user = user
       @preferences = NotificationPreference.defaults_for_user(user)
     end
-
-    def send_email_notification(notification)
-      InvestorNotificationEmailService.send_notification(@user, notification)
-    end
     
     def notify_valuation_update(campaign, old_valuation, new_valuation)
       return unless @preferences.enabled_for_report_type?(:valuation_updates)
@@ -145,6 +141,19 @@ module InvestorReporting
       )
     end
     
+    def send_welcome_notification
+      send_notification(
+        type: :welcome,
+        title: "Welcome to Investor Reporting",
+        message: "You're now set up to receive notifications about your investments. Manage your preferences anytime in your settings.",
+        data: {
+          welcome: true,
+          setup_date: Time.current
+        },
+        priority: :low
+      )
+    end
+    
     private
     
     def send_notification(type:, title:, message:, data: {}, priority: :normal)
@@ -187,7 +196,7 @@ module InvestorReporting
     end
     
     def send_email_notification(notification)
-      InvestorNotificationMailer.send_notification(@user, notification).deliver_later
+      InvestorNotificationEmailService.send_notification(@user, notification)
     end
     
     def send_push_notification(notification)
