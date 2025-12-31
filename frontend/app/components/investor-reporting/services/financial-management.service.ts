@@ -57,7 +57,7 @@ export class FinancialManagementService {
   }
 
   // ========== FINANCIAL STATEMENTS ==========
-
+  // Update the return type for getFinancialStatements
   async getFinancialStatements(
     campaignId: number,
     filters?: { status?: string },
@@ -65,6 +65,16 @@ export class FinancialManagementService {
     success: boolean;
     financials: any[];
     summary?: any;
+    campaign_currency?: {
+      code: string;
+      symbol: string;
+      name: string;
+    };
+    fundraiser_currency?: {
+      code: string;
+      symbol: string;
+      name: string;
+    };
   }> {
     try {
       let endpoint = `/campaigns/${campaignId}/financials`;
@@ -84,6 +94,7 @@ export class FinancialManagementService {
     }
   }
 
+  // Also update the createFinancialStatement return type
   async createFinancialStatement(
     campaignId: number,
     data: {
@@ -101,6 +112,11 @@ export class FinancialManagementService {
     success: boolean;
     financial: any;
     errors?: string[];
+    campaign_currency?: {
+      code: string;
+      symbol: string;
+      name: string;
+    };
   }> {
     try {
       const response = await this.fetchApi(
@@ -117,6 +133,7 @@ export class FinancialManagementService {
     }
   }
 
+  // Update updateFinancialStatement return type
   async updateFinancialStatement(
     campaignId: number,
     financialId: number,
@@ -125,6 +142,11 @@ export class FinancialManagementService {
     success: boolean;
     financial: any;
     errors?: string[];
+    campaign_currency?: {
+      code: string;
+      symbol: string;
+      name: string;
+    };
   }> {
     try {
       const response = await this.fetchApi(
@@ -409,13 +431,13 @@ export class FinancialManagementService {
 
       // Send report_date as a top-level parameter, NOT nested
       const body: any = {
-        report_date: reportDate || new Date().toISOString().split('T')[0]
+        report_date: reportDate || new Date().toISOString().split('T')[0],
       };
 
-      console.log('Generating quarterly report:', { 
-        endpoint, 
+      console.log('Generating quarterly report:', {
+        endpoint,
         body,
-        campaignId 
+        campaignId,
       });
 
       const response = await this.fetchApi(endpoint, {

@@ -177,7 +177,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
   const handleGenerateQuarterly = async () => {
     try {
       console.log('Generating quarterly report for campaign ID:', campaignId);
-      
+
       // Always send current date
       const currentDate = format(new Date(), 'yyyy-MM-dd');
       console.log('Using date:', currentDate);
@@ -198,10 +198,12 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
       }
     } catch (error: any) {
       console.error('Error generating quarterly report:', error);
-      
+
       // Check error type and show appropriate message
       if (error.message && error.message.includes('Not authorized')) {
-        toast.error('You do not have permission to generate reports for this campaign');
+        toast.error(
+          'You do not have permission to generate reports for this campaign',
+        );
       } else if (error.message && error.message.includes('not found')) {
         toast.error('Campaign not found or you do not have access to it');
       } else {
