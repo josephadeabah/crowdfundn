@@ -426,10 +426,14 @@ export class InvestorReportingService {
   // Download document
   async downloadDocument(
     documentId: number,
-  ): Promise<{ success: boolean; url?: string; blob?: Blob }> {
+  ): Promise<{ success: boolean; url?: string }> {
     try {
-      // First try the new method
-      return await this.downloadDocumentDirect(documentId);
+      // Create a form and submit it to trigger the download
+      // This is necessary because the Rails controller returns a 302 redirect
+      // which doesn't work well with fetch API for file downloads
+      await this.downloadFileViaForm(documentId);
+
+      return { success: true };
     } catch (error: any) {
       console.error('Error downloading document:', error);
 
@@ -441,75 +445,8 @@ export class InvestorReportingService {
         throw new Error('Document not found');
       }
 
-      // If direct download fails, try the form method as fallback
-      console.log('Direct download failed, trying form method...');
-      try {
-        await this.downloadFileViaForm(documentId);
-        return { success: true };
-      } catch (formError: any) {
-        console.error('Form download also failed:', formError);
-        throw error; // Throw the original error
-      }
+      throw error;
     }
-  }
-
-  // Direct download using fetch API
-  private async downloadDocumentDirect(
-    documentId: number,
-  ): Promise<{ success: boolean; url?: string; blob?: Blob }> {
-    const endpoint = `${this.baseUrl}/investor/documents/${documentId}/download`;
-
-    if (!this.token) {
-      throw new Error('Authentication required');
-    }
-
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    // Check if response is a redirect
-    if (response.redirected) {
-      // Handle redirect - open in new window
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-
-      return {
-        success: true,
-        url,
-        blob,
-      };
-    } else {
-      // Handle direct file download
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-
-      return {
-        success: true,
-        url,
-        blob,
-      };
-    }
-  }
-
-  // Helper method to trigger download from blob
-  triggerDownload(blob: Blob, filename: string): void {
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
   }
 
   // Helper method to download file via form submission
