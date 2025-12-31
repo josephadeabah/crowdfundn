@@ -56,7 +56,16 @@ module InvestorReporting
     private
     
     def add_header(pdf, report)
-      pdf.image Rails.root.join('app/assets/images/bantuhive_logo.png'), width: 100, position: :center
+        # Find the logo in compiled assets
+      logo_path = Rails.root.join('public', 'assets', 'bantuhive_logo-*.png').glob.first || 
+                  Rails.root.join('app', 'assets', 'images', 'bantuhive_logo.png')
+      
+      if File.exist?(logo_path)
+        pdf.image logo_path, width: 100, position: :center
+      else
+        # Fallback to text if logo not found
+        pdf.text "BANTUHIVE", size: 24, align: :center, style: :bold
+      end
       pdf.move_down 20
       
       pdf.text "INVESTOR REPORT", size: 24, align: :center, style: :bold
