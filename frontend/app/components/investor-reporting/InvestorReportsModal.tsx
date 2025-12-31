@@ -194,17 +194,29 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
     try {
       const idToDownload = documentId || reportId;
 
-      // First try to get document info
-      const response =
-        await investorReportingService.getDocumentInfo(idToDownload);
-
-      if (response?.success && response?.document?.file_url) {
-        // If we have a direct file URL, open it
-        window.open(response.document.file_url, '_blank');
-        toast.success('Opening document...');
-      } else {
-        // Otherwise use the download endpoint
+      // Use the updated downloadDocument method
+      const result =
         await investorReportingService.downloadDocument(idToDownload);
+
+      if (result.success && result.blob) {
+        // Get filename from document info or use default
+        const docResponse =
+          await investorReportingService.getDocumentInfo(idToDownload);
+        const filename =
+          docResponse.success && docResponse.document?.file_name
+            ? docResponse.document.file_name
+            : `document-${idToDownload}.pdf`;
+
+        // Trigger download using the service method
+        investorReportingService.triggerDownload(result.blob, filename);
+
+        toast.success('Download started');
+      } else if (result.success && result.url) {
+        // Open URL in new tab (for redirects)
+        window.open(result.url, '_blank');
+        toast.success('Opening document...');
+      } else if (result.success) {
+        // Just success without blob or URL (form method succeeded)
         toast.success('Download initiated');
       }
     } catch (error: any) {
@@ -212,6 +224,11 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
 
       if (error?.message?.includes('Document not found')) {
         toast.error('Document not found');
+      } else if (
+        error?.message?.includes('401') ||
+        error?.message?.includes('Unauthorized')
+      ) {
+        toast.error('Authentication required. Please log in again.');
       } else {
         toast.error(error?.message || 'Failed to download report');
       }
