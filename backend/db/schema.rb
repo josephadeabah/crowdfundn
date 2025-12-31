@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_28_023540) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_31_025618) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -640,9 +640,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_28_023540) do
     t.jsonb "metadata", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "published_by_id"
     t.index ["campaign_id", "period_type", "period_start"], name: "idx_financial_statements_campaign_period", unique: true
     t.index ["campaign_id"], name: "index_financial_statements_on_campaign_id"
     t.index ["published_at"], name: "index_financial_statements_on_published_at"
+    t.index ["published_by_id"], name: "index_financial_statements_on_published_by_id"
     t.index ["status"], name: "index_financial_statements_on_status"
   end
 
@@ -1391,6 +1393,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_28_023540) do
   add_foreign_key "favorites", "campaigns"
   add_foreign_key "favorites", "users"
   add_foreign_key "financial_statements", "campaigns"
+  add_foreign_key "financial_statements", "users", column: "published_by_id"
   add_foreign_key "fundraiser_leaderboard_entries", "users"
   add_foreign_key "fundraisers", "users"
   add_foreign_key "investment_clubs", "users", column: "creator_id"
