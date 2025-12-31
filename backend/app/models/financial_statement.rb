@@ -13,9 +13,8 @@ class FinancialStatement < ApplicationRecord
   validates :assets, :liabilities, :equity, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
   
   validate :validate_period_dates
-  validate :validate_accounting_consistency, if: -> { assets.present? && liabilities.present? && equity.present? }
   
-  before_validation :calculate_derived_metrics
+  before_validation :calculate_missing_metrics
   before_save :set_published_at, if: -> { status_changed?(to: 'published') && published_at.blank? }
   after_save :update_campaign_valuation_metrics, if: -> { saved_change_to_status?(to: 'published') }
   
@@ -81,24 +80,12 @@ class FinancialStatement < ApplicationRecord
       current_ratio: current_ratio,
       debt_to_equity: debt_to_equity,
       period_duration: period_duration,
-      calculated_gross_profit: revenue - expenses,
-      calculated_equity: assets && liabilities ? assets - liabilities : nil,
+      gross_profit: gross_profit,
+      net_income: net_income,
+      equity: equity,
       source_file_url: source_file.attached? ? source_file_url : nil,
       source_file_name: source_file.attached? ? source_file.filename : nil
     )
-    
-    # Include derived metrics if they're different from calculated
-    if self[:gross_profit].present?
-      json[:gross_profit] = self[:gross_profit]
-    end
-    
-    if self[:net_income].present?
-      json[:net_income] = self[:net_income]
-    end
-    
-    if self[:equity].present?
-      json[:equity] = self[:equity]
-    end
     
     json
   end
@@ -160,44 +147,24 @@ class FinancialStatement < ApplicationRecord
     end
   end
   
-  def validate_accounting_consistency
-    # Check basic accounting equation: Assets = Liabilities + Equity
-    if assets.present? && liabilities.present? && self[:equity].present?
-      calculated_equity = assets - liabilities
-      
-      # Allow small rounding differences but warn if they're significant
-      if (calculated_equity - self[:equity]).abs > 1.0
-        errors.add(:equity, "significantly different from calculated value (assets - liabilities). Calculated: #{calculated_equity}, Provided: #{self[:equity]}. Consider updating equity to #{calculated_equity.round(2)}")
-      end
-    end
-  end
-  
-  def calculate_derived_metrics
-    # Calculate basic derived metrics if not provided
+  def calculate_missing_metrics
+    # Always calculate gross profit from revenue and expenses
     if revenue.present? && expenses.present?
-      # Gross profit is always revenue minus expenses
       self.gross_profit = revenue - expenses
-      
-      # Net income defaults to gross profit unless specifically overridden
-      self.net_income = self[:net_income].presence || gross_profit
     end
     
-    # Calculate equity if assets and liabilities are provided
-    if assets.present? && liabilities.present?
-      calculated_equity = assets - liabilities
-      
-      # Use provided equity if it's within reasonable range of calculated value
-      if self[:equity].present?
-        # Check if provided equity is significantly different
-        if (self[:equity] - calculated_equity).abs > 1.0
-          # Log the discrepancy but don't fail validation
-          Rails.logger.warn "FinancialStatement #{id}: Provided equity (#{self[:equity]}) differs significantly from calculated (#{calculated_equity})"
-        end
-      else
-        # No equity provided, use calculated value
-        self.equity = calculated_equity
-      end
+    # Set net income to gross profit if not provided
+    if revenue.present? && expenses.present? && self[:net_income].blank?
+      self.net_income = revenue - expenses
     end
+    
+    # Calculate equity if not provided but assets and liabilities are present
+    if assets.present? && liabilities.present? && self[:equity].blank?
+      self.equity = assets - liabilities
+    end
+    
+    # If equity is provided as 0 but assets and liabilities exist, allow it
+    # (Some users might want to intentionally set equity to 0)
     
     # Calculate burn rate and runway if applicable
     if expenses.present? && period_duration > 0
