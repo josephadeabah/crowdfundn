@@ -180,31 +180,31 @@ const InvestorReportingDashboard: React.FC = () => {
     setShowFinancialStatements(true);
   };
 
-// In InvestorReportingDashboard.tsx, update the handleDownloadReport function:
-const handleDownloadReport = async (reportId: number) => {
-  try {
-    // First try to get document info
-    const response = await investorReportingService.getDocumentInfo(reportId);
-    
-    if (response?.success && response?.document?.file_url) {
-      // If we have a direct file URL, open it
-      window.open(response.document.file_url, '_blank');
-      toast.success('Opening report...');
-    } else {
-      // Otherwise use the download endpoint
-      await investorReportingService.downloadDocument(reportId);
-      toast.success('Download initiated');
+  // In InvestorReportingDashboard.tsx, update the handleDownloadReport function:
+  const handleDownloadReport = async (reportId: number) => {
+    try {
+      // First try to get document info
+      const response = await investorReportingService.getDocumentInfo(reportId);
+
+      if (response?.success && response?.document?.file_url) {
+        // If we have a direct file URL, open it
+        window.open(response.document.file_url, '_blank');
+        toast.success('Opening report...');
+      } else {
+        // Otherwise use the download endpoint
+        await investorReportingService.downloadDocument(reportId);
+        toast.success('Download initiated');
+      }
+    } catch (error: any) {
+      console.error('Error downloading report:', error);
+
+      if (error?.message?.includes('Document not found')) {
+        toast.error('Document not found');
+      } else {
+        toast.error(error?.message || 'Failed to download report');
+      }
     }
-  } catch (error: any) {
-    console.error('Error downloading report:', error);
-    
-    if (error?.message?.includes('Document not found')) {
-      toast.error('Document not found');
-    } else {
-      toast.error(error?.message || 'Failed to download report');
-    }
-  }
-};
+  };
 
   if (loading) {
     return (
@@ -492,7 +492,7 @@ const handleDownloadReport = async (reportId: number) => {
                     className="flex items-center justify-between p-4 border rounded-lg"
                   >
                     <div className="flex items-center space-x-4">
-                      <FileText className="h-8 w-8 text-blue-500" />
+                      <FileText className="h-8 w-8 text-emerald-700" />
                       <div>
                         <h4 className="font-medium">{report.title}</h4>
                         <div className="flex items-center space-x-2 text-sm text-muted-foreground">

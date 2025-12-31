@@ -432,16 +432,19 @@ export class InvestorReportingService {
       // This is necessary because the Rails controller returns a 302 redirect
       // which doesn't work well with fetch API for file downloads
       await this.downloadFileViaForm(documentId);
-      
+
       return { success: true };
     } catch (error: any) {
       console.error('Error downloading document:', error);
-      
+
       // Check if it's a 404 error
-      if (error?.message?.includes('404') || error?.message?.includes('Document not found')) {
+      if (
+        error?.message?.includes('404') ||
+        error?.message?.includes('Document not found')
+      ) {
         throw new Error('Document not found');
       }
-      
+
       throw error;
     }
   }
@@ -456,7 +459,7 @@ export class InvestorReportingService {
         form.action = `${this.baseUrl}/investor/documents/${documentId}/download`;
         form.target = '_blank'; // Open in new tab/window
         form.style.display = 'none';
-        
+
         // Add authorization token as hidden input
         if (this.token) {
           const tokenInput = document.createElement('input');
@@ -465,19 +468,18 @@ export class InvestorReportingService {
           tokenInput.value = `Bearer ${this.token}`;
           form.appendChild(tokenInput);
         }
-        
+
         // Add the form to the document
         document.body.appendChild(form);
-        
+
         // Submit the form
         form.submit();
-        
+
         // Remove the form after submission
         setTimeout(() => {
           document.body.removeChild(form);
           resolve();
         }, 100);
-        
       } catch (error) {
         reject(error);
       }
@@ -497,7 +499,9 @@ export class InvestorReportingService {
     };
   }> {
     try {
-      const response = await this.fetchApi(`/investor/documents/${documentId}/info`);
+      const response = await this.fetchApi(
+        `/investor/documents/${documentId}/info`,
+      );
       return response;
     } catch (error) {
       console.error('Error getting document info:', error);

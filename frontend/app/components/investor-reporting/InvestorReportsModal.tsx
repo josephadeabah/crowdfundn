@@ -193,10 +193,11 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
   ) => {
     try {
       const idToDownload = documentId || reportId;
-      
+
       // First try to get document info
-      const response = await investorReportingService.getDocumentInfo(idToDownload);
-      
+      const response =
+        await investorReportingService.getDocumentInfo(idToDownload);
+
       if (response?.success && response?.document?.file_url) {
         // If we have a direct file URL, open it
         window.open(response.document.file_url, '_blank');
@@ -208,7 +209,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
       }
     } catch (error: any) {
       console.error('Error downloading report:', error);
-      
+
       if (error?.message?.includes('Document not found')) {
         toast.error('Document not found');
       } else {

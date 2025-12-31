@@ -223,8 +223,9 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   const handleDownloadStatement = async (statementId: number) => {
     try {
       // First try to get document info to see if file exists
-      const response = await investorReportingService.getDocumentInfo(statementId);
-      
+      const response =
+        await investorReportingService.getDocumentInfo(statementId);
+
       if (response?.success && response?.document?.file_url) {
         // If we have a direct file URL, open it
         window.open(response.document.file_url, '_blank');
@@ -236,7 +237,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
       }
     } catch (error: any) {
       console.error('Error downloading statement:', error);
-      
+
       if (error?.message?.includes('Document not found')) {
         toast.error('Document not found');
       } else {
