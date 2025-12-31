@@ -407,13 +407,16 @@ export class FinancialManagementService {
     try {
       const endpoint = `/campaigns/${campaignId}/investor_reports/generate_quarterly`;
 
-      // Always send a body with the report_date
-      const body: any = {};
-      if (reportDate) {
-        body.report_date = reportDate;
-      }
+      // Send report_date as a top-level parameter, NOT nested
+      const body: any = {
+        report_date: reportDate || new Date().toISOString().split('T')[0]
+      };
 
-      console.log('Generating quarterly report:', { endpoint, body });
+      console.log('Generating quarterly report:', { 
+        endpoint, 
+        body,
+        campaignId 
+      });
 
       const response = await this.fetchApi(endpoint, {
         method: 'POST',
