@@ -45,6 +45,7 @@ import { toast } from 'sonner';
 import { Skeleton } from '../ui/Skeleton';
 import { formatDate } from '@/app/utils/helpers/formatters';
 import { investorReportingService } from './services/investor-reporting.service';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface InvestorReportsModalProps {
   isOpen: boolean;
@@ -87,6 +88,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { token } = useAuth();
   const [reports, setReports] = useState<InvestorReport[]>([]);
   const [filteredReports, setFilteredReports] = useState<InvestorReport[]>([]);
   const [loading, setLoading] = useState(false);
@@ -97,6 +99,12 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
     null,
   );
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+
+    useEffect(() => {
+    if (token) {
+      investorReportingService.setToken(token);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (isOpen) {

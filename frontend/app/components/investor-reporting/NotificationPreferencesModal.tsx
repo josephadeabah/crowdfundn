@@ -39,8 +39,9 @@ import {
 import { Separator } from '@/app/components/ui/separator';
 import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
-import { InvestorReportingService } from './services/investor-reporting.service';
+import investorReportingService, { InvestorReportingService } from './services/investor-reporting.service';
 import { Skeleton } from '../ui/Skeleton';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface NotificationPreferencesModalProps {
   isOpen: boolean;
@@ -84,6 +85,13 @@ const NotificationPreferencesModal: React.FC<
   const [hasChanges, setHasChanges] = useState(false);
   const [originalPreferences, setOriginalPreferences] =
     useState<NotificationPreferences | null>(null);
+    const { token } = useAuth();
+
+      useEffect(() => {
+    if (token) {
+      investorReportingService.setToken(token);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (isOpen) {

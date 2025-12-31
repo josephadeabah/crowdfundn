@@ -136,17 +136,28 @@ export interface PortfolioMetricsResponse {
 export class InvestorReportingService {
   private baseUrl =
     process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
+  private token: string | null = null;
+
+  // Set token when service is used
+  setToken(token: string | null) {
+    this.token = token;
+  }
 
   private async fetchApi(endpoint: string, options: RequestInit = {}) {
-    const token =
-      typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const url = `${this.baseUrl}${endpoint}`;
 
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    };
+    const headers = new Headers(options.headers as HeadersInit);
+
+    // Set default Content-Type for JSON requests (remove for FormData)
+    if (!(options.body instanceof FormData)) {
+      headers.set('Content-Type', 'application/json');
+    } else {
+      headers.delete('Content-Type');
+    }
+
+    if (this.token) {
+      headers.set('Authorization', `Bearer ${this.token}`);
+    }
 
     try {
       const response = await fetch(url, {
@@ -156,11 +167,6 @@ export class InvestorReportingService {
 
       if (!response.ok) {
         if (response.status === 401) {
-          // Token expired or invalid
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('token');
-            window.location.href = '/auth/login';
-          }
           throw new Error('Authentication required');
         }
 
@@ -182,6 +188,29 @@ export class InvestorReportingService {
       console.error(`API Error (${endpoint}):`, error);
       throw error;
     }
+  }
+
+  private async fetchFormData(endpoint: string, formData: FormData, method: string = 'POST') {
+    const url = `${this.baseUrl}${endpoint}`;
+
+    if (!this.token) {
+      throw new Error('Authentication required');
+    }
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+        // Don't set Content-Type - let browser set it with boundary
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return response.json();
   }
 
   // ========== INVESTOR ROUTES ==========
@@ -431,7 +460,6 @@ export class InvestorReportingService {
     }
   }
 
-  // app/components/investor-reporting/services/investor-reporting.service.ts - Fix the return type
   async generatePortfolioStatement(options: {
     period: string;
     format: string;
@@ -441,7 +469,7 @@ export class InvestorReportingService {
     url?: string;
     filename?: string;
     expires_at?: string;
-    message?: string; // ADD THIS LINE
+    message?: string;
   }> {
     try {
       const response = await this.fetchApi('/investor/portfolio/statement', {
@@ -696,18 +724,11 @@ export class InvestorReportingService {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(
-        `${this.baseUrl}/campaigns/${campaignId}/financials/import`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: formData,
-        },
+      return await this.fetchFormData(
+        `/campaigns/${campaignId}/financials/import`,
+        formData,
+        'POST'
       );
-
-      return response.json();
     } catch (error) {
       console.error('Error importing campaign financials:', error);
       throw error;
@@ -844,20 +865,42 @@ export class InvestorReportingService {
   async createCampaignInvestorReport(
     campaignId: number,
     reportData: Partial<InvestorReport>,
+    attachments?: File[]
   ): Promise<{
     success: boolean;
     report: InvestorReport;
     errors?: string[];
   }> {
     try {
-      const response = await this.fetchApi(
-        `/campaigns/${campaignId}/investor_reports`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ report: reportData }),
-        },
-      );
-      return response;
+      // If there are attachments, use FormData
+      if (attachments && attachments.length > 0) {
+        const formData = new FormData();
+        Object.entries(reportData).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            formData.append(`report[${key}]`, value.toString());
+          }
+        });
+
+        attachments.forEach((file) => {
+          formData.append('report[attachments][]', file);
+        });
+
+        return await this.fetchFormData(
+          `/campaigns/${campaignId}/investor_reports`,
+          formData,
+          'POST'
+        );
+      } else {
+        // No attachments, use JSON
+        const response = await this.fetchApi(
+          `/campaigns/${campaignId}/investor_reports`,
+          {
+            method: 'POST',
+            body: JSON.stringify({ report: reportData }),
+          },
+        );
+        return response;
+      }
     } catch (error) {
       console.error('Error creating campaign investor report:', error);
       throw error;

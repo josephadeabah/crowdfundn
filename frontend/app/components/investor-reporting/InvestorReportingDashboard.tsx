@@ -100,6 +100,12 @@ const InvestorReportingDashboard: React.FC = () => {
     null,
   );
 
+    useEffect(() => {
+    if (token) {
+      investorReportingService.setToken(token);
+    }
+  }, [token]);
+  
   useEffect(() => {
     if (user && token) {
       fetchDashboardData();

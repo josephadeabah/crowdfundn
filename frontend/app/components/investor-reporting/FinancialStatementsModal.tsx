@@ -57,6 +57,7 @@ import { formatCurrency } from '@/app/utils/helpers/formatters';
 import { Skeleton } from '../ui/Skeleton';
 import { formatDate } from '@/app/utils/helpers/formatters';
 import { investorReportingService } from './services/investor-reporting.service';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface FinancialStatementsModalProps {
   isOpen: boolean;
@@ -96,6 +97,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
     campaignId,
   });
 
+  const { token } = useAuth();
+
   // Show a message if modal is open but no campaignId is provided
   if (isOpen && !campaignId) {
     return (
@@ -134,6 +137,12 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
     revenueData: [],
     profitabilityData: [],
   });
+
+    useEffect(() => {
+    if (token) {
+      investorReportingService.setToken(token);
+    }
+  }, [token]);
 
   useEffect(() => {
     console.log(

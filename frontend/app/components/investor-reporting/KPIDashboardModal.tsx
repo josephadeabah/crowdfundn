@@ -61,6 +61,7 @@ import {
 import { investorReportingService } from './services/investor-reporting.service';
 import { Skeleton } from '../ui/Skeleton';
 import { formatDate } from '@/app/utils/helpers/formatters';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface KPIDashboardModalProps {
   isOpen: boolean;
@@ -93,10 +94,17 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
   onClose,
   campaignId,
 }) => {
+  const { token } = useAuth();
   const [kpis, setKpis] = useState<KPI[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedKpiType, setSelectedKpiType] = useState('all');
   const [timeRange, setTimeRange] = useState('90d');
+
+    useEffect(() => {
+    if (token) {
+      investorReportingService.setToken(token);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (isOpen && campaignId) {
