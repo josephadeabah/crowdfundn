@@ -39,7 +39,9 @@ import {
 import { Separator } from '@/app/components/ui/separator';
 import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
-import investorReportingService, { InvestorReportingService } from './services/investor-reporting.service';
+import investorReportingService, {
+  InvestorReportingService,
+} from './services/investor-reporting.service';
 import { Skeleton } from '../ui/Skeleton';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
@@ -85,9 +87,9 @@ const NotificationPreferencesModal: React.FC<
   const [hasChanges, setHasChanges] = useState(false);
   const [originalPreferences, setOriginalPreferences] =
     useState<NotificationPreferences | null>(null);
-    const { token } = useAuth();
+  const { token } = useAuth();
 
-      useEffect(() => {
+  useEffect(() => {
     if (token) {
       investorReportingService.setToken(token);
     }

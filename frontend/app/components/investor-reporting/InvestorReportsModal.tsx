@@ -100,7 +100,7 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
   );
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
-    useEffect(() => {
+  useEffect(() => {
     if (token) {
       investorReportingService.setToken(token);
     }

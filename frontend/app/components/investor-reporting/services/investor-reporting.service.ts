@@ -190,7 +190,11 @@ export class InvestorReportingService {
     }
   }
 
-  private async fetchFormData(endpoint: string, formData: FormData, method: string = 'POST') {
+  private async fetchFormData(
+    endpoint: string,
+    formData: FormData,
+    method: string = 'POST',
+  ) {
     const url = `${this.baseUrl}${endpoint}`;
 
     if (!this.token) {
@@ -200,7 +204,7 @@ export class InvestorReportingService {
     const response = await fetch(url, {
       method,
       headers: {
-        'Authorization': `Bearer ${this.token}`,
+        Authorization: `Bearer ${this.token}`,
         // Don't set Content-Type - let browser set it with boundary
       },
       body: formData,
@@ -727,7 +731,7 @@ export class InvestorReportingService {
       return await this.fetchFormData(
         `/campaigns/${campaignId}/financials/import`,
         formData,
-        'POST'
+        'POST',
       );
     } catch (error) {
       console.error('Error importing campaign financials:', error);
@@ -865,7 +869,7 @@ export class InvestorReportingService {
   async createCampaignInvestorReport(
     campaignId: number,
     reportData: Partial<InvestorReport>,
-    attachments?: File[]
+    attachments?: File[],
   ): Promise<{
     success: boolean;
     report: InvestorReport;
@@ -888,7 +892,7 @@ export class InvestorReportingService {
         return await this.fetchFormData(
           `/campaigns/${campaignId}/investor_reports`,
           formData,
-          'POST'
+          'POST',
         );
       } else {
         // No attachments, use JSON

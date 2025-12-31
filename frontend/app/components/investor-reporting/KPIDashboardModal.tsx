@@ -100,7 +100,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
   const [selectedKpiType, setSelectedKpiType] = useState('all');
   const [timeRange, setTimeRange] = useState('90d');
 
-    useEffect(() => {
+  useEffect(() => {
     if (token) {
       investorReportingService.setToken(token);
     }

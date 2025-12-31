@@ -138,7 +138,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
     profitabilityData: [],
   });
 
-    useEffect(() => {
+  useEffect(() => {
     if (token) {
       investorReportingService.setToken(token);
     }
