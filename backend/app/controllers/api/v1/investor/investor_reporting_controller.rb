@@ -4,7 +4,7 @@ module Api
       class InvestorReportingController < ApplicationController
         
         before_action :authenticate_request
-        before_action :authorize_investor, except: [:campaign_financials, :campaign_kpis, :campaign_reports, :document_info]
+        before_action :authorize_investor, except: [:campaign_financials, :campaign_kpis, :campaign_reports]
         
         # GET /api/v1/investor/portfolio
         def portfolio
