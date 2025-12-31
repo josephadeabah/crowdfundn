@@ -150,7 +150,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
           isOpen={showCampaignSelector}
           onClose={() => setShowCampaignSelector(false)}
           title="Select a Campaign"
-          size="xlarge"
+          size="xxlarge"
         >
           <CampaignSelector onSelectCampaign={handleSelectCampaign} />
         </Modal>
