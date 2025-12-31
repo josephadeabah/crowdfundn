@@ -240,10 +240,12 @@ module Api
         end
         
         def authorize_fundraiser_or_admin
-          unless @current_user.admin? || @campaign.fundraiser == @current_user
-            render json: { error: 'Not authorized' }, status: :forbidden
+          unless @current_user.admin? || @campaign.fundraiser_id == @current_user.id
+            Rails.logger.warn "Unauthorized quarterly report attempt: user=#{@current_user.id}, campaign=#{@campaign.id}"
+            render json: { error: 'Not authorized for this campaign' }, status: :forbidden
           end
         end
+
         
         def report_params
           params.require(:report).permit(
