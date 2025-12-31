@@ -192,16 +192,28 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
     documentId?: number,
   ) => {
     try {
-      const response = await investorReportingService.downloadDocument(
-        documentId || reportId,
-      );
-
-      if (response?.success && response?.url) {
-        window.open(response?.url, '_blank');
+      const idToDownload = documentId || reportId;
+      
+      // First try to get document info
+      const response = await investorReportingService.getDocumentInfo(idToDownload);
+      
+      if (response?.success && response?.document?.file_url) {
+        // If we have a direct file URL, open it
+        window.open(response.document.file_url, '_blank');
+        toast.success('Opening document...');
+      } else {
+        // Otherwise use the download endpoint
+        await investorReportingService.downloadDocument(idToDownload);
+        toast.success('Download initiated');
       }
     } catch (error: any) {
       console.error('Error downloading report:', error);
-      toast.error(error?.message || 'Failed to download report');
+      
+      if (error?.message?.includes('Document not found')) {
+        toast.error('Document not found');
+      } else {
+        toast.error(error?.message || 'Failed to download report');
+      }
     }
   };
 

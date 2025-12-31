@@ -219,13 +219,29 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
     });
   };
 
+  // In FinancialStatementsModal.tsx, update the handleDownloadStatement function:
   const handleDownloadStatement = async (statementId: number) => {
     try {
-      await investorReportingService.downloadDocument(statementId);
-      toast.success('Financial statement downloaded');
+      // First try to get document info to see if file exists
+      const response = await investorReportingService.getDocumentInfo(statementId);
+      
+      if (response?.success && response?.document?.file_url) {
+        // If we have a direct file URL, open it
+        window.open(response.document.file_url, '_blank');
+        toast.success('Opening document...');
+      } else {
+        // Otherwise use the download endpoint
+        await investorReportingService.downloadDocument(statementId);
+        toast.success('Download initiated');
+      }
     } catch (error: any) {
       console.error('Error downloading statement:', error);
-      toast.error(error?.message || 'Failed to download financial statement');
+      
+      if (error?.message?.includes('Document not found')) {
+        toast.error('Document not found');
+      } else {
+        toast.error(error?.message || 'Failed to download financial statement');
+      }
     }
   };
 

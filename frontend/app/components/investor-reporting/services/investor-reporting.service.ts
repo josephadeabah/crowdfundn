@@ -428,16 +428,80 @@ export class InvestorReportingService {
     documentId: number,
   ): Promise<{ success: boolean; url?: string }> {
     try {
-      const response = await this.fetchApi(
-        `/investor/documents/${documentId}/download`,
-        {
-          method: 'POST',
-        },
-      );
+      // Create a form and submit it to trigger the download
+      // This is necessary because the Rails controller returns a 302 redirect
+      // which doesn't work well with fetch API for file downloads
+      await this.downloadFileViaForm(documentId);
+      
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error downloading document:', error);
+      
+      // Check if it's a 404 error
+      if (error?.message?.includes('404') || error?.message?.includes('Document not found')) {
+        throw new Error('Document not found');
+      }
+      
+      throw error;
+    }
+  }
+
+  // Helper method to download file via form submission
+  private async downloadFileViaForm(documentId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Create a temporary form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `${this.baseUrl}/investor/documents/${documentId}/download`;
+        form.target = '_blank'; // Open in new tab/window
+        form.style.display = 'none';
+        
+        // Add authorization token as hidden input
+        if (this.token) {
+          const tokenInput = document.createElement('input');
+          tokenInput.type = 'hidden';
+          tokenInput.name = 'Authorization';
+          tokenInput.value = `Bearer ${this.token}`;
+          form.appendChild(tokenInput);
+        }
+        
+        // Add the form to the document
+        document.body.appendChild(form);
+        
+        // Submit the form
+        form.submit();
+        
+        // Remove the form after submission
+        setTimeout(() => {
+          document.body.removeChild(form);
+          resolve();
+        }, 100);
+        
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  // Add a method to get document info first
+  async getDocumentInfo(documentId: number): Promise<{
+    success: boolean;
+    document?: {
+      id: number;
+      title: string;
+      file_url?: string;
+      file_name?: string;
+      file_size?: string;
+      file_format?: string;
+    };
+  }> {
+    try {
+      const response = await this.fetchApi(`/investor/documents/${documentId}/info`);
       return response;
     } catch (error) {
-      console.error('Error downloading document:', error);
-      throw error;
+      console.error('Error getting document info:', error);
+      return { success: false };
     }
   }
 

@@ -180,21 +180,31 @@ const InvestorReportingDashboard: React.FC = () => {
     setShowFinancialStatements(true);
   };
 
-  const handleDownloadReport = async (reportId: number) => {
-    try {
-      const response =
-        await investorReportingService.downloadDocument(reportId);
-      if (response?.success && response.url) {
-        window.open(response.url, '_blank');
-        toast.success('Report downloaded successfully');
-      } else {
-        toast.error('Failed to download report');
-      }
-    } catch (error: any) {
-      console.error('Error downloading report:', error);
-      toast.error(error.message || 'Failed to download report');
+// In InvestorReportingDashboard.tsx, update the handleDownloadReport function:
+const handleDownloadReport = async (reportId: number) => {
+  try {
+    // First try to get document info
+    const response = await investorReportingService.getDocumentInfo(reportId);
+    
+    if (response?.success && response?.document?.file_url) {
+      // If we have a direct file URL, open it
+      window.open(response.document.file_url, '_blank');
+      toast.success('Opening report...');
+    } else {
+      // Otherwise use the download endpoint
+      await investorReportingService.downloadDocument(reportId);
+      toast.success('Download initiated');
     }
-  };
+  } catch (error: any) {
+    console.error('Error downloading report:', error);
+    
+    if (error?.message?.includes('Document not found')) {
+      toast.error('Document not found');
+    } else {
+      toast.error(error?.message || 'Failed to download report');
+    }
+  }
+};
 
   if (loading) {
     return (
