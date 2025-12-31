@@ -468,6 +468,10 @@ class EquityCampaign < Campaign
     }
   end
 
+  def to_s
+    "#{company_name} - #{title}"
+  end
+
   # Add this method to your EquityCampaign model
   def create_investment(user, amount, attributes = {})
     EquityInvestment.transaction do
@@ -519,14 +523,13 @@ class EquityCampaign < Campaign
     report
   end
 
-  # ========== PRIVATE METHODS ==========
   private
-  
+
   def generate_executive_summary(start_date, end_date)
     # Generate executive summary based on financial performance
     financials = financial_statements.published
-                                     .where(period_end: start_date..end_date)
-                                     .order(period_end: :desc)
+                                    .where(period_end: start_date..end_date)
+                                    .order(period_end: :desc)
     
     return "Quarterly report for #{start_date.to_s(:short)} - #{end_date.to_s(:short)}." if financials.empty?
     
@@ -544,13 +547,13 @@ class EquityCampaign < Campaign
     
     summary
   end
-  
+
   def generate_key_highlights(start_date, end_date)
     highlights = []
     
     # Financial highlights
     financials = financial_statements.published
-                                     .where(period_end: start_date..end_date)
+                                    .where(period_end: start_date..end_date)
     
     unless financials.empty?
       revenue_growth = calculate_revenue_growth(financials)
@@ -563,8 +566,8 @@ class EquityCampaign < Campaign
     
     # Investment highlights
     investments_count = equity_investments.successful
-                                         .where(created_at: start_date..end_date)
-                                         .count
+                                        .where(created_at: start_date..end_date)
+                                        .count
     if investments_count > 0
       highlights << "Attracted #{investments_count} new investors"
     end
@@ -584,7 +587,7 @@ class EquityCampaign < Campaign
     
     highlights.join(". ")
   end
-  
+
   def calculate_revenue_growth(financials)
     return 0 if financials.size < 2
     

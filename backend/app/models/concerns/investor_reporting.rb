@@ -6,7 +6,7 @@ module InvestorReporting
     # Add any associations or validations if needed
   end
   
-  def generate_quarterly_report(report_date)
+  def generate_quarterly_report(report_date = Date.current)
     # Determine quarter based on report_date
     quarter = ((report_date.month - 1) / 3) + 1
     year = report_date.year

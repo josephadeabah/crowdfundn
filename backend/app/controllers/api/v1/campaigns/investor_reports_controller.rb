@@ -163,13 +163,38 @@ module Api
           else
             # Collection route - create new quarterly report
             begin
-              # Use the new method we just added
-              report = @campaign.generate_quarterly_report(report_date)
-              
-              render json: {
-                success: true,
-                report: report.as_json
-              }
+              # Use the generate_quarterly_report method which now exists in both Campaign and EquityCampaign
+              if @campaign.respond_to?(:generate_quarterly_report)
+                report = @campaign.generate_quarterly_report(report_date)
+                
+                render json: {
+                  success: true,
+                  report: report.as_json
+                }
+              else
+                # Fallback - create basic quarterly report
+                quarter = ((report_date.month - 1) / 3) + 1
+                year = report_date.year
+                quarter_start_month = (quarter - 1) * 3 + 1
+                period_start = Date.new(year, quarter_start_month, 1)
+                period_end = period_start.end_of_quarter
+                
+                report = @campaign.investor_reports.create!(
+                  report_type: 'quarterly',
+                  title: "Q#{quarter} #{year} Quarterly Report",
+                  report_date: report_date,
+                  period_start: period_start,
+                  period_end: period_end,
+                  status: 'draft',
+                  notify_investors: false,
+                  executive_summary: "Quarterly financial report for Q#{quarter} #{year}."
+                )
+                
+                render json: {
+                  success: true,
+                  report: report.as_json
+                }
+              end
             rescue => e
               Rails.logger.error "Error generating quarterly report: #{e.message}"
               Rails.logger.error e.backtrace.join("\n")
