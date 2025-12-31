@@ -531,7 +531,8 @@ class EquityCampaign < Campaign
                                     .where(period_end: start_date..end_date)
                                     .order(period_end: :desc)
     
-    return "Quarterly report for #{start_date.to_s(:short)} - #{end_date.to_s(:short)}." if financials.empty?
+    # FIX: Use strftime instead of to_s(:short)
+    return "Quarterly report for #{start_date.strftime('%b %d, %Y')} - #{end_date.strftime('%b %d, %Y')}." if financials.empty?
     
     latest = financials.first
     
