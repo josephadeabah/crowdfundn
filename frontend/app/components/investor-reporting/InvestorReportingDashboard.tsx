@@ -103,7 +103,9 @@ const safeToFixed = (value: any, decimals: number = 2): string => {
 const InvestorReportingDashboard: React.FC = () => {
   const { user, token } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
+  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(
+    null,
+  );
   const [recentReports, setRecentReports] = useState<any[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
@@ -139,13 +141,15 @@ const InvestorReportingDashboard: React.FC = () => {
       }
 
       // Fetch recent reports
-      const reportsResponse = await investorReportingService.getRecentInvestorReports(5);
+      const reportsResponse =
+        await investorReportingService.getRecentInvestorReports(5);
       if (reportsResponse?.success) {
         setRecentReports(reportsResponse.reports || []);
       }
 
       // Fetch notification count
-      const notificationsResponse = await investorReportingService.getUnreadNotificationCount();
+      const notificationsResponse =
+        await investorReportingService.getUnreadNotificationCount();
       setUnreadNotifications(notificationsResponse?.count || 0);
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
@@ -157,7 +161,8 @@ const InvestorReportingDashboard: React.FC = () => {
 
   const handleDownloadStatement = async () => {
     try {
-      const response = await investorReportingService.downloadPortfolioStatement();
+      const response =
+        await investorReportingService.downloadPortfolioStatement();
       if (response?.success && response.url) {
         window.open(response.url, '_blank');
         toast.success('Portfolio statement downloaded successfully');
@@ -177,7 +182,8 @@ const InvestorReportingDashboard: React.FC = () => {
 
   const handleDownloadReport = async (reportId: number) => {
     try {
-      const response = await investorReportingService.downloadDocument(reportId);
+      const response =
+        await investorReportingService.downloadDocument(reportId);
       if (response?.success && response.url) {
         window.open(response.url, '_blank');
         toast.success('Report downloaded successfully');
@@ -398,9 +404,7 @@ const InvestorReportingDashboard: React.FC = () => {
                     <div className="flex items-center space-x-4">
                       <Building className="h-8 w-8 text-muted-foreground" />
                       <div>
-                        <h4 className="font-medium">
-                          {campaign.company_name}
-                        </h4>
+                        <h4 className="font-medium">{campaign.company_name}</h4>
                         <p className="text-sm text-muted-foreground">
                           {campaign.investment_count} investment
                           {campaign.investment_count !== 1 ? 's' : ''}
@@ -417,7 +421,9 @@ const InvestorReportingDashboard: React.FC = () => {
                       </div>
                       <div
                         className={`text-sm ${
-                          safeToNumber(campaign.roi) >= 0 ? 'text-green-600' : 'text-red-600'
+                          safeToNumber(campaign.roi) >= 0
+                            ? 'text-green-600'
+                            : 'text-red-600'
                         }`}
                       >
                         {safeToNumber(campaign.roi) >= 0 ? '+' : ''}
@@ -427,7 +433,9 @@ const InvestorReportingDashboard: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleViewCampaignDetails(campaign.campaign_id)}
+                      onClick={() =>
+                        handleViewCampaignDetails(campaign.campaign_id)
+                      }
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -481,7 +489,9 @@ const InvestorReportingDashboard: React.FC = () => {
                           <Calendar className="h-3 w-3" />
                           <span>
                             {report.report_date
-                              ? new Date(report.report_date).toLocaleDateString()
+                              ? new Date(
+                                  report.report_date,
+                                ).toLocaleDateString()
                               : 'N/A'}
                           </span>
                           <Badge variant="outline" className="capitalize">
@@ -546,11 +556,17 @@ const InvestorReportingDashboard: React.FC = () => {
                     <div className="flex justify-between text-sm mb-1">
                       <span>Portfolio Concentration</span>
                       <span className="font-medium">
-                        {safeToFixed(safeToNumber(riskAnalysis.concentration_risk) * 100, 1)}%
+                        {safeToFixed(
+                          safeToNumber(riskAnalysis.concentration_risk) * 100,
+                          1,
+                        )}
+                        %
                       </span>
                     </div>
                     <Progress
-                      value={safeToNumber(riskAnalysis.concentration_risk) * 100}
+                      value={
+                        safeToNumber(riskAnalysis.concentration_risk) * 100
+                      }
                       className="h-2"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
@@ -580,7 +596,11 @@ const InvestorReportingDashboard: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Overall Risk Score</span>
                       <span className="font-medium">
-                        {safeToFixed(safeToNumber(riskAnalysis.overall_risk_score) * 100, 1)}%
+                        {safeToFixed(
+                          safeToNumber(riskAnalysis.overall_risk_score) * 100,
+                          1,
+                        )}
+                        %
                       </span>
                     </div>
                   </div>
@@ -596,47 +616,49 @@ const InvestorReportingDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {portfolioData?.cash_flow?.slice(0, 3).map((cashflow, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between"
-                    >
-                      <div>
-                        <p className="font-medium">{cashflow.month}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Invested:{' '}
-                          {formatCurrency(
-                            safeToNumber(cashflow.invested),
-                            portfolioMetrics?.currency || 'GHS',
-                            portfolioMetrics?.currency_symbol || '₵',
-                          )}
-                        </p>
+                  {portfolioData?.cash_flow
+                    ?.slice(0, 3)
+                    .map((cashflow, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between"
+                      >
+                        <div>
+                          <p className="font-medium">{cashflow.month}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Invested:{' '}
+                            {formatCurrency(
+                              safeToNumber(cashflow.invested),
+                              portfolioMetrics?.currency || 'GHS',
+                              portfolioMetrics?.currency_symbol || '₵',
+                            )}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">
+                            {formatCurrency(
+                              safeToNumber(cashflow.current_value),
+                              portfolioMetrics?.currency || 'GHS',
+                              portfolioMetrics?.currency_symbol || '₵',
+                            )}
+                          </p>
+                          <p
+                            className={`text-sm ${
+                              safeToNumber(cashflow.returns) >= 0
+                                ? 'text-green-600'
+                                : 'text-red-600'
+                            }`}
+                          >
+                            {safeToNumber(cashflow.returns) >= 0 ? '+' : ''}
+                            {formatCurrency(
+                              safeToNumber(cashflow.returns),
+                              portfolioMetrics?.currency || 'GHS',
+                              portfolioMetrics?.currency_symbol || '₵',
+                            )}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">
-                          {formatCurrency(
-                            safeToNumber(cashflow.current_value),
-                            portfolioMetrics?.currency || 'GHS',
-                            portfolioMetrics?.currency_symbol || '₵',
-                          )}
-                        </p>
-                        <p
-                          className={`text-sm ${
-                            safeToNumber(cashflow.returns) >= 0
-                              ? 'text-green-600'
-                              : 'text-red-600'
-                          }`}
-                        >
-                          {safeToNumber(cashflow.returns) >= 0 ? '+' : ''}
-                          {formatCurrency(
-                            safeToNumber(cashflow.returns),
-                            portfolioMetrics?.currency || 'GHS',
-                            portfolioMetrics?.currency_symbol || '₵',
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
 
                   {!portfolioData?.cash_flow?.length && (
                     <p className="text-center text-muted-foreground py-4">
@@ -737,7 +759,9 @@ const InvestorReportingDashboard: React.FC = () => {
                     className="w-full justify-start"
                     onClick={() => {
                       if (campaignPerformance.length > 0) {
-                        setSelectedCampaignId(campaignPerformance[0].campaign_id);
+                        setSelectedCampaignId(
+                          campaignPerformance[0].campaign_id,
+                        );
                         setShowFinancialStatements(true);
                       }
                     }}

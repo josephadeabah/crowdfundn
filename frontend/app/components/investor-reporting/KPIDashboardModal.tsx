@@ -59,7 +59,11 @@ import {
 } from 'recharts';
 import { investorReportingService } from './services/investor-reporting.service';
 import { Skeleton } from '../ui/Skeleton';
-import { formatDate, safeToNumber, safeToFixed } from '@/app/utils/helpers/formatters';
+import {
+  formatDate,
+  safeToNumber,
+  safeToFixed,
+} from '@/app/utils/helpers/formatters';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface KPIDashboardModalProps {
@@ -157,7 +161,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
     const currentValue = safeToNumber(kpi.latest_value?.value);
     const targetValue = safeToNumber(kpi.target_value);
     const achievement = safeToNumber(kpi.performance_vs_target?.percentage);
-    
+
     return {
       name: kpi.name,
       current: currentValue,
@@ -174,14 +178,14 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
         date,
         value: safeToNumber(value),
         name: kpi.name,
-      }))
+      })),
     );
 
   const radarData = primaryKpis.map((kpi) => {
     const currentValue = safeToNumber(kpi.latest_value?.value);
     const targetValue = safeToNumber(kpi.target_value);
     const fullMark = Math.max(targetValue * 1.5, currentValue * 1.5);
-    
+
     return {
       subject: kpi.name,
       A: currentValue,
@@ -237,12 +241,16 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
         {/* Primary KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {primaryKpis.slice(0, 3).map((kpi) => {
-            const achievement = safeToNumber(kpi.performance_vs_target?.percentage);
+            const achievement = safeToNumber(
+              kpi.performance_vs_target?.percentage,
+            );
             const isOnTarget = achievement >= 90;
             const isBehind = achievement < 70;
             const currentValue = safeToNumber(kpi.latest_value?.value);
             const targetValue = safeToNumber(kpi.target_value);
-            const difference = safeToNumber(kpi.performance_vs_target?.difference);
+            const difference = safeToNumber(
+              kpi.performance_vs_target?.difference,
+            );
 
             return (
               <Card key={kpi.id}>
@@ -383,10 +391,14 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                 ) : kpis.length > 0 ? (
                   <div className="space-y-4">
                     {kpis.map((kpi) => {
-                      const achievement = safeToNumber(kpi.performance_vs_target?.percentage);
+                      const achievement = safeToNumber(
+                        kpi.performance_vs_target?.percentage,
+                      );
                       const isOnTarget = achievement >= 90;
                       const isBehind = achievement < 70;
-                      const currentValue = safeToNumber(kpi.latest_value?.value);
+                      const currentValue = safeToNumber(
+                        kpi.latest_value?.value,
+                      );
                       const targetValue = safeToNumber(kpi.target_value);
 
                       return (
@@ -475,20 +487,30 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                 ) : kpis.length > 0 ? (
                   <div className="space-y-6">
                     {kpis.map((kpi) => {
-                      const achievement = safeToNumber(kpi.performance_vs_target?.percentage);
+                      const achievement = safeToNumber(
+                        kpi.performance_vs_target?.percentage,
+                      );
                       const trend = kpi.trend || {};
                       const trendDates = Object.keys(trend).sort();
                       const latestValue = safeToNumber(kpi.latest_value?.value);
-                      const previousValue = safeToNumber(trend[trendDates[trendDates.length - 2]]);
+                      const previousValue = safeToNumber(
+                        trend[trendDates[trendDates.length - 2]],
+                      );
                       const growth = previousValue
                         ? ((latestValue - previousValue) / previousValue) * 100
                         : 0;
                       const targetValue = safeToNumber(kpi.target_value);
-                      const difference = safeToNumber(kpi.performance_vs_target?.difference);
-                      const trendValues = Object.values(trend).map(value => safeToNumber(value));
-                      const averageValue = trendValues.length > 0
-                        ? trendValues.reduce((a, b) => a + b, 0) / trendValues.length
-                        : 0;
+                      const difference = safeToNumber(
+                        kpi.performance_vs_target?.difference,
+                      );
+                      const trendValues = Object.values(trend).map((value) =>
+                        safeToNumber(value),
+                      );
+                      const averageValue =
+                        trendValues.length > 0
+                          ? trendValues.reduce((a, b) => a + b, 0) /
+                            trendValues.length
+                          : 0;
 
                       return (
                         <Card key={kpi.id}>
@@ -535,7 +557,9 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                                   </div>
                                   <div
                                     className={`text-sm ${
-                                      growth >= 0 ? 'text-green-600' : 'text-red-600'
+                                      growth >= 0
+                                        ? 'text-green-600'
+                                        : 'text-red-600'
                                     }`}
                                   >
                                     {growth >= 0 ? '+' : ''}
@@ -608,7 +632,9 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                                     <span>Latest Update</span>
                                     <span className="font-medium">
                                       {kpi.latest_value?.period_date
-                                        ? formatDate(kpi.latest_value.period_date)
+                                        ? formatDate(
+                                            kpi.latest_value.period_date,
+                                          )
                                         : 'N/A'}
                                     </span>
                                   </div>

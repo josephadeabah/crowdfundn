@@ -32,8 +32,12 @@ import {
 import { Badge } from '@/app/components/ui/badge';
 import { Progress } from '@/app/components/ui/progress';
 import { toast } from 'sonner';
-import { formatCurrency } from '@/app/utils/helpers/formatters';
-import { formatDate } from '@/app/utils/helpers/formatters';
+import { 
+  formatCurrency, 
+  formatDate, 
+  formatPercentage,
+  formatNumber 
+} from '@/app/utils/helpers/formatters';
 
 interface PortfolioOverviewModalProps {
   isOpen: boolean;
@@ -167,7 +171,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                         : 'text-red-600'
                     }`}
                   >
-                    {summary.roi?.toFixed(2) || '0.00'}%
+                    {formatPercentage(summary.roi || 0, 2)}
                   </p>
                 </div>
                 <Percent className="h-8 w-8 text-purple-500" />
@@ -213,8 +217,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                             </span>
                             <span>•</span>
                             <span>
-                              {campaign.ownership_percentage?.toFixed(2) ||
-                                '0.00'}
+                              {formatNumber(campaign.ownership_percentage || 0, 2)}
                               % ownership
                             </span>
                           </div>
@@ -244,7 +247,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                           }`}
                         >
                           {(campaign.roi || 0) >= 0 ? '+' : ''}
-                          {campaign.roi?.toFixed(2) || '0.00'}% ROI
+                          {formatPercentage(campaign.roi || 0, 2)}
                         </div>
                       </div>
                     </div>
@@ -281,10 +284,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                               Portfolio Concentration
                             </div>
                             <div className="text-lg font-medium">
-                              {(
-                                (riskAnalysis.concentration_risk || 0) * 100
-                              ).toFixed(1)}
-                              %
+                              {formatPercentage((riskAnalysis.concentration_risk || 0) * 100, 1)}
                             </div>
                             <div className="text-xs text-muted-foreground">
                               Herfindahl-Hirschman Index
@@ -295,10 +295,7 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                               Overall Risk Score
                             </div>
                             <div className="text-lg font-medium">
-                              {(
-                                (riskAnalysis.overall_risk_score || 0) * 100
-                              ).toFixed(1)}
-                              %
+                              {formatPercentage((riskAnalysis.overall_risk_score || 0) * 100, 1)}
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {riskAnalysis.risk_category?.toUpperCase() ||

@@ -43,11 +43,11 @@ import {
 } from '@/app/components/ui/select';
 import { Label } from '@/app/components/ui/label';
 import { toast } from 'sonner';
-import { 
-  formatDate, 
-  formatCurrency, 
-  formatPercentage, 
-  formatNumber 
+import {
+  formatDate,
+  formatCurrency,
+  formatPercentage,
+  formatNumber,
 } from '@/app/utils/helpers/formatters';
 import investorReportingService, {
   InvestorReportingService,
@@ -513,7 +513,10 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                         <span
                           className={`font-medium ${(portfolioData?.summary?.roi ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                         >
-                          {formatPercentage(portfolioData?.summary?.roi ?? 0, 2)}
+                          {formatPercentage(
+                            portfolioData?.summary?.roi ?? 0,
+                            2,
+                          )}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -521,7 +524,10 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                           Internal Rate of Return (IRR)
                         </span>
                         <span className="font-medium">
-                          {formatPercentage(portfolioData?.summary?.irr ?? 0, 2)}
+                          {formatPercentage(
+                            portfolioData?.summary?.irr ?? 0,
+                            2,
+                          )}
                         </span>
                       </div>
                       <div className="flex justify-between">
