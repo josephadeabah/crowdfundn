@@ -179,20 +179,55 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
       console.log('Response received:', response);
       if (response?.success) {
         // Transform string numbers to actual numbers
-        const transformedStatements = (response?.financials ?? []).map(stmt => ({
-          ...stmt,
-          revenue: typeof stmt.revenue === 'string' ? parseFloat(stmt.revenue) || 0 : stmt.revenue || 0,
-          expenses: typeof stmt.expenses === 'string' ? parseFloat(stmt.expenses) || 0 : stmt.expenses || 0,
-          gross_profit: typeof stmt.gross_profit === 'string' ? parseFloat(stmt.gross_profit) || 0 : stmt.gross_profit || 0,
-          net_income: typeof stmt.net_income === 'string' ? parseFloat(stmt.net_income) || 0 : stmt.net_income || 0,
-          assets: typeof stmt.assets === 'string' ? parseFloat(stmt.assets) || 0 : stmt.assets || 0,
-          liabilities: typeof stmt.liabilities === 'string' ? parseFloat(stmt.liabilities) || 0 : stmt.liabilities || 0,
-          equity: typeof stmt.equity === 'string' ? parseFloat(stmt.equity) || 0 : stmt.equity || 0,
-          burn_rate: typeof stmt.burn_rate === 'string' ? parseFloat(stmt.burn_rate) || 0 : stmt.burn_rate || 0,
-          runway_months: typeof stmt.runway_months === 'string' ? parseFloat(stmt.runway_months) || 0 : stmt.runway_months || 0,
-          gross_margin: typeof stmt.gross_margin === 'string' ? parseFloat(stmt.gross_margin) || 0 : stmt.gross_margin || 0,
-          net_margin: typeof stmt.net_margin === 'string' ? parseFloat(stmt.net_margin) || 0 : stmt.net_margin || 0,
-        }));
+        const transformedStatements = (response?.financials ?? []).map(
+          (stmt) => ({
+            ...stmt,
+            revenue:
+              typeof stmt.revenue === 'string'
+                ? parseFloat(stmt.revenue) || 0
+                : stmt.revenue || 0,
+            expenses:
+              typeof stmt.expenses === 'string'
+                ? parseFloat(stmt.expenses) || 0
+                : stmt.expenses || 0,
+            gross_profit:
+              typeof stmt.gross_profit === 'string'
+                ? parseFloat(stmt.gross_profit) || 0
+                : stmt.gross_profit || 0,
+            net_income:
+              typeof stmt.net_income === 'string'
+                ? parseFloat(stmt.net_income) || 0
+                : stmt.net_income || 0,
+            assets:
+              typeof stmt.assets === 'string'
+                ? parseFloat(stmt.assets) || 0
+                : stmt.assets || 0,
+            liabilities:
+              typeof stmt.liabilities === 'string'
+                ? parseFloat(stmt.liabilities) || 0
+                : stmt.liabilities || 0,
+            equity:
+              typeof stmt.equity === 'string'
+                ? parseFloat(stmt.equity) || 0
+                : stmt.equity || 0,
+            burn_rate:
+              typeof stmt.burn_rate === 'string'
+                ? parseFloat(stmt.burn_rate) || 0
+                : stmt.burn_rate || 0,
+            runway_months:
+              typeof stmt.runway_months === 'string'
+                ? parseFloat(stmt.runway_months) || 0
+                : stmt.runway_months || 0,
+            gross_margin:
+              typeof stmt.gross_margin === 'string'
+                ? parseFloat(stmt.gross_margin) || 0
+                : stmt.gross_margin || 0,
+            net_margin:
+              typeof stmt.net_margin === 'string'
+                ? parseFloat(stmt.net_margin) || 0
+                : stmt.net_margin || 0,
+          }),
+        );
 
         console.log('Setting transformed statements:', transformedStatements);
         setStatements(transformedStatements);
@@ -445,7 +480,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         Runway
                       </div>
                       <div className="text-2xl font-bold">
-                        {safeToFixed(selectedStatement?.runway_months, 1)} months
+                        {safeToFixed(selectedStatement?.runway_months, 1)}{' '}
+                        months
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         Burn rate:{' '}
@@ -680,7 +716,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           Runway
                         </div>
                         <div className="text-lg font-medium">
-                          {safeToFixed(selectedStatement?.runway_months, 1)} months
+                          {safeToFixed(selectedStatement?.runway_months, 1)}{' '}
+                          months
                         </div>
                       </div>
                     </div>
@@ -832,15 +869,17 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {selectedStatement?.revenue && selectedStatement?.expenses
+                            {selectedStatement?.revenue &&
+                            selectedStatement?.expenses
                               ? safeToFixed(
                                   (((selectedStatement?.gross_profit ?? 0) -
                                     (selectedStatement?.expenses ?? 0)) /
                                     (selectedStatement?.revenue ?? 1)) *
                                     100,
-                                  1
+                                  1,
                                 )
-                              : '0.0'}%
+                              : '0.0'}
+                            %
                           </div>
                         </div>
                       </div>
@@ -861,7 +900,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                               ? safeToFixed(
                                   (selectedStatement?.assets ?? 0) /
                                     (selectedStatement?.liabilities ?? 1),
-                                  1
+                                  1,
                                 )
                               : 'N/A'}
                           </div>
@@ -878,7 +917,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                               ? safeToFixed(
                                   (selectedStatement?.liabilities ?? 0) /
                                     (selectedStatement?.equity ?? 1),
-                                  1
+                                  1,
                                 )
                               : 'N/A'}
                           </div>
@@ -895,7 +934,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                               ? safeToFixed(
                                   (selectedStatement?.revenue ?? 0) /
                                     (selectedStatement?.assets ?? 1),
-                                  2
+                                  2,
                                 )
                               : 'N/A'}
                           </div>
@@ -927,7 +966,8 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           )}
                         </div>
                         <div className="text-sm text-green-600 mt-1">
-                          +{safeToFixed(selectedStatement?.net_margin, 1)}% margin
+                          +{safeToFixed(selectedStatement?.net_margin, 1)}%
+                          margin
                         </div>
                       </div>
                       <div className="text-center p-4 border rounded-lg">
