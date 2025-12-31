@@ -222,27 +222,46 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   // In FinancialStatementsModal.tsx, update the handleDownloadStatement function:
   const handleDownloadStatement = async (statementId: number) => {
     try {
-      // First try to get document info to see if file exists
-      const response =
-        await investorReportingService.getDocumentInfo(statementId);
-
-      if (response?.success && response?.document?.file_url) {
-        // If we have a direct file URL, open it
-        window.open(response.document.file_url, '_blank');
-        toast.success('Opening document...');
-      } else {
-        // Otherwise use the download endpoint
-        await investorReportingService.downloadDocument(statementId);
-        toast.success('Download initiated');
+      // Find the statement in the list
+      const statement = statements.find(s => s.id === statementId);
+      
+      if (!statement) {
+        toast.error('Statement not found');
+        return;
       }
+      
+      // Check if statement has a source_file_url
+      if (statement.source_file_url) {
+        // Open the file URL directly
+        window.open(statement.source_file_url, '_blank');
+        toast.success('Opening document...');
+        return;
+      }
+      
+      // If no direct URL, try the download endpoint
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/investor/documents/${statementId}/download`;
+      
+      // Try a simple fetch to see if it works
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include', // Important for cookies
+      });
+      
+      if (response.ok) {
+        // It worked (probably redirected)
+        toast.success('Download started...');
+      } else if (response.status === 404) {
+        toast.error('No file attached to this statement');
+      } else {
+        toast.error('Failed to download');
+      }
+      
     } catch (error: any) {
       console.error('Error downloading statement:', error);
-
-      if (error?.message?.includes('Document not found')) {
-        toast.error('Document not found');
-      } else {
-        toast.error(error?.message || 'Failed to download financial statement');
-      }
+      toast.error('No file available for download');
     }
   };
 
