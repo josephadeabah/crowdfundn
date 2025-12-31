@@ -94,14 +94,16 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-xs text-gray-700">Valuation</p>
                     <p className="font-semibold text-gray-900">
-                      {user?.currency?.toUpperCase()}{parseInt(campaign.valuation).toLocaleString()}
+                      {user?.currency?.toUpperCase()}
+                      {parseInt(campaign.valuation).toLocaleString()}
                     </p>
                   </div>
                 ) : (
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-xs text-gray-700">Goal</p>
                     <p className="font-semibold text-gray-900">
-                      {user?.currency?.toUpperCase()}{parseInt(campaign.goal_amount || '0').toLocaleString()}
+                      {user?.currency?.toUpperCase()}
+                      {parseInt(campaign.goal_amount || '0').toLocaleString()}
                     </p>
                   </div>
                 )}

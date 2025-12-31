@@ -45,7 +45,7 @@ interface FinancialDashboardProps {
 const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
   campaignId,
 }) => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -187,7 +187,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
   const summaryCards = [
     {
       title: 'Total Invested',
-      value: `$${dashboardData.summary.total_invested.toLocaleString()}`,
+      value: `${user?.currency?.toUpperCase()}${dashboardData.summary.total_invested.toLocaleString()}`,
       change: '+12.5%',
       icon: <FiDollarSign className="h-5 w-5" />,
       color: 'text-green-600',
@@ -203,7 +203,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
     },
     {
       title: 'Valuation',
-      value: `$${dashboardData.summary.valuation.toLocaleString()}`,
+      value: `${user?.currency?.toUpperCase()}${dashboardData.summary.valuation.toLocaleString()}`,
       change: '+8.2%',
       icon: <FiTrendingUp className="h-5 w-5" />,
       color: 'text-gray-600',
@@ -312,11 +312,11 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `$${value.toLocaleString()}`}
+                    tickFormatter={(value) => `${user?.currency?.toUpperCase()}${value.toLocaleString()}`}
                   />
                   <Tooltip
                     formatter={(value) => [
-                      `$${value.toLocaleString()}`,
+                      `${user?.currency?.toUpperCase()}${value.toLocaleString()}`,
                       'Revenue',
                     ]}
                   />
@@ -360,11 +360,11 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `$${value.toLocaleString()}`}
+                    tickFormatter={(value) => `${user?.currency?.toUpperCase()}${value.toLocaleString()}`}
                   />
                   <Tooltip
                     formatter={(value) => [
-                      `$${value.toLocaleString()}`,
+                      `${user?.currency?.toUpperCase()}${value.toLocaleString()}`,
                       'Amount',
                     ]}
                   />

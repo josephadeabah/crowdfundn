@@ -340,10 +340,12 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
                     </p>
                     <div className="flex gap-4 mt-2 text-sm text-gray-500">
                       <span>
-                        Revenue: {user?.currency?.toUpperCase()}{financial.revenue.toLocaleString()}
+                        Revenue: {user?.currency?.toUpperCase()}
+                        {financial.revenue.toLocaleString()}
                       </span>
                       <span>
-                        Expenses: {user?.currency?.toUpperCase()}{financial.expenses.toLocaleString()}
+                        Expenses: {user?.currency?.toUpperCase()}
+                        {financial.expenses.toLocaleString()}
                       </span>
                       <span>
                         Net Income: {user?.currency?.toUpperCase()}
@@ -478,7 +480,9 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="revenue">Revenue ({user?.currency?.toUpperCase()})</Label>
+              <Label htmlFor="revenue">
+                Revenue ({user?.currency?.toUpperCase()})
+              </Label>
               <Input
                 id="revenue"
                 type="number"
@@ -492,7 +496,9 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="expenses">Expenses ({user?.currency?.toUpperCase()})</Label>
+              <Label htmlFor="expenses">
+                Expenses ({user?.currency?.toUpperCase()})
+              </Label>
               <Input
                 id="expenses"
                 type="number"
@@ -506,7 +512,9 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="assets">Assets ({user?.currency?.toUpperCase()})</Label>
+              <Label htmlFor="assets">
+                Assets ({user?.currency?.toUpperCase()})
+              </Label>
               <Input
                 id="assets"
                 type="number"
@@ -520,7 +528,9 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="liabilities">Liabilities ({user?.currency?.toUpperCase()})</Label>
+              <Label htmlFor="liabilities">
+                Liabilities ({user?.currency?.toUpperCase()})
+              </Label>
               <Input
                 id="liabilities"
                 type="number"
@@ -625,7 +635,9 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit_revenue">Revenue ({user?.currency?.toUpperCase()})</Label>
+              <Label htmlFor="edit_revenue">
+                Revenue ({user?.currency?.toUpperCase()})
+              </Label>
               <Input
                 id="edit_revenue"
                 type="number"
@@ -638,7 +650,9 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit_expenses">Expenses ({user?.currency?.toUpperCase()})</Label>
+              <Label htmlFor="edit_expenses">
+                Expenses ({user?.currency?.toUpperCase()})
+              </Label>
               <Input
                 id="edit_expenses"
                 type="number"

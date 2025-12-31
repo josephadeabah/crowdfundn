@@ -437,7 +437,9 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
                   <SelectValue placeholder="Select unit" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="currency">Currency ({user?.currency?.toUpperCase()})</SelectItem>
+                  <SelectItem value="currency">
+                    Currency ({user?.currency?.toUpperCase()})
+                  </SelectItem>
                   <SelectItem value="percentage">Percentage (%)</SelectItem>
                   <SelectItem value="number">Number</SelectItem>
                   <SelectItem value="ratio">Ratio</SelectItem>
