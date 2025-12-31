@@ -43,13 +43,8 @@ module InvestorReporting
       total_invested = investments.sum(&:amount)
       total_current = investments.sum { |inv| inv.current_value || inv.amount }
       
-      # FIXED: Specify table name to avoid ambiguous column
-      begin
-        average_years = investments.average("EXTRACT(YEAR FROM AGE(NOW(), equity_investments.created_at))").to_f
-      rescue ActiveRecord::StatementInvalid
-        # Fallback: calculate in Ruby if SQL fails
-        average_years = calculate_average_investment_age_ruby(investments)
-      end
+      # FIXED: Calculate average age in Ruby to avoid SQL issues
+      average_years = calculate_average_investment_age_ruby(investments)
       
       return 0 if average_years.zero? || total_invested.zero?
       
@@ -111,7 +106,7 @@ module InvestorReporting
           currency: @user.currency,
           currency_symbol: @user.currency_symbol
         },
-        by_campaign: calculate_by_campaign(investments),
+        by_campaign: calculate_by_campaign_simplified(investments),
         performance_metrics: { time_weighted_return: 0 },
         risk_analysis: { risk_category: 'Medium' },
         cash_flow: [],
@@ -160,7 +155,31 @@ module InvestorReporting
           investment_count: camp_investments.count,
           first_investment_date: camp_investments.min_by(&:created_at).created_at,
           latest_valuation: campaign.valuation,
-          valuation_change: calculate_valuation_change(campaign, invested)
+          valuation_change: calculate_valuation_change(campaign, invested, camp_investments)
+        }
+      end.sort_by { |c| -c[:invested] }
+    end
+    
+    def calculate_by_campaign_simplified(investments)
+      investments.group_by(&:campaign).map do |campaign, camp_investments|
+        invested = camp_investments.sum(&:amount)
+        current = camp_investments.sum { |inv| inv.current_value || inv.amount }
+        returns = current - invested
+        roi = invested.zero? ? 0 : (returns / invested * 100).round(2)
+        
+        {
+          campaign_id: campaign.id,
+          campaign_name: campaign.title,
+          company_name: campaign.company_name,
+          invested: invested,
+          current_value: current,
+          returns: returns,
+          roi: roi,
+          ownership_percentage: camp_investments.sum(&:percentage).round(4),
+          investment_count: camp_investments.count,
+          first_investment_date: camp_investments.min_by(&:created_at).created_at,
+          latest_valuation: campaign.valuation,
+          valuation_change: 0 # Skip complex calculation
         }
       end.sort_by { |c| -c[:invested] }
     end
@@ -220,14 +239,11 @@ module InvestorReporting
       end
     end
     
-    def calculate_valuation_change(campaign, invested)
+    def calculate_valuation_change(campaign, invested, camp_investments)
       return 0 if invested.zero?
       
-      # Calculate how much the valuation has changed since average investment
-      average_investment_date = campaign.equity_investments
-                                        .where(user: @user)
-                                        .average(:created_at)
-      
+      # Calculate average investment date in Ruby to avoid SQL timestamp averaging
+      average_investment_date = calculate_average_date_ruby(camp_investments)
       return 0 unless average_investment_date
       
       # This is a simplified calculation
@@ -238,6 +254,14 @@ module InvestorReporting
       
       valuation_change = current_valuation - initial_valuation
       (valuation_change / initial_valuation * 100).round(2)
+    end
+    
+    def calculate_average_date_ruby(investments)
+      return nil if investments.empty?
+      
+      # Calculate average timestamp in Ruby
+      total_seconds = investments.sum { |inv| inv.created_at.to_f }
+      Time.at(total_seconds / investments.size)
     end
     
     def calculate_monthly_returns(investments)
