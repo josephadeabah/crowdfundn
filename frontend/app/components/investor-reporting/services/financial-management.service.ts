@@ -400,7 +400,7 @@ export class FinancialManagementService {
   async generateQuarterlyReport(
     campaignId: number,
     reportDate?: string,
-    existingReportId?: number, // Optional: if updating existing report
+    existingReportId?: number,
   ): Promise<{
     success: boolean;
     report: any;
@@ -408,20 +408,18 @@ export class FinancialManagementService {
     try {
       let endpoint = `/campaigns/${campaignId}/investor_reports`;
 
-      // If we have an existing report ID, use member route
-      // Otherwise use collection route
       if (existingReportId) {
         endpoint += `/${existingReportId}/generate_quarterly`;
       } else {
         endpoint += `/generate_quarterly`;
       }
 
-      if (reportDate) {
-        endpoint += `?report_date=${reportDate}`;
-      }
-
+      // Create the request body with report_date
+      const body = reportDate ? { report_date: reportDate } : {};
+      
       const response = await this.fetchApi(endpoint, {
         method: 'POST',
+        body: JSON.stringify(body),
       });
       return response;
     } catch (error) {
