@@ -176,8 +176,13 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
 
   const handleGenerateQuarterly = async () => {
     try {
-      const response =
-        await financialManagementService.generateQuarterlyReport(campaignId);
+      // Always send current date
+      const currentDate = format(new Date(), 'yyyy-MM-dd');
+      
+      const response = await financialManagementService.generateQuarterlyReport(
+        campaignId,
+        currentDate  // Always send a date
+      );
 
       if (response.success) {
         toast.success('Quarterly report generated successfully');
