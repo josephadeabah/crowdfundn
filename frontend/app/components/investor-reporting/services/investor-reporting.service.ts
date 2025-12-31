@@ -469,7 +469,6 @@ export class InvestorReportingService {
         Authorization: `Bearer ${this.token}`,
         // Don't set Content-Type for POST with no body
       },
-      credentials: 'include', // Include cookies if needed
     });
 
     if (!response.ok) {
