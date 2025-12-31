@@ -459,29 +459,27 @@ export class InvestorReportingService {
         form.action = `${this.baseUrl}/investor/documents/${documentId}/download`;
         form.target = '_blank'; // Open in new tab/window
         form.style.display = 'none';
-        
-        // Add CSRF token if needed
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if (csrfToken) {
-          const csrfInput = document.createElement('input');
-          csrfInput.type = 'hidden';
-          csrfInput.name = 'authenticity_token';
-          csrfInput.value = csrfToken;
-          form.appendChild(csrfInput);
+
+        // Add authorization token as hidden input
+        if (this.token) {
+          const tokenInput = document.createElement('input');
+          tokenInput.type = 'hidden';
+          tokenInput.name = 'Authorization';
+          tokenInput.value = `Bearer ${this.token}`;
+          form.appendChild(tokenInput);
         }
-        
+
         // Add the form to the document
         document.body.appendChild(form);
-        
-        // Submit the form - the browser will include cookies/session
+
+        // Submit the form
         form.submit();
-        
+
         // Remove the form after submission
         setTimeout(() => {
           document.body.removeChild(form);
           resolve();
         }, 100);
-        
       } catch (error) {
         reject(error);
       }
