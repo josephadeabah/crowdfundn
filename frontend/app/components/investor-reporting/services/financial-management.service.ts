@@ -406,20 +406,20 @@ export class FinancialManagementService {
   }> {
     try {
       const endpoint = `/campaigns/${campaignId}/investor_reports/generate_quarterly`;
-      
+
       // Always send a body with the report_date
       const body: any = {};
       if (reportDate) {
         body.report_date = reportDate;
       }
-      
+
       console.log('Generating quarterly report:', { endpoint, body });
-      
+
       const response = await this.fetchApi(endpoint, {
         method: 'POST',
         body: JSON.stringify(body),
       });
-      
+
       return response;
     } catch (error) {
       console.error('Error generating quarterly report:', error);
