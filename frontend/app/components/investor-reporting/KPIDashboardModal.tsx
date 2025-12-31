@@ -1,4 +1,3 @@
-// app/components/investor-reporting/KPIDashboardModal.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -60,7 +59,7 @@ import {
 } from 'recharts';
 import { investorReportingService } from './services/investor-reporting.service';
 import { Skeleton } from '../ui/Skeleton';
-import { formatDate } from '@/app/utils/helpers/formatters';
+import { formatDate, safeToNumber, safeToFixed } from '@/app/utils/helpers/formatters';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface KPIDashboardModalProps {
@@ -74,18 +73,18 @@ interface KPI {
   name: string;
   kpi_type: string;
   unit: string;
-  target_value: number;
+  target_value: number | string;
   is_primary: boolean;
   latest_value?: {
-    value: number;
+    value: number | string;
     period_date: string;
   };
-  trend: Record<string, number>;
+  trend: Record<string, number | string>;
   performance_vs_target?: {
-    current_value: number;
-    target_value: number;
-    difference: number;
-    percentage: number;
+    current_value: number | string;
+    target_value: number | string;
+    difference: number | string;
+    percentage: number | string;
   };
 }
 
@@ -121,7 +120,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
       );
 
       if (response?.success) {
-        setKpis(response?.kpis ?? []);
+        setKpis(response.kpis || []);
       }
     } catch (error: any) {
       console.error('Error fetching KPIs:', error);
@@ -152,38 +151,44 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
   };
 
   // Prepare data for charts
-  const primaryKpis = kpis?.filter((kpi) => kpi?.is_primary);
+  const primaryKpis = kpis.filter((kpi) => kpi.is_primary);
 
-  const performanceData =
-    primaryKpis?.map((kpi) => ({
-      name: kpi?.name,
-      current: kpi?.latest_value?.value ?? 0,
-      target: kpi?.target_value ?? 0,
-      achievement: kpi?.performance_vs_target?.percentage ?? 0,
-    })) ?? [];
+  const performanceData = primaryKpis.map((kpi) => {
+    const currentValue = safeToNumber(kpi.latest_value?.value);
+    const targetValue = safeToNumber(kpi.target_value);
+    const achievement = safeToNumber(kpi.performance_vs_target?.percentage);
+    
+    return {
+      name: kpi.name,
+      current: currentValue,
+      target: targetValue,
+      achievement: achievement,
+    };
+  });
 
-  const trendData =
-    kpis
-      ?.filter((kpi) => kpi?.trend && Object.keys(kpi?.trend)?.length > 0)
-      ?.slice(0, 3)
-      ?.flatMap((kpi) =>
-        Object.entries(kpi?.trend ?? {})?.map(([date, value]) => ({
-          date,
-          value,
-          name: kpi?.name,
-        })),
-      ) ?? [];
+  const trendData = kpis
+    .filter((kpi) => kpi.trend && Object.keys(kpi.trend).length > 0)
+    .slice(0, 3)
+    .flatMap((kpi) =>
+      Object.entries(kpi.trend || {}).map(([date, value]) => ({
+        date,
+        value: safeToNumber(value),
+        name: kpi.name,
+      }))
+    );
 
-  const radarData =
-    primaryKpis?.map((kpi) => ({
-      subject: kpi?.name,
-      A: kpi?.latest_value?.value ?? 0,
-      B: kpi?.target_value ?? 0,
-      fullMark: Math.max(
-        (kpi?.target_value ?? 0) * 1.5,
-        (kpi?.latest_value?.value ?? 0) * 1.5,
-      ),
-    })) ?? [];
+  const radarData = primaryKpis.map((kpi) => {
+    const currentValue = safeToNumber(kpi.latest_value?.value);
+    const targetValue = safeToNumber(kpi.target_value);
+    const fullMark = Math.max(targetValue * 1.5, currentValue * 1.5);
+    
+    return {
+      subject: kpi.name,
+      A: currentValue,
+      B: targetValue,
+      fullMark: fullMark,
+    };
+  });
 
   return (
     <Modal
@@ -231,25 +236,28 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
 
         {/* Primary KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {primaryKpis?.slice(0, 3)?.map((kpi) => {
-            const achievement = kpi?.performance_vs_target?.percentage ?? 0;
+          {primaryKpis.slice(0, 3).map((kpi) => {
+            const achievement = safeToNumber(kpi.performance_vs_target?.percentage);
             const isOnTarget = achievement >= 90;
             const isBehind = achievement < 70;
+            const currentValue = safeToNumber(kpi.latest_value?.value);
+            const targetValue = safeToNumber(kpi.target_value);
+            const difference = safeToNumber(kpi.performance_vs_target?.difference);
 
             return (
-              <Card key={kpi?.id}>
+              <Card key={kpi.id}>
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-2">
                       <div
-                        className={`p-2 rounded-full ${getKpiTypeColor(kpi?.kpi_type)}`}
+                        className={`p-2 rounded-full ${getKpiTypeColor(kpi.kpi_type)}`}
                       >
-                        {getKpiIcon(kpi?.kpi_type)}
+                        {getKpiIcon(kpi.kpi_type)}
                       </div>
                       <div>
-                        <p className="font-medium">{kpi?.name}</p>
+                        <p className="font-medium">{kpi.name}</p>
                         <p className="text-xs text-muted-foreground capitalize">
-                          {kpi?.kpi_type}
+                          {kpi.kpi_type}
                         </p>
                       </div>
                     </div>
@@ -262,7 +270,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                             : 'secondary'
                       }
                     >
-                      {achievement?.toFixed(1)}%
+                      {safeToFixed(achievement, 1)}%
                     </Badge>
                   </div>
 
@@ -271,8 +279,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                       <div className="flex justify-between text-sm mb-1">
                         <span>Current Value</span>
                         <span className="font-medium">
-                          {kpi?.latest_value?.value?.toLocaleString() ?? 'N/A'}{' '}
-                          {kpi?.unit}
+                          {currentValue.toLocaleString()} {kpi.unit}
                         </span>
                       </div>
                       <Progress
@@ -284,23 +291,21 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                     <div className="flex justify-between text-sm">
                       <span>Target</span>
                       <span className="font-medium">
-                        {kpi?.target_value?.toLocaleString() ?? 'N/A'}{' '}
-                        {kpi?.unit}
+                        {targetValue.toLocaleString()} {kpi.unit}
                       </span>
                     </div>
 
                     <div className="flex justify-between text-sm">
                       <span>Variance</span>
                       <span
-                        className={`font-medium ${kpi?.performance_vs_target?.difference && kpi?.performance_vs_target?.difference >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                        className={`font-medium ${
+                          difference >= 0 ? 'text-green-600' : 'text-red-600'
+                        }`}
                       >
-                        {kpi?.performance_vs_target?.difference ? (
+                        {difference ? (
                           <>
-                            {kpi?.performance_vs_target?.difference >= 0
-                              ? '+'
-                              : ''}
-                            {kpi?.performance_vs_target?.difference?.toLocaleString()}{' '}
-                            {kpi?.unit}
+                            {difference >= 0 ? '+' : ''}
+                            {difference.toLocaleString()} {kpi.unit}
                           </>
                         ) : (
                           'N/A'
@@ -335,7 +340,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
               <CardContent>
                 {loading ? (
                   <Skeleton className="h-[300px] w-full" />
-                ) : performanceData?.length > 0 ? (
+                ) : performanceData.length > 0 ? (
                   <div className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsBarChart data={performanceData}>
@@ -375,33 +380,34 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                       <Skeleton key={i} className="h-16 w-full" />
                     ))}
                   </div>
-                ) : kpis?.length > 0 ? (
+                ) : kpis.length > 0 ? (
                   <div className="space-y-4">
-                    {kpis?.map((kpi) => {
-                      const achievement =
-                        kpi?.performance_vs_target?.percentage ?? 0;
+                    {kpis.map((kpi) => {
+                      const achievement = safeToNumber(kpi.performance_vs_target?.percentage);
                       const isOnTarget = achievement >= 90;
                       const isBehind = achievement < 70;
+                      const currentValue = safeToNumber(kpi.latest_value?.value);
+                      const targetValue = safeToNumber(kpi.target_value);
 
                       return (
                         <div
-                          key={kpi?.id}
+                          key={kpi.id}
                           className="flex items-center justify-between p-4 border rounded-lg"
                         >
                           <div className="flex items-center space-x-4">
                             <div
-                              className={`p-2 rounded-full ${getKpiTypeColor(kpi?.kpi_type)}`}
+                              className={`p-2 rounded-full ${getKpiTypeColor(kpi.kpi_type)}`}
                             >
-                              {getKpiIcon(kpi?.kpi_type)}
+                              {getKpiIcon(kpi.kpi_type)}
                             </div>
                             <div>
-                              <h4 className="font-medium">{kpi?.name}</h4>
+                              <h4 className="font-medium">{kpi.name}</h4>
                               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                                 <span className="capitalize">
-                                  {kpi?.kpi_type}
+                                  {kpi.kpi_type}
                                 </span>
                                 <span>•</span>
-                                <span>Unit: {kpi?.unit}</span>
+                                <span>Unit: {kpi.unit}</span>
                               </div>
                             </div>
                           </div>
@@ -409,13 +415,10 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                           <div className="flex items-center space-x-4">
                             <div className="text-right">
                               <div className="font-medium">
-                                {kpi?.latest_value?.value?.toLocaleString() ??
-                                  'N/A'}{' '}
-                                {kpi?.unit}
+                                {currentValue.toLocaleString()} {kpi.unit}
                               </div>
                               <div className="text-sm text-muted-foreground">
-                                Target:{' '}
-                                {kpi?.target_value?.toLocaleString() ?? 'N/A'}
+                                Target: {targetValue.toLocaleString()}
                               </div>
                             </div>
 
@@ -428,9 +431,15 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                                 <div className="h-5 w-5 text-yellow-500" />
                               )}
                               <div
-                                className={`text-xs mt-1 ${isOnTarget ? 'text-green-600' : isBehind ? 'text-red-600' : 'text-yellow-600'}`}
+                                className={`text-xs mt-1 ${
+                                  isOnTarget
+                                    ? 'text-green-600'
+                                    : isBehind
+                                      ? 'text-red-600'
+                                      : 'text-yellow-600'
+                                }`}
                               >
-                                {achievement?.toFixed(1)}%
+                                {safeToFixed(achievement, 1)}%
                               </div>
                             </div>
                           </div>
@@ -463,46 +472,48 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                       <Skeleton key={i} className="h-32 w-full" />
                     ))}
                   </div>
-                ) : kpis?.length > 0 ? (
+                ) : kpis.length > 0 ? (
                   <div className="space-y-6">
-                    {kpis?.map((kpi) => {
-                      const achievement =
-                        kpi?.performance_vs_target?.percentage ?? 0;
-                      const trend = kpi?.trend ?? {};
-                      const trendDates = Object.keys(trend)?.sort();
-                      const latestValue = kpi?.latest_value?.value;
-                      const previousValue =
-                        trend?.[trendDates?.[trendDates?.length - 2]];
+                    {kpis.map((kpi) => {
+                      const achievement = safeToNumber(kpi.performance_vs_target?.percentage);
+                      const trend = kpi.trend || {};
+                      const trendDates = Object.keys(trend).sort();
+                      const latestValue = safeToNumber(kpi.latest_value?.value);
+                      const previousValue = safeToNumber(trend[trendDates[trendDates.length - 2]]);
                       const growth = previousValue
-                        ? (((latestValue ?? 0) - previousValue) /
-                            previousValue) *
-                          100
+                        ? ((latestValue - previousValue) / previousValue) * 100
+                        : 0;
+                      const targetValue = safeToNumber(kpi.target_value);
+                      const difference = safeToNumber(kpi.performance_vs_target?.difference);
+                      const trendValues = Object.values(trend).map(value => safeToNumber(value));
+                      const averageValue = trendValues.length > 0
+                        ? trendValues.reduce((a, b) => a + b, 0) / trendValues.length
                         : 0;
 
                       return (
-                        <Card key={kpi?.id}>
+                        <Card key={kpi.id}>
                           <CardContent className="pt-6">
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                               <div className="flex items-center space-x-3">
                                 <div
-                                  className={`p-2 rounded-full ${getKpiTypeColor(kpi?.kpi_type)}`}
+                                  className={`p-2 rounded-full ${getKpiTypeColor(kpi.kpi_type)}`}
                                 >
-                                  {getKpiIcon(kpi?.kpi_type)}
+                                  {getKpiIcon(kpi.kpi_type)}
                                 </div>
                                 <div>
                                   <h4 className="font-medium text-lg">
-                                    {kpi?.name}
+                                    {kpi.name}
                                   </h4>
                                   <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                                     <Badge
                                       variant="outline"
                                       className="capitalize"
                                     >
-                                      {kpi?.kpi_type}
+                                      {kpi.kpi_type}
                                     </Badge>
                                     <span>•</span>
-                                    <span>{kpi?.unit}</span>
-                                    {kpi?.is_primary && (
+                                    <span>{kpi.unit}</span>
+                                    {kpi.is_primary && (
                                       <>
                                         <span>•</span>
                                         <Badge variant="secondary">
@@ -517,24 +528,32 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                               <div className="flex items-center space-x-4 mt-4 md:mt-0">
                                 <div className="text-right">
                                   <div className="text-2xl font-bold">
-                                    {latestValue?.toLocaleString() || 'N/A'}
+                                    {latestValue.toLocaleString()}
                                     <span className="text-sm font-normal ml-1">
-                                      {kpi?.unit}
+                                      {kpi.unit}
                                     </span>
                                   </div>
                                   <div
-                                    className={`text-sm ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                                    className={`text-sm ${
+                                      growth >= 0 ? 'text-green-600' : 'text-red-600'
+                                    }`}
                                   >
                                     {growth >= 0 ? '+' : ''}
-                                    {growth?.toFixed(1)}% from previous
+                                    {safeToFixed(growth, 1)}% from previous
                                   </div>
                                 </div>
 
                                 <div className="text-center">
                                   <div
-                                    className={`text-lg font-bold ${achievement >= 90 ? 'text-green-600' : achievement < 70 ? 'text-red-600' : 'text-yellow-600'}`}
+                                    className={`text-lg font-bold ${
+                                      achievement >= 90
+                                        ? 'text-green-600'
+                                        : achievement < 70
+                                          ? 'text-red-600'
+                                          : 'text-yellow-600'
+                                    }`}
                                   >
-                                    {achievement?.toFixed(1)}%
+                                    {safeToFixed(achievement, 1)}%
                                   </div>
                                   <div className="text-xs text-muted-foreground">
                                     Target
@@ -550,33 +569,27 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                                   <div className="flex justify-between text-sm">
                                     <span>Target Value</span>
                                     <span className="font-medium">
-                                      {kpi?.target_value?.toLocaleString() ??
-                                        'N/A'}
+                                      {targetValue.toLocaleString()}
                                     </span>
                                   </div>
                                   <div className="flex justify-between text-sm">
                                     <span>Current Value</span>
                                     <span className="font-medium">
-                                      {latestValue?.toLocaleString() ?? 'N/A'}
+                                      {latestValue.toLocaleString()}
                                     </span>
                                   </div>
                                   <div className="flex justify-between text-sm">
                                     <span>Variance</span>
                                     <span
-                                      className={`font-medium ${kpi?.performance_vs_target?.difference && kpi?.performance_vs_target?.difference >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                                      className={`font-medium ${
+                                        difference >= 0
+                                          ? 'text-green-600'
+                                          : 'text-red-600'
+                                      }`}
                                     >
-                                      {kpi?.performance_vs_target
-                                        ?.difference ? (
-                                        <>
-                                          {kpi?.performance_vs_target
-                                            ?.difference >= 0
-                                            ? '+'
-                                            : ''}
-                                          {kpi?.performance_vs_target?.difference?.toLocaleString()}
-                                        </>
-                                      ) : (
-                                        'N/A'
-                                      )}
+                                      {difference
+                                        ? `${difference >= 0 ? '+' : ''}${difference.toLocaleString()}`
+                                        : 'N/A'}
                                     </span>
                                   </div>
                                 </div>
@@ -588,30 +601,21 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                                   <div className="flex justify-between text-sm">
                                     <span>Periods Tracked</span>
                                     <span className="font-medium">
-                                      {trendDates?.length}
+                                      {trendDates.length}
                                     </span>
                                   </div>
                                   <div className="flex justify-between text-sm">
                                     <span>Latest Update</span>
                                     <span className="font-medium">
-                                      {kpi?.latest_value?.period_date
-                                        ? formatDate(
-                                            kpi?.latest_value?.period_date,
-                                          )
+                                      {kpi.latest_value?.period_date
+                                        ? formatDate(kpi.latest_value.period_date)
                                         : 'N/A'}
                                     </span>
                                   </div>
                                   <div className="flex justify-between text-sm">
                                     <span>Average Value</span>
                                     <span className="font-medium">
-                                      {(trendDates?.length ?? 0) > 0
-                                        ? (
-                                            Object.values(trend)?.reduce(
-                                              (a, b) => a + b,
-                                              0,
-                                            ) / (trendDates?.length ?? 1)
-                                          )?.toLocaleString()
-                                        : 'N/A'}
+                                      {averageValue.toLocaleString()}
                                     </span>
                                   </div>
                                 </div>
@@ -623,7 +627,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
                                   <div className="flex justify-between text-sm">
                                     <span>Target Achievement</span>
                                     <span className="font-medium">
-                                      {achievement?.toFixed(1)}%
+                                      {safeToFixed(achievement, 1)}%
                                     </span>
                                   </div>
                                   <Progress
@@ -666,7 +670,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
               <CardContent>
                 {loading ? (
                   <Skeleton className="h-[400px] w-full" />
-                ) : trendData?.length > 0 ? (
+                ) : trendData.length > 0 ? (
                   <div className="h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsLineChart data={trendData}>
@@ -706,7 +710,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
               <CardContent>
                 {loading ? (
                   <Skeleton className="h-[400px] w-full" />
-                ) : radarData?.length > 0 ? (
+                ) : radarData.length > 0 ? (
                   <div className="h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <RadarChart outerRadius={150} data={radarData}>
@@ -746,7 +750,7 @@ const KPIDashboardModal: React.FC<KPIDashboardModalProps> = ({
         {/* Footer */}
         <div className="flex justify-between items-center pt-4 border-t">
           <div className="text-sm text-muted-foreground">
-            {kpis?.length} KPIs tracked • Last updated{' '}
+            {kpis.length} KPIs tracked • Last updated{' '}
             {formatDate(new Date().toISOString())}
           </div>
           <div className="flex gap-2">
