@@ -6,14 +6,16 @@ class FinancialStatement < ApplicationRecord
   has_many :kpi_values, dependent: :nullify
   has_one_attached :source_file
   
-  validates :period_type, :period_start, :period_end, presence: true
+  validates :period_type, :period_start, :period_end, :revenue, :expenses, presence: true
   validates :period_type, inclusion: { in: %w[monthly quarterly annual] }
   validates :status, inclusion: { in: %w[draft published archived] }
+  validates :revenue, :expenses, numericality: { greater_than_or_equal_to: 0 }
+  validates :assets, :liabilities, :equity, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
   
   validate :validate_period_dates
-  validate :validate_consistency
+  validate :validate_accounting_consistency, if: -> { assets.present? && liabilities.present? && equity.present? }
   
-  before_validation :calculate_derived_metrics, if: -> { revenue_changed? || expenses_changed? || assets_changed? || liabilities_changed? }
+  before_validation :calculate_derived_metrics
   before_save :set_published_at, if: -> { status_changed?(to: 'published') && published_at.blank? }
   after_save :update_campaign_valuation_metrics, if: -> { saved_change_to_status?(to: 'published') }
   
@@ -54,16 +56,51 @@ class FinancialStatement < ApplicationRecord
     (liabilities / equity).round(2)
   end
   
+  def gross_profit
+    self[:gross_profit] || (revenue - expenses)
+  end
+  
+  def net_income
+    self[:net_income] || (revenue - expenses)
+  end
+  
+  def equity
+    if self[:equity].present?
+      self[:equity]
+    elsif assets.present? && liabilities.present?
+      assets - liabilities
+    else
+      0
+    end
+  end
+  
   def as_json(options = {})
-    super(options).merge(
+    json = super(options).merge(
       gross_margin: gross_margin,
       net_margin: net_margin,
       current_ratio: current_ratio,
       debt_to_equity: debt_to_equity,
       period_duration: period_duration,
+      calculated_gross_profit: revenue - expenses,
+      calculated_equity: assets && liabilities ? assets - liabilities : nil,
       source_file_url: source_file.attached? ? source_file_url : nil,
       source_file_name: source_file.attached? ? source_file.filename : nil
     )
+    
+    # Include derived metrics if they're different from calculated
+    if self[:gross_profit].present?
+      json[:gross_profit] = self[:gross_profit]
+    end
+    
+    if self[:net_income].present?
+      json[:net_income] = self[:net_income]
+    end
+    
+    if self[:equity].present?
+      json[:equity] = self[:equity]
+    end
+    
+    json
   end
   
   def source_file_url
@@ -123,46 +160,43 @@ class FinancialStatement < ApplicationRecord
     end
   end
   
-  def validate_consistency
-    # Basic accounting equation: Assets = Liabilities + Equity
-    if assets.present? && liabilities.present? && equity.present?
+  def validate_accounting_consistency
+    # Check basic accounting equation: Assets = Liabilities + Equity
+    if assets.present? && liabilities.present? && self[:equity].present?
       calculated_equity = assets - liabilities
-      if (calculated_equity - equity).abs > 0.01
-        errors.add(:equity, "doesn't match assets minus liabilities (calculated: #{calculated_equity}, provided: #{equity})")
-      end
-    end
-    
-    # Profit calculations
-    if revenue.present? && expenses.present? && gross_profit.present?
-      calculated_gross = revenue - expenses
-      if (calculated_gross - gross_profit).abs > 0.01
-        errors.add(:gross_profit, "doesn't match revenue minus expenses (calculated: #{calculated_gross}, provided: #{gross_profit})")
-      end
-    end
-    
-    # Net income calculation
-    if revenue.present? && expenses.present? && net_income.present?
-      calculated_net = revenue - expenses
-      if (calculated_net - net_income).abs > 0.01
-        errors.add(:net_income, "doesn't match revenue minus expenses (calculated: #{calculated_net}, provided: #{net_income})")
+      
+      # Allow small rounding differences but warn if they're significant
+      if (calculated_equity - self[:equity]).abs > 1.0
+        errors.add(:equity, "significantly different from calculated value (assets - liabilities). Calculated: #{calculated_equity}, Provided: #{self[:equity]}. Consider updating equity to #{calculated_equity.round(2)}")
       end
     end
   end
   
   def calculate_derived_metrics
-    # Calculate gross profit if not provided
-    if revenue.present? && expenses.present? && gross_profit.blank?
+    # Calculate basic derived metrics if not provided
+    if revenue.present? && expenses.present?
+      # Gross profit is always revenue minus expenses
       self.gross_profit = revenue - expenses
+      
+      # Net income defaults to gross profit unless specifically overridden
+      self.net_income = self[:net_income].presence || gross_profit
     end
     
-    # Calculate equity if not provided
-    if assets.present? && liabilities.present? && equity.blank?
-      self.equity = assets - liabilities
-    end
-    
-    # Calculate net income if not provided
-    if revenue.present? && expenses.present? && net_income.blank?
-      self.net_income = revenue - expenses
+    # Calculate equity if assets and liabilities are provided
+    if assets.present? && liabilities.present?
+      calculated_equity = assets - liabilities
+      
+      # Use provided equity if it's within reasonable range of calculated value
+      if self[:equity].present?
+        # Check if provided equity is significantly different
+        if (self[:equity] - calculated_equity).abs > 1.0
+          # Log the discrepancy but don't fail validation
+          Rails.logger.warn "FinancialStatement #{id}: Provided equity (#{self[:equity]}) differs significantly from calculated (#{calculated_equity})"
+        end
+      else
+        # No equity provided, use calculated value
+        self.equity = calculated_equity
+      end
     end
     
     # Calculate burn rate and runway if applicable
