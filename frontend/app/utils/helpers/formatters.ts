@@ -186,6 +186,21 @@ export const formatDuration = (seconds: number): string => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
+export const safeToNumber = (value: any): number => {
+  if (value === null || value === undefined) return 0;
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    const num = parseFloat(value);
+    return isNaN(num) ? 0 : num;
+  }
+  return 0;
+};
+
+export const safeToFixed = (value: any, decimals: number = 2): string => {
+  const num = safeToNumber(value);
+  return num.toFixed(decimals);
+};
+
 // Add this export at the bottom of the file
 export default {
   formatCurrency,
@@ -198,4 +213,6 @@ export default {
   truncateText,
   formatSocialNumber,
   formatDuration,
+  safeToNumber,
+  safeToFixed,
 };
