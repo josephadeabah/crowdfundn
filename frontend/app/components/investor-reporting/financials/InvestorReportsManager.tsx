@@ -178,10 +178,10 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
     try {
       // Always send current date
       const currentDate = format(new Date(), 'yyyy-MM-dd');
-      
+
       const response = await financialManagementService.generateQuarterlyReport(
         campaignId,
-        currentDate  // Always send a date
+        currentDate, // Always send a date
       );
 
       if (response.success) {

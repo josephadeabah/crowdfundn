@@ -416,7 +416,7 @@ export class FinancialManagementService {
 
       // Create the request body with report_date
       const body = reportDate ? { report_date: reportDate } : {};
-      
+
       const response = await this.fetchApi(endpoint, {
         method: 'POST',
         body: JSON.stringify(body),
