@@ -21,9 +21,13 @@ export class FinancialManagementService {
       headers.delete('Content-Type');
     }
 
-    if (this.token) {
-      headers.set('Authorization', `Bearer ${this.token}`);
+    // Validate token before making request
+    if (!this.token || this.token === 'null' || this.token === 'undefined') {
+      console.error('No valid token available for API request');
+      throw new Error('Authentication required. Please login again.');
     }
+
+    headers.set('Authorization', `Bearer ${this.token}`);
 
     try {
       const response = await fetch(url, {
@@ -33,7 +37,9 @@ export class FinancialManagementService {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Authentication required');
+          // Clear invalid token
+          this.token = null;
+          throw new Error('Session expired. Please login again.');
         }
 
         const errorText = await response.text();
@@ -369,12 +375,13 @@ export class FinancialManagementService {
           formData.append('report[attachments][]', file);
         });
 
+        // Use this.token instead of localStorage
         const response = await fetch(
           `${this.baseUrl}/campaigns/${campaignId}/investor_reports`,
           {
             method: 'POST',
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              Authorization: `Bearer ${this.token}`,
             },
             body: formData,
           },
@@ -448,39 +455,6 @@ export class FinancialManagementService {
       return response;
     } catch (error) {
       console.error('Error generating quarterly report:', error);
-      throw error;
-    }
-  }
-
-  async uploadReportAttachments(
-    campaignId: number,
-    reportId: number,
-    files: File[],
-  ): Promise<{
-    success: boolean;
-    message: string;
-    attachments?: any[];
-  }> {
-    try {
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append('attachments[]', file);
-      });
-
-      const response = await fetch(
-        `${this.baseUrl}/campaigns/${campaignId}/investor_reports/${reportId}/upload_attachments`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: formData,
-        },
-      );
-
-      return response.json();
-    } catch (error) {
-      console.error('Error uploading attachments:', error);
       throw error;
     }
   }
@@ -567,6 +541,39 @@ export class FinancialManagementService {
 
   // ========== DOCUMENT MANAGEMENT ==========
 
+  async uploadReportAttachments(
+    campaignId: number,
+    reportId: number,
+    files: File[],
+  ): Promise<{
+    success: boolean;
+    message: string;
+    attachments?: any[];
+  }> {
+    try {
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.append('attachments[]', file);
+      });
+
+      const response = await fetch(
+        `${this.baseUrl}/campaigns/${campaignId}/investor_reports/${reportId}/upload_attachments`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+          },
+          body: formData,
+        },
+      );
+
+      return response.json();
+    } catch (error) {
+      console.error('Error uploading attachments:', error);
+      throw error;
+    }
+  }
+
   async uploadFinancialDocument(
     campaignId: number,
     financialId: number,
@@ -585,7 +592,7 @@ export class FinancialManagementService {
         {
           method: 'PUT',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${this.token}`,
           },
           body: formData,
         },
@@ -618,7 +625,7 @@ export class FinancialManagementService {
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${this.token}`,
           },
           body: formData,
         },
