@@ -467,7 +467,7 @@ export class InvestorReportingService {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.token}`,
-        // Don't set Content-Type for POST with no body
+        'Content-Type': 'application/json',
       },
     });
 
