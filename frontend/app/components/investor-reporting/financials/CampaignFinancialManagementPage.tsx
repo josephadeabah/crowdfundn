@@ -195,7 +195,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
             <div className="bg-gray-50 px-4 py-2 rounded-lg">
               <p className="text-sm text-gray-700">Valuation</p>
               <p className="text-lg font-semibold text-gray-900">
-                {campaign.currecy_symbol}
+                {user?.currency?.toUpperCase()}
                 {parseInt(campaign.valuation).toLocaleString()}
               </p>
             </div>
@@ -221,7 +221,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
           <div className="bg-gray-50 px-4 py-2 rounded-lg">
             <p className="text-sm text-gray-700">Total Raised</p>
             <p className="text-lg font-semibold text-gray-900">
-              $
+              {user?.currency?.toUpperCase()}
               {parseInt(
                 campaign.transferred_amount || campaign.current_amount || '0',
               ).toLocaleString()}
