@@ -44,7 +44,9 @@ import {
 import { Label } from '@/app/components/ui/label';
 import { toast } from 'sonner';
 import { formatDate, formatCurrency } from '@/app/utils/helpers/formatters';
-import investorReportingService, { InvestorReportingService } from './services/investor-reporting.service';
+import investorReportingService, {
+  InvestorReportingService,
+} from './services/investor-reporting.service';
 import { Skeleton } from '../ui/Skeleton';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
@@ -115,12 +117,12 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
     'campaigns',
     'risk',
   ]);
-  
-    useEffect(() => {
-      if (token) {
-        investorReportingService.setToken(token);
-      }
-    }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      investorReportingService.setToken(token);
+    }
+  }, [token]);
 
   const service = new InvestorReportingService();
 

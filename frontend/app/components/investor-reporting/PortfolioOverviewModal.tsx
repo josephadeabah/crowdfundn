@@ -42,7 +42,9 @@ import {
 } from '@/app/components/ui/select';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/app/utils/helpers/formatters';
-import investorReportingService, { InvestorReportingService } from './services/investor-reporting.service';
+import investorReportingService, {
+  InvestorReportingService,
+} from './services/investor-reporting.service';
 import { Skeleton } from '../ui/Skeleton';
 import { formatDate } from '@/app/utils/helpers/formatters';
 import {
@@ -79,13 +81,13 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [service] = useState(new InvestorReportingService());
 
-    const { token } = useAuth();
-  
-    useEffect(() => {
-      if (token) {
-        investorReportingService.setToken(token);
-      }
-    }, [token]);
+  const { token } = useAuth();
+
+  useEffect(() => {
+    if (token) {
+      investorReportingService.setToken(token);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (isOpen && portfolioData) {
