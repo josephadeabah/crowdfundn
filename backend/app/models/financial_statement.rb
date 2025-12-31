@@ -16,7 +16,7 @@ class FinancialStatement < ApplicationRecord
   
   before_validation :calculate_missing_metrics
   before_save :set_published_at, if: -> { status_changed?(to: 'published') && published_at.blank? }
-  after_save :update_campaign_valuation_metrics, if: -> { saved_change_to_status?(to: 'published') }
+  # after_save :update_campaign_valuation_metrics, if: -> { saved_change_to_status?(to: 'published') }
   
   scope :published, -> { where(status: 'published') }
   scope :draft, -> { where(status: 'draft') }
@@ -182,7 +182,7 @@ class FinancialStatement < ApplicationRecord
     self.published_at = Time.current
   end
   
-  def update_campaign_valuation_metrics
-    UpdateCampaignValuationJob.perform_later(campaign_id) if net_income.present?
-  end
+  # def update_campaign_valuation_metrics
+  #   UpdateCampaignValuationJob.perform_later(campaign_id) if net_income.present?
+  # end
 end
