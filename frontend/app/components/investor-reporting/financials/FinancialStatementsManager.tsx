@@ -39,57 +39,15 @@ interface FinancialStatementsManagerProps {
   campaignId: number;
 }
 
-// Define the type for financial data
-interface FinancialData {
-  id: number;
-  period_type: string;
-  period_start: string;
-  period_end: string;
-  revenue: number;
-  expenses: number;
-  net_income?: number;
-  assets?: number;
-  liabilities?: number;
-  cash_flow?: number;
-  status: string;
-  source_file_url?: string;
-  formatted_revenue?: string;
-  formatted_expenses?: string;
-  formatted_net_income?: string;
-  formatted_assets?: string;
-  formatted_liabilities?: string;
-  formatted_cash_flow?: string;
-}
-
-interface CurrencyInfo {
-  code: string;
-  symbol: string;
-  name: string;
-}
-
-interface FinancialStatementsResponse {
-  success: boolean;
-  financials: FinancialData[];
-  summary?: any;
-  campaign_currency?: CurrencyInfo;
-  fundraiser_currency?: CurrencyInfo;
-}
-
 const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
   campaignId,
 }) => {
   const { token } = useAuth();
-  const [financials, setFinancials] = useState<FinancialData[]>([]);
+  const [financials, setFinancials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedFinancial, setSelectedFinancial] =
-    useState<FinancialData | null>(null);
-  const [campaignCurrency, setCampaignCurrency] = useState<CurrencyInfo>({
-    code: 'USD',
-    symbol: '$',
-    name: 'US Dollar',
-  });
+  const [selectedFinancial, setSelectedFinancial] = useState<any>(null);
   const [formData, setFormData] = useState({
     period_type: 'monthly',
     period_start: '',
@@ -102,6 +60,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
     status: 'draft',
   });
 
+  // Set token in service
   useEffect(() => {
     if (token) {
       financialManagementService.setToken(token);
@@ -117,37 +76,16 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
   const fetchFinancials = async () => {
     try {
       setLoading(true);
-      const response = (await financialManagementService.getFinancialStatements(
-        campaignId,
-      )) as FinancialStatementsResponse;
-
+      const response =
+        await financialManagementService.getFinancialStatements(campaignId);
       if (response.success) {
         setFinancials(response.financials || []);
-
-        // Safely get campaign currency with proper type checking
-        if (response.campaign_currency) {
-          setCampaignCurrency(response.campaign_currency);
-        } else {
-          // Fallback to default currency if not provided
-          setCampaignCurrency({
-            code: 'USD',
-            symbol: '$',
-            name: 'US Dollar',
-          });
-        }
       }
     } catch (error: any) {
       toast.error(error.message || 'Failed to load financial statements');
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatAmount = (amount: number) => {
-    return `${campaignCurrency.symbol}${amount.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
   };
 
   const handleCreate = async () => {
@@ -273,7 +211,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
     }
   };
 
-  const handleEdit = (financial: FinancialData) => {
+  const handleEdit = (financial: any) => {
     setSelectedFinancial(financial);
     setFormData({
       period_type: financial.period_type,
@@ -329,26 +267,6 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
     }
   };
 
-  // Helper to safely format amount from financial data
-  const getFormattedAmount = (
-    financial: FinancialData,
-    field: keyof FinancialData,
-  ) => {
-    // First try to use backend-formatted amount if available
-    const formattedField = `formatted_${field}` as keyof FinancialData;
-    if (financial[formattedField]) {
-      return financial[formattedField];
-    }
-
-    // Fallback to local formatting
-    const amount = financial[field];
-    if (typeof amount === 'number') {
-      return formatAmount(amount);
-    }
-
-    return 'N/A';
-  };
-
   if (loading) {
     return (
       <div className="space-y-4">
@@ -373,9 +291,6 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
           </h2>
           <p className="text-gray-600">
             Manage and publish financial statements for investors
-            <span className="ml-2 text-sm text-gray-500">
-              (Currency: {campaignCurrency.code} {campaignCurrency.symbol})
-            </span>
           </p>
         </div>
         <Button variant="success" onClick={() => setIsCreateModalOpen(true)}>
@@ -425,14 +340,16 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
                     </p>
                     <div className="flex gap-4 mt-2 text-sm text-gray-500">
                       <span>
-                        Revenue: {getFormattedAmount(financial, 'revenue')}
+                        Revenue: ${financial.revenue.toLocaleString()}
                       </span>
                       <span>
-                        Expenses: {getFormattedAmount(financial, 'expenses')}
+                        Expenses: ${financial.expenses.toLocaleString()}
                       </span>
                       <span>
-                        Net Income:{' '}
-                        {formatAmount(financial.revenue - financial.expenses)}
+                        Net Income: $
+                        {(
+                          financial.revenue - financial.expenses
+                        ).toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -498,15 +415,6 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
         size="xlarge"
       >
         <div className="space-y-4">
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-            <p className="text-sm font-medium text-gray-700">
-              Currency: {campaignCurrency.code} ({campaignCurrency.symbol})
-            </p>
-            <p className="text-xs text-gray-500">
-              All amounts will be recorded in {campaignCurrency.name}
-            </p>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="period_type">Period Type</Label>
@@ -570,9 +478,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="revenue">
-                Revenue ({campaignCurrency.symbol})
-              </Label>
+              <Label htmlFor="revenue">Revenue ($)</Label>
               <Input
                 id="revenue"
                 type="number"
@@ -586,9 +492,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="expenses">
-                Expenses ({campaignCurrency.symbol})
-              </Label>
+              <Label htmlFor="expenses">Expenses ($)</Label>
               <Input
                 id="expenses"
                 type="number"
@@ -602,7 +506,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="assets">Assets ({campaignCurrency.symbol})</Label>
+              <Label htmlFor="assets">Assets ($)</Label>
               <Input
                 id="assets"
                 type="number"
@@ -616,9 +520,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="liabilities">
-                Liabilities ({campaignCurrency.symbol})
-              </Label>
+              <Label htmlFor="liabilities">Liabilities ($)</Label>
               <Input
                 id="liabilities"
                 type="number"
@@ -659,12 +561,6 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
         size="xlarge"
       >
         <div className="space-y-4">
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-            <p className="text-sm font-medium text-gray-700">
-              Currency: {campaignCurrency.code} ({campaignCurrency.symbol})
-            </p>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="edit_period_type">Period Type</Label>
@@ -729,9 +625,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit_revenue">
-                Revenue ({campaignCurrency.symbol})
-              </Label>
+              <Label htmlFor="edit_revenue">Revenue ($)</Label>
               <Input
                 id="edit_revenue"
                 type="number"
@@ -744,9 +638,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit_expenses">
-                Expenses ({campaignCurrency.symbol})
-              </Label>
+              <Label htmlFor="edit_expenses">Expenses ($)</Label>
               <Input
                 id="edit_expenses"
                 type="number"
