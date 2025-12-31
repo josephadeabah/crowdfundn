@@ -1,4 +1,4 @@
-# app/models/financial_statement.rb
+# app/models/financial_statement.rb - FINAL VERSION
 class FinancialStatement < ApplicationRecord
   belongs_to :campaign
   belongs_to :published_by, class_name: 'User', optional: true
@@ -25,9 +25,9 @@ class FinancialStatement < ApplicationRecord
   scope :for_period, ->(start_date, end_date) { where(period_start: start_date, period_end: end_date) }
   
   PERIOD_TYPES = {
-    monthly: 30.days,      # Average month length
-    quarterly: 90.days,    # Average quarter length
-    annual: 365.days       # Average year length
+    monthly: 30.days,
+    quarterly: 90.days,
+    annual: 365.days
   }.freeze
   
   def period_duration
@@ -41,17 +41,17 @@ class FinancialStatement < ApplicationRecord
   end
   
   def net_margin
-    return 0 if revenue.zero?
+    return 0 if revenue.zero? || net_income.zero?
     (net_income / revenue * 100).round(2)
   end
   
   def current_ratio
-    return 0 if liabilities.zero?
+    return 0 if liabilities.blank? || liabilities.zero?
     (assets / liabilities).round(2)
   end
   
   def debt_to_equity
-    return 0 if equity.zero?
+    return 0 if equity.blank? || equity.zero?
     (liabilities / equity).round(2)
   end
   
@@ -73,6 +73,17 @@ class FinancialStatement < ApplicationRecord
     end
   end
   
+  # Helper method to get calculated equity (ignoring user-provided 0)
+  def calculated_equity
+    return assets - liabilities if assets.present? && liabilities.present?
+    0
+  end
+  
+  # Helper method to get calculated net income
+  def calculated_net_income
+    revenue - expenses
+  end
+  
   def as_json(options = {})
     json = super(options).merge(
       gross_margin: gross_margin,
@@ -83,6 +94,9 @@ class FinancialStatement < ApplicationRecord
       gross_profit: gross_profit,
       net_income: net_income,
       equity: equity,
+      calculated_net_income: calculated_net_income,
+      calculated_equity: calculated_equity,
+      accounting_discrepancy: accounting_discrepancy?,
       source_file_url: source_file.attached? ? source_file_url : nil,
       source_file_name: source_file.attached? ? source_file.filename : nil
     )
@@ -100,12 +114,16 @@ class FinancialStatement < ApplicationRecord
     end
   end
   
+  def accounting_discrepancy?
+    (revenue - expenses - net_income).abs > 0.01 ||
+    (assets.present? && liabilities.present? && equity.present? && (assets - liabilities - equity).abs > 0.01)
+  end
+  
   private
   
   def validate_period_dates
     return if period_start.blank? || period_end.blank?
     
-    # Ensure dates are properly parsed
     start_date = period_start.to_date
     end_date = period_end.to_date
     
@@ -114,65 +132,46 @@ class FinancialStatement < ApplicationRecord
       return
     end
     
-    # Calculate actual duration in days
     duration_days = (end_date - start_date).to_i + 1
     
-    # Get expected duration based on period type
     expected_duration_days = case period_type
-    when 'monthly'
-      30  # Average month
-    when 'quarterly'
-      90  # Average quarter
-    when 'annual'
-      365 # Average year
-    else
-      0
+    when 'monthly' then 30
+    when 'quarterly' then 90
+    when 'annual' then 365
+    else 0
     end
     
-    # Calculate allowed variance (5 days for monthly, 7 for quarterly, 10 for annual)
     variance_days = case period_type
-    when 'monthly'
-      5
-    when 'quarterly'
-      7
-    when 'annual'
-      10
-    else
-      5
+    when 'monthly' then 5
+    when 'quarterly' then 7
+    when 'annual' then 10
+    else 5
     end
     
-    # Check if duration is within acceptable range
     unless (duration_days - expected_duration_days).abs <= variance_days
       errors.add(:period_end, "doesn't match #{period_type} period duration. Expected ~#{expected_duration_days} days, got #{duration_days} days")
     end
   end
   
   def calculate_missing_metrics
-    # Always calculate gross profit from revenue and expenses
-    if revenue.present? && expenses.present?
-      self.gross_profit = revenue - expenses
-    end
+    # Always calculate gross profit
+    self.gross_profit = revenue - expenses if revenue.present? && expenses.present?
     
-    # Set net income to gross profit if not provided
+    # Only set net_income if it's truly blank (not 0)
     if revenue.present? && expenses.present? && self[:net_income].blank?
       self.net_income = revenue - expenses
     end
     
-    # Calculate equity if not provided but assets and liabilities are present
+    # Only set equity if it's truly blank (not 0) and we have assets/liabilities
     if assets.present? && liabilities.present? && self[:equity].blank?
       self.equity = assets - liabilities
     end
     
-    # If equity is provided as 0 but assets and liabilities exist, allow it
-    # (Some users might want to intentionally set equity to 0)
-    
-    # Calculate burn rate and runway if applicable
+    # Calculate burn rate
     if expenses.present? && period_duration > 0
-      # Monthly burn rate (extrapolates expenses to monthly basis)
       days_in_month = 30.0
       self.burn_rate = (expenses / period_duration.to_f * days_in_month).round(2)
       
-      # Runway in months if assets are available
       if assets.present? && burn_rate > 0
         self.runway_months = (assets / burn_rate).round(2)
       end
@@ -184,7 +183,6 @@ class FinancialStatement < ApplicationRecord
   end
   
   def update_campaign_valuation_metrics
-    # This can trigger AI valuation updates or other processes
     UpdateCampaignValuationJob.perform_later(campaign_id) if net_income.present?
   end
 end
