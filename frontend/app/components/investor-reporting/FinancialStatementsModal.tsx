@@ -53,9 +53,8 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { formatCurrency } from '@/app/utils/helpers/formatters';
+import { formatCurrency, formatDate } from '@/app/utils/helpers/formatters';
 import { Skeleton } from '../ui/Skeleton';
-import { formatDate } from '@/app/utils/helpers/formatters';
 import { investorReportingService } from './services/investor-reporting.service';
 import { useAuth } from '@/app/context/auth/AuthContext';
 
@@ -86,6 +85,13 @@ interface FinancialStatement {
   source_file_url?: string;
   source_file_name?: string;
 }
+
+// Helper function to safely format numbers
+const safeToFixed = (value: any, decimals: number = 2): string => {
+  if (value === null || value === undefined) return '0.0';
+  const num = parseFloat(value);
+  return isNaN(num) ? '0.0' : num.toFixed(decimals);
+};
 
 const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   isOpen,
@@ -172,11 +178,27 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
 
       console.log('Response received:', response);
       if (response?.success) {
-        console.log('Setting statements:', response?.financials);
-        setStatements(response?.financials ?? []);
-        if (response?.financials?.length > 0) {
-          setSelectedStatement(response?.financials?.[0] ?? null);
-          prepareChartData(response?.financials ?? []);
+        // Transform string numbers to actual numbers
+        const transformedStatements = (response?.financials ?? []).map(stmt => ({
+          ...stmt,
+          revenue: parseFloat(stmt.revenue) || 0,
+          expenses: parseFloat(stmt.expenses) || 0,
+          gross_profit: parseFloat(stmt.gross_profit) || 0,
+          net_income: parseFloat(stmt.net_income) || 0,
+          assets: parseFloat(stmt.assets) || 0,
+          liabilities: parseFloat(stmt.liabilities) || 0,
+          equity: parseFloat(stmt.equity) || 0,
+          burn_rate: parseFloat(stmt.burn_rate) || 0,
+          runway_months: parseFloat(stmt.runway_months) || 0,
+          gross_margin: parseFloat(stmt.gross_margin) || 0,
+          net_margin: parseFloat(stmt.net_margin) || 0,
+        }));
+
+        console.log('Setting transformed statements:', transformedStatements);
+        setStatements(transformedStatements);
+        if (transformedStatements.length > 0) {
+          setSelectedStatement(transformedStatements[0]);
+          prepareChartData(transformedStatements);
         } else {
           console.log('No financial statements found');
           toast.info('No financial statements available for this campaign');
@@ -332,6 +354,10 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                                 name,
                               ];
                             }
+                            // Handle percentage values safely
+                            if (typeof value === 'number') {
+                              return [`${safeToFixed(value, 1)}%`, name];
+                            }
                             return [`${value}%`, name];
                           }}
                         />
@@ -406,8 +432,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         )}
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
-                        {selectedStatement?.net_margin?.toFixed(1) ?? '0.0'}%
-                        margin
+                        {safeToFixed(selectedStatement?.net_margin, 1)}% margin
                       </div>
                     </div>
                   </CardContent>
@@ -420,8 +445,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                         Runway
                       </div>
                       <div className="text-2xl font-bold">
-                        {selectedStatement?.runway_months?.toFixed(1) ?? '0.0'}{' '}
-                        months
+                        {safeToFixed(selectedStatement?.runway_months, 1)} months
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         Burn rate:{' '}
@@ -627,8 +651,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           Gross Margin
                         </div>
                         <div className="text-lg font-medium">
-                          {selectedStatement?.gross_margin?.toFixed(1) ?? '0.0'}
-                          %
+                          {safeToFixed(selectedStatement?.gross_margin, 1)}%
                         </div>
                       </div>
                       <div className="text-center p-3 border rounded-lg">
@@ -636,7 +659,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           Net Margin
                         </div>
                         <div className="text-lg font-medium">
-                          {selectedStatement?.net_margin?.toFixed(1) ?? '0.0'}%
+                          {safeToFixed(selectedStatement?.net_margin, 1)}%
                         </div>
                       </div>
                       <div className="text-center p-3 border rounded-lg">
@@ -657,9 +680,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           Runway
                         </div>
                         <div className="text-lg font-medium">
-                          {selectedStatement?.runway_months?.toFixed(1) ??
-                            '0.0'}{' '}
-                          months
+                          {safeToFixed(selectedStatement?.runway_months, 1)} months
                         </div>
                       </div>
                     </div>
@@ -789,9 +810,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {selectedStatement?.gross_margin?.toFixed(1) ??
-                              '0.0'}
-                            %
+                            {safeToFixed(selectedStatement?.gross_margin, 1)}%
                           </div>
                         </div>
                         <div className="flex justify-between items-center p-3 border rounded-lg">
@@ -802,30 +821,26 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {selectedStatement?.net_margin?.toFixed(1) ?? '0.0'}
-                            %
+                            {safeToFixed(selectedStatement?.net_margin, 1)}%
                           </div>
                         </div>
                         <div className="flex justify-between items-center p-3 border rounded-lg">
                           <div>
                             <div className="font-medium">Operating Margin</div>
                             <div className="text-sm text-muted-foreground">
-                              {(
-                                ((selectedStatement?.gross_profit ?? 0) /
-                                  (selectedStatement?.revenue ?? 1)) *
-                                100
-                              ).toFixed(1)}
-                              %
+                              Operating efficiency
                             </div>
                           </div>
                           <div className="text-lg font-medium">
-                            {(
-                              (((selectedStatement?.gross_profit ?? 0) -
-                                (selectedStatement?.expenses ?? 0)) /
-                                (selectedStatement?.revenue ?? 1)) *
-                              100
-                            ).toFixed(1)}
-                            %
+                            {selectedStatement?.revenue && selectedStatement?.expenses
+                              ? safeToFixed(
+                                  (((selectedStatement?.gross_profit ?? 0) -
+                                    (selectedStatement?.expenses ?? 0)) /
+                                    (selectedStatement?.revenue ?? 1)) *
+                                    100,
+                                  1
+                                )
+                              : '0.0'}%
                           </div>
                         </div>
                       </div>
@@ -843,10 +858,11 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           </div>
                           <div className="text-lg font-medium">
                             {(selectedStatement?.liabilities ?? 0) > 0
-                              ? (
+                              ? safeToFixed(
                                   (selectedStatement?.assets ?? 0) /
-                                  (selectedStatement?.liabilities ?? 1)
-                                ).toFixed(1)
+                                    (selectedStatement?.liabilities ?? 1),
+                                  1
+                                )
                               : 'N/A'}
                           </div>
                         </div>
@@ -859,10 +875,11 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           </div>
                           <div className="text-lg font-medium">
                             {(selectedStatement?.equity ?? 0) > 0
-                              ? (
+                              ? safeToFixed(
                                   (selectedStatement?.liabilities ?? 0) /
-                                  (selectedStatement?.equity ?? 1)
-                                ).toFixed(1)
+                                    (selectedStatement?.equity ?? 1),
+                                  1
+                                )
                               : 'N/A'}
                           </div>
                         </div>
@@ -875,10 +892,11 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           </div>
                           <div className="text-lg font-medium">
                             {(selectedStatement?.assets ?? 0) > 0
-                              ? (
+                              ? safeToFixed(
                                   (selectedStatement?.revenue ?? 0) /
-                                  (selectedStatement?.assets ?? 1)
-                                ).toFixed(1)
+                                    (selectedStatement?.assets ?? 1),
+                                  2
+                                )
                               : 'N/A'}
                           </div>
                         </div>
@@ -909,8 +927,7 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
                           )}
                         </div>
                         <div className="text-sm text-green-600 mt-1">
-                          +{selectedStatement?.net_margin?.toFixed(1) ?? '0.0'}%
-                          margin
+                          +{safeToFixed(selectedStatement?.net_margin, 1)}% margin
                         </div>
                       </div>
                       <div className="text-center p-4 border rounded-lg">
