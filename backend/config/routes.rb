@@ -17,6 +17,7 @@ Rails.application.routes.draw do
         get 'metrics', to: 'investor_reporting#metrics'
         get 'notifications/preferences', to: 'investor_reporting#notification_preferences'
         put 'notifications/preferences', to: 'investor_reporting#update_notification_preferences'
+        get 'documents/:id/info', to: 'investor_reporting#document_info'
         post 'documents/:id/download', to: 'investor_reporting#download_document'
         
         # Campaign-specific investor routes

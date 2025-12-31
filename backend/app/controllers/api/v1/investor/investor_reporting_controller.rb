@@ -436,6 +436,31 @@ module Api
         rescue => e
           render json: { error: e.message }, status: :internal_server_error
         end
+
+        def document_info
+          document = InvestorReportDocument.find(params[:id])
+          
+          # Check if user has access
+          unless document.investor_report.campaign.equity_investments.successful.exists?(user: @current_user)
+            return render json: { error: 'Not authorized' }, status: :forbidden
+          end
+          
+          render json: {
+            success: true,
+            document: {
+              id: document.id,
+              title: document.title,
+              file_url: document.file_url,
+              file_name: document.file.attached? ? document.file.filename.to_s : nil,
+              file_size: document.file.attached? ? ActiveSupport::NumberHelper.number_to_human_size(document.file.byte_size) : nil,
+              file_format: document.file_format
+            }
+          }
+        rescue ActiveRecord::RecordNotFound
+          render json: { success: false, error: 'Document not found' }, status: :not_found
+        rescue => e
+          render json: { success: false, error: e.message }, status: :internal_server_error
+        end
         
         private
         
