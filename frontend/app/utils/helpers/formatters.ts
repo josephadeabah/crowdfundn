@@ -71,19 +71,36 @@ export const formatPercentage = (
   decimals: number = 2,
 ): string => {
   if (isNaN(value)) return '0%';
-  return `${value.toFixed(decimals)}%`;
+  
+  const formattedValue = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+  
+  return `${formattedValue}%`;
 };
 
 export const formatNumber = (value: number, decimals: number = 0): string => {
   if (isNaN(value)) return '0';
 
   if (value >= 1000000) {
-    return `${(value / 1000000).toFixed(1)}M`;
+    const formatted = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    }).format(value / 1000000);
+    return `${formatted}M`;
   } else if (value >= 1000) {
-    return `${(value / 1000).toFixed(1)}K`;
+    const formatted = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    }).format(value / 1000);
+    return `${formatted}K`;
   }
 
-  return value.toFixed(decimals);
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
 };
 
 export const formatFileSize = (bytes: number): string => {
@@ -92,8 +109,14 @@ export const formatFileSize = (bytes: number): string => {
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const size = bytes / Math.pow(k, i);
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  const formatted = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(size);
+
+  return `${formatted} ${sizes[i]}`;
 };
 
 export const formatTimeAgo = (dateString: string | Date): string => {
@@ -162,11 +185,23 @@ export const formatSocialNumber = (number: number): string => {
   if (isNaN(number)) return '0';
 
   if (number >= 1000000) {
-    return `${(number / 1000000).toFixed(1)}M`;
+    const formatted = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    }).format(number / 1000000);
+    return `${formatted}M`;
   } else if (number >= 10000) {
-    return `${(number / 1000).toFixed(0)}K`;
+    const formatted = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(number / 1000);
+    return `${formatted}K`;
   } else if (number >= 1000) {
-    return `${(number / 1000).toFixed(1)}K`;
+    const formatted = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    }).format(number / 1000);
+    return `${formatted}K`;
   }
 
   return number.toString();
@@ -198,7 +233,10 @@ export const safeToNumber = (value: any): number => {
 
 export const safeToFixed = (value: any, decimals: number = 2): string => {
   const num = safeToNumber(value);
-  return num.toFixed(decimals);
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(num);
 };
 
 // Add this export at the bottom of the file
