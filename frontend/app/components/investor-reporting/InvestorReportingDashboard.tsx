@@ -39,7 +39,11 @@ import { Progress } from '@/app/components/ui/progress';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { toast } from 'sonner';
 import { Skeleton } from '../ui/Skeleton';
-import { formatCurrency, safeToFixed, safeToNumber } from '@/app/utils/helpers/formatters';
+import {
+  formatCurrency,
+  safeToFixed,
+  safeToNumber,
+} from '@/app/utils/helpers/formatters';
 import InvestorReportsModal from './InvestorReportsModal';
 import PortfolioOverviewModal from './PortfolioOverviewModal';
 import FinancialStatementsModal from './FinancialStatementsModal';

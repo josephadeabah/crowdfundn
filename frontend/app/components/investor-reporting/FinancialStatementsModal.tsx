@@ -280,26 +280,28 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   const handleDownloadStatement = async (statementId: number) => {
     try {
       console.log('Downloading financial statement:', statementId);
-      
+
       if (!campaignId) {
         toast.error('Campaign ID is required');
         return;
       }
-      
+
       // Use the new service method for financial statements
       await investorReportingService.downloadFinancialStatement(
         campaignId,
-        statementId
+        statementId,
       );
-      
+
       toast.success('Financial statement download initiated');
     } catch (error: any) {
       console.error('Error downloading financial statement:', error);
-      
+
       if (error?.message?.includes('File not found')) {
         toast.error('Financial statement file not found');
       } else if (error?.message?.includes('Not authorized')) {
-        toast.error('You are not authorized to download this financial statement');
+        toast.error(
+          'You are not authorized to download this financial statement',
+        );
       } else {
         toast.error(error?.message || 'Failed to download financial statement');
       }

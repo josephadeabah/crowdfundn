@@ -815,15 +815,24 @@ export class InvestorReportingService {
     try {
       const endpoint = `/campaigns/${campaignId}/financials/${financialId}/download`;
       
-      // This will redirect to the file, so we need to handle it differently
-      // Create a form and submit it
+      // Method 1: Create a form with POST method (better for authorization)
       const form = document.createElement('form');
-      form.method = 'GET';
+      form.method = 'POST';
       form.action = `${this.baseUrl}${endpoint}`;
       form.target = '_blank';
       form.style.display = 'none';
       
-      // Add authorization token as hidden input
+      // Add CSRF token if needed (for POST requests)
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      if (csrfToken) {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'authenticity_token';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+      }
+      
+      // Add authorization header as hidden input for POST
       if (this.token) {
         const tokenInput = document.createElement('input');
         tokenInput.type = 'hidden';
@@ -853,14 +862,14 @@ export class InvestorReportingService {
   // Also add a method to get financial statement info
   async getFinancialStatementInfo(
     campaignId: number,
-    financialId: number
+    financialId: number,
   ): Promise<{
     success: boolean;
     financial?: FinancialStatement;
   }> {
     try {
       const response = await this.fetchApi(
-        `/campaigns/${campaignId}/financials/${financialId}`
+        `/campaigns/${campaignId}/financials/${financialId}`,
       );
       return response;
     } catch (error) {
