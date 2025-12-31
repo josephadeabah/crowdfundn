@@ -92,14 +92,14 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-xs text-gray-700">Valuation</p>
                     <p className="font-semibold text-gray-900">
-                      ${parseInt(campaign.valuation).toLocaleString()}
+                      {campaign.currency_symbol}{parseInt(campaign.valuation).toLocaleString()}
                     </p>
                   </div>
                 ) : (
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-xs text-gray-700">Goal</p>
                     <p className="font-semibold text-gray-900">
-                      ${parseInt(campaign.goal_amount || '0').toLocaleString()}
+                      {campaign.currency_symbol}{parseInt(campaign.goal_amount || '0').toLocaleString()}
                     </p>
                   </div>
                 )}
@@ -115,7 +115,7 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                   <div className="bg-green-50 p-3 rounded-lg">
                     <p className="text-xs text-green-700">Raised</p>
                     <p className="font-semibold text-green-900">
-                      $
+                      {campaign.currency_symbol}
                       {parseInt(
                         campaign.current_amount || '0',
                       ).toLocaleString()}
@@ -126,7 +126,7 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                 <div className="bg-gray-50 p-3 rounded-lg">
                   <p className="text-xs text-gray-700">Total Raised</p>
                   <p className="font-semibold text-gray-900">
-                    $
+                    {campaign.currency_symbol}
                     {parseInt(
                       campaign.transferred_amount ||
                         campaign.current_amount ||
