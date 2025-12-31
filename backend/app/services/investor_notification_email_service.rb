@@ -1,6 +1,6 @@
 # app/services/investor_notification_email_service.rb
 class InvestorNotificationEmailService
-  DEFAULT_FROM = 'Bantuhive Investor Relations <investor@bantuhive.com>'.freeze
+  DEFAULT_FROM = 'Bantuhive Investor Relations <help@bantuhive.com>'.freeze
 
   def self.send_notification(user, notification)
     return false unless user.is_a?(User) && notification.is_a?(Hash)
@@ -83,11 +83,36 @@ class InvestorNotificationEmailService
     send_email(
       to_email: user.email,
       to_name: user.full_name,
-      subject: "#{period.capitalize} Portfolio Summary - #{Date.current.to_formatted_s(:long)}",
+      subject: "#{period.capitalize} Portfolio Summary - #{Date.current.strftime('%B %d, %Y')}",
       html_content: html_content,
       text_content: text_content,
       category: 'portfolio_summary'
     )
+  end
+
+  def self.test_email(user)
+    return false unless user.is_a?(User)
+    
+    # Create a test notification
+    test_notification = {
+      title: "Test Email Notification",
+      message: "This is a test email to verify that the investor notification system is working properly.",
+      type: :test
+    }
+    
+    send_notification(user, test_notification)
+  end
+
+  def self.send_welcome_email(user)
+    return false unless user.is_a?(User)
+    
+    welcome_notification = {
+      title: "Welcome to Bantuhive Investor Relations",
+      message: "Thank you for joining Bantuhive as an investor. You will receive notifications about your investments, financial statements, and reports here.",
+      type: :welcome
+    }
+    
+    send_notification(user, welcome_notification)
   end
 
   private
@@ -335,6 +360,7 @@ class InvestorNotificationEmailService
             </div>
 
             <div class="footer">
+              <p>You are receiving this email because you are an investor on Bantuhive.</p>
               <p>© #{Time.current.year} Bantuhive Ltd. All rights reserved.</p>
             </div>
           </div>
@@ -370,6 +396,10 @@ class InvestorNotificationEmailService
   end
 
   def self.build_financial_statement_html(user, statement, campaign)
+    # Fix date formatting
+    period_start = statement.period_start.strftime('%b %d, %Y') rescue statement.period_start.to_s
+    period_end = statement.period_end.strftime('%b %d, %Y') rescue statement.period_end.to_s
+    
     <<~HTML
       <!DOCTYPE html>
       <html>
@@ -436,7 +466,7 @@ class InvestorNotificationEmailService
               <p>A new financial statement has been published for <strong>#{campaign.company_name}</strong>.</p>
               
               <div class="financial-details">
-                <p><strong>Period:</strong> #{statement.period_start.to_s(:short)} - #{statement.period_end.to_s(:short)}</p>
+                <p><strong>Period:</strong> #{period_start} - #{period_end}</p>
                 <p><strong>Type:</strong> #{statement.period_type.capitalize}</p>
                 <p><strong>Revenue:</strong> #{campaign.currency_symbol}#{statement.revenue.round(2)}</p>
                 <p><strong>Net Income:</strong> #{campaign.currency_symbol}#{statement.net_income.round(2)}</p>
@@ -451,6 +481,7 @@ class InvestorNotificationEmailService
             </div>
 
             <div class="footer">
+              <p>You are receiving this email because you are an investor on Bantuhive.</p>
               <p>© #{Time.current.year} Bantuhive Ltd. All rights reserved.</p>
             </div>
           </div>
@@ -460,6 +491,10 @@ class InvestorNotificationEmailService
   end
 
   def self.build_financial_statement_text(user, statement, campaign)
+    # Fix date formatting
+    period_start = statement.period_start.strftime('%b %d, %Y') rescue statement.period_start.to_s
+    period_end = statement.period_end.strftime('%b %d, %Y') rescue statement.period_end.to_s
+    
     <<~TEXT
       New Financial Statement: #{campaign.company_name}
       
@@ -467,7 +502,7 @@ class InvestorNotificationEmailService
       
       A new financial statement has been published for #{campaign.company_name}:
       
-      Period: #{statement.period_start.to_s(:short)} - #{statement.period_end.to_s(:short)}
+      Period: #{period_start} - #{period_end}
       Type: #{statement.period_type.capitalize}
       Revenue: #{campaign.currency_symbol}#{statement.revenue.round(2)}
       Net Income: #{campaign.currency_symbol}#{statement.net_income.round(2)}
@@ -484,6 +519,16 @@ class InvestorNotificationEmailService
   end
 
   def self.build_investor_report_html(user, report, campaign)
+    # Fix date formatting
+    report_date = report.report_date.strftime('%B %d, %Y') rescue report.report_date.to_s
+    period_desc = if report.period_start && report.period_end
+      start_date = report.period_start.strftime('%b %d, %Y') rescue report.period_start.to_s
+      end_date = report.period_end.strftime('%b %d, %Y') rescue report.period_end.to_s
+      "#{start_date} - #{end_date}"
+    else
+      "As of #{report_date}"
+    end
+    
     <<~HTML
       <!DOCTYPE html>
       <html>
@@ -551,8 +596,8 @@ class InvestorNotificationEmailService
               
               <div class="report-details">
                 <p><strong>Title:</strong> #{report.title}</p>
-                <p><strong>Report Date:</strong> #{report.report_date.to_formatted_s(:long)}</p>
-                <p><strong>Period:</strong> #{report.period_description}</p>
+                <p><strong>Report Date:</strong> #{report_date}</p>
+                <p><strong>Period:</strong> #{period_desc}</p>
               </div>
 
               <p>You can download the full report from your investor dashboard.</p>
@@ -562,6 +607,7 @@ class InvestorNotificationEmailService
             </div>
 
             <div class="footer">
+              <p>You are receiving this email because you are an investor on Bantuhive.</p>
               <p>© #{Time.current.year} Bantuhive Ltd. All rights reserved.</p>
             </div>
           </div>
@@ -571,6 +617,16 @@ class InvestorNotificationEmailService
   end
 
   def self.build_investor_report_text(user, report, campaign)
+    # Fix date formatting
+    report_date = report.report_date.strftime('%B %d, %Y') rescue report.report_date.to_s
+    period_desc = if report.period_start && report.period_end
+      start_date = report.period_start.strftime('%b %d, %Y') rescue report.period_start.to_s
+      end_date = report.period_end.strftime('%b %d, %Y') rescue report.period_end.to_s
+      "#{start_date} - #{end_date}"
+    else
+      "As of #{report_date}"
+    end
+    
     <<~TEXT
       New #{report.report_type.capitalize} Report: #{campaign.company_name}
       
@@ -579,8 +635,8 @@ class InvestorNotificationEmailService
       A new #{report.report_type} report has been published for #{campaign.company_name}:
       
       Title: #{report.title}
-      Report Date: #{report.report_date.to_formatted_s(:long)}
-      Period: #{report.period_description}
+      Report Date: #{report_date}
+      Period: #{period_desc}
       
       You can download the full report from your investor dashboard.
       
@@ -675,6 +731,7 @@ class InvestorNotificationEmailService
             </div>
 
             <div class="footer">
+              <p>You are receiving this email because you are an investor on Bantuhive.</p>
               <p>© #{Time.current.year} Bantuhive Ltd. All rights reserved.</p>
             </div>
           </div>
@@ -721,7 +778,7 @@ class InvestorNotificationEmailService
         textContent: text_content,
         sender: {
           name: 'Bantuhive Investor Relations',
-          email: 'investor@bantuhive.com'
+          email: 'help@bantuhive.com'
         },
         headers: {
           'X-Mailin-custom' => category
