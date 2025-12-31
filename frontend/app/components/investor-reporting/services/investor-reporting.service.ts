@@ -807,6 +807,68 @@ export class InvestorReportingService {
     }
   }
 
+  // Add this method to the InvestorReportingService class
+  async downloadFinancialStatement(
+    campaignId: number,
+    financialId: number
+  ): Promise<{ success: boolean; url?: string }> {
+    try {
+      const endpoint = `/campaigns/${campaignId}/financials/${financialId}/download`;
+      
+      // This will redirect to the file, so we need to handle it differently
+      // Create a form and submit it
+      const form = document.createElement('form');
+      form.method = 'GET';
+      form.action = `${this.baseUrl}${endpoint}`;
+      form.target = '_blank';
+      form.style.display = 'none';
+      
+      // Add authorization token as hidden input
+      if (this.token) {
+        const tokenInput = document.createElement('input');
+        tokenInput.type = 'hidden';
+        tokenInput.name = 'Authorization';
+        tokenInput.value = `Bearer ${this.token}`;
+        form.appendChild(tokenInput);
+      }
+      
+      // Add the form to the document
+      document.body.appendChild(form);
+      
+      // Submit the form
+      form.submit();
+      
+      // Remove the form after submission
+      setTimeout(() => {
+        document.body.removeChild(form);
+      }, 100);
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error downloading financial statement:', error);
+      throw error;
+    }
+  }
+
+  // Also add a method to get financial statement info
+  async getFinancialStatementInfo(
+    campaignId: number,
+    financialId: number
+  ): Promise<{
+    success: boolean;
+    financial?: FinancialStatement;
+  }> {
+    try {
+      const response = await this.fetchApi(
+        `/campaigns/${campaignId}/financials/${financialId}`
+      );
+      return response;
+    } catch (error) {
+      console.error('Error getting financial statement info:', error);
+      return { success: false };
+    }
+  }
+
   // Campaign KPIs management
   async getCampaignKPIs(
     campaignId: number,

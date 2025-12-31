@@ -39,7 +39,7 @@ import { Progress } from '@/app/components/ui/progress';
 import { useAuth } from '@/app/context/auth/AuthContext';
 import { toast } from 'sonner';
 import { Skeleton } from '../ui/Skeleton';
-import { formatCurrency } from '@/app/utils/helpers/formatters';
+import { formatCurrency, safeToFixed, safeToNumber } from '@/app/utils/helpers/formatters';
 import InvestorReportsModal from './InvestorReportsModal';
 import PortfolioOverviewModal from './PortfolioOverviewModal';
 import FinancialStatementsModal from './FinancialStatementsModal';
@@ -82,23 +82,6 @@ interface PortfolioData {
   cash_flow?: any[];
   projections?: any[];
 }
-
-// Helper function to safely convert to number
-const safeToNumber = (value: any): number => {
-  if (value === null || value === undefined) return 0;
-  if (typeof value === 'number') return value;
-  if (typeof value === 'string') {
-    const num = parseFloat(value);
-    return isNaN(num) ? 0 : num;
-  }
-  return 0;
-};
-
-// Helper function to safely format number with toFixed
-const safeToFixed = (value: any, decimals: number = 2): string => {
-  const num = safeToNumber(value);
-  return num.toFixed(decimals);
-};
 
 const InvestorReportingDashboard: React.FC = () => {
   const { user, token } = useAuth();
