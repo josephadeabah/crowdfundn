@@ -178,10 +178,12 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
     try {
       // Always send current date
       const currentDate = format(new Date(), 'yyyy-MM-dd');
-
+      
+      console.log('Generating quarterly report with date:', currentDate);
+      
       const response = await financialManagementService.generateQuarterlyReport(
         campaignId,
-        currentDate, // Always send a date
+        currentDate  // Always send a date
       );
 
       if (response.success) {
@@ -191,6 +193,7 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
         toast.error('Failed to generate quarterly report');
       }
     } catch (error: any) {
+      console.error('Error generating quarterly report:', error);
       toast.error(error.message || 'Error generating quarterly report');
     }
   };

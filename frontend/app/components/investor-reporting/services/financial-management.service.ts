@@ -400,27 +400,26 @@ export class FinancialManagementService {
   async generateQuarterlyReport(
     campaignId: number,
     reportDate?: string,
-    existingReportId?: number,
   ): Promise<{
     success: boolean;
     report: any;
   }> {
     try {
-      let endpoint = `/campaigns/${campaignId}/investor_reports`;
-
-      if (existingReportId) {
-        endpoint += `/${existingReportId}/generate_quarterly`;
-      } else {
-        endpoint += `/generate_quarterly`;
+      const endpoint = `/campaigns/${campaignId}/investor_reports/generate_quarterly`;
+      
+      // Always send a body with the report_date
+      const body: any = {};
+      if (reportDate) {
+        body.report_date = reportDate;
       }
-
-      // Create the request body with report_date
-      const body = reportDate ? { report_date: reportDate } : {};
-
+      
+      console.log('Generating quarterly report:', { endpoint, body });
+      
       const response = await this.fetchApi(endpoint, {
         method: 'POST',
         body: JSON.stringify(body),
       });
+      
       return response;
     } catch (error) {
       console.error('Error generating quarterly report:', error);
