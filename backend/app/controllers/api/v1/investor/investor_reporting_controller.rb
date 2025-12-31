@@ -1,4 +1,3 @@
-# app/controllers/api/v1/investor/investor_reporting_controller.rb
 module Api
   module V1
     module Investor
@@ -11,6 +10,10 @@ module Api
         def portfolio
           calculator = InvestorReporting::PortfolioCalculator.new(@current_user)
           portfolio_data = calculator.calculate_detailed_portfolio
+          
+          # Format amounts with campaign currency
+          portfolio_data[:summary] = format_portfolio_summary(portfolio_data[:summary])
+          portfolio_data[:by_campaign] = format_campaign_amounts(portfolio_data[:by_campaign])
           
           render json: {
             success: true,
@@ -47,6 +50,10 @@ module Api
               calculator = InvestorReporting::PortfolioCalculator.new(@current_user)
               portfolio_data = calculator.calculate_detailed_portfolio
               
+              # Format amounts with campaign currency
+              portfolio_data[:summary] = format_portfolio_summary(portfolio_data[:summary])
+              portfolio_data[:by_campaign] = format_campaign_amounts(portfolio_data[:by_campaign])
+              
               # Filter data based on requested sections
               filtered_data = {}
               filtered_data[:summary] = portfolio_data[:summary] if include_sections.include?('summary')
@@ -65,7 +72,10 @@ module Api
                   user: {
                     id: @current_user.id,
                     name: @current_user.full_name,
-                    email: @current_user.email
+                    email: @current_user.email,
+                    currency: @current_user.currency,
+                    currency_symbol: @current_user.currency_symbol,
+                    currency_code: @current_user.currency_code
                   }
                 }
               elsif format == 'csv'
@@ -124,7 +134,12 @@ module Api
                 download_url: rails_blob_url(blob),
                 filename: filename,
                 generated_at: Time.current,
-                expires_at: 24.hours.from_now
+                expires_at: 24.hours.from_now,
+                currency_info: {
+                  code: @current_user.currency_code,
+                  symbol: @current_user.currency_symbol,
+                  name: @current_user.currency
+                }
               }
             rescue => e
               Rails.logger.error "Failed to create blob: #{e.message}"
@@ -138,6 +153,10 @@ module Api
             # For other formats, generate and return as attachment
             calculator = InvestorReporting::PortfolioCalculator.new(@current_user)
             portfolio_data = calculator.calculate_detailed_portfolio
+            
+            # Format amounts with campaign currency
+            portfolio_data[:summary] = format_portfolio_summary(portfolio_data[:summary])
+            portfolio_data[:by_campaign] = format_campaign_amounts(portfolio_data[:by_campaign])
             
             # Prepare data based on requested sections
             export_data = {}
@@ -181,7 +200,12 @@ module Api
                   download_url: rails_blob_url(blob),
                   filename: blob.filename.to_s,
                   generated_at: Time.current,
-                  expires_at: 24.hours.from_now
+                  expires_at: 24.hours.from_now,
+                  currency_info: {
+                    code: @current_user.currency_code,
+                    symbol: @current_user.currency_symbol,
+                    name: @current_user.currency
+                  }
                 }
               else
                 # Fallback to direct download
@@ -243,7 +267,12 @@ module Api
           render json: {
             success: true,
             metrics: metrics.as_json,
-            current: current_metric&.as_json
+            current: current_metric&.as_json,
+            currency_info: {
+              code: @current_user.currency_code,
+              symbol: @current_user.currency_symbol,
+              name: @current_user.currency
+            }
           }
         rescue => e
           render json: {
@@ -271,7 +300,17 @@ module Api
           render json: {
             success: true,
             financials: financials.as_json,
-            summary: campaign.financial_performance_summary(4)
+            summary: campaign.financial_performance_summary(4),
+            campaign_currency: {
+              code: campaign.currency_code,
+              symbol: campaign.currency_symbol,
+              name: campaign.currency
+            },
+            fundraiser_currency: {
+              code: campaign.fundraiser.currency_code,
+              symbol: campaign.fundraiser.currency_symbol,
+              name: campaign.fundraiser.currency
+            }
           }
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found
@@ -309,7 +348,8 @@ module Api
               is_primary: kpi.is_primary,
               latest_value: latest_value ? {
                 value: latest_value.value,
-                period_date: latest_value.period_date
+                period_date: latest_value.period_date,
+                formatted_value: format_kpi_value(latest_value.value, kpi.unit, campaign)
               } : nil,
               trend: trend,
               performance_vs_target: kpi.performance_vs_target
@@ -318,7 +358,12 @@ module Api
           
           render json: {
             success: true,
-            kpis: kpis_data
+            kpis: kpis_data,
+            campaign_currency: {
+              code: campaign.currency_code,
+              symbol: campaign.currency_symbol,
+              name: campaign.currency
+            }
           }
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found
@@ -357,7 +402,12 @@ module Api
           
           render json: {
             success: true,
-            reports: reports.as_json(include: { documents: {} })
+            reports: reports.as_json(include: { documents: {} }),
+            campaign_currency: {
+              code: campaign.currency_code,
+              symbol: campaign.currency_symbol,
+              name: campaign.currency
+            }
           }
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Campaign not found' }, status: :not_found
@@ -371,7 +421,12 @@ module Api
           
           render json: {
             success: true,
-            preferences: preferences.as_json
+            preferences: preferences.as_json,
+            currency_info: {
+              code: @current_user.currency_code,
+              symbol: @current_user.currency_symbol,
+              name: @current_user.currency
+            }
           }
         rescue => e
           Rails.logger.error "Error fetching notification preferences: #{e.message}"
@@ -471,23 +526,28 @@ module Api
             csv << ["Generated: #{Time.current.to_formatted_s(:long)}"]
             csv << ['Investor ID:', @current_user.id]
             csv << ['Investor Name:', @current_user.full_name]
+            csv << ['Investor Currency:', @current_user.currency_code, @current_user.currency_symbol]
             csv << []
             
             csv << ['PORTFOLIO SUMMARY']
-            csv << ['Metric', 'Value']
+            csv << ['Metric', 'Value', 'Formatted Value']
             if data[:summary]
               data[:summary].each do |key, value|
                 formatted_key = key.to_s.humanize.titleize
-                formatted_value = if [:total_invested, :current_value, :total_returns].include?(key)
+                
+                # Format values based on type
+                formatted_value = case key
+                when :total_invested, :current_value, :total_returns
                   "#{@current_user.currency_symbol}#{value.round(2)}"
-                elsif [:roi, :irr].include?(key)
+                when :roi, :irr
                   "#{value.round(2)}%"
-                elsif key == :moic
+                when :moic
                   "#{value.round(2)}x"
                 else
                   value
                 end
-                csv << [formatted_key, formatted_value]
+                
+                csv << [formatted_key, value, formatted_value]
               end
             end
             csv << []
@@ -495,13 +555,18 @@ module Api
             # Campaigns section
             if data[:campaigns] && data[:campaigns].any?
               csv << ['CAMPAIGN BREAKDOWN']
-              csv << ['Company', 'Invested', 'Current Value', 'Returns', 'ROI', 'Ownership %']
+              csv << ['Company', 'Campaign Currency', 'Invested', 'Formatted Invested', 'Current Value', 'Formatted Current Value', 'Returns', 'Formatted Returns', 'ROI', 'Ownership %']
               data[:campaigns].each do |campaign|
+                campaign_currency_symbol = campaign[:campaign_currency_symbol] || '$'
                 csv << [
                   campaign[:company_name],
-                  "#{@current_user.currency_symbol}#{campaign[:invested].round(2)}",
-                  "#{@current_user.currency_symbol}#{campaign[:current_value].round(2)}",
-                  "#{@current_user.currency_symbol}#{campaign[:returns].round(2)}",
+                  campaign[:campaign_currency] || 'USD',
+                  campaign[:invested],
+                  "#{campaign_currency_symbol}#{campaign[:invested].round(2)}",
+                  campaign[:current_value],
+                  "#{campaign_currency_symbol}#{campaign[:current_value].round(2)}",
+                  campaign[:returns],
+                  "#{campaign_currency_symbol}#{campaign[:returns].round(2)}",
                   "#{campaign[:roi].round(2)}%",
                   "#{campaign[:ownership_percentage].round(2)}%"
                 ]
@@ -536,6 +601,7 @@ module Api
             csv << ['CONFIDENTIAL']
             csv << ['This statement contains confidential investor information.']
             csv << ['Generated by Bantuhive Investment Platform']
+            csv << ['Currency used for calculations:', @current_user.currency_code, @current_user.currency_symbol]
           end
         end
 
@@ -564,6 +630,66 @@ module Api
               success: false,
               error: "Unsupported format: #{format}. Supported formats: pdf, json, csv"
             }, status: :bad_request
+          end
+        end
+        
+        # Helper method to format portfolio summary amounts
+        def format_portfolio_summary(summary)
+          return {} unless summary
+          
+          {
+            total_invested: summary[:total_invested],
+            formatted_total_invested: "#{@current_user.currency_symbol}#{summary[:total_invested].round(2)}",
+            current_value: summary[:current_value],
+            formatted_current_value: "#{@current_user.currency_symbol}#{summary[:current_value].round(2)}",
+            total_returns: summary[:total_returns],
+            formatted_total_returns: "#{@current_user.currency_symbol}#{summary[:total_returns].round(2)}",
+            roi: summary[:roi],
+            formatted_roi: "#{summary[:roi].round(2)}%",
+            irr: summary[:irr],
+            formatted_irr: "#{summary[:irr].round(2)}%",
+            moic: summary[:moic],
+            formatted_moic: "#{summary[:moic].round(2)}x",
+            investors_count: summary[:investors_count],
+            campaigns_count: summary[:campaigns_count],
+            currency_code: @current_user.currency_code,
+            currency_symbol: @current_user.currency_symbol
+          }
+        end
+        
+        # Helper method to format campaign amounts
+        def format_campaign_amounts(campaigns)
+          return [] unless campaigns.is_a?(Array)
+          
+          campaigns.map do |campaign|
+            # Get campaign to access its currency
+            campaign_obj = Campaign.find_by(id: campaign[:campaign_id])
+            campaign_currency_symbol = campaign_obj&.currency_symbol || '$'
+            campaign_currency_code = campaign_obj&.currency_code || 'USD'
+            
+            campaign.merge(
+              formatted_invested: "#{campaign_currency_symbol}#{campaign[:invested].round(2)}",
+              formatted_current_value: "#{campaign_currency_symbol}#{campaign[:current_value].round(2)}",
+              formatted_returns: "#{campaign_currency_symbol}#{campaign[:returns].round(2)}",
+              formatted_roi: "#{campaign[:roi].round(2)}%",
+              campaign_currency_symbol: campaign_currency_symbol,
+              campaign_currency_code: campaign_currency_code,
+              campaign_currency_name: campaign_obj&.currency || 'USD'
+            )
+          end
+        end
+        
+        # Helper method to format KPI values with currency
+        def format_kpi_value(value, unit, campaign)
+          case unit
+          when 'currency'
+            "#{campaign.currency_symbol}#{value.round(2)}"
+          when 'percentage'
+            "#{value.round(2)}%"
+          when 'number'
+            value.to_i.to_s
+          else
+            value.round(2).to_s
           end
         end
       end

@@ -1,4 +1,3 @@
-# app/controllers/api/v1/campaigns/investor_reports_controller.rb
 module Api
   module V1
     module Campaigns
@@ -20,9 +19,30 @@ module Api
             reports = reports.where(status: params[:status])
           end
           
+          # Format reports with campaign currency info
+          formatted_reports = reports.recent.map do |report|
+            report.as_json.merge(
+              campaign_currency: {
+                code: @campaign.currency_code,
+                symbol: @campaign.currency_symbol,
+                name: @campaign.currency
+              },
+              fundraiser_currency: {
+                code: @campaign.fundraiser.currency_code,
+                symbol: @campaign.fundraiser.currency_symbol,
+                name: @campaign.fundraiser.currency
+              }
+            )
+          end
+          
           render json: {
             success: true,
-            reports: reports.recent.as_json
+            reports: formatted_reports,
+            campaign_currency: {
+              code: @campaign.currency_code,
+              symbol: @campaign.currency_symbol,
+              name: @campaign.currency
+            }
           }
         rescue => e
           render json: {
@@ -35,9 +55,31 @@ module Api
         def show
           report = @campaign.investor_reports.find(params[:id])
           
+          formatted_report = report.as_json(include_documents: true).merge(
+            campaign_currency: {
+              code: @campaign.currency_code,
+              symbol: @campaign.currency_symbol,
+              name: @campaign.currency
+            },
+            fundraiser_currency: {
+              code: @campaign.fundraiser.currency_code,
+              symbol: @campaign.fundraiser.currency_symbol,
+              name: @campaign.fundraiser.currency
+            }
+          )
+          
           render json: {
             success: true,
-            report: report.as_json(include_documents: true)
+            report: formatted_report,
+            campaign_info: {
+              title: @campaign.title,
+              company_name: @campaign.company_name,
+              valuation: @campaign.valuation,
+              formatted_valuation: "#{@campaign.currency_symbol}#{@campaign.valuation.round(2)}",
+              equity_offered: @campaign.equity_offered,
+              currency: @campaign.currency_code,
+              currency_symbol: @campaign.currency_symbol
+            }
           }
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Report not found' }, status: :not_found
@@ -58,7 +100,13 @@ module Api
             
             render json: {
               success: true,
-              report: report.as_json
+              report: report.as_json.merge(
+                campaign_currency: {
+                  code: @campaign.currency_code,
+                  symbol: @campaign.currency_symbol,
+                  name: @campaign.currency
+                }
+              )
             }, status: :created
           else
             render json: {
@@ -82,7 +130,13 @@ module Api
             
             render json: {
               success: true,
-              report: report.as_json
+              report: report.as_json.merge(
+                campaign_currency: {
+                  code: @campaign.currency_code,
+                  symbol: @campaign.currency_symbol,
+                  name: @campaign.currency
+                }
+              )
             }
           else
             render json: {
@@ -117,7 +171,13 @@ module Api
             # Generate PDF and notify investors (handled by callbacks)
             render json: {
               success: true,
-              report: report.as_json
+              report: report.as_json.merge(
+                campaign_currency: {
+                  code: @campaign.currency_code,
+                  symbol: @campaign.currency_symbol,
+                  name: @campaign.currency
+                }
+              )
             }
           else
             render json: {
@@ -154,6 +214,7 @@ module Api
           Rails.logger.info "Campaign ID: #{@campaign.id}"
           Rails.logger.info "Campaign Title: #{@campaign.title}"
           Rails.logger.info "Campaign Fundraiser ID: #{@campaign.fundraiser_id}"
+          Rails.logger.info "Campaign Currency: #{@campaign.currency_code} #{@campaign.currency_symbol}"
           
           # Check if we're generating for a specific report (member route) or creating new (collection route)
           if params[:id]
@@ -162,7 +223,13 @@ module Api
             if report.update(report_type: 'quarterly', report_date: report_date)
               render json: {
                 success: true,
-                report: report.as_json
+                report: report.as_json.merge(
+                  campaign_currency: {
+                    code: @campaign.currency_code,
+                    symbol: @campaign.currency_symbol,
+                    name: @campaign.currency
+                  }
+                )
               }
             else
               render json: {
@@ -184,7 +251,13 @@ module Api
                   Rails.logger.info "Successfully generated report ID: #{report.id}"
                   render json: {
                     success: true,
-                    report: report.as_json
+                    report: report.as_json.merge(
+                      campaign_currency: {
+                        code: @campaign.currency_code,
+                        symbol: @campaign.currency_symbol,
+                        name: @campaign.currency
+                      }
+                    )
                   }
                 else
                   Rails.logger.error "Failed to generate report: #{report.errors.full_messages}"
@@ -209,12 +282,18 @@ module Api
                   period_end: period_end,
                   status: 'draft',
                   notify_investors: false,
-                  executive_summary: "Quarterly financial report for Q#{quarter} #{year}."
+                  executive_summary: "Quarterly financial report for Q#{quarter} #{year}. All amounts in #{@campaign.currency_code} (#{@campaign.currency_symbol})."
                 )
                 
                 render json: {
                   success: true,
-                  report: report.as_json
+                  report: report.as_json.merge(
+                    campaign_currency: {
+                      code: @campaign.currency_code,
+                      symbol: @campaign.currency_symbol,
+                      name: @campaign.currency
+                    }
+                  )
                 }
               end
             rescue => e
@@ -243,7 +322,12 @@ module Api
             render json: {
               success: true,
               message: 'Attachments uploaded successfully',
-              attachments: report.attachments_urls
+              attachments: report.attachments_urls,
+              campaign_currency: {
+                code: @campaign.currency_code,
+                symbol: @campaign.currency_symbol,
+                name: @campaign.currency
+              }
             }
           else
             render json: {
