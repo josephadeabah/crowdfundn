@@ -33,7 +33,8 @@ Rails.application.routes.draw do
         resources :financials, controller: 'campaigns/financials', only: [:index, :show, :create, :update, :destroy] do
           member do
             post :publish
-            get :download  # ADD THIS LINE
+            get :download  # Keep GET for backward compatibility
+            post :download # Add POST for form submissions with auth
           end
           collection do
             post :import
