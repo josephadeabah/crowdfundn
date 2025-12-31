@@ -179,8 +179,6 @@ const InvestorReportsManager: React.FC<InvestorReportsManagerProps> = ({
       // Always send current date
       const currentDate = format(new Date(), 'yyyy-MM-dd');
 
-      console.log('Generating quarterly report with date:', currentDate);
-
       const response = await financialManagementService.generateQuarterlyReport(
         campaignId,
         currentDate, // Always send a date
