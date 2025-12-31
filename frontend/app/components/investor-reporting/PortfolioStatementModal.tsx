@@ -43,7 +43,12 @@ import {
 } from '@/app/components/ui/select';
 import { Label } from '@/app/components/ui/label';
 import { toast } from 'sonner';
-import { formatDate, formatCurrency } from '@/app/utils/helpers/formatters';
+import { 
+  formatDate, 
+  formatCurrency, 
+  formatPercentage, 
+  formatNumber 
+} from '@/app/utils/helpers/formatters';
 import investorReportingService, {
   InvestorReportingService,
 } from './services/investor-reporting.service';
@@ -508,7 +513,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                         <span
                           className={`font-medium ${(portfolioData?.summary?.roi ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                         >
-                          {portfolioData?.summary?.roi?.toFixed(2) ?? '0.00'}%
+                          {formatPercentage(portfolioData?.summary?.roi ?? 0, 2)}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -516,7 +521,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                           Internal Rate of Return (IRR)
                         </span>
                         <span className="font-medium">
-                          {portfolioData?.summary?.irr?.toFixed(2) ?? '0.00'}%
+                          {formatPercentage(portfolioData?.summary?.irr ?? 0, 2)}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -524,7 +529,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                           Multiple on Invested Capital (MOIC)
                         </span>
                         <span className="font-medium">
-                          {portfolioData?.summary?.moic?.toFixed(2) ?? '0.00'}x
+                          {formatNumber(portfolioData?.summary?.moic ?? 0, 2)}x
                         </span>
                       </div>
                     </div>
@@ -557,7 +562,7 @@ const PortfolioStatementModal: React.FC<PortfolioStatementModalProps> = ({
                                   portfolioData?.summary?.currency,
                                   portfolioData?.summary?.currency_symbol,
                                 )}{' '}
-                                ({percentage?.toFixed(1)}%)
+                                ({formatNumber(percentage, 1)}%)
                               </span>
                             </div>
                           );
