@@ -1,4 +1,3 @@
-# app/controllers/api/v1/investor/investor_reporting_controller.rb
 module Api
   module V1
     module Investor
@@ -9,13 +8,24 @@ module Api
         
         # GET /api/v1/investor/portfolio
         def portfolio
-          calculator = InvestorReporting::PortfolioCalculator.new(@current_user)
-          portfolio_data = calculator.calculate_detailed_portfolio
-          
-          render json: {
-            success: true,
-            portfolio: portfolio_data
-          }
+          begin
+            calculator = InvestorReporting::PortfolioCalculator.new(@current_user)
+            portfolio_data = calculator.calculate_detailed_portfolio
+            
+            render json: {
+              success: true,
+              portfolio: portfolio_data
+            }
+          rescue => e
+            Rails.logger.error "Error in portfolio endpoint: #{e.message}"
+            Rails.logger.error e.backtrace.first(10).join("\n")
+            
+            render json: {
+              success: false,
+              error: "Failed to calculate portfolio",
+              details: Rails.env.development? ? e.message : nil
+            }, status: :internal_server_error
+          end
         end
         
         # GET /api/v1/investor/portfolio/statement
