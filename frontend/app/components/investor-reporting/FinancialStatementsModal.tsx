@@ -181,17 +181,17 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
         // Transform string numbers to actual numbers
         const transformedStatements = (response?.financials ?? []).map(stmt => ({
           ...stmt,
-          revenue: parseFloat(stmt.revenue) || 0,
-          expenses: parseFloat(stmt.expenses) || 0,
-          gross_profit: parseFloat(stmt.gross_profit) || 0,
-          net_income: parseFloat(stmt.net_income) || 0,
-          assets: parseFloat(stmt.assets) || 0,
-          liabilities: parseFloat(stmt.liabilities) || 0,
-          equity: parseFloat(stmt.equity) || 0,
-          burn_rate: parseFloat(stmt.burn_rate) || 0,
-          runway_months: parseFloat(stmt.runway_months) || 0,
-          gross_margin: parseFloat(stmt.gross_margin) || 0,
-          net_margin: parseFloat(stmt.net_margin) || 0,
+          revenue: typeof stmt.revenue === 'string' ? parseFloat(stmt.revenue) || 0 : stmt.revenue || 0,
+          expenses: typeof stmt.expenses === 'string' ? parseFloat(stmt.expenses) || 0 : stmt.expenses || 0,
+          gross_profit: typeof stmt.gross_profit === 'string' ? parseFloat(stmt.gross_profit) || 0 : stmt.gross_profit || 0,
+          net_income: typeof stmt.net_income === 'string' ? parseFloat(stmt.net_income) || 0 : stmt.net_income || 0,
+          assets: typeof stmt.assets === 'string' ? parseFloat(stmt.assets) || 0 : stmt.assets || 0,
+          liabilities: typeof stmt.liabilities === 'string' ? parseFloat(stmt.liabilities) || 0 : stmt.liabilities || 0,
+          equity: typeof stmt.equity === 'string' ? parseFloat(stmt.equity) || 0 : stmt.equity || 0,
+          burn_rate: typeof stmt.burn_rate === 'string' ? parseFloat(stmt.burn_rate) || 0 : stmt.burn_rate || 0,
+          runway_months: typeof stmt.runway_months === 'string' ? parseFloat(stmt.runway_months) || 0 : stmt.runway_months || 0,
+          gross_margin: typeof stmt.gross_margin === 'string' ? parseFloat(stmt.gross_margin) || 0 : stmt.gross_margin || 0,
+          net_margin: typeof stmt.net_margin === 'string' ? parseFloat(stmt.net_margin) || 0 : stmt.net_margin || 0,
         }));
 
         console.log('Setting transformed statements:', transformedStatements);
