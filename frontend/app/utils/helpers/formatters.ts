@@ -71,12 +71,12 @@ export const formatPercentage = (
   decimals: number = 2,
 ): string => {
   if (isNaN(value)) return '0%';
-  
+
   const formattedValue = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(value);
-  
+
   return `${formattedValue}%`;
 };
 

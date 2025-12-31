@@ -32,11 +32,11 @@ import {
 import { Badge } from '@/app/components/ui/badge';
 import { Progress } from '@/app/components/ui/progress';
 import { toast } from 'sonner';
-import { 
-  formatCurrency, 
-  formatDate, 
+import {
+  formatCurrency,
+  formatDate,
   formatPercentage,
-  formatNumber 
+  formatNumber,
 } from '@/app/utils/helpers/formatters';
 
 interface PortfolioOverviewModalProps {
@@ -217,7 +217,10 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                             </span>
                             <span>•</span>
                             <span>
-                              {formatNumber(campaign.ownership_percentage || 0, 2)}
+                              {formatNumber(
+                                campaign.ownership_percentage || 0,
+                                2,
+                              )}
                               % ownership
                             </span>
                           </div>
@@ -284,7 +287,10 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                               Portfolio Concentration
                             </div>
                             <div className="text-lg font-medium">
-                              {formatPercentage((riskAnalysis.concentration_risk || 0) * 100, 1)}
+                              {formatPercentage(
+                                (riskAnalysis.concentration_risk || 0) * 100,
+                                1,
+                              )}
                             </div>
                             <div className="text-xs text-muted-foreground">
                               Herfindahl-Hirschman Index
@@ -295,7 +301,10 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                               Overall Risk Score
                             </div>
                             <div className="text-lg font-medium">
-                              {formatPercentage((riskAnalysis.overall_risk_score || 0) * 100, 1)}
+                              {formatPercentage(
+                                (riskAnalysis.overall_risk_score || 0) * 100,
+                                1,
+                              )}
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {riskAnalysis.risk_category?.toUpperCase() ||
