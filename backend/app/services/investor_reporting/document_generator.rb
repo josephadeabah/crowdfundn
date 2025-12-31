@@ -56,16 +56,20 @@ module InvestorReporting
     private
     
     def add_header(pdf, report)
-        # Find the logo in compiled assets
-      logo_path = Rails.root.join('public', 'assets', 'bantuhive_logo-*.png').glob.first || 
-                  Rails.root.join('app', 'assets', 'images', 'bantuhive_logo.png')
+      # Try different logo locations like InvestmentCertificateService
+      logo_path = find_logo_path
       
-      if File.exist?(logo_path)
-        pdf.image logo_path, width: 100, position: :center
+      if logo_path && File.exist?(logo_path)
+        begin
+          pdf.image logo_path, width: 100, position: :center
+        rescue => e
+          Rails.logger.error "Error loading logo: #{e.message}"
+          pdf.text "BANTUHIVE", size: 24, align: :center, style: :bold
+        end
       else
-        # Fallback to text if logo not found
         pdf.text "BANTUHIVE", size: 24, align: :center, style: :bold
       end
+      
       pdf.move_down 20
       
       pdf.text "INVESTOR REPORT", size: 24, align: :center, style: :bold
@@ -195,7 +199,20 @@ module InvestorReporting
     end
     
     def add_portfolio_header(pdf, user, period)
-      pdf.image Rails.root.join('app/assets/images/bantuhive_logo.png'), width: 100, position: :center
+      # Try different logo locations like InvestmentCertificateService
+      logo_path = find_logo_path
+      
+      if logo_path && File.exist?(logo_path)
+        begin
+          pdf.image logo_path, width: 100, position: :center
+        rescue => e
+          Rails.logger.error "Error loading logo: #{e.message}"
+          pdf.text "BANTUHIVE", size: 24, align: :center, style: :bold
+        end
+      else
+        pdf.text "BANTUHIVE", size: 24, align: :center, style: :bold
+      end
+      
       pdf.move_down 20
       
       pdf.text "PORTFOLIO STATEMENT", size: 24, align: :center, style: :bold
@@ -361,6 +378,28 @@ module InvestorReporting
     
     def truncate(text, length: 30)
       text.length > length ? "#{text[0..length-3]}..." : text
+    end
+    
+    # Helper method to find logo path - similar to InvestmentCertificateService
+    def find_logo_path
+      # Check for compiled assets with fingerprints
+      compiled_pattern = Rails.root.join('public', 'assets', 'bantuhive_logo-*.png')
+      
+      # Use Dir.glob to find fingerprinted files
+      compiled_logos = Dir.glob(compiled_pattern.to_s)
+      if compiled_logos.any?
+        return compiled_logos.first
+      end
+      
+      # Fallback to source asset
+      source_path = Rails.root.join('app', 'assets', 'images', 'bantuhive_logo.png')
+      return source_path if File.exist?(source_path)
+      
+      # Check in public folder as well (for precompiled assets)
+      public_path = Rails.root.join('public', 'images', 'bantuhive_logo.png')
+      return public_path if File.exist?(public_path)
+      
+      nil
     end
   end
 end
