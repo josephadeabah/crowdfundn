@@ -27,6 +27,7 @@ import { Skeleton } from '../../ui/Skeleton';
 import Modal from '@/app/components/modal/Modal';
 import CampaignSelector from './CampaignSelector';
 import { Button } from '../../ui/button';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface CampaignFinancialsPageProps {
   onBackToCampaigns?: () => void;
@@ -42,6 +43,8 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
     loading: campaignsLoading,
     fetchUserCampaigns,
   } = useCampaignContext();
+
+  const { user } = useAuth();
 
   const [campaign, setCampaign] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -208,7 +211,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
             <div className="bg-green-50 px-4 py-2 rounded-lg">
               <p className="text-sm text-green-700">Goal</p>
               <p className="text-lg font-semibold text-green-900">
-                {campaign.currency_symbol}{parseInt(campaign.goal_amount || '0').toLocaleString()}
+                {user?.currency?.toUpperCase()}{parseInt(campaign.goal_amount || '0').toLocaleString()}
               </p>
             </div>
           )}

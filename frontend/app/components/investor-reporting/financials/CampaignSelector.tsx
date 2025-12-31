@@ -7,6 +7,7 @@ import { useCampaignContext } from '@/app/context/account/campaign/CampaignsCont
 import { FiArrowRight, FiBarChart2 } from 'react-icons/fi';
 import { Skeleton } from '../../ui/Skeleton';
 import { Button } from '../../ui/button';
+import { useAuth } from '@/app/context/auth/AuthContext';
 
 interface CampaignSelectorProps {
   onSelectCampaign: (campaignId: number) => void;
@@ -16,6 +17,7 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
   onSelectCampaign,
 }) => {
   const { userCampaigns, loading: campaignsLoading } = useCampaignContext();
+  const { user } = useAuth();
 
   if (campaignsLoading) {
     return (
@@ -92,14 +94,14 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-xs text-gray-700">Valuation</p>
                     <p className="font-semibold text-gray-900">
-                      {campaign.currency_symbol}{parseInt(campaign.valuation).toLocaleString()}
+                      {user?.currency?.toUpperCase()}{parseInt(campaign.valuation).toLocaleString()}
                     </p>
                   </div>
                 ) : (
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-xs text-gray-700">Goal</p>
                     <p className="font-semibold text-gray-900">
-                      {campaign.currency_symbol}{parseInt(campaign.goal_amount || '0').toLocaleString()}
+                      {user?.currency?.toUpperCase()}{parseInt(campaign.goal_amount || '0').toLocaleString()}
                     </p>
                   </div>
                 )}
@@ -115,7 +117,7 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                   <div className="bg-green-50 p-3 rounded-lg">
                     <p className="text-xs text-green-700">Raised</p>
                     <p className="font-semibold text-green-900">
-                      {campaign.currency_symbol}
+                      {user?.currency?.toUpperCase()}
                       {parseInt(
                         campaign.current_amount || '0',
                       ).toLocaleString()}
@@ -126,7 +128,7 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                 <div className="bg-gray-50 p-3 rounded-lg">
                   <p className="text-xs text-gray-700">Total Raised</p>
                   <p className="font-semibold text-gray-900">
-                    {campaign.currency_symbol}
+                    {user?.currency?.toUpperCase()}
                     {parseInt(
                       campaign.transferred_amount ||
                         campaign.current_amount ||

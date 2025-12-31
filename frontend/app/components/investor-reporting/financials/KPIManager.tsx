@@ -43,7 +43,7 @@ interface KPIManagerProps {
 }
 
 const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [kpis, setKpis] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -197,7 +197,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
   const formatValue = (value: number, unit: string) => {
     switch (unit) {
       case 'currency':
-        return `$${value.toLocaleString()}`;
+        return `${user?.currency?.toUpperCase()}${value.toLocaleString()}`;
       case 'percentage':
         return `${value}%`;
       default:
@@ -437,7 +437,7 @@ const KPIManager: React.FC<KPIManagerProps> = ({ campaignId }) => {
                   <SelectValue placeholder="Select unit" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="currency">Currency ($)</SelectItem>
+                  <SelectItem value="currency">Currency ({user?.currency?.toUpperCase()})</SelectItem>
                   <SelectItem value="percentage">Percentage (%)</SelectItem>
                   <SelectItem value="number">Number</SelectItem>
                   <SelectItem value="ratio">Ratio</SelectItem>

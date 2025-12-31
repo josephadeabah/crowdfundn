@@ -42,7 +42,7 @@ interface FinancialStatementsManagerProps {
 const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
   campaignId,
 }) => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [financials, setFinancials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -340,13 +340,13 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
                     </p>
                     <div className="flex gap-4 mt-2 text-sm text-gray-500">
                       <span>
-                        Revenue: ${financial.revenue.toLocaleString()}
+                        Revenue: {user?.currency?.toUpperCase()}{financial.revenue.toLocaleString()}
                       </span>
                       <span>
-                        Expenses: ${financial.expenses.toLocaleString()}
+                        Expenses: {user?.currency?.toUpperCase()}{financial.expenses.toLocaleString()}
                       </span>
                       <span>
-                        Net Income: $
+                        Net Income: {user?.currency?.toUpperCase()}
                         {(
                           financial.revenue - financial.expenses
                         ).toLocaleString()}
@@ -478,7 +478,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="revenue">Revenue ($)</Label>
+              <Label htmlFor="revenue">Revenue ({user?.currency?.toUpperCase()})</Label>
               <Input
                 id="revenue"
                 type="number"
@@ -492,7 +492,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="expenses">Expenses ($)</Label>
+              <Label htmlFor="expenses">Expenses ({user?.currency?.toUpperCase()})</Label>
               <Input
                 id="expenses"
                 type="number"
@@ -506,7 +506,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="assets">Assets ($)</Label>
+              <Label htmlFor="assets">Assets ({user?.currency?.toUpperCase()})</Label>
               <Input
                 id="assets"
                 type="number"
@@ -520,7 +520,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="liabilities">Liabilities ($)</Label>
+              <Label htmlFor="liabilities">Liabilities ({user?.currency?.toUpperCase()})</Label>
               <Input
                 id="liabilities"
                 type="number"
@@ -625,7 +625,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit_revenue">Revenue ($)</Label>
+              <Label htmlFor="edit_revenue">Revenue ({user?.currency?.toUpperCase()})</Label>
               <Input
                 id="edit_revenue"
                 type="number"
@@ -638,7 +638,7 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit_expenses">Expenses ($)</Label>
+              <Label htmlFor="edit_expenses">Expenses ({user?.currency?.toUpperCase()})</Label>
               <Input
                 id="edit_expenses"
                 type="number"
