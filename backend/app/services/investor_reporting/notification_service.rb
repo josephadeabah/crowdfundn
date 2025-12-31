@@ -169,7 +169,7 @@ module InvestorReporting
       }
       
       # Store notification in database
-      create_notification_record(notification)
+      create_notification_record(notification) rescue nil
       
       # Send via email if enabled
       send_email_notification(notification) if @preferences.email_notifications
@@ -184,19 +184,31 @@ module InvestorReporting
     end
     
     def create_notification_record(notification)
-      UserNotification.create!(
-        user_id: @user.id,
-        notification_type: notification[:type],
-        title: notification[:title],
-        message: notification[:message],
-        data: notification[:data],
-        read: false,
-        sent_at: notification[:sent_at]
-      )
+      # Check if UserNotification model exists
+      if defined?(UserNotification) && UserNotification.respond_to?(:create!)
+        UserNotification.create!(
+          user_id: @user.id,
+          notification_type: notification[:type],
+          title: notification[:title],
+          message: notification[:message],
+          data: notification[:data],
+          read: false,
+          sent_at: notification[:sent_at]
+        )
+      else
+        Rails.logger.warn "UserNotification model not defined, skipping database storage"
+      end
+    rescue => e
+      Rails.logger.error "Failed to create notification record: #{e.message}"
+      # Don't fail the entire notification if storage fails
     end
     
     def send_email_notification(notification)
+      # Use the general notification method
       InvestorNotificationEmailService.send_notification(@user, notification)
+    rescue => e
+      Rails.logger.error "Failed to send email notification: #{e.message}"
+      # Don't fail other notification methods
     end
     
     def send_push_notification(notification)

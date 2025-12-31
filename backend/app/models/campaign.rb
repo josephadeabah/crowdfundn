@@ -321,11 +321,33 @@ class Campaign < ApplicationRecord
     
     # Update all investor portfolio metrics
     equity_investments.successful.distinct.pluck(:user_id).each do |user_id|
-      InvestorPortfolioMetric.calculate_for_user(user_id)
-      
-      # Send notification
       user = User.find(user_id)
-      InvestorReporting::NotificationService.new(user).notify_valuation_update(self, old_valuation, valuation)
+      
+      # Find the specific investment for this user
+      investment = equity_investments.successful.find_by(user_id: user_id)
+      
+      # Send email notification if investment exists
+      if investment
+        # Check if user has valuation update notifications enabled
+        preferences = NotificationPreference.defaults_for_user(user)
+        if preferences.email_notifications && preferences.enabled_for_report_type?(:valuation_updates)
+          # Send email notification
+          InvestorNotificationEmailService.valuation_update(
+            user,
+            self,
+            old_valuation,
+            valuation,
+            investment
+          )
+          
+          Rails.logger.info "Sent valuation update notification to investor #{user.id} (#{user.email})"
+        else
+          Rails.logger.info "Skipped valuation update notification for investor #{user.id} - email notifications disabled"
+        end
+      end
+      
+      # Update metrics
+      InvestorPortfolioMetric.calculate_for_user(user_id)
     end
   end
   

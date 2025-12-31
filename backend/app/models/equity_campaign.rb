@@ -70,6 +70,7 @@ class EquityCampaign < Campaign
   before_validation :calculate_min_max_shares, if: -> { minimum_investment.present? && maximum_investment.present? && price_per_share.present? && (minimum_investment_changed? || maximum_investment_changed? || price_per_share_changed? || new_record?) }
   after_initialize :run_initial_calculations, if: :new_record?
   after_update :update_investments_valuation, if: -> { saved_change_to_valuation? || saved_change_to_total_shares? }
+  after_update :notify_investors_of_valuation_change, if: -> { saved_change_to_valuation? }
   after_save :update_shares_available_from_investments, if: -> { saved_change_to_shares_available? }
   after_create :create_deal_room_if_needed
 
@@ -753,6 +754,46 @@ class EquityCampaign < Campaign
       Rails.logger.error "Failed to create deal room for EquityCampaign #{id}: #{e.message}"
       # Don't raise error in callback to prevent campaign creation from failing
     end
+  end
+
+  def notify_investors_of_valuation_change
+    old_valuation = valuation_before_last_save
+    
+    # Get all unique investors
+    investor_ids = equity_investments.successful.distinct.pluck(:user_id)
+    
+    investor_ids.each do |investor_id|
+      begin
+        user = User.find(investor_id)
+        
+        # Find the specific investment for this user
+        investment = equity_investments.successful.find_by(user_id: investor_id)
+        
+        if investment
+          # Check if user has valuation update notifications enabled
+          preferences = NotificationPreference.defaults_for_user(user)
+          if preferences.email_notifications && preferences.enabled_for_report_type?(:valuation_updates)
+            # Send email notification
+            InvestorNotificationEmailService.valuation_update(
+              user,
+              self,
+              old_valuation,
+              valuation,
+              investment
+            )
+            
+            Rails.logger.info "Sent valuation update notification to investor #{user.id} (#{user.email}) for campaign #{id}"
+          else
+            Rails.logger.info "Skipped valuation update notification for investor #{user.id} - email notifications disabled"
+          end
+        end
+      rescue => e
+        Rails.logger.error "Failed to notify investor #{investor_id} of valuation change: #{e.message}"
+        # Continue with other investors even if one fails
+      end
+    end
+    
+    Rails.logger.info "Valuation change notifications sent to #{investor_ids.count} investors"
   end
 
 end

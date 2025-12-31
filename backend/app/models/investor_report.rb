@@ -1,4 +1,3 @@
-# app/models/investor_report.rb
 class InvestorReport < ApplicationRecord
   belongs_to :campaign
   belongs_to :published_by, class_name: 'User', optional: true
@@ -13,7 +12,7 @@ class InvestorReport < ApplicationRecord
   validate :validate_period_dates, if: -> { period_start.present? && period_end.present? }
   
   before_create :set_initial_published_at, if: -> { status == 'published' && published_at.blank? }
-  after_save :send_investor_notifications, if: -> { saved_change_to_status?(to: 'published') && notify_investors? }
+  after_save :notify_investors_on_publish, if: -> { saved_change_to_status?(to: 'published') && notify_investors? }
   after_save :generate_pdf_report, if: -> { saved_change_to_status?(to: 'published') }
   
   scope :published, -> { where(status: 'published') }
@@ -44,8 +43,7 @@ class InvestorReport < ApplicationRecord
     InvestorReportPdfJob.perform_later(id)
   end
   
-  # RENAME THIS METHOD to avoid conflict with database column
-  def send_investor_notifications
+  def notify_investors_on_publish
     InvestorReportNotificationJob.perform_later(id)
   end
   

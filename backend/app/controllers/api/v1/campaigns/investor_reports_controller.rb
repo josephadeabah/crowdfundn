@@ -1,4 +1,3 @@
-# app/controllers/api/v1/campaigns/investor_reports_controller.rb
 module Api
   module V1
     module Campaigns
@@ -114,7 +113,9 @@ module Api
           report = @campaign.investor_reports.find(params[:id])
           
           if report.update(status: 'published', published_by: @current_user)
-            # Generate PDF and notify investors (handled by callbacks)
+            # Trigger notification job which will send emails
+            report.notify_investors_on_publish
+            
             render json: {
               success: true,
               report: report.as_json
@@ -182,6 +183,12 @@ module Api
                 
                 if report.persisted?
                   Rails.logger.info "Successfully generated report ID: #{report.id}"
+                  
+                  # If report is published, notify investors
+                  if report.status == 'published' && report.notify_investors?
+                    report.notify_investors_on_publish
+                  end
+                  
                   render json: {
                     success: true,
                     report: report.as_json

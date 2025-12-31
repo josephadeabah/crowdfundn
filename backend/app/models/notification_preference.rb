@@ -1,4 +1,3 @@
-# app/models/notification_preference.rb
 class NotificationPreference < ApplicationRecord
   belongs_to :user
   
@@ -8,24 +7,47 @@ class NotificationPreference < ApplicationRecord
   after_create :send_welcome_notification, if: -> { email_notifications }
   
   def self.defaults_for_user(user)
-    find_or_create_by(user: user) do |pref|
-      # Set defaults
-      pref.financial_statements = true
-      pref.valuation_updates = true
-      pref.monthly_reports = true
-      pref.quarterly_reports = true
-      pref.annual_reports = true
-      pref.campaign_updates = true
-      pref.portfolio_updates = true
-      pref.email_notifications = true
-      pref.push_notifications = true
-      pref.in_app_notifications = true
-      pref.summary_frequency = 'weekly'
-      pref.preferred_time = 32400 # 9:00 AM in seconds (9 * 3600)
-    end
-  rescue ActiveRecord::StatementInvalid => e
-    # If table doesn't exist yet, create a new record in memory
-    Rails.logger.error "Notification preferences table not found: #{e.message}"
+    # Try to find existing preferences
+    existing = find_by(user: user)
+    return existing if existing
+    
+    # Create new preferences with defaults
+    create!(
+      user: user,
+      financial_statements: true,
+      valuation_updates: true,
+      monthly_reports: true,
+      quarterly_reports: true,
+      annual_reports: true,
+      campaign_updates: true,
+      portfolio_updates: true,
+      email_notifications: true,
+      push_notifications: true,
+      in_app_notifications: true,
+      summary_frequency: 'weekly',
+      preferred_time: 32400 # 9:00 AM in seconds (9 * 3600)
+    )
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error "Failed to create notification preferences: #{e.message}"
+    # Return a new instance with defaults (not persisted)
+    new(
+      user: user,
+      financial_statements: true,
+      valuation_updates: true,
+      monthly_reports: true,
+      quarterly_reports: true,
+      annual_reports: true,
+      campaign_updates: true,
+      portfolio_updates: true,
+      email_notifications: true,
+      push_notifications: true,
+      in_app_notifications: true,
+      summary_frequency: 'weekly',
+      preferred_time: 32400
+    )
+  rescue => e
+    Rails.logger.error "Error in defaults_for_user: #{e.message}"
+    # Return a default instance
     new(
       user: user,
       financial_statements: true,
