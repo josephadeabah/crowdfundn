@@ -1,4 +1,5 @@
 class Campaign < ApplicationRecord
+  include InvestorReporting
   # Add optimistic locking
   self.locking_column = :lock_version
   

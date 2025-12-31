@@ -131,7 +131,18 @@ module Api
         
         # POST  /api/v1/campaigns/:campaign_id/investor_reports/generate_quarterly
         def generate_quarterly
-          report_date = params[:report_date] ? Date.parse(params[:report_date]) : Date.current
+          # Get report_date from params or use current date
+          report_date = if params[:report_date].present?
+            begin
+              Date.parse(params[:report_date])
+            rescue ArgumentError
+              Date.current
+            end
+          else
+            Date.current
+          end
+          
+          Rails.logger.info "Generating quarterly report for campaign #{@campaign.id} with date: #{report_date}"
           
           # Check if we're generating for a specific report (member route) or creating new (collection route)
           if params[:id]
@@ -151,22 +162,24 @@ module Api
             end
           else
             # Collection route - create new quarterly report
-            if @campaign.is_a?(EquityCampaign)
+            begin
+              # Use the new method we just added
               report = @campaign.generate_quarterly_report(report_date)
               
               render json: {
                 success: true,
                 report: report.as_json
               }
-            else
+            rescue => e
+              Rails.logger.error "Error generating quarterly report: #{e.message}"
+              Rails.logger.error e.backtrace.join("\n")
+              
               render json: {
                 success: false,
-                error: 'Only equity campaigns can generate quarterly reports'
-              }, status: :unprocessable_entity
+                error: "Failed to generate quarterly report: #{e.message}"
+              }, status: :internal_server_error
             end
           end
-        rescue ArgumentError
-          render json: { error: 'Invalid date format' }, status: :bad_request
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'Report not found' }, status: :not_found
         end
