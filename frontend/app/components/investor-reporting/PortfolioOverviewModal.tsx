@@ -281,7 +281,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                               Portfolio Concentration
                             </div>
                             <div className="text-lg font-medium">
-                              {((riskAnalysis.concentration_risk || 0) * 100).toFixed(1)}
+                              {(
+                                (riskAnalysis.concentration_risk || 0) * 100
+                              ).toFixed(1)}
                               %
                             </div>
                             <div className="text-xs text-muted-foreground">
@@ -293,7 +295,9 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
                               Overall Risk Score
                             </div>
                             <div className="text-lg font-medium">
-                              {((riskAnalysis.overall_risk_score || 0) * 100).toFixed(1)}
+                              {(
+                                (riskAnalysis.overall_risk_score || 0) * 100
+                              ).toFixed(1)}
                               %
                             </div>
                             <div className="text-xs text-muted-foreground">
