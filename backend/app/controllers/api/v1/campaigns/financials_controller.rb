@@ -1,3 +1,4 @@
+# app/controllers/api/v1/campaigns/financials_controller.rb
 module Api
   module V1
     module Campaigns
@@ -15,35 +16,10 @@ module Api
             financials = financials.where(status: params[:status])
           end
           
-          # Format financial statements with campaign currency
-          formatted_financials = financials.map do |financial|
-            financial.as_json.merge(
-              formatted_revenue: format_amount(financial.revenue),
-              formatted_expenses: format_amount(financial.expenses),
-              formatted_gross_profit: format_amount(financial.gross_profit),
-              formatted_net_income: format_amount(financial.net_income),
-              formatted_assets: financial.assets ? format_amount(financial.assets) : nil,
-              formatted_liabilities: financial.liabilities ? format_amount(financial.liabilities) : nil,
-              formatted_equity: financial.equity ? format_amount(financial.equity) : nil,
-              formatted_cash_flow: financial.cash_flow ? format_amount(financial.cash_flow) : nil,
-              formatted_burn_rate: financial.burn_rate ? format_amount(financial.burn_rate) : nil
-            )
-          end
-          
           render json: {
             success: true,
-            financials: formatted_financials,
-            summary: @campaign.financial_performance_summary,
-            campaign_currency: {
-              code: @campaign.currency_code,
-              symbol: @campaign.currency_symbol,
-              name: @campaign.currency
-            },
-            fundraiser_currency: {
-              code: @campaign.fundraiser.currency_code,
-              symbol: @campaign.fundraiser.currency_symbol,
-              name: @campaign.fundraiser.currency
-            }
+            financials: financials.as_json,
+            summary: @campaign.financial_performance_summary
           }
         end
         
@@ -51,26 +27,9 @@ module Api
         def show
           financial = @campaign.financial_statements.find(params[:id])
           
-          formatted_financial = financial.as_json.merge(
-            formatted_revenue: format_amount(financial.revenue),
-            formatted_expenses: format_amount(financial.expenses),
-            formatted_gross_profit: format_amount(financial.gross_profit),
-            formatted_net_income: format_amount(financial.net_income),
-            formatted_assets: financial.assets ? format_amount(financial.assets) : nil,
-            formatted_liabilities: financial.liabilities ? format_amount(financial.liabilities) : nil,
-            formatted_equity: financial.equity ? format_amount(financial.equity) : nil,
-            formatted_cash_flow: financial.cash_flow ? format_amount(financial.cash_flow) : nil,
-            formatted_burn_rate: financial.burn_rate ? format_amount(financial.burn_rate) : nil
-          )
-          
           render json: {
             success: true,
-            financial: formatted_financial,
-            campaign_currency: {
-              code: @campaign.currency_code,
-              symbol: @campaign.currency_symbol,
-              name: @campaign.currency
-            }
+            financial: financial.as_json
           }
         end
         
@@ -82,17 +41,7 @@ module Api
           if financial.save
             render json: {
               success: true,
-              financial: financial.as_json.merge(
-                formatted_revenue: format_amount(financial.revenue),
-                formatted_expenses: format_amount(financial.expenses),
-                formatted_gross_profit: format_amount(financial.gross_profit),
-                formatted_net_income: format_amount(financial.net_income)
-              ),
-              campaign_currency: {
-                code: @campaign.currency_code,
-                symbol: @campaign.currency_symbol,
-                name: @campaign.currency
-              }
+              financial: financial.as_json
             }, status: :created
           else
             render json: {
@@ -109,17 +58,7 @@ module Api
           if financial.update(financial_params)
             render json: {
               success: true,
-              financial: financial.as_json.merge(
-                formatted_revenue: format_amount(financial.revenue),
-                formatted_expenses: format_amount(financial.expenses),
-                formatted_gross_profit: format_amount(financial.gross_profit),
-                formatted_net_income: format_amount(financial.net_income)
-              ),
-              campaign_currency: {
-                code: @campaign.currency_code,
-                symbol: @campaign.currency_symbol,
-                name: @campaign.currency
-              }
+              financial: financial.as_json
             }
           else
             render json: {
@@ -159,17 +98,7 @@ module Api
             
             render json: {
               success: true,
-              financial: financial.as_json.merge(
-                formatted_revenue: format_amount(financial.revenue),
-                formatted_expenses: format_amount(financial.expenses),
-                formatted_gross_profit: format_amount(financial.gross_profit),
-                formatted_net_income: format_amount(financial.net_income)
-              ),
-              campaign_currency: {
-                code: @campaign.currency_code,
-                symbol: @campaign.currency_symbol,
-                name: @campaign.currency
-              }
+              financial: financial.as_json
             }
           else
             render json: {
@@ -228,12 +157,6 @@ module Api
             :is_public,
             :source_file
           )
-        end
-        
-        # Helper method to format amounts with campaign currency
-        def format_amount(amount)
-          return nil if amount.nil?
-          "#{@campaign.currency_symbol}#{amount.to_f.round(2)}"
         end
       end
     end

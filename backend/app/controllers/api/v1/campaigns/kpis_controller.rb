@@ -1,3 +1,4 @@
+# app/controllers/api/v1/campaigns/kpis_controller.rb
 module Api
   module V1
     module Campaigns
@@ -19,38 +20,10 @@ module Api
             kpis = kpis.where(is_primary: params[:is_primary])
           end
           
-          # Prepare KPI data with formatted values
-          kpis_data = kpis.ordered.map do |kpi|
-            latest_value = kpi.kpi_values.order(period_date: :desc).first
-            trend = kpi.trend(days: 90)
-            
-            {
-              id: kpi.id,
-              name: kpi.name,
-              kpi_type: kpi.kpi_type,
-              unit: kpi.unit,
-              target_value: kpi.target_value,
-              formatted_target_value: format_kpi_value(kpi.target_value, kpi.unit),
-              is_primary: kpi.is_primary,
-              latest_value: latest_value ? {
-                value: latest_value.value,
-                formatted_value: format_kpi_value(latest_value.value, kpi.unit),
-                period_date: latest_value.period_date
-              } : nil,
-              trend: trend,
-              performance_vs_target: kpi.performance_vs_target
-            }
-          end
-          
           render json: {
             success: true,
-            kpis: kpis_data,
-            dashboard: @campaign.kpi_dashboard,
-            campaign_currency: {
-              code: @campaign.currency_code,
-              symbol: @campaign.currency_symbol,
-              name: @campaign.currency
-            }
+            kpis: kpis.ordered.as_json,
+            dashboard: @campaign.kpi_dashboard
           }
         rescue => e
           render json: {
@@ -63,40 +36,9 @@ module Api
         def show
           kpi = @campaign.campaign_kpis.find(params[:id])
           
-          # Get all values with formatting
-          values = kpi.kpi_values.order(period_date: :desc).map do |value|
-            {
-              id: value.id,
-              period_date: value.period_date,
-              value: value.value,
-              formatted_value: format_kpi_value(value.value, kpi.unit),
-              is_actual: value.is_actual,
-              data_source: value.data_source
-            }
-          end
-          
           render json: {
             success: true,
-            kpi: {
-              id: kpi.id,
-              name: kpi.name,
-              kpi_type: kpi.kpi_type,
-              description: kpi.description,
-              unit: kpi.unit,
-              target_value: kpi.target_value,
-              formatted_target_value: format_kpi_value(kpi.target_value, kpi.unit),
-              target_period: kpi.target_period,
-              is_primary: kpi.is_primary,
-              is_public: kpi.is_public,
-              values: values,
-              trend: kpi.trend(days: 90),
-              performance_vs_target: kpi.performance_vs_target
-            },
-            campaign_currency: {
-              code: @campaign.currency_code,
-              symbol: @campaign.currency_symbol,
-              name: @campaign.currency
-            }
+            kpi: kpi.as_json(include_values: true)
           }
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'KPI not found' }, status: :not_found
@@ -109,21 +51,7 @@ module Api
           if kpi.save
             render json: {
               success: true,
-              kpi: {
-                id: kpi.id,
-                name: kpi.name,
-                kpi_type: kpi.kpi_type,
-                unit: kpi.unit,
-                target_value: kpi.target_value,
-                formatted_target_value: format_kpi_value(kpi.target_value, kpi.unit),
-                is_primary: kpi.is_primary,
-                is_public: kpi.is_public
-              },
-              campaign_currency: {
-                code: @campaign.currency_code,
-                symbol: @campaign.currency_symbol,
-                name: @campaign.currency
-              }
+              kpi: kpi.as_json
             }, status: :created
           else
             render json: {
@@ -140,21 +68,7 @@ module Api
           if kpi.update(kpi_params)
             render json: {
               success: true,
-              kpi: {
-                id: kpi.id,
-                name: kpi.name,
-                kpi_type: kpi.kpi_type,
-                unit: kpi.unit,
-                target_value: kpi.target_value,
-                formatted_target_value: format_kpi_value(kpi.target_value, kpi.unit),
-                is_primary: kpi.is_primary,
-                is_public: kpi.is_public
-              },
-              campaign_currency: {
-                code: @campaign.currency_code,
-                symbol: @campaign.currency_symbol,
-                name: @campaign.currency
-              }
+              kpi: kpi.as_json
             }
           else
             render json: {
@@ -190,19 +104,7 @@ module Api
           if value.save
             render json: {
               success: true,
-              value: {
-                id: value.id,
-                period_date: value.period_date,
-                value: value.value,
-                formatted_value: format_kpi_value(value.value, kpi.unit),
-                is_actual: value.is_actual,
-                data_source: value.data_source
-              },
-              campaign_currency: {
-                code: @campaign.currency_code,
-                symbol: @campaign.currency_symbol,
-                name: @campaign.currency
-              }
+              value: value.as_json
             }, status: :created
           else
             render json: {
@@ -223,25 +125,10 @@ module Api
           values = kpi.kpi_values.where(period_date: period_start..period_end)
                        .order(period_date: :asc)
           
-          formatted_values = values.map do |value|
-            {
-              period_date: value.period_date,
-              value: value.value,
-              formatted_value: format_kpi_value(value.value, kpi.unit),
-              is_actual: value.is_actual,
-              data_source: value.data_source
-            }
-          end
-          
           render json: {
             success: true,
-            values: formatted_values,
-            trend: values.pluck(:period_date, :value).to_h,
-            campaign_currency: {
-              code: @campaign.currency_code,
-              symbol: @campaign.currency_symbol,
-              name: @campaign.currency
-            }
+            values: values.as_json,
+            trend: values.pluck(:period_date, :value).to_h
           }
         rescue ActiveRecord::RecordNotFound
           render json: { error: 'KPI not found' }, status: :not_found
@@ -286,24 +173,6 @@ module Api
             :data_source,
             :financial_statement_id
           )
-        end
-        
-        # Helper method to format KPI values with campaign currency
-        def format_kpi_value(value, unit)
-          return nil if value.nil?
-          
-          case unit
-          when 'currency'
-            "#{@campaign.currency_symbol}#{value.to_f.round(2)}"
-          when 'percentage'
-            "#{value.to_f.round(2)}%"
-          when 'number'
-            value.to_i.to_s
-          when 'ratio'
-            value.to_f.round(2).to_s
-          else
-            value.to_f.round(2).to_s
-          end
         end
       end
     end
