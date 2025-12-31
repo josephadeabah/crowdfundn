@@ -312,7 +312,9 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `${user?.currency?.toUpperCase()}${value.toLocaleString()}`}
+                    tickFormatter={(value) =>
+                      `${user?.currency?.toUpperCase()}${value.toLocaleString()}`
+                    }
                   />
                   <Tooltip
                     formatter={(value) => [
@@ -360,7 +362,9 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `${user?.currency?.toUpperCase()}${value.toLocaleString()}`}
+                    tickFormatter={(value) =>
+                      `${user?.currency?.toUpperCase()}${value.toLocaleString()}`
+                    }
                   />
                   <Tooltip
                     formatter={(value) => [
