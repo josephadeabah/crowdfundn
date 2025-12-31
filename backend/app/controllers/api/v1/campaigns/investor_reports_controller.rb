@@ -131,10 +131,18 @@ module Api
         
         # POST  /api/v1/campaigns/:campaign_id/investor_reports/generate_quarterly
         def generate_quarterly
-          # Get report_date from params or use current date
-          report_date = if params[:report_date].present?
+          # Debug logging
+          Rails.logger.info "=== GENERATE QUARTERLY REPORT ==="
+          Rails.logger.info "All params received: #{params.inspect}"
+          Rails.logger.info "Current User ID: #{@current_user.id}"
+          Rails.logger.info "Campaign ID from params: #{params[:campaign_id]}"
+          
+          # Get report_date from params - handle both nested and top-level formats
+          report_date_param = params[:report_date] || params.dig(:investor_report, :report_date)
+          
+          report_date = if report_date_param.present?
             begin
-              Date.parse(params[:report_date])
+              Date.parse(report_date_param.to_s)
             rescue ArgumentError
               Date.current
             end
@@ -142,14 +150,16 @@ module Api
             Date.current
           end
           
-          Rails.logger.info "Generating quarterly report for campaign #{@campaign.id} with date: #{report_date}"
+          Rails.logger.info "Using report date: #{report_date}"
+          Rails.logger.info "Campaign ID: #{@campaign.id}"
+          Rails.logger.info "Campaign Title: #{@campaign.title}"
+          Rails.logger.info "Campaign Fundraiser ID: #{@campaign.fundraiser_id}"
           
           # Check if we're generating for a specific report (member route) or creating new (collection route)
           if params[:id]
             # Member route - update existing report
             report = @campaign.investor_reports.find(params[:id])
             if report.update(report_type: 'quarterly', report_date: report_date)
-              # Regenerate or update the report
               render json: {
                 success: true,
                 report: report.as_json
@@ -163,14 +173,26 @@ module Api
           else
             # Collection route - create new quarterly report
             begin
+              # Log what method we're calling
+              Rails.logger.info "Calling generate_quarterly_report on campaign #{@campaign.id}"
+              
               # Use the generate_quarterly_report method which now exists in both Campaign and EquityCampaign
               if @campaign.respond_to?(:generate_quarterly_report)
                 report = @campaign.generate_quarterly_report(report_date)
                 
-                render json: {
-                  success: true,
-                  report: report.as_json
-                }
+                if report.persisted?
+                  Rails.logger.info "Successfully generated report ID: #{report.id}"
+                  render json: {
+                    success: true,
+                    report: report.as_json
+                  }
+                else
+                  Rails.logger.error "Failed to generate report: #{report.errors.full_messages}"
+                  render json: {
+                    success: false,
+                    errors: report.errors.full_messages
+                  }, status: :unprocessable_entity
+                end
               else
                 # Fallback - create basic quarterly report
                 quarter = ((report_date.month - 1) / 3) + 1
@@ -181,7 +203,7 @@ module Api
                 
                 report = @campaign.investor_reports.create!(
                   report_type: 'quarterly',
-                  title: "Q#{quarter} #{year} Quarterly Report",
+                  title: "Q#{quarter} #{year} Quarterly Report - #{@campaign.title}",
                   report_date: report_date,
                   period_start: period_start,
                   period_end: period_end,
@@ -234,15 +256,25 @@ module Api
         private
         
         def set_campaign
-          @campaign = Campaign.find(params[:campaign_id])
+          # Find campaign that belongs to the current user
+          @campaign = @current_user.campaigns.find(params[:campaign_id])
         rescue ActiveRecord::RecordNotFound
-          render json: { error: 'Campaign not found' }, status: :not_found
+          Rails.logger.error "Campaign not found or not owned by user #{@current_user.id}: #{params[:campaign_id]}"
+          render json: { 
+            success: false,
+            error: 'Campaign not found or you do not have permission to access it' 
+          }, status: :not_found
         end
         
         def authorize_fundraiser_or_admin
-          unless @current_user.admin? || @campaign.fundraiser_id == @current_user.id
-            Rails.logger.warn "Unauthorized quarterly report attempt: user=#{@current_user.id}, campaign=#{@campaign.id}"
-            render json: { error: 'Not authorized for this campaign' }, status: :forbidden
+          # This is already covered by set_campaign which only finds user's campaigns
+          # But keep it for additional security
+          unless @current_user.admin? || @campaign.fundraiser == @current_user
+            Rails.logger.error "User #{@current_user.id} not authorized for campaign #{@campaign.id}"
+            render json: { 
+              success: false,
+              error: 'Not authorized to manage this campaign' 
+            }, status: :forbidden
           end
         end
 
