@@ -29,6 +29,10 @@ class FinancialStatement < ApplicationRecord
     quarterly: 90.days,
     annual: 365.days
   }.freeze
+
+  def increment_download_count!
+    update(download_count: download_count + 1)
+  end
   
   def period_duration
     return 0 if period_start.blank? || period_end.blank?

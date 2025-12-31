@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_31_025618) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_31_202641) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -641,8 +641,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_31_025618) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "published_by_id"
+    t.integer "download_count", default: 0, null: false
     t.index ["campaign_id", "period_type", "period_start"], name: "idx_financial_statements_campaign_period", unique: true
     t.index ["campaign_id"], name: "index_financial_statements_on_campaign_id"
+    t.index ["download_count"], name: "index_financial_statements_on_download_count"
     t.index ["published_at"], name: "index_financial_statements_on_published_at"
     t.index ["published_by_id"], name: "index_financial_statements_on_published_by_id"
     t.index ["status"], name: "index_financial_statements_on_status"

@@ -113,6 +113,36 @@ module Api
             message: 'Import functionality coming soon'
           }, status: :not_implemented
         end
+
+        # GET /api/v1/campaigns/:campaign_id/financials/:id/download
+        def download
+          financial = @campaign.financial_statements.find(params[:id])
+          
+          if financial.source_file.attached?
+            # Check if user has access
+            unless @current_user.admin? || 
+                  @campaign.fundraiser == @current_user ||
+                  @campaign.equity_investments.successful.exists?(user: @current_user)
+              return render json: { error: 'Not authorized' }, status: :forbidden
+            end
+            
+            financial.increment!(:download_count) if financial.respond_to?(:download_count)
+            
+            if Rails.env.development?
+              # For development, serve directly
+              redirect_to rails_blob_url(financial.source_file), allow_other_host: true
+            else
+              # For production, use the pre-signed URL
+              redirect_to financial.source_file_url, allow_other_host: true
+            end
+          else
+            render json: { error: 'File not found' }, status: :not_found
+          end
+        rescue ActiveRecord::RecordNotFound
+          render json: { error: 'Financial statement not found' }, status: :not_found
+        rescue => e
+          render json: { error: e.message }, status: :internal_server_error
+        end
         
         private
         
