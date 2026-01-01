@@ -651,10 +651,6 @@ const InvestorReportsModal: React.FC<InvestorReportsModalProps> = ({
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
-            <Button variant="success">
-              <Bell className="mr-2 h-4 w-4" />
-              Manage Notifications
-            </Button>
           </div>
         </div>
       </div>
