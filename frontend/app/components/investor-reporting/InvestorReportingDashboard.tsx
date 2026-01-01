@@ -261,7 +261,7 @@ const InvestorReportingDashboard: React.FC = () => {
             className="w-full sm:w-auto"
           >
             <Download className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Download</span>
+            <span className="sm:inline">Download</span>
           </Button>
           <Button
             onClick={() => setShowPortfolioOverview(true)}
@@ -269,7 +269,7 @@ const InvestorReportingDashboard: React.FC = () => {
             className="w-full sm:w-auto"
           >
             <BarChart3 className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Analytics</span>
+            <span className="sm:inline">Analytics</span>
           </Button>
         </div>
       </div>
