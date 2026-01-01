@@ -190,8 +190,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
       value: `${user?.currency?.toUpperCase()}${dashboardData.summary.total_invested.toLocaleString()}`,
       change: '+12.5%',
       icon: <FiDollarSign className="h-5 w-5" />,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-50',
     },
     {
       title: 'Investors',
@@ -214,8 +214,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
       value: `${dashboardData.summary.equity_offered}%`,
       change: 'Remaining',
       icon: <FiPieChart className="h-5 w-5" />,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-50',
     },
   ];
 
