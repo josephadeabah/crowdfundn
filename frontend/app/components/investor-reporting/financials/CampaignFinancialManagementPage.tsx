@@ -202,16 +202,16 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
           )}
 
           {campaign.equity_offered && campaign.equity_offered > 0 ? (
-            <div className="bg-green-50 px-4 py-2 rounded-lg">
-              <p className="text-sm text-green-700">Equity Offered</p>
-              <p className="text-lg font-semibold text-green-900">
+            <div className="bg-gray-50 px-4 py-2 rounded-lg">
+              <p className="text-sm text-gray-700">Equity Offered</p>
+              <p className="text-lg font-semibold text-gray-900">
                 {campaign.equity_offered}%
               </p>
             </div>
           ) : (
-            <div className="bg-green-50 px-4 py-2 rounded-lg">
-              <p className="text-sm text-green-700">Goal</p>
-              <p className="text-lg font-semibold text-green-900">
+            <div className="bg-gray-50 px-4 py-2 rounded-lg">
+              <p className="text-sm text-gray-700">Goal</p>
+              <p className="text-lg font-semibold text-gray-900">
                 {user?.currency?.toUpperCase()}
                 {parseInt(campaign.goal_amount || '0').toLocaleString()}
               </p>
@@ -228,9 +228,9 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
             </p>
           </div>
 
-          <div className="bg-orange-50 px-4 py-2 rounded-lg">
-            <p className="text-sm text-orange-700">Investors</p>
-            <p className="text-lg font-semibold text-orange-900">
+          <div className="bg-gray-50 px-4 py-2 rounded-lg">
+            <p className="text-sm text-gray-700">Investors</p>
+            <p className="text-lg font-semibold text-gray-900">
               {campaign.total_investors || campaign.total_donors || 0}
             </p>
           </div>

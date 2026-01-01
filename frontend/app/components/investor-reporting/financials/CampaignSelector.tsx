@@ -109,9 +109,9 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                 )}
 
                 {campaign.equity_offered && campaign.equity_offered > 0 ? (
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <p className="text-xs text-green-700">Equity Offered</p>
-                    <p className="font-semibold text-green-900">
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-700">Equity Offered</p>
+                    <p className="font-semibold text-gray-900">
                       {campaign.equity_offered}%
                     </p>
                   </div>
@@ -139,9 +139,9 @@ const CampaignSelector: React.FC<CampaignSelectorProps> = ({
                   </p>
                 </div>
 
-                <div className="bg-orange-50 p-3 rounded-lg">
-                  <p className="text-xs text-orange-700">Investors</p>
-                  <p className="font-semibold text-orange-900">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-700">Investors</p>
+                  <p className="font-semibold text-gray-900">
                     {campaign.total_investors || campaign.total_donors || 0}
                   </p>
                 </div>
