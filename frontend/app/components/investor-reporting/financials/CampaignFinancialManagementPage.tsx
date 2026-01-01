@@ -162,28 +162,30 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex sm:justify-center md:justify-between items-center gap-4 mb-2">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLocalSelectedCampaignId(undefined)}
-              className="w-full sm:w-auto"
-            >
-              <FiArrowLeft className="mr-2 h-4 w-4" />
-              <span className="sm:inline">Back to Campaigns</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowCampaignSelector(true)}
-              className="w-full sm:w-auto"
-            >
-              <FiGrid className="mr-2 h-4 w-4" />
-              <span className="sm:inline">Switch Campaign</span>
-            </Button>
-          </div>
-        </div>
+<div className="flex justify-center md:justify-start items-center gap-2 mb-2">
+  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 w-full sm:w-auto">
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setLocalSelectedCampaignId(undefined)}
+      className="w-full sm:w-auto"
+    >
+      <FiArrowLeft className="mr-2 h-4 w-4" />
+      <span className="hidden sm:inline">Back to Campaigns</span>
+      <span className="sm:hidden">Back</span>
+    </Button>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setShowCampaignSelector(true)}
+      className="w-full sm:w-auto"
+    >
+      <FiGrid className="mr-2 h-4 w-4" />
+      <span className="hidden sm:inline">Switch Campaign</span>
+      <span className="sm:hidden">Switch</span>
+    </Button>
+  </div>
+</div>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           {campaign.title}
@@ -240,7 +242,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className='mb-8'>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
         <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <FiBarChart2 className="h-4 w-4" />
