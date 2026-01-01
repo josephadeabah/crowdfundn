@@ -162,30 +162,30 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-<div className="flex justify-center md:justify-start items-center gap-2 mb-2">
-  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 w-full sm:w-auto">
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => setLocalSelectedCampaignId(undefined)}
-      className="w-full sm:w-auto"
-    >
-      <FiArrowLeft className="mr-2 h-4 w-4" />
-      <span className="hidden sm:inline">Back to Campaigns</span>
-      <span className="sm:hidden">Back</span>
-    </Button>
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => setShowCampaignSelector(true)}
-      className="w-full sm:w-auto"
-    >
-      <FiGrid className="mr-2 h-4 w-4" />
-      <span className="hidden sm:inline">Switch Campaign</span>
-      <span className="sm:hidden">Switch</span>
-    </Button>
-  </div>
-</div>
+        <div className="flex justify-center md:justify-start items-center gap-2 mb-2">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 w-full sm:w-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocalSelectedCampaignId(undefined)}
+              className="w-full sm:w-auto"
+            >
+              <FiArrowLeft className="mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Back to Campaigns</span>
+              <span className="sm:hidden">Back</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCampaignSelector(true)}
+              className="w-full sm:w-auto"
+            >
+              <FiGrid className="mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Switch Campaign</span>
+              <span className="sm:hidden">Switch</span>
+            </Button>
+          </div>
+        </div>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           {campaign.title}
