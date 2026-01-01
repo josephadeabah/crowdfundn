@@ -162,7 +162,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center justify-between gap-4 mb-2">
+        <div className="flex justify-center items-center gap-4 mb-2">
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
