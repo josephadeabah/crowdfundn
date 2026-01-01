@@ -280,35 +280,38 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
   const handleDownloadStatement = async (statementId: number) => {
     try {
       console.log('Downloading financial statement:', statementId);
-      
+
       // Find the statement in the list
-      const statement = statements.find(s => s.id === statementId);
-      
+      const statement = statements.find((s) => s.id === statementId);
+
       if (!statement) {
         toast.error('Statement not found');
         return;
       }
-      
+
       // OPTION A: If we have a direct URL, use it
       if (statement.source_file_url) {
         window.open(statement.source_file_url, '_blank');
         toast.success('Opening financial statement...');
         return;
       }
-      
+
       // OPTION B: Use fetch with proper headers
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/campaigns/${campaignId}/financials/${statementId}/download`,
         {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json, application/pdf, */*',
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json, application/pdf, */*',
           },
-        }
+        },
       );
 
-      if (response.ok && response.headers.get('content-type')?.includes('application/pdf')) {
+      if (
+        response.ok &&
+        response.headers.get('content-type')?.includes('application/pdf')
+      ) {
         // Download the PDF
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -330,15 +333,28 @@ const FinancialStatementsModal: React.FC<FinancialStatementsModalProps> = ({
       }
     } catch (error: any) {
       console.error('Error downloading financial statement:', error);
-      
-      if (error?.message?.includes('401') || error?.message?.includes('Unauthorized')) {
+
+      if (
+        error?.message?.includes('401') ||
+        error?.message?.includes('Unauthorized')
+      ) {
         toast.error('Authentication required. Please log in again.');
-      } else if (error?.message?.includes('403') || error?.message?.includes('Forbidden')) {
-        toast.error('You do not have permission to download this financial statement.');
-      } else if (error?.message?.includes('404') || error?.message?.includes('Not found')) {
+      } else if (
+        error?.message?.includes('403') ||
+        error?.message?.includes('Forbidden')
+      ) {
+        toast.error(
+          'You do not have permission to download this financial statement.',
+        );
+      } else if (
+        error?.message?.includes('404') ||
+        error?.message?.includes('Not found')
+      ) {
         toast.error('Financial statement file not found.');
       } else {
-        toast.error('Failed to download financial statement. Please try again.');
+        toast.error(
+          'Failed to download financial statement. Please try again.',
+        );
       }
     }
   };

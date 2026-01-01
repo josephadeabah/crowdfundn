@@ -810,20 +810,22 @@ export class InvestorReportingService {
   // Add this method to the InvestorReportingService class
   async downloadFinancialStatement(
     campaignId: number,
-    financialId: number
+    financialId: number,
   ): Promise<{ success: boolean; url?: string }> {
     try {
       const endpoint = `/campaigns/${campaignId}/financials/${financialId}/download`;
-      
+
       // Method 1: Create a form with POST method (better for authorization)
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = `${this.baseUrl}${endpoint}`;
       form.target = '_blank';
       form.style.display = 'none';
-      
+
       // Add CSRF token if needed (for POST requests)
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content');
       if (csrfToken) {
         const csrfInput = document.createElement('input');
         csrfInput.type = 'hidden';
@@ -831,7 +833,7 @@ export class InvestorReportingService {
         csrfInput.value = csrfToken;
         form.appendChild(csrfInput);
       }
-      
+
       // Add authorization header as hidden input for POST
       if (this.token) {
         const tokenInput = document.createElement('input');
@@ -840,18 +842,18 @@ export class InvestorReportingService {
         tokenInput.value = `Bearer ${this.token}`;
         form.appendChild(tokenInput);
       }
-      
+
       // Add the form to the document
       document.body.appendChild(form);
-      
+
       // Submit the form
       form.submit();
-      
+
       // Remove the form after submission
       setTimeout(() => {
         document.body.removeChild(form);
       }, 100);
-      
+
       return { success: true };
     } catch (error) {
       console.error('Error downloading financial statement:', error);

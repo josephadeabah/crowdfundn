@@ -189,83 +189,75 @@ const PortfolioOverviewModal: React.FC<PortfolioOverviewModalProps> = ({
             <TabsTrigger value="projections">Projections</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="performance" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Campaign Performance</CardTitle>
-                <CardDescription>
-                  Detailed performance metrics for each investment
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {campaigns.map((campaign: any) => (
-                    <div
-                      key={campaign.campaign_id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <Building className="h-10 w-10 text-muted-foreground" />
-                        <div>
-                          <h4 className="font-medium">
-                            {campaign.company_name}
-                          </h4>
-                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                            <span>
-                              {campaign.investment_count} investment
-                              {campaign.investment_count !== 1 ? 's' : ''}
-                            </span>
-                            <span>•</span>
-                            <span>
-                              {formatNumber(
-                                campaign.ownership_percentage || 0,
-                                2,
-                              )}
-                              % ownership
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">
-                          {formatCurrency(
-                            campaign.current_value || 0,
-                            summary.currency,
-                            summary.currency_symbol,
-                          )}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          Invested:{' '}
-                          {formatCurrency(
-                            campaign.invested || 0,
-                            summary.currency,
-                            summary.currency_symbol,
-                          )}
-                        </div>
-                        <div
-                          className={`text-sm font-medium ${
-                            (campaign.roi || 0) >= 0
-                              ? 'text-green-600'
-                              : 'text-red-600'
-                          }`}
-                        >
-                          {(campaign.roi || 0) >= 0 ? '+' : ''}
-                          {formatPercentage(campaign.roi || 0, 2)}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {campaigns.length === 0 && (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <Building className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No investment data available</p>
-                    </div>
-                  )}
+<TabsContent value="performance" className="space-y-6">
+  <Card>
+    <CardHeader>
+      <CardTitle>Campaign Performance</CardTitle>
+      <CardDescription>
+        Detailed performance metrics for each investment
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-4">
+        {campaigns.map((campaign: any) => (
+          <div
+            key={campaign.campaign_id}
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg gap-3 sm:gap-0"
+          >
+            <div className="flex items-start sm:items-center space-x-4 w-full sm:w-auto">
+              <Building className="h-10 w-10 text-muted-foreground flex-shrink-0" />
+              <div className="min-w-0 flex-1">
+                <h4 className="font-medium truncate">{campaign.company_name}</h4>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mt-1">
+                  <span className="whitespace-nowrap">
+                    {campaign.investment_count} investment
+                    {campaign.investment_count !== 1 ? 's' : ''}
+                  </span>
+                  <span className="hidden sm:inline">•</span>
+                  <span className="whitespace-nowrap">
+                    {formatNumber(campaign.ownership_percentage || 0, 2)}% ownership
+                  </span>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            </div>
+            <div className="text-right w-full sm:w-auto mt-2 sm:mt-0">
+              <div className="font-medium">
+                {formatCurrency(
+                  campaign.current_value || 0,
+                  summary.currency,
+                  summary.currency_symbol,
+                )}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Invested:{' '}
+                {formatCurrency(
+                  campaign.invested || 0,
+                  summary.currency,
+                  summary.currency_symbol,
+                )}
+              </div>
+              <div
+                className={`text-sm font-medium ${
+                  (campaign.roi || 0) >= 0 ? 'text-green-600' : 'text-red-600'
+                }`}
+              >
+                {(campaign.roi || 0) >= 0 ? '+' : ''}
+                {formatPercentage(campaign.roi || 0, 2)}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {campaigns.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground">
+            <Building className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>No investment data available</p>
+          </div>
+        )}
+      </div>
+    </CardContent>
+  </Card>
+</TabsContent>
 
           <TabsContent value="risk" className="space-y-6">
             <Card>

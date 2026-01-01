@@ -464,79 +464,84 @@ const InvestorReportingDashboard: React.FC = () => {
           </Card>
 
           {/* Recent Reports */}
-{/* Recent Reports */}
-<Card>
-  <CardHeader>
-    <CardTitle>Recent Reports</CardTitle>
-    <CardDescription>
-      Latest updates from your portfolio companies
-    </CardDescription>
-  </CardHeader>
-  <CardContent>
-    <div className="space-y-4">
-      {recentReports.map((report) => (
-        <div
-          key={report.id}
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg gap-3 sm:gap-0"
-        >
-          <div className="flex items-start sm:items-center space-x-4 w-full sm:w-auto">
-            <FileText className="h-8 w-8 text-emerald-700 flex-shrink-0" />
-            <div className="min-w-0 flex-1">
-              <h4 className="font-medium truncate">{report.title}</h4>
-              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mt-1">
-                <div className="flex items-center space-x-1">
-                  <Calendar className="h-3 w-3 flex-shrink-0" />
-                  <span className="truncate">
-                    {report.report_date
-                      ? new Date(report.report_date).toLocaleDateString()
-                      : 'N/A'}
-                  </span>
-                </div>
-                <Badge variant="outline" className="capitalize truncate">
-                  {report.report_type?.replace('_', ' ') || 'Report'}
-                </Badge>
+          {/* Recent Reports */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Reports</CardTitle>
+              <CardDescription>
+                Latest updates from your portfolio companies
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentReports.map((report) => (
+                  <div
+                    key={report.id}
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg gap-3 sm:gap-0"
+                  >
+                    <div className="flex items-start sm:items-center space-x-4 w-full sm:w-auto">
+                      <FileText className="h-8 w-8 text-emerald-700 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-medium truncate">{report.title}</h4>
+                        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mt-1">
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">
+                              {report.report_date
+                                ? new Date(
+                                    report.report_date,
+                                  ).toLocaleDateString()
+                                : 'N/A'}
+                            </span>
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className="capitalize truncate"
+                          >
+                            {report.report_type?.replace('_', ' ') || 'Report'}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between sm:justify-end space-x-2 w-full sm:w-auto mt-2 sm:mt-0">
+                      <Badge variant="secondary" className="whitespace-nowrap">
+                        {report.download_count || 0} downloads
+                      </Badge>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDownloadReport(report.id)}
+                        className="flex-shrink-0"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+
+                {recentReports.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No reports available yet</p>
+                    <p className="text-sm">
+                      Reports will appear here as companies publish them
+                    </p>
+                  </div>
+                )}
               </div>
-            </div>
-          </div>
-          <div className="flex items-center justify-between sm:justify-end space-x-2 w-full sm:w-auto mt-2 sm:mt-0">
-            <Badge variant="secondary" className="whitespace-nowrap">
-              {report.download_count || 0} downloads
-            </Badge>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleDownloadReport(report.id)}
-              className="flex-shrink-0"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      ))}
 
-      {recentReports.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p>No reports available yet</p>
-          <p className="text-sm">
-            Reports will appear here as companies publish them
-          </p>
-        </div>
-      )}
-    </div>
-
-    {recentReports.length > 0 && (
-      <div className="mt-6 flex justify-end">
-        <Button
-          variant="outline"
-          onClick={() => setShowInvestorReports(true)}
-        >
-          View All Reports
-        </Button>
-      </div>
-    )}
-  </CardContent>
-</Card>
+              {recentReports.length > 0 && (
+                <div className="mt-6 flex justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowInvestorReports(true)}
+                  >
+                    View All Reports
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="portfolio">
