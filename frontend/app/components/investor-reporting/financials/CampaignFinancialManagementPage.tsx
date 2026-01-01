@@ -171,7 +171,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
               className="w-full sm:w-auto"
             >
               <FiArrowLeft className="mr-2 h-4 w-4" />
-               <span className="sm:inline">Back to Campaigns</span>
+              <span className="sm:inline">Back to Campaigns</span>
             </Button>
             <Button
               variant="outline"
@@ -180,7 +180,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
               className="w-full sm:w-auto"
             >
               <FiGrid className="mr-2 h-4 w-4" />
-               <span className="sm:inline">Switch Campaign</span>
+              <span className="sm:inline">Switch Campaign</span>
             </Button>
           </div>
         </div>
