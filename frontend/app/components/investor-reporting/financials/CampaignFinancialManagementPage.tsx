@@ -240,58 +240,57 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
       </div>
 
       {/* Tabs */}
-{/* Tabs */}
-<Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-  <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8 mt-4 md:mt-0">
-    <TabsTrigger value="dashboard" className="flex items-center gap-2">
-      <FiBarChart2 className="h-4 w-4" />
-      <span className="hidden sm:inline">Dashboard</span>
-    </TabsTrigger>
-    <TabsTrigger value="financials" className="flex items-center gap-2">
-      <FiFileText className="h-4 w-4" />
-      <span className="hidden sm:inline">Financials</span>
-    </TabsTrigger>
-    <TabsTrigger value="kpis" className="flex items-center gap-2">
-      <FiTrendingUp className="h-4 w-4" />
-      <span className="hidden sm:inline">KPIs</span>
-    </TabsTrigger>
-    <TabsTrigger value="reports" className="flex items-center gap-2">
-      <FiUsers className="h-4 w-4" />
-      <span className="hidden sm:inline">Investor Reports</span>
-    </TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+        <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8 mt-4 md:mt-0">
+          <TabsTrigger value="dashboard" className="flex items-center gap-2">
+            <FiBarChart2 className="h-4 w-4" />
+            <span className="hidden sm:inline">Dashboard</span>
+          </TabsTrigger>
+          <TabsTrigger value="financials" className="flex items-center gap-2">
+            <FiFileText className="h-4 w-4" />
+            <span className="hidden sm:inline">Financials</span>
+          </TabsTrigger>
+          <TabsTrigger value="kpis" className="flex items-center gap-2">
+            <FiTrendingUp className="h-4 w-4" />
+            <span className="hidden sm:inline">KPIs</span>
+          </TabsTrigger>
+          <TabsTrigger value="reports" className="flex items-center gap-2">
+            <FiUsers className="h-4 w-4" />
+            <span className="hidden sm:inline">Investor Reports</span>
+          </TabsTrigger>
 
-    {/* Settings as a button, not a tab trigger */}
-    <button
-      className={`flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium transition-colors rounded-md ${
-        showSettingsModal
-          ? 'bg-gray-100 text-gray-900'
-          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-      }`}
-      onClick={() => setShowSettingsModal(true)}
-    >
-      <FiSettings className="h-4 w-4" />
-      <span className="hidden sm:inline">Settings</span>
-    </button>
-  </TabsList>
+          {/* Settings as a button, not a tab trigger */}
+          <button
+            className={`flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium transition-colors rounded-md ${
+              showSettingsModal
+                ? 'bg-gray-100 text-gray-900'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+            onClick={() => setShowSettingsModal(true)}
+          >
+            <FiSettings className="h-4 w-4" />
+            <span className="hidden sm:inline">Settings</span>
+          </button>
+        </TabsList>
 
-  <div className="mt-4">
-    <TabsContent value="dashboard">
-      <FinancialDashboard campaignId={localSelectedCampaignId} />
-    </TabsContent>
+        <div className="mt-4">
+          <TabsContent value="dashboard">
+            <FinancialDashboard campaignId={localSelectedCampaignId} />
+          </TabsContent>
 
-    <TabsContent value="financials">
-      <FinancialStatementsManager campaignId={localSelectedCampaignId} />
-    </TabsContent>
+          <TabsContent value="financials">
+            <FinancialStatementsManager campaignId={localSelectedCampaignId} />
+          </TabsContent>
 
-    <TabsContent value="kpis">
-      <KPIManager campaignId={localSelectedCampaignId} />
-    </TabsContent>
+          <TabsContent value="kpis">
+            <KPIManager campaignId={localSelectedCampaignId} />
+          </TabsContent>
 
-    <TabsContent value="reports">
-      <InvestorReportsManager campaignId={localSelectedCampaignId} />
-    </TabsContent>
-  </div>
-</Tabs>
+          <TabsContent value="reports">
+            <InvestorReportsManager campaignId={localSelectedCampaignId} />
+          </TabsContent>
+        </div>
+      </Tabs>
 
       {/* Settings Modal */}
       <Modal
