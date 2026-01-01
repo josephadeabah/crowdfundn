@@ -163,7 +163,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
       {/* Header */}
       <div className="mb-8">
         <div className="flex justify-center md:justify-start items-center gap-2 mb-2">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 w-full sm:w-auto">
+          <div className="flex sm:flex-row items-center sm:items-start gap-2 sm:w-auto">
             <Button
               variant="outline"
               size="sm"
@@ -171,8 +171,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
               className="w-full sm:w-auto"
             >
               <FiArrowLeft className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Back to Campaigns</span>
-              <span className="sm:hidden">Back</span>
+              <span className="sm:inline">Back to Campaigns</span>
             </Button>
             <Button
               variant="outline"
@@ -181,8 +180,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
               className="w-full sm:w-auto"
             >
               <FiGrid className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Switch Campaign</span>
-              <span className="sm:hidden">Switch</span>
+              <span className="sm:inline">Switch Campaign</span>
             </Button>
           </div>
         </div>
