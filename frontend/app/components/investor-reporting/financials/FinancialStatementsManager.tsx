@@ -284,24 +284,24 @@ const FinancialStatementsManager: React.FC<FinancialStatementsManagerProps> = ({
 
   return (
     <div className="space-y-6">
-<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-  <div className="mb-2 sm:mb-0">
-    <h2 className="text-2xl font-bold text-gray-900">
-      Financial Statements
-    </h2>
-    <p className="text-gray-600 text-sm sm:text-base">
-      Manage and publish financial statements for investors
-    </p>
-  </div>
-  <Button 
-    variant="success" 
-    onClick={() => setIsCreateModalOpen(true)}
-    className="w-full sm:w-auto whitespace-nowrap"
-  >
-    <FiPlus className="mr-2 h-4 w-4" />
-    Add Financial Statement
-  </Button>
-</div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="mb-2 sm:mb-0">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Financial Statements
+          </h2>
+          <p className="text-gray-600 text-sm sm:text-base">
+            Manage and publish financial statements for investors
+          </p>
+        </div>
+        <Button
+          variant="success"
+          onClick={() => setIsCreateModalOpen(true)}
+          className="w-full sm:w-auto whitespace-nowrap"
+        >
+          <FiPlus className="mr-2 h-4 w-4" />
+          Add Financial Statement
+        </Button>
+      </div>
 
       {financials.length === 0 ? (
         <Card>

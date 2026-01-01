@@ -240,7 +240,7 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className='mb-8'>
         <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <FiBarChart2 className="h-4 w-4" />
