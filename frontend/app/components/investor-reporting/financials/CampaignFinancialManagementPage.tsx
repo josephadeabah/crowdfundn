@@ -163,22 +163,24 @@ const CampaignFinancialsPage: React.FC<CampaignFinancialsPageProps> = ({
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between gap-4 mb-2">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setLocalSelectedCampaignId(undefined)}
+              className="w-full sm:w-auto"
             >
               <FiArrowLeft className="mr-2 h-4 w-4" />
-              Back to Campaigns
+               <span className="sm:inline">Back to Campaigns</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowCampaignSelector(true)}
+              className="w-full sm:w-auto"
             >
               <FiGrid className="mr-2 h-4 w-4" />
-              Switch Campaign
+               <span className="sm:inline">Switch Campaign</span>
             </Button>
           </div>
         </div>
