@@ -90,8 +90,7 @@ const Footer = () => {
                 Gate 2, Takoradi | Ghana.
               </p>
               <p className="text-sm text-gray-600 mb-6">
-                Empowering dreams through crowdfunding and investment. Join us
-                in transforming ideas into reality.
+                If you're tired of the same old venture capital chatter and looking for a fresh, unfiltered take on startups and investing, you're in the right place
               </p>
               <p className="text-sm text-gray-600 mb-2">Follow us on:</p>
               <div className="flex space-x-4">

@@ -27,8 +27,8 @@ const FooterWarning: React.FC = () => {
 
             {/* <p className="font-semibold text-gray-900">Platform Status</p> */}
 
-            <div className="border border-amber-300 bg-amber-50 rounded-md p-4">
-              <p className="text-xs font-semibold text-amber-900 leading-relaxed">
+            <div className="rounded-md p-4">
+              <p className="text-xs font-semibold text-gray-900 leading-relaxed">
                 PLATFORM STATUS NOTICE: BantuHive investment crowdfunding is
                 currently operating in a controlled, invite-only private pilot
                 phase. The platform's investment crowdfunding is not open to the
