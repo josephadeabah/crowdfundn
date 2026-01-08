@@ -193,7 +193,7 @@ const Footer = () => {
           </div>
         </div>
       </footer>
-      <FooterWarning />
+      {/* <FooterWarning /> */}
     </>
   );
 };
