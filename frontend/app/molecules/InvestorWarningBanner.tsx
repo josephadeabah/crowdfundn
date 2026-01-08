@@ -36,8 +36,9 @@ const InvestorWarningBanner: React.FC<InvestorWarningBannerProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <p className="text-sm">
-              Investing involves risk, and returns are not guaranteed.  
-              We encourage you to understand how each opportunity works and only invest what you’re comfortable with.{' '}
+              Investing involves risk, and returns are not guaranteed. We
+              encourage you to understand how each opportunity works and only
+              invest what you’re comfortable with.{' '}
               <a
                 href="/info/risk-warning"
                 className="underline font-medium hover:text-gray-800"

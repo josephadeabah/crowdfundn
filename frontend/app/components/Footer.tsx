@@ -91,8 +91,8 @@ const Footer = () => {
               </p>
               <p className="text-sm text-gray-600 mb-6">
                 If you're tired of the same old venture capital chatter and
-                looking for a fresh, truly unfiltered take on startups and investing,
-                you're in the right place. We do it differently.
+                looking for a fresh, truly unfiltered take on startups and
+                investing, you're in the right place. We do it differently.
               </p>
               <p className="text-sm text-gray-600 mb-2">Follow us on:</p>
               <div className="flex space-x-4">
