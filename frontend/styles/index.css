@@ -260,6 +260,30 @@
            transition-all duration-300 ease-out shadow-md
            hover:bg-video-hover hover:scale-110;
   }
+
+   .policy-section {
+    @apply mb-10;
+  }
+
+  .policy-section h2 {
+    @apply text-2xl font-bold text-foreground mb-4 pb-2 border-b border-border;
+  }
+
+  .policy-section h3 {
+    @apply text-xl font-semibold text-foreground mt-6 mb-3;
+  }
+
+  .policy-section p {
+    @apply text-muted-foreground leading-relaxed mb-4;
+  }
+
+  .policy-section ul {
+    @apply list-disc list-inside space-y-2 text-muted-foreground mb-4 ml-4;
+  }
+
+  .policy-section li {
+    @apply leading-relaxed;
+  }
 }
 
 @layer components {
