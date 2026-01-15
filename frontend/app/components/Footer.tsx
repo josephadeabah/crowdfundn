@@ -61,6 +61,7 @@ const Footer = () => {
         },
         { name: 'Disclosures', path: '/info/disclosures' },
         { name: 'Investor Protections', path: '/info/investor-protections' },
+        { name: 'Data Protection Policy', path: '/info/data-protection' },
       ],
     },
   ];
