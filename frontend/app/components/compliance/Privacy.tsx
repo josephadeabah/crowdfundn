@@ -625,7 +625,7 @@ const Privacy = () => {
             <strong>Email:</strong> dpo@bantuhive.com
           </li>
           <li>
-            <strong>Phone:</strong> +233 XX XXX XXXX
+            <strong>Phone:</strong> +233 551 563 081
           </li>
         </ul>
         <h3>13.2 General Inquiries</h3>
@@ -634,7 +634,7 @@ const Privacy = () => {
             <strong>Email:</strong> privacy@bantuhive.com
           </li>
           <li>
-            <strong>Address:</strong> BantuHive Ltd, [Address], Accra, Ghana
+            <strong>Address:</strong> BantuHive Ltd, 27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi | Ghana
           </li>
           <li>
             <strong>Website:</strong> www.bantuhive.com/contact
