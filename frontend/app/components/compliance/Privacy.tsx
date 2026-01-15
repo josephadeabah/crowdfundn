@@ -476,7 +476,7 @@ const Privacy = () => {
             <strong>Email:</strong> compliance@bantuhive.com
           </li>
           <li>
-            <strong>Hotline:</strong> +233 XX XXX XXXX (available 24/7)
+            <strong>Hotline:</strong> +233 55 156 3081 (available 24/7)
           </li>
           <li>
             <strong>Online:</strong> Through the "Report Campaign" feature on

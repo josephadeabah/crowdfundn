@@ -350,7 +350,7 @@ const DataProtection = () => {
           </li>
         </ul>
         <p>
-          We primarily use cloud service providers with data centers in Ghana,
+          We primarily use cloud service providers with data centers in US,
           Europe, and other jurisdictions that provide adequate protection for
           personal data.
         </p>
