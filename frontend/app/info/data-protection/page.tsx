@@ -406,7 +406,8 @@ const DataProtection = () => {
             <strong>Email:</strong> dpo@bantuhive.com
           </li>
           <li>
-            <strong>Address:</strong> BantuHive Ltd, 27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi | Ghana
+            <strong>Address:</strong> BantuHive Ltd, 27 Independence Avenue,
+            Synergy Office Space, Takoradi Mall, Gate 2, Takoradi | Ghana
           </li>
           <li>
             <strong>Phone:</strong> +233 551 563 081

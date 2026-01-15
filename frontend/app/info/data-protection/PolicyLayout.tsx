@@ -28,13 +28,10 @@ const PolicyLayout = ({
     <div className="min-h-screen bg-emerald-50">
       {/* Hero Section */}
       <section className="bg-emerald-700 py-16 md:py-24">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-emerald-100 mb-6">
-            <Link
-              href="/"
-              className="hover:text-white transition-colors"
-            >
+            <Link href="/" className="hover:text-white transition-colors">
               Home
             </Link>
             <ChevronRight className="h-4 w-4" />
@@ -59,8 +56,8 @@ const PolicyLayout = ({
 
       {/* Content */}
       <section className="py-12 md:py-16 bg-emerald-50">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
             {/* Sidebar - Table of Contents */}
             <aside className="lg:col-span-1">
               <div className="sticky top-24 bg-white rounded-xl p-6 shadow-lg border border-emerald-200">

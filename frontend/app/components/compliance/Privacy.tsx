@@ -634,7 +634,8 @@ const Privacy = () => {
             <strong>Email:</strong> privacy@bantuhive.com
           </li>
           <li>
-            <strong>Address:</strong> BantuHive Ltd, 27 Independence Avenue, Synergy Office Space, Takoradi Mall, Gate 2, Takoradi | Ghana
+            <strong>Address:</strong> BantuHive Ltd, 27 Independence Avenue,
+            Synergy Office Space, Takoradi Mall, Gate 2, Takoradi | Ghana
           </li>
           <li>
             <strong>Website:</strong> www.bantuhive.com/contact
