@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import Link  from "next/link";
-import { ChevronRight, Calendar, FileText } from "lucide-react";
+import { ReactNode } from 'react';
+import Link from 'next/link';
+import { ChevronRight, Calendar, FileText } from 'lucide-react';
 
 interface PolicyLayoutProps {
   title: string;
@@ -9,11 +9,16 @@ interface PolicyLayoutProps {
   tableOfContents: { id: string; title: string }[];
 }
 
-const PolicyLayout = ({ title, lastUpdated, children, tableOfContents }: PolicyLayoutProps) => {
+const PolicyLayout = ({
+  title,
+  lastUpdated,
+  children,
+  tableOfContents,
+}: PolicyLayoutProps) => {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -24,7 +29,10 @@ const PolicyLayout = ({ title, lastUpdated, children, tableOfContents }: PolicyL
         <div className="container mx-auto px-4">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-primary-foreground/70 mb-6">
-            <Link href="/" className="hover:text-primary-foreground transition-colors">
+            <Link
+              href="/"
+              className="hover:text-primary-foreground transition-colors"
+            >
               Home
             </Link>
             <ChevronRight className="h-4 w-4" />
@@ -54,7 +62,9 @@ const PolicyLayout = ({ title, lastUpdated, children, tableOfContents }: PolicyL
             {/* Sidebar - Table of Contents */}
             <aside className="lg:col-span-1">
               <div className="sticky top-24 bg-card rounded-xl p-6 shadow-card border border-border">
-                <h3 className="font-semibold text-foreground mb-4">Table of Contents</h3>
+                <h3 className="font-semibold text-foreground mb-4">
+                  Table of Contents
+                </h3>
                 <nav className="space-y-2">
                   {tableOfContents.map((item) => (
                     <button

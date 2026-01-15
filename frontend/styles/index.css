@@ -261,7 +261,7 @@
            hover:bg-video-hover hover:scale-110;
   }
 
-   .policy-section {
+  .policy-section {
     @apply mb-10;
   }
 
