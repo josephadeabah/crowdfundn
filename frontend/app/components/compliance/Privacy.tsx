@@ -1,3 +1,4 @@
+'use client';
 import PolicyLayout from '@/app/info/data-protection/PolicyLayout';
 
 const Privacy = () => {
