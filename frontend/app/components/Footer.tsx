@@ -91,9 +91,9 @@ const Footer = () => {
                 Gate 2, Takoradi | Ghana.
               </p>
               <p className="text-sm text-gray-600 mb-6">
-                If you're tired of the same old venture capital chatter and
-                looking for a fresh, truly unfiltered take on startups and
-                investing, you're in the right place. We do it differently.
+                The easiest way to crowdfund online in Ghana. Bantu (People),
+                BantuHive is the people crowdfunding platform that makes it easy
+                to fundraise in Ghana and build trust with supporters.
               </p>
               <p className="text-sm text-gray-600 mb-2">Follow us on:</p>
               <div className="flex space-x-4">
