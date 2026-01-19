@@ -228,7 +228,7 @@ const Hero = () => {
                   </span>
                 </h1>
                 <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
-                  The community-powered platform for growing impact.
+                  For Individuals, Non-Profits & Businesses
                 </p>
               </div>
 

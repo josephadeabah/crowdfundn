@@ -48,6 +48,7 @@ const HomePage = () => {
           </div>
         ))}
       </main>
+      <PartnersCarousel />
     </div>
   );
 };
