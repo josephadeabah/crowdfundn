@@ -103,9 +103,9 @@ const Navbar = () => {
 
   return (
     <>
-      {/* {!warningDismissed && (
+      {!warningDismissed && (
         <InvestorWarningBanner onDismiss={handleWarningDismiss} />
-      )} */}
+      )}
       <header
         className={cn(
           'sticky top-0 z-50 transition-transform duration-300 ease-in-out bg-white',
