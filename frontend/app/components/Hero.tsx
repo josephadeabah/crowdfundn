@@ -230,7 +230,7 @@ const Hero = () => {
                   </span>
                 </h1>
                 <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
-                  For Individuals, Non-Profits & Businesses
+                  For SMEs, Nonprofits & Large Enterprises
                 </p>
               </div>
 
