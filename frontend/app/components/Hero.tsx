@@ -225,13 +225,12 @@ const Hero = () => {
                   AI-powered investment crowdfunding and peer-to-peer capital
                   infrastructure&nbsp;
                   <span className="text-orange-500">
-                    enabling African communities and startups to raise, deploy,
-                    and manage capital digitally.
+                    enabling communities, VCs, accelerators and startups to
+                    raise, deploy, and manage capital digitally.
                   </span>
                 </h1>
                 <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
-                  A Platform Built for SMEs, Nonprofits, and Large
-                  Enterprises
+                  A Platform Built for SMEs, Nonprofits, and Large Enterprises
                 </p>
               </div>
 
