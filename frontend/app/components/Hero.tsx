@@ -222,9 +222,9 @@ const Hero = () => {
               {/* Main Heading */}
               <div className="space-y-4 pb-6">
                 <h1 className="text-3xl font-bold text-gray-700 leading-tight">
-                  Peer-to-Peer Capital Through Digital Venture Groups.&nbsp;
+                  AI-powered investment crowdfunding and peer-to-peer capital infrastructure &nbsp;
                   <span className="text-orange-500">
-                    A Collaborative Platform For Raising Capital
+                    enabling African communities and startups to raise, deploy, and manage capital digitally.
                   </span>
                 </h1>
                 <p className="text-xl text-gray-800 leading-relaxed max-w-xl">
