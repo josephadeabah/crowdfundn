@@ -1,4 +1,3 @@
-Here’s a **full professional README.md** for your **BantuHive** GitHub project. You can copy and paste this directly into your `README.md`.
 
 ---
 
@@ -130,16 +129,17 @@ CLOUD_STORAGE_KEY=
 5. Receive contributions
 6. Reward contributors
 7. Withdraw funds
+8. Equity crowdfunding
+9. AI campaign recommendations
+10. Real-time notification systems
 
 ---
 
 ## Roadmap
 
 * Mobile app
-* AI campaign recommendations
 * Escrow system
 * Community voting system
-* Equity crowdfunding
 * Blockchain transparency
 * Multi-currency wallets
 * API for third-party integrations
