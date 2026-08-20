@@ -6,11 +6,6 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-# ===== ADD THIS =====
-# Require the custom Active Storage service before Rails initializes
-require_relative '../lib/active_storage/service/supabase_storage_service'
-# ===== END ADD =====
-
 module Backend
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.

@@ -1,10 +1,10 @@
-# lib/active_storage/service/supabase_storage_service.rb
+# lib/active_storage/service/supabase_storage.rb
 require "active_storage/service"
 require "faraday"
 require "mime-types"
 
 module ActiveStorage
-  class Service::SupabaseStorage < Service  # Changed: Added "Service" at the end
+  class Service::SupabaseStorage < Service
     attr_reader :client, :bucket, :public, :supabase_url, :api_key
 
     def initialize(bucket:, public: true, **options)
@@ -26,10 +26,8 @@ module ActiveStorage
       instrument :upload, key: key, checksum: checksum do
         content_type ||= MIME::Types.type_for(key).first&.content_type || "application/octet-stream"
         
-        # Convert io to a file-like object if it's a StringIO
         file_to_upload = io
         if io.is_a?(StringIO)
-          # Create a temp file for upload
           temp_file = Tempfile.new(["upload", File.extname(key)])
           temp_file.binmode
           temp_file.write(io.read)
@@ -51,7 +49,6 @@ module ActiveStorage
           
           response
         ensure
-          # Clean up temp file if created
           if file_to_upload.is_a?(Tempfile)
             file_to_upload.close
             file_to_upload.unlink
@@ -78,8 +75,6 @@ module ActiveStorage
 
     def download_chunk(key, range)
       instrument :download_chunk, key: key, range: range do
-        # Supabase doesn't support range requests directly with the gem
-        # We'll download the full file and slice it
         response = @client.storage.from(@bucket).download(key)
         
         if response.status != 200
@@ -121,14 +116,11 @@ module ActiveStorage
     def url(key, expires_in: nil, filename: nil, disposition: nil, content_type: nil)
       instrument :url, key: key do
         if @public
-          # Public URL - no expiry
           "#{@supabase_url}/storage/v1/object/public/#{@bucket}/#{key}"
         elsif expires_in
-          # Signed URL with expiry
           response = @client.storage.from(@bucket).create_signed_url(key, expires_in.to_i)
           response.body["signedUrl"] if response.status == 200
         else
-          # Fallback to public URL
           "#{@supabase_url}/storage/v1/object/public/#{@bucket}/#{key}"
         end
       end
