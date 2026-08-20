@@ -4,7 +4,7 @@ require "faraday"
 require "mime-types"
 
 module ActiveStorage
-  class Service::SupabaseStorageService < Service
+  class Service::SupabaseStorage < Service  # Changed: Added "Service" at the end
     attr_reader :client, :bucket, :public, :supabase_url, :api_key
 
     def initialize(bucket:, public: true, **options)
@@ -14,7 +14,6 @@ module ActiveStorage
       @api_key = options[:api_key] || ENV.fetch("SUPABASE_SERVICE_ROLE_KEY")
       @client = options[:client] || $supabase_client
       
-      # If client is nil, initialize a new one
       if @client.nil?
         @client = Supabase.create_client(
           supabase_url: @supabase_url,

@@ -7,22 +7,23 @@ local:
   root: <%= Rails.root.join("storage") %>
 
 
+# config/storage.yml
 supabase:
-  service: SupabaseStorageService
+  service: SupabaseStorage  # Changed from SupabaseStorageService
   bucket: <%= ENV.fetch("SUPABASE_STORAGE_BUCKET", "bantuhive-storage") %>
   public: true
   supabase_url: <%= ENV.fetch("SUPABASE_URL") %>
   api_key: <%= ENV.fetch("SUPABASE_SERVICE_ROLE_KEY") %>
 
 production:
-  service: SupabaseStorageService
+  service: SupabaseStorage  # Changed from SupabaseStorageService
   bucket: <%= ENV.fetch("SUPABASE_STORAGE_BUCKET", "bantuhive-storage") %>
   public: true
   supabase_url: <%= ENV.fetch("SUPABASE_URL") %>
   api_key: <%= ENV.fetch("SUPABASE_SERVICE_ROLE_KEY") %>
 
 development:
-  service: SupabaseStorageService
+  service: SupabaseStorage  # Changed from SupabaseStorageService
   bucket: <%= ENV.fetch("SUPABASE_STORAGE_BUCKET", "bantuhive-storage-dev") %>
   public: true
   supabase_url: <%= ENV.fetch("SUPABASE_URL") %>
