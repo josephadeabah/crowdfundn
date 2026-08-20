@@ -2,9 +2,11 @@
 require "active_storage/service"
 require "faraday"
 require "mime-types"
+require "tempfile"
+require "stringio"
 
 module ActiveStorage
-  class Service::SupabaseStorage < Service  # NO "Service" at the end
+  class Service::SupabaseStorageService < Service
     attr_reader :client, :bucket, :public, :supabase_url, :api_key
 
     def initialize(bucket:, public: true, **options)
