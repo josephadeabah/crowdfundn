@@ -19,7 +19,7 @@ module ApplicationCable
         begin
           decoded_token = JWT.decode(
             token, 
-            Rails.application.credentials.secret_key_base || Rails.application.secret_key_base,
+            ENV.fetch('SECRET_KEY_BASE'),
             true, 
             { algorithm: 'HS256' }
           )

@@ -7,17 +7,37 @@ local:
   root: <%= Rails.root.join("storage") %>
 
 
+supabase:
+  service: SupabaseStorageService
+  bucket: <%= ENV.fetch("SUPABASE_STORAGE_BUCKET", "bantuhive-storage") %>
+  public: true
+  supabase_url: <%= ENV.fetch("SUPABASE_URL") %>
+  api_key: <%= ENV.fetch("SUPABASE_SERVICE_ROLE_KEY") %>
+
+production:
+  service: SupabaseStorageService
+  bucket: <%= ENV.fetch("SUPABASE_STORAGE_BUCKET", "bantuhive-storage") %>
+  public: true
+  supabase_url: <%= ENV.fetch("SUPABASE_URL") %>
+  api_key: <%= ENV.fetch("SUPABASE_SERVICE_ROLE_KEY") %>
+
+development:
+  service: SupabaseStorageService
+  bucket: <%= ENV.fetch("SUPABASE_STORAGE_BUCKET", "bantuhive-storage-dev") %>
+  public: true
+  supabase_url: <%= ENV.fetch("SUPABASE_URL") %>
+  api_key: <%= ENV.fetch("SUPABASE_SERVICE_ROLE_KEY") %>
+
 # DigitalOcean Spaces configuration
-digitalocean:
-  service: S3
-  access_key_id: <%= Rails.application.credentials.dig(:digitalocean, :access_key_id) %>
-  secret_access_key: <%= Rails.application.credentials.dig(:digitalocean, :secret_access_key) %>
-  endpoint: <%= Rails.application.credentials.dig(:digitalocean, :endpoint) %>
-  region: nyc3
-  bucket: <%= Rails.application.credentials.dig(:digitalocean, :bucket) %>
-  # paystack_secret_key: <%= Rails.application.credentials.dig(:digitalocean, :paystack_secret_key) %>
-  force_path_style: true # Necessary for Spaces
-  public: true # This line sets the default to public
+# digitalocean:
+#   service: S3
+#   access_key_id: <%= Rails.application.credentials.dig(:digitalocean, :access_key_id) %>
+#   secret_access_key: <%= Rails.application.credentials.dig(:digitalocean, :secret_access_key) %>
+#   endpoint: <%= Rails.application.credentials.dig(:digitalocean, :endpoint) %>
+#   region: nyc3
+#   bucket: <%= Rails.application.credentials.dig(:digitalocean, :bucket) %>
+#   force_path_style: true # Necessary for Spaces
+#   public: true # This line sets the default to public
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 # amazon:

@@ -1,3 +1,4 @@
+# config/environments/production.rb
 require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
@@ -13,7 +14,6 @@ Rails.application.configure do
   config.eager_load = true
 
   Rails.application.routes.default_url_options[:host] = 'bantuhive.com'
-
 
   # Full error reports are disabled and caching is turned on.
   config.consider_all_requests_local = false
@@ -33,16 +33,16 @@ Rails.application.configure do
   config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  config.asset_host = 'https://bantuhive-space-media.nyc3.digitaloceanspaces.com'
-
-  config.action_controller.asset_host = 'https://bantuhive-space-media.nyc3.digitaloceanspaces.com'
+  # UPDATE: Changed from DigitalOcean to Supabase Storage
+  config.asset_host = ENV.fetch('SUPABASE_STORAGE_URL', 'https://uwjirycrmnyvufmywuat.supabase.co/storage/v1/object/public/bantuhive-storage')
+  config.action_controller.asset_host = ENV.fetch('SUPABASE_STORAGE_URL', 'https://uwjirycrmnyvufmywuat.supabase.co/storage/v1/object/public/bantuhive-storage')
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :digitalocean
+  # Store uploaded files on Supabase Storage (replacing DigitalOcean)
+  config.active_storage.service = :production
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
@@ -94,7 +94,6 @@ Rails.application.configure do
 
   config.action_dispatch.trusted_proxies = ['127.0.0.1', '::1']
   config.middleware.insert_before 0, Rack::SSL if ENV['FORCE_SSL'] == 'true'
-  
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [

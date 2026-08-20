@@ -13,8 +13,7 @@ class InvestorPortfolioStatement < ApplicationRecord
     return unless file.attached?
     
     if Rails.env.production?
-      # For DigitalOcean Spaces
-      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{file.blob.key}"
+      "#{ENV.fetch('SUPABASE_URL')}/storage/v1/object/public/#{ENV.fetch('SUPABASE_STORAGE_BUCKET')}/#{file.blob.key}"
     else
       Rails.application.routes.url_helpers.rails_blob_url(file)
     end

@@ -8,13 +8,15 @@ class Reward < ApplicationRecord
   validates :title, :description, :amount, presence: true
   validates :amount, numericality: { greater_than: 0 }
 
-  # Generates the image URL for DigitalOcean Spaces or other storage
+  # Generates the image URL for Supabase Storage
   def image_url
     return unless image.attached?
-
-    "#{Rails.application.credentials.dig(:digitalocean,
-                                         :endpoint)}/#{Rails.application.credentials.dig(:digitalocean,
-                                                                                         :bucket)}/#{image.blob.key}"
+    
+    if Rails.env.production?
+      "#{ENV.fetch('SUPABASE_URL')}/storage/v1/object/public/#{ENV.fetch('SUPABASE_STORAGE_BUCKET')}/#{image.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(image)
+    end
   end
 
   def image_filename

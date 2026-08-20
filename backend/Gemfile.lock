@@ -159,11 +159,14 @@ GEM
       tzinfo
     ethon (0.16.0)
       ffi (>= 1.15.0)
+    event_emitter (0.2.6)
     event_stream_parser (1.0.0)
     faraday (2.14.0)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
+    faraday-follow_redirects (0.5.0)
+      faraday (>= 1, < 3)
     faraday-multipart (1.1.1)
       multipart-post (~> 2.0)
     faraday-net_http (3.4.1)
@@ -424,6 +427,12 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.1.1)
+    supabase-rb (3.2.1)
+      faraday (~> 2.0)
+      faraday-follow_redirects (~> 0.3)
+      faraday-multipart (~> 1.0)
+      jwt (~> 2.8)
+      websocket-client-simple (~> 0.9)
     thor (1.3.2)
     tilt (2.6.0)
     timeout (0.4.1)
@@ -451,6 +460,11 @@ GEM
       railties (>= 6.0.0)
     webrick (1.8.1)
     websocket (1.2.11)
+    websocket-client-simple (0.9.0)
+      base64
+      event_emitter
+      mutex_m
+      websocket
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -480,6 +494,7 @@ DEPENDENCIES
   delayed_job
   delayed_job_active_record
   dotenv-rails
+  faraday
   foreman
   geocoder
   groupdate
@@ -489,6 +504,7 @@ DEPENDENCIES
   jwt
   kaminari
   mail
+  mime-types
   mini_magick
   neighbor
   openai
@@ -513,6 +529,7 @@ DEPENDENCIES
   solargraph
   sprockets-rails
   stimulus-rails
+  supabase-rb
   turbo-rails
   tzinfo-data
   web-console

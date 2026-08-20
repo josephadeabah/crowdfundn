@@ -8,31 +8,49 @@ WORKDIR /usr/src/app
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_WITHOUT="development:test"
 
 # Install required packages
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    git \
+    libpq-dev \
+    libvips \
+    pkg-config \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
+# Copy Gemfile and install dependencies
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
+# Copy application code
 COPY . .
 
+# Precompile assets (if you have any)
+# RUN SECRET_KEY_BASE=dummy RAILS_MASTER_KEY=$RAILS_MASTER_KEY bundle exec rails assets:precompile
+
+# Copy and set entrypoint
 COPY entrypoint.sh /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
 
-# ENV variables
-# ENV GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/config/paysight_runner.key
+# Environment variables
 ARG DB_PASSWORD
 ARG SECRET_KEY_BASE
-ENV DATABASE_PASSWORD=${DB_PASSWORD}
-ENV SECRET_KEY_BASE=${SECRET_KEY_BASE}
-ENV RAILS_SERVE_STATIC_FILES=true
-ENV RAILS_LOG_TO_STDOUT=true
+ARG SUPABASE_URL
+ARG SUPABASE_SERVICE_ROLE_KEY
+ARG SUPABASE_STORAGE_BUCKET
+
+ENV DATABASE_PASSWORD=${DB_PASSWORD} \
+    SECRET_KEY_BASE=${SECRET_KEY_BASE} \
+    SUPABASE_URL=${SUPABASE_URL} \
+    SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY} \
+    SUPABASE_STORAGE_BUCKET=${SUPABASE_STORAGE_BUCKET} \
+    RAILS_SERVE_STATIC_FILES=true \
+    RAILS_LOG_TO_STDOUT=true
 
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
-
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]

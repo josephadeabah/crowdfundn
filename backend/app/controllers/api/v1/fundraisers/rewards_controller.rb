@@ -23,7 +23,7 @@ module Api
           @reward = @campaign.rewards.new(reward_params)
           if params[:image].present?
             @reward.image.attach(params[:image])
-            set_media_content_disposition(@reward.image)
+            # No need for S3 content disposition - Supabase handles this
           end
 
           if @reward.save
@@ -38,7 +38,7 @@ module Api
           if @reward.update(reward_params)
             if params[:image].present?
               @reward.image.attach(params[:image])
-              set_media_content_disposition(@reward.image)
+              # No need for S3 content disposition - Supabase handles this
             end
             render json: @reward, status: :ok
           else
@@ -53,20 +53,10 @@ module Api
         end
 
         def authorize_campaign_user!
-          authorize_user!(@campaign) # Call the authorization method
+          authorize_user!(@campaign)
         end
 
         private
-
-        def set_media_content_disposition(media)
-          s3 = Aws::S3::Resource.new
-          object = s3.bucket(Rails.application.credentials.dig(:digitalocean, :bucket)).object(media.key)
-          object.copy_from(object.bucket.name + '/' + object.key, {
-                             metadata_directive: 'REPLACE',
-                             content_disposition: 'inline',
-                             acl: 'public-read'
-                           })
-        end
 
         def set_campaign
           @campaign = Campaign.find(params[:campaign_id])

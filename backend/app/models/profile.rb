@@ -18,10 +18,12 @@ class Profile < ApplicationRecord
   # Method to return avatar URL like the campaign's media_url
   def avatar_url
     return unless avatar.attached?
-
-    "#{Rails.application.credentials.dig(:digitalocean,
-                                         :endpoint)}/#{Rails.application.credentials.dig(:digitalocean,
-                                                                                         :bucket)}/#{avatar.blob.key}"
+    
+    if Rails.env.production?
+      "#{ENV.fetch('SUPABASE_URL')}/storage/v1/object/public/#{ENV.fetch('SUPABASE_STORAGE_BUCKET')}/#{avatar.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(avatar)
+    end
   end
 
   def avatar_filename

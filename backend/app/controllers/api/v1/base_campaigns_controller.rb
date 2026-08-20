@@ -114,7 +114,7 @@ module Api
         response_data = grouped_paginated_campaigns.each_with_object({}) do |(category, campaigns), result|
           result[category] = {
             campaigns: campaigns.map do |campaign|
-              campaign_json(campaign) # Use the existing campaign_json method instead of as_json
+              campaign_json(campaign)
             end,
             current_page: campaigns.current_page,
             total_pages: campaigns.total_pages,
@@ -255,7 +255,7 @@ module Api
 
       def favorites
         @campaigns = @current_user.favorited_campaigns
-                                  .includes(:rewards, :updates, :comments, fundraiser: [:profile, :latest_kyc])  # Add KYC
+                                  .includes(:rewards, :updates, :comments, fundraiser: [:profile, :latest_kyc])
                                   .page(params[:page])
                                   .per(params[:pageSize] || 20)
 
@@ -336,7 +336,7 @@ module Api
           :updates,
           :comments,
           :investor_documents,
-          :archived_campaigns, # This should now work
+          :archived_campaigns,
           fundraiser: [:profile, :latest_kyc]
         )
       end
@@ -349,7 +349,6 @@ module Api
         campaign_class.name
       end
 
-      # app/controllers/api/v1/base_campaigns_controller.rb
       def campaign_json(campaign)
         # Get KYC status for the fundraiser
         kyc_status = if campaign.fundraiser.latest_kyc
@@ -531,16 +530,6 @@ module Api
         unless @campaign.fundraiser == @current_user || @current_user.admin?
           render json: { error: 'Unauthorized' }, status: :unauthorized
         end
-      end
-
-      def set_media_content_disposition(media)
-        s3 = Aws::S3::Resource.new
-        object = s3.bucket(Rails.application.credentials.dig(:digitalocean, :bucket)).object(media.key)
-        object.copy_from(object.bucket.name + '/' + object.key, {
-                           metadata_directive: 'REPLACE',
-                           content_disposition: 'inline',
-                           acl: 'public-read'
-                         })
       end
     end
   end

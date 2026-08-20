@@ -1,8 +1,6 @@
 # This configuration file will be evaluated by Puma. The top-level methods that
 # are invoked here are part of Puma's configuration DSL. For more information
 # about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
-# config/puma.rb
-# The optimal configuration for production cluster mode
 
 # Thread settings - adjust based on your database connection pool
 max_threads_count = ENV.fetch('RAILS_MAX_THREADS', 5).to_i
@@ -47,6 +45,11 @@ plugin :tmp_restart
 
 # Optimize for Kubernetes/container environments
 bind "tcp://0.0.0.0:#{ENV['PORT']}"
+
+# Health check endpoint (for Northflank)
+before_fork do
+  require 'puma/plugin/stats'
+end
 
 # For better performance with reverse proxies
 persistent_timeout 20  # Default is 20 seconds

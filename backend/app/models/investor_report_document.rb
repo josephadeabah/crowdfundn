@@ -10,13 +10,12 @@ class InvestorReportDocument < ApplicationRecord
   
   before_save :extract_file_metadata, if: -> { file.attached? && file_changed? }
   
-  # CHANGE THIS LINE:
-  scope :publicly_accessible, -> { where(is_public: true) }  # Changed from 'public' to 'publicly_accessible'
+  scope :publicly_accessible, -> { where(is_public: true) }
   
   def file_url
     if file.attached?
       if Rails.env.production?
-        "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{file.blob.key}"
+        "#{ENV.fetch('SUPABASE_URL')}/storage/v1/object/public/#{ENV.fetch('SUPABASE_STORAGE_BUCKET')}/#{file.blob.key}"
       else
         Rails.application.routes.url_helpers.rails_blob_url(file)
       end

@@ -27,10 +27,12 @@ class Article < ApplicationRecord
   # Method to return featured_image URL
   def featured_image_url
     return unless featured_image.attached?
-
-    "#{Rails.application.credentials.dig(:digitalocean,
-                                         :endpoint)}/#{Rails.application.credentials.dig(:digitalocean,
-                                                                                         :bucket)}/#{featured_image.blob.key}"
+    
+    if Rails.env.production?
+      "#{ENV.fetch('SUPABASE_URL')}/storage/v1/object/public/#{ENV.fetch('SUPABASE_STORAGE_BUCKET')}/#{featured_image.blob.key}"
+    else
+      Rails.application.routes.url_helpers.rails_blob_url(featured_image)
+    end
   end
 
   # Method to return featured_image filename
