@@ -1,4 +1,4 @@
-# lib/active_storage/service/supabase_storage.rb
+# lib/active_storage/service/supabase_storage_service.rb
 require "active_storage/service"
 require "faraday"
 require "mime-types"
