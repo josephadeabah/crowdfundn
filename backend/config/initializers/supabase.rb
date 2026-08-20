@@ -1,6 +1,11 @@
 # config/initializers/supabase.rb
 require "supabase"
 
+# ===== ADD THIS =====
+# Load the custom Active Storage service
+# This ensures the service is available when Active Storage tries to use it
+# ===== END ADD =====
+
 # Only load if environment variables are present
 if ENV["SUPABASE_URL"].present? && ENV["SUPABASE_SERVICE_ROLE_KEY"].present?
   SUPABASE_URL = ENV.fetch("SUPABASE_URL")

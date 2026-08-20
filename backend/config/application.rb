@@ -16,10 +16,14 @@ module Backend
 
     config.active_record.migration_error = :page_load
 
-
-
     # Add services directory to autoload paths
     config.autoload_paths << Rails.root.join('app/services')
+    
+    # ===== ADD THIS =====
+    # Add lib directory to autoload paths for custom services (like Supabase Storage)
+    config.autoload_paths << Rails.root.join('lib')
+    config.eager_load_paths << Rails.root.join('lib')
+    # ===== END ADD =====
 
     # Autoload lib settings
     config.autoload_lib(ignore: %w[assets tasks])
