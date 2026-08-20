@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1
 
-ARG RUBY_VERSION=3.3.4
+ARG RUBY_VERSION=3.3.6  # Changed from 3.3.4 to 3.3.6
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
 WORKDIR /usr/src/app
@@ -29,9 +29,6 @@ RUN bundle install && \
 
 # Copy application code
 COPY . .
-
-# Precompile assets (if you have any)
-# RUN SECRET_KEY_BASE=dummy RAILS_MASTER_KEY=$RAILS_MASTER_KEY bundle exec rails assets:precompile
 
 # Copy and set entrypoint
 COPY entrypoint.sh /usr/src/app/entrypoint.sh
