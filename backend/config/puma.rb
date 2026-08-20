@@ -9,25 +9,26 @@ threads min_threads_count, max_threads_count
 
 # Worker configuration for cluster mode
 if ENV['RAILS_ENV'] == 'production'
-  # Use all available CPU cores by default
-  worker_count = ENV.fetch('WEB_CONCURRENCY') { Concurrent.physical_processor_count }.to_i
-  
-  # Ensure at least 1 worker if physical processor count returns 0
+  # Use 1 worker by default; override with WEB_CONCURRENCY
+  worker_count = ENV.fetch('WEB_CONCURRENCY', 1).to_i
+
+  # Ensure at least 1 worker
   worker_count = 1 if worker_count < 1
-  
+
   workers worker_count
-  
+
   # Important cluster mode settings
-  preload_app!  # Preload the application before forking workers
-  worker_timeout 60  # Default is 30, increase if you have long-running requests
-  
+  preload_app!
+
+  worker_timeout 60
+
   # Recommended for deployments with zero-downtime restarts
   fork_worker do
     if defined?(ActiveRecord::Base)
       ActiveRecord::Base.connection.disconnect!
     end
   end
-  
+
   on_worker_boot do
     if defined?(ActiveRecord::Base)
       ActiveRecord::Base.establish_connection
