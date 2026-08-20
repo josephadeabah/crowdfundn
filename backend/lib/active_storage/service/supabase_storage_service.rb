@@ -4,7 +4,7 @@ require "faraday"
 require "mime-types"
 
 module ActiveStorage
-  class Service::SupabaseStorage < Service
+  class Service::SupabaseStorageService < Service  # MUST end with "Service"
     attr_reader :client, :bucket, :public, :supabase_url, :api_key
 
     def initialize(bucket:, public: true, **options)
