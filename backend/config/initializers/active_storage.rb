@@ -1,4 +1,8 @@
 # config/initializers/active_storage.rb
+
+# Explicitly require the custom Active Storage service
+require_relative '../../lib/active_storage/service/supabase_storage_service'
+
 Rails.application.config.to_prepare do
   ActiveStorage::PurgeJob.class_eval do
     discard_on ActiveRecord::RecordNotFound

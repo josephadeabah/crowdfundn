@@ -6,6 +6,11 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# ===== ADD THIS =====
+# Require the custom Active Storage service before Rails initializes
+require_relative '../lib/active_storage/service/supabase_storage_service'
+# ===== END ADD =====
+
 module Backend
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -19,11 +24,9 @@ module Backend
     # Add services directory to autoload paths
     config.autoload_paths << Rails.root.join('app/services')
     
-    # ===== ADD THIS =====
-    # Add lib directory to autoload paths for custom services (like Supabase Storage)
+    # Add lib directory to autoload paths for custom services
     config.autoload_paths << Rails.root.join('lib')
     config.eager_load_paths << Rails.root.join('lib')
-    # ===== END ADD =====
 
     # Autoload lib settings
     config.autoload_lib(ignore: %w[assets tasks])
