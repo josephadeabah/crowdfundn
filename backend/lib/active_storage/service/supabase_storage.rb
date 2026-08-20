@@ -1,10 +1,10 @@
-# lib/active_storage/service/supabase_storage_service.rb
+# lib/active_storage/service/supabase_storage.rb
 require "active_storage/service"
 require "faraday"
 require "mime-types"
 
 module ActiveStorage
-  class Service::SupabaseStorageService < Service  # MUST end with "Service"
+  class Service::SupabaseStorage < Service  # NO "Service" at the end
     attr_reader :client, :bucket, :public, :supabase_url, :api_key
 
     def initialize(bucket:, public: true, **options)

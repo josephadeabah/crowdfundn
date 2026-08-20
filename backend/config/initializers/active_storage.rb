@@ -2,7 +2,7 @@
 # This file ensures the custom Active Storage service is loaded
 
 # Explicitly require the custom Active Storage service
-require_relative '../../lib/active_storage/service/supabase_storage_service'
+require_relative '../../lib/active_storage/service/supabase_storage'
 
 Rails.logger.info "✅ Supabase Storage Service loaded"
 

@@ -7,17 +7,17 @@ local:
   root: <%= Rails.root.join("storage") %>
 
 supabase:
-  service: SupabaseStorageService
+  service: SupabaseStorage
   bucket: <%= ENV.fetch("SUPABASE_STORAGE_BUCKET", "bantuhive-storage") %>
   public: true
 
 production:
-  service: SupabaseStorageService
+  service: SupabaseStorage
   bucket: <%= ENV.fetch("SUPABASE_STORAGE_BUCKET", "bantuhive-storage") %>
   public: true
 
 development:
-  service: SupabaseStorageService
+  service: SupabaseStorage
   bucket: <%= ENV.fetch("SUPABASE_STORAGE_BUCKET", "bantuhive-storage-dev") %>
   public: true
 
