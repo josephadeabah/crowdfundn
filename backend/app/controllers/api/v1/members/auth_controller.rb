@@ -29,35 +29,29 @@ module Api
           nil
         end
 
+        # app/controllers/api/v1/members/auth_controller.rb
         def confirm_email
-          decoded = decode_confirmation_token(params[:confirmation_token])
-
-          if decoded.nil?
-            render json: { error: 'Invalid confirmation token' }, status: :unprocessable_entity
+          token = params[:confirmation_token]
+          
+          Rails.logger.info "Confirming email with token: #{token[0..10]}..." if token.present?
+          
+          if token.blank?
+            render json: { error: 'Confirmation token is missing' }, status: :unprocessable_entity
             return
           end
-
-          user = User.find_by(id: decoded['user_id'])
-          if user.nil?
-            render json: { error: 'User not found' }, status: :unprocessable_entity
-            return
+          
+          # Use the service to confirm the email
+          result = UserConfirmationService.confirm_email(token)
+          
+          if result[:success]
+            render json: { message: 'Email confirmed successfully!' }, status: :ok
+          else
+            render json: { error: result[:error] }, status: :unprocessable_entity
           end
-
-          if user.email_confirmed
-            render json: { message: 'Email is already confirmed.' }, status: :ok
-            return
-          end
-
-          if decoded['exp'] < Time.current.to_i
-            render json: { error: 'Token expired. Request a new confirmation email.' }, status: :unprocessable_entity
-            return
-          end
-
-          user.update_columns(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
-          render json: { message: 'Email confirmed successfully' }, status: :ok
-        rescue JWT::DecodeError => e
-          Rails.logger.error "JWT DecodeError: #{e.message}"
-          render json: { error: 'Invalid token format' }, status: :unprocessable_entity
+        rescue => e
+          Rails.logger.error "Error confirming email: #{e.message}"
+          render json: { error: 'An error occurred while confirming your email. Please try again.' }, 
+                status: :unprocessable_entity
         end
 
         def login

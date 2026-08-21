@@ -64,6 +64,7 @@ class User < ApplicationRecord
   after_create :send_confirmation_email
   after_create :assign_default_role
   after_create :create_default_profile
+
   # Scopes
   scope :active, -> { where(status: 'active') }
   scope :blocked, -> { where(status: 'blocked') }
@@ -92,13 +93,18 @@ class User < ApplicationRecord
   end
   
   def generate_confirmation_token
-    self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
+    self.confirmation_token = SecureRandom.urlsafe_base64(32)
+    self.confirmation_token_expires_at = 24.hours.from_now
     self.confirmation_sent_at = Time.current
     self.email_confirmed = false
   end
 
   def send_confirmation_email
-    UserConfirmationService.send_confirmation_email(self)
+    # Generate token before sending
+    generate_confirmation_token if confirmation_token.blank?
+    save(validate: false) # Save without validations to ensure token is stored
+    
+    UserConfirmationEmailService.send_confirmation_email(self, ENV.fetch('FRONTEND_URL', 'https://bantuhive.com'))
   rescue StandardError => e
     Rails.logger.error "Failed to send confirmation email to user #{id}: #{e.message}"
   end
