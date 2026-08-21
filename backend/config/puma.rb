@@ -47,9 +47,6 @@ pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
 # Allow for zero-downtime restarts
 plugin :tmp_restart
 
-# Bind to all interfaces
-bind "tcp://0.0.0.0:#{puma_port}"
-
 # Health check endpoint / Puma stats
 before_fork do
   require 'puma/plugin/stats'
