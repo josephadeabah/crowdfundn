@@ -91,4 +91,5 @@ production:
   host: <%= ENV['DB_HOST'] %>
   port: <%= ENV['DB_PORT'] %>
   sslmode: require
+  prepared_statements: false
 
