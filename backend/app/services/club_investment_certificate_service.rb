@@ -8,8 +8,20 @@ class ClubInvestmentCertificateService
   BRAND_GREEN = '2E8B57'
   BRAND_ORANGE = 'FF8C00'
 
+  # Environment Configuration
+  def self.frontend_url
+    ENV.fetch('FRONTEND_URL', 'https://crowdfundn.vercel.app')
+  end
+
+  def self.support_email
+    ENV.fetch('SUPPORT_EMAIL', 'help@crowdfundn.vercel.app')
+  end
+
+  def self.company_name
+    ENV.fetch('COMPANY_NAME', 'Bantuhive')
+  end
+
   def self.generate_certificate(club_investment)
-    # FIXED: Add better validation and logging
     unless club_investment.is_a?(ClubInvestment)
       Rails.logger.error "ClubInvestmentCertificateService: Invalid club investment type: #{club_investment.class}"
       return false
@@ -46,7 +58,7 @@ class ClubInvestmentCertificateService
         margin: [30, 40, 30, 40],
         info: {
           Title: 'Club Investment Certificate',
-          Creator: 'Bantuhive',
+          Creator: company_name,
           CreationDate: Time.now
         }
       )
@@ -64,7 +76,7 @@ class ClubInvestmentCertificateService
       pdf.move_down 10
 
       pdf.fill_color BRAND_GREEN
-      pdf.text 'BANTUHIVE CLUB INVESTMENT CERTIFICATE', size: 20, align: :center, style: :bold
+      pdf.text "#{company_name.upcase} CLUB INVESTMENT CERTIFICATE", size: 20, align: :center, style: :bold
       pdf.move_down 3
       
       pdf.fill_color '444444'
@@ -81,10 +93,10 @@ class ClubInvestmentCertificateService
       club = club_investment.investment_club
       campaign = club_investment.campaign
       
-      # FIXED: Safe access to campaign data with proper currency handling
+      # Safe access to campaign data with proper currency handling
       campaign_title = campaign&.title || 'Unknown Campaign'
       campaign_company = campaign&.company_name || 'Unknown Company'
-      campaign_currency = clean_currency(campaign&.currency || campaign&.currency_symbol || '$')
+      campaign_currency = clean_currency(campaign&.currency || campaign&.currency_symbol || 'GHS')
       campaign_description = campaign&.company_description || 'No description available'
       campaign_headquarters = campaign&.company_headquarters || 'Not specified'
       campaign_website = campaign&.company_website || 'Not specified'
@@ -103,9 +115,7 @@ class ClubInvestmentCertificateService
       pdf.move_down 4
       
       pdf.fill_color BRAND_ORANGE
-      # FIXED: Safe rounding of investment amount
       investment_amount = club_investment.investment_amount.to_f.round(2)
-      # FIXED: Proper currency formatting without array display
       pdf.text "#{campaign_currency}#{investment_amount}", 
                size: 18, align: :center, style: :bold
       pdf.move_down 8
@@ -168,10 +178,9 @@ class ClubInvestmentCertificateService
       pdf.text 'INVESTMENT DETAILS', size: 14, align: :center, style: :bold
       pdf.move_down 10
 
-      # FIXED: Safe rounding of shares and percentage
       shares = club_investment.shares&.to_f&.round(4) || 0
       percentage = club_investment.percentage&.to_f&.round(4) || 0
-      certificate_number = club_investment.certificate_number || "CLUB-#{club_investment.id}"
+      certificate_number = club_investment.certificate_number || "CLUB-#{club_investment.id}-#{Time.current.strftime('%Y%m')}"
 
       details = [
         ['Certificate Number:', { content: certificate_number, color: BRAND_GREEN }],
@@ -215,7 +224,7 @@ class ClubInvestmentCertificateService
       pdf.move_down 8
 
       pdf.fill_color BRAND_GREEN
-      pdf.text "ISSUED BY BANTUHIVE LIMITED", size: 10, align: :center, style: :bold
+      pdf.text "ISSUED BY #{company_name.upcase} LIMITED", size: 10, align: :center, style: :bold
       pdf.move_down 2
       pdf.fill_color BRAND_ORANGE
       pdf.text "on #{Time.current.strftime('%B %d, %Y')}", size: 8, align: :center, style: :italic
@@ -232,7 +241,7 @@ class ClubInvestmentCertificateService
       # Footer
       pdf.move_down 10
       pdf.fill_color '666666'
-      pdf.text "Bantuhive Limited • Registered Investment Platform • www.bantuhive.com", 
+      pdf.text "#{company_name} Limited • Registered Investment Platform • #{frontend_url}", 
                size: 6, align: :center
 
       # Create temp file and attach
@@ -246,7 +255,7 @@ class ClubInvestmentCertificateService
         raise "Failed to generate PDF file"
       end
 
-      # FIXED: Use update! to ensure the certificate is saved
+      # Attach certificate
       club_investment.certificate.attach(
         io: File.open(temp_file.path),
         filename: "club_investment_certificate_#{certificate_number}.pdf",
@@ -254,7 +263,6 @@ class ClubInvestmentCertificateService
         identify: false
       )
 
-      # FIXED: Save the investment to ensure certificate is persisted
       club_investment.save!
 
       unless club_investment.certificate.attached?
@@ -270,6 +278,18 @@ class ClubInvestmentCertificateService
       temp_file.close! if temp_file && !temp_file.closed?
       temp_file.unlink if temp_file
     end
+  end
+
+  def self.regenerate_certificate(club_investment)
+    return false unless club_investment.is_a?(ClubInvestment)
+    
+    # Remove existing certificate if present
+    if club_investment.certificate.attached?
+      club_investment.certificate.purge
+      club_investment.save!
+    end
+    
+    generate_certificate(club_investment)
   end
 
   def self.add_club_signatures_section(pdf, club_sig_url, issuer_sig_url, club_name, issuer_name)
@@ -342,14 +362,12 @@ class ClubInvestmentCertificateService
     pdf.move_down 30
   end
 
-  # FIXED: Safe signature URL methods
   def self.get_club_signature_url(club_investment)
     club = club_investment.investment_club
     return nil unless club
     
-    # Try to get club president's signature
     club_president = club.admin_members.first
-    return nil unless club_president
+    return nil unless club_presidents
     
     kyc = club_president.latest_kyc
     return nil unless kyc
@@ -376,8 +394,9 @@ class ClubInvestmentCertificateService
     nil
   end
 
-  # NEW: Helper method to clean currency format
   def self.clean_currency(currency)
+    return 'GHS' if currency.nil?
+    
     if currency.is_a?(Array)
       currency.first.to_s
     elsif currency.is_a?(String)
@@ -403,13 +422,15 @@ class ClubInvestmentCertificateService
                     position: :absolute
         end
       end
+    rescue => e
+      Rails.logger.warn "Could not add background image: #{e.message}"
     end
 
     def add_watermark(pdf)
       pdf.transparent(0.03) do
         pdf.fill_color 'DDDDDD'
         
-        pdf.text_box "BANTUHIVE CLUB",
+        pdf.text_box "#{company_name.upcase} CLUB",
                      at: [pdf.bounds.width / 2 - 60, pdf.bounds.height / 2],
                      size: 40,
                      style: :bold,
@@ -419,6 +440,8 @@ class ClubInvestmentCertificateService
                      valign: :center
       end
       pdf.fill_color '000000'
+    rescue => e
+      Rails.logger.warn "Could not add watermark: #{e.message}"
     end
   end
 end
