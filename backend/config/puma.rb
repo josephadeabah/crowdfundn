@@ -9,29 +9,34 @@ threads min_threads_count, max_threads_count
 
 # Worker configuration for cluster mode
 if ENV['RAILS_ENV'] == 'production'
-  # Use 1 worker by default; override with WEB_CONCURRENCY
-  worker_count = ENV.fetch('WEB_CONCURRENCY', 1).to_i
-
-  # Ensure at least 1 worker
-  worker_count = 1 if worker_count < 1
-
-  workers worker_count
-
-  # Preload application before forking workers
-  preload_app!
-
-  worker_timeout 60
-
-  fork_worker do
-    if defined?(ActiveRecord::Base)
-      ActiveRecord::Base.connection.disconnect!
+  # Use single worker mode by default to avoid prepared statement conflicts
+  # Override with WEB_CONCURRENCY if needed
+  worker_count = ENV.fetch('WEB_CONCURRENCY', 0).to_i  # Changed default to 0
+  
+  # Use workers only if explicitly set
+  if worker_count > 0
+    workers worker_count
+    
+    # Preload application before forking workers
+    preload_app!
+    
+    worker_timeout 60
+    
+    fork_worker do
+      if defined?(ActiveRecord::Base)
+        ActiveRecord::Base.connection.disconnect!
+      end
     end
-  end
-
-  on_worker_boot do
-    if defined?(ActiveRecord::Base)
-      ActiveRecord::Base.establish_connection
+    
+    on_worker_boot do
+      if defined?(ActiveRecord::Base)
+        ActiveRecord::Base.establish_connection
+      end
     end
+  else
+    # Single mode (no workers) - avoids prepared statement conflicts
+    # In single mode, we don't need to preload or handle worker lifecycle
+    Rails.logger.info "Puma running in single mode (no workers)"
   end
 end
 
