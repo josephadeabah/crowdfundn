@@ -60,7 +60,7 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :profile
 
   after_initialize :set_default_status, if: :new_record?
-  after_create :generate_confirmation_token
+  before_create :generate_confirmation_token
   after_create :send_confirmation_email
   after_create :assign_default_role
   after_create :create_default_profile
@@ -92,7 +92,7 @@ class User < ApplicationRecord
   end
   
   def generate_confirmation_token
-    self.confirmation_token = UserConfirmationService.generate_confirmation_token(self)
+    self.confirmation_token = SecureRandom.urlsafe_base64(32)
     self.confirmation_sent_at = Time.current
     self.email_confirmed = false
   end

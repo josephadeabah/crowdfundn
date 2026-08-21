@@ -30,34 +30,36 @@ module Api
         end
 
         def confirm_email
-          decoded = decode_confirmation_token(params[:confirmation_token])
+          user = User.find_by(confirmation_token: params[:confirmation_token])
 
-          if decoded.nil?
-            render json: { error: 'Invalid confirmation token' }, status: :unprocessable_entity
-            return
-          end
-
-          user = User.find_by(id: decoded['user_id'])
           if user.nil?
-            render json: { error: 'User not found' }, status: :unprocessable_entity
+            render json: { error: 'Invalid confirmation token' },
+                  status: :unprocessable_entity
             return
           end
 
           if user.email_confirmed
-            render json: { message: 'Email is already confirmed.' }, status: :ok
+            render json: { message: 'Email is already confirmed.' },
+                  status: :ok
             return
           end
 
-          if decoded['exp'] < Time.current.to_i
-            render json: { error: 'Token expired. Request a new confirmation email.' }, status: :unprocessable_entity
+          if user.confirmation_sent_at < 2.days.ago
+            render json: {
+              error: 'Token expired. Request a new confirmation email.'
+            }, status: :unprocessable_entity
             return
           end
 
-          user.update_columns(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
-          render json: { message: 'Email confirmed successfully' }, status: :ok
-        rescue JWT::DecodeError => e
-          Rails.logger.error "JWT DecodeError: #{e.message}"
-          render json: { error: 'Invalid token format' }, status: :unprocessable_entity
+          user.update!(
+            email_confirmed: true,
+            confirmed_at: Time.current,
+            confirmation_token: nil
+          )
+
+          render json: {
+            message: 'Email confirmed successfully'
+          }, status: :ok
         end
 
         def login
@@ -93,26 +95,35 @@ module Api
           user = User.find_by(email: params[:email])
 
           if user.nil?
-            render json: { error: 'Invalid email' }, status: :unprocessable_entity
+            render json: { error: 'Invalid email' },
+                  status: :unprocessable_entity
             return
           end
 
           if user.email_confirmed
-            render json: { error: 'Email is already confirmed.' }, status: :unprocessable_entity
+            render json: { error: 'Email is already confirmed.' },
+                  status: :unprocessable_entity
             return
           end
 
-          if user.confirmation_sent_at && user.confirmation_sent_at > 1.hour.ago
-            render json: { error: 'Confirmation email already sent recently. Please check your inbox or try again later.' },
-                   status: :too_many_requests
+          if user.confirmation_sent_at &&
+            user.confirmation_sent_at > 1.hour.ago
+            render json: {
+              error: 'Confirmation email already sent recently. Please check your inbox or try again later.'
+            }, status: :too_many_requests
             return
           end
 
-          user.generate_confirmation_token
-          user.save!
+          user.update!(
+            confirmation_token: SecureRandom.urlsafe_base64(32),
+            confirmation_sent_at: Time.current
+          )
+
           user.send_confirmation_email
 
-          render json: { message: 'Confirmation email resent successfully' }, status: :ok
+          render json: {
+            message: 'Confirmation email resent successfully'
+          }, status: :ok
         end
 
         def password_reset
