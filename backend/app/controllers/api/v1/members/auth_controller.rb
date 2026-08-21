@@ -66,28 +66,40 @@ module Api
           user = User.find_by(email: params[:email])
 
           if user&.authenticate(params[:password])
-            Rails.logger.debug { "User email confirmed: #{user.email_confirmed}" } # Debugging line
-            if user.email_confirmed
-              user.update(
-                last_sign_in_at: Time.current,
-                sign_in_count: user.sign_in_count + 1
-              )
-              
-              # Prepare user data with KYC status info
-              user_data = user.as_json(include: :roles).merge(
-                kyc_status_info: user.kyc_status_info,
-                can_invest: user.can_invest?,
-                can_create_campaign: user.can_create_campaign?
-              )
-              
-              render json: { token: encode_token(user.id), user: user_data }, status: :ok
-            else
+            Rails.logger.debug { "User email confirmed: #{user.email_confirmed}" }
+
+            require_confirmation =
+              ENV.fetch('REQUIRE_EMAIL_CONFIRMATION', 'true') == 'true'
+
+            if require_confirmation && !user.email_confirmed
               user.send_confirmation_email
-              render json: { error: 'Email not confirmed. Please confirm with the link sent to your email to log in.' },
-                     status: :unauthorized
+
+              render json: {
+                error: 'Email not confirmed. Please confirm with the link sent to your email to log in.'
+              }, status: :unauthorized
+
+              return
             end
+
+            user.update(
+              last_sign_in_at: Time.current,
+              sign_in_count: user.sign_in_count + 1
+            )
+
+            user_data = user.as_json(include: :roles).merge(
+              kyc_status_info: user.kyc_status_info,
+              can_invest: user.can_invest?,
+              can_create_campaign: user.can_create_campaign?
+            )
+
+            render json: {
+              token: encode_token(user.id),
+              user: user_data
+            }, status: :ok
           else
-            render json: { error: 'Invalid email or password' }, status: :unauthorized
+            render json: {
+              error: 'Invalid email or password'
+            }, status: :unauthorized
           end
         end
 

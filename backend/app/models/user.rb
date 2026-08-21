@@ -60,8 +60,8 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :profile
 
   after_initialize :set_default_status, if: :new_record?
-  before_create :generate_confirmation_token
-  after_create :send_confirmation_email
+  before_create :generate_confirmation_token, if: :email_confirmation_required?
+  after_create :send_confirmation_email, if: :email_confirmation_required?
   after_create :assign_default_role
   after_create :create_default_profile
   # Scopes
@@ -354,6 +354,10 @@ class User < ApplicationRecord
       last_transfer_reset_at: last_transfer_reset_at,
       total_transferred_amount: total_transferred_amount
     )
+  end
+
+  def email_confirmation_required?
+    ENV.fetch('REQUIRE_EMAIL_CONFIRMATION', 'true') == 'true'
   end
 
   private
