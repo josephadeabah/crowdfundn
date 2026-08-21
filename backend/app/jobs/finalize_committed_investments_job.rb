@@ -37,7 +37,10 @@ class FinalizeCommittedInvestmentsJob < ApplicationJob
           recipient_email: investment.email,
           recipient_name: investment.user&.full_name || investment.full_name || 'Investor',
           metadata: {
-            redirect_url: Rails.application.routes.url_helpers.campaign_url(campaign_identifier, host: 'bantuhive.com'),
+            redirect_url: Rails.application.routes.url_helpers.campaign_url(
+                campaign_identifier,
+                host: ENV.fetch('FRONTEND_HOST', 'crowdfundn.vercel.app')
+            ),
             finalized: true,
             cancellation_window_ended: true
           }

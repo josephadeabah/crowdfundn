@@ -109,8 +109,10 @@ module Api
             secure_random_uuid = SecureRandom.uuid
             # Use campaign.slug if available, otherwise fall back to id
             campaign_identifier = @campaign.slug || @campaign.id
-            redirect_url = Rails.application.routes.url_helpers.campaign_url(campaign_identifier,
-                                                                            host: 'bantuhive.com') + "?#{secure_random_uuid}"
+            redirect_url = Rails.application.routes.url_helpers.campaign_url(
+                campaign_identifier,
+                host: ENV.fetch('FRONTEND_HOST', 'crowdfundn.vercel.app')
+              ) + "?#{secure_random_uuid}"
 
             # Prepare metadata (similar structure to donations but with equity-specific fields)
             metadata = build_metadata(investment, redirect_url)

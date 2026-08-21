@@ -1,3 +1,4 @@
+# app/services/campaign_rejection_email_service.rb
 class CampaignRejectionEmailService
   def self.send_rejection_email(campaign, rejection_reason)
     fundraiser = campaign.fundraiser
@@ -5,15 +6,17 @@ class CampaignRejectionEmailService
     fundraiser_email = fundraiser.email
     campaign_name = campaign.title
     rejection_date = Time.current.strftime('%B %d, %Y')
+    frontend_url = ENV.fetch('FRONTEND_URL', 'https://crowdfundn.vercel.app')
+    frontend_host = ENV.fetch('FRONTEND_HOST', 'crowdfundn.vercel.app')
 
     # Generate a secure random UUID and create the edit URL
     secure_random_uuid = SecureRandom.uuid
-    campaign_identifier = campaign.slug || campaign.id
-    edit_url = Rails.application.routes.url_helpers.campaign_url(
-      campaign_identifier,
-      host: 'bantuhive.com',
-      params: { token: secure_random_uuid }
-    )
+    
+    # Use slug if available, otherwise fallback to ID
+    campaign_identifier = campaign.slug.presence || campaign.id
+    
+    # Build the edit URL properly
+    edit_url = "#{frontend_url}/campaigns/#{campaign_identifier}/edit?token=#{secure_random_uuid}"
 
     send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new(
       to: [
@@ -26,11 +29,12 @@ class CampaignRejectionEmailService
       params: {
         'name' => fundraiser_name,
         'campaign_name' => campaign_name,
-        'rejection_reason' => rejection_reason
+        'rejection_reason' => rejection_reason,
+        'edit_url' => edit_url
       },
       sender: {
         'name' => 'Bantuhive Ltd',
-        'email' => 'help@bantuhive.com'
+        'email' => ENV.fetch('BREVO_SENDER_EMAIL', 'help@crowdfundn.vercel.app')
       },
       subject: "Your campaign '#{campaign_name}' requires changes",
       headers: {
@@ -58,7 +62,7 @@ class CampaignRejectionEmailService
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
               }
               .header {
-                background-color: #f44336; /* Red header for rejection */
+                background-color: #f44336;
                 padding: 20px;
                 text-align: center;
                 color: white;
@@ -68,7 +72,7 @@ class CampaignRejectionEmailService
                 color: #333333;
               }
               .content h1 {
-                color: #f44336; /* Red heading */
+                color: #f44336;
                 font-size: 24px;
                 margin-bottom: 20px;
               }
@@ -98,20 +102,20 @@ class CampaignRejectionEmailService
                 text-decoration: underline;
               }
               .action-button {
-              display: inline-block;
-              background-color: #8ABB6C;
-              color: white !important; 
-              padding: 10px 20px;
-              text-decoration: none;
-              border-radius: 5px;
-              margin-top: 15px;
-              font-weight: bold;  
-              border: none; 
-            }
-            .action-button:hover {
-              background-color: #6DA34A; 
-              color: white !important; 
-            }
+                display: inline-block;
+                background-color: #8ABB6C;
+                color: white !important; 
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 15px;
+                font-weight: bold;  
+                border: none; 
+              }
+              .action-button:hover {
+                background-color: #6DA34A; 
+                color: white !important; 
+              }
             </style>
           </head>
           <body>
@@ -161,7 +165,7 @@ class CampaignRejectionEmailService
                   <a href="https://www.linkedin.com/company/bantu-hive/about/" style="color: black; text-decoration: none; padding: 5px 10px; transition: color 0.3s;">LinkedIn</a>
                 </div>
 
-                <p><a href="https://bantuhive.com">© BantuHive Ltd 2024</a></p>
+                <p><a href="#{frontend_url}">© BantuHive Ltd 2024</a></p>
               </div>
             </div>
           </body>

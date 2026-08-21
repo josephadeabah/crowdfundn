@@ -272,15 +272,17 @@ class Campaign < ApplicationRecord
 
   def media_url
     return unless media_attached?
-    
+
     if Rails.env.production?
-      # For DigitalOcean Spaces
-      "#{Rails.application.credentials.dig(:digitalocean, :endpoint)}/#{Rails.application.credentials.dig(:digitalocean, :bucket)}/#{media.blob.key}"
+      "#{ENV.fetch('SUPABASE_URL')}/storage/v1/object/public/#{ENV.fetch('SUPABASE_STORAGE_BUCKET')}/#{media.blob.key}"
     else
       Rails.application.routes.url_helpers.rails_blob_url(media)
     end
   rescue => e
-    Rails.logger.error "Failed to generate media URL for campaign #{id}: #{e.message}"
+    Rails.logger.error(
+      "Failed to generate media URL for campaign #{id}: #{e.message}"
+    )
+
     nil
   end
 
@@ -311,7 +313,7 @@ class Campaign < ApplicationRecord
   end
 
   def canonical_url
-    "https://www.bantuhive.com/campaign/#{slug}"
+    "#{ENV.fetch('FRONTEND_URL')}/campaign/#{slug}"
   end
   
   # Add this method to update investor metrics when valuation changes

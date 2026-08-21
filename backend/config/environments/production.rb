@@ -14,7 +14,7 @@ Rails.application.configure do
   # Rake tasks automatically ignore this option for performance.
   config.eager_load = true
 
-  Rails.application.routes.default_url_options[:host] = 'bantuhive.com'
+  Rails.application.routes.default_url_options[:host] = 'crowdfundn.vercel.app'
 
   # Full error reports are disabled and caching is turned on.
   config.consider_all_requests_local = false

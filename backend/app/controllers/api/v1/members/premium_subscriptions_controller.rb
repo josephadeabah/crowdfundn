@@ -34,7 +34,7 @@ module Api
         def create
           plan = PremiumPlan.find(params[:plan_id])
           
-          callback_url = 'https://www.bantuhive.com/premium/callback'
+          callback_url = "#{ENV.fetch('FRONTEND_URL', 'https://crowdfundn.vercel.app')}/premium/callback"
           paystack_service = PaystackService.new
           
           metadata = {

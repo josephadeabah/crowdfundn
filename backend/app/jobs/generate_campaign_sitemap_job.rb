@@ -6,7 +6,7 @@ class GenerateCampaignSitemapJob < ApplicationJob
 
   def perform
     campaigns = Campaign.active.where(is_public: true).where(appear_in_search_results: true).select(:id, :slug, :updated_at)
-    base_url = 'https://www.bantuhive.com'
+    base_url = ENV.fetch('FRONTEND_URL', 'https://crowdfundn.vercel.app')
 
     xml = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
       xml.urlset(xmlns: 'http://www.sitemaps.org/schemas/sitemap/0.9') do

@@ -161,9 +161,11 @@ module Api
         def generate_redirect_url(campaign)
           secure_random_uuid = SecureRandom.uuid
           campaign_identifier = campaign.slug || campaign.id
+          frontend_host = ENV.fetch('FRONTEND_HOST', 'crowdfundn.vercel.app')
+
           Rails.application.routes.url_helpers.campaign_url(
-            campaign_identifier, 
-            host: 'bantuhive.com'
+            campaign_identifier,
+            host: frontend_host
           ) + "?#{secure_random_uuid}"
         end
 
