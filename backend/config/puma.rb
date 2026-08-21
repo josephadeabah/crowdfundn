@@ -36,7 +36,7 @@ if ENV['RAILS_ENV'] == 'production'
 end
 
 # Basic settings
-puma_port = ENV.fetch('PORT', 3000).to_i
+puma_port = ENV.fetch('DB_PORT', 3000).to_i
 
 port puma_port
 
