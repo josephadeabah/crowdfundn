@@ -1,11 +1,7 @@
-# app/controllers/api/v1/members/auth_controller.rb
 module Api
   module V1
     module Members
       class AuthController < ApplicationController
-        # Skip authentication for auth actions
-        skip_before_action :authenticate_request, only: [:signup, :login, :confirm_email, :resend_confirmation, :password_reset]
-
         def signup
           existing_user = User.find_by(email: user_params[:email])
 
@@ -19,57 +15,63 @@ module Api
             end
           else
             user = User.new(user_params)
-            user.email_confirmed = false
-            
             if user.save
-              # Send confirmation email
-              user.send_confirmation_email
-              
-              render json: { 
-                message: 'User created successfully. Please check your email for confirmation link.',
-                user: user.as_json(only: [:id, :email, :full_name])
-              }, status: :created
+              render json: { token: encode_token(user.id), user: user.as_json(include: :roles) }, status: :created
             else
               render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
             end
           end
         end
 
+        def decode_confirmation_token(token)
+          JWT.decode(token, Rails.application.secret_key_base).first
+        rescue StandardError
+          nil
+        end
+
         def confirm_email
-          token = params[:confirmation_token]
-          
-          Rails.logger.info "Confirming email with token: #{token[0..10]}..." if token.present?
-          
-          if token.blank?
-            render json: { error: 'Confirmation token is missing' }, status: :unprocessable_entity
+          decoded = decode_confirmation_token(params[:confirmation_token])
+
+          if decoded.nil?
+            render json: { error: 'Invalid confirmation token' }, status: :unprocessable_entity
             return
           end
-          
-          # Use the service to confirm the email
-          result = UserConfirmationService.confirm_email(token)
-          
-          if result[:success]
-            render json: { message: 'Email confirmed successfully!' }, status: :ok
-          else
-            render json: { error: result[:error] }, status: :unprocessable_entity
+
+          user = User.find_by(id: decoded['user_id'])
+          if user.nil?
+            render json: { error: 'User not found' }, status: :unprocessable_entity
+            return
           end
-        rescue => e
-          Rails.logger.error "Error confirming email: #{e.message}"
-          render json: { error: 'An error occurred while confirming your email. Please try again.' }, 
-                 status: :unprocessable_entity
+
+          if user.email_confirmed
+            render json: { message: 'Email is already confirmed.' }, status: :ok
+            return
+          end
+
+          if decoded['exp'] < Time.current.to_i
+            render json: { error: 'Token expired. Request a new confirmation email.' }, status: :unprocessable_entity
+            return
+          end
+
+          user.update_columns(email_confirmed: true, confirmed_at: Time.current, confirmation_token: nil)
+          render json: { message: 'Email confirmed successfully' }, status: :ok
+        rescue JWT::DecodeError => e
+          Rails.logger.error "JWT DecodeError: #{e.message}"
+          render json: { error: 'Invalid token format' }, status: :unprocessable_entity
         end
 
         def login
           user = User.find_by(email: params[:email])
 
           if user&.authenticate(params[:password])
-            Rails.logger.debug { "User email confirmed: #{user.email_confirmed}" }
+            Rails.logger.debug { "User email confirmed: #{user.email_confirmed}" } # Debugging line
             if user.email_confirmed
               user.update(
                 last_sign_in_at: Time.current,
                 sign_in_count: user.sign_in_count + 1
               )
               
+              # Prepare user data with KYC status info
               user_data = user.as_json(include: :roles).merge(
                 kyc_status_info: user.kyc_status_info,
                 can_invest: user.can_invest?,
@@ -100,8 +102,8 @@ module Api
             return
           end
 
-          if user.confirmation_sent_at && user.confirmation_sent_at > 1.minute.ago
-            render json: { error: 'Confirmation email already sent recently. Please check your inbox or try again in a minute.' },
+          if user.confirmation_sent_at && user.confirmation_sent_at > 1.hour.ago
+            render json: { error: 'Confirmation email already sent recently. Please check your inbox or try again later.' },
                    status: :too_many_requests
             return
           end
@@ -116,6 +118,7 @@ module Api
         def password_reset
           user = User.find_by(email: params[:email])
           if user
+            # Implement password reset logic (e.g., send email with reset instructions)
             render json: { message: 'Password reset instructions sent' }, status: :ok
           else
             render json: { error: 'Email not found' }, status: :not_found
@@ -126,6 +129,7 @@ module Api
           # Find user by reset token and update password
           # Implement actual reset password logic
         end
+
 
         private
 
