@@ -180,7 +180,7 @@ module Api
         paystack_service.initialize_transaction(
           email: @current_user.email,
           amount: contribution.amount,
-          callback_url: "#{ENV.fetch('FRONTEND_URL', 'https://crowdfundn.vercel.app')}/account#Your%20Clubs"
+          callback_url: "#{ENV.fetch('FRONTEND_URL', 'https://crowdfundn.vercel.app')}/account#Your%20Clubs",
           metadata: metadata,
           currency: @current_user.currency.upcase
         )
