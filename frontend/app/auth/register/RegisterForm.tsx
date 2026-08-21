@@ -125,10 +125,8 @@ const RegisterForm: React.FC = () => {
       'BHD': 'د.ب',
       'OMR': 'ر.ع.',
       'JOD': 'د.ا',
-      'EGP': '£',
       'TND': 'د.ت',
       'DZD': 'د.ج',
-      'MAD': 'د.م.',
     };
     return symbols[currencyCode] || currencyCode;
   };
@@ -136,7 +134,7 @@ const RegisterForm: React.FC = () => {
   // FIXED: Simplified location detection using ipapi.co data directly
   const detectLocation = async () => {
     try {
-      // Call ipapi.co directly - this is the most reliable source
+      // Call ipapi.co directly - this gives us country, currency, and phone code
       const ipResponse = await fetch('https://ipapi.co/json/', {
         headers: { 'Accept': 'application/json' },
         signal: AbortSignal.timeout(10000),
@@ -153,37 +151,10 @@ const RegisterForm: React.FC = () => {
 
       // Check if we got valid country data
       if (data.country_code && data.country_code.length === 2) {
-        // Use the currency directly from ipapi.co if available
-        let currency = data.currency || 'GHS';
-        let currencySymbol = getCurrencySymbol(currency);
+        // Use currency directly from ipapi.co
+        const currency = data.currency || 'GHS';
+        const currencySymbol = getCurrencySymbol(currency);
         
-        // If currency symbol is still the code, try to get it from the API
-        if (currencySymbol === currency) {
-          // Try to get currency info from restcountries as fallback
-          try {
-            const countryResponse = await fetch(
-              `https://restcountries.com/v3.1/alpha/${data.country_code}`,
-              {
-                headers: { 'Accept': 'application/json' },
-                signal: AbortSignal.timeout(5000),
-              }
-            );
-
-            if (countryResponse.ok) {
-              const [countryData] = await countryResponse.json();
-              if (countryData.currencies) {
-                const currencyCode = Object.keys(countryData.currencies)[0];
-                currency = currencyCode;
-                const currencyInfo = countryData.currencies[currencyCode];
-                currencySymbol = currencyInfo?.symbol || getCurrencySymbol(currencyCode);
-              }
-            }
-          } catch (currencyError) {
-            console.warn('Failed to fetch currency from restcountries:', currencyError);
-            // Keep using the data from ipapi.co
-          }
-        }
-
         // Get phone code - ensure it starts with +
         let phoneCode = data.country_calling_code || '+233';
         if (!phoneCode.startsWith('+')) {
