@@ -61,7 +61,6 @@ const RegisterForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
-  const [countryCode, setCountryCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
@@ -77,60 +76,179 @@ const RegisterForm: React.FC = () => {
     { value: 'investor', label: 'Investor' },
   ];
 
-  const isStepValid = (): boolean => {
-    const fieldsToValidate: Record<number, (keyof FormData)[]> = {
-      1: ['email', 'password', 'confirmPassword', 'fullName', 'phoneNumber'],
-      2: ['category', 'targetAmount', 'userType'],
-      3: [
-        'country',
-        'paymentMethod',
-        ...(formData.paymentMethod === 'Mobile Money'
-          ? ['mobileMoneyProvider']
-          : []),
-      ] as (keyof FormData)[],
+  // Currency symbol mapping for common currencies
+  const getCurrencySymbol = (currencyCode: string): string => {
+    const symbols: Record<string, string> = {
+      'GHS': '₵',
+      'USD': '$',
+      'EUR': '€',
+      'GBP': '£',
+      'NGN': '₦',
+      'ZAR': 'R',
+      'KES': 'KSh',
+      'EGP': '£',
+      'MAD': 'DH',
+      'XOF': 'CFA',
+      'UGX': 'USh',
+      'TZS': 'TSh',
+      'ZMW': 'ZK',
+      'ZWL': '$',
+      'CAD': 'C$',
+      'AUD': 'A$',
+      'JPY': '¥',
+      'CNY': '¥',
+      'INR': '₹',
+      'BRL': 'R$',
+      'MXN': '$',
+      'SGD': 'S$',
+      'CHF': 'Fr',
+      'SEK': 'kr',
+      'NOK': 'kr',
+      'DKK': 'kr',
+      'PLN': 'zł',
+      'TRY': '₺',
+      'RUB': '₽',
+      'KRW': '₩',
+      'IDR': 'Rp',
+      'MYR': 'RM',
+      'PHP': '₱',
+      'THB': '฿',
+      'VND': '₫',
+      'PKR': '₨',
+      'LKR': 'Rs',
+      'NPR': 'Rs',
+      'BDT': '৳',
+      'AED': 'د.إ',
+      'SAR': '﷼',
+      'QAR': '﷼',
+      'KWD': 'د.ك',
+      'BHD': 'د.ب',
+      'OMR': 'ر.ع.',
+      'JOD': 'د.ا',
+      'EGP': '£',
+      'TND': 'د.ت',
+      'DZD': 'د.ج',
+      'MAD': 'د.م.',
     };
-    return fieldsToValidate[currentStep].every((field) => {
-      const value = formData[field];
-      return value && value.trim() !== '' && !errors[field];
-    });
+    return symbols[currencyCode] || currencyCode;
   };
 
-  useEffect(() => {
-    const fetchUserLocation = async () => {
-      try {
-        const ipResponse = await fetch('https://ipapi.co/json/');
-        const data = await ipResponse.json();
-        setCountryCode(data.country_calling_code);
-        const currencyResponse = await fetch(
-          `https://restcountries.com/v3.1/alpha/${data.country_code}`,
-        );
-        const [countryData] = await currencyResponse.json();
-        const currencies = Object.values(countryData.currencies)[0];
-        const currencySymbol = (currencies as { symbol: string }).symbol;
-        const currencyCode = Object.keys(countryData.currencies)[0];
+  // FIXED: Simplified location detection using ipapi.co data directly
+  const detectLocation = async () => {
+    try {
+      // Call ipapi.co directly - this is the most reliable source
+      const ipResponse = await fetch('https://ipapi.co/json/', {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(10000),
+      });
 
-        setFormData((prev) => ({
-          ...prev,
-          country: data.country_name,
-          currency: currencyCode,
+      if (!ipResponse.ok) {
+        throw new Error('IP API request failed');
+      }
+
+      const data = await ipResponse.json();
+      
+      // Log the response for debugging
+      console.log('📍 IP API Response:', data);
+
+      // Check if we got valid country data
+      if (data.country_code && data.country_code.length === 2) {
+        // Use the currency directly from ipapi.co if available
+        let currency = data.currency || 'GHS';
+        let currencySymbol = getCurrencySymbol(currency);
+        
+        // If currency symbol is still the code, try to get it from the API
+        if (currencySymbol === currency) {
+          // Try to get currency info from restcountries as fallback
+          try {
+            const countryResponse = await fetch(
+              `https://restcountries.com/v3.1/alpha/${data.country_code}`,
+              {
+                headers: { 'Accept': 'application/json' },
+                signal: AbortSignal.timeout(5000),
+              }
+            );
+
+            if (countryResponse.ok) {
+              const [countryData] = await countryResponse.json();
+              if (countryData.currencies) {
+                const currencyCode = Object.keys(countryData.currencies)[0];
+                currency = currencyCode;
+                const currencyInfo = countryData.currencies[currencyCode];
+                currencySymbol = currencyInfo?.symbol || getCurrencySymbol(currencyCode);
+              }
+            }
+          } catch (currencyError) {
+            console.warn('Failed to fetch currency from restcountries:', currencyError);
+            // Keep using the data from ipapi.co
+          }
+        }
+
+        // Get phone code - ensure it starts with +
+        let phoneCode = data.country_calling_code || '+233';
+        if (!phoneCode.startsWith('+')) {
+          phoneCode = `+${phoneCode}`;
+        }
+
+        const locationData = {
+          country: data.country_name || 'Ghana',
+          countryCode: data.country_code || 'GH',
+          currency: currency,
           currencySymbol: currencySymbol,
-          phoneCode: `+${data.country_calling_code.replace(/\+/g, '')}`,
-        }));
-      } catch (error) {
-        console.error('Error fetching location:', error);
+          phoneCode: phoneCode,
+        };
+
+        console.log('📍 Final location data:', locationData);
+        return locationData;
+      }
+
+      throw new Error('Invalid country data received');
+      
+    } catch (error) {
+      console.error('Location detection failed:', error);
+      // Default to Ghana
+      return {
+        country: 'Ghana',
+        countryCode: 'GH',
+        currency: 'GHS',
+        currencySymbol: '₵',
+        phoneCode: '+233',
+      };
+    }
+  };
+
+  // Initialize location on mount
+  useEffect(() => {
+    const initializeLocation = async () => {
+      setIsLocationLoading(true);
+      try {
+        const location = await detectLocation();
+        
         setFormData((prev) => ({
           ...prev,
-          country: 'United States',
-          currency: 'USD',
-          currencySymbol: '$',
-          phoneCode: '+1',
+          country: location.country,
+          currency: location.currency,
+          currencySymbol: location.currencySymbol,
+          phoneCode: location.phoneCode,
+        }));
+        
+        console.log('✅ Location set to:', location.country, location.currency, location.currencySymbol);
+      } catch (error) {
+        console.error('Error initializing location:', error);
+        // Fallback to Ghana
+        setFormData((prev) => ({
+          ...prev,
+          country: 'Ghana',
+          currency: 'GHS',
+          currencySymbol: '₵',
+          phoneCode: '+233',
         }));
       } finally {
         setIsLocationLoading(false);
       }
     };
 
-    fetchUserLocation();
+    initializeLocation();
   }, []);
 
   const validateField = (name: keyof FormData, value: string): string => {
@@ -155,7 +273,6 @@ const RegisterForm: React.FC = () => {
       }
       case 'birthDate':
         if (value) {
-          // Only validate if value exists
           const birthDate = new Date(value);
           const minDate = getMinimumBirthDate();
           if (birthDate > minDate) {
@@ -179,19 +296,22 @@ const RegisterForm: React.FC = () => {
     return error;
   };
 
-  const handleBirthDateChange = (date: Date | undefined) => {
-    if (date) {
-      const isoDate = date.toISOString().split('T')[0];
-      setFormData((prev) => ({
-        ...prev,
-        birthDate: isoDate,
-      }));
-      const error = validateField('birthDate', isoDate);
-      setErrors((prev) => ({ ...prev, birthDate: error }));
-    } else {
-      setFormData((prev) => ({ ...prev, birthDate: '' }));
-      setErrors((prev) => ({ ...prev, birthDate: '' }));
-    }
+  const isStepValid = (): boolean => {
+    const fieldsToValidate: Record<number, (keyof FormData)[]> = {
+      1: ['email', 'password', 'confirmPassword', 'fullName', 'phoneNumber'],
+      2: ['category', 'targetAmount', 'userType'],
+      3: [
+        'country',
+        'paymentMethod',
+        ...(formData.paymentMethod === 'Mobile Money'
+          ? ['mobileMoneyProvider']
+          : []),
+      ] as (keyof FormData)[],
+    };
+    return fieldsToValidate[currentStep].every((field) => {
+      const value = formData[field];
+      return value && value.trim() !== '' && !errors[field];
+    });
   };
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -217,7 +337,7 @@ const RegisterForm: React.FC = () => {
 
     const newErrors: Errors = {};
     Object.keys(formData).forEach((key) => {
-      if (key === 'birthDate') return; // Skip birthdate validation
+      if (key === 'birthDate') return;
       const error = validateField(
         key as keyof FormData,
         formData[key as keyof FormData],
@@ -244,7 +364,7 @@ const RegisterForm: React.FC = () => {
         currency: formData.currency,
         currency_symbol: formData.currencySymbol,
         phone_code: formData.phoneCode,
-        birth_date: formData.birthDate || null, // Send null if empty
+        birth_date: formData.birthDate || null,
         category: formData.category,
         target_amount: parseInt(formData.targetAmount, 10),
         user_type: formData.userType,
@@ -588,7 +708,7 @@ const RegisterForm: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <FaSpinner className="animate-spin text-4xl text-gray-600" />
         <span className="ml-2 text-gray-600">
-          Loading your location data...
+          Detecting your location...
         </span>
       </div>
     );
@@ -616,7 +736,7 @@ const RegisterForm: React.FC = () => {
         <StepIndicator />
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
           <p className="text-violet-600">
-            Location detected: {formData.country} ({formData.currency} -{' '}
+            📍 Location detected: {formData.country} ({formData.currency} -{' '}
             {formData.currencySymbol})
           </p>
         </div>
