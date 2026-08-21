@@ -34,28 +34,63 @@ class UserConfirmationEmailService
             <style>
               body {
                 font-family: Arial, sans-serif;
-                background-color: #f0faf0; /* Light green background */
+                background-color: #f0faf0;
                 margin: 0;
                 padding: 0;
               }
               .email-container {
                 max-width: 600px;
                 margin: 0 auto;
-                background-color: #ffffff; /* White background for content */
+                background-color: #ffffff;
                 border-radius: 10px;
                 overflow: hidden;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
               }
               .header {
-                background-color: #4CAF50; /* Green header */
+                background-color: #4CAF50;
                 padding: 20px;
                 text-align: center;
               }
-              .header img {
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-            }
+              .content {
+                padding: 20px;
+                color: #333333;
+              }
+              .content h1 {
+                color: #4CAF50;
+                font-size: 24px;
+                margin-bottom: 20px;
+              }
+              .content p {
+                font-size: 16px;
+                line-height: 1.6;
+                margin-bottom: 20px;
+              }
+              .button {
+                display: inline-block;
+                padding: 12px 24px;
+                background-color: #4CAF50;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+              }
+              .button:hover {
+                background-color: #45a049;
+              }
+              .footer {
+                background-color: #f0faf0;
+                padding: 15px;
+                text-align: center;
+                font-size: 14px;
+                color: #666666;
+              }
+              .footer a {
+                color: #4CAF50;
+                text-decoration: none;
+              }
+              .footer a:hover {
+                text-decoration: underline;
+              }
             </style>
           </head>
           <body>
