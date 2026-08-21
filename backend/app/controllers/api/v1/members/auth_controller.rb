@@ -1,7 +1,9 @@
+# app/controllers/api/v1/members/auth_controller.rb
 module Api
   module V1
     module Members
       class AuthController < ApplicationController
+        # Skip authentication for auth actions
         skip_before_action :authenticate_request, only: [:signup, :login, :confirm_email, :resend_confirmation, :password_reset]
 
         def signup
