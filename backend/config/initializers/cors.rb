@@ -4,8 +4,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     # Production origins
     origins 'https://bantuhive.com',
             'https://www.bantuhive.com',
-            'https://cp--crowdfundn--s7pq9f6qzpzc.code.run',
-            'https://crowdfundn.vercel.app',
+            'https://api.bantuhive.com',
             # Vercel preview deployments (dynamic)
             -> { ENV.fetch('FRONTEND_URLS', '').split(',') },
             # Local development
