@@ -36,7 +36,7 @@ if ENV['RAILS_ENV'] == 'production'
 end
 
 # Basic settings
-puma_port = ENV.fetch('DB_PORT', 3000).to_i
+puma_port = ENV.fetch('PORT', 3000).to_i
 
 port puma_port
 
@@ -46,11 +46,6 @@ pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
 
 # Allow for zero-downtime restarts
 plugin :tmp_restart
-
-# Health check endpoint / Puma stats
-before_fork do
-  require 'puma/plugin/stats'
-end
 
 # For better performance with reverse proxies
 persistent_timeout 20
